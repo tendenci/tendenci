@@ -2868,6 +2868,52 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         file_name = event.title.strip().replace(' ', '-')
         file_name = 'Event-%s-Total.xls' % re.sub(r'[^a-zA-Z0-9._]+', '', file_name)
 
+    from collections import namedtuple
+
+    # RegistrantTuple = namedtuple('Registrant', [
+    #     'first_name',
+    #     'last_name',
+    #     'phone',
+    #     'email',
+    #     'position',
+    #     'company',
+    #     'address',
+    #     'city',
+    #     'state',
+    #     'zip',
+    #     'country',
+    #     'date',
+    #     'registration_id',
+    #     'is_primary',
+    #     'amount',
+    #     'price_type',
+    #     'invoice_id',
+    #     'registration_price',
+    #     'payment_method',
+    #     'balance'])
+
+    RegistrantTuple = namedtuple('Registrant', [
+        'first_name',
+        'last_name',
+        'phone',
+        'email',
+        'position_title',
+        'company_name',
+        'address',
+        'city',
+        'state',
+        'zip',
+        'country',
+        'create_dt',
+        'registration__pk',
+        'is_primary',
+        'amount',
+        'registration__reg_conf_price__title',
+        'registration__invoice__pk',
+        'registration__invoice__total',
+        'registration__payment_method__machine_name',
+        'registration__invoice__balance'])
+
     # the key is what the column will be in the
     # excel sheet. the value is the database lookup
     # Used OrderedDict to maintain the column order
@@ -2885,6 +2931,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('country', 'country'),
         ('date', 'create_dt'),
         ('registration_id', 'registration__pk'),
+        ('is_primary', 'is_primary'),
         ('amount', 'amount'),
         ('price type', 'registration__reg_conf_price__title'),
         ('invoice_id', 'registration__invoice__pk'),
@@ -2892,6 +2939,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('payment method', 'registration__payment_method__machine_name'),
         ('balance', 'registration__invoice__balance'),
     ])
+
     registrant_lookups = registrant_mappings.values()
 
     # Append the heading to the list of values that will
@@ -2900,15 +2948,27 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
     # registrants with regular reg form
     non_custom_registrants = registrants.filter(custom_reg_form_entry=None)
-    non_custom_registrants = non_custom_registrants.values_list(*registrant_lookups)
+    non_custom_registrants = non_custom_registrants.values(*registrant_lookups)
+
     if non_custom_registrants:
         values_list.insert(0, registrant_mappings.keys())
-        for registrant in non_custom_registrants:
-            values_list.append(registrant)
+
+        for registrant_dict in non_custom_registrants:
+
+            # update registrant values
+            if not registrant_dict['is_primary']:
+                registrant_dict['registration__invoice__total'] = 0
+                registrant_dict['registration__invoice__balance'] = 0
+
+            # keeps order of values
+            registrant_tuple = RegistrantTuple(**registrant_dict)
+
+            values_list.append(registrant_tuple)
+
         values_list.append(['\n'])
 
     # Write the data enumerated to the excel sheet
-    balance_index = 16
+    balance_index = 17
     start_row = 0
     render_registrant_excel(sheet, values_list, balance_index, styles, start=start_row)
     start_row += len(values_list)
