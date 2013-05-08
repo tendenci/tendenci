@@ -1111,6 +1111,9 @@ def register(request, event_id=0,
                                                 ).exists()
 
         pricings = pricings.order_by('position', '-price')
+        # registration might be closed, redirect to detail page
+        if not pricings.exists():
+            return HttpResponseRedirect(reverse('event', args=(event.pk,),))
 
         try:
             pricing_id = int(pricing_id)
