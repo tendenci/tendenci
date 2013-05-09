@@ -285,6 +285,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
                 return expiration_dt
 
+
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)
 
@@ -322,8 +323,8 @@ class MembershipSet(models.Model):
         self.save()
 
         self.invoice.object_type = ContentType.objects.get(
-                        app_label=self._meta.app_label,
-                        model=self._meta.module_name)
+            app_label=self._meta.app_label, model=self._meta.module_name)
+
         self.invoice.object_id = self.pk
         self.invoice.save()
 
