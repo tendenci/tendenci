@@ -122,6 +122,14 @@ def get_setting(scope, scope_category, name):
     return u''
 
 
+def get_global_setting(name):
+    return get_setting('site', 'global', name)
+
+
+def get_module_setting(scope_category, name):
+    return get_setting('module', scope_category, name)
+
+
 def check_setting(scope, scope_category, name):
     #check cache first
     keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
