@@ -34,7 +34,7 @@ class Command(BaseCommand):
             ages.sort()
             ages.reverse()
             max_age = ages[0]
-            params = {'age': max_age, 'remove': True}
+            params = {'age': max_age, 'batch-size': 50}
 
             call_command('update_index', *items, **params)
             unindexed_items.delete()
