@@ -151,15 +151,17 @@ class Invoice(models.Model):
 
         self.bill_to_first_name = user.first_name
         self.bill_to_last_name = user.last_name
-        self.bill_to_company = user.profile.company
-        self.bill_to_address = user.profile.address
-        self.bill_to_city = user.profile.city
-        self.bill_to_state = user.profile.state
-        self.bill_to_zip_code = user.profile.zipcode
-        self.bill_to_country = user.profile.country
-        self.bill_to_phone = user.profile.phone
-        self.bill_to_fax = user.profile.fax
         self.bill_to_email = user.email
+
+        if hasattr(user, 'profile'):
+            self.bill_to_company = user.profile.company
+            self.bill_to_address = user.profile.address
+            self.bill_to_city = user.profile.city
+            self.bill_to_state = user.profile.state
+            self.bill_to_zip_code = user.profile.zipcode
+            self.bill_to_country = user.profile.country
+            self.bill_to_phone = user.profile.phone
+            self.bill_to_fax = user.profile.fax
 
     def ship_to_user(self, user):
         """
@@ -171,16 +173,18 @@ class Invoice(models.Model):
 
         self.ship_to_first_name = user.first_name
         self.ship_to_last_name = user.last_name
-        self.ship_to_company = user.profile.company
-        self.ship_to_address = user.profile.address
-        self.ship_to_city = user.profile.city
-        self.ship_to_state = user.profile.state
-        self.ship_to_zip_code = user.profile.zipcode
-        self.ship_to_country = user.profile.country
-        self.ship_to_phone = user.profile.phone
-        self.ship_to_fax = user.profile.fax
         self.ship_to_email = user.email
-        self.ship_to_address_type = user.profile.address_type
+
+        if hasattr(user, 'profile'):
+            self.ship_to_company = user.profile.company
+            self.ship_to_address = user.profile.address
+            self.ship_to_city = user.profile.city
+            self.ship_to_state = user.profile.state
+            self.ship_to_zip_code = user.profile.zipcode
+            self.ship_to_country = user.profile.country
+            self.ship_to_phone = user.profile.phone
+            self.ship_to_fax = user.profile.fax
+            self.ship_to_address_type = user.profile.address_type
 
     def split_title(self):
         if ": " in self.title:
