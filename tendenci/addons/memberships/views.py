@@ -1740,9 +1740,11 @@ def membership_default_add(request, slug='',
 
                 user = user_form.save()
 
-                if hasattr(user, 'profile'):
-                    profile_form.instance = user.profile
-                    profile_form.save(request_user=request.user)
+                if not hasattr(user, 'profile'):
+                    Profile.objects.create_profile(user)
+
+                profile_form.instance = user.profile
+                profile_form.save(request_user=request.user)
 
                 # save demographics
                 demographics = demographics_form.save(commit=False)
