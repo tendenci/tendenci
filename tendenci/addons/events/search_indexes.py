@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from haystack import indexes
 from haystack import site
 
@@ -8,10 +6,10 @@ from django.db.models import signals
 
 from tendenci.addons.events.models import Event, Registrant
 from tendenci.addons.events.utils import count_event_spots_taken
-from tendenci.addons.events.models import Type as EventType
 from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.search.indexes import CustomSearchIndex
+
 
 class EventIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
@@ -19,35 +17,35 @@ class EventIndex(TendenciBaseSearchIndex):
     start_dt = indexes.DateTimeField(model_attr='start_dt')
     end_dt = indexes.DateTimeField(model_attr='end_dt')
     on_weekend = indexes.BooleanField(model_attr='on_weekend')
-    
+
     # fields for sorting events that span multiple days
     hour = indexes.IntegerField()
     minute = indexes.IntegerField()
-    
+
     # event type id
     type_id = indexes.IntegerField(null=True)
-    
+
     # amount of registrations spots left
     spots_taken = indexes.IntegerField()
-    
+
     # number of days the event is active
     number_of_days = indexes.IntegerField()
-    
+
     # RSS fields
     can_syndicate = indexes.BooleanField()
-    
+
     def prepare_description(self, obj):
         description = obj.description
         description = strip_tags(description)
         description = strip_entities(description)
         return description
-        
+
     def prepare_hour(self, obj):
         return int(obj.start_dt.hour)
-    
+
     def prepare_minute(self, obj):
         return int(obj.start_dt.minute)
-        
+
     def prepare_type_id(self, obj):
         if obj.type:
             return obj.type.pk
@@ -59,22 +57,13 @@ class EventIndex(TendenciBaseSearchIndex):
             return obj.spots_taken
         else:
             return count_event_spots_taken(obj)
-            
+
     def prepare_number_of_days(self, obj):
         return obj.number_of_days()
 
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.status == 1 \
-                and obj.status_detail == 'active'
-
-
-class EventTypeIndex(CustomSearchIndex):
-    text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='name')
-    slug = indexes.CharField(model_attr='slug')
-
-    # PK: needed for exclude list_tags
-    primary_key = indexes.CharField(model_attr='pk')
+            and obj.status_detail == 'active'
 
 
 class RegistrantIndex(CustomSearchIndex):
@@ -105,7 +94,7 @@ class RegistrantIndex(CustomSearchIndex):
 
     def prepare_groups_can_view(self, obj):
         return ObjectPermission.objects.groups_with_perms('registrants.view_registrant', obj)
-    
+
     def prepare_last_name(self, obj):
         if obj.custom_reg_form_entry:
             obj.last_name = obj.custom_reg_form_entry.get_value_of_mapped_field('last_name')
@@ -114,5 +103,4 @@ class RegistrantIndex(CustomSearchIndex):
         return obj.last_name
 
 site.register(Event, EventIndex)
-site.register(EventType, EventTypeIndex)
 site.register(Registrant, RegistrantIndex)
