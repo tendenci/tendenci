@@ -411,7 +411,11 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             email = EmailMessage(subject, body, sender,
                                  recipients, headers=headers)
         email.content_subtype = content_type
-        email.send(fail_silently=True)  # should we raise exception or not?
+
+        try:
+            email.send(fail_silently=True)  # should we raise exception or not?
+        except UnicodeError:
+            pass
 
     to = ','.join(emails)
     bcc = ','.join(recipient_bcc)
