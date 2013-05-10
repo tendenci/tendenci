@@ -306,6 +306,7 @@ div.pending-entries {
 
 .t .membership-details-balance a {
     color: inherit;
+    text-decoration: none;
 }
 
 .t .go-to-profile {
@@ -323,26 +324,25 @@ div.pending-entries {
     margin: 0 2px;
 }
 
+
 .t .membership-details-info {
     position: relative;
 }
 
-.t .membership-details-status {
-    background-color: white;
-    position: absolute;
-    top: -10px;
-    right: 0;
-    bottom: -20px;
+.t #membership-details-info {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.t #membership-details-info #status {
     border-left: 1px solid #DDD;
-
     width: 400px;
-
     padding-bottom: 10px;
+}
 
-/*    -moz-box-shadow: 0 0 5px #CCC;
-    -webkit-box-shadow: 0 0 5px #CCC;
-    box-shadow: 0 0 5px #CCC;*/
-
+.t #membership-details-info #status .status-label {
+    padding: 10px;
+    background-color: #FAFAFA;
 }
 
 .t .membership-details-status .status-label {
@@ -351,29 +351,26 @@ div.pending-entries {
     background-color: #FAFAFA;
 }
 
-.t .status-label.active {
+.t #membership-details-info #status .status-label.active {
     color: white;
     background-color: #468847;
 }
 
-.t .status-label.pending {
+.t #membership-details-info #status .status-label.pending {
     color: white;
     background-color: #FB9406;
 }
 
-.t .status-label.expired,
-.t .status-label.disapproved,
-.t .status-label.revoked {
+.t #membership-details-info #status .status-label.expired,
+.t #membership-details-info #status .status-label.disapproved,
+.t #membership-details-info #status .status-label.revoked {
     color: white;
     background-color: #B94A4B;
 }
 
-.t .membership-details-status .status-action {
-    padding: 10px;
-}
-
-.t .membership-details-status .status-action li {
-    
+.t #membership-details-info #status .status-action ul {
+    padding: 10px 10px 0;
+    margin-bottom: 0;
 }
 
 

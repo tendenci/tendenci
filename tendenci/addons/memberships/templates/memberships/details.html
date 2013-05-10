@@ -51,78 +51,78 @@
 
                 </div>
 
-                <div class="membership-details-info">
+                <table id="membership-details-info">
+                    <tr>
+                        <td id="timeline">
+                            <p>Member <strong>{{ membership.member_number }}</strong></p>
 
-                    <p>Member <strong>{{ membership.member_number }}</strong></p>
+                            <p>Group <strong>{{ membership.membership_type }}</strong></p>
 
-                    <p>Group <strong>{{ membership.membership_type }}</strong></p>
+                            <p title="{{ membership.get_since_dt|timesince }} ago">
+                                Since <strong>{{ membership.get_since_dt|date:"N j, Y" }}</strong></p>
 
-                    <p title="{{ membership.get_since_dt|timesince }} ago">
-                        Since <strong>{{ membership.get_since_dt|date:"N j, Y" }}</strong></p>
+                            {% if membership.renewal %}
+                            <p title="{{ membership.subscribe_dt|timesince }} ago">
+                                Renewed <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
+                            {% endif %}                        
 
-                    {% if membership.renewal %}
-                    <p title="{{ membership.subscribe_dt|timesince }} ago">
-                        Renewed <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
-                    {% endif %}                        
-
-                    {% if membership.is_approved %}
-                        {% if membership.is_forever %}
-                            <p>{% trans "Never expires" %}</p>
-                        {% else %}
-                            <p>Expires <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>    
-                        {% endif %}
-
-                    {% else %}
-                        {% if membership.is_expired %}
-                            <p>Expired <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>
-                        {% endif %}
-                    {% endif %}
-
-                    {% if membership.get_renewal_period_dt %}
-                        <p>Renew between {{ membership.get_renewal_period_dt.0|date:"N j, Y" }} and {{ membership.get_renewal_period_dt.1|date:"N j, Y" }}</p>
-                    {% else %}
-                        <p>Membership type does not allow renewals.</p>
-                    {% endif %}
-
-                    <div class="membership-details-status">
-                        
-                        <div class="status-label {{ membership.get_status }}">
-                            {{ membership.get_status|capfirst }} Membership</div>
-
-                        {% if user.is_superuser %}
-                        <div class="status-action">
-                            <ul class="nav nav-pills nav-stacked">
-                                {% for address, label in membership|get_actions:request.user %}
-                                    {% if address %}
-                                    <li><a href="{{ address }}">{{ label }}</a></li>
-                                    {% else %}
-                                    <li>{{ label }}</li>
-                                    {% endif %}
-                                {% empty %}
-                                    <li>{{ membership.status_note }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        {% else %}
-                        <div class="status-action">
-                        {% if membership.user == request.user %}
-                        {% if membership.can_renew %}
-                            <a href="{% url membership.application_details membership.ma.slug %}?username={{ membership.user.username }}">Renew your membership.</a>
-                        {% else %}
-                            {% if membership.app %}
-                                {% if membership.is_expired %}
-                                <a href="{% url membership.application_details membership.app.slug %}?username={{ membership.user.username }}">Oh no you're expired, sign up for membership.</a>
+                            {% if membership.is_approved %}
+                                {% if membership.is_forever %}
+                                    <p>{% trans "Never expires" %}</p>
                                 {% else %}
-                                    <div>No pending actions required, good job!</div>
+                                    <p>Expires <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>    
+                                {% endif %}
+
+                            {% else %}
+                                {% if membership.is_expired %}
+                                    <p>Expired <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>
                                 {% endif %}
                             {% endif %}
-                        {% endif %}
-                        {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
 
-                </div>
+                            {% if membership.get_renewal_period_dt %}
+                                <p>Renew between {{ membership.get_renewal_period_dt.0|date:"N j, Y" }} and {{ membership.get_renewal_period_dt.1|date:"N j, Y" }}</p>
+                            {% else %}
+                                <p>Membership type does not allow renewals.</p>
+                            {% endif %}
+                        </td>
+                        <td id="status">
+                            <div class="status-label {{ membership.get_status }}">
+                                {{ membership.get_status|capfirst }} Membership</div>
+
+                            {% if user.is_superuser %}
+                            <div class="status-action">
+                                <ul class="nav nav-pills nav-stacked">
+                                    {% for address, label in membership|get_actions:request.user %}
+                                        {% if address %}
+                                        <li><a href="{{ address }}">{{ label }}</a></li>
+                                        {% else %}
+                                        <li>{{ label }}</li>
+                                        {% endif %}
+                                    {% empty %}
+                                        <li>{{ membership.status_note }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% else %}
+                            <div class="status-action">
+                            {% if membership.user == request.user %}
+                            {% if membership.can_renew %}
+                                <a href="{% url membership.application_details membership.ma.slug %}?username={{ membership.user.username }}">Renew your membership.</a>
+                            {% else %}
+                                {% if membership.app %}
+                                    {% if membership.is_expired %}
+                                    <a href="{% url membership.application_details membership.app.slug %}?username={{ membership.user.username }}">Oh no you're expired, sign up for membership.</a>
+                                    {% else %}
+                                        <div>No pending actions required, good job!</div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% endif %}
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
 
             </div>
         </fieldset>
