@@ -27,7 +27,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.template import RequestContext
 
-from tendenci.core.base.utils import day_validate
+from tendenci.core.base.utils import day_validate, is_blank
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.utils import get_notice_recipients, has_perm
@@ -537,6 +537,9 @@ class MembershipDefault(TendenciBaseModel):
                         field_label,
                         getattr(demographic, field_name)
                     ))
+
+        if is_blank(dict(field_list).values()):
+            return []  # empty list
 
         return field_list
 
