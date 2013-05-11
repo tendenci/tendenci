@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.conf.urls.defaults import patterns, url
 from django.template.defaultfilters import slugify
@@ -38,6 +39,21 @@ from tendenci.addons.memberships.middleware import ExceededMaxTypes
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
 
+
+class MembershipStatusDetailFilter(SimpleListFilter):
+    title = 'status detail'
+    parameter_name = 'status_detail'
+
+    def lookups(self, request, model_admin):
+        memberships = model_admin.model.objects.exclude(status_detail='archive')
+        status_detail_list = set([m.status_detail for m in memberships])
+        return zip(status_detail_list, status_detail_list)
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(status_detail=self.value())
+        else:
+            return queryset
 
 class MembershipAdmin(admin.ModelAdmin):
 
@@ -316,7 +332,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     list_filter = [
         'membership_type',
-        'status_detail'
+        MembershipStatusDetailFilter,
     ]
 
     actions = [
@@ -377,7 +393,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
         qs = super(MembershipDefaultAdmin, self).queryset(request)
-        return qs.order_by('-application_approved_dt')
+        return qs.exclude(status_detail='archive').order_by('-application_approved_dt')
 
     def get_urls(self):
         """
