@@ -543,6 +543,16 @@ class MembershipDefault(TendenciBaseModel):
 
         return field_list
 
+    def get_archived_memberships(self):
+        """
+        Returns back a list of archived memberships
+        in order of newest to oldest
+        """
+        memberships = self.user.membershipdefault_set.filter(
+            status_detail='archive', membership_type=self.membership_type).order_by('join_dt')
+
+        return memberships
+
     @classmethod
     def refresh_groups(cls):
         """

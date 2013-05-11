@@ -421,6 +421,27 @@
         </fieldset>
         {% endif %}
 
+        {% if membership.get_archived_memberships %}
+        <fieldset>
+            <div class="fieldset-label">Archived Memberships</div>
+            <div style="clear:both;"></div>
+
+            {% for archive in membership.get_archived_memberships %}
+                <div class="field">
+                    <div class="label">
+                        {% firstof archive.join_dt|date:"F Y" archive.create_dt|date:"F Y" %} - {% firstof archive.expire_dt|date:"F Y" "Forever" %}
+
+                        {% if membership == archive %}
+                            (you are here)
+                        {% endif %}
+
+                    </div>
+                    <div class="value"><a href="{% url membership.details archive.pk %}">{{ archive.membership_type.name }}</a></div>
+                </div>
+            {% endfor %}
+        </fieldset>
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}
