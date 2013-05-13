@@ -16,25 +16,22 @@ from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin import SimpleListFilter
 from django.utils.encoding import force_unicode
 
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import tcurrency
 from tendenci.core.perms.utils import update_perms_and_save
-from tendenci.addons.memberships.models import (Membership, MembershipDefault,
-                                                MembershipType, Notice,
-                                                AppField,
-                                                MembershipAppField,
-                                                MembershipApp)
-from tendenci.addons.memberships.forms import (MembershipDefaultForm, AppForm,
-                            NoticeForm, AppFieldForm, AppEntryForm,
-                            MembershipAppForm,
-                            MembershipAppFieldAdminForm)
-from tendenci.addons.memberships.utils import (get_default_membership_fields,
-                                               edit_app_update_corp_fields,
-                                               get_selected_demographic_field_names)
+from tendenci.addons.memberships.models import (
+    Membership, MembershipDefault, MembershipType, Notice,
+    AppField, MembershipAppField, MembershipApp)
+from tendenci.addons.memberships.forms import (
+    MembershipDefaultForm, AppForm, NoticeForm, AppFieldForm,
+    AppEntryForm, MembershipAppForm, MembershipAppFieldAdminForm)
+from tendenci.addons.memberships.utils import (
+    get_default_membership_fields,
+    edit_app_update_corp_fields,
+    get_selected_demographic_field_names)
 from tendenci.addons.memberships.middleware import ExceededMaxTypes
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
@@ -54,6 +51,7 @@ class MembershipStatusDetailFilter(SimpleListFilter):
             return queryset.filter(status_detail=self.value())
         else:
             return queryset
+
 
 class MembershipAdmin(admin.ModelAdmin):
 
@@ -159,7 +157,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     form = MembershipDefaultForm
 
-    profile = ('Profile',
+    profile = (
+        'Profile',
         {'fields': (
             ('first_name', 'last_name'),
             ('email', 'email2'),
@@ -175,7 +174,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         )}
     )
 
-    membership = ('Membership',
+    membership = (
+        'Membership',
         {'fields': (
             'member_number',
             'renewal',
@@ -212,21 +212,24 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         )}
     )
 
-    money = ('Money',
+    money = (
+        'Money',
         {'fields': (
             'payment_method',
             'membership_type',
         )}
     )
 
-    extra = ('Extra',
+    extra = (
+        'Extra',
         {'fields': (
             'industry',
             'region',
         )}
     )
 
-    status = ('Status',
+    status = (
+        'Status',
         {'fields': (
             'join_dt',
             'renew_dt',
@@ -235,15 +238,15 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     fieldsets = (
-            profile,
-            membership,
-            money,
-            status
+        profile,
+        membership,
+        money,
+        status
     )
 
     def get_fieldsets(self, request, instance=None):
         demographics_fields = get_selected_demographic_field_names(
-                                        instance and instance.app)
+            instance and instance.app)
 
         if demographics_fields:
             demographics = (
