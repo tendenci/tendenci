@@ -9,6 +9,7 @@ Server packages
 You can install all of the necessary Ubuntu packages with the following command:
 ::
 
+    sudo apt-get update
     sudo apt-get install git python-pip postgresql build-essential python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
 
 Along with this, we need to add some symlinks for our jpeg and freetype libraries:
