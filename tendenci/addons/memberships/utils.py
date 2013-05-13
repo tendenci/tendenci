@@ -35,7 +35,7 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipDemographic,
                                                 MembershipApp,
                                                 MembershipAppField)
-from tendenci.core.base.utils import normalize_newline
+from tendenci.core.base.utils import normalize_newline, UnicodeWriter
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.core.emails.models import Email
@@ -371,7 +371,7 @@ def process_export(export_type='all_fields',
                                             identifier, cp_id)
 
     with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = csv.writer(csvfile)
+        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
         csv_writer.writerow(title_list)
         # corp_membership_rows is a generator - for better performance
         for row_dict in membership_rows(user_field_list,
@@ -398,6 +398,7 @@ def process_export(export_type='all_fields',
                     elif field_name == 'membership_type':
                         # display membership type name instead of id
                         item = membership_ids_dict[item]
+                item = smart_str(item).decode('utf-8')
                 items_list.append(item)
             csv_writer.writerow(items_list)
     # rename the file name
