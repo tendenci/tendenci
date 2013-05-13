@@ -271,9 +271,11 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         )
         name.strip()
         return name
+    name.admin_order_field = 'user__last_name'
 
     def email(self, instance):
         return instance.user.email
+    email.admin_order_field = 'user__email'
 
     def get_status(self, instance):
         return instance.get_status().capitalize()
