@@ -1137,7 +1137,6 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 @login_required
 @password_required
 def merge_process(request, sid):
-
     if not request.user.profile.is_superuser:
         raise Http403
 
@@ -1174,9 +1173,11 @@ def merge_process(request, sid):
                         setattr(master, field, getattr(profile, field))
 
                 for model, fields in valnames.iteritems():
+
                     for field in fields:
                         if not isinstance(field, models.OneToOneField):
                             objs = model.objects.filter(**{field.name: profile.user})
+
                             # handle unique_together fields. for example, GroupMembership
                             # unique_together = ('group', 'member',)
                             [unique_together] = model._meta.unique_together[:1] or [None]
@@ -1194,8 +1195,11 @@ def merge_process(request, sid):
                                         obj.save()
                             else:
                                 if objs.exists():
-                                    objs.update(**{field.name: master.user})
-                        else: # OneToOne
+                                    try:
+                                        objs.update(**{field.name: master.user})
+                                    except Exception:
+                                        connection._rollback()
+                        else:  # OneToOne
                             [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
                             if obj:
                                 [master_obj] = model.objects.filter(**{field.name: master.user})[:1] or [None]
