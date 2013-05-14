@@ -482,7 +482,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         Returns admin change_form page.
         """
-        return ('membership_details', [self.pk])
+        return ('membership.details', [self.pk])
         # return ('admin:memberships_membershipdefault_change', [self.pk])
 
     def save(self, *args, **kwargs):
