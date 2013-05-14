@@ -994,17 +994,6 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     users_with_duplicate_name = []
     users_with_duplicate_email = []
 
-#    duplicate_names = User.objects.values_list('first_name', 'last_name'
-#                                          ).annotate(
-#                                        num_last=Count('last_name')
-#                                        ).annotate(
-#                                        num_first=Count('first_name')
-#                                        ).filter(num_last__gt=1,
-#                                                num_first__gt=1
-#                                        ).exclude(
-#                                        first_name='',
-#                                        last_name=''
-#                                        ).order_by('last_name', 'first_name')
     # use raw sql to get the accurate number of duplicate names
     sql = """
             SELECT first_name , last_name
