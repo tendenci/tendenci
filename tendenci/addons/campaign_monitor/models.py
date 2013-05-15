@@ -307,10 +307,10 @@ if cm_api_key and cm_client_id:
             try:
                 if add_list:
                     # this list might be deleted on campaign monitor, add it back
-                    list_id = list.create(cm_client_id, instance.group.name,
+                    list_id = alist.create(cm_client_id, instance.group.name,
                                           "", False, "")
                     # custom fields setup
-                    setup_custom_fields(list)
+                    setup_custom_fields(alist)
                     subscriber_obj = Subscriber(auth, list_id)
                     if not list_map:
                         list_map = ListMap()
