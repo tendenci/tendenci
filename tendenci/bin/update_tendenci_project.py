@@ -37,7 +37,7 @@ def update_project():
             os.path.join("conf", "__init__.py"),
             os.path.join("conf", "settings.py"),
             os.path.join("conf", "urls.py"),
-            #os.path.join("conf", "wsgi.py"),
+            os.path.join("conf", "wsgi.py"),
             "deploy.py",
         ]
         for file_path in files_to_copy:
