@@ -292,6 +292,11 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 @is_enabled('directories')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-meta.html"):
+    directory = get_object_or_404(Directory, pk=id)
+
+    if not has_perm(request.user, 'directories.change_directory', directory):
+        raise Http403
+
     defaults = {
         'title': directory.get_title(),
         'description': directory.get_description(),
