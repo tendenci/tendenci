@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
 
 from tendenci.core.perms.managers import TendenciBaseManager
+from tendenci.core.site_settings.utils import get_global_setting
 
 
 class GroupManager(TendenciBaseManager):
@@ -48,6 +49,18 @@ class GroupManager(TendenciBaseManager):
             group = self.create(**params)
 
         return group
+
+    def get_initial_group_id(self):
+        """
+        Returns the id of the default group.
+        Can be used to set group initial for forms.
+        """
+        group_id = get_global_setting('default_group')
+        if not group_id:
+            group = self.get_or_create_default()
+            group_id = group.id
+
+        return group_id
 
 
 class OldGroupManager(Manager):
