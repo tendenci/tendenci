@@ -663,14 +663,14 @@
         "updated_by": ""
     },
     {
-        "default_value": "", 
+        "default_value": 0, 
         "description": "Select a group that will be used as the default group for all modules.", 
-        "data_type": "string", 
+        "data_type": "int", 
         "update_dt": "2013-05-09 10:13:00", 
         "input_type": "select", 
         "client_editable": true, 
         "name": "default_group", 
-        "value": "", 
+        "value": 0, 
         "label": "Default Group", 
         "input_value": "<group_list>", 
         "parent_id": 0, 
