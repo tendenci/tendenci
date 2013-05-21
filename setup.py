@@ -161,7 +161,7 @@ setup(
         "django-avatar>=1.0.4",
         "django-form-utils>=0.1.8",
         "django-pagination>=1.0.7",
-        "django-photologue>=2.3",
+        "django-photologue==2.5",
         "django-picklefield>=0.1.6",
         "django-simple-captcha==0.3.6",
         "django-tagging>=0.3.1",
