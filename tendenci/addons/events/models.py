@@ -134,7 +134,7 @@ class RegistrationConfiguration(models.Model):
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
     discount_eligible = models.BooleanField(default=True)
-    display_registration_stats = models.BooleanField(_('Publicly Show Registration Stats'), default=False, help_text='Display the number of spots registered and the number of spots left to the public.')
+    display_registration_stats = models.BooleanField(_('Publicly Show Registration Stats'), default=True, help_text='Display the number of spots registered and the number of spots left to the public.')
 
     # custom reg form
     use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
