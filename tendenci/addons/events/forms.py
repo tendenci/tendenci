@@ -20,8 +20,7 @@ from tendenci.addons.events.models import (
     Event, Place, RegistrationConfiguration, Payment,
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
-    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
-    Registrant
+    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry
 )
 
 from form_utils.forms import BetterModelForm
@@ -31,15 +30,10 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.core.emails.models import Email
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.imports.utils import get_header_list_from_content
-from tendenci.core.imports.models import Import
-from form_utils.forms import BetterModelForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.events.settings import FIELD_MAX_LENGTH
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.addons.memberships.models import Membership
 
 from fields import Reg8nDtField, UseCustomRegField
 from widgets import UseCustomRegWidget
