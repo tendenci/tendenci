@@ -15,6 +15,7 @@ from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
 
 from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.addons.industries.models import Industry
 from tendenci.addons.memberships.fields import PriceInput
 from tendenci.addons.memberships.fields import NoticeTimeTypeField
 from tendenci.addons.corporate_memberships.widgets import NoticeTimeTypeWidget
@@ -512,6 +513,26 @@ class CorpMembershipSearchForm(forms.Form):
                                   required=False)
     q = forms.CharField(max_length=100,
                                  required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(CorpMembershipSearchForm, self).__init__(*args, **kwargs)
+        app = CorpMembershipApp.objects.current_app()
+        if app:
+            [industry_field] = app.fields.filter(
+                        field_name='industry',
+                        display=True
+                            )[:1] or [None]
+
+            if industry_field:
+                industries = Industry.objects.all().order_by('industry_name')
+                industries_choices = [(0, _('Select One'))]
+                for industry in industries:
+                    industries_choices.append((industry.id, industry.industry_name))
+                self.fields['industry'] = forms.ChoiceField(
+                            label=industry_field.label,
+                            choices=industries_choices,
+                            required=False
+                                )
 
 
 class CorpMembershipUploadForm(forms.ModelForm):
