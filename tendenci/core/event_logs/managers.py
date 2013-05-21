@@ -164,7 +164,7 @@ class EventLogManager(Manager):
 
         # Action is the name of the view that is being called
         #
-        # We get it via the stack, but we filter out stacks that are named 
+        # We get it via the stack, but we filter out stacks that are named
         # 'save' or 'update_perms_and_save' to avoid getting the incorrect
         # view. We don't want to miss on a save method override or our own
         # updating. - JMO 2012-05-14
@@ -180,6 +180,9 @@ class EventLogManager(Manager):
                         event_log.action = stack[3][3]
                 else:
                     event_log.action = stack[2][3]
+
+        if event_log.application == "base":
+            event_log.application = "homepage"
 
         # If the request is not present in the kwargs, we try to find it
         # by inspecting the stack. We dive 3 levels if necessary. - JMO 2012-05-14

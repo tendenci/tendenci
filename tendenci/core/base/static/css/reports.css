@@ -166,3 +166,9 @@ tr.odd {
 .user-access-report td {
   text-align: center;
 }
+
+@media print {
+  .event-log-summary-nav { page-break-before: always; }
+  .events-summary-chart,
+  .events-summary {-webkit-print-color-adjust: exact;}
+}

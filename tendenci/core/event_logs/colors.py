@@ -11,7 +11,7 @@ non_model_event_logs = {
         'jobs_feed':('630525', '00FF99'), # jobs rss feed
     },
     'homepage':{
-        'view':('100000', '7F0000'), # base app
+        'view':('100000', '17ABB9'), # base app
     }
 }
 
@@ -62,10 +62,11 @@ def get_color(event_id):
         colors = generate_colors()
         colors.update(generate_base_colors())
         cache_colors(colors)
-    
+
     if event_id in colors:
+        print event_id
         return colors[event_id]
     else:
-        return '333333'
-    
+        return '17ABB9'
+
     return ''
