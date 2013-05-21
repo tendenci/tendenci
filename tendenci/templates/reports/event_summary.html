@@ -53,7 +53,7 @@
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
-	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count }})</a>
+	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
 	</li>
 	{% endif %}
 {% endfor %}
@@ -65,7 +65,7 @@
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
-	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count }})</a>
+	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
 	</li>
 	{% endif %}
 {% endfor %}
