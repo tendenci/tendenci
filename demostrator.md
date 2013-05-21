@@ -9,7 +9,7 @@ Tendenci virtual machine images contain a fully functional tendenci web site. It
 * Minumum file storage: 24 GB
 
 ## Download the latest Tendenci VM appliance:
-[OVA File](https://s3.amazonaws.com/tendenci-virtual-appliances/tendenci_vm_v2.ova)
+[OVA File](https://s3.amazonaws.com/tendenci-virtual-appliances/tendenci_vm.ova)
 
 
 ## Steps to import ova file
