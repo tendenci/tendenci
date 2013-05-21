@@ -107,6 +107,7 @@ class StoryForm(TendenciBaseForm):
                  
     def __init__(self, *args, **kwargs):
         super(StoryForm, self).__init__(*args, **kwargs)
+        self.fields['group'].initial = Group.objects.get_initial_group_id()
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:

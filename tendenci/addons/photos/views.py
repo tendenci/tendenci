@@ -681,12 +681,15 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
 
+    default_group_id = Group.objects.get_initial_group_id()
+
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
         "photo_set": photo_set,
         "cc_licenses": cc_licenses,
         "tag_help_text": tag_help_text,
         "groups": groups,
+        'default_group_id': default_group_id
     }, context_instance=RequestContext(request))
 
 

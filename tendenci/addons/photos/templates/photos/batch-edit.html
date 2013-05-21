@@ -54,7 +54,7 @@
                         <select>
                             <option value=""> {% trans "--- SELECT A GROUP ---" %} </option>
                             {% for g in groups %}
-                            <option value="{{ g.pk }}">{{ g }}</option>
+                            <option value="{{ g.pk }}"{% if g.pk == default_group_id %} selected="selected"{% endif %}>{{ g }}</option>
                             {% endfor %}
                         </select>
                     </div>

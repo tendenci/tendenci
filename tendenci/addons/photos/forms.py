@@ -89,6 +89,11 @@ class PhotoBatchEditForm(TendenciBaseForm):
             'status_detail',
         )
 
+    def __init__(self, *args, **kwargs):
+        super(PhotoEditForm, self).__init__(*args, **kwargs)
+        if 'group' in self.fields:
+            self.fields['group'].initial = Group.objects.get_initial_group_id()
+
 
 class PhotoEditForm(TendenciBaseForm):
 
@@ -145,9 +150,10 @@ class PhotoEditForm(TendenciBaseForm):
 
 
     safetylevel = forms.HiddenInput()
-        
+
     def __init__(self, *args, **kwargs):
         super(PhotoEditForm, self).__init__(*args, **kwargs)
+        self.fields['group'].initial = Group.objects.get_initial_group_id()
 
 class PhotoSetAddForm(TendenciBaseForm):
     """ Photo-Set Add-Form """
@@ -195,6 +201,7 @@ class PhotoSetAddForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(PhotoSetAddForm, self).__init__(*args, **kwargs)
+        self.fields['group'].initial = Group.objects.get_initial_group_id()
         
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
@@ -251,6 +258,7 @@ class PhotoSetEditForm(TendenciBaseForm):
         
     def __init__(self, *args, **kwargs):
         super(PhotoSetEditForm, self).__init__(*args, **kwargs)
+        self.fields['group'].initial = Group.objects.get_initial_group_id()
 
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')

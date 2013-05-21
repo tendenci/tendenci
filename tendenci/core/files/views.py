@@ -19,6 +19,7 @@ from django.core.files.base import ContentFile
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import admin_required, is_enabled
@@ -441,6 +442,8 @@ def add(request, form_class=FileForm, category_form_class=CategoryForm, template
             'pk': 0,  # not used for this view but is required for the form
         }
         form = form_class(user=request.user)
+        if 'group' in form.fields:
+            form.fields['group'].initial = Group.objects.get_initial_group_id()
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
     return render_to_response(
         template_name, {
