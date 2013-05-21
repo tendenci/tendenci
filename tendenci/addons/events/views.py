@@ -2023,7 +2023,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     else:
         month, year = datetime.now().month, datetime.now().year
 
-    if type:
+    if type and "latest" in request.GET:
         current_type = Type.objects.filter(slug=type)
         current_date = datetime(month=month, day=1, year=year)
         latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt')
