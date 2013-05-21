@@ -110,6 +110,13 @@ def renew_selected(modeladmin, request, queryset):
         membership.renew(request_user=request.user)
         membership.send_email(request, 'renewal')
 
+    member_names = [m.user.profile.get_name() for m in memberships]
+
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        'Successfully renewed: %s' % u', '.join(member_names))
+
 renew_selected.short_description = u'Renew selected'
 
 
@@ -311,6 +318,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         if dt:
             return dt.strftime('%b %d, %Y, %I:%M %p')
         return u''
+
     get_approve_dt.short_description = u'Approved On'
 
     def get_actions(self, request):
