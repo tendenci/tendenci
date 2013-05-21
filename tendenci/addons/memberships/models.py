@@ -773,23 +773,23 @@ class MembershipDefault(TendenciBaseModel):
         dupe.status_detail = 'active'
 
         # application approved ---------------
-        self.application_approved = True
-        self.application_approved_dt = \
-            self.application_approved_dt or NOW
+        dupe.application_approved = True
+        dupe.application_approved_dt = \
+            dupe.application_approved_dt or NOW
         if request_user:  # else: don't set
-            self.application_approved_user = request_user
+            dupe.application_approved_user = request_user
 
         # application approved/denied ---------------
-        self.application_approved_denied_dt = \
-            self.application_approved_denied_dt or NOW
+        dupe.application_approved_denied_dt = \
+            dupe.application_approved_denied_dt or NOW
         if request_user:  # else: don't set
-            self.application_approved_denied_user = request_user
+            dupe.application_approved_denied_user = request_user
 
         # action_taken ------------------------------
-        self.action_taken = True
-        self.action_taken_dt = self.action_taken_dt or NOW
+        dupe.action_taken = True
+        dupe.action_taken_dt = dupe.action_taken_dt or NOW
         if request_user:  # else: don't set
-            self.action_taken_user = request_user
+            dupe.action_taken_user = request_user
 
         dupe.set_join_dt()
         dupe.set_renew_dt()
