@@ -230,14 +230,15 @@ class File(TendenciBaseModel):
             if not os.path.exists(self.file.path):
                 return unicode()
 
-        if self.type() == 'pdf':
+        if settings.INDEX_FILE_CONTENT:
+            if self.type() == 'pdf':
 
-            try:
-                doc = PDF(self.file.file)
-            except:
-                return unicode()
+                try:
+                    doc = PDF(self.file.file)
+                except:
+                    return unicode()
 
-            return doc.text()
+                return doc.text()
 
         return unicode()
 
