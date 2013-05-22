@@ -1199,7 +1199,7 @@ class MembershipDefault(TendenciBaseModel):
         if not renewal_period:
             return False
 
-        # can only renew from approved state
+        # can only renew from active or expired
         if not self.get_status() in ['active', 'expired']:
             return False
 
@@ -1261,10 +1261,10 @@ class MembershipDefault(TendenciBaseModel):
         disapprove_link = '%s?disapprove' % reverse('membership.details', args=[self.pk])
         expire_link = '%s?expire' % reverse('membership.details', args=[self.pk])
 
-        if self.user.profile.can_renew():
+        if self.can_renew():
             renew = {form_link: u'Renew Membership'}
         elif is_superuser:
-            renew = {form_link: u'Renew Membership'}
+            renew = {form_link: u'Admin: Renew Membership'}
         else:
             renew = {}
 
