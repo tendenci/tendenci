@@ -588,14 +588,17 @@ def corpmembership_search(request, my_corps_only=False,
                                                 my_corps_only=my_corps_only)
         corp_members = corp_members.exclude(status_detail='archive')
 
-    # generate the choices for the cp_id field
-    corp_profiles_choices = [(0, _('Select One'))]
-    for corp_memb in corp_members:
-        t = (corp_memb.corp_profile.id, corp_memb.corp_profile.name)
-        if not t in corp_profiles_choices:
-            corp_profiles_choices.append(t)
+    if not corp_members.exists():
+        del search_form.fields['cp_id']
+    else:
+        # generate the choices for the cp_id field
+        corp_profiles_choices = [(0, _('Select One'))]
+        for corp_memb in corp_members:
+            t = (corp_memb.corp_profile.id, corp_memb.corp_profile.name)
+            if not t in corp_profiles_choices:
+                corp_profiles_choices.append(t)
 
-    search_form.fields['cp_id'].choices = corp_profiles_choices
+        search_form.fields['cp_id'].choices = corp_profiles_choices
 
     if cp_id:
         corp_members = corp_members.filter(corp_profile_id=cp_id)
