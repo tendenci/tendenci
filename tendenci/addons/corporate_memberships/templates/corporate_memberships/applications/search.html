@@ -12,6 +12,17 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+    #id_search_criteria, #id_search_text{
+        width: 150px;
+    }
+    #id_search_method{
+        width: 100px;
+    }
+    .search-form input[type=submit]{
+       height: 30px;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
@@ -29,17 +40,12 @@
     <br />
     {{ search_form.industry.label }}: {{ search_form.industry }}
     {% endif %}
-    {% if not SITE_GLOBAL_SEARCHINDEX %}
+    
+    <br />
+   {% trans 'Search By'%}: {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
+
     <input type="submit" name="search" value="Submit" />
-    {% endif %}
 </p>
-{% if SITE_GLOBAL_SEARCHINDEX %}
-<p>
-{{ search_form.q }}
-<input type="submit" name="search" value="Search" />
-<br /><small>Type corporation name or zip code</small>
-</p>
-{% endif %}
 </form>
 
 {% autopaginate corp_members 10 %}
