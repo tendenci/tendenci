@@ -18,24 +18,22 @@ from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
 
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
-from tendenci.addons.corporate_memberships.models import (CorporateMembership,
-    CorpMembership, CorpMembershipAuthDomain)
+from tendenci.addons.corporate_memberships.models import (
+    CorporateMembership, CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.addons.memberships.models import (Membership,
-    MembershipDefault, MembershipDemographic, MembershipAppField,
-    MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry,
-    MembershipImport, MembershipApp)
+from tendenci.addons.memberships.models import (
+    Membership, MembershipDefault, MembershipDemographic, MembershipAppField,
+    MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry, MembershipImport, MembershipApp)
 from tendenci.addons.memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
 from tendenci.addons.memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from tendenci.addons.memberships.utils import csv_to_dict, NoMembershipTypes
 from tendenci.addons.memberships.utils import normalize_field_names
-from tendenci.addons.memberships.utils import (get_membership_type_choices,
-                                               get_corporate_membership_choices,
-                                               get_selected_demographic_fields)
-from tendenci.addons.memberships.widgets import (CustomRadioSelect, TypeExpMethodWidget,
-    NoticeTimeTypeWidget)
+from tendenci.addons.memberships.utils import (
+    get_membership_type_choices, get_corporate_membership_choices, get_selected_demographic_fields)
+from tendenci.addons.memberships.widgets import (
+    CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget)
 from tendenci.addons.memberships.utils import get_notice_token_help_text
 from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.addons.educations.models import Education
@@ -765,6 +763,7 @@ class MembershipDefault2Form(forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         request_user = kwargs.pop('request_user')
+        customer = kwargs.pop('customer')
         self.membership_app = kwargs.pop('membership_app')
         multiple_membership = kwargs.pop('multiple_membership', False)
 
@@ -785,15 +784,19 @@ class MembershipDefault2Form(forms.ModelForm):
 
         if multiple_membership:
             self.fields['membership_type'].widget = forms.widgets.CheckboxSelectMultiple(
-                    choices=get_membership_type_choices(request_user,
-                                        self.membership_app,
-                                        corp_membership=self.corp_membership),
+                    choices=get_membership_type_choices(
+                        request_user,
+                        customer,
+                        self.membership_app,
+                        corp_membership=self.corp_membership),
                     attrs=self.fields['membership_type'].widget.attrs)
         else:
             self.fields['membership_type'].widget = forms.widgets.RadioSelect(
-                    choices=get_membership_type_choices(request_user,
-                                        self.membership_app,
-                                        corp_membership=self.corp_membership),
+                    choices=get_membership_type_choices(
+                        request_user,
+                        customer,
+                        self.membership_app,
+                        corp_membership=self.corp_membership),
                     attrs=self.fields['membership_type'].widget.attrs)
 
         if self.corp_membership:
@@ -2089,6 +2092,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             for user_attr in user_attrs:
                 self.fields[user_attr].initial = \
                     getattr(self.instance.user, user_attr)
+
 
             # initialize profile fields
             for profile_attr in profile_attrs:

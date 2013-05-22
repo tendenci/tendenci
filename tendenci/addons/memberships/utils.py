@@ -11,7 +11,7 @@ import time as ttime
 from django.http import Http404, HttpResponseServerError
 from django.conf import settings
 from django.utils import simplejson
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.template import loader
 from django.template.defaultfilters import slugify
 from django.db.models import Q
@@ -122,7 +122,7 @@ def get_corporate_membership_choices():
     return cm_list
 
 
-def get_membership_type_choices(user, membership_app, corp_membership=None):
+def get_membership_type_choices(request_user, customer, membership_app, corp_membership=None):
     """
     Get membership type choices available in this application and to this user.
 
@@ -138,10 +138,11 @@ def get_membership_type_choices(user, membership_app, corp_membership=None):
 
         # assume not superuser; get superuser status
         is_superuser = False
-        if hasattr(user, 'profile'):
-            is_superuser = user.profile.is_superuser
 
-        # filter memberships types based on superuser status
+        if hasattr(request_user, 'profile'):
+            is_superuser = request_user.profile.is_superuser
+
+        # filter memberships types based on request_user superuser status
         if not is_superuser:
             membership_types = membership_types.filter(admin_only=False)
 
@@ -151,40 +152,43 @@ def get_membership_type_choices(user, membership_app, corp_membership=None):
 
     price_fmt = u'%s - %s%0.2f'
     admin_fee_fmt = u' (+%s%s admin fee)'
+    renew_fmt = u' Renewal'
 
     for mt in membership_types:
-
         renew_mode = False
-        if isinstance(user, User):
-            m_list = MembershipDefault.objects.filter(user=user, membership_type=mt)
-            renew_mode = any([m.can_renew() for m in m_list])
+        elligable = isinstance(customer, AnonymousUser)
+        if isinstance(customer, User):
+            m_list = MembershipDefault.objects.filter(user=customer, membership_type=mt)
+            renew_mode = len(m_list)
+            elligable = any([m.can_renew() for m in m_list])
 
         mt.renewal_price = mt.renewal_price or 0
 
-        if not renew_mode:
-            if mt.admin_fee:
-                price_display = (price_fmt + admin_fee_fmt) % (
+        if is_superuser or elligable:
+            if renew_mode:
+                price_display = (price_fmt + renew_fmt) % (
                     mt.name,
                     currency_symbol,
-                    mt.price,
-                    currency_symbol,
-                    mt.admin_fee
+                    mt.renewal_price
                 )
             else:
-                price_display = price_fmt % (
-                    mt.name,
-                    currency_symbol,
-                    mt.price
-                )
-        else:
-            price_display = price_fmt % (
-                mt.name,
-                currency_symbol,
-                mt.renewal_price
-            )
+                if mt.admin_fee:
+                    price_display = (price_fmt + admin_fee_fmt) % (
+                        mt.name,
+                        currency_symbol,
+                        mt.price,
+                        currency_symbol,
+                        mt.admin_fee
+                    )
+                else:
+                    price_display = (price_fmt) % (
+                        mt.name,
+                        currency_symbol,
+                        mt.price
+                    )
 
-        price_display = mark_safe(price_display)
-        mt_list.append((mt.id, price_display))
+            price_display = mark_safe(price_display)
+            mt_list.append((mt.id, price_display))
 
     return mt_list
 

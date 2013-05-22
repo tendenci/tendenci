@@ -84,7 +84,8 @@ def get_actions(membership, user):
     Example call:
         membership.get_actions|request.user
     """
-    if user.profile.is_superuser:
+    profile = getattr(user, 'profile')
+    if profile and profile.is_superuser:
         return membership.get_actions(is_superuser=True).items()
     else:
         return membership.get_actions().items()

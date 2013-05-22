@@ -1517,13 +1517,10 @@ def membership_default_add_legacy(request):
     return redirect(reverse('membership_default.add', args=[app.slug]))
 
 
-def membership_default_add(request, slug='',
-                    template='memberships/applications/add.html',
-                    **kwargs):
+def membership_default_add(request, slug='', template='memberships/applications/add.html', **kwargs):
     """
     Default membership application form.
     """
-
     user = None
     membership = None
     username = request.GET.get('username', u'')
@@ -1609,19 +1606,17 @@ def membership_default_add(request, slug='',
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
-    user_form = UserForm(app_fields, request.POST or None)
-    profile_form = ProfileForm(app_fields, request.POST or None)
     user_initial = {}
     if user:
         user_initial = {
+            'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
         }
 
-    user_form = UserForm(app_fields, request.POST or None,
-        initial=user_initial
-    )
+    user_form = UserForm(app_fields, request.POST or None, initial=user_initial)
+    profile_form = ProfileForm(app_fields, request.POST or None)
 
     profile_initial = {}
     if user:
@@ -1661,6 +1656,7 @@ def membership_default_add(request, slug='',
 
     params = {
         'request_user': request.user,
+        'customer': user or request.user,
         'membership_app': app,
         'join_under_corporate': join_under_corporate,
         'corp_membership': corp_membership,
@@ -1721,8 +1717,8 @@ def membership_default_add(request, slug='',
         post_values = request.POST.copy()
         memberships = []
         amount_list = []
-        for type in membership_types:
-            post_values['membership_type'] = type
+        for membership_type in membership_types:
+            post_values['membership_type'] = membership_type
             membership_form2 = MembershipDefault2Form(
                 app_fields, post_values, initial=membership_initial, **params)
 
@@ -1738,30 +1734,37 @@ def membership_default_add(request, slug='',
             # form is valid
             if all(good):
 
-                user = user_form.save()
+                customer = user_form.save()
 
-                if not hasattr(user, 'profile'):
-                    Profile.objects.create_profile(user)
+                if user:
+                    customer.pk = user.pk
+                    customer.username = user.username
+                    customer.password = customer.password or user.password
 
-                profile_form.instance = user.profile
-                profile_form.save(request_user=request.user)
+                if not hasattr(customer, 'profile'):
+                    Profile.objects.create_profile(customer)
+
+                profile_form.instance = customer.profile
+                profile_form.save(request_user=customer)
 
                 # save demographics
                 demographics = demographics_form.save(commit=False)
-                if hasattr(user, 'demographics'):
-                    demographics.pk = user.demographics.pk
+                if hasattr(customer, 'demographics'):
+                    demographics.pk = customer.demographics.pk
 
-                demographics.user = user
+                demographics.user = customer
                 demographics.save()
 
                 membership = membership_form2.save(
                     request=request,
-                    user=user,
+                    user=customer,
                 )
+
                 memberships.append(membership)
                 amount_list.append(membership.membership_type.price)
 
         if memberships:
+
             membership_set = MembershipSet()
             invoice = membership_set.save_invoice(memberships)
 
@@ -1788,11 +1791,15 @@ def membership_default_add(request, slug='',
 
             for membership in memberships:
                 membership.membership_set = membership_set
-                if membership.approval_required() or (
-                        join_under_corporate and authentication_method == 'admin'):
+
+                requires_approval = (
+                    membership.approval_required(),
+                    join_under_corporate and authentication_method == 'admin')
+
+                if any(requires_approval):
                     membership.pend()
                 else:
-                    membership.approve(request_user=request.user)
+                    membership.approve(request_user=customer)
                     membership.send_email(request, 'approve')
 
                 # application complete
@@ -1803,7 +1810,6 @@ def membership_default_add(request, slug='',
                 membership.save()
 
                 if membership.application_approved:
-                    membership.archive_old_memberships()
                     membership.save_invoice(status_detail='tendered')
                 else:
                     membership.save_invoice(status_detail='estimate')
