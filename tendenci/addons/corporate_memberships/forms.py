@@ -551,7 +551,10 @@ class CorpMembershipSearchForm(forms.Form):
         fields = fields.order_by('label')
 
         for field in fields:
-            search_choices.append((field.field_name, field.label))
+            label = field.label
+            if len(label) > 30:
+                label = '%s...' % label[:30]
+            search_choices.append((field.field_name, label))
         self.fields['search_criteria'].choices = search_choices
 
 
