@@ -122,7 +122,7 @@
     {% for membership in memberships %}
 	    {% with membership|get_object as membership %}
 			<div class="member-line {% if membership.status_detail != 'active' %}inactive{% endif %}">
-				<div class="avatar">{% avatar membership.user 56 %}</div>
+				<div class="avatar">{% has_avatar membership.user 56 %}</div>
 				<div class="member-details">
 					<div class="member-name">
 							<a href="{{ membership.user.profile.get_absolute_url }}">
