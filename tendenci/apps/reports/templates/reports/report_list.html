@@ -22,7 +22,7 @@
         <tr>
             <td>{{ report.pk }}</td>
             <td>{% if report.creator_username %}<a href="{% url profile report.creator_username %}">{{ report.creator_username }}</a>{% endif %}</td>
-            <td><a href="{{ report.get_absolute_url }}">View Report</a></td>
+            <td><a href="{{ report.get_absolute_url }}">{% trans 'Go to Report' %}</a></td>
             <td>{{ report.type|title }}</td>
             <td>{{ report.config_options_string }}</td>
         </tr>

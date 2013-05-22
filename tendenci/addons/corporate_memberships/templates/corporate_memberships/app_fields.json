@@ -292,5 +292,26 @@
     "display": "false",
     "required": "false",
     "admin_only": "false"
+    },
+    {
+    "label": "ud6",
+    "field_name": "ud6",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud7",
+    "field_name": "ud7",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud8",
+    "field_name": "ud8",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
     }
 ]

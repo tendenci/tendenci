@@ -7,6 +7,7 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
+from django.contrib.auth.models import AnonymousUser
 
 from tendenci.core.categories.models import CategoryItem
 from tagging.fields import TagField
@@ -245,3 +246,15 @@ class JobPricing(models.Model):
             self.premium_price = 0
 
         super(JobPricing, self).save(*args, **kwargs)
+
+    def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
+        if not user.is_anonymous() and user.profile.is_member:
+            if list_type == 'regular':
+                return self.regular_price_member
+            else:
+                return self.premium_price_member
+        else:
+            if list_type == 'regular':
+                return self.regular_price
+            else:
+                return self.premium_price

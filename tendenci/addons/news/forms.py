@@ -138,6 +138,7 @@ class NewsForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['group'].initial = Group.objects.get_initial_group_id()
 
         #if not self.user.profile.is_superuser:
         if self.user and not self.user.profile.is_superuser:

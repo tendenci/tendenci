@@ -87,6 +87,10 @@ Open http://127.0.0.1:8000/ in your browser to see your tendenci site!
 
     python manage.py set_theme my-theme-name
 
+**Optional:** You can download a set of starter themes at:
+
+    https://github.com/tendenci/tendenci-themes
+    
 **Optional:** You can add additional local environment variables to the `.env` file by defining them as `KEY='value'`. Settings that are sensitive (like passwords) or vary per environment should be added to this file. For example, to use Amazon's S3 service as a file storage backend, set the following key/value pairs in your `.env` file:
 
     AWS_ACCESS_KEY_ID='MY_ACCESS_KEY'

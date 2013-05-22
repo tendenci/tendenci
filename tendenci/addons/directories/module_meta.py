@@ -27,10 +27,12 @@ class DirectoryMeta():
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')
 
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
-        )
+        creator_name = ''
+        if object.creator:
+            creator_name = '%s %s' % (
+                object.creator.first_name,
+                object.creator.last_name
+            )
         creator_name = creator_name.strip()
 
         ### Build string -----------------------
@@ -80,10 +82,12 @@ class DirectoryMeta():
         subcategory = category_set.get('sub_category', '')
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
-        )
+        creator_name = ''
+        if object.creator:
+            creator_name = '%s %s' % (
+                object.creator.first_name,
+                object.creator.last_name
+            )
         creator_name = creator_name.strip()
 
         if object.summary:
@@ -131,10 +135,12 @@ class DirectoryMeta():
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
 
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
-        )
+        creator_name = ''
+        if object.creator:
+            creator_name = '%s %s' % (
+                object.creator.first_name,
+                object.creator.last_name
+            )
 
         ### Build string -----------------------
         value = ''

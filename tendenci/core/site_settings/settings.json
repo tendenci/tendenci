@@ -663,6 +663,23 @@
         "updated_by": ""
     },
     {
+        "default_value": 0, 
+        "description": "Select a group that will be used as the default group for all modules.", 
+        "data_type": "int", 
+        "update_dt": "2013-05-09 10:13:00", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "default_group", 
+        "value": 0, 
+        "label": "Default Group", 
+        "input_value": "<group_list>", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
         "default_value": "", 
         "description": "Enter a NAICS (North American Industry Classification System) number for the organization. Full list and lookup is available on the <a href='http://www.census.gov/cgi-bin/sssd/naics/naicsrch?chart=2007'>US Census website</a>.", 
         "data_type": "string", 

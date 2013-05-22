@@ -1,15 +1,14 @@
 from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from tendenci.core.base.widgets import SplitDateTimeWidget
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.payments.models import Payment, PaymentMethod
 
-PAYMENT_METHODS = PaymentMethod.objects.filter(
-    is_online=False).values_list('machine_name', 'human_name').exclude()
+PAYMENT_METHODS = PaymentMethod.objects.filter().values_list(
+    'machine_name', 'human_name').exclude()
 
 
-class OfflinePaymentForm(forms.ModelForm):
+class MarkAsPaidForm(forms.ModelForm):
 
     payment_method = forms.CharField(
         max_length=20,
@@ -32,7 +31,7 @@ class OfflinePaymentForm(forms.ModelForm):
         Save payment, bind invoice instance.
         Set payment fields (e.g. name, description)
         """
-        instance = super(OfflinePaymentForm, self).save(*args, **kwargs)
+        instance = super(MarkAsPaidForm, self).save(*args, **kwargs)
 
         instance.method = self.cleaned_data['payment_method']
 

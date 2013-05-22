@@ -67,7 +67,7 @@
         <h1>{% trans "Edit Corporate Membership" %}</h1>
         {{ app.description|safe }}
 
-   <form action="" method="post">{% csrf_token %}
+   <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
        
     {% if corpmembership_form.errors.values %}
         <div class="form-errors">

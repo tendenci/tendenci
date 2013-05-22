@@ -1,6 +1,7 @@
 from haystack import indexes
 
 from django.db.models import signals
+from django.conf import settings
 
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.search.indexes import CustomSearchIndex
@@ -31,6 +32,36 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
     
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
+
+    def prepare_allow_anonymous_view(self, obj):
+        if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
+            return int(obj.allow_anonymous_view)
+        return obj.allow_anonymous_view
+
+    def prepare_allow_user_view(self, obj):
+        if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
+            return int(obj.allow_user_view)
+        return obj.allow_user_view
+
+    def prepare_allow_member_view(self, obj):
+        if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
+            return int(obj.allow_member_view)
+        return obj.allow_member_view
+
+    def prepare_allow_user_edit(self, obj):
+        if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
+            return int(obj.allow_user_edit)
+        return obj.allow_user_edit
+
+    def prepare_allow_member_edit(self, obj):
+        if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
+            return int(obj.allow_member_edit)
+        return obj.allow_member_edit
+
+    def prepare_status(self, obj):
+        if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
+            return int(obj.status)
+        return obj.status
 
     def get_updated_field(self):
         return 'update_dt'

@@ -37,7 +37,7 @@
         <div class="options-list">
             <ul>
                 <li>
-                    <a class="option-link roster" href="{% url corpmembership.roster_search %}?cm_id={{ corporate_membership.id }}">{% trans "Roster" %}</a>
+                    <a class="option-link roster" href="{% url corpmembership.roster_search %}?cm_id={{ corporate_membership.id }}&active_only=1">{% trans "Roster" %}</a>
                 </li>               
                     <li>
                         <a class="option-link delete" href="{% url corpmembership.delete corporate_membership.pk %}">{% trans "Delete" %}</a>

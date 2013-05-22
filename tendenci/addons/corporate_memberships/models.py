@@ -17,6 +17,7 @@ from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_delete
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
@@ -44,6 +45,7 @@ from tendenci.core.base.fields import DictField
 
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification, day_validate, fieldify
+from tendenci.core.event_logs.models import EventLog
 from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.addons.corporate_memberships.utils import (
                                             corp_membership_update_perms,
@@ -320,11 +322,14 @@ class CorpProfile(TendenciBaseModel):
     referral_source_member_number = models.CharField(max_length=50,
                              blank=True, default='')
 
-    ud1 = models.CharField(max_length=100, blank=True, default='')
-    ud2 = models.CharField(max_length=100, blank=True, default='')
-    ud3 = models.CharField(max_length=100, blank=True, default='')
-    ud4 = models.CharField(max_length=100, blank=True, default='')
-    ud5 = models.CharField(max_length=100, blank=True, default='')
+    ud1 = models.TextField(blank=True, default='', null=True)
+    ud2 = models.TextField(blank=True, default='', null=True)
+    ud3 = models.TextField(blank=True, default='', null=True)
+    ud4 = models.TextField(blank=True, default='', null=True)
+    ud5 = models.TextField(blank=True, default='', null=True)
+    ud6 = models.TextField(blank=True, default='', null=True)
+    ud7 = models.TextField(blank=True, default='', null=True)
+    ud8 = models.TextField(blank=True, default='', null=True)
 
     perms = generic.GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
@@ -383,6 +388,19 @@ class CorpProfile(TendenciBaseModel):
                                             '-expiration_dt'
                                             )[:1] or [None]
         return corp_membership
+
+    def is_rep(self, this_user):
+        """
+        Check if this user is one of the representatives of
+        # this corp profile.
+        """
+        if this_user.is_anonymous():
+            return False
+        reps = self.reps.all()
+        for rep in reps:
+            if rep.user.id == this_user.id:
+                return True
+        return False
 
 
 class CorpMembership(TendenciBaseModel):
@@ -516,10 +534,7 @@ class CorpMembership(TendenciBaseModel):
                 if user.is_authenticated():
                     filter_or = {'creator': user,
                                  'owner': user}
-                    if use_search_index:
-                        filter_or.update({'corp_profile__reps': user})
-                    else:
-                        filter_or.update({'corp_profile__reps__user': user})
+                    filter_or.update({'corp_profile__reps__user': user})
                 else:
                     filter_and = {'allow_anonymous_view': True}
 
@@ -1038,15 +1053,9 @@ class CorpMembership(TendenciBaseModel):
     def is_rep(self, this_user):
         """
         Check if this user is one of the representatives of
-        # this corporate membership.
+        this corporate membership.
         """
-        if this_user.is_anonymous():
-            return False
-        reps = self.corp_profile.reps.all()
-        for rep in reps:
-            if rep.user.id == this_user.id:
-                return True
-        return False
+        return self.corp_profile.is_rep(this_user)
 
     def allow_view_by(self, this_user):
         if this_user.profile.is_superuser:
@@ -1273,8 +1282,16 @@ class CorpMembershipApp(TendenciBaseModel):
             self.memb_app.use_for_corp = True
             self.memb_app.save()
 
+    def application_form_link(self):
+        if self.is_current():
+            return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
+                                            self.slug)
+        return '--'
 
-class CorpMembershipAppField(models.Model):
+    application_form_link.allow_tags = True
+
+
+class CorpMembershipAppField(OrderingBaseModel):
     corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True,
@@ -1288,7 +1305,7 @@ class CorpMembershipAppField(models.Model):
     display = models.BooleanField(_("Show"), default=True)
     admin_only = models.BooleanField(_("Admin Only"), default=False)
 
-    help_text = models.CharField(_("Instruction for User"),
+    help_text = models.CharField(_("Help Text"),
                                  max_length=2000, blank=True, default='')
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
                     null=True,
@@ -1301,21 +1318,105 @@ class CorpMembershipAppField(models.Model):
     size = models.CharField(_("Field Size"), choices=SIZE_CHOICES,
                             max_length=1,
                             blank=True, null=True, default='m')
-    default_value = models.CharField(_("Predefined Value"),
+    default_value = models.CharField(_("Default Value"),
                                      max_length=100, blank=True, default='')
     css_class = models.CharField(_("CSS Class Name"),
                                  max_length=50, blank=True, default='')
-    order = models.IntegerField(_("Order"), default=0)
+    description = models.TextField(_("Description"),
+                                   max_length=200,
+                                   blank=True,
+                                   default='')
 
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        ordering = ('order',)
+        ordering = ('position',)
 
     def __unicode__(self):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
+
+    def app_link(self):
+        return '<a href="%s">%s</a>' % (
+                reverse('admin:corporate_memberships_corpmembershipapp_change',
+                        args=[self.corp_app.id]),
+                self.corp_app.id)
+
+    app_link.allow_tags = True
+
+    def get_field_class(self, initial=None):
+        """
+            Generate the form field class for this field.
+        """
+        if self.field_type and self.id:
+            if "/" in self.field_type:
+                field_class, field_widget = self.field_type.split("/")
+            else:
+                field_class, field_widget = self.field_type, None
+            if field_class == 'TextField':
+                field_class = 'CharField'
+            field_class = getattr(forms, field_class)
+            field_args = {"label": self.label,
+                          "required": self.required,
+                          'help_text': self.help_text}
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            if initial:
+                field_args['initial'] = initial
+            else:
+                if self.default_value:
+                    field_args['initial'] = self.default_value
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                if self.field_name not in [
+                            'corporate_membership_type',
+                            'payment_method']:
+                    choices = self.choices.split(",")
+                    field_args["choices"] = zip(choices, choices)
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+
+            return field_class(**field_args)
+        return None
+
+    @staticmethod
+    def get_default_field_type(field_name):
+        """
+        Get the default field type for the ``field_name``.
+        If the ``field_name`` is the name of one of the fields
+        in User, Profile, MembershipDefault and MembershipDemographic
+        models, the field type is determined via the field.
+        Otherwise, default to 'CharField'.
+        """
+        available_field_types = [choice[0] for choice in
+                                FIELD_CHOICES]
+        corp_profile_fields = dict([(field.name, field) \
+                        for field in CorpProfile._meta.fields \
+                        if field.get_internal_type() != 'AutoField'])
+        fld = None
+        field_type = 'CharField'
+
+        if field_name in corp_profile_fields:
+            fld = corp_profile_fields[field_name]
+        if not fld:
+            corp_memb_fields = dict([(field.name, field) \
+                            for field in CorpMembership._meta.fields])
+
+            if field_name in corp_memb_fields:
+                fld = corp_memb_fields[field_name]
+
+        if fld:
+            field_type = fld.get_internal_type()
+            if not field_type in available_field_types:
+                if field_type in ['ForeignKey', 'OneToOneField']:
+                    field_type = 'ChoiceField'
+                elif field_type in ['ManyToManyField']:
+                    field_type = 'MultipleChoiceField'
+                else:
+                    field_type = 'CharField'
+        return field_type
 
 
 class CorpMembershipAuthDomain(models.Model):
@@ -1335,6 +1436,9 @@ class CorpMembershipRep(models.Model):
 
     class Meta:
         unique_together = (("corp_profile", "user"),)
+
+    def __unicode__(self):
+        return 'Rep: %s for "%s"' % (self.user, self.corp_profile.name)
 
 
 class IndivEmailVerification(models.Model):
@@ -2541,3 +2645,28 @@ class NoticeLogRecord(models.Model):
     action_taken = models.BooleanField(default=0)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
+
+
+def delete_corp_profile(sender, **kwargs):
+    corp_membership = kwargs['instance']
+    corp_profile = corp_membership.corp_profile
+
+    if not corp_profile.corp_memberships.exists():
+        # delete auth domains
+        for auth_domain in corp_profile.authorized_domains.all():
+            auth_domain.delete()
+
+        # delete reps
+        for rep in corp_profile.reps.all():
+            rep.delete()
+        # delete email verifications
+        for email_veri in corp_profile.indivemailverification_set.all():
+            email_veri.delete()
+
+        description = 'Corp profile - %s (id=%d) - deleted' % (
+                                            corp_profile.name,
+                                            corp_profile.id)
+        corp_profile.delete()
+        EventLog.objects.log(description=description)
+
+post_delete.connect(delete_corp_profile, sender=CorpMembership, weak=False)

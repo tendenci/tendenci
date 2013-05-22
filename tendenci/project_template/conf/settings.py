@@ -242,6 +242,7 @@ if HAYSTACK_SEARCH_ENGINE == "solr":
 if HAYSTACK_SEARCH_ENGINE == 'whoosh':
     HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, 'index.whoosh')
 
+INDEX_FILE_CONTENT = env('INDEX_FILE_CONTENT', False)
 
 # ---------------------------------------#
 # PAYMENT GATEWAY

@@ -122,6 +122,14 @@ def get_setting(scope, scope_category, name):
     return u''
 
 
+def get_global_setting(name):
+    return get_setting('site', 'global', name)
+
+
+def get_module_setting(scope_category, name):
+    return get_setting('module', scope_category, name)
+
+
 def check_setting(scope, scope_category, name):
     #check cache first
     keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
@@ -188,3 +196,36 @@ def get_box_list(user):
         l.append((box.pk, box.title))
 
     return l
+
+
+def get_group_list(user):
+    """
+    Generate a list of 2-tuples of group id and group name
+    This will be used as a special select
+    """
+    from tendenci.apps.user_groups.models import Group
+    groups = Group.objects.filter(status=True,
+                                  status_detail='active'
+                                  ).order_by('name')
+    if not groups.exists():
+        # no groups - create one
+        groups = [Group.objects.get_or_create_default(user)]
+        initial_group = groups[0]
+    else:
+        [initial_group] = groups.filter(
+                        entity__id=1,
+                        entity__entity_name__iexact=get_global_setting(
+                                                    'sitedisplayname')
+                        )[:1] or [None]
+        if not initial_group:
+            [initial_group] = groups.filter(
+                        entity__id=1)[:1] or [None]
+        if not initial_group:
+            initial_group = groups[0]
+
+    choices = []
+
+    for group in groups:
+        choices.append((group.pk, group.name))
+
+    return choices, initial_group.id

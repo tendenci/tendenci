@@ -2,34 +2,106 @@
 {% load i18n %}
 
 {% block content %}
-	<h1>{% trans "Membership Joins Report Summary" %}</h1>
-    <form action="" method="post">{% csrf_token %}
-        {% trans "Filter By:" %} {{ form.membership_type.label }} {{ form.membership_type }} 
-        {{ form.membership_status.label }} {{ form.membership_status }}
-        <input type="submit" value="submit">
+
+	<h1>{% trans "Memberships by Join Date" %}</h1>
+
+    <form action="" method="POST" class="form-inline">
+        {% csrf_token %}
+        {{ form.membership_type }}
+        {{ form.membership_status }}
+        {{ form.start_date }}
+        {{ form.end_date }}
+        <button type="submit" class="btn">Filter Memberships</button>
     </form>
 
-	<h2>{% trans "New Members - Last 30 days" %}</h2>
-    <a href="{% url reports-memberships-joins-pdf %}?days=30&mem_type={{ mem_type }}&mem_stat={{ mem_stat }}">{% trans "Generate PDF" %}</a>
-	
-	{% with mems30days as mems %}
-		{% include "reports/mem_join_table.html" %}
-	{% endwith %}
-	
-	
-	<h2>{% trans "New Members - Last 60 days" %}</h2> 
-    <a href="{% url reports-memberships-joins-pdf %}?days=60&mem_type={{ mem_type }}&mem_stat={{ mem_stat }}">{% trans "Generate PDF" %}</a>
-	
-	{% with mems60days as mems %}
-		{% include "reports/mem_join_table.html" %}
-	{% endwith %}
-	
-	
-	<h2>{% trans "New Members - Last 90 days" %}</h2> 
-	<a href="{% url reports-memberships-joins-pdf %}?days=90&mem_type={{ mem_type }}&mem_stat={{ mem_stat }}">{% trans "Generate PDF" %}</a>
-    
-	{% with mems90days as mems %}
-		{% include "reports/mem_join_table.html" %}
-	{% endwith %}
+    <a class="download-pdf-version" href="{% url reports-memberships-joins-pdf %}?start_date={{ start_date|date:"Y-m-d" }}&amp;end_date={{ end_date|date:"Y-m-d" }}&amp;mem_type={{ membership_type.pk }}&amp;mem_stat={{ membership_status }}">{% trans "Download PDF version" %}</a>
+
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <tr style="font-size: .9em;">
+            <th>{% trans "#" %}</th>
+            <th>{% trans "First Name" %}</th>
+            <th>{% trans "Last Name" %}</th>
+            <th>{% trans "Email" %}</th>
+            <th>{% trans "Member Type" %}</th>
+            <th>{% trans "Paid" %}</th>
+            <th>{% trans "Pay Method" %}</th>
+            <th>{% trans "Start Date" %}</th>
+            <th>{% trans "Expire Date" %}</th>
+            <th>{% trans "Status" %}</th>
+        </tr>
+
+        {% for membership in memberships %}
+
+        {% if membership.is_active %}
+            <tr class="success">
+        {% elif membership.is_pending %}
+            <tr class="warning">
+        {% elif membership.is_expired %}
+            <tr class="error">
+        {% elif membership.is_archived %}
+            <tr class="info">
+        {% endif %}
+            <td>{{ forloop.counter }}</td>
+            <td>{{ membership.user.first_name }}</td>
+            <td>{{ membership.user.last_name }}</td>
+            <td style="font-size: .9em;">{{ membership.user.email }}</td>
+            <td>{{ membership.membership_type }}</td>
+            <td><a href="{{ membership.get_invoice.get_absolute_url }}">{{ membership.get_invoice.total }}</a></td>
+            <td style="white-space: nowrap;">{{ membership.payment_method.human_name }}</td>
+            <td style="white-space: nowrap;">{{ membership.join_dt|date:"N j, Y" }}</td>
+            <td style="white-space: nowrap;">{{ membership.expire_dt|date:"N j, Y" }}</td>
+            <td><a href="{{ membership.get_absolute_url }}">{{ membership.status_detail|title }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
 {% endblock content %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL}}js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript">
+        var nowTemp = new Date();
+        var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+         
+        var checkin = $('#id_start_date').datepicker(
+        ).on('changeDate', function(ev) {
+          if (ev.date.valueOf() > checkout.date.valueOf()) {
+            var newDate = new Date(ev.date)
+            newDate.setDate(newDate.getDate() + 1);
+            checkout.setValue(newDate);
+          }
+          checkin.hide();
+          $('#id_end_date')[0].focus();
+        }).data('datepicker');
+
+        var checkout = $('#id_end_date').datepicker({
+          onRender: function(date) {
+            return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
+          }
+        }).on('changeDate', function(ev) {
+          checkout.hide();
+        }).data('datepicker');
+
+    </script>
+
+<script type="text/javascript">
+$('#reportrange').daterangepicker(
+    {
+        ranges: {
+            'Today': ['today', 'today'],
+            'Yesterday': ['yesterday', 'yesterday'],
+            'Last 7 Days': [Date.today().add({ days: -6 }), 'today'],
+            'Last 30 Days': [Date.today().add({ days: -29 }), 'today'],
+            'This Month': [Date.today().moveToFirstDayOfMonth(), Date.today().moveToLastDayOfMonth()],
+            'Last Month': [Date.today().moveToFirstDayOfMonth().add({ months: -1 }), Date.today().moveToFirstDayOfMonth().add({ days: -1 })]
+        }
+    },
+    function(start, end) {
+        $('#reportrange span').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
+    }
+);
+</script>
+
+{% endblock %}
 

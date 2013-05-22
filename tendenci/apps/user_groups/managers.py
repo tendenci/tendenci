@@ -3,12 +3,65 @@ from haystack.query import SearchQuerySet
 
 from django.db.models import Manager
 from django.db.models import Q
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 from tendenci.core.perms.managers import TendenciBaseManager
+from tendenci.core.site_settings.utils import get_global_setting
+
 
 class GroupManager(TendenciBaseManager):
-    pass
+    def first(self, **fiters):
+        groups = self.filter(status=True,
+                             status_detail='active'
+                            ).order_by('id')
+        if fiters:
+            groups = groups.filter(**fiters)
+        [group] = groups[:1] or [None]
+
+        return group
+
+    def get_or_create_default(self, user=AnonymousUser()):
+        from tendenci.apps.entities.models import Entity
+        from tendenci.core.site_settings.utils import get_global_setting
+        group = self.first()
+        if not group:
+            entity = Entity.objects.first()
+            if not entity:
+                entity = Entity.objects.get_or_create_default(user)
+            params = {'name': get_global_setting('sitedisplayname'),
+                  'entity': entity,
+                  'type': 'distribution',
+                  'email_recipient': get_global_setting('sitecontactemail'),
+                  'allow_anonymous_view': True,
+                  'status': True,
+                  'status_detail': 'active'
+                  }
+            if not user.is_anonymous():
+                params.update({'creator': user,
+                               'creator_username': user.username,
+                               'owner': user,
+                               'owner_username': user.username
+                               })
+            else:
+                params.update({'creator_username': '',
+                               'owner_username': ''
+                               })
+            group = self.create(**params)
+
+        return group
+
+    def get_initial_group_id(self):
+        """
+        Returns the id of the default group.
+        Can be used to set group initial for forms.
+        """
+        group_id = get_global_setting('default_group')
+        if not group_id:
+            group = self.get_or_create_default()
+            group_id = group.id
+
+        return group_id
+
 
 class OldGroupManager(Manager):
     def search(self, query=None, *args, **kwargs):

@@ -327,6 +327,7 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
         theme_setting = Setting.objects.get(name='theme')
         theme_setting.set_value(selected_theme)
         theme_setting.save()
+        messages.add_message(request, messages.SUCCESS, "Your theme has been changed to %s." % selected_theme.title())
 
     current_theme = get_setting('module', 'theme_editor', 'theme')
 

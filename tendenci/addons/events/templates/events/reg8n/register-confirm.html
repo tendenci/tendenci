@@ -114,7 +114,7 @@
 	    		</td>
 	    		<td  style="text-align: right;padding:0 20px; font-weight:bold;">
 	    			{% if registration.override_table %}<span class="override-symbol">*</span>{% endif %}
-	    			 {% if registration.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
+	    			 {% if registration.invoice.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
 	    			{% with registrants|first as registrant %}{{ registrant.amount|format_currency }}{% endwith %}
 	    		</td>
 	    	</tr>
@@ -188,10 +188,10 @@
         </tr>
         {% endif %}
         
-         {% if registration.discount_amount > 0 %}
+         {% if registration.invoice.discount_amount > 0 %}
         <tr>
         	 <td class="td-right" colspan="2">
-        	 <span class="discount-symbol">d</span> discount applied (discount code: {{ registration.discount_code }})
+        	 <span class="discount-symbol">d</span> discount applied (discount code: {{ registration.invoice.discount_code }})
         	 </td>
         </tr>
         {% endif %}

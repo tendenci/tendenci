@@ -73,3 +73,18 @@ def render_membership_field(request, field_obj,
 
     return {'request': request, 'field_obj': field_obj,
             'field': field, 'field_pwd': field_pwd}
+
+
+@register.filter
+def get_actions(membership, user):
+    """
+    Returns a 2-tuple of membership
+    actions available via super-user status.
+
+    Example call:
+        membership.get_actions|request.user
+    """
+    if user.profile.is_superuser:
+        return membership.get_actions(is_superuser=True).items()
+    else:
+        return membership.get_actions().items()

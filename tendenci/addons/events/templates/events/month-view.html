@@ -96,12 +96,12 @@
 
 				<div class="type">
 					<a style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.border_color }};" 
-					href="{% url event.month year month type.slug %}">{{ type }}</a>
+					href="{% url event.month year month type.slug %}?latest">{{ type }}</a>
 				</div>
 				{% else %}
 				<div class="type">
 					<a style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.bg_color }};" 
-					href="{% url event.month year month type.slug %}">{{ type }}</a>
+					href="{% url event.month year month type.slug %}?latest">{{ type }}</a>
 				</div>
 				{% endif %}
 			{% endfor %}

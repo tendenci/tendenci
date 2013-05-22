@@ -2,6 +2,11 @@ from django.contrib import admin
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.contrib.admin import SimpleListFilter
+from django.utils.encoding import force_unicode
+from django.utils.translation import ugettext_lazy as _
+from django.conf.urls.defaults import patterns, url
+from django.shortcuts import get_object_or_404, redirect
 
 from tendenci.addons.corporate_memberships.models import (
     CorporateMembershipType,
@@ -16,7 +21,9 @@ from tendenci.addons.corporate_memberships.forms import (
     CorpMembershipAppForm,
     CorpFieldForm,
     CorpAppForm,
-    NoticeForm)
+    NoticeForm,
+    CorpMembershipAppFieldAdminForm)
+
 from tendenci.addons.corporate_memberships.utils import (
     get_corpapp_default_fields_list,
     update_authenticate_fields,
@@ -70,20 +77,20 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
 class CorpMembershipAppFieldAdmin(admin.TabularInline):
     model = CorpMembershipAppField
     fields = ('label', 'field_name', 'display',
-              'required', 'admin_only', 'order',
+              'required', 'admin_only', 'position',
               )
 #    readonly_fields = ('field_name',)
     extra = 0
     can_delete = False
     verbose_name = 'Section Break'
-    ordering = ("order",)
+    ordering = ("position",)
     template = "corporate_memberships/admin/corpmembershipapp/tabular.html"
 
 
 class CorpMembershipAppAdmin(admin.ModelAdmin):
     inlines = (CorpMembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'status', 'status_detail')
+    list_display = ('name', 'application_form_link', 'status', 'status_detail')
     search_fields = ('name', 'status', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'authentication_method',
@@ -267,17 +274,43 @@ class CorpAppAdmin(admin.ModelAdmin):
         super(CorpAppAdmin, self).log_addition(request, object)
 
 
+class StatusDetailFilter(SimpleListFilter):
+    title = _('status detail')
+    parameter_name = 'status_detail'
+
+    def lookups(self, request, model_admin):
+        status_detail_list = CorpMembership.objects.exclude(
+                        status_detail='archive'
+                        ).distinct('status_detail'
+                        ).values_list('status_detail',
+                        flat=True).order_by('status_detail')
+        return [(status_detail, status_detail
+                 ) for status_detail in status_detail_list]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            queryset = queryset.filter(
+                    status_detail=self.value())
+        return queryset
+
+
 class CorpMembershipAdmin(admin.ModelAdmin):
     list_display = ['corp_profile', 'join_dt',
                     'renewal', 'renew_dt',
                     'expiration_dt',
                     'approved', 'status_detail']
-    list_filter = ['status_detail', 'join_dt', 'expiration_dt']
+    list_filter = [StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name']
 
     fieldsets = (
         (None, {'fields': ()}),
     )
+
+    def queryset(self, request):
+        return super(CorpMembershipAdmin, self).queryset(request
+                    ).exclude(status_detail='archive'
+                              ).order_by('status_detail',
+                                         'corp_profile__name')
 
     def add_view(self, request, form_url='', extra_context=None):
         return HttpResponseRedirect(reverse('corpmembership.add'))
@@ -286,6 +319,14 @@ class CorpMembershipAdmin(admin.ModelAdmin):
                     extra_context=None):
         return HttpResponseRedirect(reverse('corpmembership.view',
                                             args=[object_id]))
+
+    def log_deletion(self, request, object, object_repr):
+        description = 'Corporate membership - %s (id=%d, corp_profile_id=%d) - deleted' % (
+                                            object.corp_profile.name,
+                                            object.id,
+                                            object.corp_profile.id)
+        EventLog.objects.log(instance=object, description=description)
+        super(CorpMembershipAdmin, self).log_deletion(request, object, object_repr)
 
 
 class NoticeAdmin(admin.ModelAdmin):
@@ -334,7 +375,153 @@ class NoticeAdmin(admin.ModelAdmin):
 
         return instance
 
+    def get_urls(self):
+        urls = super(NoticeAdmin, self).get_urls()
+        extra_urls = patterns('',
+            url("^clone/(?P<pk>\d+)/$",
+                self.admin_site.admin_view(self.clone),
+                name='corporate_membership_notice.admin_clone'),
+        )
+        return extra_urls + urls
+
+    def clone(self, request, pk):
+        """
+        Make a clone of this notice.
+        """
+        notice = get_object_or_404(Notice, pk=pk)
+        notice_clone = Notice()
+
+        ignore_fields = ['guid', 'id', 'create_dt', 'update_dt',
+                         'creator', 'creator_username',
+                         'owner', 'owner_username']
+        field_names = [field.name
+                        for field in notice.__class__._meta.fields
+                        if field.name not in ignore_fields]
+
+        for name in field_names:
+            setattr(notice_clone, name, getattr(notice, name))
+
+        notice_clone.notice_name = 'Clone of %s' % notice_clone.notice_name
+        notice_clone.creator = request.user
+        notice_clone.creator_username = request.user.username
+        notice_clone.owner = request.user
+        notice_clone.owner_username = request.user.username
+        notice_clone.save()
+
+        return redirect(reverse(
+            'admin:corporate_memberships_notice_change',
+            args=[notice_clone.pk],
+        ))
+
+
+class AppListFilter(SimpleListFilter):
+    title = _('Corp. Memb. App')
+    parameter_name = 'corp_app_id'
+
+    def lookups(self, request, model_admin):
+        apps_list = CorpMembershipApp.objects.filter(
+                        status=True,
+                        status_detail__in=['active', 'published']
+                        ).values_list('id', 'name'
+                        ).order_by('id')
+        return [(app_tuple[0], app_tuple[1]) for app_tuple in apps_list]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            queryset = queryset.filter(
+                    corp_app_id=int(self.value()))
+        queryset = queryset.filter(display=True)
+        return queryset
+
+
+class CorpMembershipAppField2Admin(admin.ModelAdmin):
+    model = CorpMembershipAppField
+    list_display = ['label', 'app_link', 'field_name', 'display',
+              'required', 'admin_only', 'position',
+              ]
+
+    readonly_fields = ('corp_app', 'field_name')
+
+    list_editable = ['position']
+    ordering = ("position",)
+    list_filter = (AppListFilter,)
+    form = CorpMembershipAppFieldAdminForm
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            'js/jquery-ui-1.8.17.custom.min.js',
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+        )
+
+    def get_fieldsets(self, request, obj=None):
+        extra_fields = ['description', 'help_text',
+                        'choices', 'default_value', 'css_class']
+        if obj:
+            if obj.field_name:
+                extra_fields.remove('description')
+            else:
+                extra_fields.remove('help_text')
+                extra_fields.remove('choices')
+                extra_fields.remove('default_value')
+        fields = ('corp_app', 'label', 'field_name', 'field_type',
+                    ('display', 'required', 'admin_only'),
+                             ) + tuple(extra_fields)
+
+        return ((None, {'fields': fields
+                        }),)
+
+    def get_object(self, request, object_id):
+        obj = super(CorpMembershipAppField2Admin, self).get_object(request, object_id)
+
+        # assign default field_type
+        if obj:
+            if not obj.field_type:
+                if not obj.field_name:
+                    obj.field_type = 'section_break'
+                else:
+                    obj.field_type = CorpMembershipAppField.get_default_field_type(obj.field_name)
+
+        return obj
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+    def get_actions(self, request):
+        return None
+
+    def response_change(self, request, obj):
+        """
+        If the 'Save' button is clicked, redirect to fields list
+        with the selected app.
+        """
+        if "_save" in request.POST:
+            opts = obj._meta
+            verbose_name = opts.verbose_name
+            module_name = opts.module_name
+            if obj._deferred:
+                opts_ = opts.proxy_for_model._meta
+                verbose_name = opts_.verbose_name
+                module_name = opts_.module_name
+
+            msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
+                        'name': force_unicode(verbose_name),
+                        'obj': force_unicode(obj)}
+            self.message_user(request, msg)
+            post_url = '%s?corp_app_id=%d' % (
+                            reverse('admin:%s_%s_changelist' %
+                                   (opts.app_label, module_name),
+                                   current_app=self.admin_site.name),
+                            obj.corp_app_id)
+            return HttpResponseRedirect(post_url)
+        else:
+            return super(CorpMembershipAppField2Admin, self).response_change(request, obj)
+
 admin.site.register(CorpMembership, CorpMembershipAdmin)
 admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
 admin.site.register(CorpMembershipApp, CorpMembershipAppAdmin)
+admin.site.register(CorpMembershipAppField, CorpMembershipAppField2Admin)
 admin.site.register(Notice, NoticeAdmin)

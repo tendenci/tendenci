@@ -1,9 +1,13 @@
 {% load styled_forms %}
+{% load base_filters %}
 
 {% if field_obj.field_name == '' %}
     {% if field_obj.field_name == '' %}
         <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
             <h2>{{ field_obj.label  }}</h2>
+            {% if field_obj.description %}
+            <div>{{ field_obj.description }}</div>
+            {% endif %}
         </div>
     {% endif %}
 {% else %}
@@ -69,6 +73,10 @@
                             
                             {% if field.help_text %}
                                 <div class="help-text"><small>{{ field.help_text|safe }}</small></div>
+                            {% endif %}
+                            
+                            {% if field_obj.field_type == 'FileField' and field.value %}
+                            <div><small>Currently: {{ field.value|basename }}</small></div>
                             {% endif %}
                         </div>
               

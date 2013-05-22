@@ -221,6 +221,7 @@ class JobForm(TendenciBaseForm):
                 self.fields['status_detail'].choices = STATUS_DETAIL_CHOICES
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['group'].initial = Group.objects.get_initial_group_id()
 
         self.fields['pricing'].choices = pricing_choices(self.user)
 

@@ -15,3 +15,4 @@ A story consists of the following basic fields:
 - Link (internal or external)
 
 Stories can be set to activate and expire based on a start and end date. Stories may also be set to never expire.
+

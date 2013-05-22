@@ -21,6 +21,8 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
 from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
+from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
@@ -33,9 +35,10 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipDemographic,
                                                 MembershipApp,
                                                 MembershipAppField)
-from tendenci.core.base.utils import normalize_newline
+from tendenci.core.base.utils import normalize_newline, UnicodeWriter
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
+from tendenci.core.emails.models import Email
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
 
@@ -230,49 +233,60 @@ def get_selected_demographic_field_names(membership_app=None):
     return selected_field_names
 
 
-def membership_rows(user_field_list,
+def get_membership_rows(user_field_list,
                     profile_field_list,
                     demographic_field_list,
                     membership_field_list,
+                    invoice_field_list,
                     foreign_keys,
-                    export_status_detail=''):
+                    export_status_detail='',
+                    cp_id=0):
+
     # grab all except the archived
     memberships = MembershipDefault.objects.filter(
-                                status=True
-                                ).exclude(
-                                status_detail='archive'
-                                )
+        status=True).exclude(status_detail='archive')
+
     if export_status_detail:
         if export_status_detail == 'pending':
             memberships = memberships.filter(
-                        status_detail__icontains='pending'
-                                )
+                status_detail__icontains='pending')
         else:
             memberships = memberships.filter(
-                        status_detail=export_status_detail)
+                status_detail=export_status_detail)
+
+    if cp_id:
+        memberships = memberships.filter(corp_profile_id=cp_id)
 
     for membership in memberships:
         row_dict = {}
+
         user = membership.user
+        invoice = membership.get_invoice()
+
         [profile] = Profile.objects.filter(user=user)[:1] or [None]
         [demographic] = MembershipDemographic.objects.filter(user=user)[:1] or [None]
 
         for field_name in user_field_list:
             row_dict[field_name] = get_obj_field_value(field_name, user)
+
         if profile:
             for field_name in profile_field_list:
                 row_dict[field_name] = get_obj_field_value(
-                                                field_name, profile,
-                                                field_name in foreign_keys)
+                    field_name, profile, field_name in foreign_keys)
+
         if demographic:
             for field_name in demographic_field_list:
                 row_dict[field_name] = get_obj_field_value(
-                                                field_name, demographic,
-                                                field_name in foreign_keys)
+                    field_name, demographic, field_name in foreign_keys)
+
         for field_name in membership_field_list:
             row_dict[field_name] = get_obj_field_value(
-                                            field_name, membership,
-                                            field_name in foreign_keys)
+                field_name, membership, field_name in foreign_keys)
+
+        if invoice:
+            for field_name in invoice_field_list:
+                row_dict[field_name] = get_obj_field_value(
+                    field_name, invoice, field_name in foreign_keys)
 
         yield row_dict
 
@@ -284,87 +298,140 @@ def get_obj_field_value(field_name, obj, is_foreign_key=False):
     return value
 
 
-def process_export(export_type='all_fields',
-                   export_status_detail='active',
-                   identifier=''):
+def process_export(
+        export_type='all_fields',
+        export_status_detail='active',
+        identifier=u'', user_id=0, cp_id=0):
     from tendenci.core.perms.models import TendenciBaseModel
+
     if export_type == 'main_fields':
+
         base_field_list = []
-        user_field_list = ['first_name', 'last_name', 'username',
-                           'email', 'is_active', 'is_staff',
-                           'is_superuser']
-        profile_field_list = ['member_number', 'company',
-                              'phone', 'address',
-                              'address2', 'city',
-                              'state', 'zipcode',
-                              'country']
+
+        user_field_list = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'is_active',
+            'is_staff',
+            'is_superuser']
+
+        profile_field_list = [
+            'member_number',
+            'company',
+            'phone',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'country']
+
         demographic_field_list = []
-        membership_field_list = ['membership_type',
-                                 'corp_profile_id',
-                                 'corporate_membership_id',
-                                 'join_dt',
-                                 'expire_dt',
-                                 'renewal',
-                                 'renew_dt',
-                                 'status',
-                                 'status_detail'
-                                 ]
+
+        membership_field_list = [
+            'membership_type',
+            'corp_profile_id',
+            'corporate_membership_id',
+            'join_dt',
+            'expire_dt',
+            'renewal',
+            'renew_dt',
+            'status',
+            'status_detail']
+
+        invoice_field_list = []
+
     else:
-        base_field_list = [smart_str(field.name) for field \
-                           in TendenciBaseModel._meta.fields \
-                         if not field.__class__ == AutoField]
-        user_field_list = [smart_str(field.name) for field \
-                           in User._meta.fields \
-                         if not field.__class__ == AutoField]
-        # remove password
+
+        # base ------------
+        base_field_list = [
+            smart_str(field.name) for field in TendenciBaseModel._meta.fields
+            if not field.__class__ == AutoField]
+
+        # user ------------
+        user_field_list = [
+            smart_str(field.name) for field in User._meta.fields
+            if not field.__class__ == AutoField]
         user_field_list.remove('password')
-        profile_field_list = [smart_str(field.name) for field \
-                           in Profile._meta.fields \
-                         if not field.__class__ == AutoField]
-        profile_field_list = [name for name in profile_field_list \
-                                   if not name in base_field_list]
+
+        # profile ---------
+        profile_field_list = [
+            smart_str(field.name) for field in Profile._meta.fields
+            if not field.__class__ == AutoField]
+        profile_field_list = [
+            name for name in profile_field_list
+            if not name in base_field_list]
         profile_field_list.remove('guid')
         profile_field_list.remove('user')
-        demographic_field_list = [smart_str(field.name) for field \
-                           in MembershipDemographic._meta.fields \
-                         if not field.__class__ == AutoField]
+
+        # demographic -----
+        demographic_field_list = [
+            smart_str(field.name) for field in MembershipDemographic._meta.fields
+            if not field.__class__ == AutoField]
         demographic_field_list.remove('user')
-        membership_field_list = [smart_str(field.name) for field \
-                           in MembershipDefault._meta.fields \
-                         if not field.__class__ == AutoField]
+
+        # membership ------
+        membership_field_list = [
+            smart_str(field.name) for field in MembershipDefault._meta.fields
+            if not field.__class__ == AutoField]
         membership_field_list.remove('user')
 
-    title_list = user_field_list + profile_field_list + \
-        membership_field_list + demographic_field_list
+        # invoice ---------
+        invoice_field_list = ['total', 'balance']
+
+    title_list = (
+        user_field_list +
+        profile_field_list +
+        membership_field_list +
+        invoice_field_list +
+        demographic_field_list)
 
     # list of foreignkey fields
     if export_type == 'main_fields':
         fks = ['membership_type']
     else:
-        user_fks = [field.name for field in User._meta.fields \
-                       if isinstance(field, (ForeignKey, OneToOneField))]
-        profile_fks = [field.name for field in Profile._meta.fields \
-                       if isinstance(field, (ForeignKey, OneToOneField))]
-        demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
-                       if isinstance(field, (ForeignKey, OneToOneField))]
-        membership_fks = [field.name for field in MembershipDefault._meta.fields \
-                    if isinstance(field, (ForeignKey, OneToOneField))]
+
+        user_fks = [
+            field.name for field in User._meta.fields
+            if isinstance(field, (ForeignKey, OneToOneField))]
+
+        profile_fks = [
+            field.name for field in Profile._meta.fields
+            if isinstance(field, (ForeignKey, OneToOneField))]
+
+        demographic_fks = [
+            field.name for field in MembershipDemographic._meta.fields
+            if isinstance(field, (ForeignKey, OneToOneField))]
+
+        membership_fks = [
+            field.name for field in MembershipDefault._meta.fields
+            if isinstance(field, (ForeignKey, OneToOneField))]
 
         fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
 
-    if not identifier:
-        identifier = int(ttime.time())
-    file_name_temp = 'export/memberships/%s_temp.csv' % identifier
+    membership_ids_dict = dict(MembershipType.objects.all().values_list('id', 'name'))
+
+    identifier = identifier or int(time.time())
+    file_name_temp = 'export/memberships/%s_%d_temp.csv' % (identifier, cp_id)
+
     with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = csv.writer(csvfile)
+        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
         csv_writer.writerow(title_list)
-        # corp_membership_rows is a generator - for better performance
-        for row_dict in membership_rows(user_field_list,
-                                        profile_field_list,
-                                        demographic_field_list,
-                                        membership_field_list,
-                                        fks,
-                                        export_status_detail):
+
+        membership_rows = get_membership_rows(
+            user_field_list,
+            profile_field_list,
+            demographic_field_list,
+            membership_field_list,
+            invoice_field_list,
+            fks,
+            export_status_detail,
+            cp_id)
+
+        for row_dict in membership_rows:
+
             items_list = []
             for field_name in title_list:
                 item = row_dict.get(field_name)
@@ -379,13 +446,55 @@ def process_export(export_type='all_fields',
                         item = item.strftime('%H:%M:%S')
                     elif isinstance(item, basestring):
                         item = item.encode("utf-8")
+                    elif field_name == 'membership_type':
+                        # display membership type name instead of id
+                        item = membership_ids_dict[item]
+                item = smart_str(item).decode('utf-8')
                 items_list.append(item)
             csv_writer.writerow(items_list)
+
     # rename the file name
-    file_name = 'export/memberships/%s.csv' % identifier
+    file_name = 'export/memberships/%s_%d.csv' % (identifier, cp_id)
     default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+
     # delete the temp file
     default_storage.delete(file_name_temp)
+
+    # notify user that export is ready to download
+    [user] = User.objects.filter(id=user_id)[:1] or [None]
+    if user and user.email:
+        corp_profile = None
+        if cp_id:
+            from tendenci.addons.corporate_memberships.models import CorpProfile
+            [corp_profile] = CorpProfile.objects.filter(pk=cp_id)[:1] or [None]
+        download_url = reverse('memberships.default_export_download', args=[identifier])
+
+        if cp_id:
+            download_url = '%s?cp_id=%s' % (download_url, cp_id)
+        site_url = get_setting('site', 'global', 'siteurl')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        parms = {
+            'download_url': download_url,
+            'user': user,
+            'site_url': site_url,
+            'site_display_name': site_display_name,
+            'export_status_detail': export_status_detail,
+            'export_type': export_type,
+            'corp_profile': corp_profile}
+
+        subject = render_to_string(
+            'memberships/notices/export_ready_subject.html', parms)
+        subject = subject.strip('\n').strip('\r')
+
+        body = render_to_string(
+            'memberships/notices/export_ready_body.html', parms)
+
+        email = Email(
+            recipient=user.email,
+            subject=subject,
+            body=body)
+
+        email.send()
 
 
 def has_null_byte(file_path):
@@ -662,7 +771,7 @@ def get_notice_token_help_text(notice=None):
                                         display=True,
                                         ).exclude(
                                         field_name=''
-                                        ).order_by('order')
+                                        ).order_by('position')
             help_text += "<ul>"
             for field in fields:
                 help_text += '<li>{{ %s }} - (for %s)</li>' % (
@@ -739,8 +848,14 @@ def get_membership_stats():
             'total': total_all,
         })
 
-    return (sorted(summary, key=lambda x: x['type'].name),
-        (total_active, total_pending, total_expired, total_total))
+    total_dict = {
+        'active': total_active,
+        'pending': total_pending,
+        'expired': total_expired,
+        'total': total_total,
+    }
+
+    return (sorted(summary, key=lambda x: x['type'].name), total_dict)
 
 
 def make_csv(**kwargs):

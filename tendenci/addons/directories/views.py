@@ -4,11 +4,13 @@ from PIL import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.conf import settings
+from django.utils import simplejson
+from django.views.decorators.csrf import csrf_exempt
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
@@ -25,7 +27,7 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.addons.directories.forms import DirectoryForm, DirectoryPricingForm, DirectoryRenewForm
-from tendenci.addons.directories.utils import directory_set_inv_payment
+from tendenci.addons.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
 from tendenci.addons.directories.utils import resize_s3_image
@@ -134,12 +136,21 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         del form.fields['payment_method']
         del form.fields['list_type']
 
-    if request.method == "POST":   
-        if form.is_valid():           
+    if request.method == "POST":
+        if require_payment:
+            is_free = is_free_listing(request.user,
+                               request.POST.get('pricing', 0),
+                               request.POST.get('list_type'))
+            if is_free:
+                del form.fields['payment_method']
+
+        if form.is_valid():
             directory = form.save(commit=False)
             pricing = form.cleaned_data['pricing']
-            
-            if directory.payment_method: 
+
+            if require_payment and is_free:
+                directory.payment_method = 'paid - cc'
+            if directory.payment_method:
                 directory.payment_method = directory.payment_method.lower()
             if not directory.requested_duration:
                 directory.requested_duration = 30
@@ -207,8 +218,23 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))             
 
-    return render_to_response(template_name, {'form':form}, 
+    return render_to_response(template_name,
+                              {'form': form,
+                               'require_payment': require_payment},
         context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def query_price(request):
+    """
+    Get the price for user with the selected list type.
+    """
+    pricing_id = request.POST.get('pricing_id', 0)
+    list_type = request.POST.get('list_type', '')
+    pricing = get_object_or_404(DirectoryPricing, pk=pricing_id)
+    price = pricing.get_price_for_user(request.user, list_type=list_type)
+    return HttpResponse(simplejson.dumps({'price': price}))
 
 
 @is_enabled('directories')
@@ -266,6 +292,11 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 @is_enabled('directories')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-meta.html"):
+    directory = get_object_or_404(Directory, pk=id)
+
+    if not has_perm(request.user, 'directories.change_directory', directory):
+        raise Http403
+
     defaults = {
         'title': directory.get_title(),
         'description': directory.get_description(),

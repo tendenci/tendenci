@@ -70,7 +70,7 @@
                 {% ifnotequal ACTIVE_THEME current_theme %}
                 <p><a href="{% url home %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
                 {% endifnotequal %}
-                <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}. <a href="/settings/module/theme_editor">{% trans "Change?" %}</a></p>
+                <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}. <a href="{% url theme_editor.picker %}">{% trans "Change?" %}</a></p>
                 </div>
                 {# endif #}
             </div>

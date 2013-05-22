@@ -18,6 +18,7 @@ class Command(BaseCommand):
                                                    --export_status_detail active
                                                    --identifier 1359048111
                                                    --user 1
+                                                   --cp_id 21
     """
     option_list = BaseCommand.option_list + (
         make_option('--export_type',
@@ -40,6 +41,11 @@ class Command(BaseCommand):
             dest='user',
             default='1',
             help='Request user'),
+        make_option('--cp_id',
+            action='store',
+            dest='cp_id',
+            default=0,
+            help='corp_profile id'),
         )
 
     def handle(self, *args, **options):
@@ -50,10 +56,17 @@ class Command(BaseCommand):
         identifier = options['identifier']
         if not identifier:
             identifier = int(time.time())
-        #user = options['user']
+        try:
+            cp_id = int(options['cp_id'])
+        except:
+            cp_id = 0
+
+        user_id = options['user']
         process_export(export_type=export_type,
                        export_status_detail=export_status_detail,
-                       identifier=identifier)
+                       identifier=identifier,
+                       user_id=user_id,
+                       cp_id=cp_id)
         print 'Membership export done %s.' % identifier
 #        print 'URL to download: ', '%s%s' % (get_setting('site', 'global',
 #                                                         'siteurl'),

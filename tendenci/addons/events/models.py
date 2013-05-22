@@ -387,12 +387,6 @@ class Registration(models.Model):
                                          decimal_places=2, 
                                          blank=True, 
                                          default=0)
-    discount_code = models.CharField(_('Discount Code'), max_length=100,
-                                     blank=True, null=True)
-    discount_amount = models.DecimalField(_('Discount Amount'), 
-                                          max_digits=10, 
-                                          decimal_places=2,
-                                          default=0)
     canceled = models.BooleanField(_('Canceled'), default=False)
 
     creator = models.ForeignKey(User, related_name='created_registrations', null=True, on_delete=models.SET_NULL)
@@ -1058,6 +1052,16 @@ class Event(TendenciBaseModel):
                 return True
             
         return False
+
+    def speakers(self, **kwargs):
+        """
+        This method can returns the list of speakers associated with an event.
+        Speakers with no name are excluded in the list.
+        """
+
+        speakers = self.speaker_set.exclude(name="").order_by('pk')
+
+        return speakers
 
     def number_of_days(self):
         delta = self.end_dt - self.start_dt

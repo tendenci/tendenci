@@ -5,36 +5,52 @@ from django.contrib import admin
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.conf.urls.defaults import patterns, url
 from django.template.defaultfilters import slugify
 from django.http import HttpResponse
 from django.utils.html import escape
+from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin import SimpleListFilter
 from django.utils.encoding import force_unicode
 
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import tcurrency
 from tendenci.core.perms.utils import update_perms_and_save
-from tendenci.addons.memberships.models import (Membership, MembershipDefault,
-                                                MembershipType, Notice,
-                                                AppField,
-                                                MembershipAppField,
-                                                MembershipApp)
-from tendenci.addons.memberships.forms import (MembershipDefaultForm, AppForm,
-                            NoticeForm, AppFieldForm, AppEntryForm,
-                            MembershipAppForm,
-                            MembershipAppFieldAdminForm)
-from tendenci.addons.memberships.utils import (get_default_membership_fields,
-                                               edit_app_update_corp_fields,
-                                               get_selected_demographic_field_names)
+from tendenci.addons.memberships.models import (
+    Membership, MembershipDefault, MembershipType, Notice,
+    AppField, MembershipAppField, MembershipApp)
+from tendenci.addons.memberships.forms import (
+    MembershipDefaultForm, AppForm, NoticeForm, AppFieldForm,
+    AppEntryForm, MembershipAppForm, MembershipAppFieldAdminForm)
+from tendenci.addons.memberships.utils import (
+    get_default_membership_fields,
+    edit_app_update_corp_fields,
+    get_selected_demographic_field_names)
 from tendenci.addons.memberships.middleware import ExceededMaxTypes
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
+
+
+class MembershipStatusDetailFilter(SimpleListFilter):
+    title = 'status detail'
+    parameter_name = 'status_detail'
+
+    def lookups(self, request, model_admin):
+        memberships = model_admin.model.objects.exclude(status_detail='archive')
+        status_detail_list = set([m.status_detail for m in memberships])
+        return zip(status_detail_list, status_detail_list)
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(status_detail=self.value())
+        else:
+            return queryset
 
 
 class MembershipAdmin(admin.ModelAdmin):
@@ -73,6 +89,9 @@ def approve_selected(modeladmin, request, queryset):
     for membership in memberships:
         membership.approve(request_user=request.user)
         membership.send_email(request, 'approve')
+        if membership.corporate_membership_id:
+            # notify corp reps
+            membership.email_corp_reps(request)
 
 approve_selected.short_description = u'Approve selected'
 
@@ -90,6 +109,13 @@ def renew_selected(modeladmin, request, queryset):
     for membership in memberships:
         membership.renew(request_user=request.user)
         membership.send_email(request, 'renewal')
+
+    member_names = [m.user.profile.get_name() for m in memberships]
+
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        'Successfully renewed: %s' % u', '.join(member_names))
 
 renew_selected.short_description = u'Renew selected'
 
@@ -138,7 +164,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     form = MembershipDefaultForm
 
-    profile = ('Profile',
+    profile = (
+        'Profile',
         {'fields': (
             ('first_name', 'last_name'),
             ('email', 'email2'),
@@ -154,7 +181,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         )}
     )
 
-    membership = ('Membership',
+    membership = (
+        'Membership',
         {'fields': (
             'member_number',
             'renewal',
@@ -191,21 +219,24 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         )}
     )
 
-    money = ('Money',
+    money = (
+        'Money',
         {'fields': (
             'payment_method',
             'membership_type',
         )}
     )
 
-    extra = ('Extra',
+    extra = (
+        'Extra',
         {'fields': (
             'industry',
             'region',
         )}
     )
 
-    status = ('Status',
+    status = (
+        'Status',
         {'fields': (
             'join_dt',
             'renew_dt',
@@ -214,15 +245,15 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     fieldsets = (
-            profile,
-            membership,
-            money,
-            status
+        profile,
+        membership,
+        money,
+        status
     )
 
     def get_fieldsets(self, request, instance=None):
         demographics_fields = get_selected_demographic_field_names(
-                                        instance and instance.app)
+            instance and instance.app)
 
         if demographics_fields:
             demographics = (
@@ -250,9 +281,11 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         )
         name.strip()
         return name
+    name.admin_order_field = 'user__last_name'
 
     def email(self, instance):
         return instance.user.email
+    email.admin_order_field = 'user__email'
 
     def get_status(self, instance):
         return instance.get_status().capitalize()
@@ -285,6 +318,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         if dt:
             return dt.strftime('%b %d, %Y, %I:%M %p')
         return u''
+
     get_approve_dt.short_description = u'Approved On'
 
     def get_actions(self, request):
@@ -311,7 +345,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     list_filter = [
         'membership_type',
-        'status_detail'
+        MembershipStatusDetailFilter,
     ]
 
     actions = [
@@ -332,10 +366,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         Intercept add page and redirect to form.
         """
         apps = MembershipApp.objects.filter(
-                                status=True,
-                                status_detail__in=['published',
-                                                   'active']
-                                            )
+            status=True,
+            status_detail__in=['published', 'active'])
+
         count = apps.count()
         if count == 1:
             app = apps[0]
@@ -352,9 +385,28 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
                 reverse('admin:memberships_membershipapp_changelist')
             )
 
+    def response_change(self, request, obj):
+        """
+        When the change page is submitted we can redirect
+        to a URL specified in the next parameter.
+        """
+        POST_KEYS = request.POST.keys()
+        GET_KEYS = request.GET.keys()
+        NEXT_URL = iri_to_uri('%s') % request.GET.get('next')
+
+        do_next_url = (
+            not '_addanother' in POST_KEYS,
+            not '_continue' in POST_KEYS,
+            'next' in GET_KEYS)
+
+        if all(do_next_url):
+            return HttpResponseRedirect(NEXT_URL)
+
+        return super(MembershipDefaultAdmin, self).response_change(request, obj)
+
     def queryset(self, request):
         qs = super(MembershipDefaultAdmin, self).queryset(request)
-        return qs.order_by('-application_approved_dt')
+        return qs.exclude(status_detail='archive').order_by('-application_approved_dt')
 
     def get_urls(self):
         """
@@ -362,7 +414,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
-        extra_urls = patterns('',
+        extra_urls = patterns(
+            u'',
             url("^approve/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
@@ -388,6 +441,15 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         m = get_object_or_404(MembershipDefault, pk=pk)
         m.approve(request_user=request.user)
         m.send_email(request, 'approve')
+        if m.corporate_membership_id:
+            # notify corp reps
+            m.email_corp_reps(request)
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Approved'
+        )
 
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
@@ -403,6 +465,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         m.renew(request_user=request.user)
         m.send_email(request, 'renewal')
 
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Renewed'
+        )
+
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
             args=[pk],
@@ -417,6 +485,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         m.disapprove(request_user=request.user)
         m.send_email(request, 'disapprove')
 
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Disapproved'
+        )
+
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
             args=[pk],
@@ -429,6 +503,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         m = get_object_or_404(MembershipDefault, pk=pk)
         m.expire(request_user=request.user)
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Expired'
+        )
 
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
@@ -455,7 +535,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
         (None, {'fields': ('name', 'slug', 'description',
                            'confirmation_text', 'notes', 'allow_multiple_membership',
                            'membership_types', 'payment_methods',
-                           'use_for_corp', 'use_captcha',)},),
+                           'use_for_corp', 'use_captcha', 'discount_eligible')},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -626,6 +706,44 @@ class NoticeAdmin(admin.ModelAdmin):
         instance.save()
 
         return instance
+
+    def get_urls(self):
+        urls = super(NoticeAdmin, self).get_urls()
+        extra_urls = patterns('',
+            url("^clone/(?P<pk>\d+)/$",
+                self.admin_site.admin_view(self.clone),
+                name='membership_notice.admin_clone'),
+        )
+        return extra_urls + urls
+
+    def clone(self, request, pk):
+        """
+        Make a clone of this notice.
+        """
+        notice = get_object_or_404(Notice, pk=pk)
+        notice_clone = Notice()
+
+        ignore_fields = ['guid', 'id', 'create_dt', 'update_dt',
+                         'creator', 'creator_username',
+                         'owner', 'owner_username']
+        field_names = [field.name
+                        for field in notice.__class__._meta.fields
+                        if field.name not in ignore_fields]
+
+        for name in field_names:
+            setattr(notice_clone, name, getattr(notice, name))
+
+        notice_clone.notice_name = 'Clone of %s' % notice_clone.notice_name
+        notice_clone.creator = request.user
+        notice_clone.creator_username = request.user.username
+        notice_clone.owner = request.user
+        notice_clone.owner_username = request.user.username
+        notice_clone.save()
+
+        return redirect(reverse(
+            'admin:memberships_notice_change',
+            args=[notice_clone.pk],
+        ))
 
 
 class AppFieldAdmin(admin.StackedInline):

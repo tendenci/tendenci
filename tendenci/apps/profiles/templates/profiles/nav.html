@@ -43,6 +43,11 @@
             {% if can_add_profile %}
                 <li><a href="{% url profile.add %}">{% trans "Add a User" %}</a></li>
             {% endif %}
+
+            {% if user.profile.is_superuser %}
+            <li><a href="{% url profile.similar %}">{% trans "Similar Users List" %}</a></li>
+            {% endif %}
+
             {% if user.profile.is_staff %}
                 <li><a href="{% url reports-memberships %}">{% trans "Membership Reports" %}</a></li>
                 <li><a href="{% url profile.admins %}">{% trans "Admin List" %}</a></li>

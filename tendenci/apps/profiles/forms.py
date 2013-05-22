@@ -14,6 +14,7 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.addons.memberships.models import App, Membership
+from tendenci.addons.memberships.models import MembershipType
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
@@ -26,6 +27,55 @@ APPS = ('profiles', 'user_groups', 'articles',
         'stories', 'actions', 'photos', 'entities',
         'locations', 'files', 'directories', 'resumes',
         'memberships', 'corporate_memberships')
+
+
+class ProfileSearchForm(forms.Form):
+    SEARCH_CRITERIA_CHOICES = (
+                        ('', _('SELECT ONE')),
+                        ('first_name', _('First Name')),
+                        ('last_name', _('Last Name')),
+                        ('email', _('Email')),
+                        ('username', _('Username')),
+                        ('member_number', _('Member Number')),
+                        ('company', _('Company')),
+                        ('position_title', _('Position Title')),
+                        ('phone', _('Phone')),
+                        ('city', _('City')),
+                        ('state', _('State')),
+                        ('zipcode', _('Zip Code')),
+                        ('country', _('Country'))
+                               )
+    SEARCH_METHOD_CHOICES = (
+                             ('starts_with', _('Starts With')),
+                             ('contains', _('Contains')),
+                             ('exact', _('Exact')),
+                             )
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    email = forms.CharField(required=False)
+    member_only = forms.BooleanField(label=_('Show Member Only'),
+                                     widget=forms.CheckboxInput(),
+                                     initial=True, required=False)
+    membership_type = forms.IntegerField(required=False)
+    search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
+                                        required=False)
+    search_text = forms.CharField(max_length=100, required=False)
+    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
+                                        required=False)
+
+    def __init__(self, *args, **kwargs):
+        mts = kwargs.pop('mts')
+        super(ProfileSearchForm, self).__init__(*args, **kwargs)
+
+        if not mts:
+            del self.fields['membership_type']
+            del self.fields['member_only']
+        else:
+            choices = [(0, 'SELECT ONE')]
+            choices += [(mt.id, mt.name) for mt in mts]
+            self.fields['membership_type'].widget = forms.widgets.Select(
+                                    choices=choices)
+
 
 class ProfileForm(TendenciBaseForm):
 
@@ -405,6 +455,7 @@ class ProfileAdminForm(TendenciBaseForm):
         """
         Create a new user then create the user profile
         """
+        request = kwargs.pop('request', None)
         username = self.cleaned_data['username']
         email = self.cleaned_data['email']
         params = {'first_name': self.cleaned_data['first_name'],
@@ -422,25 +473,33 @@ class ProfileAdminForm(TendenciBaseForm):
             params.update({'username': username})
             update_user(self.instance.user, **params)
 
-        security_level = self.cleaned_data['security_level']
-        if security_level == 'superuser':
-            self.instance.user.is_superuser = 1
-            self.instance.user.is_staff = 1
-        elif security_level == 'staff':
-            self.instance.user.is_superuser = 0
-            self.instance.user.is_staff = 1
-        else:
-            self.instance.user.is_superuser = 0
-            self.instance.user.is_staff = 0
+        if not (request.user == self.instance.user and request.user.is_superuser):
+            security_level = self.cleaned_data['security_level']
+            if security_level == 'superuser':
+                self.instance.user.is_superuser = 1
+                self.instance.user.is_staff = 1
+            elif security_level == 'staff':
+                self.instance.user.is_superuser = 0
+                self.instance.user.is_staff = 1
+            else:
+                self.instance.user.is_superuser = 0
+                self.instance.user.is_staff = 0
 
-        interactive = self.cleaned_data['interactive']
-        try:
-            interactive = int(interactive)
-        except:
-            interactive = 0
-        self.instance.user.is_active = interactive
+            interactive = self.cleaned_data['interactive']
+            try:
+                interactive = int(interactive)
+            except:
+                interactive = 0
+            self.instance.user.is_active = interactive
+
+        if not self.instance.id:
+            self.instance.creator = request.user
+            self.instance.creator_username = request.user.username
+        self.instance.owner = request.user
+        self.instance.owner_username = request.user.username
 
         self.instance.user.save()
+        self.instance.save()
             
         return super(ProfileAdminForm, self).save(*args, **kwargs)
 

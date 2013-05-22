@@ -108,6 +108,8 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
 @is_enabled('photos')
 def photo(request, id, set_id=0, partial=False, template_name="photos/details.html"):
     """ photo details """
+    photo_set = None
+    set_count = None
     photo = get_object_or_404(Image, id=id)
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
@@ -129,10 +131,11 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         photo_prev = photo.get_prev(set=set_id)
         photo_next = photo.get_next(set=set_id)
         photo_first = photo.get_first(set=set_id)
+        photo_position = photo.get_position(set=set_id)
 
-        if photo_prev: photo_prev_url = reverse("photo", args= [photo_prev.id, set_id])
-        if photo_next: photo_next_url = reverse("photo", args= [photo_next.id, set_id])
-        if photo_first: photo_first_url = reverse("photo", args= [photo_first.id, set_id])
+        if photo_prev: photo_prev_url = reverse("photo", args=[photo_prev.id, set_id])
+        if photo_next: photo_next_url = reverse("photo", args=[photo_next.id, set_id])
+        if photo_first: photo_first_url = reverse("photo", args=[photo_first.id, set_id])
 
         photo_sets = list(photo.photoset.all())
         if photo_set in photo_sets:
@@ -143,13 +146,18 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     else:
         photo_prev = photo.get_prev()
         photo_next = photo.get_next()
+        photo_position = photo.get_position()
 
-        if photo_prev: photo_prev_url = reverse("photo", args= [photo_prev.id])
-        if photo_next: photo_next_url = reverse("photo", args= [photo_next.id])
+        if photo_prev: photo_prev_url = reverse("photo", args=[photo_prev.id])
+        if photo_next: photo_next_url = reverse("photo", args=[photo_next.id])
 
         photo_sets = photo.photoset.all()
         if photo_sets:
             set_id = photo_sets[0].id
+            photo_set = get_object_or_404(PhotoSet, id=set_id)
+
+    if photo_set:
+        set_count = photo_set.get_images(user=request.user).count()
 
     # "is me" variable
     is_me = photo.member == request.user
@@ -158,12 +166,14 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         template_name = "photos/partial-details.html"
 
     return render_to_response(template_name, {
+        "photo_position": photo_position,
         "photo_prev_url": photo_prev_url,
         "photo_next_url": photo_next_url,
         "photo_first_url": photo_first_url,
         "photo": photo,
         "photo_sets": photo_sets,
         "photo_set_id": set_id,
+        "photo_set_count": set_count,
         "id": id,
         "set_id": set_id,
         "is_me": is_me,
@@ -671,12 +681,15 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
 
+    default_group_id = Group.objects.get_initial_group_id()
+
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
         "photo_set": photo_set,
         "cc_licenses": cc_licenses,
         "tag_help_text": tag_help_text,
         "groups": groups,
+        'default_group_id': default_group_id
     }, context_instance=RequestContext(request))
 
 

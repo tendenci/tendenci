@@ -7,11 +7,17 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-
+        """
+        Clear 2 fields, corporate_entity and organization_entity,
+        from membership apps.
+        """
+        orm.MembershipAppField.objects.filter(field_name='corporate_entity'
+                                          ).delete()
+        orm.MembershipAppField.objects.filter(field_name='organization_entity'
+                                          ).delete()
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        pass
 
 
     models = {

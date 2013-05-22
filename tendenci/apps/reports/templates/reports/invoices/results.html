@@ -6,12 +6,23 @@
         <h2>Totals</h2>
         <table>
             <tr>
+                <th>App</th>
                 <th>Count</th>
                 <th>Total</th>
                 <th>Payments</th>
                 <th>Balance</th>
             </tr>
-            <tr class="summary-labels">
+            {% for item in results %}
+            <tr class="totals {% cycle "even" "odd" %}">
+                <td class="title"><a href="#app-{{ forloop.counter }}">{{ item.object_type }}</a></td>
+                <td>{{ item.count }} invoices</td>
+                <td>{{ item.total__sum|format_currency }}</td>
+                <td>{{ item.payments_credits__sum|format_currency }}</td>
+                <td>{{ item.balance__sum|format_currency }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th>TOTAL</th>
                 <th>{{ totals.count }} invoices</th>
                 <th>{{ totals.total|format_currency }}</th>
                 <th>{{ totals.payments_credits|format_currency }}</th>
@@ -32,7 +43,7 @@
 {% for item in results %}
 <div class="row invoice-resultset{% if forloop.last %} last{% endif %}">
     <div class="span12">
-        <h3 id="app-{{ forloop.counter }}">{{ forloop.counter }}. {{ item.object_type }}</h3>
+        <h3 id="app-{{ forloop.counter }}">{{ forloop.counter }}. {{ item.object_type }} <a class="back-to-top no-print" href="#top">Back to Top</a></h3>
 
         <table class="">
             <tr>

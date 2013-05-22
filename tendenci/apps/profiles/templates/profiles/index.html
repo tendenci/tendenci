@@ -151,7 +151,7 @@
         		<tr>
         			<td>
                         {% if request.user.profile.is_superuser %}
-        				{% trans "Member of" %} <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.membership_type }}
+        				 <a href="{% url membership.details membership.pk %}">{% trans "Member of" %} {{ membership.membership_type }}
         				</a>
                         {% else %}
                         {{ membership.member_number }} {{ membership.membership_type }}
@@ -170,11 +170,23 @@
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
 
                         {% if membership.can_renew %}
-                        {% if not membership.corporate_membership_id %}
-                        <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
-                        {% else %}
-                        <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                            {% if membership.corporate_membership_id %}
+                                <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                            {% else %}
+                                {% if membership.app %}
+                                <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
+
+                        {% if user.is_superuser and membership.past_renewal %}
+                            {% if membership.corporate_membership_id %}
+                                <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Admin Renew</a>
+                            {% else %}
+                                {% if membership.app %}
+                                <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Admin Renew</a>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
 
 	        		</td>

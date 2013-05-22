@@ -50,19 +50,31 @@ class File(TendenciBaseModel):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
-    group = models.ForeignKey(Group, null=True,
-        default=get_default_group, on_delete=models.SET_NULL)
+    group = models.ForeignKey(
+        Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
     categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
 
-    perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    perms = generic.GenericRelation(
+        ObjectPermission,
+        object_id_field="object_id",
+        content_type_field="content_type")
 
     objects = FileManager()
 
     class Meta:
         permissions = (("view_file", "Can view file"),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("file", [self.pk])
+
+    @models.permalink
+    def get_absolute_download_url(self):
+        return ("file", [self.pk, 'download'])
+
+    def __unicode__(self):
+        return self.get_name()
 
     @property
     def category_set(self):
@@ -84,11 +96,12 @@ class File(TendenciBaseModel):
             set_s3_file_permission(self.file, public=True)
         else:
             set_s3_file_permission(self.file, public=False)
-            cache_set = cache.get("files_cache_set.%s" % self.pk)
-            if cache_set is not None:
-                # TODO remove cached images
-                cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
-                cache.delete("files_cache_set.%s" % self.pk)
+
+        cache_set = cache.get("files_cache_set.%s" % self.pk)
+        if cache_set is not None:
+            # TODO remove cached images
+            cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
+            cache.delete("files_cache_set.%s" % self.pk)
 
     def delete(self, *args, **kwargs):
         # Related objects
@@ -138,8 +151,7 @@ class File(TendenciBaseModel):
 
         # map file-type to extension
         types = {
-            'image': ('.jpg', '.jpeg', '.gif', '.png', 
-                      '.tif', '.tiff', '.bmp'),
+            'image': ('.jpg', '.jpeg', '.gif', '.png', '.tif', '.tiff', '.bmp'),
             'text': ('.txt', '.doc', '.docx'),
             'spreadsheet': ('.csv', '.xls', '.xlsx'),
             'powerpoint': ('.ppt', '.pptx'),
@@ -218,34 +230,24 @@ class File(TendenciBaseModel):
             if not os.path.exists(self.file.path):
                 return unicode()
 
-        if self.type() == 'pdf':
+        if settings.INDEX_FILE_CONTENT:
+            if self.type() == 'pdf':
 
-            try:
-                doc = PDF(self.file.file)
-            except:
-                return unicode()
+                try:
+                    doc = PDF(self.file.file)
+                except:
+                    return unicode()
 
-            return doc.text()
+                return doc.text()
 
         return unicode()
 
-    @models.permalink
-    def get_absolute_url(self):
-        return ("file", [self.pk])
-
-    @models.permalink
-    def get_absolute_download_url(self):
-        return ("file", [self.pk, 'download'])
-
-    def __unicode__(self):
-        return self.get_name()
-
     def is_public_file(self):
-        return all([self.is_public,
+        return all([
+            self.is_public,
             self.allow_anonymous_view,
             self.status,
-            self.status_detail.lower() == "active"]
-            )
+            self.status_detail.lower() == "active"])
 
     def get_file_public_url(self):
         if self.is_public_file():

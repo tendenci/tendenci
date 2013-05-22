@@ -1,0 +1,58 @@
+Theme: Structure
+===============
+
+Here is an overview of the folder structure for themes, along with some details of specific files within the theme. All themes should be added to the ``themes`` folder in the main root of the site.
+
+Theme Folder Organization
+-------------------------
+
+- theme-name
+
+  - theme.info
+  - screenshot.png
+  - settings.json
+
+  - media
+
+    - css
+    - js
+    - img
+
+  - templates
+
+    - homepage.html
+    - default.html
+
+
+Theme File Descriptions
+-----------------------
+
+**theme.info**
+   This file contains a set of attributes associated with a theme. See the example below for some common attributes.
+
+   ::
+
+      name = Salonify
+      description = Salonify theme for Tendenci CMS.
+      tags = homepage rotator, spaces
+      screenshot = screenshot.png
+      author = Schipul
+      author uri = http://schipul.com
+      version = 1.0
+
+**screenshot.png**
+   This file is a full page screenshot of the theme after it has been loaded with the fixtures using the ``load_npo_defaults`` management command.
+
+**settings.json**
+   This file contains settings for the Tendenci site settings. These settings are written in json and are installed whenever the ``update_settings``, ``set_theme``, or ``install_theme`` command is run.
+
+**templates/homepage.html**
+   This file defines the HTML that is used when the homepage of the site is loaded. You can learn more about the homepage at :doc:`../templating/theme_homepage`
+
+**templates/default.html**
+   This file defines the HTML that is used when a page other than the homepage is loaded.
+
+Theme Media Usage
+-----------------
+
+Template media in the ``media`` folder can be referenced in the template using the ``{{ THEME_URL }}media/``.

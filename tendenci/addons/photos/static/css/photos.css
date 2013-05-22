@@ -311,7 +311,7 @@ table.photo-form select {
 	width: 300px;
 }
 
-.bulk-license {
+.bulk-license, .bulk-group {
 	border: 1px solid silver;
 	background-color: #FDFDFD;
 	padding: 10px;
@@ -698,16 +698,24 @@ div.gallery-photo-thumb img {
 .minimize-photo {
     margin-right: 12px;
     cursor: move;
-    padding: 5px;
+    padding: 1px;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -moz-border-radius: 0;
 }
 .minimize-link {
     text-align: center;
     margin: 5px;
 }
-.minimize-photo .photo-wrap img{
-    width: 122px;
+.photo-wrap img.square { display: none; }
+
+.minimize-photo .photo-wrap img.square {
     cursor: move;
+    display: block;
 }
+
+.minimize-photo .photo-wrap img.full { display: none; }
+
 .position-wrap{
     display: none;
 }

@@ -421,10 +421,12 @@ def make_image_object_from_url(image_url):
         im = None
     return im
 
+
 def image_rescale(img, size, force=True):
     """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
     import Image as pil
-    
+
+    format = img.format  # temp. save format
     max_width, max_height = size
 
     if not force:
@@ -434,7 +436,7 @@ def image_rescale(img, size, force=True):
         src_ratio = float(src_width) / float(src_height)
         dst_width, dst_height = max_width, max_height
         dst_ratio = float(dst_width) / float(dst_height)
-        
+
         if dst_ratio < src_ratio:
             crop_height = src_height
             crop_width = crop_height * dst_ratio
@@ -447,7 +449,8 @@ def image_rescale(img, size, force=True):
             y_offset = float(src_height - crop_height) / 3
         img = img.crop((int(x_offset), int(y_offset), int(x_offset)+int(crop_width), int(y_offset)+int(crop_height)))
         img = img.resize((dst_width, dst_height), pil.ANTIALIAS)
-    
+
+    img.format = format  # add format back
     return img
 
 def in_group(user, group):

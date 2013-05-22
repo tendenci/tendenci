@@ -7,7 +7,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
 
-from tendenci.core.site_settings.utils import (get_form_list, get_box_list)
+from tendenci.core.site_settings.utils import (get_form_list,
+                                               get_box_list,
+                                               get_group_list)
 
 
 def clean_settings_form(self):
@@ -118,6 +120,11 @@ def build_settings_form(user, settings):
             elif setting.input_value == '<box_list>':
                 choices = get_box_list(user)
                 required = False
+            elif setting.input_value == '<group_list>':
+                choices, initial = get_group_list(user)
+                required = True
+                if not setting_value:
+                    setting_value = initial
             else:
                 # Allow literal_eval in settings in order to pass a list from the setting
                 # This is useful if you want different values and labels for the select options

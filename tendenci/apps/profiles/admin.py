@@ -3,11 +3,17 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('get_user', 'display_name', 'get_email')
+
+class ProfileAdmin(TendenciBaseModelAdmin):
+    list_display = ('username', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser')
+    search_fields = ('display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
+
     fieldsets = (
         (_('Name Information'), {'fields': ('salutation',
                                             'first_name',
@@ -53,19 +59,38 @@ class ProfileAdmin(admin.ModelAdmin):
                                                      'security_level',)}),)
     form = ProfileAdminForm
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.creator = request.user
-            obj.creator_username = request.user.username
-        obj.owner = request.user
-        obj.owner_username = request.user.username
+    ordering = ('user__last_name', 'user__first_name')
 
-        obj.save()
+    def save_model(self, request, object, form, change):
+        instance = form.save(request=request, commit=False)
+        instance = update_perms_and_save(request, form, instance, log=False)
+
+        log_defaults = {
+            'instance': object,
+            'action': "edit"
+        }
+        if not change:
+            log_defaults['action'] = "add"
+
+        EventLog.objects.log(**log_defaults)
+        return instance
+
+    def save_form(self, request, form, change):
+        return form.save(request=request, commit=False)
 
     def get_email(self, obj):
         return obj.user.email
-    get_email.admin_order_field  = 'user__email'
+
+    get_email.admin_order_field = 'user__email'
     get_email.short_description = 'Email'
+
+    def is_superuser(self, obj):
+        return obj.is_superuser
+    is_superuser.boolean = True
+
+    def is_active(self, obj):
+        return obj.is_active
+    is_active.boolean = True
 
     def get_user(self, obj):
         name = "%s %s" % (obj.user.first_name, obj.user.last_name)
@@ -88,4 +113,4 @@ class MyUserAdmin(UserAdmin):
     )
 
 admin.site.unregister(User)
-#admin.site.register(User, MyUserAdmin)
+admin.site.register(User, MyUserAdmin)

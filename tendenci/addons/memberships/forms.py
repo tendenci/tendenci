@@ -449,6 +449,7 @@ class MembershipAppForm(TendenciBaseForm):
             'group_perms',
             'status',
             'status_detail',
+            'discount_eligible',
             'allow_multiple_membership',
 #            'app_field_selection',
             )
@@ -544,8 +545,9 @@ def assign_fields(form, app_field_objs):
     field_names = [field.field_name for field in app_field_objs \
                    if field.field_name != '' and \
                    field.field_name in form_field_keys]
+    
     for name in form_field_keys:
-        if name not in field_names:
+        if name not in field_names and name != 'discount_code':
             del form.fields[name]
     # update the field attrs - label, required...
     for obj in app_field_objs:
@@ -755,6 +757,8 @@ class MembershipDefault2Form(forms.ModelForm):
                       (1, 'Active'),
                       (0, 'Inactive')
                       )
+
+    discount_code = forms.CharField(label=_('Discount Code'), required=False)
 
     class Meta:
         model = MembershipDefault
@@ -1813,13 +1817,27 @@ class ExportForm(forms.Form):
 
 class ReportForm(forms.Form):
     STATUS_CHOICES = (
-        ('', '----------'),
-        ('ACTIVE', 'ACTIVE'),
-        ('EXPIRED', 'EXPIRED'),
+        ('', 'All Statuses'),
+        ('active', 'Active'),
+        ('expired', 'Expired'),
     )
 
-    membership_type = forms.ModelChoiceField(queryset=MembershipType.objects.all(), required=False)
-    membership_status = forms.ChoiceField(choices=STATUS_CHOICES, required=False)
+    start_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={'class': 'input-small', 'placeholder': 'Start Date'}))
+
+    end_date = forms.DateField(
+        widget=forms.TextInput(
+            attrs={'class': 'input-small', 'placeholder': 'End Date'}))
+
+    membership_type = forms.ModelChoiceField(
+        queryset=MembershipType.objects.all(),
+        empty_label='All Types',
+        required=False)
+
+    membership_status = forms.ChoiceField(
+        choices=STATUS_CHOICES,
+        required=False)
 
 
 class MembershipDefaultForm(TendenciBaseForm):

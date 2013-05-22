@@ -26,7 +26,8 @@ from tendenci.core.newsletters.utils import newsletter_articles_list, newsletter
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
-CreateSend.api_key = api_key
+#CreateSend.api_key = api_key
+auth = {'api_key': api_key}
 
 @login_required
 def template_index(request, template_name='campaign_monitor/templates/index.html'):
@@ -264,7 +265,7 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
 
             #sync with campaign monitor
             try:
-                t_id = CST().create(
+                t_id = CST(auth=auth).create(
                         client_id, template.name, 
                         html_url, zip_url
                     )
@@ -280,7 +281,7 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
                     context_instance=RequestContext(request))
             
             #get campaign monitor details
-            t = CST(template_id=t_id).details()
+            t = CST(auth=auth, template_id=t_id).details()
             template.template_id = t_id
             template.name = t.Name
             template.cm_preview_url = t.PreviewURL
@@ -333,7 +334,7 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             
             #sync with campaign monitor
             try:
-                t = CST(template_id = form.instance.template_id)
+                t = CST(auth=auth, template_id = form.instance.template_id)
                 t.update(str(template.name), html_url, zip_url)
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
@@ -400,7 +401,7 @@ def template_update(request, template_id):
     
     #sync with campaign monitor
     try:
-        t = CST(template_id = template.template_id)
+        t = CST(auth=auth, template_id = template.template_id)
         t.update(unicode(template.name), html_url, zip_url)
     except BadRequest, e:
         messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
@@ -430,7 +431,7 @@ def template_delete(request, template_id):
     t_id = template.template_id
     
     try:
-        CST(template_id=t_id).delete()
+        CST(auth=auth, template_id=t_id).delete()
     except BadRequest, e:
         messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
         return redirect(template)
@@ -524,7 +525,7 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
            
             #sync with campaign monitor
             try:
-                t = CST(template_id = template.template_id)
+                t = CST(auth=auth, template_id = template.template_id)
                 t.update(unicode(template.name), html_url, zip_url)
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
@@ -552,7 +553,7 @@ def campaign_delete(request, campaign_id, template_name="campaign_monitor/campai
     if request.method == "POST":
             
         try:
-            CSC(campaign_id = campaign.campaign_id).delete()
+            CSC(auth=auth, campaign_id=campaign.campaign_id).delete()
         except BadRequest, e:
             messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
             return redirect(campaign)

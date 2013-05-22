@@ -18,7 +18,7 @@
 <div class="t">
 
     {% invoice_nav invoice %}
-    <h1>{% blocktrans with invoice.pk as invoice_pk %}Make Offline Payment for Invoice {{ invoice_pk }}{% endblocktrans %}</h1>
+    <h1>{% blocktrans with invoice.pk as invoice_pk %}Mark Invoice #{{ invoice_pk }} as Paid{% endblocktrans %}</h1>
 
     {% with invoice.get_object as object %}
     <div class="invoice-meta">
@@ -75,7 +75,7 @@
               </tr>
             </table>
         {% endfor %}
-        <div><input class="field-submit" type="submit" value="Save Offline Payment"></div>
+        <div><input class="field-submit" type="submit" value="Save Payment"></div>
       </div>
     </form>
 </div>
