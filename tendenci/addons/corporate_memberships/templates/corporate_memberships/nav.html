@@ -54,7 +54,7 @@
             <li><a href="{% url corpmembership.search %}">{% trans "Search All" %}</a></li> 
             <li><a href="{% url corpmembership.mycorps %}">{% trans "My Corp. Members" %}</a></li> 
             {% if user.profile.is_superuser %}
-            <li><a href="{% url corpmembership.search %}?q=is_pending:true">{% trans "Pending Corp. Members" %}</a></li>
+            <li><a href="{% url corpmembership.pending_list %}">{% trans "Pending Corp. Members" %}</a></li>
             <li class="divider"></li>
             <li><a href="/admin/corporate_memberships/">Admin Backend</a></li>
             <li><a href="{% url admin:corporate_memberships_corpmembershipapp_changelist %}">{% trans "Application" %}</a></li>

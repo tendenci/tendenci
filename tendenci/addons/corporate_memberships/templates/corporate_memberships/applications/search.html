@@ -29,9 +29,12 @@
 <div class="t">
 <div class="t-search">
  {% corpmemb_nav request.user %}
- 
-<h1>{% trans "Corporate Membership Search" %}</h1>
 
+{% if pending_only %}
+<h1>{% trans "Pending Corporate Membership List" %}</h1>
+{% else %}
+<h1>{% trans "Corporate Membership Search" %}</h1>
+{% endif %}
 
 <form class="search-form" action="{% url corpmembership.search %}" method="get">
 <p>

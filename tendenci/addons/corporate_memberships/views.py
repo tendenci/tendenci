@@ -547,6 +547,7 @@ def download_file(request, cm_id, field_id):
 
 
 def corpmembership_search(request, my_corps_only=False,
+            pending_only=False,
             template_name="corporate_memberships/applications/search.html"):
     allow_anonymous_search = get_setting('module',
                                      'corporate_memberships',
@@ -557,6 +558,14 @@ def corpmembership_search(request, my_corps_only=False,
             raise Http403
     is_superuser = request.user.profile.is_superuser
 
+    # legacy pending url
+    query = request.GET.get('q')
+    if query == 'is_pending:true':
+        pending_only = True
+
+    if pending_only and not is_superuser:
+        raise Http403
+
     # field names for search criteria choices
     names_list = ['name', 'address', 'city',
                    'zip', 'country', 'phone',
@@ -564,14 +573,12 @@ def corpmembership_search(request, my_corps_only=False,
 
     search_form = CorpMembershipSearchForm(request.GET,
                                            names_list=names_list)
-
-    query = request.GET.get('q')
     try:
         cp_id = int(request.GET.get('cp_id'))
     except:
         cp_id = 0
 
-    if query == 'is_pending:true' and is_superuser:
+    if pending_only and is_superuser:
         # pending list only for admins
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
@@ -646,6 +653,7 @@ def corpmembership_search(request, my_corps_only=False,
     EventLog.objects.log()
 
     return render_to_response(template_name, {
+        'pending_only': pending_only,
         'corp_members': corp_members,
         'search_form': search_form},
         context_instance=RequestContext(request))
