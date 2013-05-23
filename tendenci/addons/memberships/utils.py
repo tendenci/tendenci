@@ -131,16 +131,16 @@ def get_membership_type_choices(request_user, customer, membership_app, corp_mem
     """
 
     mt_list = []
+    # assume not superuser; get superuser status
+    is_superuser = False
+
+    if hasattr(request_user, 'profile'):
+        is_superuser = request_user.profile.is_superuser
+
     if corp_membership:
         membership_types = [corp_membership.corporate_membership_type.membership_type]
     else:
         membership_types = membership_app.membership_types.all()
-
-        # assume not superuser; get superuser status
-        is_superuser = False
-
-        if hasattr(request_user, 'profile'):
-            is_superuser = request_user.profile.is_superuser
 
         # filter memberships types based on request_user superuser status
         if not is_superuser:
