@@ -18,7 +18,7 @@
 	 <div class="clear-right"></div>
 	<h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url }}">{{user_this.first_name }} {{ user_this.last_name }}</a></h2>
     <p>{% trans "Current avatar:" %} </p>
-    {% has_avatar user_this %}
+    {% avatar user_this %}
     {% if not avatars %}
         <p>{% trans "You do not yet have an avatar.  Please upload one now." %}</p>
     {% else %}

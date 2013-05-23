@@ -44,7 +44,7 @@
 	<div class="intro info">
 		<div class="profile-icon">
 			<a href="{% url profile.change_avatar  user_this.id %}">
-				{% has_avatar user_this 128 %}
+				{% avatar user_this 128 %}
 			</a>
 		</div>
         {% if profile.display_name %}
