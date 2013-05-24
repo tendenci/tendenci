@@ -47,6 +47,7 @@ from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
 UserMembershipForm, ProfileMergeForm, ProfileSearchForm)
 from tendenci.apps.profiles.tasks import ExportProfilesTask
+from tendenci.apps.profiles.utils import get_member_reminders
 from tendenci.addons.events.models import Registrant
 from tendenci.addons.memberships.models import MembershipType, MembershipDefault
 
@@ -143,6 +144,10 @@ def index(request, username='', template_name="profiles/index.html"):
     else:
         membership_apps = None
 
+    membership_reminders = ()
+    if request.user == user_this:
+        membership_reminders = get_member_reminders(user_this)
+
     return render_to_response(template_name, {
         'can_edit': can_edit,
         "user_this": user_this,
@@ -155,7 +160,8 @@ def index(request, username='', template_name="profiles/index.html"):
         'memberships': memberships,
         'registrations': registrations,
         'membership_apps': membership_apps,
-        'multiple_apps': multiple_apps
+        'multiple_apps': multiple_apps,
+        'membership_reminders': membership_reminders,
         }, context_instance=RequestContext(request))
 
 
