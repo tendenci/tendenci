@@ -156,39 +156,35 @@ def get_membership_type_choices(request_user, customer, membership_app, corp_mem
 
     for mt in membership_types:
         renew_mode = False
-        elligable = isinstance(customer, AnonymousUser)
         if isinstance(customer, User):
             m_list = MembershipDefault.objects.filter(user=customer, membership_type=mt)
-            renew_mode = len(m_list)
-            elligable = any([m.can_renew() for m in m_list])
+            renew_mode = any([m.can_renew() for m in m_list])
 
         mt.renewal_price = mt.renewal_price or 0
-
-        if is_superuser or elligable:
-            if renew_mode:
-                price_display = (price_fmt + renew_fmt) % (
+        if renew_mode:
+            price_display = (price_fmt + renew_fmt) % (
+                mt.name,
+                currency_symbol,
+                mt.renewal_price
+            )
+        else:
+            if mt.admin_fee:
+                price_display = (price_fmt + admin_fee_fmt) % (
                     mt.name,
                     currency_symbol,
-                    mt.renewal_price
+                    mt.price,
+                    currency_symbol,
+                    mt.admin_fee
                 )
             else:
-                if mt.admin_fee:
-                    price_display = (price_fmt + admin_fee_fmt) % (
-                        mt.name,
-                        currency_symbol,
-                        mt.price,
-                        currency_symbol,
-                        mt.admin_fee
-                    )
-                else:
-                    price_display = (price_fmt) % (
-                        mt.name,
-                        currency_symbol,
-                        mt.price
-                    )
+                price_display = (price_fmt) % (
+                    mt.name,
+                    currency_symbol,
+                    mt.price
+                )
 
-            price_display = mark_safe(price_display)
-            mt_list.append((mt.id, price_display))
+        price_display = mark_safe(price_display)
+        mt_list.append((mt.id, price_display))
 
     return mt_list
 
