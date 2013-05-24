@@ -950,21 +950,13 @@ class MembershipDefault(TendenciBaseModel):
 
     def is_expired(self):
         """
-        status=True, status_detail='active' and has expired,
-        includes the grace period.
+        status=True, status_detail='active' or 'expired',
+        might or might not be in the grace period.
         """
-        if not self.get_expire_dt():
-            # there is no grace period, so the member isn't in it
-            in_grace_period = False
-        else:
-            in_grace_period = self.get_expire_dt() < datetime.now()
-        is_good = (
-            self.status,
-            self.status_detail.lower() == 'expired',
-            self.get_expire_dt(),
-            in_grace_period)
-
-        return all(is_good)
+        if self.status and self.status_detail.lower() in ('active', 'expired'):
+            if self.expire_dt:
+                return self.expire_dt <= datetime.now()
+        return False
 
     def is_pending(self):
         """
@@ -1168,11 +1160,14 @@ class MembershipDefault(TendenciBaseModel):
         # the end_dt should be the end of the end_dt not start of the end_dt
         # not datetime.datetime(2013, 2, 21, 0, 0),
         # but datetime.datetime(2013, 2, 21, 23, 59, 59)
-        end_dt = self.expire_dt + timedelta(
-            days=self.membership_type.renewal_period_end + 1
-        ) - timedelta(seconds=1)
+        end_dt = self.get_renewal_period_end_dt()
 
         return (start_dt, end_dt)
+
+    def get_renewal_period_end_dt(self):
+        return self.expire_dt + timedelta(
+            days=self.membership_type.renewal_period_end + 1
+        ) - timedelta(seconds=1)
 
     def is_renewal(self):
         """

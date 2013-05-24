@@ -28,6 +28,16 @@
 {% block body %}
 <div class="t"><div id="t-profile">
 
+    {% for message,link,label in membership_reminders %}
+    <div class="alert-message block-message fade in" data-alert="alert">
+        <a class="close" href="#">×</a>
+        <p>{{ message }}</p>
+        <div class="alert-actions">
+            <a class="btn" href="{{ link }}">{{ label }}</a>
+        </div>
+    </div>
+    {% endfor %}
+
 	{% users_nav request.user user_this %}
 
 	<div id="t-view">
