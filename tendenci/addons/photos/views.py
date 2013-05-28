@@ -639,8 +639,8 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
         form = PhotoBatchEditForm(request.POST, instance=photo)
 
         if form.is_valid():
-            delete_photo = request.POST.get('delete')
-            if delete_photo:
+
+            if 'delete' in request.POST:
                 photo.delete()
 
             photo = form.save()
