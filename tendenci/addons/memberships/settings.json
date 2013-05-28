@@ -51,7 +51,7 @@
         "updated_by": ""
     },
     {
-        "default_value": "", 
+        "default_value": "5000", 
         "description": "Base Number is an integer used to add to the id when generating a member number.", 
         "data_type": "int", 
         "update_dt": "2013-05-28 12:55:00", 
