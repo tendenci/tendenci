@@ -90,7 +90,7 @@ class PhotoBatchEditForm(TendenciBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(PhotoEditForm, self).__init__(*args, **kwargs)
+        super(PhotoBatchEditForm, self).__init__(*args, **kwargs)
         if 'group' in self.fields:
             self.fields['group'].initial = Group.objects.get_initial_group_id()
 
