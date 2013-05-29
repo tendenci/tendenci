@@ -214,8 +214,6 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             'industry',
             'company_size',
             'promotion_code',
-            # 'directory',
-            # 'sig_user_group_ids',
         )}
     )
 
