@@ -249,6 +249,35 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         status
     )
 
+    search_fields = [
+        'user__first_name',
+        'user__last_name',
+        'user__email',
+        'member_number',
+    ]
+
+    list_display = [
+        'name',
+        'email',
+        'member_number',
+        'membership_type_link',
+        'get_approve_dt',
+        'get_status',
+        'get_invoice',
+    ]
+
+    list_filter = [
+        MembershipStatusDetailFilter,
+        'membership_type',
+    ]
+
+    actions = [
+        approve_selected,
+        renew_selected,
+        disapprove_selected,
+        expire_selected,
+    ]
+
     def get_fieldsets(self, request, instance=None):
         demographics_fields = get_selected_demographic_field_names(
             instance and instance.app)
@@ -316,42 +345,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         if dt:
             return dt.strftime('%b %d, %Y, %I:%M %p')
         return u''
-
     get_approve_dt.short_description = u'Approved On'
 
     def get_actions(self, request):
         actions = super(MembershipDefaultAdmin, self).get_actions(request)
         actions['delete_selected'][0].short_description = "Delete Selected"
         return actions
-
-    search_fields = [
-        'user__first_name',
-        'user__last_name',
-        'user__email',
-        'member_number',
-    ]
-
-    list_display = [
-        'name',
-        'email',
-        'member_number',
-        'membership_type_link',
-        'get_approve_dt',
-        'get_status',
-        'get_invoice',
-    ]
-
-    list_filter = [
-        'membership_type',
-        MembershipStatusDetailFilter,
-    ]
-
-    actions = [
-        approve_selected,
-        renew_selected,
-        disapprove_selected,
-        expire_selected,
-    ]
 
     def save_form(self, request, form, change):
         """
