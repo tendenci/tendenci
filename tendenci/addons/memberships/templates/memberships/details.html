@@ -429,7 +429,8 @@
             {% for archive in membership.get_archived_memberships %}
                 <div class="field">
                     <div class="label">
-                        {% firstof archive.join_dt|date:"F Y" archive.create_dt|date:"F Y" %} - {% firstof archive.expire_dt|date:"F Y" "Forever" %}
+
+                        {% firstof archive.renew_dt|date:"F Y" archive.join_dt|date:"F Y" archive.create_dt|date:"F Y" %} - {% firstof archive.expire_dt|date:"F Y" "Forever" %}
 
                         {% if membership == archive %}
                             (you are here)
