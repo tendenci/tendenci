@@ -404,10 +404,6 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         return super(MembershipDefaultAdmin, self).response_change(request, obj)
 
-    def queryset(self, request):
-        qs = super(MembershipDefaultAdmin, self).queryset(request)
-        return qs.exclude(status_detail='archive').order_by('-application_approved_dt')
-
     def get_urls(self):
         """
         Add the export view to urls.
