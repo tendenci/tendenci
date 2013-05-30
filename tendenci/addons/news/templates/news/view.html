@@ -51,9 +51,7 @@
         </div>
         {% include "news/meta.html" %}
 		<br />
-        {% with news.get_absolute_url as the_url %}
-        <p>{% fb_like_button_iframe the_url %}</p>
-        {% endwith %}
+        <p>{% fb_like_button_iframe news.get_absolute_url %}</p>
     </div>
 
 </div>
