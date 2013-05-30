@@ -225,7 +225,7 @@ def get_member_reminders(user):
                 # expired but can renew
                 message = 'Your membership for %s has expired. Renewal is available until %s.' % (
                     membership.membership_type.name,
-                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y'))
+                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p'))
                 reminders += ((message,
                                   renew_link,
                                   'Renew your membership now'),)
@@ -242,7 +242,7 @@ def get_member_reminders(user):
                 message = 'Your membership for %s will expire on %s. Renewal is available until %s.' % (
                     membership.membership_type.name,
                     membership.expire_dt.strftime('%d-%b-%Y'),
-                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y')
+                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p')
                     )
                 reminders += ((message,
                                   renew_link,

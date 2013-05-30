@@ -9,11 +9,17 @@
     <li><a href="{% url profile original.user.username %}">
         {% trans "Go to profile" %}</a></li>
 
-    {% if original.is_approved %}
-        <li><a href="{% url admin:membership.admin_expire original.pk %}" >{{ original.get_status|capfirst }} &rarr; {% trans "Expire" %}</a></li>
-    {% elif original.can_renew %}
+    
+    {% if original.can_renew %}
         <li><a href="{% url membership_default.add original.app.slug %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
-    {% else %}
+    {% elif original.is_approved %}
+        <li><a href="{% url admin:membership.admin_expire original.pk %}" >{{ original.get_status|capfirst }} &rarr; {% trans "Expire" %}</a></li>
+    {% elif original.is_expired %}
+        <li><a href="{% url membership_default.add original.app.slug %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
+    {% elif original.is_disapproved %}
+        <li><a href="{% url admin:membership.admin_approve original.pk %}" >
+            {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
+    {% elif original.is_pending %}
         <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
     {% endif %}

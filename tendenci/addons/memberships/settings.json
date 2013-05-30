@@ -51,6 +51,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "5000", 
+        "description": "Base Number is an integer used to add to the id when generating a member number.", 
+        "data_type": "int", 
+        "update_dt": "2013-05-28 12:55:00", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "membernumberbasenumber", 
+        "value": "5000", 
+        "label": "Base Number", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
         "default_value": "admin-only", 
         "description": "Who is allowed to export members. <ul><li>Public - Everyone can export members</li><li>Users - People logged-in can export members</li><li>Members - All members can export</li><li>Members of Same Type - Only members of that membership can export</li><li>Admin Only - Only administrators can export</li></ul>", 
         "data_type": "string", 

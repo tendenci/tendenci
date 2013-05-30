@@ -30,6 +30,9 @@ class ReportForm(forms.ModelForm):
                 (k, v['label']) for k, v in CONFIG_OPTIONS[item]['options'].items()],
                 label=CONFIG_OPTIONS[item]['label'])
 
+        if 'invoice_status' in self.fields:
+            self.fields['invoice_status'].initial = 'has-balance'
+
         self.fields['invoice_object_type'] = forms.MultipleChoiceField(
             label="Which apps to include?",
             choices=sorted([(i['object_type'], get_ct_nice_name(i['object_type'])) for i in Invoice.objects.values('object_type').distinct()], key=lambda t: t[1]),

@@ -895,9 +895,6 @@ class MembershipDefault2Form(forms.ModelForm):
         # adding membership record
         membership.renewal = is_renewal
 
-        # assign member number
-        membership.set_member_number()
-
         # set app
         membership.app = self.membership_app
 
@@ -906,6 +903,10 @@ class MembershipDefault2Form(forms.ModelForm):
         membership.save()
         # save many-to-many data for the form
         self.save_m2m()
+
+        # assign member number
+        membership.set_member_number()
+        membership.save()
 
         return membership
 

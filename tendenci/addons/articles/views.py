@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.contrib import messages
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
@@ -73,7 +74,11 @@ def search(request, template_name="articles/search.html"):
     if not has_perm(request.user, 'articles.view_article'):
         articles = articles.filter(release_dt__lte=datetime.now())
 
-    articles = articles.order_by('-release_dt')
+    # don't use order_by with "whoosh"
+    if not query or settings.HAYSTACK_SEARCH_ENGINE.lower() != "whoosh":
+        articles = articles.order_by('-release_dt')
+    else:
+        articles = articles.order_by('-create_dt')
 
     EventLog.objects.log()
 

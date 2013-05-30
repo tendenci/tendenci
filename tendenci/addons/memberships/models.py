@@ -951,11 +951,12 @@ class MembershipDefault(TendenciBaseModel):
     def is_expired(self):
         """
         status=True, status_detail='active' or 'expired',
-        might or might not be in the grace period.
+        out of the grace period.
         """
         if self.status and self.status_detail.lower() in ('active', 'expired'):
             if self.expire_dt:
-                return self.expire_dt <= datetime.now()
+                return self.expire_dt <= datetime.now() and \
+                    (not self.in_grace_period())
         return False
 
     def is_pending(self):
@@ -1135,12 +1136,14 @@ class MembershipDefault(TendenciBaseModel):
     def in_grace_period(self):
         """ Returns True if a member's expiration date has passed but status detail is still active.
         """
-        # if can't expire, membership is not in the grace period
-        if not self.get_expire_dt():
+        expire_with_grace_period_dt = self.get_expire_dt()
+
+        if not expire_with_grace_period_dt:
             return False
 
-        return all([self.expire_dt < datetime.now(),
-            self.get_expire_dt() > datetime.now(),
+        return all([
+            self.expire_dt < datetime.now(),
+            expire_with_grace_period_dt > datetime.now(),
             self.status_detail == "active"])
 
     def get_renewal_period_dt(self):
@@ -1417,33 +1420,37 @@ class MembershipDefault(TendenciBaseModel):
 
     def create_member_number(self):
         """
-        Returns a unique member number that is greater than 1000
-        and not already taken by a membership record.
+        Create a unique membership number using setting MemberNumberBaseNumber.
+                new member number = MemberNumberBaseNumber + 1
+
+        If the new member number has already been taken for some reason,
+                new member number = maximum member number in system + 1
         """
-        numbers = MembershipDefault.objects.values_list(
-            'member_number', flat=True).exclude(member_number=u'')
+        if self.id and not self.member_number:
+            base_number = get_setting('module',
+                                      'memberships',
+                                      'membernumberbasenumber')
+            new_member_number = str(base_number + self.id)
+            # check if this number's already been taken
+            if MembershipDefault.objects.filter(
+                                member_number=new_member_number
+                                ).exclude(user=self.user
+                                          ).exists():
+                # get the maximum member_number in the system
+                [m_max] = MembershipDefault.objects.extra(
+                                    select={'length': 'Length(member_number)'}
+                                    ).filter(
+                                    member_number__regex=r'^\d+$'
+                                    ).order_by('-length', '-member_number'
+                                               )[:1] or [None]
+                if m_max:
+                    new_member_number = str(int(m_max.member_number) + 1)
+                else:
+                    new_member_number = str(base_number + 1)
 
-        numbers = set(numbers)  # remove duplicates
-        numbers = [n for n in numbers if n.isdigit()]  # only keep digits
-        numbers = map(int, numbers)  # convert strings to ints
-        numbers = sorted(numbers)  # sort integers
+            return new_member_number
 
-        count = 1000
-        gap_list = []
-        for number in numbers:
-            while True:
-                count += 1
-                if count >= number:
-                    break
-                gap_list.append(count)
-
-        if gap_list:
-            return '%s' % gap_list[0]
-
-        if numbers:
-            return '%s' % (max(numbers) + 1)
-
-        return '%s' % (count + 1)
+        return ''
 
     def set_join_dt(self):
         """

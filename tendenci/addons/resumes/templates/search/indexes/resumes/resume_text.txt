@@ -1,0 +1,22 @@
+{{ title }}
+{{ description }}
+{{ location }}
+{{ skills }}
+{{ experience }}
+{{ education }}
+{{ resume_url }}
+
+{{ contact_name }}
+{{ contact_address }}
+{{ contact_address2 }}
+{{ contact_city }}
+{{ contact_state }}
+{{ contact_zip_code }}
+{{ contact_country }}
+{{ contact_phone }}
+{{ contact_phone2 }}
+{{ contact_fax }}
+{{ contact_email }}
+{{ contact_website }}
+
+{{ tags }}
