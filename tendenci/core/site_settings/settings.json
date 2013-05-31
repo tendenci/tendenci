@@ -729,5 +729,22 @@
         "scope_category": "global", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "26214400", 
+        "description": "Max size for file uploads for the site. Enter value in bytes.", 
+        "data_type": "string", 
+        "update_dt": "2013-03-18 14:36:12", 
+        "input_type": "text", 
+        "client_editable": false, 
+        "name": "maxfilesize", 
+        "value": "26214400", 
+        "label": "Max file size", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

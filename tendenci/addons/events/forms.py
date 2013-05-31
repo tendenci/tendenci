@@ -14,6 +14,7 @@ from django.utils.importlib import import_module
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import filesizeformat
 
 from captcha.fields import CaptchaField
 from tendenci.addons.events.models import (
@@ -29,6 +30,7 @@ from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.core.emails.models import Email
+from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.site_settings.utils import get_setting, get_global_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
@@ -521,6 +523,10 @@ class EventForm(TendenciBaseForm):
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
 
+            max_upload_size = get_max_file_upload_size()
+            if photo_upload.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
+
         return photo_upload
 
     def clean(self):
@@ -711,6 +717,16 @@ class SpeakerForm(BetterModelForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+    def clean_file(self):
+        data = self.cleaned_data['file']
+        if data:
+            max_upload_size = get_max_file_upload_size()
+            if data.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+
+        return data
+
 
 class OrganizerForm(forms.ModelForm):
     description = forms.CharField(required=False,
