@@ -1,6 +1,14 @@
 import datetime
+import os
+import shutil
+import zipfile
+
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.template import RequestContext
+
 
 def get_start_dt(duration_days, end_dt=None):
     if not end_dt:
@@ -110,3 +118,27 @@ def newsletter_jobs_list(request, jobs_days, simplified):
     except ImportError:
         pass
     return jobs, job_content
+
+
+def extract_files(template):
+    if template.zip_file:
+        zip_file = zipfile.ZipFile(template.zip_file.file)
+        if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            # create a tmp directory to extract the zip file
+            tmp_dir = 'tmp_%d' % template.id
+            path = './%s/newsletters/%s' % (tmp_dir, template.template_id)
+            zip_file.extractall(path)
+            # upload extracted files to s3
+            for root, dirs, files in os.walk(path):
+                for name in files:
+                    file_path = os.path.join(root, name)
+                    dst_file_path = file_path.replace('./%s/' % tmp_dir, '')
+                    default_storage.save(dst_file_path,
+                                ContentFile(open(file_path).read()))
+            # remove the tmp directory
+            shutil.rmtree(tmp_dir)
+        else:
+            path = os.path.join(settings.MEDIA_ROOT,
+                                'newsletters',
+                                template.template_id)
+            zip_file.extractall(path)

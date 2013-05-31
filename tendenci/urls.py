@@ -6,7 +6,6 @@ from django.contrib import admin
 from tendenci.libs.model_report import report
 
 from tendenci.core.registry import autodiscover as reg_autodiscover
-from tendenci.core.newsletters.views import NewsletterGeneratorView
 
 # load the apps that are in Django Admin
 admin.autodiscover()
@@ -105,7 +104,6 @@ urlpatterns += patterns('',
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
-    (r'^newsletter_generator/', NewsletterGeneratorView.as_view()),
 
     url(r'^', include('tendenci.apps.contacts.urls')),
     url(r'^', include('tendenci.addons.articles.urls')),
@@ -114,6 +112,7 @@ urlpatterns += patterns('',
     url(r'^', include('tendenci.addons.help_files.urls')),
     url(r'^', include('tendenci.addons.locations.urls')),
     url(r'^', include('tendenci.addons.news.urls')),
+    url(r'^', include('tendenci.core.newsletters.urls')),
 )
 
 handler500 = 'tendenci.core.base.views.custom_error'
