@@ -7,6 +7,7 @@ from django import forms
 from tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
+from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.directories.models import Directory, DirectoryPricing
@@ -15,6 +16,7 @@ from tendenci.addons.directories.utils import (get_payment_method_choices,
 from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
 from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.files.utils import get_max_file_upload_size
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -154,6 +156,10 @@ class DirectoryForm(TendenciBaseForm):
             image_type = '.%s' % imghdr.what('', logo.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+
+            max_upload_size = get_max_file_upload_size()
+            if logo.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(logo.size)))
 
         return logo
 

@@ -19,6 +19,7 @@ from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 from tendenci.core.files.models import File as TFile
 from tendenci.core.files.models import file_directory
+from tendenci.core.site_settings.utils import get_setting
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
@@ -509,3 +510,11 @@ class AppRetrieveFiles(object):
         tfile.file.save(file_path, ContentFile(urllib2.urlopen(url).read()))
         tfile.save()
         return tfile
+
+
+def get_max_file_upload_size(file_module=False):
+    global_max_upload_size = (get_setting('site', 'global', 'maxfilesize') or 
+                              "26214400")  # default value if ever site setting is missing
+    if file_module:
+        return int(get_setting('module', 'files', 'maxfilesize') or global_max_upload_size)
+    return int(global_max_upload_size)

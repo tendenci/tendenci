@@ -15,5 +15,22 @@
         "scope_category": "files", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "26214400", 
+        "description": "Max size for file uploads for this module. Enter value in bytes. If blank defaults to global max upload size", 
+        "data_type": "string", 
+        "update_dt": "2013-03-18 14:36:12", 
+        "input_type": "text", 
+        "client_editable": false, 
+        "name": "maxfilesize", 
+        "value": "26214400", 
+        "label": "Max file size", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "files", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

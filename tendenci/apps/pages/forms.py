@@ -7,9 +7,11 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from django.utils.safestring import mark_safe
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import filesizeformat
 
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.utils import get_template_list
+from tendenci.core.files.utils import get_max_file_upload_size
 
 template_choices = [('default.html','Default')]
 template_choices += get_template_list()
@@ -147,6 +149,10 @@ class PageForm(TendenciBaseForm):
             image_type = '.%s' % imghdr.what('', header_image.read())
             if image_type not in ALLOWED_IMG_EXT:
                 raise forms.ValidationError('The header image is an invalid image. Try uploading another image.')
+
+            max_upload_size = get_max_file_upload_size()
+            if header_image.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(header_image.size)))
 
         return header_image
 
