@@ -1,6 +1,7 @@
 .table {
   width: 100%;
   margin: 20px 0;
+  border-collapse: collapse;
 }
 
 .table th,
@@ -12,7 +13,8 @@
 }
 
 .table th {
-  font-weight: bold;
+  background-color: #EEE;
+  margin-bottom: 10px;
 }
 
 .table thead th {

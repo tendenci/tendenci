@@ -1,4 +1,4 @@
-{% extends "base-wide.html" %}
+{% extends "base-print.html" %}
 {% load i18n %}
 
 {% block title %}{% trans "Report" %}: {{ report.get_title }}{% endblock %}
@@ -17,7 +17,7 @@
 {% include "model_report/includes/form_report.html" %}
 
 {% if report_rows %}
-<div id="data_container" style="clear:both; width: 100%;">
+<div id="data_container" style="clear:both; width: 100%; overflow: auto;">
 
     {% include "model_report/includes/report_chart.html" %}
 
