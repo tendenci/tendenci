@@ -1,22 +1,22 @@
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import mark_safe
+from django.core.urlresolvers import reverse
 
 from tendenci.libs.model_report.report import reports, ReportAdmin
-from tendenci.libs.model_report.utils import (sum_column, us_date_format, date_label, obj_type_format)
+from tendenci.libs.model_report.utils import (sum_column, us_date_format, date_label, obj_type_format, date_from_datetime)
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.site_settings.utils import get_setting
 
+CURRENCY_SYMBOL = get_setting("site", "global", "currencysymbol")
     
 def id_format(value, instance):
-    invoice = Invoice.objects.get(id=value)
-    link = invoice.get_absolute_url()
+    link = reverse('invoice.view', args=[value])
     html = "<a href=\"%s\">%s</a>" % (link, value)
     return mark_safe(html)
 
 def currency_format(value, instance):
-    currencysymbol = get_setting("site", "global", "currencysymbol")
-    return "%s%s" % (currencysymbol, value)
+    return "%s%s" % (CURRENCY_SYMBOL, value)
 
 class InvoiceReport(ReportAdmin):
     # choose a title for your report for h1, title tag and report list
@@ -38,13 +38,13 @@ class InvoiceReport(ReportAdmin):
     ]
     
     # fields in the model to show filters for
-    list_filter = ('status_detail', 'create_dt',)
+    list_filter = ('status_detail', 'create_dt', 'object_type')
     
     # fields in the model to order results by
     list_order_by = ('create_dt', 'status_detail')
     
     # fields to group results by
-    list_group_by = ('object_type',)
+    list_group_by = ('object_type', 'status_detail', 'create_dt')
     
     # allowed export formats. default is excel and pdf
     exports = ('excel', 'pdf',)
@@ -65,6 +65,10 @@ class InvoiceReport(ReportAdmin):
     # override the label for a field by referencing a function
     override_field_labels = {
         'create_dt': date_label
+    }
+
+    override_group_value = {
+        'create_dt': date_from_datetime
     }
     
     group_totals = {
