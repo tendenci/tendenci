@@ -191,7 +191,7 @@ def search(request, template_name="invoices/search.html"):
         event = form.cleaned_data.get('event')
         event_id = form.cleaned_data.get('event_id')
 
-    invoices = Invoice.objects.all()            
+    invoices = Invoice.objects.all()
     if start_dt:
         invoices = invoices.filter(create_dt__gte=datetime.combine(start_dt, time.min))
     if end_dt:
@@ -210,9 +210,9 @@ def search(request, template_name="invoices/search.html"):
         invoices = invoices.filter(balance__gt=0)
 
     if bill_to_email:
-        invoices = invoices.filter(bill_to_email=bill_to_email)
+        invoices = invoices.filter(bill_to_email__iexact=bill_to_email)
     if last_name:
-        invoices = invoices.filter(bill_to_last_name=last_name)
+        invoices = invoices.filter(bill_to_last_name__iexact=last_name)
     
     if search_criteria and search_text:
         search_type = '__iexact'
