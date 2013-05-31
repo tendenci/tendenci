@@ -1,37 +1,53 @@
-{% load styled_forms %}
+{% load i18n %}
 
-{% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="search-form" action="{% url invoice.search %}" method="get">
-	<div class="fieldWrapper">
-		{{ form.q.label }}
-        {{ form.q }}
-    </div>
-    
-    <div class="linkWrapper">
-	    <a id="advancedOptionsLink" href="#">Advanced Options</a>
-    </div>
-    
-    <div class="fieldWrapper advanced">
-		{{ form.start_dt.label }}
+    <div class="fieldWrapper">
+		{{ form.start_dt.label }}:
 		{{ form.start_dt }}
-		
-		{{ form.end_dt.label }}
+		{{ form.end_dt.label }}:
 		{{ form.end_dt }}
     </div>
-    
-    <div class="fieldWrapper advanced">
-		{{ form.invoice_type.label }}
+
+    <div class="fieldWrapper">
+        {% trans 'Amount Between' %}:
+		{{ form.start_amount }}
+		{% trans 'AND' %}
+		{{ form.end_amount }}
+    </div>
+
+    <div class="fieldWrapper float-left">
+        <div>
+		{{ form.invoice_type.label }}:
 		{{ form.invoice_type }}
+		</div>
+        <div>
+		{{ form.last_name.label }}:
+		{{ form.last_name }}
+		</div>
+    </div>
+
+    <div class="fieldWrapper float-left">
+        <div style="margin-left: 3em;">
+		{{ form.tendered.label }}:
+		{{ form.tendered }}
+		</div>
+        <div style="margin-left: 3em;">
+		{{ form.balance.label }}:
+		{{ form.balance }}
+		</div>
+    </div>
+    <div class="clear-left"></div>
+	<div class="fieldWrapper">
+		{% trans 'Search By'%} : {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
     </div>
     
     <div class="fieldWrapper advanced eventFields">
-		{{ form.event.label }}
+		{{ form.event.label }}:
 		{{ form.event }}
 		
-		{{ form.event_id.label }}
+		{{ form.event_id.label }}:
 		{{ form.event_id }}
     </div>
     
     <input type="submit" value="Search" />
 </form>
-{% endif %}
