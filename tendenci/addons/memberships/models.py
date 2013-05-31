@@ -633,7 +633,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.addons.corporate_memberships.models import CorpMembership
         [corporate_membership] = CorpMembership.objects.filter(
-            pk=self.corp_profile_id) or [None]
+            pk=self.corporate_membership_id) or [None]
 
         return corporate_membership
 
