@@ -749,7 +749,7 @@ class MembershipDefault(TendenciBaseModel):
 
         return True
 
-    def renew(self, customer):
+    def renew(self, request_user):
         """
         Renew this membership.
             - Assert user is in group.
@@ -770,19 +770,19 @@ class MembershipDefault(TendenciBaseModel):
         dupe.application_approved = True
         dupe.application_approved_dt = NOW
 
-        if customer:  # else: don't set
-            dupe.application_approved_user = customer
+        if request_user:  # else: don't set
+            dupe.application_approved_user = request_user
 
         # application approved/denied ---------------
         dupe.application_approved_denied_dt = NOW
-        if customer:  # else: don't set
-            dupe.application_approved_denied_user = customer
+        if request_user:  # else: don't set
+            dupe.application_approved_denied_user = request_user
 
         # action_taken ------------------------------
         dupe.action_taken = True
         dupe.action_taken_dt = NOW
-        if customer:  # else: don't set
-            dupe.action_taken_user = customer
+        if request_user:  # else: don't set
+            dupe.action_taken_user = request_user
 
         dupe.set_join_dt()
         dupe.set_renew_dt()
