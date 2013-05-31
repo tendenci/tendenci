@@ -38,8 +38,12 @@
 {% block body %}
 <div class="t">
  <div id="t-newsletters">
-        <h1>{% trans 'Third-Party Newsletter Providers'%}</h1>
+        <h1>{% trans 'Email Newsletters'%}</h1>
         
+       {% if request.user.is_superuser %}
+       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href="{% url admin:newsletters_newslettertemplate_changelist %}">Newsletter Templates</a> see your templates and generate new email newsletters.</p>
+       {% endif %}
+
        <h3>MailChimp</h3>
        <div class="third-party-newletter">
           <a href="http://mailchimp.com" target="_blank">
