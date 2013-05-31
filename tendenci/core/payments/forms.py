@@ -58,3 +58,28 @@ class MarkAsPaidForm(forms.ModelForm):
                 instance.pk, invoice_object, invoice_object.pk)
 
         return instance
+
+
+class PaymentSearchForm(forms.Form):
+    SEARCH_CRITERIA_CHOICES = (
+        ('', _('SELECT ONE')),
+        ('first_name', _('First Name')),
+        ('last_name', _('Last Name')),
+        ('amount', _('Amount')),
+        ('owner_username', _('Owner Username')),
+        ('id', _('Payment ID')),
+        ('invoice__id', _('Invoice ID')),
+        ('trans_id', _('Transaction ID')),
+        ('auth_code', _('Authorization Code'))
+    )
+    SEARCH_METHOD_CHOICES = (
+        ('starts_with', _('Starts With')),
+        ('contains', _('Contains')),
+        ('exact', _('Exact')),
+    )
+
+    search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
+                                        required=False)
+    search_text = forms.CharField(max_length=100, required=False)
+    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
+                                        required=False)

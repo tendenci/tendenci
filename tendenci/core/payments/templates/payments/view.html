@@ -1,6 +1,6 @@
 {% extends "payments/base.html" %}
 {% load i18n %}
-{% load invoice_tags %}
+{% load payments_tags %}
 {% load base_filters %}
 
 {% block title %}View a Payment{% endblock %}
@@ -12,7 +12,7 @@
 
 {% block body %}
 <div class="t payment-view">
- {% invoice_nav  payment.invoice %}
+ {% payment_nav  payment %}
 <h1>{% trans "View a Payment" %}</h1>
 
 <p class="payment-view-intro">

@@ -9,4 +9,5 @@ urlpatterns = patterns('tendenci.core.payments.views',
     (r'^stripe/', include('tendenci.core.payments.stripe.urls')),
     url(r'^(?P<id>\d+)/(?P<guid>[\d\w-]+)?$', 'view', name="payment.view"), 
     url(r'^receipt/(?P<id>\d+)/(?P<guid>[\d\w-]+)$', 'receipt', name="payment.receipt"), 
+    url(r'^search/$', 'search', name='payment.search'), 
 )
