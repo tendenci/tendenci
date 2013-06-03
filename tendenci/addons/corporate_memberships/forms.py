@@ -542,7 +542,7 @@ class CorpMembershipSearchForm(forms.Form):
                             required=False
                                 )
         # search criteria choices
-        search_choices = [('', _('SELECT ONE'))]
+        search_choices = []
         fields = CorpMembershipAppField.objects.filter(
                         field_name__in=search_field_names_list,
                         display=True)
