@@ -232,6 +232,7 @@ class MembershipTypeForm(forms.ModelForm):
                   #'corporate_membership_only',
                   #'corporate_membership_type_id',
                   'require_approval',
+                  'require_payment_approval',
                   'admin_only',
                   'renewal_require_approval',
                   'renewal_period_start',

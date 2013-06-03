@@ -573,7 +573,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
 
         ('Other Options', {'fields': (
             'expiration_grace_period', ('require_approval',
-            'admin_only'), 'position', 'status_detail')}),
+            'admin_only'), 'require_payment_approval', 'position', 'status_detail')}),
     )
 
     form = MembershipTypeForm
