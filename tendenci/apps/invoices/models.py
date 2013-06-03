@@ -11,6 +11,7 @@ from tendenci.core.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.accountings.utils import (make_acct_entries,
                                     make_acct_entries_reversing)
+from tendenci.apps.entities.models import Entity
 
 
 class Invoice(models.Model):
@@ -30,6 +31,8 @@ class Invoice(models.Model):
                               null=True,
                               on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
+    entity = models.ForeignKey(Entity, blank=True, null=True, default=None,
+        on_delete=models.SET_NULL, related_name="invoices")
     #dates
     create_dt = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
