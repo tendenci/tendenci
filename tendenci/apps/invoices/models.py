@@ -210,7 +210,32 @@ class Invoice(models.Model):
             self.set_creator(user)
             self.set_owner(user)
 
+        # assign entity
+        if not self.entity_id and self.object_type:
+            self.entity = self.get_entity()
+
         super(Invoice, self).save()
+        
+    def get_entity(self):
+        """
+        Discover the entity for this invoice.
+        
+        Note that - the entity we're looking for is the entity
+        from the object's group, not the object's entity field.
+        """
+        entity = None
+        obj = self.get_object()
+        if obj:
+            # an object is associated with a group which ties to an entity
+            group = None
+            if hasattr(obj, 'group'):
+                group = getattr(obj, 'group')
+                if group:
+                    entity = group.entity
+        if not entity:
+            entity = Entity.objects.first()
+
+        return entity
 
     def get_object(self):
         _object = None
