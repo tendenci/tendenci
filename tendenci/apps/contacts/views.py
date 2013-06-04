@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 
 from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import create_salesforce_contact
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.contacts.models import Contact, Address, Phone, Email, URL
 from tendenci.apps.contacts.forms import ContactForm, SubmitContactForm
@@ -174,6 +175,7 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                                   address=address, country=country, city=city, state=state,
                                   url=url, phone=phone, zipcode=zipcode)
                 profile.save()
+                sf_id = create_salesforce_contact(profile)
 
                 # if exists:
                 #     event_log_dict['description'] = 'logged-out submission as existing user'

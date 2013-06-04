@@ -205,5 +205,6 @@ setup(
         "django-storages==1.1.5",
         "python-memcached==1.48",
         "Whoosh==2.4.1",
+        "simple-salesforce==0.51",
     ],
 )

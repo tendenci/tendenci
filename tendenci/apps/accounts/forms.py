@@ -18,6 +18,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.accounts.utils import send_registration_activation_email
+from tendenci.core.base.utils import create_salesforce_contact
 
 
 class SetPasswordCustomForm(SetPasswordForm):
@@ -110,6 +111,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_profile.owner = new_user
         new_profile.owner_username = new_user.username
         new_profile.save()
+        sf_id = create_salesforce_contact(new_profile)
                     
         return new_user
 
