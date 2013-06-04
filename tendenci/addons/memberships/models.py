@@ -292,6 +292,10 @@ class MembershipSet(models.Model):
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
+        
+    @property
+    def group(self):
+        return self.memberships[0].group
 
     def memberships(self):
         return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')
@@ -484,6 +488,10 @@ class MembershipDefault(TendenciBaseModel):
         """
         return ('membership.details', [self.pk])
         # return ('admin:memberships_membershipdefault_change', [self.pk])
+
+    @property
+    def group(self):
+        return self.membership_type.group
 
     def save(self, *args, **kwargs):
         """

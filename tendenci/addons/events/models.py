@@ -401,6 +401,10 @@ class Registration(models.Model):
         return 'Registration - %s' % self.event.title
 
     @property
+    def group(self):
+        return self.event.group
+
+    @property
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()
     
