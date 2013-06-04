@@ -1521,6 +1521,13 @@ class ImportMembDefault(object):
             if memb.status and memb.status_detail == 'active':
                 memb.join_dt = datetime.now()
 
+        # no application_approved_dt - set one
+        if not hasattr(memb, 'application_approved_dt') or not memb.application_approved_dt:
+            if memb.status and memb.status_detail == 'active':
+                memb.application_approved = True
+                memb.application_approved_dt = memb.join_dt
+                memb.application_approved_denied_dt = memb.join_dt
+
         # no expire_dt - get it via membership_type
         if not hasattr(memb, 'expire_dt') or not memb.expire_dt:
             if memb.membership_type:
