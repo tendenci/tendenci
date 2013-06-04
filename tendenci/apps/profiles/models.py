@@ -335,7 +335,7 @@ class Profile(Person):
         user.save()
 
         if created:
-            Profile.objects.create_profile(user)
+            profile = Profile.objects.create_profile(user)
             sf_id = create_salesforce_contact(profile)
 
         return user, created
