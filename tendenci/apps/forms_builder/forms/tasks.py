@@ -60,7 +60,6 @@ class FormsExportTask(Task):
             'label',
             'field_type',
             'field_function',
-            'function_params',
             'required',
             'visible',
             'choices',

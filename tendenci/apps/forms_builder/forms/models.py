@@ -45,6 +45,7 @@ FIELD_FUNCTIONS = (
     ("EmailLastName", _("Last Name")),
     ("EmailFullName", _("Full Name")),
     ("EmailPhoneNumber", _("Phone Number")),
+    ("Recipients", _("Email to Recipients")),
 )
 
 BILLING_PERIOD_CHOICES = (
@@ -168,8 +169,6 @@ class Field(OrderingBaseModel):
         max_length=64)
     field_function = models.CharField(_("Special Functionality"),
         choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
-    function_params = models.CharField(_("Group Name or Names"),
-        max_length=100, null=True, blank=True, help_text="Comma separated if more than one")
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
@@ -201,11 +200,18 @@ class Field(OrderingBaseModel):
             field_class, field_widget = self.field_type, None
         return field_widget
 
+    def get_choices(self):
+        if self.field_function == 'Recipients':
+            choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
+        else:
+            choices = [(val, val) for val in self.choices.split(",")]
+        return choices
+
     def execute_function(self, entry, value, user=None):
         if self.field_function == "GroupSubscription":
             if value:
-                for val in self.function_params.split(','):
-                    group = Group.objects.get(name=val)
+                for val in self.choices.split(','):
+                    group = Group.objects.get(name=val.strip())
                     if user:
                         try:
                             group_membership = GroupMembership.objects.get(group=group, member=user)
@@ -318,7 +324,7 @@ class FormEntry(models.Model):
         Returns the value of the a field entry based
         on the field_function specified
         """
-        for entry in self.fields.all():
+        for entry in self.fields.order_by('field__position'):
             if entry.field.field_function == field_function:
                 return entry.value
         return ''
@@ -344,6 +350,20 @@ class FormEntry(models.Model):
 
     def get_phone_number(self):
         return self.get_value_of("EmailPhoneNumber")
+
+    def get_function_email_recipients(self):
+        email_list = set()
+        for entry in self.fields.order_by('field__position'):
+            if entry.field.field_function == 'Recipients' and entry.value:
+                if entry.field.field_type == 'BooleanField':
+                    for email in entry.field.choices.split(","):
+                        email_list.add(email.strip())
+                else:
+                    for email in entry.value.split(","):
+                        email = email.split(":")
+                        if len(email) > 1:
+                            email_list.add(email[1].strip())
+        return email_list
 
     def get_email_address(self):
         return self.get_type_of("emailverificationfield")
