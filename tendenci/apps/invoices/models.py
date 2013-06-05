@@ -215,11 +215,18 @@ class Invoice(models.Model):
             self.entity = self.get_entity()
 
         super(Invoice, self).save()
-        
+
+    def delete(self, *args, **kwargs):
+        """
+        Invoices are never deleted.
+        Per Ed Schipul 06/05/2013
+        """
+        pass
+
     def get_entity(self):
         """
         Discover the entity for this invoice.
-        
+
         Note that - the entity we're looking for is the entity
         from the object's group, not the object's entity field.
         """
