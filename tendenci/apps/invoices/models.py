@@ -27,6 +27,7 @@ class Invoice(models.Model):
                                 null=True,
                                 on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
+    # the owner here is the user who owns this invoice
     owner = models.ForeignKey(User, related_name="invoice_owner",
                               null=True,
                               on_delete=models.SET_NULL)

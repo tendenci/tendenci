@@ -106,6 +106,11 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.balance = inv.total
             inv.estimate = 1
             inv.status_detail = 'estimate'
+            
+            if user and not user.is_anonymous():
+                inv.set_creator(user)
+                inv.set_owner(user)
+                
             inv.save(user)
             
             # tender the invoice

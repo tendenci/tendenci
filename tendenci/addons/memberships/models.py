@@ -305,6 +305,7 @@ class MembershipSet(models.Model):
 
     def save_invoice(self, memberships):
         invoice = Invoice()
+        invoice.title = "Membership Invoice"
         invoice.estimate = True
         invoice.status_detail = "estimate"
 

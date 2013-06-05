@@ -45,6 +45,10 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.total = make_payment.payment_amount
     inv.balance = make_payment.payment_amount
     
+    if user and not user.is_anonymous():
+        inv.set_creator(user)
+        inv.set_owner(user)
+
     inv.save(user)
     # tender the invoice
     inv.tender(user)

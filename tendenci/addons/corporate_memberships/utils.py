@@ -179,6 +179,8 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
             inv.bill_to_first_name = user.first_name
             inv.bill_to_last_name = user.last_name
             inv.bill_to_email = user.email
+            inv.set_creator(user)
+            inv.set_owner(user)
         else:
             if corp_memb.anonymous_creator:
                 cmc = corp_memb.anonymous_creator
