@@ -88,6 +88,7 @@ class InvoiceSearchForm(forms.Form):
             if isinstance(field, CharField) or isinstance(field, DecimalField):
                 if not field.name.startswith('bill_to') and not field.name.startswith('ship_to'):
                     criteria_choices.append((field.name, field.verbose_name))
+        criteria_choices.append(('owner_id', _('owner')))
         self.fields['search_criteria'].choices = criteria_choices
 
         # Set invoice type choices

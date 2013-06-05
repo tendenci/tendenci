@@ -173,7 +173,6 @@ def search(request, template_name="invoices/search.html"):
     event = None
     event_id = None
 
-    bill_to_email = request.GET.get('bill_to_email', None)
     form = InvoiceSearchForm(request.GET)
     
     if form.is_valid():
@@ -209,20 +208,44 @@ def search(request, template_name="invoices/search.html"):
     elif balance == '1':
         invoices = invoices.filter(balance__gt=0)
 
-    if bill_to_email:
-        invoices = invoices.filter(bill_to_email__iexact=bill_to_email)
     if last_name:
         invoices = invoices.filter(bill_to_last_name__iexact=last_name)
     
+    owner = None
     if search_criteria and search_text:
-        search_type = '__iexact'
+        if search_criteria == 'owner_id':
+            search_criteria = 'owner__id'
+            try:
+                search_text = int(search_text)
+                [owner] = User.objects.filter(id=search_text)[:1] or [None]
+            except:
+                search_text = 0
+
         if search_method == 'starts_with':
-            search_type = '__istartswith'
+            if isinstance(search_text, basestring):
+                search_type = '__istartswith'
+            else:
+                search_type = '__startswith'
         elif search_method == 'contains':
-            search_type = '__icontains'
-        search_filter = {'%s%s' % (search_criteria,
-                                   search_type): search_text}
-        invoices = invoices.filter(**search_filter)
+            if isinstance(search_text, basestring):
+                search_type = '__icontains'
+            else:
+                search_type = '__contains'
+        else:
+            if isinstance(search_text, basestring):
+                search_type = '__iexact'
+            else:
+                search_type = '__exact'
+  
+        if all([search_criteria == 'owner__id',
+                search_method == 'exact',
+                owner]):
+            invoices = invoices.filter(Q(bill_to_email__iexact=owner.email)
+                               | Q(owner_id=owner.id))                    
+        else: 
+            search_filter = {'%s%s' % (search_criteria,
+                                       search_type): search_text}
+            invoices = invoices.filter(**search_filter)
 
     if invoice_type:
         content_type = ContentType.objects.filter(app_label=invoice_type)
@@ -240,11 +263,10 @@ def search(request, template_name="invoices/search.html"):
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
-        if request.user.is_authenticated():
-            from django.db.models import Q
-            invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
-        else:
-            raise Http403
+        invoices = invoices.filter(Q(creator=request.user) |
+                                   Q(owner=request.user) |
+                                   Q(bill_to_email__iexact=request.user.email)
+                                   ).order_by('-create_dt')
     EventLog.objects.log()
     return render_to_response(template_name, {'invoices': invoices, 'form':form,}, 
         context_instance=RequestContext(request))
