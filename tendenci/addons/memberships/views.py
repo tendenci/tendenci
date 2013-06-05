@@ -1298,8 +1298,8 @@ def download_default_template(request):
 
 @login_required
 @password_required
-def membership_default_export(request,
-                           template='memberships/default_export.html'):
+def membership_default_export(
+    request, template='memberships/default_export.html'):
     """
     Export memberships as .csv
     """
@@ -1307,11 +1307,12 @@ def membership_default_export(request,
         cp_id = int(request.GET.get('cp_id', 0))
     except:
         cp_id = 0
+
     if cp_id:
-        corp_profile = get_object_or_404(CorpProfile,
-                                    pk=cp_id)
+        corp_profile = get_object_or_404(CorpProfile, pk=cp_id)
     else:
         corp_profile = None
+
     if not request.user.profile.is_superuser:
         if not (corp_profile and corp_profile.is_rep(request.user)):
             raise Http403
