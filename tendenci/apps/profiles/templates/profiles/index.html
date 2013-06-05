@@ -76,7 +76,7 @@
 
         {% if request.user == user_this or admin %}
         {% if content_counts.invoice > 0 %}
-            <p><a href="{% url invoice.search %}?bill_to_email={{ user_this.email }}">{% trans "Invoices" %} ({{ content_counts.invoice }})</a></p>
+            <p><a href="{% url invoice.search %}?search_criteria=owner_id&search_text={{ user_this.id }}&search_method=exact">{% trans "Invoices" %} ({{ content_counts.invoice }})</a></p>
         {% endif %}
         {% endif %}
 
