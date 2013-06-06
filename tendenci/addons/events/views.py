@@ -162,7 +162,8 @@ def details(request, id=None, template_name="events/view.html"):
 
     EventLog.objects.log(instance=event)
 
-    speakers = event.speaker_set.all().order_by('pk')
+    speakers = event.speaker_set.exclude(name="").order_by('pk')[:2]
+    print speakers
     organizers = event.organizer_set.all().order_by('pk') or None
 
     organizer = None
@@ -176,6 +177,18 @@ def details(request, id=None, template_name="events/view.html"):
         'organizer': organizer,
         'now': datetime.now(),
         'addons': event.addon_set.filter(status=True),
+    }, context_instance=RequestContext(request))
+
+
+@is_enabled('events')
+def speaker_list(request, event_id, template_name='events/speakers.html'):
+    event = get_object_or_404(Event, pk=event_id)
+
+    speakers = event.speaker_set.exclude(name="").order_by('pk')
+
+    return render_to_response(template_name, {
+        'event': event,
+        'speakers': speakers,
     }, context_instance=RequestContext(request))
 
 

@@ -30,6 +30,7 @@ urlpatterns = patterns(
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.details', name="event"),
 
+    url(r'^(?P<event_id>\d+)/speakers/$', 'views.speaker_list', name="event.speakers"),
     url(r'^(?P<event_id>\d+)/attendees$', 'views.view_attendees', name="event.attendees"),
 
     #delete

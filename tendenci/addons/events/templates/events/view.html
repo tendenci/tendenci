@@ -29,36 +29,37 @@
 		<div class="info">
 	        <h1>{{ event.title }}</h1>
 
-            {% for speaker in speakers %}
-                {% if speaker.name %}
-                <div class="speaker-wrap">
-                    {% if speaker.get_photo %}
-                    <div class="speaker-photo">
-                      <img alt="Speaker: {{ speaker.name }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
-                    </div>
-                    {% endif %}
-                    <div class="speaker">
-                        <strong>{% trans "Speaker" %}</strong> {{ speaker.name }}
-                    </div>
-                    {% if speaker.description|striptags|wordcount > 50 %}
-                    <div class="speaker-desc-short">
-                        {{ speaker.description|striptags|safe|truncatewords:"50" }}
-                    </div>
-                    <div class="speaker-desc-long">
-                        {{ speaker.description|safe|urlize|linebreaks }}
-                    </div>
-                    {% else %}
-                        <div class="speaker-desc-short">
-                            {{ speaker.description|safe|urlize|linebreaks }}
-                        </div>                    
-                    {% endif %}
-                    {% if speaker.description|striptags|wordcount > 50 %}
-                    <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
-                    {% endif %}
-                    <div style="clear:both;"></div>
+            {% for speaker in speakers|slice:"1" %}
+            <div class="speaker-wrap">
+                {% if speaker.get_photo %}
+                <div class="speaker-photo">
+                    <img alt="Speaker: {{ speaker.name }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
                 </div>
-                {% endif %}                        
+                {% endif %}
+                <div class="speaker">
+                    <strong>{% trans "Speaker" %}</strong> {{ speaker.name }}
+                </div>
+                {% if speaker.description|striptags|wordcount > 50 %}
+                <div class="speaker-desc-short">
+                    {{ speaker.description|striptags|safe|truncatewords:"50" }}
+                </div>
+                <div class="speaker-desc-long">
+                    {{ speaker.description|safe|urlize|linebreaks }}
+                </div>
+                {% else %}
+                <div class="speaker-desc-short">
+                    {{ speaker.description|safe|urlize|linebreaks }}
+                </div>                    
+                {% endif %}
+                {% if speaker.description|striptags|wordcount > 50 %}
+                <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
+                {% endif %}
+                <div style="clear:both;"></div>
+            </div>              
             {% endfor %}
+            {% if speakers|length > 1 %}
+            <a href="{% url event.speakers event.pk %}">{% trans "Speaker info" %}</a>
+            {% endif %}
 	        
             <!-- event description -->
             <div class="content">
