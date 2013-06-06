@@ -925,9 +925,12 @@ class MembershipExportForm(forms.Form):
         ('all_fields', 'Export All Fields'),
     )
 
+    EXPORT_TYPE_CHOICES = [(u'all', 'Export All Types')] + list(MembershipType.objects.values_list('pk', 'name'))
+
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
     export_status_detail = forms.ChoiceField(choices=STATUS_DETAIL_CHOICES)
     export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
+    export_type = forms.ChoiceField(choices=EXPORT_TYPE_CHOICES)
 
 
 class NoticeForm(forms.ModelForm):

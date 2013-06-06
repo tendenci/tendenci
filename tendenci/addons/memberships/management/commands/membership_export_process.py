@@ -20,18 +20,25 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
 
         make_option(
-            '--export_type',
-            action='store',
-            dest='export_type',
-            default='main_fields',
-            help='Either main_fields or all_fields to export'),
-
-        make_option(
             '--export_status_detail',
             action='store',
             dest='export_status_detail',
             default='active',
             help='Export memberships with the status detail specified'),
+
+        make_option(
+            '--export_fields',
+            action='store',
+            dest='export_fields',
+            default='main_fields',
+            help='Either main_fields or all_fields to export'),
+
+        make_option(
+            '--export_type',
+            action='store',
+            dest='export_type',
+            default='all',
+            help='All or one specific membership type'),
 
         make_option(
             '--identifier',
@@ -59,6 +66,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.addons.memberships.utils import process_export
 
+        export_fields = options['export_fields']
         export_type = options['export_type']
         export_status_detail = options['export_status_detail']
         identifier = options['identifier']
@@ -70,6 +78,7 @@ class Command(BaseCommand):
 
         user_id = options['user']
         process_export(
+            export_fields=export_fields,
             export_type=export_type,
             export_status_detail=export_status_detail,
             identifier=identifier,

@@ -1321,17 +1321,19 @@ def membership_default_export(
 
     if request.method == "POST":
         if form.is_valid():
-            export_status_detail = form.cleaned_data['export_status_detail']
-            export_status_detail = export_status_detail.strip()
+
+            export_fields = form.cleaned_data['export_fields']
             export_type = form.cleaned_data['export_type']
+            export_status_detail = form.cleaned_data['export_status_detail']
+
             identifier = int(ttime.time())
-            temp_file_path = 'export/memberships/%s_%d_temp.csv' % (
-                                                        identifier, cp_id)
+            temp_file_path = 'export/memberships/%s_%d_temp.csv' % (identifier, cp_id)
             default_storage.save(temp_file_path, ContentFile(''))
 
             # start the process
             subprocess.Popen(["python", "manage.py",
                           "membership_export_process",
+                          '--export_fields=%s' % export_fields,
                           '--export_type=%s' % export_type,
                           '--export_status_detail=%s' % export_status_detail,
                           '--identifier=%s' % identifier,
@@ -1339,10 +1341,11 @@ def membership_default_export(
                           '--cp_id=%d' % cp_id])
             # log an event
             EventLog.objects.log()
-            status_url = reverse('memberships.default_export_status',
-                                     args=[identifier])
+            status_url = reverse('memberships.default_export_status', args=[identifier])
+
             if cp_id:
                 status_url = '%s?cp_id=%d' % (status_url, cp_id)
+
             return redirect(status_url)
 
     context = {"form": form,
