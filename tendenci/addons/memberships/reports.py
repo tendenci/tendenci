@@ -39,7 +39,7 @@ class ReportNewMems(Report):
                     get_value=lambda instance: instance.user.email),
                 ObjectValue(attribute_name='membership_type', left=5.5*cm),
                 ObjectValue(attribute_name='invoice', left=11.5*cm,
-                    get_value=lambda instance: instance.get_invoice().total if instance.get_invoice else '' ),
+                    get_value=lambda instance: instance.get_invoice().total if instance.get_invoice() else ''),
                 #ObjectValue(attribute_name='payment_method', left=15*cm),
                 ObjectValue(attribute_name='join_dt', left=14.5*cm,
                     get_value=lambda instance: instance.join_dt.strftime('%b %d, %Y')),

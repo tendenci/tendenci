@@ -295,12 +295,17 @@ class MembershipSet(models.Model):
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
+        
+    @property
+    def group(self):
+        return self.memberships[0].group
 
     def memberships(self):
         return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')
 
     def save_invoice(self, memberships):
         invoice = Invoice()
+        invoice.title = "Membership Invoice"
         invoice.estimate = True
         invoice.status_detail = "estimate"
 
@@ -488,6 +493,10 @@ class MembershipDefault(TendenciBaseModel):
         return ('membership.details', [self.pk])
         # return ('admin:memberships_membershipdefault_change', [self.pk])
 
+    @property
+    def group(self):
+        return self.membership_type.group
+
     def save(self, *args, **kwargs):
         """
         Set GUID if not already set.
@@ -636,7 +645,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.addons.corporate_memberships.models import CorpMembership
         [corporate_membership] = CorpMembership.objects.filter(
-            pk=self.corp_profile_id) or [None]
+            pk=self.corporate_membership_id) or [None]
 
         return corporate_membership
 
@@ -752,7 +761,7 @@ class MembershipDefault(TendenciBaseModel):
 
         return True
 
-    def renew(self, customer):
+    def renew(self, request_user):
         """
         Renew this membership.
             - Assert user is in group.
@@ -773,19 +782,19 @@ class MembershipDefault(TendenciBaseModel):
         dupe.application_approved = True
         dupe.application_approved_dt = NOW
 
-        if customer:  # else: don't set
-            dupe.application_approved_user = customer
+        if request_user:  # else: don't set
+            dupe.application_approved_user = request_user
 
         # application approved/denied ---------------
         dupe.application_approved_denied_dt = NOW
-        if customer:  # else: don't set
-            dupe.application_approved_denied_user = customer
+        if request_user:  # else: don't set
+            dupe.application_approved_denied_user = request_user
 
         # action_taken ------------------------------
         dupe.action_taken = True
         dupe.action_taken_dt = NOW
-        if customer:  # else: don't set
-            dupe.action_taken_user = customer
+        if request_user:  # else: don't set
+            dupe.action_taken_user = request_user
 
         dupe.set_join_dt()
         dupe.set_renew_dt()
@@ -1645,16 +1654,16 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.notifications.utils import send_welcome_email
 
-        can_approve = False
+        open_renewal = (
+            self.renewal,
+            not self.membership_type.renewal_require_approval)
 
-        if request.user.profile.is_superuser:
-            can_approve = True
-        else:
-            if (self.renewal and \
-                    not self.membership_type.renewal_require_approval) \
-                or (not self.renewal and \
-                    not self.membership_type.require_approval):
-                    can_approve = True
+        open_join = (
+            not self.renewal,
+            not self.membership_type.require_approval)
+
+        can_approve = all(open_renewal) or all(open_join)
+        can_approve = can_approve or request.user.profile.is_superuser
 
         if can_approve:
 

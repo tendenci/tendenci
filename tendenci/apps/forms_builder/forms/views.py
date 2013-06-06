@@ -224,7 +224,6 @@ def copy(request, id):
             label = field.label,
             field_type = field.field_type,
             field_function = field.field_function,
-            function_params = field.function_params,
             required = field.required,
             visible = field.visible,
             choices = field.choices,
@@ -468,6 +467,17 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     msg.send(fail_silently=True)
                 except:
                     pass
+
+            # Email copies to recipient list indicated in the form
+            email_recipients = entry.get_function_email_recipients()
+            if email_recipients:
+                # Send message to the email addresses selected in the form.
+                msg = EmailMessage(subject, admin_body, sender, email_recipients, headers=email_headers)
+                msg.content_subtype = 'html'
+                for f in form_for_form.files.values():
+                    f.seek(0)
+                    msg.attach(f.name, f.read())
+                msg.send()
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:

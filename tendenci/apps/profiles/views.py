@@ -49,7 +49,8 @@ UserMembershipForm, ProfileMergeForm, ProfileSearchForm)
 from tendenci.apps.profiles.tasks import ExportProfilesTask
 from tendenci.apps.profiles.utils import get_member_reminders
 from tendenci.addons.events.models import Registrant
-from tendenci.addons.memberships.models import MembershipType, MembershipDefault
+from tendenci.addons.memberships.models import MembershipType
+from tendenci.apps.invoices.models import Invoice
 
 try:
     notification = get_app('notifications')
@@ -81,10 +82,9 @@ def index(request, username='', template_name="profiles/index.html"):
 
     # content counts
     content_counts = {'total': 0, 'invoice': 0}
-    from tendenci.apps.invoices.models import Invoice
-    inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this), Q(bill_to_email=user_this.email)).count()
-    if request.user.profile.is_superuser:
-        inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
+
+    inv_count = Invoice.objects.filter(Q(owner=user_this) |
+                                        Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
 

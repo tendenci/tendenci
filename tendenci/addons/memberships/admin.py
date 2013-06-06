@@ -47,6 +47,10 @@ class MembershipStatusDetailFilter(SimpleListFilter):
         return zip(status_detail_list, status_detail_list)
 
     def queryset(self, request, queryset):
+
+        if not self.value() == 'archive':
+            queryset = queryset.exclude(status_detail='archive')
+
         if self.value():
             return queryset.filter(status_detail=self.value())
         else:

@@ -331,6 +331,7 @@ def process_export(
         demographic_field_list = []
 
         membership_field_list = [
+            'app',
             'membership_type',
             'corp_profile_id',
             'corporate_membership_id',
@@ -390,7 +391,7 @@ def process_export(
 
     # list of foreignkey fields
     if export_type == 'main_fields':
-        fks = ['membership_type']
+        fks = ['membership_type', 'app']
     else:
 
         user_fks = [
@@ -412,6 +413,7 @@ def process_export(
         fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
 
     membership_ids_dict = dict(MembershipType.objects.all().values_list('id', 'name'))
+    app_ids_dict = dict(MembershipApp.objects.all().values_list('id', 'name'))
 
     identifier = identifier or int(time.time())
     file_name_temp = 'export/memberships/%s_%d_temp.csv' % (identifier, cp_id)
@@ -449,6 +451,9 @@ def process_export(
                     elif field_name == 'membership_type':
                         # display membership type name instead of id
                         item = membership_ids_dict[item]
+                    elif field_name == 'app':
+                        # display membership type name instead of id
+                        item = app_ids_dict[item]
                 item = smart_str(item).decode('utf-8')
                 items_list.append(item)
             csv_writer.writerow(items_list)
@@ -1520,6 +1525,13 @@ class ImportMembDefault(object):
         if not hasattr(memb, 'join_dt') or not memb.join_dt:
             if memb.status and memb.status_detail == 'active':
                 memb.join_dt = datetime.now()
+
+        # no application_approved_dt - set one
+        if not hasattr(memb, 'application_approved_dt') or not memb.application_approved_dt:
+            if memb.status and memb.status_detail == 'active':
+                memb.application_approved = True
+                memb.application_approved_dt = memb.join_dt
+                memb.application_approved_denied_dt = memb.join_dt
 
         # no expire_dt - get it via membership_type
         if not hasattr(memb, 'expire_dt') or not memb.expire_dt:

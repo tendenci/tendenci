@@ -11,6 +11,7 @@ from tendenci.core.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.accountings.utils import (make_acct_entries,
                                     make_acct_entries_reversing)
+from tendenci.apps.entities.models import Entity
 
 
 class Invoice(models.Model):
@@ -26,10 +27,13 @@ class Invoice(models.Model):
                                 null=True,
                                 on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
+    # the owner here is the user who owns this invoice
     owner = models.ForeignKey(User, related_name="invoice_owner",
                               null=True,
                               on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
+    entity = models.ForeignKey(Entity, blank=True, null=True, default=None,
+        on_delete=models.SET_NULL, related_name="invoices")
     #dates
     create_dt = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
@@ -207,7 +211,39 @@ class Invoice(models.Model):
             self.set_creator(user)
             self.set_owner(user)
 
+        # assign entity
+        if not self.entity_id and self.object_type:
+            self.entity = self.get_entity()
+
         super(Invoice, self).save()
+
+    def delete(self, *args, **kwargs):
+        """
+        Invoices are never deleted.
+        Per Ed Schipul 06/05/2013
+        """
+        pass
+
+    def get_entity(self):
+        """
+        Discover the entity for this invoice.
+
+        Note that - the entity we're looking for is the entity
+        from the object's group, not the object's entity field.
+        """
+        entity = None
+        obj = self.get_object()
+        if obj:
+            # an object is associated with a group which ties to an entity
+            group = None
+            if hasattr(obj, 'group'):
+                group = getattr(obj, 'group')
+                if group:
+                    entity = group.entity
+        if not entity:
+            entity = Entity.objects.first()
+
+        return entity
 
     def get_object(self):
         _object = None

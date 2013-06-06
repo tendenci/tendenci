@@ -103,6 +103,12 @@ class TendenciBaseModel(models.Model):
             if log:
                 application = self.__module__
                 EventLog.objects.log(instance=self, application=application)
-        if "log" in kwargs:
-            kwargs.pop('log')
-        super(TendenciBaseModel, self).delete(*args, **kwargs)
+
+        # Soft-delete all base-model objects. This means we
+        # set status to False and then save(). We do NOT
+        # actually delete anything from the database.
+        self.status = False
+        self.save(**{'log': False})
+        # Leave this commented out. We do not want Django to
+        # delete our objects from the database.
+        # super(TendenciBaseModel, self).delete(*args, **kwargs)
