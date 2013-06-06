@@ -21,6 +21,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
@@ -41,7 +42,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (has_perm, get_notice_recipients,
-    get_query_filters, update_perms_and_save, has_view_perm)
+    get_query_filters, update_perms_and_save, has_view_perm, assign_files_perms)
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
@@ -162,13 +163,22 @@ def details(request, id=None, template_name="events/view.html"):
 
     EventLog.objects.log(instance=event)
 
-    speakers = event.speaker_set.exclude(name="").order_by('pk')[:2]
-    print speakers
+    speakers = event.speaker_set.exclude(name="").order_by('pk')
     organizers = event.organizer_set.all().order_by('pk') or None
 
     organizer = None
     if organizers:
         organizer = organizers[0]
+
+    event_ct = event.content_type()
+    speaker_ct = ContentType.objects.get_for_model(Speaker)
+    org_ct = ContentType.objects.get_for_model(Organizer)
+    place_ct = ContentType.objects.get_for_model(Place)
+
+    event_files = File.objects.filter(content_type=event_ct, object_id=event.id)
+    speaker_files = File.objects.filter(content_type=speaker_ct, object_id__in=speakers)
+    organizer_files = File.objects.filter(content_type=org_ct, object_id=organizer.id)
+    place_files = File.objects.filter(content_type=place_ct, object_id=event.place_id)
 
     return render_to_response(template_name, {
         'days': days,
@@ -177,6 +187,10 @@ def details(request, id=None, template_name="events/view.html"):
         'organizer': organizer,
         'now': datetime.now(),
         'addons': event.addon_set.filter(status=True),
+        'event_files': event_files,
+        'speaker_files': speaker_files,
+        'organizer_files': organizer_files,
+        'place_files': place_files,
     }, context_instance=RequestContext(request))
 
 
@@ -509,11 +523,15 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
 
+                assign_files_perms(place)
+                assign_files_perms(organizer)
+
                 # handle image
                 f = form_event.cleaned_data['photo_upload']
                 if f:
                     image = EventPhoto()
                     image.object_id = event.id
+                    image.content_type = ContentType.objects.get_for_model(event.__class__)
                     image.creator = request.user
                     image.creator_username = request.user.username
                     image.owner = request.user
@@ -538,6 +556,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 for speaker in speakers:
                     speaker.event = [event]
                     speaker.save()
+                    assign_files_perms(speaker)
 
                     # match speaker w/ speaker image
                     binary_files = []
@@ -802,11 +821,15 @@ def add(request, year=None, month=None, day=None, \
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
 
+                assign_files_perms(place)
+                assign_files_perms(organizer)
+
                 # handle image
                 f = form_event.cleaned_data['photo_upload']
                 if f:
                     image = EventPhoto()
                     image.object_id = event.id
+                    image.content_type = ContentType.objects.get_for_model(event.__class__)
                     image.creator = request.user
                     image.creator_username = request.user.username
                     image.owner = request.user
@@ -831,6 +854,7 @@ def add(request, year=None, month=None, day=None, \
                 for speaker in speakers:
                     speaker.event = [event]
                     speaker.save()
+                    assign_files_perms(speaker)
 
                     # match speaker w/ speaker image
                     binary_files = []
