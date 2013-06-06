@@ -21,11 +21,7 @@
 <div class="t">
     <div class="group-view">
     	{% user_group_nav request.user group %}
-    
-    	<div class="quick-options">
-    		{% user_group_options request.user group %}
-    	</div>
-    	
+
     	<h1>{{ group.name }}</h1>
     	{% if can_edit %}
         <div class="group-section">
