@@ -3,7 +3,9 @@ from django.utils.html import mark_safe
 from django.core.urlresolvers import reverse
 
 from tendenci.libs.model_report.report import reports, ReportAdmin
-from tendenci.libs.model_report.utils import (sum_column, us_date_format, date_label, obj_type_format, date_from_datetime)
+from tendenci.libs.model_report.utils import (sum_column, us_date_format, date_label,
+                                              obj_type_format, date_from_datetime,
+                                              entity_format)
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.site_settings.utils import get_setting
@@ -32,6 +34,7 @@ class InvoiceReport(ReportAdmin):
         'create_dt',
         'status_detail',
         'object_type',
+        'entity',
         'payments_credits',
         'balance',
         'total'
@@ -44,7 +47,7 @@ class InvoiceReport(ReportAdmin):
     list_order_by = ('create_dt', 'status_detail')
     
     # fields to group results by
-    list_group_by = ('object_type', 'status_detail', 'create_dt')
+    list_group_by = ('object_type', 'status_detail', 'entity', 'create_dt')
     
     # allowed export formats. default is excel and pdf
     exports = ('excel', 'pdf',)
@@ -68,7 +71,8 @@ class InvoiceReport(ReportAdmin):
     }
 
     override_group_value = {
-        'create_dt': date_from_datetime
+        'create_dt': date_from_datetime,
+        'entity': entity_format
     }
     
     group_totals = {
