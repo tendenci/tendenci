@@ -233,18 +233,23 @@ def get_selected_demographic_field_names(membership_app=None):
     return selected_field_names
 
 
-def get_membership_rows(user_field_list,
-                    profile_field_list,
-                    demographic_field_list,
-                    membership_field_list,
-                    invoice_field_list,
-                    foreign_keys,
-                    export_status_detail='',
-                    cp_id=0):
+def get_membership_rows(
+        user_field_list,
+        profile_field_list,
+        demographic_field_list,
+        membership_field_list,
+        invoice_field_list,
+        foreign_keys,
+        export_type=u'all',
+        export_status_detail=u'',
+        cp_id=0):
 
     # grab all except the archived
     memberships = MembershipDefault.objects.filter(
         status=True).exclude(status_detail='archive')
+
+    if not export_type == 'all':
+        memberships = memberships.filter(membership_type=export_type)
 
     if export_status_detail:
         if export_status_detail == 'pending':
@@ -299,12 +304,13 @@ def get_obj_field_value(field_name, obj, is_foreign_key=False):
 
 
 def process_export(
-        export_type='all_fields',
+        export_fields='all_fields',
+        export_type='all',
         export_status_detail='active',
         identifier=u'', user_id=0, cp_id=0):
     from tendenci.core.perms.models import TendenciBaseModel
 
-    if export_type == 'main_fields':
+    if export_fields == 'main_fields':
 
         base_field_list = []
 
@@ -390,7 +396,7 @@ def process_export(
         demographic_field_list)
 
     # list of foreignkey fields
-    if export_type == 'main_fields':
+    if export_fields == 'main_fields':
         fks = ['membership_type', 'app']
     else:
 
@@ -429,6 +435,7 @@ def process_export(
             membership_field_list,
             invoice_field_list,
             fks,
+            export_type,
             export_status_detail,
             cp_id)
 
@@ -484,7 +491,7 @@ def process_export(
             'site_url': site_url,
             'site_display_name': site_display_name,
             'export_status_detail': export_status_detail,
-            'export_type': export_type,
+            'export_fields': export_fields,
             'corp_profile': corp_profile}
 
         subject = render_to_string(
