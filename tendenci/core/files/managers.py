@@ -27,11 +27,10 @@ def save_to_disk(f, instance):
     )
 
     # make directory with pk
-    if isinstance(instance.pk, long):
+    if isinstance(instance.pk, (int, long)):
         relative_directory = os.path.join(
             relative_directory,
-            unicode(instance.pk),
-        )
+            unicode(instance.pk))
 
     default_storage.save(os.path.join(relative_directory, file_name), f)
 
@@ -156,7 +155,7 @@ class FileManager(TendenciBaseManager):
                     'owner_username': request.user.username,
                 })
 
-            file.save() # auto generate GUID if missing
+            file.save()  # auto generate GUID if missing
             files_saved.append(file)
 
         return files_saved
