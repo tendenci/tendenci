@@ -1,8 +1,8 @@
 from django.contrib.auth.models import AnonymousUser
-from tendenci.core.perms.managers import TendenciBaseManager
+from django.db import models
 
 
-class EntityManager(TendenciBaseManager):
+class EntityManager(models.Manager):
     def first(self, **kwargs):
         """
         Returns first instance that matches filters.

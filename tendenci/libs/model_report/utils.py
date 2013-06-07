@@ -3,12 +3,15 @@ from decimal import Decimal
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.contrib.contenttypes.models import ContentType
+from tendenci.apps.entities.models import Entity
+
 
 OBJECT_TYPE_DICT = dict((ct.id, '%s: %s' % (ct.app_label, ct.name))
                         for ct in ContentType.objects.all())
 DEFAULT_OBJ_TYPES = ('registration', 'membershipdefault',
                      'membershipset', 'makepayment',
                      'corpmembership', 'job')
+ENTITY_DICT = dict((e.id, e.entity_name) for e in Entity.objects.all())
 
 
 def base_label(report, field):
@@ -71,8 +74,6 @@ def obj_type_format(value, instance):
 
 
 def entity_format(value):
-    from tendenci.apps.entities.models import Entity
-    ENTITY_DICT = dict((e.id, e.entity_name) for e in Entity.objects.all())
     return '%s (Entity ID: %s)' % (ENTITY_DICT.get(value), value)
 
 
