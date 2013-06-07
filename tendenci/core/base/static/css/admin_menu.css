@@ -18,6 +18,8 @@ html {
 #admin-bar .admin-logo img, #user-bar .admin-logo img {
 	margin:0;
 	padding:0;
+	width: 47px;
+	height: 24px;
 }
 
 #admin-bar ul li a.admin-logo, #user-bar, ul li a.admin-logo {
