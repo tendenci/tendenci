@@ -729,7 +729,7 @@ def add_registration(*args, **kwargs):
                 override = form.cleaned_data.get('override', False)
                 override_price = form.cleaned_data.get('override_price', Decimal(0))
 
-            price = form.cleaned_data['pricing']
+            price = form.cleaned_data.get('pricing', 0)
 
             if override:
                 amount = override_price
