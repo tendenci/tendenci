@@ -428,14 +428,14 @@ def list_events(parser, token):
 
         {% list_events as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``events_sidebar`` or 
+    Be sure the [varname] has a specific name like ``events_sidebar`` or
     ``events_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
-           The order of the items. Custom options include ``next_upcoming`` for the 
+           The order of the items. Custom options include ``next_upcoming`` for the
            events starting after now, and ``current_and_upcoming`` for events going on
            as well as upcoming. **Default: Next Upcoming by date**
         ``user``
@@ -474,4 +474,3 @@ def list_events(parser, token):
         kwargs['order'] = 'next_upcoming'
 
     return ListEventsNode(context_var, *args, **kwargs)
-
