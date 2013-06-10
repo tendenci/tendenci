@@ -421,7 +421,7 @@ def process_export(
     membership_ids_dict = dict(MembershipType.objects.all().values_list('id', 'name'))
     app_ids_dict = dict(MembershipApp.objects.all().values_list('id', 'name'))
 
-    identifier = identifier or int(time.time())
+    identifier = identifier or int(ttime.time())
     file_name_temp = 'export/memberships/%s_%d_temp.csv' % (identifier, cp_id)
 
     with default_storage.open(file_name_temp, 'wb') as csvfile:
