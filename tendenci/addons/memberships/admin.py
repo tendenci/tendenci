@@ -351,10 +351,10 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         return u''
     get_approve_dt.short_description = u'Approved On'
 
-    def get_actions(self, request):
-        actions = super(MembershipDefaultAdmin, self).get_actions(request)
-        actions['delete_selected'][0].short_description = "Delete Selected"
-        return actions
+    # def get_actions(self, request):
+    #     actions = super(MembershipDefaultAdmin, self).get_actions(request)
+    #     actions['delete_selected'][0].short_description = "Delete Selected"
+    #     return actions
 
     def save_form(self, request, form, change):
         """
@@ -931,10 +931,10 @@ class AppEntryAdmin(admin.ModelAdmin):
             entry.judge = request.user
             entry.save()
 
-    def get_actions(self, request):
-        actions = super(AppEntryAdmin, self).get_actions(request)
-        del actions['delete_selected']
-        return actions
+    # def get_actions(self, request):
+    #     actions = super(AppEntryAdmin, self).get_actions(request)
+    #     del actions['delete_selected']
+    #     return actions
 
     def entry_name(self):
         return '<a href="%s">%s</a>' % (self.get_absolute_url(), self)
