@@ -502,6 +502,10 @@ class MembershipDefault(TendenciBaseModel):
         Set GUID if not already set.
         """
         self.guid = self.guid or uuid.uuid1().get_hex()
+        # set the status_detail to pending if not specified
+        # the default 'active' is causing problems
+        if not self.status_detail:
+            self.status_detail = 'pending'
         super(MembershipDefault, self).save(*args, **kwargs)
 
     @property
@@ -991,7 +995,7 @@ class MembershipDefault(TendenciBaseModel):
         self.is_active()
         self.application_approved
         """
-        if self.is_active():
+        if self.is_active() and self.application_approved():
 
             # membership does not expire
             if self.is_forever():
