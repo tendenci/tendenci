@@ -1446,6 +1446,10 @@ class MembershipDefault(TendenciBaseModel):
             base_number = get_setting('module',
                                       'memberships',
                                       'membernumberbasenumber')
+            if not isinstance(base_number, int):
+                # default to 5000 if not specified
+                base_number = 5000
+                
             new_member_number = str(base_number + self.id)
             # check if this number's already been taken
             if MembershipDefault.objects.filter(
