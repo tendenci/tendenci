@@ -108,7 +108,7 @@ def make_invoice_for_entry(entry, **kwargs):
     inv.due_date = now
     inv.ship_date = now
     
-    if entry.creator and not entry.creator.user.is_anonymous():
+    if entry.creator and not entry.creator.is_anonymous():
         inv.set_owner(entry.creator)
 
     inv.save()
