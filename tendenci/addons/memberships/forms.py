@@ -764,7 +764,7 @@ class MembershipDefault2Form(forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         request_user = kwargs.pop('request_user')
-        customer = kwargs.pop('customer')
+        customer = kwargs.pop('customer', request_user)
         self.membership_app = kwargs.pop('membership_app')
         multiple_membership = kwargs.pop('multiple_membership', False)
 
