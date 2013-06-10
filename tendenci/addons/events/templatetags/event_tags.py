@@ -130,7 +130,6 @@ def file_detail(context, attachment):
 
 class EventListNode(Node):
     def __init__(self, day, type_slug, ordering, context_var):
-        #print ordering
         self.day = Variable(day)
         self.type_slug = Variable(type_slug)
         self.ordering = ordering
@@ -283,7 +282,7 @@ class ListEventsNode(ListNode):
 
         if 'start_dt' in self.kwargs:
             try:
-                start_dt =  datetime.strptime(self.kwargs['start_dt'], '%m/%d/%Y-%H:%M')
+                start_dt = datetime.strptime(self.kwargs['start_dt'].replace('"', '').replace('"', ''), '%m/%d/%Y-%H:%M')
             except ValueError:
                 pass
 
@@ -448,6 +447,8 @@ def list_events(parser, token):
            The group id associated with items to be included.
         ``random``
            Use this with a value of true to randomize the items included.
+        ``start_dt``
+           Specify the date that events should start after to be shown. MUST be in the format 1/20/2013-06:45
 
     Example::
 
