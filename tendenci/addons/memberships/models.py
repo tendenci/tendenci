@@ -749,6 +749,8 @@ class MembershipDefault(TendenciBaseModel):
         self.set_join_dt()
         self.set_renew_dt()
         self.set_expire_dt()
+        if not self.member_number:
+            self.set_member_number()
         self.save()
 
         # user in [membership] group
