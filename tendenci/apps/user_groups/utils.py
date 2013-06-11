@@ -52,10 +52,10 @@ def process_export(
     # be careful of the memory usage
     rows_per_batch = 100
 
-    identifier = identifier or int(time.time())
+    identifier = identifier or str(time.time())
     file_dir = 'export/groups/'
     
-    file_name_temp = '%sgroup_%d_%s_%d_temp.csv' % (file_dir,
+    file_path_temp = '%sgroup_%d_%s_%s_temp.csv' % (file_dir,
                                                  group.id,
                                                  export_target,
                                                 identifier)
@@ -107,7 +107,7 @@ def process_export(
     field_dict = OrderedDict([(label.lower().replace(" ", "_"), ''
                                ) for label in labels])
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
+    with default_storage.open(file_path_temp, 'wb') as csvfile:
         csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
         csv_writer.writerow(field_dict.keys())
         
@@ -174,12 +174,13 @@ def process_export(
             
 
     # rename the file name
-    file_name = '%sgroup_%d_%s_%d.csv' % (file_dir,
+    file_path = '%sgroup_%d_%s_%s.csv' % (file_dir,
                                          group.id,
                                          export_target,
                                         identifier)
-    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+    default_storage.save(file_path, default_storage.open(file_path_temp, 'rb'))
 
     # delete the temp file
-    default_storage.delete(file_name_temp)
-    print file_name
+    default_storage.delete(file_path_temp)
+    
+    # TODO: email user
