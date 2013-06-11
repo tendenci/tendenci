@@ -4,10 +4,14 @@ from datetime import datetime, date
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
+from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.subscribers.models import GroupSubscription, SubscriberData
 from tendenci.core.base.utils import UnicodeWriter
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.emails.models import Email
 
 def member_choices(group, member_label):
     """
@@ -163,15 +167,26 @@ def process_export(
                     ssdata = SubscriberData.objects.filter(
                                             subscription__group=group,
                                             subscription_id__in=subscription_ids
-                                            )
+                                            ).order_by('subscription__id')
                     if ssdata:
+                        prev_subscription_id = 0
                         row_dict = field_dict.copy()
+                        # this batch of ssdata can contain up to 100 subscriptions
+                        # we process one subscription at a time by remembering
+                        # its previous subscription
                         for sd in ssdata:
+                            if prev_subscription_id != 0 and \
+                                    sd.subscription.id != prev_subscription_id:
+                                # write out the row
+                                csv_writer.writerow(row_dict.values())
+                                # reset row_dict
+                                row_dict = field_dict.copy()
+                            prev_subscription_id = sd.subscription.id
+                                    
                             field_name = sd.field_label.lower().replace(" ", "_")
                             row_dict[field_name] = sd.value
-                        csv_writer.writerow(row_dict.values())
-
-            
+                        # write out the last row
+                        csv_writer.writerow(row_dict.values())           
 
     # rename the file name
     file_path = '%sgroup_%d_%s_%s.csv' % (file_dir,
@@ -183,4 +198,31 @@ def process_export(
     # delete the temp file
     default_storage.delete(file_path_temp)
     
-    # TODO: email user
+    # notify user that export is ready to download
+    [user] = User.objects.filter(id=user_id)[:1] or [None]
+    if user and user.email:
+        download_url = reverse('group.members_export_download',
+                               args=[group.slug, export_target, identifier])
+        site_url = get_setting('site', 'global', 'siteurl')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        parms = {
+            'group': group,
+            'download_url': download_url,
+            'user': user,
+            'site_url': site_url,
+            'site_display_name': site_display_name,
+            'export_target': export_target}
+
+        subject = render_to_string(
+            'user_groups/exports/export_ready_subject.html', parms)
+        subject = subject.strip('\n').strip('\r')
+
+        body = render_to_string(
+            'user_groups/exports/export_ready_body.html', parms)
+
+        email = Email(
+            recipient=user.email,
+            subject=subject,
+            body=body)
+
+        email.send()
