@@ -19,6 +19,15 @@ urlpatterns = patterns('tendenci.apps.user_groups.views',
     url(r'^(?P<group_slug>[-.\w]+)/export/(?P<export_target>\w+)/$', 'group_members_export', name='group.members_export'),
     url(r'^(?P<group_slug>[-.\w]+)/export/(?P<export_target>\w+)/status/(?P<identifier>[_\d]+)/$', 'group_members_export_status', name='group.members_export_status'),
     url(r'^(?P<group_slug>[-.\w]+)/export/(?P<export_target>\w+)/download/(?P<identifier>[_\d]+)/$', 'group_members_export_download', name='group.members_export_download'),
+    # The following 3 links are old export urls. They are here to help to render
+    # the url template tags for old export in any customized group detail template.
+    # Once the links are rendered, they can be resolved by the pattern
+    # group.members_export shown above
+    # In other words, to remove the following 3 links, we need to update
+    # all custom group detail pages.
+    url(r'^(?P<group_slug>[-.\w]+)/export/members/$', 'group_member_export', name='group.member_export'),
+    url(r'^(?P<group_slug>[-.\w]+)/export/subscribers/$', 'group_subscriber_export', name='group.subscriber_export'),
+    url(r'^(?P<group_slug>[-.\w]+)/export/all/$', 'group_all_export', name='group.all_export'),
     url(r'^(?P<group_slug>[-.\w]+)/import/subscribers/$', 'group_subscriber_import', name='group.subscriber_import'),
     url(r'^(?P<group_slug>[-.\w]+)/edit/$', 'group_add_edit', name='group.edit'),
     url(r'^(?P<group_slug>[-.\w]+)/adduser/$', 'groupmembership_bulk_add', name='group.adduser'),
