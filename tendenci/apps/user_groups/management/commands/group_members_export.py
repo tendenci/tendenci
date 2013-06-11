@@ -8,11 +8,11 @@ class Command(BaseCommand):
     Group members or subscribers export.
 
     Usage:
-        python manage.py group_members_export --group_id xxx
+        python manage.py group_members_export --group_id=xxx
 
         example:
         # for regular group members
-        python manage.py group_members_export --export_target regular
+        python manage.py group_members_export --export_target members
                                               --identifier 1370634758
                                               --group_id 1
                                               --user_id 1

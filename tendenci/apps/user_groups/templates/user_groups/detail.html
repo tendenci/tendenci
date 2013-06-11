@@ -28,7 +28,7 @@
             <p>{% blocktrans %}This group currently has {{ count_members }} members.{% endblocktrans %}</p>
             <p>{% blocktrans with group.groupsubscription_set.all.count as count %}This group currently has {{ count }} subscribers.{% endblocktrans %}</p>
             <h3>Export</h3>
-            <p><a href="{% url group.members_export group.slug "regular" %}">{% trans "Export all members" %}</a></p>
+            <p><a href="{% url group.members_export group.slug "members" %}">{% trans "Export all members" %}</a></p>
             <p><a href="{% url group.members_export group.slug "subscribers" %}">{% trans "Export all subscribers" %}</a></p>
             <p><a href="{% url group.members_export group.slug "all" %}">{% trans "Export all members and subscribers" %}</a></p>
         </div>
