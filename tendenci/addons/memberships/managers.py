@@ -317,7 +317,7 @@ class MembershipManager(Manager):
         return silenced_memberships
 
 
-class MembershipDefaultManager(Manager):
+class MembershipDefaultManager(TendenciBaseManager):
     def first(self, **kwargs):
         """
         Returns first instance that matches filters.
