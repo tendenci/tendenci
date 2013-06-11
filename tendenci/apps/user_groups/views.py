@@ -1,6 +1,7 @@
 import subprocess
 from datetime import datetime
 from datetime import date
+import time as ttime
 from djcelery.models import TaskMeta
 
 from django.conf import settings
@@ -15,6 +16,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.http import HttpResponse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.http import Http404
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
@@ -389,6 +393,113 @@ def users_added_report(request, kind):
                                'site': Site.objects.get_current(),
                                'date_range': (from_date, to_date)},
                               context_instance=RequestContext(request))
+
+
+@login_required
+def group_members_export(request, group_slug, export_target='all'):
+    """
+    Export members or subscribers for a specific group
+    """
+    group = get_object_or_404(Group, slug=group_slug)
+    # if they can edit it, they can export it
+    if not has_perm(request.user,'user_groups.change_group', group):
+        raise Http403
+
+    identifier = '%s_%s' % (int(ttime.time()), request.user.id)
+    file_dir = 'export/groups/'
+    temp_export_path = '%sgroup_%d_%s_%s_temp.csv' % (file_dir,
+                                             group.id,
+                                             export_target,
+                                            identifier)
+    default_storage.save(temp_export_path, ContentFile(''))
+    # start the process
+    subprocess.Popen(["python", "manage.py",
+                  "group_members_export",
+                  '--group_id=%d' % group.id,
+                  '--export_target=%s' % export_target,
+                  '--identifier=%s' % identifier,
+                  '--user_id=%s' % request.user.id])
+    # log an event
+    EventLog.objects.log()
+    return redirect(reverse('group.members_export_status',
+                     args=[group.slug, export_target, identifier]))
+
+
+@login_required
+def group_members_export_status(request, group_slug,
+                                export_target, identifier,
+                                template='user_groups/members_export_status.html'):
+    if not identifier:
+        raise Http404
+
+    group = get_object_or_404(Group, slug=group_slug)
+    if not has_perm(request.user,'user_groups.change_group', group):
+        raise Http403
+
+    file_dir = 'export/groups/'
+    export_path = '%sgroup_%d_%s_%s.csv' % (file_dir,
+                                         group.id,
+                                         export_target,
+                                        identifier)
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = '%sgroup_%d_%s_%s_temp.csv' % (
+                                        file_dir,
+                                        group.id,
+                                        export_target,
+                                        identifier)
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    # check who will receive the email when the export is done
+    # the original user is not necessary the request user
+    original_user_id = identifier.split('_')[-1]
+    try:
+        original_user_id = int(original_user_id)
+    except:
+        original_user_id = None
+    if original_user_id:
+        [email_recipient] = User.objects.filter(
+                            id=original_user_id
+                            ).values_list('email', flat=True
+                            ) or [None]
+    else:
+        email_recipient = None
+
+    context = {'group': group,
+               'identifier': identifier,
+               'export_target': export_target,
+               'download_ready': download_ready,
+               'email_recipient': email_recipient}
+    return render_to_response(template, context, RequestContext(request))
+
+
+@login_required
+def group_members_export_download(request, group_slug, export_target, identifier):
+    if not identifier:
+        raise Http404
+
+    group = get_object_or_404(Group, slug=group_slug)
+    if not has_perm(request.user,'user_groups.change_group', group):
+        raise Http403
+    
+    file_dir = 'export/groups/'
+    file_name = 'group_%d_%s_%s.csv' % (
+                                         group.id,
+                                         export_target,
+                                        identifier)
+    export_path = '%s%s' % (file_dir, file_name)
+    if not default_storage.exists(export_path):
+        raise Http404
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
+    response.content = default_storage.open(export_path).read()
+    return response
+    
 
 def group_member_export(request, group_slug):
     """
