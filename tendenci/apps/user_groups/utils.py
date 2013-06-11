@@ -72,7 +72,7 @@ def process_export(
                                           ).values_list('field_label')
                                   ]))
                                  
-    if export_target in ['regular', 'all']:
+    if export_target in ['members', 'all']:
         user_fields = [
                         'id',
                         'first_name',
@@ -112,7 +112,7 @@ def process_export(
         csv_writer.writerow(field_dict.keys())
         
         # process regular group members
-        if export_target in ['regular', 'all']:
+        if export_target in ['members', 'all']:
             count_members = group.members.filter(
                             group_member__status=True,
                             group_member__status_detail='active'
