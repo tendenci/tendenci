@@ -427,8 +427,8 @@ def group_members_export(request, group_slug, export_target='all'):
 
 @login_required
 def group_members_export_status(request, group_slug,
-                                export_target, identifier,
-                                template='user_groups/members_export_status.html'):
+                            export_target, identifier,
+                            template='user_groups/exports/members_export_status.html'):
     if not identifier:
         raise Http404
 
