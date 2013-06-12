@@ -31,15 +31,17 @@ DEFAULT_THEME_INFO = 'theme.info'
 
 # Class to hold theme info details
 class ThemeInfo(object):
+
     def __init__(self, theme):
+
         self.orig_name = theme
         self.name = theme
-        self.description = ''
-        self.tags = ''
-        self.screenshot = ''
-        self.author = ''
-        self.author_uri = ''
-        self.version = ''
+        self.description = u''
+        self.tags = u''
+        self.screenshot = u''
+        self.author = u''
+        self.author_uri = u''
+        self.version = u''
 
         theme_root = get_theme_root(theme)
         # check if theme info file exists
