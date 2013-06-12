@@ -51,7 +51,9 @@ class Command(BaseCommand):
         for table in tables_list:
             related_tables[table] = [field.rel.to._meta.db_table \
                         for field in models_d[table]._meta.fields \
-                        if isinstance(field, (ForeignKey, OneToOneField))]
+                        if isinstance(field, (ForeignKey, OneToOneField))
+                        and field.rel.to._meta.db_table != table
+                        ]
 
         sorted_list = []
         for table in tables_list:
