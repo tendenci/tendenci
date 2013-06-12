@@ -2176,14 +2176,17 @@ class Notice(models.Model):
                 "%d-%b-%y %I:%M %p",
                 membership.expire_dt.timetuple()),
             })
-
+        if membership.payment_method:
+            payment_method_name = membership.payment_method.human_name
+        else:
+            payment_method_name = ''
         context.update({
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
             'email': membership.user.email,
             'member_number': membership.member_number,
             'membership_type': membership.membership_type.name,
-            'payment_method': membership.payment_method.human_name,
+            'payment_method': payment_method_name,
             'membership_link': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
             'renew_link': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
             'corporate_membership_notice': corporate_msg,
