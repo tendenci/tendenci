@@ -4,7 +4,7 @@
 
     <td class="screenshot">
         {% if theme.screenshot %}
-            <img src="{{ theme.screenshot }}" />
+            <img src="{% firstof theme.screenshot_thumbnail theme.screenshot %}" />
             <div class="lightbox" data="{{ theme.orig_name }}" style="display:none">
                 <img src="{{ theme.screenshot }}" />
             </div>

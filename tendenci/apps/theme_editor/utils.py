@@ -57,8 +57,8 @@ class ThemeInfo(object):
                 label, value = datum.split('=')
                 label = label.strip().replace(' ', '_').lower()
                 value = value.strip()
-                if label == 'screenshot':
-                    value = '/themes/' + theme + '/' + value
+                if label in ('screenshot', 'screenshot_thumbnail'):
+                    value = os.path.join('/themes', theme, value)
                 self.__setattr__(label, value)
 
 # At compile time, cache the directories to search.
