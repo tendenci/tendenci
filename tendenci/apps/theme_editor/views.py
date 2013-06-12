@@ -50,6 +50,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     is_file = qstr_is_file(default_file, ROOT_DIR=theme_root)
     is_dir = qstr_is_dir(default_file, ROOT_DIR=theme_root)
+
     if is_file:
         pass
     elif is_dir:

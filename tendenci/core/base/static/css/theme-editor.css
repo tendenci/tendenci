@@ -351,7 +351,8 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 .theme-info table td.screenshot {
   background: white;
 }
-.theme-info table td.screenshot img {
+.theme-info table td.screenshot img,
+.theme-info table td.screenshot .screenshot-placeholder {
   background-color: white;
   cursor: pointer;
 
@@ -367,6 +368,12 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 
 .theme-info.selected table td.screenshot img {
   box-shadow: 10px 0 20px #F4F0DD;
+}
+
+.theme-info table td.screenshot .screenshot-placeholder {
+  background-color: #FEFEFE;
+  width: 200px;
+  height: 200px;
 }
 
 .lightbox img{
