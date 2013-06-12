@@ -39,6 +39,7 @@ class ThemeInfo(object):
         self.description = u''
         self.tags = u''
         self.screenshot = u''
+        self.screenshot_thumbnail = u''
         self.author = u''
         self.author_uri = u''
         self.version = u''
