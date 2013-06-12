@@ -59,7 +59,7 @@ class ThemeInfo(object):
                 value = value.strip()
                 if label in ('screenshot', 'screenshot_thumbnail'):
                     value = os.path.join('/themes', theme, value)
-                self.__setattr__(label, value)
+                setattr(self, label, value)
 
 # At compile time, cache the directories to search.
 fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
