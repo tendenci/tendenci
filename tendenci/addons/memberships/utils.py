@@ -1227,6 +1227,9 @@ class ImportMembDefault(object):
                 if not value in self.membership_app_names_dict:
                     is_valid = False
                     error_msg = 'Invalid app "%s"' % value
+                else:
+                    app = self.membership_app_names_dict[value]
+                    memb_data['app'] = app.id
         else:
             # no app specified, assign the default one
             membership_type_id = memb_data['membership_type']
