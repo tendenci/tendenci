@@ -259,7 +259,10 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             directory = form.save(commit=False)
             
             if directory.logo:
-                directory.logo.file.seek(0)
+                try:
+                    directory.logo.file.seek(0)
+                except IOError:
+                    directory.logo = None
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
 
