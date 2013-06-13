@@ -705,3 +705,22 @@ def create_salesforce_contact(profile):
                 profile.save()
                 return contact['id']
     return None
+
+
+def directory_cleanup(dir_path, ndays):
+    """
+    Delete the files that are older than 'ndays' in the directory 'dir_path'
+    The 'dir_path' should be a relative path. We cannot use os.walk.
+    """
+    foldernames, filenames = default_storage.listdir(dir_path)
+    for filename in filenames:
+        if not filename:
+            continue
+        file_path = os.path.join(dir_path, filename)
+        modified_dt = default_storage.modified_time(file_path)
+        if modified_dt + timedelta(days=ndays) < datetime.now():
+            # the file is older than ndays, delete it
+            default_storage.delete(file_path)
+    for foldername in foldernames:
+        folder_path = os.path.join(dir_path, foldername)
+        directory_cleanup(folder_path, ndays)
