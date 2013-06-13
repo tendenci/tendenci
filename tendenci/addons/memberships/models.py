@@ -2161,6 +2161,9 @@ class Notice(models.Model):
         if not membership:
             return context
 
+        # get membership field context
+        context.update(membership.get_field_items())
+
         if membership.corporate_membership_id:
             corporate_msg = """
             <br /><br />
@@ -2184,6 +2187,7 @@ class Notice(models.Model):
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
             'email': membership.user.email,
+            'username': membership.user.email,
             'member_number': membership.member_number,
             'membership_type': membership.membership_type.name,
             'payment_method': payment_method_name,
@@ -2199,7 +2203,13 @@ class Notice(models.Model):
         Return self.subject replace shortcode (context) variables
         The membership object takes priority over entry object
         """
-        return self.build_notice(self.subject, context={})
+        context = self.get_default_context(membership)
+        # autoescape off for subject to avoid HTML escaping
+        self.subject = '%s%s%s' % (
+                        "{% autoescape off %}",
+                        self.subject,
+                        "{% endautoescape %}")
+        return self.build_notice(self.subject, context=context)
 
     def get_content(self, membership=None):
         """
@@ -2273,10 +2283,9 @@ class Notice(models.Model):
 
         # send to applicant
         for notice in Notice.objects.filter(**field_dict):
-
             notice_requirments = (
                 notice.membership_type == membership_type,
-                notice.membership_type == None
+                not notice.membership_type
             )
 
             if any(notice_requirments):
