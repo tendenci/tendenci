@@ -40,7 +40,6 @@ THEME_ROOT = get_theme_root()
 
 # this function is not necessary - datetime.now() *is* localized in django
 def now_localized():
-    from datetime import datetime
     from timezones.utils import adjust_datetime_to_timezone
     from time import strftime, gmtime
     
@@ -387,7 +386,6 @@ def url_exists(url):
         return False
 
 def parse_image_sources(string):
-    import re
     p = re.compile('<img[^>]* src=\"([^\"]*)\"[^>]*>')
     image_sources = re.findall(p, string)
     return image_sources
@@ -469,7 +467,6 @@ def detect_template_tags(string):
         template tags in the system
         returns boolean
     """
-    import re
     p = re.compile('{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
     return p.search(string)
 
@@ -522,7 +519,7 @@ def template_exists(template):
         return False
     return True
 
-def fieldify(str):
+def fieldify(s):
     """Convert the fields in the square brackets to the django field type. 
     
         Example: "[First Name]: Lisa" 
@@ -531,7 +528,7 @@ def fieldify(str):
     """
     #p = re.compile('(\[([\w\d\s_-]+)\])')
     p = re.compile('(\[(.*?)\])')
-    return p.sub(slugify_fields, str)
+    return p.sub(slugify_fields, s)
 
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
