@@ -3,6 +3,8 @@ import shutil
 import sys
 import boto
 import urllib
+from datetime import datetime
+from dateutil.parser import parse
 
 from django.conf import settings
 from django.core.cache import cache
@@ -43,6 +45,7 @@ class ThemeInfo(object):
         self.author = u''
         self.author_uri = u''
         self.version = u''
+        self.create_dt = datetime.now()
 
         theme_root = get_theme_root(theme)
         # check if theme info file exists
@@ -57,8 +60,13 @@ class ThemeInfo(object):
                 label, value = datum.split('=')
                 label = label.strip().replace(' ', '_').lower()
                 value = value.strip()
+
+                if label == 'create_dt':
+                    value = parse(value)
+
                 if label in ('screenshot', 'screenshot_thumbnail'):
                     value = os.path.join('/themes', theme, value)
+
                 setattr(self, label, value)
 
 # At compile time, cache the directories to search.
