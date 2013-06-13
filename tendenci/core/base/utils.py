@@ -457,7 +457,8 @@ def in_group(user, group):
         in_group(user,'administrator')
         returns boolean
     """
-    return group in [dict['name'].lower() for dict in user.groups.values('name')]
+    return user.groups.filter(id=group.id).exists()
+
 
 def detect_template_tags(string):
     """
