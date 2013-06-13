@@ -83,5 +83,22 @@
         "scope_category": "memberships", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "memberships", 
+        "description": "The root url for the memberships module. Use letters and dashes only.", 
+        "data_type": "string",
+        "update_dt": "2012-02-16 15:25:04",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "url", 
+        "value": "memberships", 
+        "label": "Root URL", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

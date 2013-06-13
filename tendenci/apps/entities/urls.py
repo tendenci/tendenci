@@ -1,11 +1,18 @@
 from django.conf.urls.defaults import patterns, url
+from tendenci.core.site_settings.utils import get_setting
+
+
+urlpath = get_setting('module', 'entities', 'url')
+if not urlpath:
+    urlpath = "entities"
+
 
 urlpatterns = patterns('tendenci.apps.entities.views',
-    url(r'^$', 'index', name="entities"),
-    url(r'^(?P<id>\d+)/$', 'index', name="entity"),
-    url(r'^search/$', 'search', name="entity.search"),
-    url(r'^print-view/(?P<id>\d+)/$', 'print_view', name="entity.print_view"),
-    url(r'^add/$', 'add', name="entity.add"),
-    url(r'^edit/(?P<id>\d+)/$', 'edit', name="entity.edit"),
-    url(r'^delete/(?P<id>\d+)/$', 'delete', name="entity.delete"),
+    url(r'^%s/$' % urlpath, 'index', name="entities"),
+    url(r'^%s/(?P<id>\d+)/$' % urlpath, 'index', name="entity"),
+    url(r'^%s/search/$' % urlpath, 'search', name="entity.search"),
+    url(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, 'print_view', name="entity.print_view"),
+    url(r'^%s/add/$' % urlpath, 'add', name="entity.add"),
+    url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="entity.edit"),
+    url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="entity.delete"),
 )
