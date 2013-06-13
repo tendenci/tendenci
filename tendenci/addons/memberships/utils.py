@@ -11,7 +11,7 @@ import time as ttime
 from django.http import Http404, HttpResponseServerError
 from django.conf import settings
 from django.utils import simplejson
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 from django.template import loader
 from django.template.defaultfilters import slugify
 from django.db.models import Q
@@ -28,8 +28,6 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
 from tendenci.addons.memberships.models import (App,
                                                 AppField,
-                                                AppEntry,
-                                                Membership,
                                                 MembershipType,
                                                 MembershipDefault,
                                                 MembershipDemographic,
@@ -39,8 +37,6 @@ from tendenci.core.base.utils import normalize_newline, UnicodeWriter
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.core.emails.models import Email
-from tendenci.core.payments.models import PaymentMethod
-from tendenci.apps.entities.models import Entity
 
 
 def get_default_membership_fields(use_for_corp=False):
