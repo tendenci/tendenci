@@ -1265,18 +1265,20 @@ class MembershipDefault(TendenciBaseModel):
 
         is_superuser = kwargs.get('is_superuser', False)
 
-        form_link = '%s?username=%s&amp;membership_type=%s' % (
-            reverse('membership_default.add', kwargs={'slug': self.app.slug}),
-            self.user.username,
-            self.membership_type.pk)
+        form_link = u''
+        if self.app:
+            form_link = '%s?username=%s&amp;membership_type=%s' % (
+                reverse('membership_default.add', kwargs={'slug': self.app.slug}),
+                self.user.username,
+                self.membership_type.pk)
 
         approve_link = '%s?approve=' % reverse('membership.details', args=[self.pk])
         disapprove_link = '%s?disapprove' % reverse('membership.details', args=[self.pk])
         expire_link = '%s?expire' % reverse('membership.details', args=[self.pk])
 
-        if self.can_renew():
+        if self.can_renew() and form_link:
             renew = {form_link: u'Renew Membership'}
-        elif is_superuser:
+        elif is_superuser and form_link:
             renew = {form_link: u'Admin: Renew Membership'}
         else:
             renew = {}
