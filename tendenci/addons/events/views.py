@@ -177,7 +177,10 @@ def details(request, id=None, template_name="events/view.html"):
 
     event_files = File.objects.filter(content_type=event_ct, object_id=event.id)
     speaker_files = File.objects.filter(content_type=speaker_ct, object_id__in=speakers)
-    organizer_files = File.objects.filter(content_type=org_ct, object_id=organizer.id)
+    if organizer:
+        organizer_files = File.objects.filter(content_type=org_ct, object_id=organizer.id)
+    else:
+        organizer_files = File.objects.none()
     place_files = File.objects.filter(content_type=place_ct, object_id=event.place_id)
 
     return render_to_response(template_name, {
