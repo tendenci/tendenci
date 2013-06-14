@@ -1,3 +1,4 @@
+import mimetypes
 from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -22,24 +23,26 @@ class Command(BaseCommand):
                                       status_detail='active')
         for tfile in tfiles:
             if default_storage.exists(tfile.file.name):
-                [user] = User.objects.filter(id=tfile.object_id)[:1] or [None]
-                if user:
-                    [user_avatar] = user.avatar_set.filter(
-                                            primary=True)[:1] or [None]
-                    if not user_avatar:
-                        avatar_path = avatar_file_path(
-                                                user=user,
-                                                filename=(tfile.file.name.split('/'))[-1])
-                        # copy the file to the avatar directory
-                        default_storage.save(avatar_path,
-                                              ContentFile(
-                                               default_storage.open(
-                                                tfile.file.name).read()))
-                        # create an avatar object for the user
-                        Avatar.objects.create(
-                            user=user,
-                            primary=True,
-                            avatar=avatar_path
-                                )
-                        print 'Avatar created for ', user
+                is_image = mimetypes.guess_type(tfile.file.name)[0].startswith('image')
+                if is_image:
+                    [user] = User.objects.filter(id=tfile.object_id)[:1] or [None]
+                    if user:
+                        [user_avatar] = user.avatar_set.filter(
+                                                primary=True)[:1] or [None]
+                        if not user_avatar:
+                            avatar_path = avatar_file_path(
+                                                    user=user,
+                                                    filename=(tfile.file.name.split('/'))[-1])
+                            # copy the file to the avatar directory
+                            default_storage.save(avatar_path,
+                                                  ContentFile(
+                                                   default_storage.open(
+                                                    tfile.file.name).read()))
+                            # create an avatar object for the user
+                            Avatar.objects.create(
+                                user=user,
+                                primary=True,
+                                avatar=avatar_path
+                                    )
+                            print 'Avatar created for ', user
         print 'Done'
