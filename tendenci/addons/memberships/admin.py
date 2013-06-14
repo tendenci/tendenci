@@ -351,6 +351,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             return dt.strftime('%b %d, %Y, %I:%M %p')
         return u''
     get_approve_dt.short_description = u'Approved On'
+    get_approve_dt.admin_order_field = 'application_approved_dt'
 
     # def get_actions(self, request):
     #     actions = super(MembershipDefaultAdmin, self).get_actions(request)
