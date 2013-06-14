@@ -29,7 +29,7 @@ class Command(BaseCommand):
                     if not user_avatar:
                         avatar_path = avatar_file_path(
                                                 user=user,
-                                                filename=tfile.file.name)
+                                                filename=(tfile.file.name.split('/'))[-1])
                         # copy the file to the avatar directory
                         default_storage.save(avatar_path,
                                               ContentFile(
