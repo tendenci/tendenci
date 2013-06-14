@@ -17,7 +17,7 @@ class ProfileIndex(TendenciBaseSearchIndex):
     country = indexes.CharField(model_attr='country')
     last_name = indexes.CharField(faceted=True)
     hide_in_search = indexes.BooleanField(model_attr='hide_in_search')
-    
+
     def prepare_last_name(self, obj):
         return obj.user.last_name
 
@@ -34,4 +34,6 @@ class ProfileIndex(TendenciBaseSearchIndex):
     def index_queryset(self):
         return Profile.objects.all().order_by('user')
 
-site.register(Profile, ProfileIndex)
+# Removed from index after search view was updated to perform
+# all searches on the database.
+# site.register(Profile, ProfileIndex)
