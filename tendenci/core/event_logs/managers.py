@@ -263,9 +263,12 @@ class EventLogManager(Manager):
             if hasattr(request, 'path'):
                 event_log.url = request.path or ''
 
-        event_log.save()
-
-        return event_log
+        # If we have an IP address, save the event_log
+        if "." in event_log.user_ip_address:
+            event_log.save()
+            return event_log
+        else:
+            return None
 
     def delete(self, *args, **kwargs):
         pass
