@@ -321,6 +321,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     def get_status(self, instance):
         return instance.get_status().capitalize()
     get_status.short_description = u'Status'
+    get_status.admin_order_field = 'status_detail'
 
     def get_invoice(self, instance):
         if instance.get_invoice():
