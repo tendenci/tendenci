@@ -935,3 +935,32 @@ table.pricing-list .price-disabled label {
 .clear-both {
     clear: both;
 }
+
+.t .files-wrap {
+	margin-bottom: 20px;
+}
+
+.t .files-wrap .file-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .files-wrap .file-wrap h2 {
+	width: 85%;
+	margin-bottom: 6px;
+}
+
+.t .file-wrap .icon {
+	float: left;
+	margin-right: 10px;
+}
+
+.t .file-wrap h2 a.broken {
+	text-decoration: line-through;
+}
+.t .event-wrap .dropdown {
+    z-index: 0;
+}

@@ -36,7 +36,7 @@ urlpatterns = patterns(
     url(r'^%s/(?P<id>\d+)/$' % urlpath, 'views.details', name="event"),
 
     # speakers_list view does not exist
-    # url(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, 'views.speaker_list', name="event.speakers"),
+    url(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, 'views.speaker_list', name="event.speakers"),
     url(r'^%s/(?P<event_id>\d+)/attendees$' % urlpath, 'views.view_attendees', name="event.attendees"),
 
     #delete

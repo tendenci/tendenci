@@ -120,6 +120,14 @@ def registration_pricing_and_button(context, event, user):
     return context
 
 
+@register.inclusion_tag('events/files_view.html', takes_context=True)
+def file_detail(context, attachment):
+    context.update({
+        "file": attachment
+    })
+    return context
+
+
 class EventListNode(Node):
     def __init__(self, day, type_slug, ordering, context_var):
         self.day = Variable(day)

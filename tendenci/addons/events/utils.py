@@ -908,6 +908,7 @@ def create_registrant_from_form(*args, **kwargs):
                     registrant.position_title = user_profile.position_title
 
     registrant.save()
+    add_sf_attendance(registrant, event)
     return registrant
 
 
@@ -1493,3 +1494,48 @@ def do_event_import(event_object_dict):
     event.save()
 
     return event
+
+
+def add_sf_attendance(registrant, event):
+
+    from django.conf import settings
+    from tendenci.core.base.utils import get_salesforce_access, create_salesforce_contact
+    from tendenci.apps.profiles.models import Profile
+
+    if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:
+        sf = get_salesforce_access()
+        if sf:
+            # Make sure we have a complete user detail from registrants
+            # which do not have an associated user. This is because the
+            # contact ID will not be stored.
+            contact_requirements = (registrant.first_name,
+                                    registrant.last_name,
+                                    registrant.email)
+            contact_id = None
+            # Get Salesforce Contact ID
+            if registrant.user:
+                try:
+                    profile = registrant.user.get_profile()
+                except Profile.DoesNotExist:
+                    profile = Profile.objects.create_profile(user=registrant.user)
+                contact_id = create_salesforce_contact(profile)
+                    
+            elif all(contact_requirements):
+                # Query for a duplicate entry in salesforce
+                result = sf.query("SELECT Id FROM Contact WHERE FirstName='%s' AND LastName='%s' AND Email='%s'"
+                                  %(registrant.first_name, registrant.last_name, registrant.email) )
+                if result['records']:
+                    contact_id = result['records'][0]['Id']
+                else:
+                    contact = sf.Contact.create({
+                        'FirstName':registrant.first_name,
+                        'LastName':registrant.last_name,
+                        'Email':registrant.email})
+                    contact_id = contact['id']
+
+            if contact_id:
+                result = sf.Event.create({
+                    'WhoId':contact_id,
+                    'Subject':event.title,
+                    'StartDateTime':event.start_dt.isoformat(),
+                    'EndDateTime':event.end_dt.isoformat()})
