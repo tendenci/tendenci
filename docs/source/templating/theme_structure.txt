@@ -1,5 +1,5 @@
 Theme: Structure
-===============
+================
 
 Here is an overview of the folder structure for themes, along with some details of specific files within the theme. All themes should be added to the ``themes`` folder in the main root of the site.
 
@@ -39,6 +39,7 @@ Theme File Descriptions
       author = Schipul
       author uri = http://schipul.com
       version = 1.0
+      create_dt = 2013-01-01 01:00:00
 
 **screenshot.png**
    This file is a full page screenshot of the theme after it has been loaded with the fixtures using the ``load_npo_defaults`` management command.
