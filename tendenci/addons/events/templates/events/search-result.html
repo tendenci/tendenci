@@ -2,7 +2,7 @@
 {% load event_tags %}
 <div class="event-wrap">
     <div class="time-stamp">
-        {{ event.start_dt|date:"l, M j, Y" }}
+        {{ event.start_dt|date:"D, M j, Y" }}
         
         {% if event.start_dt < now %}
             {% if event.end_dt < now %}
