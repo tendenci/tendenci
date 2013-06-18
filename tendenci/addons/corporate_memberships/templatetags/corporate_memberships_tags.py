@@ -8,6 +8,7 @@ from django.template import Node, Library, TemplateSyntaxError, Variable
 from tendenci.addons.corporate_memberships.models import CorpMembership
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.base.utils import tcurrency
 
 
 register = Library()
