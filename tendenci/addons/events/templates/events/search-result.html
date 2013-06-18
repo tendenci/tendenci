@@ -35,9 +35,9 @@
             {{ event.type.name|truncatewords:3 }}
             </div>
         {% endif %}
+
     </div>
     <div class="event-info">
-        
         <h3>
         {% if event.priority %}
             <div class="event-priority"></div>
@@ -59,6 +59,7 @@
             {% if now > event.end_dt or now > event.registration_configuration.end_dt %}
 
             <div class="attend-wrap closed">
+                {% include "events/include/search-result-spots-taken.html" %}
                 <div class="attend"><a href="">{% trans "Registration Closed" %}</a></div>
                 <div style="clear:both;"></div>
             </div>
@@ -68,11 +69,13 @@
             {% is_registered_user user event as registered_user %}
             {% if registered_user %}
             <div class="attend-wrap registered">
+                {% include "events/include/search-result-spots-taken.html" %}
                 <div class="attend"><a href="{% url event.myevents %}">{% trans "You are registered" %}</a></div>
                 <div style="clear:both;"></div>
             </div>
             {% else %}
             <div class="attend-wrap">
+                {% include "events/include/search-result-spots-taken.html" %}
                 <div class="attend"><a href="{% url event event.pk %}">{% trans "Attend this event" %}</a></div>
                 <div style="clear:both;"></div>
             </div>

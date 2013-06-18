@@ -94,6 +94,11 @@
 	cursor: pointer;
 }
 
+.attend-wrap .spots-taken {
+	float: left;
+	margin-top: 15px;
+}
+
 /*= Details View
  ------------------------- */
  

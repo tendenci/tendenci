@@ -1,0 +1,14 @@
+{% if user.profile.is_superuser or event.registration_configuration.display_registration_stats %}
+<div class="spots-taken">
+
+    {% if user.profile.is_superuser %}
+        <a href="{% url event.registrant.roster event.pk %}">{{ event.get_spots_status.0 }} 
+        {% if event.registration_configuration.payment_required %}Paid{% endif %}
+        Attendee{{ event.get_spots_status.0|pluralize }} Registered</a></div>
+    {% else %}
+        {{ event.get_spots_status.0 }} 
+        {% if event.registration_configuration.payment_required %}Paid{% endif %}
+        Attendee{{ event.get_spots_status.0|pluralize }} Registered</div>
+    {% endif %}
+
+{% endif %}
