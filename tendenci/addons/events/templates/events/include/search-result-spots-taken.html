@@ -4,11 +4,12 @@
     {% if user.profile.is_superuser %}
         <a href="{% url event.registrant.roster event.pk %}">{{ event.get_spots_status.0 }} 
         {% if event.registration_configuration.payment_required %}Paid{% endif %}
-        Attendee{{ event.get_spots_status.0|pluralize }} Registered</a></div>
+        Attendee{{ event.get_spots_status.0|pluralize }} Registered</a>
     {% else %}
         {{ event.get_spots_status.0 }} 
         {% if event.registration_configuration.payment_required %}Paid{% endif %}
-        Attendee{{ event.get_spots_status.0|pluralize }} Registered</div>
+        Attendee{{ event.get_spots_status.0|pluralize }} Registered
     {% endif %}
 
+</div>
 {% endif %}
