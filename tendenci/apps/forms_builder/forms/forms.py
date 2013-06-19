@@ -167,10 +167,7 @@ class FormForForm(forms.ModelForm):
                 value = ','.join(value)
             if not value: value=''
             field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
-            if self.user.is_authenticated():
-                field_entry.save(user = self.user)
-            else:
-                field_entry.save()
+            field_entry.save()
 
         # save selected pricing and payment method if any
         if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():

@@ -16,16 +16,6 @@ class Command(BaseCommand):
                                               --identifier 1370634758
                                               --group_id 1
                                               --user_id 1
-        # for subscribers
-        python manage.py group_members_export --export_target subscribers
-                                              --identifier 1370634758
-                                              --group_id 1
-                                              --user_id 1
-        # for both
-        python manage.py group_members_export --export_target all
-                                              --identifier 1370634758
-                                              --group_id 1
-                                              --user_id 1
     """
     option_list = BaseCommand.option_list + (
 

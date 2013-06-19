@@ -17,13 +17,7 @@
 
 {% block body %}
 
-    <h1>Group 
-    	{% if export_target == 'all' %}
-    	Members and Subscribers
-    	{% else %}
-    	{% if export_target == 'subscribers' %}Subscribers{% else %}Members{% endif%}
-    	{% endif%}
-    	 Export - Status</h1>
+    <h1>Group Members Export - Status</h1>
     <p style="font-size: 1.1em;">Group: <strong>{{ group.name }}</strong></p>
    
     <div id="group-export">

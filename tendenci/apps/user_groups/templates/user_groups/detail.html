@@ -26,11 +26,7 @@
     	{% if can_edit %}
         <div class="group-section">
             <p>{% blocktrans %}This group currently has {{ count_members }} members.{% endblocktrans %}</p>
-            <p>{% blocktrans with group.groupsubscription_set.all.count as count %}This group currently has {{ count }} subscribers.{% endblocktrans %}</p>
-            <h3>Export</h3>
             <p><a href="{% url group.members_export group.slug "members" %}">{% trans "Export all members" %}</a></p>
-            <p><a href="{% url group.members_export group.slug "subscribers" %}">{% trans "Export all subscribers" %}</a></p>
-            <p><a href="{% url group.members_export group.slug "all" %}">{% trans "Export all members and subscribers" %}</a></p>
         </div>
         {% endif %}
 
@@ -70,7 +66,7 @@
         <p>Group members in sets of 100</p>
         {% for gm in groupmemberships %}
             <div class="group-member {% cycle 'gray' '' %}">
-             <a href="{{ gm.member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) - {{ gm.role }}</a>
+             <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) - {{ gm.role }}</a>
              {% if can_delete %}
                 &nbsp;<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
              <!-- delete-member form -->
@@ -85,30 +81,7 @@
         {% endif %}
         
         <h2>{% trans "Group Subscribers" %}</h2>
-        {% with group.groupsubscription_set.all as groupsubscribers %}
-        {% if not groupsubscribers %}
-        <p>{% trans "This group has no subscribers" %}</p>
-        {% else %}
-        {% autopaginate groupsubscribers 50 %}
-        {% paginate %}
-        <div class="group-member-list">
-        <p>Subscribers in sets of 50</p>
-        {% for gs in groupsubscribers %}
-            <div class="group-member {% cycle 'gray' '' %}">
-                {% if gs.subscriber %}
-                    <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.name }} ({{ gs.email }})</a>
-                {% else %}
-                    <a href="{% url subscriber_detail gs.pk %}">{{ gs.name }} ({{ gs.email }})</a>
-                {% endif %}
-                {% if can_delete %}
-                    &nbsp;<span class="delete-subscriber">- <a href="{% url subscriber_delete  gs.id %}">{% trans "Remove" %}</a></span>
-                {% endif %}
-            </div>
-        {% endfor %}
-        </div>
-        {% paginate %}
-        {% endif %}
-        {% endwith %}
+        <p>{% trans "All subscribers have been converted to members" %}</p>
 
         {% endif %}
         
