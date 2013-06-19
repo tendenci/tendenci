@@ -81,7 +81,7 @@
     		{% endif %}
     	{% endfor %}
 
-        {% if request.user.is_superuser %}
+        {% if can_approve %}
         {% if entry.is_approved == 0 or entry.is_approved == 1 %}
         {% else %}
             {% if form %}

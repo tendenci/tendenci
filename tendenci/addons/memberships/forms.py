@@ -1541,9 +1541,10 @@ class AppEntryForm(forms.ModelForm):
                             choices_with_price = ['%s $%s ($%s admin fee)' % (membership_type.name, membership_type.price, membership_type.admin_fee)]
                         field_args["choices"] = zip(choices, choices_with_price)
                     else:
-                        choices = [type.name for type in app.membership_types.exclude(pk__in=exclude_types)]
+                        mem_types = app.membership_types.exclude(pk__in=exclude_types)
+                        choices = [type.name for type in mem_types]
                         choices_with_price = []
-                        for type in app.membership_types.exclude(pk__in=exclude_types):
+                        for type in mem_types:
                             if type.admin_fee:
                                 type_label = '%s $%s ($%s admin fee)' % (type.name, type.price, type.admin_fee)
                             else:
