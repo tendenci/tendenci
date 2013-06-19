@@ -21,13 +21,17 @@
         <li><a href="{% url membership_default.add original.app.slug %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
         {% endif %}
     {% elif original.is_disapproved %}
+        {% has_perm user memberships.approve_membershipdefault as can_approve %}
         {% if can_approve %}
         <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
         {% endif %}
     {% elif original.is_pending %}
+        {% has_perm user memberships.approve_membershipdefault as can_approve %}
+        {% if can_approve %}
         <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
+        {% endif %}
     {% endif %}
 
     <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
