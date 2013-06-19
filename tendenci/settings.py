@@ -92,7 +92,6 @@ MIDDLEWARE_CLASSES = (
     'tendenci.core.theme.middleware.RequestMiddleware',
     'tendenci.core.base.middleware.MissingAppMiddleware',
     'tendenci.addons.memberships.middleware.ExceededMaxTypesMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'tendenci.urls'
