@@ -10,8 +10,7 @@
 <body bgcolor="#ffffff" text="#000000">
     <p>
         Hello {{ user.first_name }},<br /><br />
-        Your group {% if export_target == 'all' %}members and subscribers{% else %}{{ export_target }}{% endif %} 
-        export for "{{ group.name }}" is ready.
+        Your group members export for "{{ group.name }}" is ready.
         <br /><br />
         
         To download the export file, go to: <br />

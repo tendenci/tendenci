@@ -11,8 +11,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import Group
         from tendenci.apps.profiles.models import Profile
-        from tendenci.apps.subscribers.models import GroupSubscription as GS, SubscriberData as SD
-        from tendenci.apps.subscribers.utils import get_subscriber_name_email
         from tendenci.addons.campaign_monitor.models import (ListMap, Campaign, Template, setup_custom_fields)
         from tendenci.addons.campaign_monitor.utils import sync_campaigns, sync_templates
         from createsend import (CreateSend, Client, List, Subscriber,
@@ -125,20 +123,6 @@ class Command(BaseCommand):
                 name = member.get_full_name()
                 subscriber_obj = Subscriber(auth, list_id, email)
                 subscribe_to_list(subscriber_obj, list_id, name, email, custom_data)
-
-            # sync subscribers in this group's subscription
-            gss = GS.objects.filter(group=group)
-            for gs in gss:
-                if gs.subscriber:
-                    form_entry = gs.subscriber
-                    (name, email) = form_entry.get_name_email()
-                else:
-                    gs_data = SD.objects.filter(subscription=gs)
-                    (name, email) = get_subscriber_name_email(gs_data)
-
-                if email:
-                    subscriber_obj = Subscriber(auth, list_id, email)
-                    subscribe_to_list(subscriber_obj, list_id, name, email, [])
 
         print 'Done'
 

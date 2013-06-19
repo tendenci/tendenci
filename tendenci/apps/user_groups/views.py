@@ -398,7 +398,7 @@ def users_added_report(request, kind):
 @login_required
 def group_members_export(request, group_slug, export_target='all'):
     """
-    Export members or subscribers for a specific group
+    Export members for a specific group
     """
     group = get_object_or_404(Group, slug=group_slug)
     # if they can edit it, they can export it
@@ -487,10 +487,7 @@ def group_members_export_download(request, group_slug, export_target, identifier
         raise Http403
     
     file_dir = 'export/groups/'
-    file_name = 'group_%d_%s_%s.csv' % (
-                                         group.id,
-                                         export_target,
-                                        identifier)
+    file_name = 'group_%d_%s_%s.csv' % (group.id, export_target, identifier)
     export_path = '%s%s' % (file_dir, file_name)
     if not default_storage.exists(export_path):
         raise Http404
