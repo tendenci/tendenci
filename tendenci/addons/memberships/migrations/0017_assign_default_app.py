@@ -10,7 +10,7 @@ class Migration(DataMigration):
         try:
             call_command('assign_default_app', verbosity=0)
         except:
-            print traceback.format_exc()
+            #print traceback.format_exc()
             print 'Please re-run the management command "assign_default_app".'
 
     def backwards(self, orm):
