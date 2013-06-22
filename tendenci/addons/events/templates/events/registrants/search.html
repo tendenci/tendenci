@@ -15,6 +15,14 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-reg-search.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
+<style>
+    #id_search_criteria, #id_search_text{
+        width: 150px;
+    }
+    #id_search_method{
+        width: 100px;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
@@ -57,9 +65,8 @@
 
 			<div class="filter-wrap">
 				<div><strong>Filters</strong></div>
-				<div><a href="{% url event.registrant.search event.pk %}?q=is:active">
-					{{ active_registrants|length }} Active</a></div>
-				<div><a href="{% url event.registrant.search event.pk %}?q=is:canceled">{{ canceled_registrants|length }} Canceled</a></div>
+                <div><a href="{% url event.registrant.search event.pk %}?status=active">{{ active_registrants }} Active</a></div>
+                <div><a href="{% url event.registrant.search event.pk %}?status=canceled">{{ canceled_registrants }} Canceled</a></div>
 			</div>
 
 			
@@ -74,7 +81,7 @@
 			<div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
 			{% endif %}
 		
-		    {% autopaginate all_registrants 10 %}
+		    {% autopaginate registrants 10 %}
 			
 			<div class="events-wrap">
 		    {% for registrant in registrants %}

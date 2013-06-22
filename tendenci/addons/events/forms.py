@@ -1653,7 +1653,7 @@ class EventICSForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all())
 
 
-class RegistrantSearchForm(forms.Form):
+class GlobalRegistrantSearchForm(forms.Form):
     event = forms.ModelChoiceField(queryset=Event.objects.filter(registration__isnull=False).distinct('pk'),
                                    label=_("Event"),
                                    required=False,
@@ -1667,7 +1667,7 @@ class RegistrantSearchForm(forms.Form):
     email = forms.CharField(label=('Email'), required=False)
 
     def __init__(self, *args, **kwargs):
-        super(RegistrantSearchForm, self).__init__(*args, **kwargs)
+        super(GlobalRegistrantSearchForm, self).__init__(*args, **kwargs)
 
         # Set start date and end date
         if self.fields.get('start_dt'):
@@ -1678,3 +1678,22 @@ class RegistrantSearchForm(forms.Form):
             self.fields.get('end_dt').widget.attrs = {
                 'class': 'datepicker',
             }
+
+
+class EventRegistrantSearchForm(forms.Form):
+    SEARCH_METHOD_CHOICES = (
+                             ('starts_with', _('Starts With')),
+                             ('contains', _('Contains')),
+                             ('exact', _('Exact')),
+                             )
+    SEARCH_CRITERIA_CHOICES = (('', 'SELECT ONE'),
+                               ('first_name', _('First Name')),
+                               ('last_name', _('Last Name')),
+                               ('company_name', _('Company Name')),
+                               ('phone', _('Phone')),
+                               ('email', _('Email')),)
+    search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
+                                        required=False)
+    search_text = forms.CharField(max_length=100, required=False)
+    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
+                                        required=False)
