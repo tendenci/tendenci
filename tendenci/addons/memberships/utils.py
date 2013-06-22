@@ -32,7 +32,8 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipDefault,
                                                 MembershipDemographic,
                                                 MembershipApp,
-                                                MembershipAppField)
+                                                MembershipAppField,
+                                                VALID_MEMBERSHIP_STATUS_DETAIL)
 from tendenci.core.base.utils import normalize_newline, UnicodeWriter
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
@@ -1520,6 +1521,8 @@ class ImportMembDefault(object):
             memb.status_detail = 'active'
         else:
             memb.status_detail = memb.status_detail.lower()
+            if memb.status_detail not in VALID_MEMBERSHIP_STATUS_DETAIL:
+                memb.status_detail = 'active'
 
         # membership type
         if not hasattr(memb, "membership_type") or not memb.membership_type:
