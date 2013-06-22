@@ -17,6 +17,7 @@ from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
@@ -179,7 +180,6 @@ def search(request, template_name="files/search.html"):
     sub_category = u''
     group = None
 
-    has_index = get_setting('site', 'global', 'searchindex')
     form = FileSearchForm(request.GET)
 
     if form.is_valid():
@@ -188,20 +188,17 @@ def search(request, template_name="files/search.html"):
         sub_category = form.cleaned_data['sub_category']
         group = form.cleaned_data['group']
 
-    if has_index and query:
-        files = File.objects.search(query, user=request.user)
-        if category:
-            files = files.filter(category=category)
-        if sub_category:
-            files = files.filter(sub_category=sub_category)
-    else:
-        filters = get_query_filters(request.user, 'files.view_file')
-        files = File.objects.filter(filters).distinct()
-        if category:
-            files = files.filter(categories__category__name=category)
-        if sub_category:
-            files = files.filter(categories__parent__name=sub_category)
-
+    filters = get_query_filters(request.user, 'files.view_file')
+    files = File.objects.filter(filters).distinct()
+    if query:
+        files = files.filter(Q(file__icontains=query)|
+                             Q(name__icontains=query)|
+                             Q(description__icontains=query)|
+                             Q(tags__icontains=query))
+    if category:
+        files = files.filter(categories__category__name=category)
+    if sub_category:
+        files = files.filter(categories__parent__name=sub_category)
     if group:
         files = files.filter(group_id=group)
 
