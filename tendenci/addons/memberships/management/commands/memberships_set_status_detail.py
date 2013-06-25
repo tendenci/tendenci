@@ -17,6 +17,11 @@ class Command(BaseCommand):
         # memberships will be set to inactive; setting them to 'expired' was a workaround
         inactive = Membership.objects.filter(expire_dt__gte=datetime.now(), status_detail='expired'
             ).update(status_detail='inactive')
+        
+        # memberships will be set to active because of the expire_dt
+        active = Membership.objects.filter(expire_dt__gt=datetime.now(), status_detail='expired'
+        ).update(status_detail='active')
+
 
         if verbosity:
-            print 'Success!', '%s set to expired and %s set to inactive.' % (expired, inactive)
+            print 'Success!', '%s set to expired and %s set to inactive and %s set to active.' % (expired, inactive, active)
