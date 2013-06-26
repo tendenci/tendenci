@@ -1,5 +1,6 @@
 import simplejson
 from datetime import datetime, timedelta
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory
 from django.shortcuts import render_to_response, redirect
@@ -87,6 +88,11 @@ def new(request, template_name="dashboard/new.html"):
             expired = True
 
     statistics = DashboardStatType.objects.filter(displayed=True)
+
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        '<a target="_blank" href="http://blog.tendenci.com/dashboard-2013/">Click here to learn more about the new Tendenci Dashboard!</a>')
 
     EventLog.objects.log()
     return render_to_response(template_name, {
