@@ -11,6 +11,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
 {% endblock %}
 
@@ -66,7 +67,17 @@
         {% endif %}
     {% endif %}
 
-    <div class="modules">
+    {% if user.is_superuser %}
+        <div class="dashboard-stats">
+        <a href="{% url dashboard_customize %}" class="readmorelarge">Customize Dashboard Statistics</a>
+        {% for stat_type in statistics %}
+            {% dashboard_stat stat_type %}
+        {% endfor %}
+        </div>
+        <p style="text-align:center;"><a href="#" class="dashboard-icons-toggle readmorelarge">Dashboard Icons</a></p>
+    {% endif %}
+
+    <div class="modules {% if user.is_superuser %}hide{% endif %}">
     <ul>
 
         {% if MODULE_USERS_ENABLED %}
@@ -154,39 +165,6 @@
     </ul>
     </div> <!-- modules -->
 
-
-    <div class="rss-feeds">
-        <div class="rss-feed">
-            <h3>{% trans "Tendenci Blog" %}</h3>
-            {% cache 86400 tendenci_blog_rss %}
-                {% get_rss "http://blog.tendenci.com/feed/" as rss %}
-                <ul>
-                {% for entry in rss.entries|slice:":3" %}
-                    <li>
-                        <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
-                        <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
-                    </li>
-                {% endfor %}
-                </ul>
-            {% endcache %}
-        </div>
-        
-        <div class="rss-feed">
-            <h3>{% trans "Tendenci Help" %}</h3>
-            {% cache 86400 tendenci_help_rss %}
-                {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
-                <ul>
-                {% for entry in rss.entries|slice:":3" %}
-                    <li>
-                        <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
-                        <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
-                    </li>
-                {% endfor %}
-                </ul>
-            {% endcache %}
-        </div>
-    </div>
-
 </div> <!-- main-panel -->
 
 
@@ -217,11 +195,62 @@
         {% endif %}
     </ul>
     </div>
-        
-    
     {% endif %}
+
+    <div class="new-rss-feed">
+        <h3>{% trans "Tendenci Blog" %}</h3>
+        {% cache 86400 tendenci_blog_rss %}
+            {% get_rss "http://blog.tendenci.com/feed/" as rss %}
+            <ul>
+            {% for entry in rss.entries|slice:":3" %}
+                <li>
+                    <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
+                    <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endcache %}
+    </div>
+
+    <div class="new-rss-feed">
+        <h3>{% trans "Tendenci Help" %}</h3>
+        {% cache 86400 tendenci_help_rss %}
+            {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
+            <ul>
+            {% for entry in rss.entries|slice:":3" %}
+                <li>
+                    <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
+                    <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endcache %}
+    </div>
+
 </div>
 
 <div style="clear:both;"></div>
 
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/bar-graph.js"></script>
+<script type="text/javascript">
+$(function(){
+    var active = $("#members-info").attr('new');
+    var pending = $("#members-info").attr('pending');
+    var expired = $("#members-info").attr('expired');
+    var d = [parseInt(active, 10), parseInt(pending, 10), parseInt(expired, 10)];
+    var c = ["New","Pending","Expired"];
+    var h = "Last 30 days";
+    $("#members-graph").graph({data:d,categories:c,legend:h,width:400});
+
+    $('a.dashboard-icons-toggle').click(function() {
+        $('div.modules').toggleClass('hide');
+        return false;
+    });
+});
+</script>
 {% endblock %}

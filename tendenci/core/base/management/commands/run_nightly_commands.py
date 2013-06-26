@@ -19,3 +19,4 @@ class Command(BaseCommand):
         call_command('refresh_membership_groups')
         call_command('send_corp_membership_notices')
         call_command('clean_old_exports')
+        call_command('update_dashboard_stats')
