@@ -16,37 +16,37 @@ class Command(BaseCommand):
         print "Creating dashboard statistics for upcoming events"
         stat_type,created = DashboardStatType.objects.get_or_create(name="events_upcoming")
         if created:
-            stat_type.description = "Events"
+            stat_type.description = "Upcoming 5 Events"
             stat_type.save()
         events = DashboardStat(key=stat_type)
-        events.value = json.dumps(self.get_events(4), use_decimal=True)
+        events.value = json.dumps(self.get_events(5), use_decimal=True)
         events.save()
 
         print "Creating dashboard statistics for form submissions"
         stat_type,created = DashboardStatType.objects.get_or_create(name="forms_30_submissions")
         if created:
-            stat_type.description = "Forms"
+            stat_type.description = "Top 5 Forms"
             stat_type.save()
         forms = DashboardStat(key=stat_type)
-        forms.value = json.dumps(self.get_forms(3, 30))
+        forms.value = json.dumps(self.get_forms(5, 30))
         forms.save()
 
         print "Creating dashboard statistics for pages traffic"
         stat_type,created = DashboardStatType.objects.get_or_create(name="pages_30_traffic")
         if created:
-            stat_type.description = "Pages Traffic"
+            stat_type.description = "Top 5 Pages"
             stat_type.save()
         pages_traffic = DashboardStat(key=stat_type)
-        pages_traffic.value = json.dumps(self.get_pages_traffic(3, 30))
+        pages_traffic.value = json.dumps(self.get_pages_traffic(5, 30))
         pages_traffic.save()
 
         print "Creating dashboard statistics for events traffic"
         stat_type,created = DashboardStatType.objects.get_or_create(name="events_30_traffic")
         if created:
-            stat_type.description = "Events Traffic"
+            stat_type.description = "Top 5 Events"
             stat_type.save()
         events_traffic = DashboardStat(key=stat_type)
-        events_traffic.value = json.dumps(self.get_events_traffic(3, 30))
+        events_traffic.value = json.dumps(self.get_events_traffic(5, 30))
         events_traffic.save()
 
         print "Creating dashboard statistics for memberships"
@@ -57,7 +57,7 @@ class Command(BaseCommand):
         members = DashboardStat(key=stat_type)
         members.value = json.dumps(self.get_membership_count(30))
         members.save()
-        
+
         print "Creating dashboard statistics for new corporate memberships"
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_memberships_30_new")
         if created:
