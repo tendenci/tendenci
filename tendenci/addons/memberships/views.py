@@ -1844,10 +1844,14 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
             # redirect: membership edit page
             if request.user.profile.is_superuser:
-                return HttpResponseRedirect(reverse(
-                    'admin:memberships_membershipdefault_change',
-                    args=[memberships[0].pk],
-                ))
+                if not membership.corporate_membership_id:
+                    # Redirect to admin backend only if it's not for corp members
+                    # For corp members, most likely they want to add more. So,
+                    # they are redirected to the confirmation page with "add more" link.
+                    return HttpResponseRedirect(reverse(
+                        'admin:memberships_membershipdefault_change',
+                        args=[memberships[0].pk],
+                    ))
 
             # send email notification to admin
             recipients = get_notice_recipients(
