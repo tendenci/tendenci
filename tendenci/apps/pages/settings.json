@@ -49,5 +49,22 @@
         "scope_category": "pages", 
         "store": false, 
         "updated_by": ""
+    },
+    {
+        "default_value": "pages", 
+        "description": "The root url for the pages module. Use letters and dashes only.", 
+        "data_type": "string",
+        "update_dt": "2012-02-16 15:25:04",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "url", 
+        "value": "pages", 
+        "label": "Root URL", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "pages", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

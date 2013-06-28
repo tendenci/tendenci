@@ -57,7 +57,7 @@
     {% if profiles %}
         <span><em>{{ paginator.count }} Pe{{ paginator.count|pluralize:"rson,ople" }} {% trans "Found" %}</em></span>
     {% else %}
-        <span>{% trans "Hmm.. didn't find anything."%} <a href="{% url haystack_search %}?q={{ request.GET.q}}">{% trans 'Try the power search' %}</a>.</span>
+        <p>{% trans "Sorry, we didn't find anything for your search."%}</p>
     {% endif %}
     
 

@@ -25,41 +25,55 @@
         {% endif %}
 
         {% if membership.is_pending %}
-        <p><span style="background-color: #ECF716;">{% trans "Your membership is pending for admin approval." %}</span>
-          <br />{% trans "You will be notified shortly after your application is approved." %} 
+        <p>       	
+        	<span style="background-color: #ECF716;">
+        		{% if request.user.profile.is_superuser %}
+        		{% trans "This membership is pending." %}
+        		{% else %}
+        		{% trans "Your membership is pending for admin approval." %}
+        		<br />{% trans "You will be notified shortly after your application is approved." %} 
+        		{% endif %}
+        	</span>         
         </p>
         {% endif %}
         
-        {% with membership.get_invoice as invoice %}
-        {% if invoice and invoice.total > 0 %}
-        <p>
-            <a href="{% url invoice.view invoice.id invoice.guid %}">View Invoice{% if invoice.balance > 0 and SITE_GLOBAL_MERCHANTACCOUNT %} and Make Online Payment{% endif %}</a>
-        </p>
-        {% endif %}
-        {% endwith %}
+        <h4>What would you like to do now?</h4>
+        <ul>
+        	{% if membership.is_pending and request.user.profile.is_superuser %}
+        	<li>
+        		<a href="{% url admin:memberships_membershipdefault_change membership.id %}">Admin: Click here to edit and approve this membership</a>
+        	</li>
+        	{% endif %}
+        	 {% with membership.get_invoice as invoice %}
+	        {% if invoice and invoice.total > 0 %}
+	        <li>
+	            <a href="{% url invoice.view invoice.id invoice.guid %}">View Invoice{% if invoice.balance > 0 and SITE_GLOBAL_MERCHANTACCOUNT %} and Make Online Payment{% endif %}</a>
+	        </li>
+	        {% endif %}
+	        {% endwith %}
+	        
+	        {% if membership.corporate_membership_id %}
+	        {% with membership.corpmembership as corpmembership %}
+	        {% if corpmembership %}
+	        <li>
+	            <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}">Add <strong>More</strong> Members Under "{{ corpmembership.corp_profile.name }}"  </a>
+	        </li>
+	        <li><a href="{% url corpmembership.view membership.corporate_membership_id %}">Back to Corporate Membership - {{ corpmembership.corp_profile.name }}</a></li>
+	        {% endif %}
+	        {% endwith %}
+	        
+	        
+
+	        {% endif %}
+	        
+	        {% if membership.user.profile.is_active %}
+	        <li><a href="{% url profile membership.user.username %}">View Profile</a></li>
+	        {% endif %}
+        	
+        </ul>
+       
         
-        {% if membership.corporate_membership_id %}
-        {% with membership.corpmembership as corpmembership %}
-        {% if corpmembership %}
-        <p>&nbsp;</p>
-        <p>
-            <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}">Add More Members Under "{{ corpmembership.corp_profile.name }}" &raquo; </a>
-        </p>
-        {% endif %}
-        {% endwith %}
         
-        {% if request.user.is_superuser %}
-        <p><a href="{% url corpmembership.search %}">Back to Corporate Memberships &raquo;</a></p>
-        {% else %}
-            {% if request.user.is_authenticated %}
-            <p><a href="{% url corpmembership.mycorps %}">Back to My Corporate Memberships &raquo;</a></p>
-            {% endif %}
-        {% endif %}
-        {% endif %}
-        
-        {% if membership.user.profile.is_active %}
-        <p><a href="{% url profile membership.user.username %}">View Profile</a></p>
-        {% endif %}
         
         <p>&nbsp;</p>
 </div>

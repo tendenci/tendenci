@@ -21,8 +21,8 @@ def payment_thankyou_display(request, payment):
         obj = None
     else:
         obj = payment.invoice.get_object()
-
-        #print 'obj', obj._meta.app_label
+        if obj._meta.module_name == 'membershipset':
+            [obj] = obj.memberships()[:1] or [None]
 
         if obj:
             from django.template.loader import render_to_string

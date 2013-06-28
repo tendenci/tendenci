@@ -18,6 +18,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 
+from tendenci.core.base.http import Http403
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import tcurrency
@@ -35,6 +36,7 @@ from tendenci.addons.memberships.utils import (
 from tendenci.addons.memberships.middleware import ExceededMaxTypes
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import has_perm
 
 
 class MembershipStatusDetailFilter(SimpleListFilter):
@@ -321,6 +323,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     def get_status(self, instance):
         return instance.get_status().capitalize()
     get_status.short_description = u'Status'
+    get_status.admin_order_field = 'status_detail'
 
     def get_invoice(self, instance):
         if instance.get_invoice():
@@ -350,10 +353,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             return dt.strftime('%b %d, %Y, %I:%M %p')
         return u''
     get_approve_dt.short_description = u'Approved On'
+    get_approve_dt.admin_order_field = 'application_approved_dt'
 
     def get_actions(self, request):
         actions = super(MembershipDefaultAdmin, self).get_actions(request)
-        actions['delete_selected'][0].short_description = "Delete Selected"
+        if not has_perm(request.user, 'memberships.approve_membershipdefault'):
+            del actions['approve_selected']
         return actions
 
     def save_form(self, request, form, change):
@@ -405,6 +410,10 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         return super(MembershipDefaultAdmin, self).response_change(request, obj)
 
+    def has_change_permission(self, request, obj=None):
+        return (has_perm(request.user, 'memberships.approve_membershipdefault') or
+                has_perm(request.user, 'memberships.change_membershipdefault'))
+
     def get_urls(self):
         """
         Add the export view to urls.
@@ -435,6 +444,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         Approve membership and redirect to
         membershipdefault change page.
         """
+        if not has_perm(request.user, 'memberships.approve_membershipdefault'):
+            raise Http403
+
         m = get_object_or_404(MembershipDefault, pk=pk)
         m.approve(request_user=request.user)
         m.send_email(request, 'approve')
@@ -931,10 +943,10 @@ class AppEntryAdmin(admin.ModelAdmin):
             entry.judge = request.user
             entry.save()
 
-    def get_actions(self, request):
-        actions = super(AppEntryAdmin, self).get_actions(request)
-        del actions['delete_selected']
-        return actions
+    # def get_actions(self, request):
+    #     actions = super(AppEntryAdmin, self).get_actions(request)
+    #     del actions['delete_selected']
+    #     return actions
 
     def entry_name(self):
         return '<a href="%s">%s</a>' % (self.get_absolute_url(), self)

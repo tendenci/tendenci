@@ -3,6 +3,8 @@ import shutil
 import sys
 import boto
 import urllib
+from datetime import datetime
+from dateutil.parser import parse
 
 from django.conf import settings
 from django.core.cache import cache
@@ -31,15 +33,19 @@ DEFAULT_THEME_INFO = 'theme.info'
 
 # Class to hold theme info details
 class ThemeInfo(object):
+
     def __init__(self, theme):
+
         self.orig_name = theme
         self.name = theme
-        self.description = ''
-        self.tags = ''
-        self.screenshot = ''
-        self.author = ''
-        self.author_uri = ''
-        self.version = ''
+        self.description = u''
+        self.tags = u''
+        self.screenshot = u''
+        self.screenshot_thumbnail = u''
+        self.author = u''
+        self.author_uri = u''
+        self.version = u''
+        self.create_dt = datetime.now()
 
         theme_root = get_theme_root(theme)
         # check if theme info file exists
@@ -54,9 +60,14 @@ class ThemeInfo(object):
                 label, value = datum.split('=')
                 label = label.strip().replace(' ', '_').lower()
                 value = value.strip()
-                if label == 'screenshot':
-                    value = '/themes/' + theme + '/' + value
-                self.__setattr__(label, value)
+
+                if label == 'create_dt':
+                    value = parse(value)
+
+                if label in ('screenshot', 'screenshot_thumbnail'):
+                    value = os.path.join('/themes', theme, value)
+
+                setattr(self, label, value)
 
 # At compile time, cache the directories to search.
 fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()

@@ -358,9 +358,10 @@ def application_details(request, template_name="memberships/applications/details
 
         # if an application entry was submitted
         # after your current membership was created
-        if user.memberships.get_membership():
+        user_membership = user.memberships.get_membership()
+        if user_membership:
             pending_entries.filter(
-                entry_time__gte=user.memberships.get_membership().subscribe_dt
+                entry_time__gte=user_membership.subscribe_dt
             )
 
     try:
@@ -611,7 +612,13 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
     EventLog.objects.log(instance=entry)
 
+    approve_perm = has_perm(request.user, "memberships.approve_membership")
+
     if request.method == "POST":
+        # perm required for approval
+        if not approve_perm:
+            raise Http403
+
         form = MemberApproveForm(entry, request.POST)
         if form.is_valid():
 
@@ -676,6 +683,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     return render_to_response(template_name, {
         'entry': entry,
         'form': form,
+        'can_approve': approve_perm,
         }, context_instance=RequestContext(request))
 
 
@@ -768,13 +776,17 @@ def application_entries_search(request, template_name="memberships/entries/searc
     """
     Displays a page for searching membership application entries.
     """
+    user = request.user
     query = request.GET.get('q')
     if get_setting('site', 'global', 'searchindex') and query:
         entries = AppEntry.objects.search(query, user=request.user)
     else:
         status = request.GET.get('status', None)
-
-        filters = get_query_filters(request.user, 'memberships.view_appentry')
+        approve_perm = has_perm(user, 'memberships.approve_membership')
+        if approve_perm:
+            filters = get_query_filters(user, 'memberships.view_appentry', super_perm=True)
+        else:
+            filters = get_query_filters(user, 'memberships.view_appentry')
         entries = AppEntry.objects.filter(filters).distinct()
         if status:
             status_filter = get_status_filter(status)
@@ -1832,10 +1844,14 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
             # redirect: membership edit page
             if request.user.profile.is_superuser:
-                return HttpResponseRedirect(reverse(
-                    'admin:memberships_membershipdefault_change',
-                    args=[memberships[0].pk],
-                ))
+                if not membership.corporate_membership_id:
+                    # Redirect to admin backend only if it's not for corp members
+                    # For corp members, most likely they want to add more. So,
+                    # they are redirected to the confirmation page with "add more" link.
+                    return HttpResponseRedirect(reverse(
+                        'admin:memberships_membershipdefault_change',
+                        args=[memberships[0].pk],
+                    ))
 
             # send email notification to admin
             recipients = get_notice_recipients(

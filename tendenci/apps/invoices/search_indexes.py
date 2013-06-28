@@ -1,10 +1,9 @@
 from haystack import indexes
 from haystack import site
 
-from django.db.models import signals
-
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.search.indexes import CustomSearchIndex
+
 
 class InvoiceIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -44,4 +43,6 @@ class InvoiceIndex(CustomSearchIndex):
             return myobj._meta.verbose_name
         return obj.object_type
 
-site.register(Invoice, InvoiceIndex)
+# Removed from index after search view was updated to perform
+# all searches on the database.
+# site.register(Invoice, InvoiceIndex)

@@ -37,7 +37,6 @@ class DirectoryForm(TendenciBaseForm):
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
-    remove_photo = forms.BooleanField(label=_('Remove the current logo'), required=False)
 
     activation_dt = SplitDateTimeField(initial=datetime.now())
     expiration_dt = SplitDateTimeField(initial=datetime.now())
@@ -146,20 +145,23 @@ class DirectoryForm(TendenciBaseForm):
     def clean_logo(self):
         logo = self.cleaned_data['logo']
         if logo:
-            extension = splitext(logo.name)[1]
+            try:
+                extension = splitext(logo.name)[1]
 
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
+                # check the extension
+                if extension.lower() not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
 
-            # check the image header
-            image_type = '.%s' % imghdr.what('', logo.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+                # check the image header
+                image_type = '.%s' % imghdr.what('', logo.read())
+                if image_type not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
 
-            max_upload_size = get_max_file_upload_size()
-            if logo.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(logo.size)))
+                max_upload_size = get_max_file_upload_size()
+                if logo.size > max_upload_size:
+                    raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(logo.size)))
+            except IOError:
+                logo = None
 
         return logo
 
@@ -174,11 +176,6 @@ class DirectoryForm(TendenciBaseForm):
                                                         ('paid - pending approval', 'Paid - Pending Approval'),)
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
-
-        if self.instance.logo:
-            self.fields['logo'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current logo: <a target="_blank" href="/site_media/media/%s">%s</a>' % (self.instance.logo, basename(self.instance.logo.file.name))
-        else:
-            self.fields.pop('remove_photo')
 
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
@@ -214,8 +211,6 @@ class DirectoryForm(TendenciBaseForm):
         directory = super(DirectoryForm, self).save(*args, **kwargs)
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration
-        if self.cleaned_data.get('remove_photo'):
-            directory.logo = None
         return directory
 
 

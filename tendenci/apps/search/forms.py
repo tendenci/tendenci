@@ -31,6 +31,7 @@ apps_not_to_search = [
     'redirect',
     'user',
     'story',
+    'member',
 ]
 
 registered_apps = registry_site.get_registered_apps()

@@ -37,21 +37,21 @@
 {% has_perm user eventlogs.view_setting as view_settings %}
 {% has_perm user forms.view_form as view_forms %}
 {% has_perm user resumes.view_reume as view_resumes %}
-{% dashboard_nav user %}	
+{% dashboard_nav user %}    
 
 <div class="main-panel">
 
     {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
         {% if user.is_superuser %}
-	        {% if not has_paid and activate_url %}
-			<div class=" alert-message block-message fade in" data-alert="alert">
-				<a class="close" href="#">×</a>
-				Your free trial period {% if expired %}expired{% else %}expires{% endif %} on {{ expiration_dt }}.
-				<div class="alert-actions">
-		            <a class="btn" href="{{ activate_url }}">Activate Your Account</a>
-		        </div> 
-			</div>
-			{% endif %}
+            {% if not has_paid and activate_url %}
+            <div class=" alert-message block-message fade in" data-alert="alert">
+                <a class="close" href="#">×</a>
+                Your free trial period {% if expired %}expired{% else %}expires{% endif %} on {{ expiration_dt }}.
+                <div class="alert-actions">
+                    <a class="btn" href="{{ activate_url }}">Activate Your Account</a>
+                </div> 
+            </div>
+            {% endif %}
         
         
         <div class="alert-message block-message fade in success" data-alert="alert">
@@ -66,36 +66,36 @@
         {% endif %}
     {% endif %}
 
-	<div class="modules">
-	<ul>
+    <div class="modules">
+    <ul>
 
-		{% if MODULE_USERS_ENABLED %}
-    	<li class="users"><a href="{% url profile.search %}"><span>{% trans "Users" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_USERS_ENABLED %}
+        <li class="users"><a href="{% url profile.search %}"><span>{% trans "Users" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_GROUPS_ENABLED %}
-    	<li class="groups"><a href="{% url group.search %}"><span>{% trans "Groups" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_GROUPS_ENABLED %}
+        <li class="groups"><a href="{% url group.search %}"><span>{% trans "Groups" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_ARTICLES_ENABLED %}
-    	<li class="articles"><a href="{% url article.search %}"><span>{% trans "Articles" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_ARTICLES_ENABLED %}
+        <li class="articles"><a href="{% url article.search %}"><span>{% trans "Articles" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_NEWS_ENABLED %}
-    	<li class="news"><a href="{% url news.search %}"><span>{%  trans "News" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_NEWS_ENABLED %}
+        <li class="news"><a href="{% url news.search %}"><span>{%  trans "News" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_DIRECTORIES_ENABLED %}
-    	<li class="directories"><a href="{% url directory.search %}"><span>{% trans "Directories" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_DIRECTORIES_ENABLED %}
+        <li class="directories"><a href="{% url directory.search %}"><span>{% trans "Directories" %}</span></a></li>
+        {% endif %}
 
         {% if MODULE_JOBS_ENABLED %}
         <li class="jobs"><a href="{% url job.search %}"><span>{%  trans "Jobs" %}</span></a></li>
         {% endif %}
 
- 		{% if MODULE_RESUMES_ENABLED %}
-    	<li class="resumes"><a href="{% url resume.search %}"><span>{%  trans "Resumes" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_RESUMES_ENABLED %}
+        <li class="resumes"><a href="{% url resume.search %}"><span>{%  trans "Resumes" %}</span></a></li>
+        {% endif %}
  
         {% if MODULE_MEMBERSHIPS_ENABLED %}
         <li class="memberships">
@@ -110,55 +110,55 @@
         <li class="events"><a href="{% url event.month %}"><span>{% trans "Events" %}</span></a></li>
         {% endif %}
 
-		{% if MODULE_PHOTOS_ENABLED %}
+        {% if MODULE_PHOTOS_ENABLED %}
         <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% trans "Photo Albums" %}</span></a></li>
-		{% endif %}
-		
-		{% if MODULE_STORIES_ENABLED %}
-    	<li class="stories"><a href="{% url story.search %}"><span>{% trans "Stories" %}</span></a></li>
-		{% endif %}
+        {% endif %}
+        
+        {% if MODULE_STORIES_ENABLED %}
+        <li class="stories"><a href="{% url story.search %}"><span>{% trans "Stories" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_PAGES_ENABLED %}
-    	<li class="pages"><a href="{% url page.search %}"><span>{% trans "Pages" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_PAGES_ENABLED %}
+        <li class="pages"><a href="{% url page.search %}"><span>{% trans "Pages" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_FILES_ENABLED %}
-     	<li class="files"><a href="{% url file.search %}"><span>{% trans "Files" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_FILES_ENABLED %}
+        <li class="files"><a href="{% url file.search %}"><span>{% trans "Files" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_LOCATIONS_ENABLED %}
-		<li class="locations"><a href="{% url location.search %}"><span>{%  trans "Locations" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_LOCATIONS_ENABLED %}
+        <li class="locations"><a href="{% url location.search %}"><span>{%  trans "Locations" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_CONTRIBUTIONS_ENABLED %}
-		<li class="contributions"><a href="{% url contribution.search %}"><span>{% trans "Contributions" %}</span></a></li>
-		{% endif %}
+        {% if MODULE_CONTRIBUTIONS_ENABLED %}
+        <li class="contributions"><a href="{% url contribution.search %}"><span>{% trans "Contributions" %}</span></a></li>
+        {% endif %}
 
-		{% if MODULE_INVOICES_ENABLED %}
+        {% if MODULE_INVOICES_ENABLED %}
          <li class="invoices"><a href="{% url invoice.search %}"><span>{%  trans "Invoices" %}</span></a></li>
- 		{% endif %}
+        {% endif %}
 
-		{% if MODULE_FORMS_ENABLED %}
+        {% if MODULE_FORMS_ENABLED %}
          <li class="forms"><a href="{% url forms %}"><span>{%  trans "Forms" %}</span></a></li>
- 		{% endif %}
- 		
-		{% if user.is_superuser %}
-		 <li class="redirects"><a href="{% url redirects %}"><span>{% trans "Redirects" %}</span></a></li>
-		<li class="contacts"><a href="{% url contact.search %}"><span>{%  trans "Contacts" %}</span></a></li>
-     	<li class="settings"><a href="{% url settings %}"><span>{% trans "Settings" %}</span></a></li>
+        {% endif %}
+        
+        {% if user.is_superuser %}
+         <li class="redirects"><a href="{% url redirects %}"><span>{% trans "Redirects" %}</span></a></li>
+        <li class="contacts"><a href="{% url contact.search %}"><span>{%  trans "Contacts" %}</span></a></li>
+        <li class="settings"><a href="{% url settings %}"><span>{% trans "Settings" %}</span></a></li>
         <li class="event-logs"><a href="{% url event_logs %}"><span>{% trans "Event Logs" %}</span></a></li>
-		<li class="rss"><a href="/rss/"><span>RSS</span></a></li>
-		{% endif %}
+        <li class="rss"><a href="/rss/"><span>RSS</span></a></li>
+        {% endif %}
 
- 		<div style="clear: both"><!-- IE7 --></div>
+        <div style="clear: both"><!-- IE7 --></div>
     </ul>
     </div> <!-- modules -->
 
 
     <div class="rss-feeds">
         <div class="rss-feed">
-        	<h3>{% trans "Tendenci Blog" %}</h3>
-			{% cache 86400 tendenci_blog_rss %}
+            <h3>{% trans "Tendenci Blog" %}</h3>
+            {% cache 86400 tendenci_blog_rss %}
                 {% get_rss "http://blog.tendenci.com/feed/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
@@ -168,12 +168,12 @@
                     </li>
                 {% endfor %}
                 </ul>
-			{% endcache %}
+            {% endcache %}
         </div>
         
         <div class="rss-feed">
-        	<h3>{% trans "Tendenci Help" %}</h3>
-			{% cache 86400 tendenci_help_rss %}
+            <h3>{% trans "Tendenci Help" %}</h3>
+            {% cache 86400 tendenci_help_rss %}
                 {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
@@ -183,7 +183,7 @@
                     </li>
                 {% endfor %}
                 </ul>
-			{% endcache %}
+            {% endcache %}
         </div>
     </div>
 
@@ -191,24 +191,24 @@
 
 
 <div class="side-panel">
-	{% if user.is_superuser %}
-	<div class="admin-quick-links">
+    {% if user.is_superuser %}
+    <div class="admin-quick-links">
     <h3>{% trans "Admin Quick Links" %}</h3>
-	<ul>
-		{% if MODULE_PAGES_ENABLED %}
-    	<li><a href="{% url page.add %}">{% trans "Add a page" %}</a></li>
-		{% endif %}
+    <ul>
+        {% if MODULE_PAGES_ENABLED %}
+        <li><a href="{% url page.add %}">{% trans "Add a page" %}</a></li>
+        {% endif %}
 
-		<li><a href="{% url haystack_search %}">{% trans "Search All Modules" %}</a></li>
+        <li><a href="{% url haystack_search %}">{% trans "Search All Modules" %}</a></li>
 
-		<!--<li><a href="{% url entity.search %}">Search entities</a></li>
-    	<li><a href="javascript:;">Edit navigation</a></li>
-    	<li><a href="{% url event_log.search %}">Search event logs</a></li>
-    	<li><a href="{% url profile.search %}">Search users</a></li>-->
-    	<li><a href="{% url import.user_upload_add %}">{% trans "Import Users" %}</a></li>
-    	<!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
-    	<li><a href="{% url settings %}">{% trans "Enable/Disable modules" %}</a></li>
-    	<!-- <li><a href="javascript:;">Update SEM</a></li> -->
+        <!--<li><a href="{% url entity.search %}">Search entities</a></li>
+        <li><a href="javascript:;">Edit navigation</a></li>
+        <li><a href="{% url event_log.search %}">Search event logs</a></li>
+        <li><a href="{% url profile.search %}">Search users</a></li>-->
+        <li><a href="{% url import.user_upload_add %}">{% trans "Import Users" %}</a></li>
+        <!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
+        <li><a href="{% url settings %}">{% trans "Enable/Disable modules" %}</a></li>
+        <!-- <li><a href="javascript:;">Update SEM</a></li> -->
         <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
        <li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
@@ -217,12 +217,11 @@
         {% endif %}
     </ul>
     </div>
-    	
-	
+        
+    
     {% endif %}
 </div>
 
 <div style="clear:both;"></div>
 
 {% endblock %}
-

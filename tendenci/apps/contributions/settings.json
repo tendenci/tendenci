@@ -1,0 +1,19 @@
+[
+    {
+        "default_value": "contributions", 
+        "description": "The root url for the contributions app. Use letters and dashes only.", 
+        "data_type": "string",
+        "update_dt": "2012-02-16 15:25:04",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "url", 
+        "value": "contributions", 
+        "label": "Root URL", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "contributions", 
+        "store": true, 
+        "updated_by": ""
+    }
+]

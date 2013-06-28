@@ -1,0 +1,80 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
+{% block meta_description %}{{ event.get_description }}{% endblock %}
+{% block meta_keywords %}{{ event.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% event_nav user event %}
+    <div class="speakers-wrap">
+		<div class="info">
+	        <h1><a href="{% url event event.pk %}">{{ event.title }}</a></h1>
+
+            <h3>{% trans "Speaker List" %}</h3>
+
+            {% for speaker in speakers %}
+                <div class="speaker-wrap">
+                    {% if speaker.get_photo %}
+                    <div class="speaker-photo">
+                      <img alt="Speaker: {{ speaker.name }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
+                    </div>
+                    {% endif %}
+                    <div class="speaker">
+                        <strong>{% trans "Speaker" %}</strong> {{ speaker.name }}
+                    </div>
+                    {% if speaker.description|striptags|wordcount > 50 %}
+                    <div class="speaker-desc-short">
+                        {{ speaker.description|striptags|safe|truncatewords:"50" }}
+                    </div>
+                    <div class="speaker-desc-long">
+                        {{ speaker.description|safe|urlize|linebreaks }}
+                    </div>
+                    {% else %}
+                        <div class="speaker-desc-short">
+                            {{ speaker.description|safe|urlize|linebreaks }}
+                        </div>                    
+                    {% endif %}
+                    {% if speaker.description|striptags|wordcount > 50 %}
+                    <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
+                    {% endif %}
+                    <div style="clear:both;"></div>
+                </div>                      
+            {% endfor %}      
+		</div> <!-- end info -->
+    </div>
+
+</div>
+
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+		$(document).ready(function(){
+            // speaker description toggle
+            $('a.speaker-desc-toggle').click(function() {
+                var _this = $(this);
+                var speaker_wrap = _this.parents('.speaker-wrap');
+
+                _this.hide();
+                speaker_wrap.find('div.speaker-desc-short').hide();
+                speaker_wrap.find('div.speaker-desc-long').show();
+                return false;
+            });
+		});
+    </script>
+{% endblock %}

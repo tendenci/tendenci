@@ -24,13 +24,13 @@
             "username": "m_stripe",
             "first_name": "Mark",
             "last_name": "Stripe",
-            "is_active": true,
+            "is_active": false,
             "is_superuser": true,
             "is_staff": true,
             "last_login": "2012-12-31T15:13:01.369",
             "groups": [],
             "user_permissions": [],
-            "password": "pbkdf2_sha256$10000$bspQiS1I4nte$trq1lhoIOfpXhtcy7QEOtcN0di9JXUhM8HiY1/xIFX8=",
+            "password": "",
             "email": "Mark.Stripe@theassociaton.com",
             "date_joined": "2012-12-31T15:13:01.369"
         }

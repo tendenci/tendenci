@@ -29,12 +29,22 @@
 		<div class="info">
 	        <h1>{{ event.title }}</h1>
 
-            {% for speaker in speakers %}
-                {% if speaker.name %}
+            <ul class="tabs">
+                <li class="dropdown active">
+                    <a id="event_detail_tab" href="#">{% trans "Event Details" %}</a>
+                </li>
+                <li class="dropdown">
+                    <a id="event_files_tab" href="#">{% trans "Event Files" %}</a>
+                </li>
+            </ul>
+
+            <!-- Event Details -->
+            <div class="details-wrap">
+                {% for speaker in speakers|slice:"1" %}
                 <div class="speaker-wrap">
                     {% if speaker.get_photo %}
                     <div class="speaker-photo">
-                      <img alt="Speaker: {{ speaker.name }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
+                        <img alt="Speaker: {{ speaker.name }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
                     </div>
                     {% endif %}
                     <div class="speaker">
@@ -48,74 +58,102 @@
                         {{ speaker.description|safe|urlize|linebreaks }}
                     </div>
                     {% else %}
-                        <div class="speaker-desc-short">
-                            {{ speaker.description|safe|urlize|linebreaks }}
-                        </div>                    
+                    <div class="speaker-desc-short">
+                        {{ speaker.description|safe|urlize|linebreaks }}
+                    </div>                    
                     {% endif %}
                     {% if speaker.description|striptags|wordcount > 50 %}
                     <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
                     {% endif %}
                     <div style="clear:both;"></div>
-                </div>
-                {% endif %}                        
-            {% endfor %}
+                </div>              
+                {% endfor %}
+                {% if speakers|length > 1 %}
+                <a href="{% url event.speakers event.pk %}">{% trans "Speaker info" %}</a>
+                {% endif %}
 	        
-            <!-- event description -->
-            <div class="content">
-                {% if event.image %}
-                <div class="photo">
-                    <img src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
+                <!-- event description -->
+                <div class="content">
+                    {% if event.image %}
+                    <div class="photo">
+                        <img src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
+                    </div>
+                    {% endif %}
+                    <div class="event-desc">{{ event.description|safe }}</div>
                 </div>
-                {% endif %}
-                <div class="event-desc">{{ event.description|safe }}</div>
-            </div>
 
-            {% if organizer.name %}
-            <div class="organizer-wrap">
-                <div class="organizer">
-                    <strong>{% trans "Organizer" %}</strong> {{ organizer.name }}
-                </div>
-                {% if organizer.description|striptags|wordcount > 50 %}
-                <div class="organizer-desc-short">
-                    {{ organizer.description|striptags|truncatewords:"50" }}
-                </div>
-                <div class="organizer-desc-long">
-                    {{ organizer.description|safe|urlize|linebreaks }}
-                </div>
-                {% else %}
+                {% if organizer.name %}
+                <div class="organizer-wrap">
+                    <div class="organizer">
+                        <strong>{% trans "Organizer" %}</strong> {{ organizer.name }}
+                    </div>
+                    {% if organizer.description|striptags|wordcount > 50 %}
                     <div class="organizer-desc-short">
+                        {{ organizer.description|striptags|truncatewords:"50" }}
+                    </div>
+                    <div class="organizer-desc-long">
                         {{ organizer.description|safe|urlize|linebreaks }}
-                    </div>                    
+                    </div>
+                    {% else %}
+                        <div class="organizer-desc-short">
+                            {{ organizer.description|safe|urlize|linebreaks }}
+                        </div>                    
+                    {% endif %}
+                    {% if organizer.description|striptags|wordcount > 50 %}
+                    <a class="organizer-desc-toggle" href="#">{% trans "Full Description" %}</a>
+                    {% endif %}
+                </div>
                 {% endif %}
-                {% if organizer.description|striptags|wordcount > 50 %}
-                <a class="organizer-desc-toggle" href="#">{% trans "Full Description" %}</a>
+            
+                {% if addons %}
+                    <hr/>
+                    <h2 class="addons-title">{% trans "Addons" %}</h2>
+                    <div class="addons-wrap">
+                        {% for addon in addons %}
+                            <h2>{{ addon.title }}</h2>
+                            <table class="addon-detail">
+                            <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
+                            {% if addon.options.all %}
+                            <tr>
+                                <td><strong>Options</strong></td>
+                                <td>
+                                {% for op in addon.options.all %}
+                                {{ op.title }}{% if not forloop.last%}, {% endif %}
+                                {% endfor %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            </table>
+                        {% endfor %}
+                    </div>
                 {% endif %}
             </div>
-            {% endif %}
-            
-            {% if addons %}
-                <hr/>
-                <h2 class="addons-title">{% trans "Addons" %}</h2>
-                <div class="addons-wrap">
-                    {% for addon in addons %}
-                        <h2>{{ addon.title }}</h2>
-                        <table class="addon-detail">
-                        <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
-                        {% if addon.options.all %}
-                        <tr>
-                            <td><strong>Options</strong></td>
-                            <td>
-                            {% for op in addon.options.all %}
-                            {{ op.title }}{% if not forloop.last%}, {% endif %}
-                            {% endfor %}
-                            </td>
-                        </tr>
-                        {% endif %}
-                        </table>
+            <div class="files-wrap">
+                {% if event_files %}
+                    <h3>{% trans "Event Files" %}</h3>
+                    {% for file in event_files %}
+                        {% file_detail file %}
                     {% endfor %}
-                </div>
-            {% endif %}
-            
+                {% endif %}
+                {% if speaker_files %}
+                    <h3>{% trans "Speaker Files" %}</h3>
+                    {% for file in speaker_files %}
+                        {% file_detail file %}
+                    {% endfor %}
+                {% endif %}
+                {% if organizer_files %}
+                    <h3>{% trans "Organizer Files" %}</h3>
+                    {% for file in organizer_files %}
+                        {% file_detail file %}
+                    {% endfor %}
+                {% endif %}
+                {% if place_files %}
+                    <h3>{% trans "Location Files" %}</h3>
+                    {% for file in place_files %}
+                        {% file_detail file %}
+                    {% endfor %}
+                {% endif %}
+            </div>
 		</div> <!-- end info -->
 
 		<div class="vitals">
@@ -199,6 +237,25 @@
                 gravity: 'e', 
                 live: true 
             });
+
+            $('.files-wrap').hide();
+            $('a#event_detail_tab').click(function(){
+                var _this = $(this);
+                $('.event-wrap .tabs .dropdown').removeClass('active');
+                _this.parent().addClass('active');
+                $('.details-wrap').show();
+                $('.files-wrap').hide();
+                return false;
+            });
+            $('a#event_files_tab').click(function(){
+                var _this = $(this);
+                $('.event-wrap .tabs .dropdown').removeClass('active');
+                _this.parent().addClass('active');
+                $('.details-wrap').hide();
+                $('.files-wrap').show();
+                return false;
+            });
+
             // speaker description toggle
             $('a.speaker-desc-toggle').click(function() {
                 var _this = $(this);

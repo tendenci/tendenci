@@ -14,6 +14,8 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 
+from simple_salesforce import Salesforce
+
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.utils import get_theme_root
 
@@ -38,7 +40,6 @@ THEME_ROOT = get_theme_root()
 
 # this function is not necessary - datetime.now() *is* localized in django
 def now_localized():
-    from datetime import datetime
     from timezones.utils import adjust_datetime_to_timezone
     from time import strftime, gmtime
     
@@ -385,7 +386,6 @@ def url_exists(url):
         return False
 
 def parse_image_sources(string):
-    import re
     p = re.compile('<img[^>]* src=\"([^\"]*)\"[^>]*>')
     image_sources = re.findall(p, string)
     return image_sources
@@ -459,7 +459,8 @@ def in_group(user, group):
         in_group(user,'administrator')
         returns boolean
     """
-    return group in [dict['name'].lower() for dict in user.groups.values('name')]
+    return user.groups.filter(id=group.id).exists()
+
 
 def detect_template_tags(string):
     """
@@ -467,7 +468,6 @@ def detect_template_tags(string):
         template tags in the system
         returns boolean
     """
-    import re
     p = re.compile('{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
     return p.search(string)
 
@@ -520,7 +520,7 @@ def template_exists(template):
         return False
     return True
 
-def fieldify(str):
+def fieldify(s):
     """Convert the fields in the square brackets to the django field type. 
     
         Example: "[First Name]: Lisa" 
@@ -529,7 +529,7 @@ def fieldify(str):
     """
     #p = re.compile('(\[([\w\d\s_-]+)\])')
     p = re.compile('(\[(.*?)\])')
-    return p.sub(slugify_fields, str)
+    return p.sub(slugify_fields, s)
 
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
@@ -664,3 +664,61 @@ class UnicodeWriter:
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
+
+
+def get_salesforce_access():
+
+    required_settings = (hasattr(settings, 'SALESFORCE_USERNAME'),
+                         hasattr(settings, 'SALESFORCE_PASSWORD'),
+                         hasattr(settings, 'SALESFORCE_SECURITY_TOKEN'))
+
+    if all(required_settings):
+        try:
+            sf = Salesforce(username=settings.SALESFORCE_USERNAME,
+                            password=settings.SALESFORCE_PASSWORD,
+                            security_token=settings.SALESFORCE_SECURITY_TOKEN)
+            return sf
+        except:
+            print 'Salesforce authentication failed'
+
+    return None
+
+
+def create_salesforce_contact(profile):
+
+    if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:
+        if profile.sf_contact_id:
+            return profile.sf_contact_id
+        else:
+            sf = get_salesforce_access()
+            # Make sure that user last name is not blank
+            # since that is a required field for Salesforce Contact.
+            if sf and profile.user.last_name:
+                contact = sf.Contact.create({
+                    'FirstName':profile.user.first_name,
+                    'LastName':profile.user.last_name,
+                    'Email':profile.user.email})
+                
+                profile.sf_contact_id = contact['id']
+                profile.save()
+                return contact['id']
+    return None
+
+
+def directory_cleanup(dir_path, ndays):
+    """
+    Delete the files that are older than 'ndays' in the directory 'dir_path'
+    The 'dir_path' should be a relative path. We cannot use os.walk.
+    """
+    foldernames, filenames = default_storage.listdir(dir_path)
+    for filename in filenames:
+        if not filename:
+            continue
+        file_path = os.path.join(dir_path, filename)
+        modified_dt = default_storage.modified_time(file_path)
+        if modified_dt + timedelta(days=ndays) < datetime.now():
+            # the file is older than ndays, delete it
+            default_storage.delete(file_path)
+    for foldername in foldernames:
+        folder_path = os.path.join(dir_path, foldername)
+        directory_cleanup(folder_path, ndays)

@@ -13,7 +13,7 @@
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
-    
+
         {% if tags %}
         <div class="tags"><strong>{% trans "Tags:" %} </strong>
             {% for tag in tags %}
@@ -28,7 +28,7 @@
             {% if event.creator.first_name %}{{ event.creator.first_name }} {{ event.creator.last_name }}
             {% else %}
             {{ event.creator }}
-       {% endif %}</a>
+            {% endif %}</a>
         </div>
         
         <div class="submitted">{% blocktrans with event.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
@@ -41,11 +41,18 @@
         {% endif %}
         
     </div>
-    
-    <div class="meta-right">
-        <a class="print-link" href="{% url event.print_view event.pk %}">{% trans "Print" %}</a>
-        <a class="share-link" >{% trans "Share" %}</a>
-    </div>
+
+    {% if user.is_authenticated %}    
+        <div class="meta-right">
+            <a class="print-link" href="{% url event.print_view event.pk %}">{% trans "Print" %}</a>
+        </div>
+    {% else %}
+        <div>
+            <a class="print-link" href="{% url event.print_view event.pk %}">{% trans "Print" %}</a>
+        </div>
+    {% endif %}
+
+    <div style="clear:both;"></div>
 </div>
 {% if can_edit %}
 <div class="editor-bar">

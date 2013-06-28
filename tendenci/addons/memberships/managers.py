@@ -37,7 +37,8 @@ class MemberAppEntryManager(TendenciBaseManager):
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        if user.profile.is_superuser:
+
+        if user.profile.is_superuser or has_perm(user, 'memberships.approve_membership'):
             sqs = sqs.all()
         else:
             if user.is_anonymous():
@@ -317,7 +318,7 @@ class MembershipManager(Manager):
         return silenced_memberships
 
 
-class MembershipDefaultManager(Manager):
+class MembershipDefaultManager(TendenciBaseManager):
     def first(self, **kwargs):
         """
         Returns first instance that matches filters.

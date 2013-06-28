@@ -1329,9 +1329,7 @@ class CustomRegFieldEntry(models.Model):
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
 class EventPhoto(File):
-    @property
-    def content_type(self):
-        return 'events'
+    pass
 
 class Addon(models.Model):
     event = models.ForeignKey(Event)

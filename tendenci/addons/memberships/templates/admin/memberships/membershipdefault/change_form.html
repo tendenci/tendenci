@@ -1,5 +1,6 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_modify %}
+{% load perm_tags %}
 
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
@@ -9,28 +10,31 @@
     <li><a href="{% url profile original.user.username %}">
         {% trans "Go to profile" %}</a></li>
 
-    
     {% if original.can_renew %}
+        {% if original.app %}
         <li><a href="{% url membership_default.add original.app.slug %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
+        {% endif %}
     {% elif original.is_approved %}
         <li><a href="{% url admin:membership.admin_expire original.pk %}" >{{ original.get_status|capfirst }} &rarr; {% trans "Expire" %}</a></li>
     {% elif original.is_expired %}
+        {% if original.app %}
         <li><a href="{% url membership_default.add original.app.slug %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
+        {% endif %}
     {% elif original.is_disapproved %}
+        {% has_perm user memberships.approve_membershipdefault as can_approve %}
+        {% if can_approve %}
         <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
+        {% endif %}
     {% elif original.is_pending %}
+        {% has_perm user memberships.approve_membershipdefault as can_approve %}
+        {% if can_approve %}
         <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
+        {% endif %}
     {% endif %}
 
     <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
-
-    {% comment %}
-    {# link removed since it points to this admin page #}
-    {# The Go to Profile link above is a good replacement #}
-    {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
-    {% endcomment %}
 
     {% endblock %}
   </ul>
