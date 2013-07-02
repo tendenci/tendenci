@@ -19,8 +19,8 @@ def sim_thank_you(request, payment_id,
 
 @csrf_exempt
 def silent_post(request):
-    payment = authorizenet_thankyou_processing(request,
-                                            dict(request.POST.items()))
+    payment = authorizenet_thankyou_processing(
+        request, dict(request.POST.items()))
 
     log_silent_post(request, payment)
 
