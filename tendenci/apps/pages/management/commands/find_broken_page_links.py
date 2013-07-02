@@ -28,13 +28,13 @@ class Command(BaseCommand):
         broken_links = []
         for link in links:
 
-            url = link.get('href')
+            url = link.get('href', u'')
 
             try:
                 if url.startswith('/'):
                     url = self.SITE_URL + url
 
-                r = requests.head(url, timeout=10)
+                r = requests.head(url)
                 if not r.ok:
                     broken_links.append(link)
 
