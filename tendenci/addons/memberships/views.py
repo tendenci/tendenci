@@ -1584,12 +1584,13 @@ def membership_default_add(request, slug='', template='memberships/applications/
             is_verified = True
         elif authentication_method == 'email':
             try:
-                indiv_veri = IndivEmailVerification.objects.get(pk=imv_id,
-                                                              guid=imv_guid)
-                if indiv_veri.verified:
-                    is_verified = True
+                indiv_veri = IndivEmailVerification.objects.get(
+                    pk=imv_id, guid=imv_guid)
+                is_verified = indiv_veri.verified
+
             except IndivEmailVerification.DoesNotExist:
                 pass
+
         elif authentication_method == 'secret_code':
             tmp_secret_hash = md5('%s%s' % (corp_membership.corp_profile.secret_code,
                         request.session.get('corp_hash_random_string', ''))
