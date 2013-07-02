@@ -1571,8 +1571,11 @@ def membership_default_add(request, slug='', template='memberships/applications/
             return redirect(reverse('membership_default.corp_pre_add'))
         # check if they have verified their email or entered the secret code
         corp_membership = get_object_or_404(CorpMembership, id=cm_id)
+
+        # imv = individual membership verification
         imv_id = kwargs.get('imv_id', 0)
         imv_guid = kwargs.get('imv_guid')
+
         secret_hash = kwargs.get('secret_hash', '')
 
         is_verified = False
