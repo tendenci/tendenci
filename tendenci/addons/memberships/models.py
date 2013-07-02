@@ -1665,11 +1665,11 @@ class MembershipDefault(TendenciBaseModel):
         from tendenci.apps.notifications.utils import send_welcome_email
 
         open_renewal = (
-            self.renewal,
+            self.is_renewal(),
             not self.membership_type.renewal_require_approval)
 
         open_join = (
-            not self.renewal,
+            not self.is_renewal(),
             not self.membership_type.require_approval)
 
         can_approve = all(open_renewal) or all(open_join)
