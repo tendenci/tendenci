@@ -1812,12 +1812,16 @@ def membership_default_add(request, slug='', template='memberships/applications/
             for membership in memberships:
                 membership.membership_set = membership_set
 
-                requires_approval = (
+                approval_required = (
                     membership.approval_required(),
                     join_under_corporate and authentication_method == 'admin')
 
-                if any(requires_approval):
+                if any(approval_required):
                     membership.pend()
+                    if membership.is_renewal():
+                        membership.send_email(request, 'renewal')
+                    else:
+                        membership.send_email(request, 'join')
                 else:
                     membership.approve(request_user=customer)
                     membership.send_email(request, 'approve')
