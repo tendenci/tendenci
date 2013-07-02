@@ -1602,7 +1602,8 @@ def membership_default_add(request, slug='', template='memberships/applications/
             return redirect(reverse('membership_default.corp_pre_add',
                                     args=[cm_id]))
 
-    else:
+    else:  # regular membership
+
         app = get_object_or_404(MembershipApp, slug=slug)
 
         if app.use_for_corp:
