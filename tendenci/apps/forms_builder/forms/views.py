@@ -420,7 +420,6 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             else:
                 entry.creator = request.user
             entry.save()
-            entry.set_group_subscribers()
 
             # Email
             subject = generate_email_subject(form, entry)

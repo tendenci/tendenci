@@ -70,9 +70,8 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
-    FormForCustomRegForm, RegConfPricingBaseModelFormSet, GlobalRegistrantSearchForm,
-    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm,
-    EventRegistrantSearchForm)
+    FormForCustomRegForm, RegConfPricingBaseModelFormSet, RegistrantSearchForm,
+    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm)
 from tendenci.addons.events.utils import (email_registrants,
     render_event_email, get_default_reminder_template,
     add_registration, registration_has_started, registration_has_ended,
@@ -2210,7 +2209,7 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
 @is_enabled('events')
 def global_registrant_search(request, template_name='events/registrants/global-search.html'):
 
-    form = GlobalRegistrantSearchForm(request.GET)
+    form = RegistrantSearchForm(request.GET)
 
     if form.is_valid():
         event = form.cleaned_data.get('event')
@@ -2222,7 +2221,7 @@ def global_registrant_search(request, template_name='events/registrants/global-s
         email = form.cleaned_data.get('email')
         user_id = form.cleaned_data.get('user_id')
 
-    registrants = Registrant.objects.filter(registration__invoice__isnull=False).order_by("-update_dt")
+    registrants = Registrant.objects.order_by("-update_dt")
 
     if event:
         registrants = registrants.filter(registration__event=event)
@@ -2248,40 +2247,39 @@ def global_registrant_search(request, template_name='events/registrants/global-s
 @is_enabled('events')
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):
-    search_criteria = None
-    search_text = None
-    search_method = None
-    status = request.GET.get('status', None)
+    query = request.GET.get('q', None)
+    page = request.GET.get('page', 1)
 
     event = get_object_or_404(Event, pk=event_id)
 
     if not (has_perm(request.user,'events.view_registrant') or has_perm(request.user,'events.change_event', event)):
         raise Http403
 
-    form = EventRegistrantSearchForm(request.GET)
-    if form.is_valid():
-        search_criteria = form.cleaned_data.get('search_criteria')
-        search_text = form.cleaned_data.get('search_text')
-        search_method = form.cleaned_data.get('search_method')
+    if not query:
+        # pull directly from db
+        sqs = Registrant.objects.filter(registration__event=event)
+        registrants = sqs.order_by("-update_dt")
+        active_registrants = sqs.filter(cancel_dt=None).order_by("-update_dt")
+        canceled_registrants = sqs.exclude(cancel_dt=None).order_by("-update_dt")
+    else:
+        sqs = SearchQuerySet().models(Registrant).filter(event_pk=event.id)
+        sqs = sqs.auto_query(sqs.query.clean(query))
+        registrants = sqs.order_by("-update_dt")
+        active_registrants = Registrant.objects.filter(registration__event=event).filter(cancel_dt=None).order_by("-update_dt")
+        canceled_registrants = Registrant.objects.filter(registration__event=event).exclude(cancel_dt=None).order_by("-update_dt")
 
-    registrants = Registrant.objects.filter(registration__event=event).order_by("-update_dt")
-    active_registrants = registrants.filter(cancel_dt=None).count()
-    canceled_registrants = registrants.exclude(cancel_dt=None).count()
+    all_registrants = registrants
 
-    if search_criteria and search_text:
-        search_type = '__iexact'
-        if search_method == 'starts_with':
-            search_type = '__istartswith'
-        elif search_method == 'contains':
-            search_type = '__icontains'
-        search_filter = {'%s%s' % (search_criteria,
-                                   search_type): search_text}
-        registrants = registrants.filter(**search_filter)
-
-    if status == 'active':
-        registrants = registrants.filter(cancel_dt=None)
-    elif status == 'canceled':
-        registrants = registrants.exclude(cancel_dt=None)
+    if page:
+        registrants_paginator = Paginator(registrants, 10)
+        try:
+            registrants = registrants_paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            registrants = registrants_paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            registrants = registrants_paginator.page(registrants_paginator.num_pages)
 
     for reg in registrants:
         if hasattr(reg, 'object'): reg = reg.object
@@ -2296,9 +2294,10 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     return render_to_response(template_name, {
         'event':event,
         'registrants':registrants,
+        'all_registrants': all_registrants,
         'active_registrants':active_registrants,
         'canceled_registrants':canceled_registrants,
-        'form':form,
+        'query': query,
         }, context_instance=RequestContext(request))
 
 

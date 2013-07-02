@@ -223,6 +223,8 @@ class Field(OrderingBaseModel):
                             group_membership.owner_id = user.id
                             group_membership.owner_username = user.username
                             group_membership.save()
+                    else:
+                        entry.subscribe(group)  # subscribe form-entry to a group
 
 
 class FormEntry(models.Model):
@@ -249,6 +251,29 @@ class FormEntry(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("form_entry_detail", (), {"id": self.pk})
+
+    def subscribe(self, group):
+        """
+        Subscribe FormEntry to group specified.
+        """
+        # avoiding circular imports
+        from tendenci.apps.subscribers.models import GroupSubscription as GS
+        try:
+            GS.objects.get(group=group, subscriber=self)
+        except GS.DoesNotExist:
+            GS.objects.create(group=group, subscriber=self)
+
+    def unsubscribe(self, group):
+        """
+        Unsubscribe FormEntry from group specified
+        """
+        # avoiding circular imports
+        from tendenci.apps.subscribers.models import GroupSubscription as GS
+        try:
+            sub = GS.objects.get(group=group, subscriber=self)
+            sub.delete()
+        except GS.DoesNotExist:
+            pass
 
     def entry_fields(self):
         return self.fields.all().order_by('field__position')
@@ -362,10 +387,6 @@ class FormEntry(models.Model):
 
         return description
 
-    def set_group_subscribers(self):
-        for entry in self.fields.filter(field__field_function="GroupSubscription"):
-            entry.field.execute_function(self, entry.value, user=self.creator)
-
 
 class FieldEntry(models.Model):
     """
@@ -393,6 +414,11 @@ class FieldEntry(models.Model):
         if field_class == 'FileField':
             return False
         return True
+
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(FieldEntry, self).save(*args, **kwargs)
+        self.field.execute_function(self.entry, self.value, user=user)
 
 
 class Pricing(models.Model):

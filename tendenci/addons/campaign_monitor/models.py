@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.forms_builder.forms.models import FormEntry
+from tendenci.apps.subscribers.models import GroupSubscription
 from tendenci.core.files.models import file_directory
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
@@ -384,6 +385,9 @@ if cm_api_key and cm_client_id:
         if isinstance(instance, GroupMembership):
             email = instance.member.email
             name = instance.member.get_full_name()
+        elif isinstance(instance, GroupSubscription):
+            name = instance.name
+            email = instance.email
 
         return (name, email)
 
@@ -392,3 +396,6 @@ if cm_api_key and cm_client_id:
 
     post_save.connect(sync_cm_subscriber, sender=GroupMembership)
     pre_delete.connect(delete_cm_subscriber, sender=GroupMembership)
+
+    post_save.connect(sync_cm_subscriber, sender=GroupSubscription)
+    pre_delete.connect(delete_cm_subscriber, sender=GroupSubscription)
