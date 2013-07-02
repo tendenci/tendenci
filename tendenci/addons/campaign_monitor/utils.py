@@ -111,7 +111,7 @@ def sync_templates(request=None):
         
         #sync with campaign monitor
         try:
-            t = CST(template_id = template.template_id)
+            t = CST(auth, template_id=template.template_id)
             t.update(unicode(template.name), html_url, zip_url)
         except BadRequest, e:
             if request:
