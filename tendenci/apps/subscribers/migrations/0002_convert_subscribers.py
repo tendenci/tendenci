@@ -1,5 +1,4 @@
 # encoding: utf-8
-import random, string
 import datetime
 from south.db import db
 from south.v2 import DataMigration
