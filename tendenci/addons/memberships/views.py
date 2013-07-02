@@ -1580,6 +1580,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
         is_verified = False
         authentication_method = corp_app.authentication_method
+
         if request.user.profile.is_superuser or authentication_method == 'admin':
             is_verified = True
         elif authentication_method == 'email':
@@ -1832,12 +1833,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
                 # save application fields
                 membership.save()
-
-                if membership.application_approved:
-                    membership.save_invoice(status_detail='tendered')
-                else:
-                    membership.save_invoice(status_detail='estimate')
-
+                membership.save_invoice(status_detail='tendered')
                 membership.user.profile.refresh_member_number()
 
                 # log an event
