@@ -567,7 +567,7 @@ def corpmembership_search(request, my_corps_only=False,
         raise Http403
 
     # field names for search criteria choices
-    names_list = ['name', 'address', 'city',
+    names_list = ['name', 'address', 'city', 'state',
                    'zip', 'country', 'phone',
                    'email', 'url']
 
@@ -640,7 +640,7 @@ def corpmembership_search(request, my_corps_only=False,
             search_type = '__istartswith'
         elif search_method == 'contains':
             search_type = '__icontains'
-        if search_criteria in ['name', 'address', 'city',
+        if search_criteria in ['name', 'address', 'city', 'state',
                                'zip', 'country', 'phone',
                                'email', 'url']:
             search_filter = {'corp_profile__%s%s' % (search_criteria,
