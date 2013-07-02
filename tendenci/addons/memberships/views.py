@@ -1743,7 +1743,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
                 app_fields, post_values, initial=membership_initial, **params)
 
             # tuple with boolean items
-            good = (
+            forms_validate = (
                 user_form.is_valid(),
                 profile_form.is_valid(),
                 demographics_form.is_valid(),
@@ -1752,7 +1752,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
             )
 
             # form is valid
-            if all(good):
+            if all(forms_validate):
 
                 customer = user_form.save()
 
