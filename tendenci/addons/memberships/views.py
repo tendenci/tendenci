@@ -1614,7 +1614,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
     if join_under_corporate:
         app_fields = app.fields.filter(Q(display=True) | Q(
-                            field_name='corporate_membership_id'))
+            field_name='corporate_membership_id'))
     else:
         app_fields = app.fields.filter(display=True)
 
