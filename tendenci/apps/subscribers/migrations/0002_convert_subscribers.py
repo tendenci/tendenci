@@ -38,16 +38,17 @@ class Migration(DataMigration):
                         if SubscriberData.objects.filter(field_label__in=phone_labels, subscription=sub):
                             profile.phone = SubscriberData.objects.filter(field_label__in=phone_labels, subscription=sub)[0].value
                         profile.save()
-                try:
-                    group_membership = GroupMembership.objects.get(group=sub.group, member=user)
-                except GroupMembership.DoesNotExist:
-                    group_membership = GroupMembership(group=sub.group, member=user)
-                    group_membership.creator_id = user.id
-                    group_membership.creator_username = user.username
-                    group_membership.role = 'subscriber'
-                    group_membership.owner_id = user.id
-                    group_membership.owner_username = user.username
-                    group_membership.save()
+                if user:
+                    try:
+                        group_membership = GroupMembership.objects.get(group=sub.group, member=user)
+                    except GroupMembership.DoesNotExist:
+                        group_membership = GroupMembership(group=sub.group, member=user)
+                        group_membership.creator_id = user.id
+                        group_membership.creator_username = user.username
+                        group_membership.role = 'subscriber'
+                        group_membership.owner_id = user.id
+                        group_membership.owner_username = user.username
+                        group_membership.save()
 
 
     def backwards(self, orm):
