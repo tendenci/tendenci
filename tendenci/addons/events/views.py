@@ -3208,7 +3208,7 @@ def pending(request, template_name="events/pending.html"):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    events = Event.objects.filter(status=False, status_detail='pending').order_by('start_dt')
+    events = Event.objects.filter(status=True, status_detail='pending').order_by('start_dt')
 
     EventLog.objects.log()
 
