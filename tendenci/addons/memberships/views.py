@@ -1537,6 +1537,8 @@ def membership_default_add(request, slug='', template='memberships/applications/
     """
     Default membership application form.
     """
+    from tendenci.addons.memberships.models import Notice
+
     user = None
     membership = None
     username = request.GET.get('username', u'')
