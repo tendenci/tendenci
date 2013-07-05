@@ -1699,3 +1699,30 @@ class EventRegistrantSearchForm(forms.Form):
     search_text = forms.CharField(max_length=100, required=False)
     search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
                                         required=False)
+
+
+class MemberRegistrationForm(forms.Form):
+    """
+    Member Registration form.
+    """
+    member_ids = forms.CharField(label=_('Member Number'),
+                                 help_text="comma separated if multiple")
+
+    def __init__(self, event, pricings, *args, **kwargs):
+        super(MemberRegistrationForm, self).__init__(*args, **kwargs)
+
+        self.fields['pricing'] = forms.ModelChoiceField(
+            queryset=pricings,
+            widget=forms.RadioSelect(),)
+        self.fields['pricing'].label_from_instance = _get_price_labels
+        self.fields['pricing'].empty_label = None
+
+    def clean_member_ids(self):
+        member_ids = self.cleaned_data['member_ids'].split(',')
+        for mem_id in member_ids:
+            [member] = Profile.objects.filter(member_number=mem_id.strip(),
+                                              status_detail='active')[:1] or [None]
+            if not member:
+                raise forms.ValidationError('Member #%s does not exists!' % mem_id.strip())
+
+        return self.cleaned_data['member_ids']

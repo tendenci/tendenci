@@ -1539,3 +1539,34 @@ def add_sf_attendance(registrant, event):
                     'Subject':event.title,
                     'StartDateTime':event.start_dt.isoformat(),
                     'EndDateTime':event.end_dt.isoformat()})
+
+
+def create_member_registration(user, event, form):
+
+    from tendenci.apps.profiles.models import Profile
+
+    pricing = form.cleaned_data['pricing']
+    reg_attrs = {'event': event,
+                 'reg_conf_price': pricing,
+                 'amount_paid': pricing.price,
+                 'creator': user,
+                 'owner': user}
+
+    for mem_id in form.cleaned_data['member_ids'].split(','):
+        mem_id = mem_id.strip()
+        [member] = Profile.objects.filter(member_number=mem_id,
+                                          status_detail='active')[:1] or [None]
+        if member:
+            exists = event.registrants().filter(user=member.user)
+            if not exists:
+                registration = Registration.objects.create(**reg_attrs)
+                registrant_attrs = {'registration': registration,
+                                    'user': member.user,
+                                    'first_name': member.user.first_name,
+                                    'last_name': member.user.last_name,
+                                    'email': member.user.email,
+                                    'is_primary': True,
+                                    'amount': pricing.price,
+                                    'pricing': pricing}
+                registrant = Registrant.objects.create(**registrant_attrs)
+                invoice = registration.save_invoice()

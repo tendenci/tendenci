@@ -56,6 +56,7 @@ urlpatterns = patterns(
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view', name='event.month'),
 
     # register for event
+    url(r'^%s/member-register/(?P<event_id>\d+)/$' % urlpath, 'views.member_register', name='event.member_register'),
     url(r'^%s/register/(?P<event_id>\d+)/$' % urlpath, 'views.register', name='event.register'),
     url(r'^%s/register/(?P<event_id>\d+)/pre/$' % urlpath, 'views.register_pre', name='event.register_pre'),
     url(r'^%s/register/(?P<event_id>\d+)/individual/(?P<pricing_id>\d+)/$' % urlpath, 'views.register', {'individual': True}, name='event.register_individual'),

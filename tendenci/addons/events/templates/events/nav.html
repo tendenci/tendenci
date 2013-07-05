@@ -109,6 +109,10 @@
                 {% if can_edit_event %}
                     <li><a href="{% url event.message nav_object.pk %}">{% trans "E-mail Registrants" %}</a></li>
                 {% endif %}
+                {% if request.user.is_superuser %}
+                    <li class="divider"></li>
+                    <li><a href="{% url event.member_register nav_object.pk %}">{% trans "Register Members" %}</a></li>
+                {% endif %}
                 {% if can_delete_event %}
                     <li class="divider"></li>
                     <li><a class="delete" href="{% url event.delete nav_object.pk %}">{% trans "Delete Event" %}</a></li>

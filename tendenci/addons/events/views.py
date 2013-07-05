@@ -40,7 +40,7 @@ from django.db import connection
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.decorators import is_enabled
+from tendenci.core.perms.decorators import is_enabled, superuser_required
 from tendenci.core.perms.utils import (has_perm, get_notice_recipients,
     get_query_filters, update_perms_and_save, has_view_perm, assign_files_perms)
 from tendenci.core.event_logs.models import EventLog
@@ -72,7 +72,7 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet, GlobalRegistrantSearchForm,
     RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm,
-    EventRegistrantSearchForm)
+    EventRegistrantSearchForm, MemberRegistrationForm)
 from tendenci.addons.events.utils import (email_registrants,
     render_event_email, get_default_reminder_template,
     add_registration, registration_has_started, registration_has_ended,
@@ -80,7 +80,7 @@ from tendenci.addons.events.utils import (email_registrants,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel,
-    event_import_process, check_month)
+    event_import_process, check_month, create_member_registration)
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
@@ -1058,6 +1058,44 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
 def multi_register_redirect(request, event, msg):
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(reverse('event', args=(event.pk,),))
+
+
+@is_enabled('events')
+@superuser_required
+def member_register(request, event_id,
+                    template_name="events/reg8n/member-register.html"):
+
+    event = get_object_or_404(Event, pk=event_id)
+
+    # check if event allows registration
+    if not (event.registration_configuration and
+            event.registration_configuration.enabled):
+        messages.add_message(
+            request, messages.INFO,
+            'Registration is disabled for event %s' % event)
+        return HttpResponseRedirect(reverse('event', args=[event_id]))
+
+    spots_taken, spots_available = event.get_spots_status()
+    reg_conf=event.registration_configuration
+    pricings = reg_conf.get_available_pricings(request.user,
+                                               is_strict=False,
+                                               spots_available=spots_available)
+    pricings = pricings.filter(quantity=1)
+
+    form = MemberRegistrationForm(event, pricings, request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            create_member_registration(request.user, event, form)
+            messages.add_message(
+                request, messages.SUCCESS,
+                'Successfully registered members for event %s' % event)
+            return HttpResponseRedirect(reverse('event', args=[event_id]))
+
+    return render_to_response(template_name, {
+        'event':event,
+        'form': form
+    }, context_instance=RequestContext(request))
 
 
 @is_enabled('events')
