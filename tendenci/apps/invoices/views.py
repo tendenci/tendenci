@@ -157,6 +157,7 @@ def void_payment(request, id):
     return redirect(invoice)
 
 
+@is_enabled('invoices')
 @login_required
 def search(request, template_name="invoices/search.html"):
     start_amount = None
@@ -320,7 +321,7 @@ def search_report(request, template_name="invoices/search.html"):
         context_instance=RequestContext(request))
 
 
-@is_enabled('discounts')
+@is_enabled('invoices')
 def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adjust.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
@@ -378,7 +379,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
         context_instance=RequestContext(request))
 
 
-@is_enabled('discounts')
+@is_enabled('invoices')
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
 
@@ -427,6 +428,7 @@ def detail(request, id, template_name="invoices/detail.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('invoices')
 @login_required
 def export(request, template_name="invoices/export.html"):
     """Export Invoices"""
