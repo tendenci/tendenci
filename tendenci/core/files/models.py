@@ -256,3 +256,16 @@ class File(TendenciBaseModel):
             else:
                 return "%s%s" % (settings.MEDIA_URL, self.file)
         return None
+
+    def get_content(self):
+        if self.content_type and self.object_id:
+            try:
+                model = self.content_type.model_class()
+                return model.objects.get(pk=self.object_id)
+            except:
+                return None
+        else:
+            for r_object in self._meta.get_all_related_objects():
+                if hasattr(self, r_object.var_name):
+                    return getattr(self, r_object.var_name)
+            return None
