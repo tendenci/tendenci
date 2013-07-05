@@ -450,6 +450,9 @@ class Pricing(models.Model):
     trial_period_days = models.IntegerField(default=0)
     trial_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True, default=0.0)
 
+    class Meta:
+        ordering = ["pk"]
+
     def __unicode__(self):
         currency_symbol = get_setting("site", "global", "currencysymbol")
         if not currency_symbol:
