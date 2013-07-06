@@ -34,6 +34,13 @@ class PageAdminForm(TendenciBaseForm):
     
     template = forms.ChoiceField(choices=template_choices)
 
+    meta_title = forms.CharField(required=False)
+    meta_description = forms.CharField(required=False,
+        widget=forms.widgets.Textarea(attrs={'style':'width:100%'}))
+    meta_keywords = forms.CharField(required=False,
+        widget=forms.widgets.Textarea(attrs={'style':'width:100%'}))
+    meta_canonical_url = forms.CharField(required=False)
+
     class Meta:
         model = Page
         fields = (
@@ -42,7 +49,14 @@ class PageAdminForm(TendenciBaseForm):
         'content',
         'tags',
         'template',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'meta_canonical_url',
         'allow_anonymous_view',
+        'user_perms',
+        'group_perms',
+        'member_perms',
         'syndicate',
         'status',
         'status_detail',
@@ -52,12 +66,18 @@ class PageAdminForm(TendenciBaseForm):
         super(PageAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            if self.instance.meta:
+                self.fields['meta_title'].initial = self.instance.meta.title
+                self.fields['meta_description'].initial = self.instance.meta.description
+                self.fields['meta_keywords'].initial = self.instance.meta.keywords
+                self.fields['meta_canonical_url'].initial = self.instance.meta.canonical_url
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
         
         template_choices = [('default.html','Default')]
         template_choices += get_template_list()
         self.fields['template'].choices = template_choices
+
 
 class PageForm(TendenciBaseForm):
     header_image = forms.ImageField(required=False)

@@ -5,6 +5,7 @@ from django.conf import settings
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.perms.utils import update_perms_and_save
+from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.apps.pages.models import Page 
 from tendenci.apps.pages.forms import PageAdminForm
 
@@ -19,7 +20,12 @@ class PageAdmin(admin.ModelAdmin):
                     'status_detail')
     search_fields = ('title','content',)
     fieldsets = (
-        (None, {'fields': ('title', 'slug', 'content', 'tags')}),
+        (None, {'fields': ('title', 'slug', 'content', 'tags', 'template')}),
+        ('Meta', {'fields': (
+            'meta_title',
+            'meta_keywords',
+            'meta_description',
+            'meta_canonical_url')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',),'fields': (
             'user_perms',
@@ -106,9 +112,21 @@ class PageAdmin(admin.ModelAdmin):
             
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
-
         instance = update_perms_and_save(request, form, instance)
-        
+
+        if instance.meta:
+            meta = instance.meta
+        else:
+            meta = MetaTags()
+
+        meta.title = form.cleaned_data['meta_title']
+        meta.description = form.cleaned_data['meta_description']
+        meta.keywords = form.cleaned_data['meta_keywords']
+        meta.canonical_url = form.cleaned_data['meta_canonical_url']
+        meta.save()
+        instance.meta = meta
+        instance.save()
+
         # notifications
         if not request.user.profile.is_superuser:
             # send notification to administrators
@@ -125,4 +143,4 @@ class PageAdmin(admin.ModelAdmin):
 
         return instance
 
-# admin.site.register(Page, PageAdmin)
+admin.site.register(Page, PageAdmin)
