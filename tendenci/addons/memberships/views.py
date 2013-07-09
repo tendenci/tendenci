@@ -1824,6 +1824,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
                     if membership.is_renewal():
                         Notice.send_notice(
                             request=request,
+                            emails=membership.user.email,
                             notice_type='renewal',
                             membership=membership,
                             membership_type=membership.membership_type,
@@ -1832,6 +1833,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
                     else:
                         Notice.send_notice(
                             request=request,
+                            emails=membership.user.email,
                             notice_type='join',
                             membership=membership,
                             membership_type=membership.membership_type,
