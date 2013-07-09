@@ -86,8 +86,8 @@ class Form(TendenciBaseModel):
     email_copies = models.CharField(_("Send copies to"), blank=True,
         help_text=_("One or more email addresses, separated by commas"),
         max_length=2000)
-    completion_url = models.URLField(_("Completion URL"), blank=True, null=True,
-        help_text=_("Redirect to this page after form completion."))
+    completion_url = models.CharField(_("Completion URL"), max_length=1000, blank=True, null=True,
+        help_text=_("Redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))
     template = models.CharField(_('Template'), max_length=50, blank=True)
 
     # payments
