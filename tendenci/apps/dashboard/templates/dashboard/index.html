@@ -159,9 +159,9 @@
         <div class="rss-feed">
             <h3>{% trans "Tendenci Blog" %}</h3>
             {% cache 86400 tendenci_blog_rss %}
-                {% get_rss "http://blog.tendenci.com/feed/" as rss %}
+                {% get_rss "http://blog.tendenci.com/feed/" as tendenciblogrss %}
                 <ul>
-                {% for entry in rss.entries|slice:":3" %}
+                {% for entry in tendenciblogrss.entries|slice:":3" %}
                     <li>
                         <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
                         <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
@@ -173,10 +173,10 @@
         
         <div class="rss-feed">
             <h3>{% trans "Tendenci Help" %}</h3>
-            {% cache 86400 tendenci_help_rss %}
-                {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
+            {% cache 14400 tendenci_help_rss %}
+                {% get_rss "http://tendenci.com/help-files/feed/" as tendencihelprss %}
                 <ul>
-                {% for entry in rss.entries|slice:":3" %}
+                {% for entry in tendencihelprss.entries|slice:":3" %}
                     <li>
                         <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
                         <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
