@@ -2209,6 +2209,8 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
 
 @is_enabled('events')
 def global_registrant_search(request, template_name='events/registrants/global-search.html'):
+    if not has_perm(request.user, 'events.view_registrant'):
+        raise Http403
 
     form = GlobalRegistrantSearchForm(request.GET)
 
