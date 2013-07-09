@@ -99,9 +99,11 @@
         </div>
 
         <div class="invoice-details">
-            <div>{% trans "Invoice ID: " %}
-                <a href="{% url invoice.view reg.registration.invoice.pk reg.registration.invoice.guid %}">{{ reg.registration.invoice.pk }}</a>
-            </div>
+            {% if reg.registration.invoice %}
+                <div>{% trans "Invoice ID: " %}
+                    <a href="{% url invoice.view reg.registration.invoice.pk reg.registration.invoice.guid %}">{{ reg.registration.invoice.pk }}</a>
+                </div>
+            {% endif %}
             <div>{% trans "Invoice Balance: "%}{{ reg.registration.invoice.balance|format_currency }}</div>
             <div>{% trans "Invoice Total: " %}{{ reg.registration.invoice.total|format_currency }}</div>
         </div>
