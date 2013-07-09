@@ -1707,6 +1707,7 @@ class MembershipDefault(TendenciBaseModel):
 
             Notice.send_notice(
                 request=request,
+                emails=self.user.email,
                 notice_type='approve',
                 membership=self,
                 membership_type=self.membership_type,
