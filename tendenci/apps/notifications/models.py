@@ -529,8 +529,6 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
             if should_send(user, notice_type, "1", send=send) and user.email:  # Email
                 recipients.append(user.email)
 
-            recipients.append('eloyz.email@gmail.com')
-
             if messages['full'][1] == '.html':
                 # headers = {'Content-Type': 'text/html'}
                 content_type = 'html'
