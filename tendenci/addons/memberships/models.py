@@ -2262,7 +2262,7 @@ class Notice(models.Model):
         if notice_type == 'join':
             template_type = 'joined'
         elif notice_type == 'renewal':
-            template_type = 'renewed'
+            template_type = 'renewal'
         elif notice_type == 'approve':
             template_type = 'approved'
         elif notice_type == 'disapprove':
@@ -2306,7 +2306,8 @@ class Notice(models.Model):
         recipients = list(set(membership_recipients + admin_recipients))
 
         if recipients:
-            notification.send_emails(recipients,
+            notification.send_emails(
+                recipients,
                 'membership_%s_to_admin' % template_type, {
                 'request': request,
                 'membership': membership,

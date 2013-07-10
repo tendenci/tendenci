@@ -291,15 +291,23 @@ def get_formatted_messages(formats, label, context):
         template_name = splitext(format)[0]
         template_ext = splitext(format)[1]
 
-        # conditionally turn off autoescaping for .txt extensions in format
-        if format.endswith(".txt"):
+        if template_ext == '.txt':
             context.autoescape = False
         else:
             context.autoescape = True
 
-        format_templates[template_name] = (render_to_string((
+        list_of_templates = (
             'notification/%s/%s' % (label, format),
-            'notification/%s' % format), context_instance=context),template_ext)
+            'notification/%s' % format
+        )
+
+        template = render_to_string(list_of_templates, context_instance=context)
+
+        if template_name == 'short':
+            template = template.strip()
+
+        format_templates[template_name] = template
+
     return format_templates
 
 
@@ -362,14 +370,23 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     # get prerendered format messages
     messages = get_formatted_messages(formats, label, context)
 
-    # Strip newlines from subject
-    subject = ''.join(render_to_string('notification/email_subject.txt', {
-        'message': messages['short'][0],
-    }, context).splitlines())
+    if 'admin' in label:
+        subject = messages['short']
+        body = messages['full']
 
-    body = render_to_string('notification/email_body.txt', {
-        'message': messages['full'][0],
-    }, context)
+    else:
+        short_template = render_to_string(
+            'notification/email_subject.txt',
+            {'message': messages['short']},
+            context)
+        subject = short_template.splitlines()
+
+
+        full_template = render_to_string(
+            'notification/email_body.txt',
+            {'message': messages['full']},
+            context)
+        body = full_template
 
     if 'reply_to' in extra_context.keys():
         reply_to = extra_context['reply_to']
@@ -391,14 +408,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     recipient_bcc = extra_context.get('recipient_bcc') or []
 
-    if messages['full'][1] == '.html':
-        # commented out for Amazon SES
-        # headers = {'Content-Type': 'text/html'}
-        content_type = 'html'
-    else:
-        # commented out for Amazon SES
-        # headers = {'Content-Type': 'text/plain'}
-        content_type = 'text'
+    content_type = 'html'
 
     for email_addr in emails:
         recipients = [email_addr]
