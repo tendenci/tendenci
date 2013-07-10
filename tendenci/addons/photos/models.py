@@ -716,7 +716,8 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
        # caching.instance_cache_add(self, self.pk)
 
         if not self.is_public_photo() or not self.is_public_photoset():
-            set_s3_file_permission(self.image.file, public=False)
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE and hasattr(self.image, 'file'):
+                set_s3_file_permission(self.image.file, public=False)
             cache_set = cache.get("photos_cache_set.%s" % self.pk)
             if cache_set is not None:
                 # TODO remove cached images
