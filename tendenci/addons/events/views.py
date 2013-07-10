@@ -3180,7 +3180,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             event.place = place
 
             # place event into pending queue
-            event.status = False
+            event.status = True
             event.status_detail = 'pending'
             event.save(log=False)
 

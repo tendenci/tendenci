@@ -1575,6 +1575,7 @@ class PendingEventForm(EventForm):
         fields = (
             'title',
             'description',
+            'group',
             'start_dt',
             'end_dt',
             'on_weekend',
@@ -1588,6 +1589,7 @@ class PendingEventForm(EventForm):
         fieldsets = [('Event Information', {
                       'fields': ['title',
                                  'description',
+                                 'group',
                                  'start_dt',
                                  'end_dt',
                                  'on_weekend',
