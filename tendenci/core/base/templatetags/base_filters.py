@@ -405,6 +405,10 @@ def multiply(value, arg):
     return Decimal(str(value)) * Decimal(str(arg))
 
 @register.filter
+def add_decimal(value, arg):
+    return Decimal(str(value)) + Decimal(str(arg))
+
+@register.filter
 def phonenumber(value):
     if value:
         # split number from extension or any text

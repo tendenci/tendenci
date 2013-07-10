@@ -200,6 +200,17 @@ class Invoice(models.Model):
     def get_absolute_url(self):
         return ('invoice.view', [self.id])
 
+    @models.permalink
+    def get_discount_url(self):
+        from tendenci.apps.discounts.models import Discount
+        if self.discount_code:
+            try:
+                discount = Discount.objects.get(discount_code=self.discount_code)
+                return ('discount.detail', [discount.id])
+            except Discount.DoesNotExist:
+                return ''
+        return ''
+
     def save(self, user=None):
         """
         Set guid, creator and owner if any of

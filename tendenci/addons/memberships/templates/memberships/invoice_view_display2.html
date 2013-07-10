@@ -34,14 +34,3 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
-
-{% if invoice.discount_amount > 0 %}
-    <tr>
-        <td>
-            {% trans "Discount applied (discount code: " %}{{ invoice.discount_code }} )
-        </td>
-        <td class="td-right">
-            - {{ invoice.discount_amount|format_currency }}
-        </td>
-    </tr>
-{% endif %}

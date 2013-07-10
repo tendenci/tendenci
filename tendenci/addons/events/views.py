@@ -2311,6 +2311,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     from django.db.models import Sum
     event = get_object_or_404(Event, pk=event_id)
     has_addons = event.has_addons
+    discount_available = event.registration_configuration.discount_eligible
 
     if not (has_perm(request.user, 'events.view_registrant') or has_perm(request.user, 'events.change_event', event)):
         raise Http403
@@ -2520,6 +2521,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'sort_order': sort_order,
         'sort_type': sort_type,
         'has_addons': has_addons,
+        'discount_available': discount_available,
         'addon_total_sum': addon_total_sum,
         'total_checked_in': total_checked_in}, context_instance=RequestContext(request))
 

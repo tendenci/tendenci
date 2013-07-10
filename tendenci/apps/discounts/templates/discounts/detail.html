@@ -45,6 +45,42 @@
                 </tr>
             </table>
 		</div>
+
+        {% if discount.discountuse_set.count > 0 %}
+        <div class="usage-report">
+            <h3>{% trans "Discount Usage Report" %}</h3>
+            <table>
+                <tr>
+                    <th>{% trans "Username" %}</th>
+                    <th>{% trans "Url" %}</th>
+                    <th>{% trans "Invoice Url" %}</th>
+                </tr>
+                {% for reg in registrant_list %}
+                <tr>
+                    <td>
+                    {% if reg.user %}
+                        <a href="{% url profile reg.user.username %}">{{ reg.user.username }}</a>
+                    {% elif reg.get_name %}
+                        {{ reg.get_name }}
+                    {% else %}
+                        {% trans "Guest" %}
+                    {% endif %}
+                    </td>
+                    <td><a href="{{ reg.get_absolute_url }}">{% trans "Registration URL" %}</a></td>
+                    <td><a href="{{ reg.registration.invoice.get_absolute_url }}">{% trans "Invoice URL" %}</a></td>
+                </tr>
+                {% endfor %}
+                {% for mem in membership_list %}
+                <tr>
+                    <td><a href="{% url profile mem.user.username %}">{{ mem.user.username }}</a></td>
+                    <td><a href="{{ mem.get_absolute_url }}">{% trans "Membership URL" %}</a></td>
+                    <td><a href="{{ mem.get_invoice.get_absolute_url }}">{% trans "Invoice URL" %}</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}

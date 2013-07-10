@@ -191,7 +191,7 @@
          {% if registration.invoice.discount_amount > 0 %}
         <tr>
         	 <td class="td-right" colspan="2">
-        	 <span class="discount-symbol">d</span> discount applied (discount code: {{ registration.invoice.discount_code }})
+        	 <span class="discount-symbol">d</span> discount applied (discount code: <a href="{{ registration.invoice.get_discount_url }}">{{ registration.invoice.discount_code }}</a>)
         	 </td>
         </tr>
         {% endif %}
@@ -236,6 +236,9 @@
         </div>
 
         <div class="payment-accounting">
+            {% if registration.invoice.discount_amount > 0 %}
+            <div>{% blocktrans with registration.invoice.discount_amount|floatformat:"2" as discount %}Discount Applied ${{ discount }}{% endblocktrans %}</div>
+            {% endif %}
             <div>{% blocktrans with registration.invoice.total|floatformat:"2" as total %}Total ${{ total }}{% endblocktrans %}</div>
             <div><strong>{% blocktrans with registration.invoice.balance|floatformat:"2" as balance %}Balance ${{ balance }}{% endblocktrans %}</strong></div>
         </div>
