@@ -336,7 +336,6 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     )
 
     formats = (
-        'full.txt',
         'full.html',
         'short.txt',
         'notice.html',
@@ -472,7 +471,6 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
         current_language = get_language()
 
         formats = (
-            'full.txt',
             'full.html',
             'short.txt',
             'notice.html',
