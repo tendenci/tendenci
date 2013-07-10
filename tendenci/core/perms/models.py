@@ -108,7 +108,10 @@ class TendenciBaseModel(models.Model):
         # set status to False and then save(). We do NOT
         # actually delete anything from the database.
         self.status = False
-        self.save(**{'log': False})
+        try:
+            self.save(**{'log': False})
+        except TypeError:
+            self.save()
         # Leave this commented out. We do not want Django to
         # delete our objects from the database.
         # super(TendenciBaseModel, self).delete(*args, **kwargs)
