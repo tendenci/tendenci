@@ -2214,10 +2214,10 @@ def report_active_members(request, template_name='reports/membership_list.html')
         mems = mems.order_by('-membership_type')
         is_ascending_type = True
     elif sort == 'subscription':
-        mems = mems.order_by('subscribe_dt')
+        mems = mems.order_by('join_dt')
         is_ascending_subscription = False
     elif sort == '-subscription':
-        mems = mems.order_by('-subscribe_dt')
+        mems = mems.order_by('-join_dt')
         is_ascending_subscription = True
     elif sort == 'expiration':
         mems = mems.order_by('expire_dt')
