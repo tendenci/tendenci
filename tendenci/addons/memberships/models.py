@@ -2262,7 +2262,7 @@ class Notice(models.Model):
         if notice_type == 'join':
             template_type = 'joined'
         elif notice_type == 'renewal':
-            template_type = 'renewal'
+            template_type = 'renewed'
         elif notice_type == 'approve':
             template_type = 'approved'
         elif notice_type == 'disapprove':
