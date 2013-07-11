@@ -1379,8 +1379,8 @@ def corpmembership_export(request,
             corp_profile_field_list.append('dues_rep')
             corp_profile_field_list.append('authorized_domains')
             corp_memb_field_list = [smart_str(field.name) for field \
-                               in CorpMembership._meta.fields \
-                             if not field.__class__ == AutoField]
+                               in CorpMembership._meta.fields]
+                             #if not field.__class__ == AutoField]
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
             corp_memb_field_list.remove('anonymous_creator')
