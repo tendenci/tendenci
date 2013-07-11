@@ -100,7 +100,7 @@ class Template(models.Model):
 
 class Campaign(models.Model):
     """
-    This represents a Campaign. It is considered as a "Draft" if it is 
+    This represents a Campaign. It is considered as a "Draft" if it is
     not yet sent.
     """
 
@@ -120,7 +120,7 @@ class Campaign(models.Model):
 
     #fields for sync
     name = models.CharField(max_length=100)
-    subject = models.CharField(max_length=100)
+    subject = models.CharField(max_length=500)
     lists = models.ManyToManyField(ListMap)
 
     #fields for sent campaigns
