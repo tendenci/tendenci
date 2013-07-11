@@ -17,16 +17,15 @@ from django.template import RequestContext
 from django.core.mail import EmailMessage
 
 from django.core.exceptions import ImproperlyConfigured
-
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
-
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
-
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, get_language, activate
+from django.utils.safestring import mark_safe
+from django.utils.html import escape
 
 from tendenci.core.site_settings.utils import get_setting
 
@@ -375,18 +374,15 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         body = messages['full']
 
     else:
-        short_template = render_to_string(
+        subject = render_to_string(
             'notification/email_subject.txt',
-            {'message': messages['short']},
+            {'message': mark_safe(messages['short'])},
             context)
-        subject = short_template.splitlines()
 
-
-        full_template = render_to_string(
+        body = render_to_string(
             'notification/email_body.txt',
-            {'message': messages['full']},
+            {'message': mark_safe(messages['full'])},
             context)
-        body = full_template
 
     if 'reply_to' in extra_context.keys():
         reply_to = extra_context['reply_to']

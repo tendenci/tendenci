@@ -2204,11 +2204,6 @@ class Notice(models.Model):
         The membership object takes priority over entry object
         """
         context = self.get_default_context(membership)
-        # autoescape off for subject to avoid HTML escaping
-        self.subject = '%s%s%s' % (
-                        "{% autoescape off %}",
-                        self.subject,
-                        "{% endautoescape %}")
         return self.build_notice(self.subject, context=context)
 
     def get_content(self, membership=None):
