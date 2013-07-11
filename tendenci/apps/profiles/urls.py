@@ -27,3 +27,9 @@ urlpatterns = patterns('tendenci.apps.profiles.views',
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/groups/(?P<membership_id>\d+)/edit/$' % urlpath, 'user_role_edit', name='profile.edit_role'),
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/memberships/add/$' % urlpath, 'user_membership_add', name='profile.add_membership'),
 )
+
+urlpatterns += patterns('',
+    # Special redirect for user.get_absolute_url
+    url(r'^users/(?P<username>[+-.\w\d@\s]+)/$', 'django.views.generic.simple.redirect_to', {
+        'url': '/%s/%s/' % (urlpath, '%(username)s')}),
+)
