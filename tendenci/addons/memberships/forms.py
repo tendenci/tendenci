@@ -487,12 +487,26 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
                 'css_class'
                   )
 
+    def __init__(self, *args, **kwargs):
+        super(MembershipAppFieldAdminForm, self).__init__(*args, **kwargs)
+        if self.instance:
+            if self.instance.field_type == 'section_break':
+                self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES2
+            else:
+                self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES1
+        
+
     def save(self, *args, **kwargs):
         self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
-        if self.instance and not self.instance.field_name:
-            if self.instance.field_type != 'section_break':
-                self.instance.field_type = 'section_break'
-                self.instance.save()
+        if self.instance:
+            if not self.instance.field_name:
+                if self.instance.field_type != 'section_break':
+                    self.instance.field_type = 'section_break'
+                    self.instance.save()
+            else:
+                if self.instance.field_type == 'section_break':
+                    self.instance.field_type = 'CharField'
+                    self.instance.save()
         return self.instance
 
 

@@ -2394,7 +2394,7 @@ class MembershipApp(TendenciBaseModel):
 
 class MembershipAppField(OrderingBaseModel):
     LABEL_MAX_LENGTH = 2000
-    FIELD_TYPE_CHOICES = (
+    FIELD_TYPE_CHOICES1 = (
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
                     ("BooleanField", _("Checkbox")),
@@ -2406,8 +2406,11 @@ class MembershipAppField(OrderingBaseModel):
                     ("FileField", _("File upload")),
                     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
                     ("DateTimeField", _("Date/time")),
+                )
+    FIELD_TYPE_CHOICES2 = (
                     ("section_break", _("Section Break")),
                 )
+    FIELD_TYPE_CHOICES = FIELD_TYPE_CHOICES1 + FIELD_TYPE_CHOICES2
 
     membership_app = models.ForeignKey("MembershipApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
