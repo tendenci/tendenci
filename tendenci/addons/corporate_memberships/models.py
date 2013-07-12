@@ -1296,11 +1296,32 @@ class CorpMembershipApp(TendenciBaseModel):
 
 
 class CorpMembershipAppField(OrderingBaseModel):
+    FIELD_TYPE_CHOICES1 = (
+                    ("CharField", _("Text")),
+                    ("CharField/django.forms.Textarea", _("Paragraph Text")),
+                    ("BooleanField", _("Checkbox")),
+                    ("ChoiceField", _("Select One from a list (Drop Down)")),
+                    ("ChoiceField/django.forms.RadioSelect",
+                        _("Select One from a list (Radio Buttons)")),
+                    ("MultipleChoiceField", _("Multi select (Drop Down)")),
+                    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple",
+                        _("Multi select (Checkboxes)")),
+                    ("EmailField", _("Email")),
+                    ("FileField", _("File upload")),
+                    ("DateField/django.forms.extras.SelectDateWidget",
+                        _("Date")),
+                    ("DateTimeField", _("Date/time")),
+                )
+    FIELD_TYPE_CHOICES2 = (
+                    ("section_break", _("Section Break")),
+                )
+    FIELD_TYPE_CHOICES = FIELD_TYPE_CHOICES1 + FIELD_TYPE_CHOICES2
+    
     corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True,
                                   default='')
-    field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES,
+    field_type = models.CharField(_("Field Type"), choices=FIELD_TYPE_CHOICES,
                                   max_length=80,
                                   blank=True, null=True,
                                   default='CharField')

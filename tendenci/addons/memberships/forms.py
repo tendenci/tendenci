@@ -490,7 +490,7 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MembershipAppFieldAdminForm, self).__init__(*args, **kwargs)
         if self.instance:
-            if self.instance.field_type == 'section_break':
+            if not self.instance.field_name:
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES2
             else:
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES1
