@@ -403,8 +403,10 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         headers['From'] = from_display
 
     recipient_bcc = extra_context.get('recipient_bcc') or []
-
     content_type = 'html'
+
+    # removing newlines
+    subject = ''.join(subject.splitlines())
 
     for email_addr in emails:
         recipients = [email_addr]
