@@ -19,7 +19,7 @@
             {% if location.address2 %}{{ location.address2 }}<br />{% endif %}
             {{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
             {% if location.country %}<p>{{ location.country }}</p>{% endif %}
-            <p>{{ location.phone|phonenumber }}</p>
+            {% if location.phone %}<p>{{ location.phone|phonenumber }}</p>{% endif %}
             {% if location.fax %}<p>Fax: {{ location.fax|phonenumber }}</p>{% endif %}
             {% if location.email %}<p>{{ location.email|obfuscate_email }}</p>{% endif %}
             {% if location.website %}<p>{{ location.website|urlize }}</p>{% endif %}
