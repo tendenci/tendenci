@@ -206,6 +206,5 @@ setup(
         "python-memcached==1.48",
         "Whoosh==2.4.1",
         "simple-salesforce==0.51",
-        "setuptools==0.8",
     ],
 )
