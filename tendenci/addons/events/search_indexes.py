@@ -103,4 +103,6 @@ class RegistrantIndex(CustomSearchIndex):
         return obj.last_name
 
 site.register(Event, EventIndex)
-site.register(Registrant, RegistrantIndex)
+# Removed from index after search view was updated to perform
+# all searches on the database.
+# site.register(Registrant, RegistrantIndex)

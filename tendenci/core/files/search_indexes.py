@@ -62,4 +62,6 @@ class FileIndex(TendenciBaseSearchIndex):
             return category.name
         return ''
 
-site.register(File, FileIndex)
+# Removed from index after search view was updated to perform
+# all searches on the database.
+# site.register(File, FileIndex)
