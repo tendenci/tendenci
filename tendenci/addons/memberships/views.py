@@ -774,38 +774,9 @@ def entry_delete(request, id=0, template_name="memberships/entries/delete.html")
 @login_required
 def application_entries_search(request, template_name="memberships/entries/search.html"):
     """
-    Displays a page for searching membership application entries.
+    Redirect to the admin area membership list view.
     """
-    user = request.user
-    query = request.GET.get('q')
-    if get_setting('site', 'global', 'searchindex') and query:
-        entries = AppEntry.objects.search(query, user=request.user)
-    else:
-        status = request.GET.get('status', None)
-        approve_perm = has_perm(user, 'memberships.approve_membership')
-        if approve_perm:
-            filters = get_query_filters(user, 'memberships.view_appentry', super_perm=True)
-        else:
-            filters = get_query_filters(user, 'memberships.view_appentry')
-        entries = AppEntry.objects.filter(filters).distinct()
-        if status:
-            status_filter = get_status_filter(status)
-            entries = entries.filter(status_filter)
-
-        entries = entries.select_related()
-
-    entries = entries.order_by('-entry_time')
-
-    apps = App.objects.all()
-    types = MembershipType.objects.all()
-
-    EventLog.objects.log()
-
-    return render_to_response(template_name, {
-        'entries': entries,
-        'apps': apps,
-        'types': types,
-        }, context_instance=RequestContext(request))
+    return redirect("admin:memberships_membershipdefault_changelist")
 
 
 @login_required
