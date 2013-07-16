@@ -51,4 +51,7 @@ class MemberAppEntryIndex(TendenciBaseSearchIndex):
 
 site.register(App, MemberAppIndex)
 site.register(AppEntry, MemberAppEntryIndex)
-site.register(MembershipDefault, MembershipDefaultIndex)
+
+# Removed from index after search view was updated to perform
+# all searches on the database.
+# site.register(MembershipDefault, MembershipDefaultIndex)
