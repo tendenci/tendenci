@@ -4,6 +4,15 @@ from south.v2 import DataMigration
 
 class Migration(DataMigration):
 
+    depends_on = (
+        ('events', '0001_initial'),
+        ('pages', '0001_initial'),
+        ('event_logs', '0001_initial'),
+        ('forms', '0001_initial'),
+        ('corporate_memberships', '0001_initial'),
+        ('memberships'), '0001_initial'),
+    )
+
     def forwards(self, orm):
         # skip if this command already run
         if not orm.DashboardStatType.objects.filter(name="events_upcoming").exists():
