@@ -50,12 +50,12 @@ class MarkAsPaidForm(forms.ModelForm):
 
         invoice_object = invoice.get_object()
 
-        if hasattr(invoice_object, 'get_payment_description'):
-            instance.description = invoice_object.get_payment_description(invoice)
-
-        if not instance.description:
-            instance.description = 'Tendenci Invoice {} for {}({})'.format(
-                instance.pk, invoice_object, invoice_object.pk)
+        if invoice_object:
+            if hasattr(invoice_object, 'get_payment_description'):
+                instance.description = invoice_object.get_payment_description(invoice)
+            if not instance.description:
+                instance.description = 'Tendenci Invoice {} for {}({})'.format(
+                    instance.pk, invoice_object, invoice_object.pk)
 
         return instance
 
