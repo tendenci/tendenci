@@ -1609,7 +1609,12 @@ def membership_default_add(request, slug='', template='memberships/applications/
             'email': user.email,
         }
 
-    user_form = UserForm(app_fields, request.POST or None, initial=user_initial)
+    user_form = UserForm(
+        app_fields,
+        request.POST or None,
+        request=request,
+        initial=user_initial)
+
     profile_form = ProfileForm(app_fields, request.POST or None)
 
     profile_initial = {}

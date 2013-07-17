@@ -612,12 +612,20 @@ class UserForm(forms.ModelForm):
         model = User
 
     def __init__(self, app_field_objs, *args, **kwargs):
+        request = kwargs.pop('request')
         super(UserForm, self).__init__(*args, **kwargs)
 
         del self.fields['groups']
 
         assign_fields(self, app_field_objs)
         self_fields_keys = self.fields.keys()
+
+        is_renewal = 'username' in request.GET
+        if request.user.is_superuser and is_renewal:
+            self_fields_keys.remove('username')
+            self_fields_keys.remove('password')
+            self.fields.pop('username')
+            self.fields.pop('password')
 
         if 'password' in self_fields_keys:
 
