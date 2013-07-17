@@ -110,6 +110,39 @@
         </fieldset>
 
         <fieldset>
+            <label>Contact Information</label>
+
+            {% if membership.user.email %}
+            <div class="field">
+                <div class="label">Email</div>
+                <div class="value">{{ membership.user.email }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.phone %}
+            <div class="field">
+                <div class="label">Phone</div>
+                <div class="value">{{ membership.user.profile.phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.url %}
+            <div class="field">
+                <div class="label">Website</div>
+                <div class="value">{{ membership.user.profile.url }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.get_address %}
+            <div class="field">
+                <div class="label">Address</div>
+                <div class="value">{{ membership.user.profile.get_address }}</div>
+            </div>
+            {% endif %}
+
+        </fieldset>
+
+        <fieldset>
             <label>More Details</label>
 
             {% if membership.certifications %}

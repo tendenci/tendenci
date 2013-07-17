@@ -128,9 +128,10 @@ class Profile(Person):
         return self.user.username
 
     def get_name(self):
-
+        """
+        Returns name first_name + last_name
+        """
         user = self.user
-
         name = "%s %s" % (user.first_name, user.last_name)
         name = name.strip()
 
