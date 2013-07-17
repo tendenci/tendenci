@@ -35,8 +35,9 @@ Go to the path on your server where you'd like to keep your site. For this examp
 It's best practice to make a virtual environment for your site. You will need `virtualenv <http://www.virtualenv.org/>`_ installed for the next step. If you don't have it, you can install it with ``pip install virtualenv``. Make a virtual environment called 'venv' and activate it.
 ::
 
-    virtualenv --distribute venv
+    virtualenv venv
     source venv/bin/activate
+    pip install setuptools --upgrade
 
 Install Tendenci. This download and install step may take a few minutes.
 ::
