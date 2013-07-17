@@ -318,7 +318,7 @@ def query_price(request):
 @is_enabled('jobs')
 @login_required
 def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object_type=Job, success_redirect='job'):
-    job = get_object_or_404(Job, pk=id)
+    job = get_object_or_404(object_type, pk=id)
 
     if not has_perm(request.user, 'jobs.change_job', job):
         raise Http403
