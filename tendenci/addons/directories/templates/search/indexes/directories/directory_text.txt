@@ -14,6 +14,8 @@ is:{{ object.status_detail }}
 {{ object.zip_code }}
 {{ object.website }}
 
+state:{{ object.state }}
+
 {% with object.category_set as obj_cats %}
 {% if obj_cats.category %}
 category:{{ obj_cats.category }}
