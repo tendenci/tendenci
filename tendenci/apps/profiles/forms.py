@@ -261,10 +261,9 @@ class ProfileForm(TendenciBaseForm):
         """
         Validate that the username is alphanumeric and is not already
         in use.
-        
         """
         try:
-            user = User.objects.get(username__iexact=self.cleaned_data['username'])
+            user = User.objects.get(username=self.cleaned_data['username'])
             if self.user_this and user.id==self.user_this.id and user.username==self.user_this.username:
                 return self.cleaned_data['username']
         except User.DoesNotExist:
