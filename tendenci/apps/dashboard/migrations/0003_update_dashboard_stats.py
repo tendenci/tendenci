@@ -10,7 +10,7 @@ class Migration(DataMigration):
         ('event_logs', '0001_initial'),
         ('forms', '0001_initial'),
         ('corporate_memberships', '0001_initial'),
-        ('memberships'), '0001_initial'),
+        ('memberships', '0001_initial'),
     )
 
     def forwards(self, orm):
