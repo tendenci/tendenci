@@ -192,7 +192,11 @@
     {% if discount_available %}
     <td colspan="2">
         {% if registrant.discount_amount > 0 %}
-            {% trans "discount code" %}(<a href="{{ registrant.registration.invoice.get_discount_url }}">{{ registrant.registration.invoice.discount_code }}</a>)
+            {% if registrant.registration.invoice.discount_code and registrant.registration.invoice.get_discount_url %}
+                {% trans "discount code" %}(<a href="{{ registrant.registration.invoice.get_discount_url }}">{{ registrant.registration.invoice.discount_code }}</a>)
+            {% else %}
+                discount
+            {% endif %}
         {% endif %}
     </td>
     {% else %}
