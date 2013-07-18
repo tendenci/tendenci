@@ -328,9 +328,11 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
                         user=request.user)
 
     #setup categories
-    content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
+    content_type = get_object_or_404(ContentType, app_label=object_type._meta.app_label, model=object_type._meta.module_name)
+
     category = Category.objects.get_for_object(job,'category')
     sub_category = Category.objects.get_for_object(job,'sub_category')
+
     initial_category_form_data = {
         'app_label': 'jobs',
         'model': 'job',
