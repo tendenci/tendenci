@@ -121,7 +121,7 @@ class Person(TendenciBaseModel):
         state_zip = ' '.join([s for s in (self.state, self.zipcode) if s])
         city_state_zip = ', '.join([s for s in (self.city, state_zip, self.country) if s])
 
-        return city_state_zip
+        return '%s %s' % (self.address, city_state_zip)
 
 
 class Address(models.Model):
