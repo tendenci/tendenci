@@ -126,6 +126,27 @@
             </div>
             {% endif %}
 
+            {% if membership.user.profile.work_phone %}
+            <div class="field">
+                <div class="label">Work Phone</div>
+                <div class="value">{{ membership.user.profile.work_phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.home_phone %}
+            <div class="field">
+                <div class="label">Home Phone</div>
+                <div class="value">{{ membership.user.profile.home_phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.mobile_phone %}
+            <div class="field">
+                <div class="label">Mobile Phone</div>
+                <div class="value">{{ membership.user.profile.mobile_phone }}</div>
+            </div>
+            {% endif %}
+
             {% if membership.user.profile.url %}
             <div class="field">
                 <div class="label">Website</div>
