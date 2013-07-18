@@ -27,7 +27,6 @@ class FileForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
         )
 
         fieldsets = [('', {
@@ -50,8 +49,7 @@ class FileForm(TendenciBaseForm):
                       }),
 
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
 
