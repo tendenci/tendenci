@@ -6,6 +6,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ('events', '0009_auto__add_field_event_priority__add_field_event_display_event_registra'),
+    )
+
     def forwards(self, orm):
         
         # Deleting field 'Email.allow_anonymous_edit'
