@@ -1881,17 +1881,6 @@ def membership_default_add(request, slug='', template='memberships/applications/
 def membership_default_corp_pre_add(request, cm_id=None,
                     template_name="memberships/applications/corp_pre_add.html"):
 
-#    [app] = MembershipApp.objects.filter(status=True,
-#        status_detail__in=['active', 'published']).order_by('id')[:1] or [None]
-#
-#    if not app:
-#        raise Http404
-#
-#    if not hasattr(app, 'corp_app'):
-#        raise Http404
-#
-#    if not app.corp_app:
-#        raise Http404
     corp_app = CorpMembershipApp.objects.current_app()
 
     if not hasattr(corp_app, 'memb_app'):
