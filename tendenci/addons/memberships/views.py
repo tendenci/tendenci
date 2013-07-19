@@ -1541,7 +1541,13 @@ def membership_default_add(request, slug='', template='memberships/applications/
         cm_id = kwargs.get('cm_id')
         if not cm_id:
             # redirect them to the corp_pre page
-            return redirect(reverse('membership_default.corp_pre_add'))
+            redirect_url = reverse('membership_default.corp_pre_add')
+
+            if username:
+                return HttpResponseRedirect(
+                    '%s?username=%s' % (redirect_url, username))
+            return redirect(redirect_url)
+
         # check if they have verified their email or entered the secret code
         corp_membership = get_object_or_404(CorpMembership, id=cm_id)
 
@@ -1581,7 +1587,12 @@ def membership_default_add(request, slug='', template='memberships/applications/
         app = get_object_or_404(MembershipApp, slug=slug)
 
         if app.use_for_corp:
-            return redirect(reverse('membership_default.corp_pre_add'))
+            redirect_url = reverse('membership_default.corp_pre_add')
+
+            if username:
+                return HttpResponseRedirect(
+                    '%s?username=%s' % (redirect_url, username))
+            return redirect(redirect_url)
 
     if not app:
         raise Http404
@@ -1899,6 +1910,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
         from utils import get_corporate_membership_choices
         cm_choices = get_corporate_membership_choices()
         form.fields['corporate_membership_id'].choices = cm_choices
+
         if cm_id:
             form.fields['corporate_membership_id'].initial = cm_id
         form.auth_method = 'corporate_membership_id'
@@ -1916,8 +1928,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
         if form.is_valid():
             # find the corporate_membership_id and redirect to membership add
             if form.auth_method == 'corporate_membership_id':
-                corporate_membership_id = form.cleaned_data[
-                                                'corporate_membership_id']
+                corporate_membership_id = form.cleaned_data['corporate_membership_id']
             else:
                 corporate_membership_id = form.corporate_membership_id
 
@@ -1979,8 +1990,13 @@ def membership_default_corp_pre_add(request, cm_id=None,
                                                 corporate_membership_id,
                                                 secret_hash]))
 
-            return redirect(reverse('membership_default.add_under_corp',
-                                    args=[corporate_membership_id]))
+            passed_username = request.POST.get('username', u'')
+            redirect_url = reverse('membership_default.add_under_corp', args=[corporate_membership_id])
+
+            if passed_username:
+                return HttpResponseRedirect('%s?username=%s' % (redirect_url, passed_username))
+            return redirect(redirect_url)
+
 
     c = {'app': app, "form": form}
 

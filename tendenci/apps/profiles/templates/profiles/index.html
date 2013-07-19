@@ -143,12 +143,12 @@
     	    <a title="Create a membership application" href="{% url admin:memberships_membershipapp_add %}" class="glyph plus">+</a>
 		{% endif %}
 		</h2>
-		
+
 		{% if multiple_apps %}
 		  <div class="app-links">
 		  {% for app in membership_apps %}
 		      <div>
-		          <a title="Join membership" href="{% url membership_default.add app.slug %}">Join</a>
+		          <a title="Join membership" href="{% url membership_default.add app.slug %}?username={{ user_this.username }}">Join</a>
 		          {{ app.name }}
 		      </div>
 		  {% endfor %}
