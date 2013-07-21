@@ -8,4 +8,9 @@ urlpatterns = patterns('tendenci.core.base.views',
     url(r'^password_again/$', 'password_again', name="password_again"),
     url(r'^exception-test/$', 'exception_test', name="exception_test"),
     url(r'^timeout-test/$', 'timeout_test', name="timeout_test"),
+
+    url(r'addon/upload/$', 'addon_upload', name="addon.upload"),
+    url(r'addon/upload/preview/(?P<sid>\d+)$', 'addon_upload_preview', name="addon.upload.preview"),
+    url(r'addon/upload/status/(?P<sid>\d+)$', 'addon_upload_process', name="addon.upload.process"),
+    url(r'addon/upload/check/(?P<sid>\d+)$', 'addon_upload_check', name="addon.upload.check"),
 )

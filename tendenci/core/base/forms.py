@@ -1,4 +1,6 @@
 from re import compile
+import zipfile
+
 from django import forms
 
 from django.core.validators import RegexValidator
@@ -51,3 +53,21 @@ class PasswordForm(forms.Form):
 
 class CaptchaForm(forms.Form):
     captcha = CaptchaField(label=_('Type the code below'))
+
+
+class AddonUploadForm(forms.Form):
+    addon = forms.FileField(label=_(u'File'),
+                           help_text="Enter the zip file of the module.")
+
+    def clean_addon(self):
+        addon = self.cleaned_data['addon']
+        try:
+            zip_file = zipfile.ZipFile(addon)
+        except:
+            raise forms.ValidationError("Could not unzip file.")
+        bad_file = zip_file.testzip()
+        zip_file.close()
+        del zip_file
+        if bad_file:
+            raise forms.ValidationError('Bad file/s found in ZIP archive.')
+        return addon
