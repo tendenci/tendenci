@@ -63,7 +63,7 @@ from tendenci.addons.events.ics.utils import run_precreate_ics
 
 from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
-    RegConfPricing, Addon, AddonOption, CustomRegForm,
+    RegConfPricing, Addon, AddonOption, CustomRegForm,  
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
     RegAddonOption, RegistrationConfiguration, EventPhoto, Place)
 from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
@@ -3192,6 +3192,20 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
 
             messages.add_message(request, messages.SUCCESS,
                 'Your event submission has been received. It is now subject to approval.')
+            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+            admin_emails = get_setting('module', 'events', 'admin_emails').replace(" ", "").split(",")
+            
+            recipients = recipients + admin_emails
+            
+            if recipients and notification:
+                notification.send_emails(recipients, 'event_added', {
+                    'event':event,
+                    'user':request.user,
+                    'registrants_paid':event.registrants(with_balance=False),
+                    'registrants_pending':event.registrants(with_balance=True),
+                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                })
             return redirect('events')
     else:
         form = form_class(user=request.user, prefix="event")
