@@ -17,7 +17,7 @@ class Migration(DataMigration):
             sub_email = sub.email
 
             if sub_email:
-                if sub.subscriber:
+                if sub.subscriber and sub.subscriber.creator:
                     user = sub.subscriber.creator
                 else:
                     if User.objects.filter(email=sub_email).exists():
