@@ -23,12 +23,7 @@ class Migration(DataMigration):
                     if User.objects.filter(email=sub_email).exists():
                         user = User.objects.filter(email=sub_email).order_by('last_login')[0]
                     else:
-                        password = ''
-                        for i in range(0, 10):
-                            password += random.choice(string.ascii_lowercase + string.ascii_uppercase)
-
                         user = User(username=sub_email[:30], email=sub_email, is_active=False)
-                        user.set_password(password)
                         if SubscriberData.objects.filter(field_label="First Name", subscription=sub):
                             user.first_name = SubscriberData.objects.filter(field_label="First Name", subscription=sub)[0].value
                         if SubscriberData.objects.filter(field_label="Last Name", subscription=sub):
