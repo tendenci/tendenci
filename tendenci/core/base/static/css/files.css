@@ -39,6 +39,11 @@
 .t .files-wrap .file-wrap .content {
 	margin-bottom: 10px;
 }
+
+.t .files-wrap .file-wrap .related-content {
+	margin-bottom: 3px;
+}
+
 .t .files-wrap .file-wrap .submitted {
 	background-color: #F6F6F6;
 	padding: 10px;

@@ -21,19 +21,6 @@
         <a title="Download {{ file.ext }}" href="{% url file file.pk 'download' %}">{% trans "Download" %} this {{ file.type }}</a>
     </div>
 
-    {% if file.get_content %}
-    <div class="related-content">
-        <p>
-            <strong>{% trans "Related Content" %}:</strong>
-        {% if file.get_content.get_absolute_url %}
-            <a href="{{ file.get_content.get_absolute_url }}">{{ file.get_content }}</a>
-        {% else %}
-            {{ file.get_content }}
-        {% endif %}
-        </p>
-    </div>
-    {% endif %}
-
     <div class="meta">
         {% with file.category_set as file_cat %}
         {% if file_cat %}
@@ -54,6 +41,18 @@
         {% endfor %}
         </div>
         {% endif %}
+
+        {% if file.get_content %}
+        <div class="related-content">
+            <strong>{% trans "Uploaded via" %}</strong>
+            {% if file.get_content.get_absolute_url %}
+                <a href="{{ file.get_content.get_absolute_url }}">{{ file.get_content }}</a>
+            {% else %}
+                {{ file.get_content }}
+            {% endif %}
+        </div>
+        {% endif %}
+
         <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.owner }}</a></div>
     </div>
 
