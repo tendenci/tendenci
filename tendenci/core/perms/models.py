@@ -8,7 +8,6 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.entities.models import Entity
 from tendenci.core.versions.models import Version
 
-
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
     # authority fields
@@ -108,10 +107,19 @@ class TendenciBaseModel(models.Model):
         # set status to False and then save(). We do NOT
         # actually delete anything from the database.
         self.status = False
+
+        # Making slugs unique by appending pk
+        # This prevents Integrity errors if
+        # an object w/ the same slug is added
+        for f in self._meta.fields:
+            if 'SlugField' == f.get_internal_type():
+                setattr(self, f.name, '%s@%s' % (getattr(self, f.name), self.pk))
+
         try:
             self.save(**{'log': False})
         except TypeError:
             self.save()
+
         # Leave this commented out. We do not want Django to
         # delete our objects from the database.
         # super(TendenciBaseModel, self).delete(*args, **kwargs)
