@@ -244,7 +244,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     return response
 
-@login_required
+
 def photo_original(request, id):
     """
     Returns a reponse with the original image.
