@@ -91,9 +91,9 @@ class CorpMembershipImportProcessor(object):
         if key == 'name':
             if not cmemb_data['company_name']:
                 error_msg.append("Missing key 'company_name'.")
-        if 'status_detail' in cmemb_data.keys():
-            if cmemb_data['status_detail'] in ['archive', 'archived']:
-                error_msg.append('No import for archived.')
+#         if 'status_detail' in cmemb_data.keys():
+#             if cmemb_data['status_detail'] in ['archive', 'archived']:
+#                 error_msg.append('No import for archived.')
 
         return ' '.join(error_msg)
 
@@ -112,6 +112,15 @@ class CorpMembershipImportProcessor(object):
         corp_memb_display = {}
         corp_memb_display['error'] = ''
         corp_memb_display['user'] = None
+        status_detail = self.cmemb_data.get('status_detail', 'active')
+        if status_detail == 'archived':
+            status_detail = 'archive'
+        if not status_detail in CorpMembership.VALID_STATUS_DETAIL:
+            status_detail = 'active'
+        self.cmemb_data['status_detail'] = status_detail
+        expiration_dt = self.cmemb_data.get('expiration_dt', None)
+        if expiration_dt:
+            expiration_dt = dparser.parse(expiration_dt)
 
         error_msg = self.validate_fields(self.cmemb_data, self.key)
 
@@ -126,10 +135,18 @@ class CorpMembershipImportProcessor(object):
             [corp_profile] = CorpProfile.objects.filter(
                     name=self.cmemb_data['name'])[:1] or [None]
             if corp_profile:
-                [corp_memb] = CorpMembership.objects.filter(
-                            corp_profile=corp_profile).exclude(
-                          status_detail='archive'
-                                ).order_by('-id')[:1] or [None]
+                corp_membs = CorpMembership.objects.filter(
+                            corp_profile=corp_profile,
+                            status_detail=status_detail)
+                # there might be multiple archives, pick the one that
+                # matches with the expiration_dt
+                if status_detail == 'archive' and expiration_dt:
+                    corp_membs = corp_membs.filter(
+                            expiration_dt__year=expiration_dt.year,
+                            expiration_dt__month=expiration_dt.month,
+                            expiration_dt__day=expiration_dt.day
+                            )
+                [corp_memb] = corp_membs.order_by('-id')[:1] or [None]
             else:
                 corp_memb = None
 
@@ -178,6 +195,7 @@ class CorpMembershipImportProcessor(object):
                     'city': self.cmemb_data.get('city', ''),
                     'state': self.cmemb_data.get('state', ''),
                     'zip': self.cmemb_data.get('zip', ''),
+                    'status_detail': self.cmemb_data.get('status_detail', ''),
                              })
         return corp_memb_display
 
@@ -409,6 +427,8 @@ class CorpMembershipImportProcessor(object):
                     value = ''
 
         elif field_type == 'BooleanField':
+            if value == 'TRUE':
+                value = True
             try:
                 value = field.to_python(value)
             except exceptions.ValidationError:

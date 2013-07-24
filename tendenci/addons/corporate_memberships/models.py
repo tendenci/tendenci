@@ -437,6 +437,12 @@ class CorpMembership(TendenciBaseModel):
                                       content_type_field="content_type")
 
     objects = CorpMembershipManager()
+    VALID_STATUS_DETAIL = ['active',
+                           'pending',
+                           'paid - pending approval',
+                           'expired',
+                           'archive',
+                           'inactive']
 
     class Meta:
         permissions = (("view_corpmembership", "Can view corporate membership"),)
