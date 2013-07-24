@@ -622,10 +622,14 @@ class UserForm(forms.ModelForm):
 
         is_renewal = 'username' in request.GET
         if request.user.is_superuser and is_renewal:
-            self_fields_keys.remove('username')
-            self_fields_keys.remove('password')
-            self.fields.pop('username')
-            self.fields.pop('password')
+            if 'username' in self_fields_keys:
+                self_fields_keys.remove('username')
+            if 'password' in self_fields_keys:
+                self_fields_keys.remove('password')
+            if 'username' in self.fields:
+                self.fields.pop('username')
+            if 'password' in self.fields:
+                self.fields.pop('password')
 
         if 'password' in self_fields_keys:
 
