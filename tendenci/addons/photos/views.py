@@ -251,8 +251,14 @@ def photo_original(request, id):
     """
     photo = get_object_or_404(Image, id=id)
 
-    # check permissions
-    if not has_perm(request.user, 'photos.view_image', photo):
+    allowed_to_view_original = [
+        request.user.profile.is_superuser,
+        request.user == photo.creator,
+        request.user == photo.owner,
+        photo.get_license().name != 'All Rights Reserved',
+    ]
+
+    if not allowed_to_view_original:
         raise Http403
 
     image_data = default_storage.open(unicode(photo.image.file), 'rb').read()
