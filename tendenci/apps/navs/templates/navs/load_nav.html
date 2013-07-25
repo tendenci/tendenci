@@ -1,4 +1,7 @@
 {% load nav_tags %}
+{% if show_title == "True" %}
+    <h2>{{ nav.title }}</h2>
+{% endif %}
 <ul id="nav-ul-{{ nav.id }}">
 {% for item in items %}
     {% nav_item item %}
