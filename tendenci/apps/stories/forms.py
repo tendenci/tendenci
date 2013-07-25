@@ -58,7 +58,6 @@ class StoryForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -86,7 +85,6 @@ class StoryForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'], 
                       'classes': ['admin-only'],
                     })]   
@@ -119,7 +117,6 @@ class StoryForm(TendenciBaseForm):
         else:
             self.fields.pop('remove_photo')
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
     def save(self, *args, **kwargs):
@@ -160,7 +157,6 @@ class StoryAdminForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -187,7 +183,6 @@ class StoryAdminForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
