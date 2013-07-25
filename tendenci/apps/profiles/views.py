@@ -294,7 +294,8 @@ def search(request, template_name="profiles/search.html"):
                 # show non-members only
                 profiles = profiles.filter(member_number='')
 
-        profiles = profiles.exclude(hide_in_search=True)
+        if not has_perm(request.user, 'profiles.view_profile'):
+            profiles = profiles.exclude(hide_in_search=True)
 
     if membership_type:
         profiles = profiles.filter(
