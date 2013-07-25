@@ -340,6 +340,13 @@ class RssParserNode(Node):
             except:
                 cache_timeout = self.kwargs['cache']
 
+        try:
+            url = Variable(self.url)
+            url = url.resolve(context)
+            self.url = url
+        except:
+            pass
+
         cache_key = md5(self.url).hexdigest()
         url_content = cache.get(cache_key)
 
