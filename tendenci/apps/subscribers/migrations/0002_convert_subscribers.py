@@ -22,6 +22,8 @@ class Migration(DataMigration):
                 else:
                     if User.objects.filter(email=sub_email).exists():
                         user = User.objects.filter(email=sub_email).order_by('last_login')[0]
+                    elif User.objects.filter(username=sub_email).exists():
+                        user = User.objects.filter(username=sub_email).order_by('last_login')[0]
                     else:
                         user = User(username=sub_email[:30], email=sub_email, is_active=False)
                         if SubscriberData.objects.filter(field_label="First Name", subscription=sub):
