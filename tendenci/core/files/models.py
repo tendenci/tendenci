@@ -5,6 +5,7 @@ import Image
 import re
 from slate import PDF
 import cStringIO
+from base64 import b64encode
 
 from django.db import models, connection
 from django.conf import settings
@@ -261,3 +262,13 @@ class File(TendenciBaseModel):
                 if hasattr(self, r_object.var_name):
                     return getattr(self, r_object.var_name)
             return None
+
+    def get_binary(self, **kwargs):
+        """
+        Returns binary in encoding base64.
+        """
+        from tendenci.core.files.utils import build_image
+        size = kwargs.get('size') or self.image_dimensions()
+
+        binary = build_image(self.file, size, 'FILE_IMAGE_PRE_KEY')
+        return b64encode(binary)
