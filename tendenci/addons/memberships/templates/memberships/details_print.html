@@ -14,34 +14,11 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-navbar.css">
 
-<style>
-    .t .membership-details-status {
-        border-left: none;
-        width: 220px;
-        text-align: right;
-    }
-    .t .membership-details-status .status-label {
-        color: black;
-        font-size: 1.2em;
-        background-color: white;
-        padding: 0;
-        width: 0;
-        white-space: nowrap;
-        border-bottom: none;
-    }
-    .t .membership-details-status .status-label.pending {
-        padding: 0;
-    }
-    .t .membership-detail-nav {
-        display: none;
-    }
-</style>
-
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <div class="membership-detail-wrap">
+    <div class="membership-detail-wrap membership-detail-print">
 
         <fieldset>
             <div class="membership-details-inner-wrap">
@@ -101,11 +78,11 @@
 
                     <div class="membership-details-status">
                         
-                        <div class="status-label {{ membership.get_status }}">
-                            {{ membership.get_status|capfirst }} Membership</div>
+                        <p class="status-label {{ membership.get_status }}">
+                            {{ membership.get_status|capfirst }} Membership</p>
 
-                        <div class="status-label">
-                            Balance Due: ${{ membership.get_invoice.balance|floatformat:"2" }}</div>
+                        <p class="status-label">
+                            Balance Due: ${{ membership.get_invoice.balance|floatformat:"2" }}</p>
 
                     </div>
 
@@ -115,7 +92,7 @@
         </fieldset>
 
         <fieldset>
-            <label>Contact Information</label>
+            <legend>Contact Information</legend>
 
             {% if membership.user.email %}
             <div class="field">
@@ -169,7 +146,7 @@
         </fieldset>
 
         <fieldset>
-            <label>More Details</label>
+            <legend>More Details</legend>
 
             {% if membership.certifications %}
             <div class="field">
@@ -447,7 +424,7 @@
 
         {% if membership.get_demographics %}
         <fieldset>
-            <label>Even More Details (custom fields)</label>
+            <legend>Even More Details (custom fields)</legend>
             {% for label, value in membership.get_demographics %}
                 {% if value %}
                 <div class="field">
