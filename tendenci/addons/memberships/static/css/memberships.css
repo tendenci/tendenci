@@ -378,15 +378,12 @@ div.pending-entries {
  ------------------------- */
 .t .membership-detail-print .membership-details-status .status-label {
     color: black;
-    font-size: 1.2em;
+    font-size: 1em;
     background-color: white;
     padding: 0;
     width: 0;
     white-space: nowrap;
     border-bottom: none;
-}
-.t .membership-detail-print .membership-details-status .status-label.pending {
-    padding: 0;
 }
 .t .membership-detail-print .membership-detail-nav {
     display: none;
@@ -397,41 +394,23 @@ div.pending-entries {
 .t .membership-detail-wrap.membership-detail-print fieldset legend {
     margin-bottom: 2px;
 }
+.t .membership-detail-print {
+    line-height: .8em;
+}
+
 
 @media print {
     .t .membership-detail-print {
         font-size: 50%;
-        line-height: .8em;
     }
-
-    .t .membership-detail-print .membership-details-status {
-        border-left: none;
-        width: 220px;
-        text-align: right;
-    }
-
-    .t .membership-detail-print .membership-details-status .status-label {
-        color: black;
-        font-size: 1.2em;
-        background-color: white;
-        padding: 0;
-        border-bottom: none;
-    }
-    .t .membership-detail-print .membership-detail-nav {
-        display: none;
-    }
-
-
     .t .membership-detail-wrap.membership-detail-print fieldset {
         padding: 0px 10px 0px;
         border: none;
     }
-
     .t .membership-detail-wrap.membership-detail-print .field {
         padding: 5px 10px;
         margin-bottom: 3px;
     }
-
     .t .membership-detail-wrap.membership-detail-print .field .label {
         margin-bottom: 5px;
     }
