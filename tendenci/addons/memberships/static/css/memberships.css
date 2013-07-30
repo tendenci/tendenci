@@ -394,14 +394,12 @@ div.pending-entries {
 .t .membership-detail-wrap.membership-detail-print fieldset legend {
     margin-bottom: 2px;
 }
-.t .membership-detail-print {
-    line-height: .8em;
-}
 
 
 @media print {
     .t .membership-detail-print {
         font-size: 50%;
+        line-height: .8em;
     }
     .t .membership-detail-wrap.membership-detail-print fieldset {
         padding: 0px 10px 0px;
