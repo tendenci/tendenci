@@ -235,7 +235,7 @@ class Profile(Person):
         return False
 
     def get_groups(self):
-        memberships = self.user.group_member.all()
+        memberships = self.user.group_member.filter(group__status=True)
         return [membership.group for membership in memberships]
 
     def refresh_member_number(self):

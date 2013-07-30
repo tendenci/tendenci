@@ -102,7 +102,7 @@ def index(request, username='', template_name="profiles/index.html"):
             additional_owners.remove(profile.owner)
 
     # group list
-    group_memberships = user_this.group_member.all()
+    group_memberships = user_this.group_member.filter(group__status=True)
 
     active_qs = Q(status_detail__iexact='active')
     pending_qs = Q(status_detail__iexact='pending')
