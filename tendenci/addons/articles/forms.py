@@ -48,7 +48,6 @@ class ArticleForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -85,7 +84,6 @@ class ArticleForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -99,7 +97,5 @@ class ArticleForm(TendenciBaseForm):
             self.fields['group'].initial = Group.objects.get_initial_group_id()
 
         if self.user and not self.user.profile.is_superuser:
-            if 'status' in self.fields:
-                self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
