@@ -1192,12 +1192,12 @@ class MembershipDefault(TendenciBaseModel):
 
     def is_renewal(self):
         """
-        Checks if there are older memberships
+        Checks if there are expired memberships
         of this same membership type
         """
         return self.user.membershipdefault_set.filter(
-            membership_type=self.membership_type).exclude(
-                status_detail='disapproved').exists()
+            membership_type=self.membership_type,
+            status_detail='expired').exists()
 
     def can_renew(self):
         """
