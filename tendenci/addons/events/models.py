@@ -632,8 +632,8 @@ class Registrant(models.Model):
         "CustomRegFormEntry", related_name="registrants", null=True)
 
     name = models.CharField(max_length=100)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     mail_name = models.CharField(max_length=100)
     address = models.CharField(max_length=200)
     city = models.CharField(max_length=100)
