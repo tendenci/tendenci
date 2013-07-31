@@ -134,14 +134,14 @@ class CorpMembershipAppForm(TendenciBaseForm):
         super(CorpMembershipAppForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs[
-                                    'app_instance_id'] = self.instance.pk
+                'app_instance_id'] = self.instance.pk
             self.fields['confirmation_text'].widget.mce_attrs[
-                                    'app_instance_id'] = self.instance.pk
+                'app_instance_id'] = self.instance.pk
         else:
             self.fields['description'].widget.mce_attrs[
-                                        'app_instance_id'] = 0
+                'app_instance_id'] = 0
             self.fields['confirmation_text'].widget.mce_attrs[
-                                        'app_instance_id'] = 0
+                'app_instance_id'] = 0
 
 
 class CorpMembershipAppFieldAdminForm(forms.ModelForm):
@@ -380,9 +380,10 @@ class CorpMembershipForm(forms.ModelForm):
         self.corpmembership_app = kwargs.pop('corpmembership_app')
         super(CorpMembershipForm, self).__init__(*args, **kwargs)
         self.fields['corporate_membership_type'].widget = forms.widgets.RadioSelect(
-                    choices=get_corpmembership_type_choices(self.request_user,
-                                                        self.corpmembership_app),
-                    attrs=self.fields['corporate_membership_type'].widget.attrs)
+            choices=get_corpmembership_type_choices(
+                self.request_user,
+                self.corpmembership_app),
+            attrs=self.fields['corporate_membership_type'].widget.attrs)
         # if all membership types are free, no need to display payment method
         require_payment = self.corpmembership_app.corp_memb_type.filter(
                                 price__gt=0).exists()
@@ -407,15 +408,16 @@ class CorpMembershipForm(forms.ModelForm):
 
     def save(self, **kwargs):
         super(CorpMembershipForm, self).save(commit=False)
-        anonymous_creator = kwargs.get('creator', None)
-        corp_profile = kwargs.get('corp_profile', None)
+        anonymous_creator = kwargs.get('creator')
+        corp_profile = kwargs.get('corp_profile')
         creator_owner = self.request_user
         if not self.instance.pk:
             if anonymous_creator:
                 self.instance.anonymous_creator = anonymous_creator
             if not isinstance(self.request_user, User):
-                [creator_owner] = User.objects.filter(is_staff=1,
-                                                is_active=1)[:1] or [None]
+                [creator_owner] = User.objects.filter(
+                    is_staff=1,
+                    is_active=1)[:1] or [None]
             if not self.request_user.profile.is_superuser:
                 self.instance.status = True
                 self.instance.status_detail = 'pending'
