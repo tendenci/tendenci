@@ -143,6 +143,20 @@ class CorpMembershipAppForm(TendenciBaseForm):
             self.fields['confirmation_text'].widget.mce_attrs[
                 'app_instance_id'] = 0
 
+    def clean(self):
+        cleaned_data = super(CorpMembershipAppForm, self).clean()
+        is_public = cleaned_data.get('allow_anonymous_view')
+        corp_memb_types = cleaned_data.get('corp_memb_type')
+
+        if is_public and corp_memb_types:
+            public_types = [not cm_type.admin_only for cm_type in corp_memb_types]
+            if not any(public_types):
+                raise forms.ValidationError(
+                    'Please select a public corporate membership type. \
+                    All types currently selected are admin only.')
+
+        return cleaned_data
+
 
 class CorpMembershipAppFieldAdminForm(forms.ModelForm):
     class Meta:
