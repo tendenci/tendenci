@@ -1861,15 +1861,18 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
             # send email notification to admin
             recipients = get_notice_recipients(
-                                       'module', 'memberships',
-                                       'membershiprecipients')
+                'module', 'memberships',
+                'membershiprecipients')
+
             extra_context = {
                 'membership': membership,
                 'app': app,
                 'request': request
             }
-            send_email_notification('membership_joined_to_admin', recipients,
-                                    extra_context)
+            send_email_notification(
+                'membership_joined_to_admin',
+                recipients,
+                extra_context)
 
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(
