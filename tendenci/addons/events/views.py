@@ -2,21 +2,15 @@
 # anonymous registration impementation of events in the registration
 # module.
 
-import os
 import re
-import time
 import calendar
 import itertools
-import cPickle
-import threading
 import subprocess
 
 from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
-from haystack.query import SearchQuerySet
 
-from django.conf import settings
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
@@ -27,7 +21,6 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.http import QueryDict
 from django.core.urlresolvers import reverse
-from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
@@ -35,61 +28,103 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, \
     inlineformset_factory
 from django.views.decorators.csrf import csrf_exempt
-from django.utils import simplejson as json
 from django.db import connection
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import is_enabled, superuser_required
-from tendenci.core.perms.utils import (has_perm, get_notice_recipients,
-    get_query_filters, update_perms_and_save, has_view_perm, assign_files_perms)
+from tendenci.core.perms.utils import (
+    has_perm,
+    get_notice_recipients,
+    get_query_filters,
+    update_perms_and_save,
+    has_view_perm,
+    assign_files_perms)
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from tendenci.core.files.models import File
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 from tendenci.core.imports.forms import ImportForm
 from tendenci.core.imports.models import Import
-from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import convert_absolute_urls
-from tendenci.core.imports.utils import (extract_from_excel,
-                render_excel)
+from tendenci.core.imports.utils import (
+    render_excel)
 
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.notifications import models as notification
 from tendenci.addons.events.ics.utils import run_precreate_ics
 
-from tendenci.addons.events.models import (Event,
-    Registration, Registrant, Speaker, Organizer, Type,
-    RegConfPricing, Addon, AddonOption, CustomRegForm,  
-    CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption, RegistrationConfiguration, EventPhoto, Place)
-from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
-    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
-    RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
-    Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
-    FormForCustomRegForm, RegConfPricingBaseModelFormSet, GlobalRegistrantSearchForm,
-    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm,
-    EventRegistrantSearchForm, MemberRegistrationForm)
-from tendenci.addons.events.utils import (email_registrants,
-    render_event_email, get_default_reminder_template,
-    add_registration, registration_has_started, registration_has_ended,
-    registration_earliest_time, get_pricing, clean_price,
-    get_event_spots_taken, get_ievent, split_table_price,
-    copy_event, email_admins, get_active_days, get_ACRF_queryset,
-    get_custom_registrants_initials, render_registrant_excel,
-    event_import_process, check_month, create_member_registration)
+from tendenci.addons.events.models import (
+    Event,
+    Registration,
+    Registrant,
+    Speaker,
+    Organizer,
+    Type,
+    RegConfPricing,
+    Addon,
+    AddonOption,
+    CustomRegForm,
+    CustomRegFormEntry,
+    CustomRegField,
+    CustomRegFieldEntry,
+    RegAddonOption,
+    RegistrationConfiguration,
+    EventPhoto,
+    Place)
+from tendenci.addons.events.forms import (
+    EventForm,
+    Reg8nEditForm,
+    PlaceForm,
+    SpeakerForm,
+    OrganizerForm,
+    TypeForm,
+    MessageAddForm,
+    RegistrationForm,
+    RegistrantForm,
+    RegistrantBaseFormSet,
+    Reg8nConfPricingForm,
+    PendingEventForm,
+    AddonForm,
+    AddonOptionForm,
+    FormForCustomRegForm,
+    RegConfPricingBaseModelFormSet,
+    GlobalRegistrantSearchForm,
+    EventICSForm,
+    EmailForm,
+    DisplayAttendeesForm,
+    ReassignTypeForm,
+    EventRegistrantSearchForm,
+    MemberRegistrationForm)
+from tendenci.addons.events.utils import (
+    email_registrants,
+    render_event_email,
+    get_default_reminder_template,
+    add_registration,
+    registration_has_started,
+    registration_has_ended,
+    registration_earliest_time,
+    get_pricing,
+    clean_price,
+    get_event_spots_taken,
+    get_ievent,
+    copy_event,
+    email_admins,
+    get_active_days,
+    get_ACRF_queryset,
+    get_custom_registrants_initials,
+    render_registrant_excel,
+    event_import_process,
+    check_month,
+    create_member_registration)
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
-from tendenci.core.base.utils import convert_absolute_urls
-from tendenci.apps.redirects.models import Redirect
 
 
-def custom_reg_form_preview(request, id,
-        template_name="events/custom_reg_form_preview.html"):
+def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
     """
     Preview a custom registration form.
     """
