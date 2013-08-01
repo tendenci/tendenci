@@ -779,9 +779,8 @@ class MembershipDefault2Form(forms.ModelForm):
             ('archive', 'Archive'),
                              )
     STATUS_CHOICES = (
-                      (1, 'Active'),
-                      (0, 'Inactive')
-                      )
+        (1, 'Active'),
+        (0, 'Inactive'))
 
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
 
