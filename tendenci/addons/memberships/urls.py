@@ -5,7 +5,8 @@ urlpath = get_setting('module', 'memberships', 'url')
 if not urlpath:
     urlpath = "memberships"
 
-urlpatterns = patterns("tendenci.addons.memberships.views",
+urlpatterns = patterns(
+    "tendenci.addons.memberships.views",
 
     # memberships
     url(r"^%s/$" % urlpath, "membership_index", name="membership.index"),
@@ -78,7 +79,7 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^%s/verifyemail/(?P<id>\d+)/(?P<guid>[\d\w-]+)/$" % urlpath,
         "verify_email",
         name="membership.verify_email"),
-    
+
     url(r"^%s/applications/add/(?P<cm_id>\d+)/$" % urlpath,
         "membership_default_add", {'join_under_corporate': True},
         name="membership_default.add_under_corp"),
