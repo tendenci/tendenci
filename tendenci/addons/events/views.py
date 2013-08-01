@@ -130,8 +130,11 @@ def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_p
     """
     form = get_object_or_404(CustomRegForm, id=id)
 
-    form_for_form = FormForCustomRegForm(request.POST or None,
-        request.FILES or None, custom_reg_form=form, user=request.user)
+    form_for_form = FormForCustomRegForm(
+        request.POST or None,
+        request.FILES or None,
+        custom_reg_form=form,
+        user=request.user)
 
     for field in form_for_form.fields:
         try:
@@ -144,8 +147,7 @@ def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_p
 
 
 @login_required
-def event_custom_reg_form_list(request, event_id,
-                template_name="events/event_custom_reg_form_list.html"):
+def event_custom_reg_form_list(request, event_id, template_name="events/event_custom_reg_form_list.html"):
     """
     List custom registration forms for this event.
     """
