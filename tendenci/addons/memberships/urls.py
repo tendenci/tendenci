@@ -103,6 +103,8 @@ urlpatterns = patterns(
         "membership_default_add",
         name="membership_default.add"),
 
+    url(r"^%s/applications/$" % urlpath, "membership_applications", name="membership-applications"),
+
 
     # reports
     url(r'^%s/reports/$' % urlpath, 'report_list', name='reports-memberships'),
