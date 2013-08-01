@@ -1808,6 +1808,8 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
                 if any(approval_required):
                     membership.pend()
+                    membership.save()  # save pending status
+
                     if membership.is_renewal():
                         Notice.send_notice(
                             request=request,
