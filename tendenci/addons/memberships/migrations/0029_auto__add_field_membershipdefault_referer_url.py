@@ -8,15 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'MembershipDefault.referral_url'
-        db.add_column('memberships_membershipdefault', 'referral_url',
+        # Adding field 'MembershipDefault.referer_url'
+        db.add_column('memberships_membershipdefault', 'referer_url',
                       self.gf('django.db.models.fields.CharField')(default='', max_length=500, blank=True),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'MembershipDefault.referral_url'
-        db.delete_column('memberships_membershipdefault', 'referral_url')
+        # Deleting field 'MembershipDefault.referer_url'
+        db.delete_column('memberships_membershipdefault', 'referer_url')
 
 
     models = {
@@ -508,7 +508,7 @@ class Migration(SchemaMigration):
             'referral_source_member_name': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '50', 'blank': 'True'}),
             'referral_source_member_number': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '50', 'blank': 'True'}),
             'referral_source_other': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
-            'referral_url': ('django.db.models.fields.CharField', [], {'max_length': '500', 'blank': 'True'}),
+            'referer_url': ('django.db.models.fields.CharField', [], {'max_length': '500', 'blank': 'True'}),
             'region': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['regions.Region']", 'null': 'True', 'blank': 'True'}),
             'renew_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'renewal': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),

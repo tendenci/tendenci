@@ -396,7 +396,7 @@ class MembershipDefault(TendenciBaseModel):
     renewal = models.BooleanField(blank=True, default=False)
     certifications = models.CharField(max_length=500, blank=True)
     work_experience = models.TextField(blank=True)
-    referral_url = models.CharField(max_length=500, blank=True, editable=False)
+    referer_url = models.CharField(max_length=500, blank=True, editable=False)
     referral_source = models.CharField(max_length=150, blank=True)
     referral_source_other = models.CharField(max_length=150, blank=True)
     referral_source_member_name = models.CharField(max_length=50, blank=True, default=u'')
