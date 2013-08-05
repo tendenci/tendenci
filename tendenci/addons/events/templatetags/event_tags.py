@@ -79,7 +79,6 @@ def global_registrant_search(context):
 def registration_pricing_and_button(context, event, user):
     limit = event.get_limit()
     spots_taken = 0
-    spots_left = limit - spots_taken
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(user, is_strict=False)
@@ -88,7 +87,6 @@ def registration_pricing_and_button(context, event, user):
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
     earliest_time = registration_earliest_time(event, pricing=pricing)
-    
 
     # spots taken
     if limit > 0:
@@ -101,7 +99,7 @@ def registration_pricing_and_button(context, event, user):
     if hasattr(user, 'registrant_set'):
         is_registrant = user.registrant_set.filter(
             registration__event=event).exists()
-    
+
     context.update({
         'now': datetime.now(),
         'event': event,
