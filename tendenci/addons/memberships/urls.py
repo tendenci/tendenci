@@ -94,17 +94,19 @@ urlpatterns = patterns(
     url(r"^%s/applications/(?P<slug>[\w\-]+)/preview/$" % urlpath,
         "membership_default_preview",
         name="membership_default.preview"),
+
     # legacy link for default add
     url(r"^%s/applications/add/$" % urlpath,
         "membership_default_add_legacy",
         name="membership_default.add"),
+
     # membership default add
     url(r"^%s/applications/(?P<slug>[\w\-]+)/$" % urlpath,
         "membership_default_add",
         name="membership_default.add"),
 
     url(r"^%s/applications/$" % urlpath, "membership_applications", name="membership-applications"),
-
+    url(r"^%s/referer-url/$" % urlpath, "referer_url", name="membership-referer-url"),
 
     # reports
     url(r'^%s/reports/$' % urlpath, 'report_list', name='reports-memberships'),

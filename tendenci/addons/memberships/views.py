@@ -237,6 +237,20 @@ def membership_applications(request, template_name="memberships/applications/lis
     return render(request, template_name, {'apps': apps})
 
 
+def referer_url(request):
+    """
+    Save the membership-referer-url
+    in sessions.  Then redirect to the 'next' URL
+    """
+    next = request.GET.get('next')
+
+    if not next:
+        raise Http404
+
+    # request.session['membership-referer-url'] = request.META['HTTP_REFERER']
+    return redirect(next)
+
+
 def application_detail_default(request, **kwargs):
     """
     Returns default membership application response
