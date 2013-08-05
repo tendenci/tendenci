@@ -44,8 +44,10 @@
         {% endif %}
         <a href="{% url event event.pk %}">{{ event.title }}</a>
         </h3>
+        {% if event.place %}
         <div class="place">{{ event.place }}</div>
-
+		 {% endif %}
+		 
         <div class="time-period">
             {{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }}
         </div> 
