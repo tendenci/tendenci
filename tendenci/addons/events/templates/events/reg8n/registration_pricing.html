@@ -44,7 +44,9 @@
                 	{% endif %}
 
                     {% if event.registration_configuration.has_member_price %}
+                    {% if not request.user.profile.is_member %}
                     <a class="become-a-member" href="{% url membership-referer-url %}?next={% url membership-applications %}">Become a member</a>
+                    {% endif %}
                     {% endif %}
 
                 	</form>
