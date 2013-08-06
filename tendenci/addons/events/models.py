@@ -199,6 +199,16 @@ class RegistrationConfiguration(models.Model):
             
         return pricings
 
+    def has_member_price(self):
+        """
+        Returns [boolean] whether or not this
+        event has a member price available.
+        """
+        price_set = self.regconfpricing_set.all()
+        has_members = [p.allow_member for p in price_set]
+        return any(has_members)
+
+
 class RegConfPricing(OrderingBaseModel):
     """
     Registration configuration pricing
