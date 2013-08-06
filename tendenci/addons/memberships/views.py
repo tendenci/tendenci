@@ -130,6 +130,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
         if 'approve' in GET_KEYS:
             membership.approve(request_user=request.user)
+            membership.send_email(request, 'approve')
             messages.add_message(request, messages.SUCCESS, 'Successfully Approved')
 
         if 'disapprove' in GET_KEYS:
