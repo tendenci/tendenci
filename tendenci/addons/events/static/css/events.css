@@ -266,6 +266,13 @@ div.id_regconf-reminder_days label{
     font-size: 0.8em;
 }
 
+.become-a-member {
+	display: block;
+	padding-top: 10px;
+	margin-top: 10px;
+	border-top: 1px solid silver;
+}
+
 
 /*= Print View
  ------------------------- */
