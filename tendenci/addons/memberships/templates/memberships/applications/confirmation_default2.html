@@ -18,23 +18,21 @@
 
         <h1>{% trans "Membership Confirmation" %}</h1>
 
-        {% if app.confirmation_text %}
-        {{ app.confirmation_text|safe }}
-        {% else %}
-        <p>Thank you for your submission!</p>
-        {% endif %}
+        {% firstof app.confirmation_text|safe "Thank you for your submission!" %}
 
         {% if membership.is_pending %}
-        <p>       	
-        	<span style="background-color: #ECF716;">
-        		{% if request.user.profile.is_superuser %}
-        		{% trans "This membership is pending." %}
-        		{% else %}
-        		{% trans "Your membership is pending for admin approval." %}
-        		<br />{% trans "You will be notified shortly after your application is approved." %} 
-        		{% endif %}
-        	</span>         
-        </p>
+            <p><span style="background-color: #ECF716;">
+                    {% if request.user.profile.is_superuser %}
+                    {% trans "This membership is pending." %}
+                    {% else %}
+                    {% trans "Your membership is pending for admin approval." %}
+                    <br />{% trans "You will be notified shortly after your application is approved." %} 
+                    {% endif %}
+            </span></p>
+        {% else %}
+            {% if membership.referer_url %}
+            <p><a href="{{ membership.referer_url }}">Please continue registering for your event as a member.</a></p>
+            {% endif %}
         {% endif %}
         
         <h4>What would you like to do now?</h4>
