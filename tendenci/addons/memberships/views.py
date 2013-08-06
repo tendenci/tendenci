@@ -599,6 +599,8 @@ def application_confirmation_default(request, hash):
     """
     Responds with default confirmation
     """
+    from django.contrib.auth import login
+
     template_name = 'memberships/applications/confirmation_default2.html'
     membership = get_object_or_404(MembershipDefault, guid=hash)
     if membership.corporate_membership_id:
@@ -608,6 +610,13 @@ def application_confirmation_default(request, hash):
         app = corp_app.memb_app
     else:
         app = membership.app
+
+    if request.user.is_anonymous():
+        request_user = membership.user
+        request_user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, request_user)  # log in the membership-user
+
+    EventLog.objects.log(instance=membership)
 
     return render_to_response(
         template_name, {
