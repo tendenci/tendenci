@@ -915,6 +915,9 @@ class MembershipDefault2Form(forms.ModelForm):
             membership.owner = request_user
             membership.owner_username = request_user.username
 
+        if 'membership-referer-url' in request.session:
+            membership.referer_url = request.session['membership-referer-url']
+
         membership.entity = Entity.objects.first()
         membership.user = user
 

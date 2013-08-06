@@ -247,7 +247,7 @@ def referer_url(request):
     if not next:
         raise Http404
 
-    # request.session['membership-referer-url'] = request.META['HTTP_REFERER']
+    request.session['membership-referer-url'] = request.META['HTTP_REFERER']
     return redirect(next)
 
 
