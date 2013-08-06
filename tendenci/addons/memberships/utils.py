@@ -776,16 +776,15 @@ def get_notice_token_help_text(notice=None):
                 help_text += '<div style="font-weight: bold;">%s</div>' % (
                                                             app.name)
             fields = MembershipAppField.objects.filter(
-                                        membership_app=app,
-                                        display=True,
-                                        ).exclude(
-                                        field_name=''
-                                        ).order_by('position')
+                membership_app=app,
+                display=True,
+                ).exclude(
+                field_name=''
+                ).order_by('position')
+
             help_text += "<ul>"
             for field in fields:
-                help_text += '<li>{{ %s }} - (for %s)</li>' % (
-                                                       field.field_name,
-                                                       field.label)
+                help_text += '<li>{{ %s }} - (for %s)</li>' % (field.field_name, field.label)
             help_text += "</ul>"
     else:
         help_text += '<div>No field tokens because there is no ' + \
@@ -794,6 +793,7 @@ def get_notice_token_help_text(notice=None):
     other_labels = ['member_number',
                     'membership_type',
                     'membership_link',
+                    'referer_url',
                     'renew_link',
                     'expire_dt',
                     'site_contact_name',
