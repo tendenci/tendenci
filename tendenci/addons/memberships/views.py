@@ -1549,12 +1549,12 @@ def membership_default_add(request, slug='', template='memberships/applications/
     else:
         membership_type_id = 0
 
-    good = (
+    allowed_users = (
         request.user.profile.is_superuser,
         username == request.user.username,
     )
 
-    if any(good) and username:
+    if any(allowed_users) and username:
         [user] = User.objects.filter(username=username)[:1] or [None]
 
     join_under_corporate = kwargs.get('join_under_corporate', False)
