@@ -243,11 +243,15 @@ def referer_url(request):
     in sessions.  Then redirect to the 'next' URL
     """
     next = request.GET.get('next')
+    site_url = get_setting('site', 'global', 'siteurl')
 
     if not next:
         raise Http404
 
-    request.session['membership-referer-url'] = request.META['HTTP_REFERER']
+    #  make referer-url relative if possible; remove domain
+    referer_url = request.META['HTTP_REFERER'].split(site_url)[-1]
+    request.session['membership-referer-url'] = referer_url
+
     return redirect(next)
 
 
