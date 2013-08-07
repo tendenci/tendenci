@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -43,6 +44,11 @@ class EventLog(models.Model):
 
     class Meta:
         permissions = (("view_eventlog", "Can view eventlog"),)
+
+    def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = str(uuid.uuid1())
+        super(EventLog, self).save(*args, **kwargs)
 
     def color(self):
         return get_color(str(self.event_id))
