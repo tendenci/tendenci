@@ -16,6 +16,11 @@
 
 {% block extra_head %}
 {{ block.super }}
+<meta property="og:title" content="{{ photo.title }}"/>
+<meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_medium_640_url }}"/>
+<meta property="og:description" content="{{ photo.caption|striptags }} {{ photo.get_license.name }}"/>
+<meta property="og:url" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_absolute_url }}" />
+<meta property="og:site_name" content="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
 {% endblock %}
 
