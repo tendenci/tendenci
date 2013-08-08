@@ -23,11 +23,8 @@ class NewsletterGeneratorView(TemplateView):
         context = super(NewsletterGeneratorView, self).get_context_data(**kwargs)
         cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
         cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
-        if cm_api_key and cm_client_id:
-            context['CAMPAIGNMONITOR_ENABLED'] = True
-        else:
-            context['CAMPAIGNMONITOR_ENABLED'] = False
 
+        context['CAMPAIGNMONITOR_enabled'] = (cm_api_key and cm_client_id)
         return context
 
 
