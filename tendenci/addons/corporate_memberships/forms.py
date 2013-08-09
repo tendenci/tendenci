@@ -503,7 +503,7 @@ class RosterSearchAdvancedForm(forms.Form):
                         ('phone', _('Phone')),
                         ('city', _('City')),
                         ('state', _('State')),
-                        ('zip', _('Zip Code')),
+                        ('zipcode', _('Zip Code')),
                         ('country', _('Country'))
                                )
     SEARCH_METHOD_CHOICES = (
