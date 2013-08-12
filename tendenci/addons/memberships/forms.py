@@ -732,7 +732,7 @@ class UserForm(forms.ModelForm):
                 password=user_attrs['password'])
 
         else:
-            user, created = Profile.objects.get_or_create_user(**user_attrs)
+            user, created = User.objects.get_or_create(**user_attrs)
 
         if created:
             send_welcome_email(user)
