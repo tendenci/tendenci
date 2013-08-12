@@ -20,11 +20,11 @@ class Command(BaseCommand):
         from boto.s3.key import Key
 
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-            backet_name = settings.AWS_STORAGE_BUCKET_NAME
-            backet_site_folder_name = settings.AWS_LOCATION
+            bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+            bucket_site_folder_name = settings.AWS_LOCATION
             conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
                                    settings.AWS_SECRET_ACCESS_KEY)
-            bucket = conn.get_bucket(backet_name)
+            bucket = conn.get_bucket(bucket_name)
             k = Key(bucket)
 
             static_root = settings.STATIC_ROOT
@@ -48,7 +48,7 @@ class Command(BaseCommand):
                                             static_url_to_find,
                                             static_url_replace_with)
                                         # upload to s3
-                                        key = '%s/%s/%s' % (backet_site_folder_name,
+                                        key = '%s/%s/%s' % (bucket_site_folder_name,
                                                             dirpath.replace(static_root, 'static'), filename)
 
                                         k.key = key
