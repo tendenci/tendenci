@@ -29,8 +29,10 @@ class NewsletterGeneratorView(TemplateView):
 
 
 def template_view(request, template_id, render=True):
+
+
+
     template = get_object_or_404(NewsletterTemplate, template_id=template_id)
-    
     if not template.html_file:
         raise Http404
 
@@ -39,43 +41,43 @@ def template_view(request, template_id, render=True):
 
     simplified = True
     login_content = ""
-    include_login = request.GET.get('include_login', False)
+    include_login = int(request.GET.get('include_login', 0))
     if include_login:
         login_content = render_to_string('newsletters/login.txt',  
                                         context_instance=RequestContext(request))
     
     jumplink_content = ""
-    jump_links = request.GET.get('jump_links', 1)
+    jump_links = int(request.GET.get('jump_links', 1))
     if jump_links:
         jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(), 
                                         context_instance=RequestContext(request))
     
     art_content = ""    
-    articles = request.GET.get('articles', 1)
+    articles = int(request.GET.get('articles', 1))
     articles_days = request.GET.get('articles_days', 60)
     if articles:
         articles_list, articles_content = newsletter_articles_list(request, articles_days, simplified)
     
     news_content = ""
-    news = request.GET.get('news', 1)
+    news = int(request.GET.get('news', 1))
     news_days = request.GET.get('news_days',30)
     if news:
         news_list, news_content = newsletter_news_list(request, news_days, simplified)
     
     jobs_content = ""
-    jobs = request.GET.get('jobs', 1)
+    jobs = int(request.GET.get('jobs', 1))
     jobs_days = request.GET.get('jobs_days', 30)
     if jobs:
         jobs_list, jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
     
     pages_content = ""
-    pages = request.GET.get('pages', 0)
+    pages = int(request.GET.get('pages', 0))
     pages_days = request.GET.get('pages_days', 7)
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
     try:
         from tendenci.addons.events.models import Event, Type    
-        events = request.GET.get('events', 1)
+        events = int(request.GET.get('events', 1))
         events_type = request.GET.get('events_type')
         start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
         event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
