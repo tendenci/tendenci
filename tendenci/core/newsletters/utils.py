@@ -120,6 +120,32 @@ def newsletter_jobs_list(request, jobs_days, simplified):
     return jobs, job_content
 
 
+def newsletter_events_list(request, start_dt, end_dt, simplified):
+    events = []
+    event_content = u''
+    try:
+        from tendenci.addons.events.models import Event
+
+        events = Event.objects.filter(
+            start_dt=start_dt,
+            end_dt=end_dt,
+            status_detail='active',
+            status=True,
+            allow_anonymous_view=True).order_by('start_dt')
+
+        event_content = render_to_string(
+            'newsletters/events_list.txt', {
+            'events': events,
+            'start_dt': start_dt,
+            'end_dt': end_dt,
+            'simplified':simplified},
+            context_instance=RequestContext(request))
+
+    except ImportError:
+        pass
+    return events, event_content
+
+
 def extract_files(template):
     if template.zip_file:
         zip_file = zipfile.ZipFile(template.zip_file.file)
