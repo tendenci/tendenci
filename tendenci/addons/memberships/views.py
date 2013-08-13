@@ -250,8 +250,9 @@ def referer_url(request):
         raise Http404
 
     #  make referer-url relative if possible; remove domain
-    referer_url = request.META['HTTP_REFERER'].split(site_url)[-1]
-    request.session['membership-referer-url'] = referer_url
+    if 'HTTP_REFERER' in request.META:
+        referer_url = request.META['HTTP_REFERER'].split(site_url)[-1]
+        request.session['membership-referer-url'] = referer_url
 
     return redirect(next)
 
