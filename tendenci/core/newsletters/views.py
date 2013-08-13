@@ -11,8 +11,12 @@ from django.views.generic import TemplateView
 from tendenci.core.base.http import Http403
 from tendenci.addons.campaign_monitor.utils import apply_template_media
 from tendenci.core.newsletters.models import NewsletterTemplate
-from tendenci.core.newsletters.utils import (newsletter_articles_list, newsletter_jobs_list,
-                                             newsletter_news_list, newsletter_pages_list)
+from tendenci.core.newsletters.utils import (
+    newsletter_articles_list,
+    newsletter_jobs_list,
+    newsletter_news_list,
+    newsletter_pages_list,
+    newsletter_events_list)
 from tendenci.core.perms.utils import has_perm
 
 
@@ -75,20 +79,19 @@ def template_view(request, template_id, render=True):
     pages_days = request.GET.get('pages_days', 7)
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
+
     try:
-        from tendenci.addons.events.models import Event, Type    
         events = int(request.GET.get('events', 1))
         events_type = request.GET.get('events_type')
         start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
         event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
         end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
         event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
-        if events:
-            events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
-            if events_type:
-                events_list = events_list.filter(type__pk=events_type)
-                events_type = Type.objects.filter(pk=events_type)[0]
-            events_list = events_list.order_by('start_dt')
+        events_list, events_content = newsletter_events_list(
+            request,
+            start_dt=event_start_dt,
+            end_dt=event_end_dt,
+            simplified=simplified)
     except ImportError:
         events_list = []
         events_type = None
@@ -108,6 +111,7 @@ def template_view(request, template_id, render=True):
                 "pages_content":pages_content,
                 "pages_list":pages_content,
                 "events":events_list, # legacy usage in templates
+                "events_content":events_content,
                 "events_list":events_list,
                 "events_type":events_type
             })
