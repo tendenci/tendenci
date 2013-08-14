@@ -1,13 +1,14 @@
-import datetime
 import os
+import re
 import shutil
 import zipfile
-
+import datetime
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from tendenci.core.site_settings.utils import get_setting
 
 
 def get_start_dt(duration_days, end_dt=None):
@@ -168,3 +169,19 @@ def extract_files(template):
                                 'newsletters',
                                 template.template_id)
             zip_file.extractall(path)
+
+
+def apply_template_media(template):
+    """
+    Prepends files in content to the media path
+    of a given template's zip file contents
+    """
+    site_url = get_setting('site', 'global', 'siteurl')
+    content = unicode(template.html_file.file.read(), "utf-8")
+    pattern = r'"[^"]*?\.(?:(?i)jpg|(?i)jpeg|(?i)png|(?i)gif|(?i)bmp|(?i)tif|(?i)css)"'
+    repl = lambda x: '"%s/%s/%s"' % (
+        site_url,
+        template.get_media_url(),
+        x.group(0).replace('"', ''))
+    new_content = re.sub(pattern, repl, content)
+    return new_content
