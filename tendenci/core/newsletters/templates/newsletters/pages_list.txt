@@ -1,8 +1,8 @@
 {% load i18n %}
 
 {% if pages %}
-	<font face="Arial" size="3"><b>
-	<font color=#000000>
+
+	<h3 style="font-size: 24px; font-family: Helvetica, Arial, sans-serif; margin: 0px;">
 	{# named area for jump links #}
 	<a name="pages" id="pages"></a>
 	{% if start_dt %}
@@ -10,8 +10,7 @@
 	{% else %}
 		{% trans "All Pages" %}
 	{% endif %}
-	
-	</font></b></font>							   
+	</h3>
 							   
 	{% for page in pages %}
 		
