@@ -2,15 +2,16 @@ import datetime
 
 from django.conf import settings
 from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
-
+from django.core.urlresolvers import reverse
 from tendenci.core.base.http import Http403
 from tendenci.addons.campaign_monitor.utils import apply_template_media
 from tendenci.core.newsletters.models import NewsletterTemplate
+from tendenci.core.newsletters.forms import GenerateForm
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
@@ -31,6 +32,41 @@ class NewsletterGeneratorView(TemplateView):
         context['CAMPAIGNMONITOR_enabled'] = (cm_api_key and cm_client_id)
         return context
 
+
+def generate(request):
+    """
+    Newsletter generator form
+    """
+    if not has_perm(request.user,'newsletters.add_newsletter'):
+        raise Http403
+
+    if request.method == 'POST':
+        form = GenerateForm(request.POST)
+        if form.is_valid():
+            template = form.cleaned_data['template']
+
+            html_url = [
+                reverse('newsletter.template_render', args=[template.template_id]),
+                u'?jump_links=%s' % form.cleaned_data.get('jump_links'),
+                '&events=%s' % form.cleaned_data.get('events'),
+                '&events_type=%s' % form.cleaned_data.get('events_type'),
+                '&event_start_dt=%s' % form.cleaned_data.get('event_start_dt', u''),
+                '&event_end_dt=%s' % form.cleaned_data.get('event_end_dt', u''),
+                '&articles=%s' % form.cleaned_data.get('articles', u''),
+                '&articles_days=%s' % form.cleaned_data.get('articles_days', u''),
+                '&news=%s' % form.cleaned_data.get('news', u''),
+                '&news_days=%s' % form.cleaned_data.get('news_days', u''),
+                '&jobs=%s' % form.cleaned_data.get('jobs', u''),
+                '&jobs_days=%s' % form.cleaned_data.get('jobs_days', u''),
+                '&pages=%s' % form.cleaned_data.get('pages', u''),
+                '&pages_days=%s' % form.cleaned_data.get('pages_days', u''),
+                ]
+
+            return redirect(''.join(html_url))
+
+    form = GenerateForm()
+
+    return render(request, 'newsletters/generate.html', {'form':form})
 
 def template_view(request, template_id, render=True):
 
@@ -85,13 +121,18 @@ def template_view(request, template_id, render=True):
         events_type = request.GET.get('events_type')
         start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
         event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
-        end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
+
+        end_y, end_m, end_d = request.GET.get(
+            'event_end_dt', 
+            str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
         event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
+
         events_list, events_content = newsletter_events_list(
             request,
             start_dt=event_start_dt,
             end_dt=event_end_dt,
             simplified=simplified)
+
     except ImportError:
         events_list = []
         events_type = None
