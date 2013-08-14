@@ -163,6 +163,9 @@ def template_view(request, template_id, render=True):
         response = HttpResponse(content)
         return response
     else:
-        template_name="newsletters/content.html"    
-        return render_to_response(template_name, {'content': content, 'template': template,},
-                                  context_instance=RequestContext(request))
+        template_name="newsletters/content.html"
+        return render_to_response(
+            template_name, {
+            'content': content,
+            'template': template},
+            context_instance=RequestContext(request))
