@@ -33,6 +33,13 @@ class NewsletterTemplate(models.Model):
     def get_absolute_url(self):
         return ("newsletter.template_render", [self.template_id])
 
+    @classmethod
+    def get_content_type(cls):
+        from django.contrib.contenttypes.models import ContentType
+        return ContentType.objects.get(
+            app_label=cls._meta.app_label,
+            model=cls._meta.module_name)
+
     @models.permalink
     def get_content_url(self):
         return ("newsletter.template_content", [self.template_id])
