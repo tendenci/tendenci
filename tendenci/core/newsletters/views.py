@@ -69,9 +69,10 @@ def generate(request):
     return render(request, 'newsletters/generate.html', {'form':form})
 
 def template_view(request, template_id, render=True):
-
-
-
+    """
+    Generate newsletter preview
+    Combine template with context passed via GET
+    """
     template = get_object_or_404(NewsletterTemplate, template_id=template_id)
     if not template.html_file:
         raise Http404
