@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse
 from tendenci.core.base.http import Http403
-from tendenci.addons.campaign_monitor.utils import apply_template_media
+from tendenci.core.newsletters.utils import apply_template_media
 from tendenci.core.newsletters.models import NewsletterTemplate
 from tendenci.core.newsletters.forms import GenerateForm
 from tendenci.core.newsletters.utils import (
