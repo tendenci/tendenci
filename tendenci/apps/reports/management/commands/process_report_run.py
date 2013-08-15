@@ -66,7 +66,10 @@ class Command(BaseCommand):
         results = sorted(results, key=lambda k: k['object_type'])
 
         try:
-            t = get_template("reports/invoices/results.html")
+            if run.output_type == 'html-extended':
+                t = get_template("reports/invoices/results-extended.html")
+            else:
+                t = get_template("reports/invoices/results.html")
         except TemplateDoesNotExist:
             self.end_with_error(run)
             raise CommandError('The template for this report is missing.')

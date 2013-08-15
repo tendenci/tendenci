@@ -121,6 +121,7 @@ RUN_STATUS_CHOICES = (
 
 RUN_TYPE_CHOICES = (
     ('html', 'HTML'),
+    ('html-extended', 'HTML Extended')
 )
 
 
