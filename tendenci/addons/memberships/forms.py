@@ -731,6 +731,10 @@ class UserForm(forms.ModelForm):
                 email=user_attrs['email'],
                 password=user_attrs['password'])
 
+            user.first_name = user_attrs['first_name']
+            user.last_name = user_attrs['last_name']
+            user.save()
+
         else:
             user, created = User.objects.get_or_create(**user_attrs)
 
