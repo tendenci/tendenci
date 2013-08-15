@@ -361,3 +361,11 @@ class Invoice(models.Model):
 
         # reverse accounting entries
         make_acct_entries_reversing(user, self, amount)
+
+    def get_first_approved_payment(self):
+        """
+        Returns first approved payment in ascending order
+        """
+        [payment] = self.payment_set.filter(status_detail='approved')[:1] or [None]
+        return payment
+
