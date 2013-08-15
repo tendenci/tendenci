@@ -574,3 +574,12 @@ class TendenciBaseManager(models.Manager):
         deleted and should not appear in querysets.
         """
         return super(TendenciBaseManager, self).get_query_set().filter(status=True)
+
+    def all_inactive(self):
+        """
+        Returns the queryset only with inactive objects that have
+        a status=False. It can be chained with filter and other functions,
+        but be sure to call this function first.
+        """
+        return super(TendenciBaseManager, self).get_query_set().filter(status=False)
+
