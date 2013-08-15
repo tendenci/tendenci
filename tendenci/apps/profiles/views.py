@@ -217,7 +217,7 @@ def search(request, template_name="profiles/search.html"):
     else:
         mts = None
 
-    show_member_option = not mts is None
+    show_member_option = mts
 
     form = ProfileSearchForm(request.GET, mts=mts)
     if form.is_valid():
