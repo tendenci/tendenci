@@ -123,3 +123,18 @@ class TendenciBaseModel(models.Model):
         # Leave this commented out. We do not want Django to
         # delete our objects from the database.
         # super(TendenciBaseModel, self).delete(*args, **kwargs)
+
+    def hard_delete(self, *args, **kwargs):
+        """
+        Delete object physically from database
+        """
+        if self.pk:
+            # if status == False, object already be soft-deleted
+            if not hasattr(self, 'status') or self.status:
+                log = kwargs.get('log', True)
+                if log:
+                    application = self.__module__
+                    EventLog.objects.log(instance=self, application=application)
+        
+        # delete object from the database.
+        super(TendenciBaseModel, self).delete(*args, **kwargs)
