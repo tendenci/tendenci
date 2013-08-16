@@ -459,6 +459,10 @@ def delete(request, id, template_name="files/delete.html"):
         raise Http403
 
     if request.method == "POST":
+        # reassign owner to current user
+        file.owner = request.user
+        file.owner_username = request.user.username
+        file.save()
         file.delete()
 
         if 'ajax' in request.POST:

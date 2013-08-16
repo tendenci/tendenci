@@ -16,12 +16,15 @@ from django.core.files.storage import default_storage
 
 from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.apps.notifications import models as notification
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.files.managers import FileManager
 from tendenci.core.categories.models import CategoryItem
+from tendenci.core.site_settings.utils import get_setting
 
 
 def file_directory(instance, filename):
@@ -80,8 +83,10 @@ class File(TendenciBaseModel):
         return items
 
     def save(self, *args, **kwargs):
+        created = False
         if not self.id:
             self.guid = unicode(uuid.uuid1())
+            created = True
 
         super(File, self).save(*args, **kwargs)
 
@@ -95,6 +100,19 @@ class File(TendenciBaseModel):
             # TODO remove cached images
             cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
             cache.delete("files_cache_set.%s" % self.pk)
+
+        # send notification to administrator(s) and module recipient(s)
+        if created:
+            recipients = get_notice_recipients('module', 'files', 'filerecipients')
+            site_display_name = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+            if recipients and notification:
+                notification.send_emails(recipients, 'file_added', {
+                    'object': self,
+                    'author': self.owner.get_full_name() or self.owner,
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+                    'SITE_GLOBAL_SITEURL': site_url,
+                })
 
     def delete(self, *args, **kwargs):
         # Related objects
@@ -120,6 +138,16 @@ class File(TendenciBaseModel):
         #"current transaction is aborted, commands ignored until 
         # end of transaction block"
         connection._rollback()
+
+        # send notification to administrator(s) and module recipient(s)
+        recipients = get_notice_recipients('module', 'files', 'filerecipients')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        if recipients and notification:
+            notification.send_emails(recipients, 'file_deleted', {
+                'object': self,
+                'author': self.owner.get_full_name() or self.owner,
+                'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+            })
 
         # delete actual file; do not save() self.instance
         self.file.delete(save=False)
