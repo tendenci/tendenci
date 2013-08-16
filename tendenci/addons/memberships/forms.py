@@ -736,7 +736,15 @@ class UserForm(forms.ModelForm):
             user.save()
 
         else:
-            user, created = User.objects.get_or_create(**user_attrs)
+
+            user = User.objects.get_or_create(
+                username=user_attrs['username'],
+                email=user_attrs['email'],
+                password=user_attrs['password'])
+
+            user.first_name = user.first_name or user_attrs['first_name']
+            user.last_name = user.last_name or user_attrs['last_name']
+            user.save()
 
         if created:
             send_welcome_email(user)
