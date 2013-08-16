@@ -173,7 +173,7 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
                                       app_label=corp_memb._meta.app_label,
                                       model=corp_memb._meta.module_name)
         inv.object_id = corp_memb.id
-        inv.title = corp_memb.name
+        inv.title = corp_memb.corp_profile.name
 
         if not user.is_anonymous():
             inv.bill_to = '%s %s' % (user.first_name, user.last_name)
