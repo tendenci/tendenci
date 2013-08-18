@@ -738,8 +738,8 @@ class UserForm(forms.ModelForm):
         else:
 
             user = User.objects.get_or_create(username=user_attrs['username'])
-            user.first_name = user.email or user_attrs['email']
-            user.first_name = user.password or user_attrs['password']
+            user.email = user.email or user_attrs['email']
+            user.password = user.password or user_attrs['password']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
             user.save()
