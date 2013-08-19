@@ -1488,6 +1488,7 @@ class MembershipDefault(TendenciBaseModel):
         if not self.application_approved_dt:
             return None
 
+        # memberships with join date
         memberships = self.qs_memberships().filter(
             join_dt__isnull=False
             ).exclude(status_detail='disapproved'
