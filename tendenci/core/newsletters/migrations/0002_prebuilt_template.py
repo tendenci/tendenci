@@ -25,6 +25,10 @@ class Migration(DataMigration):
         # move files
         for item in os.listdir(src_base_path):
             src = '%s%s' % (src_base_path, item)
+            
+            if os.path.isdir(dst):
+                continue  # on to the next one
+
             shutil.copy2(src, dst)
 
             # create file record
