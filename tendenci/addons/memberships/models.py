@@ -1517,7 +1517,7 @@ class MembershipDefault(TendenciBaseModel):
 
         # if not approved
         # set renew_dt and get out
-        if not approved:
+        if not all(approved):
             self.renew_dt = None
             return None
 
