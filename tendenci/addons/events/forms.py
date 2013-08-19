@@ -1220,6 +1220,8 @@ class RegistrantForm(forms.Form):
         self.event = kwargs.pop('event', None)
         self.form_index = kwargs.pop('form_index', None)
         self.pricings = kwargs.pop('pricings', None)
+        self.validate_pricing = kwargs.pop('validate_pricing', True)
+
         if self.event:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
 
@@ -1321,49 +1323,45 @@ class RegistrantForm(forms.Form):
         if pricing.allow_anonymous:
             return pricing
 
-        # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
-        # Both 'validated' and 'strict' require validation.
-        if self.event.anony_setting <> 'open':
-            # check if user is eligiable for this pricing
-            email = self.cleaned_data.get('email', '')
-            registrant_user = self.get_user(email)
+        if self.validate_pricing:
+            # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
+            # Both 'validated' and 'strict' require validation.
+            if self.event.anony_setting <> 'open':
+                # check if user is eligiable for this pricing
+                email = self.cleaned_data.get('email', '')
+                registrant_user = self.get_user(email)
 
-            if not registrant_user.is_anonymous():
-                if pricing.allow_user:
-                    return pricing
+                if not registrant_user.is_anonymous():
+                    if pricing.allow_user:
+                        return pricing
 
-                [registrant_profile] = Profile.objects.filter(user=registrant_user)[:1] or [None]
+                    [registrant_profile] = Profile.objects.filter(user=registrant_user)[:1] or [None]
 
-                if pricing.allow_member and registrant_profile and registrant_profile.is_member:
-                    return pricing
+                    if pricing.allow_member and registrant_profile and registrant_profile.is_member:
+                        return pricing
 
-                if pricing.group and pricing.group.is_member(registrant_user):
-                    return pricing
+                    if pricing.group and pricing.group.is_member(registrant_user):
+                        return pricing
 
-
-            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
-            err_msg = ""
-            if not email:
-                err_msg = 'An email address is required for this price %s%s %s. ' % (
-                                             currency_symbol, pricing.price, pricing.title
-                                                )
-            else:
-                if pricing.allow_user:
-                    err_msg = 'We do not detect %s as a site user.' % email
+                currency_symbol = get_setting("site", "global", "currencysymbol") or '$' 
+                err_msg = "" 
+                if not email:
+                    err_msg = 'An email address is required for this price %s%s %s.' \
+                                % (currency_symbol, pricing.price, pricing.title)
                 else:
-                    if pricing.allow_member:
-                        err_msg = "We do not detect %s as the member." % email
+                    if pricing.allow_user:
+                        err_msg = 'We do not detect %s as a site user.' % email
                     else:
-                        if pricing.group:
-                            err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
-                if not err_msg:
-
-                    err_msg = 'Not eligible for the price.%s%s %s.' % (
-                                                                currency_symbol,
-                                                                pricing.price,
-                                                                pricing.title,)
-                err_msg += ' Please choose another price option.'
-            raise forms.ValidationError(err_msg)
+                        if pricing.allow_member:
+                            err_msg = "We do not detect %s as the member." % email
+                        else:
+                            if pricing.group:
+                                err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
+                    if not err_msg:
+                        err_msg = 'Not eligible for the price.%s%s %s.' \
+                                    % (currency_symbol, pricing.price, pricing.title)
+                    err_msg += ' Please choose another price option.'
+                raise forms.ValidationError(err_msg)
 
         return pricing
 
@@ -1378,22 +1376,18 @@ class RegistrantForm(forms.Form):
         if pricing.allow_member:
             if not (pricing.allow_anonymous and pricing.allow_user):
                 price_requires_member = True
-
-        if not self.user.is_superuser:
-
-            if price_requires_member:
-                if not memberid:
-                    raise forms.ValidationError(
-                        "We don't detect you as a member. "
-                        "Please choose another price option. ")
-            else:
-                if memberid:
-                    raise forms.ValidationError(
-                        "You have entered a member id but "
-                        "have selected an option that does not "
-                        "require membership."
-                        "Please either choose the member option "
-                        "or remove your member id.")
+        
+        if price_requires_member:
+            if not memberid:
+                raise forms.ValidationError("We don't detect you as a member. " + \
+                                            "Please choose another price option. ")
+        else:
+            if memberid:
+                raise forms.ValidationError("You have entered a member id but " + \
+                                            "have selected an option that does not " + \
+                                            "require membership." + \
+                                            "Please either choose the member option " + \
+                                            "or remove your member id.")
 
         return memberid
 
@@ -1422,12 +1416,15 @@ class RegistrantBaseFormSet(BaseFormSet):
         entries = kwargs.pop('entries', None)
         if entries:
             self.entries = entries
+        self.validate_primary_only = get_setting('module', 'events', 'validateprimaryregonly')
         super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
                  initial, error_class)
 
     def _construct_form(self, i, **kwargs):
         """
         Instantiates and returns the i-th form instance in a formset.
+        If the "Validate Primary Registrant Only" setting is true,
+        pricings are only validated for the first form
         """
         defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
 
@@ -1441,6 +1438,10 @@ class RegistrantBaseFormSet(BaseFormSet):
         if hasattr(self, 'pricings'):
             defaults['pricings'] = self.pricings
 
+        # validate pricing on the first registrant only if setting dictates
+        if self.validate_primary_only:
+            if i != 0:
+                defaults['validate_pricing'] = False
 
         if self.data or self.files:
             defaults['data'] = self.data
@@ -1450,9 +1451,11 @@ class RegistrantBaseFormSet(BaseFormSet):
                 defaults['initial'] = self.initial[i]
             except IndexError:
                 pass
+
         # Allow extra forms to be empty.
         if i >= self.initial_form_count():
             defaults['empty_permitted'] = True
+
         defaults.update(kwargs)
         form = self.form(**defaults)
         self.add_fields(form, i)
