@@ -1,4 +1,5 @@
 from django.core.urlresolvers import resolve
+from django.utils.http import urlquote
 
 
 class RedirectMiddleware(object):
@@ -6,7 +7,8 @@ class RedirectMiddleware(object):
         if response.status_code != 404:
             return response  # No need to check for a redirect for non-404 responses.
 
-        path = request.get_full_path()
+        # use urlquote so we can support '?' in the redirect
+        path = urlquote(request.get_full_path())
         from tendenci.core.handler404.models import Report404
         try:
             redirect, args, kwargs = resolve(path, urlconf='tendenci.apps.redirects.dynamic_urls')
@@ -19,6 +21,7 @@ class RedirectMiddleware(object):
         except Exception, e:
             # No redirect was found. Return the response.
             # Log the 404
+            # print "e: ", e
             report_list = Report404.objects.filter(url=path)[:1]
             if report_list:
                 report = report_list[0]
