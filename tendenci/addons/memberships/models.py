@@ -1560,11 +1560,11 @@ class MembershipDefault(TendenciBaseModel):
 
             if self.renew_dt:
                 self.expire_dt = self.membership_type.get_expiration_dt(
-                    renewal=self.renewal, renew_dt=self.renew_dt
+                    renewal=self.is_renewal(), renew_dt=self.renew_dt
                 )
             elif self.join_dt:
                 self.expire_dt = self.membership_type.get_expiration_dt(
-                    renewal=self.renewal, join_dt=self.join_dt
+                    renewal=self.is_renewal(), join_dt=self.join_dt
                 )
 
     def set_member_number(self):
