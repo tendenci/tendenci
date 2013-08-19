@@ -804,6 +804,7 @@ class MembershipDefault(TendenciBaseModel):
         if request_user:  # else: don't set
             dupe.action_taken_user = request_user
 
+        dupe.save()
         dupe.set_join_dt()
         dupe.set_renew_dt()
         dupe.set_expire_dt()
