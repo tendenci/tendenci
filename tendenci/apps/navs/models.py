@@ -6,6 +6,7 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.managers import NavManager
+from tendenci.apps.navs.signals import update_nav_links
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
 class Nav(TendenciBaseModel):
@@ -123,3 +124,6 @@ class NavItem(OrderingBaseModel):
             #last item
             prev = range(0, self.level+1)
         return prev
+
+# Update page nav items when a page is saved
+models.signals.post_save.connect(update_nav_links, sender=Page)

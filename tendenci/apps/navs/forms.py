@@ -46,7 +46,7 @@ class NavForm(TendenciBaseForm):
 
 class PageSelectForm(forms.Form):
     pages = forms.ModelMultipleChoiceField(label = _('Pages'),
-                queryset = Page.objects.all(), widget=forms.CheckboxSelectMultiple)
+                queryset = Page.objects.exclude(status_detail='archive'), widget=forms.CheckboxSelectMultiple)
     
     def __init__(self, *args, **kwargs):
         super(PageSelectForm, self).__init__(*args, **kwargs)
