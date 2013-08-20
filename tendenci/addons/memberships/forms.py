@@ -718,6 +718,8 @@ class UserForm(forms.ModelForm):
             'first_name': self.cleaned_data.get('first_name'),
             'last_name': self.cleaned_data.get('last_name'),
         }
+        if not user_attrs['password']:
+            user_attrs['password'] = User.objects.make_random_password(length=8)
 
         # all fields are required in order to pull
         # an existing user record
@@ -737,9 +739,9 @@ class UserForm(forms.ModelForm):
 
         else:
 
-            user = User.objects.get_or_create(username=user_attrs['username'])
+            user, created = User.objects.get_or_create(username=user_attrs['username'])
+            user.set_password(user_attrs['password'])
             user.email = user.email or user_attrs['email']
-            user.password = user.password or user_attrs['password']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
             user.save()
