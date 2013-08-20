@@ -428,10 +428,10 @@ class CorpMembershipForm(forms.ModelForm):
         if not self.instance.pk:
             if anonymous_creator:
                 self.instance.anonymous_creator = anonymous_creator
-            if not isinstance(self.request_user, User):
-                [creator_owner] = User.objects.filter(
-                    is_staff=1,
-                    is_active=1)[:1] or [None]
+#             if not isinstance(self.request_user, User):
+#                 [creator_owner] = User.objects.filter(
+#                     is_staff=1,
+#                     is_active=1)[:1] or [None]
             if not self.request_user.profile.is_superuser:
                 self.instance.status = True
                 self.instance.status_detail = 'pending'
