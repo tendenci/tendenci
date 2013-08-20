@@ -11,8 +11,8 @@ var CodeDialog = {
       height: "350px",
       width: "680px",
       parserfile: "parsexml.js",
-      stylesheet: "js/codemirror/css/xmlcolors.css",
-      path: "js/codemirror/js/",
+      stylesheet: "/static/codemirror/css/xmlcolors.css",
+      path: "/static/codemirror/js/",
       reindentOnLoad: true, 
       continuousScanning: 500,
       lineNumbers: true
