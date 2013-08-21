@@ -38,14 +38,16 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
                      'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
+    option_fields = ['position', ('admin_only', 'status'), 'status_detail']
+    if get_setting('module', 'corporate_memberships', 'usefreepass'):
+        option_fields.insert(0, 'number_passes')
     fieldsets = (
         (None, {'fields': ('name', 'price', 'renewal_price',
                            'membership_type', 'description')}),
         ('Individual Pricing Options', {'fields':
                                     ('apply_threshold', 'individual_threshold',
                                     'individual_threshold_price',)}),
-        ('Other Options', {'fields': (
-            'position', ('admin_only', 'status'), 'status_detail')}),
+        ('Other Options', {'fields': option_fields}),
     )
 
     form = CorporateMembershipTypeForm

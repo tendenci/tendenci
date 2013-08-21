@@ -132,6 +132,10 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                  "All individual members applying " + \
                                  "under or equal to the threashold " + \
                                  "limit receive the threshold prices."))
+    number_passes = models.PositiveIntegerField(_('Number Passes'),
+                                               default=0,
+                                               blank=True)
+    
 
     def __unicode__(self):
         return self.name

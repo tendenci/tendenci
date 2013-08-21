@@ -49,6 +49,7 @@ from tendenci.addons.corporate_memberships.utils import (
 from tendenci.addons.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.payments.models import PaymentMethod
+from tendenci.core.site_settings.utils import get_setting
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -82,6 +83,7 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   'individual_threshold',
                   'individual_threshold_price',
                   'admin_only',
+                  'number_passes',
                   'position',
                   'status',
                   'status_detail',
