@@ -55,6 +55,7 @@ from tendenci.core.imports.utils import get_unique_username
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.addons.industries.models import Industry
 from tendenci.addons.regions.models import Region
+from tendenci.addons.events.models import Event, Registrant
 
 
 FIELD_CHOICES = (
@@ -1232,6 +1233,14 @@ class CorpMembership(TendenciBaseModel):
                         status=True
                             ).exclude(
                         status_detail='archive').count()
+
+
+class FreePassesStat(TendenciBaseModel):
+    user = models.ForeignKey(User, null=True)
+    corp_membership = models.ForeignKey("CorpMembership",
+                                related_name="passes_used")
+    event = models.ForeignKey(Event, related_name="passes_used")
+    registrant = models.ForeignKey(Registrant, null=True)
 
 
 class CorpMembershipApp(TendenciBaseModel):
