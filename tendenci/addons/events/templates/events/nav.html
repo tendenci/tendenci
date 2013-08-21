@@ -78,6 +78,7 @@
                 <li class="heading">{% trans "This Event" %}</li>
                 <li class="divider"></li>
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Event" %}</a></li>
+                    <li><a href="{% url event.print_view nav_object.pk %}">{% trans "Print Event" %}</a></li>
             {% if can_view_attendees %}
                     <li><a href="{% url event.attendees nav_object.pk %}">{% trans "View Attendees" %}</a></li>
             {% endif %}
