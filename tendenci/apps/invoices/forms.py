@@ -84,6 +84,7 @@ class InvoiceSearchForm(forms.Form):
 
         # Set search criteria choices
         criteria_choices = [('', 'SELECT ONE')]
+        criteria_choices.append(('id', _('ID')))
         for field in Invoice._meta.fields:
             if isinstance(field, CharField) or isinstance(field, DecimalField):
                 if not field.name.startswith('bill_to') and not field.name.startswith('ship_to'):
