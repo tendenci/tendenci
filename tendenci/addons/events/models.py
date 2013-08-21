@@ -679,6 +679,7 @@ class Registrant(models.Model):
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
     memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
+    use_free_pass = models.BooleanField(default=False)
 
     checked_in = models.BooleanField(_('Is Checked In?'), default=False)
     checked_in_dt = models.DateTimeField(null=True)
