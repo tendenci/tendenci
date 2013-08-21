@@ -506,8 +506,8 @@ class AppRetrieveFiles(object):
         if hasattr(instance, 'owner_username'):
             tfile.owner_username = instance.owner_username
 
-        file_path = file_directory(tfile, tfile.name)
-        tfile.file.save(file_path, ContentFile(urllib2.urlopen(url).read()))
+        #file_path = file_directory(tfile, tfile.name)
+        tfile.file.save(file_name, ContentFile(urllib2.urlopen(url).read()))
         tfile.save()
         return tfile
 
