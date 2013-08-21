@@ -1687,7 +1687,7 @@ class MembershipDefault(TendenciBaseModel):
                 send_welcome_email(self.user)
 
             if self.is_renewal():
-                self.renew()
+                self.renew(request.user)
                 Notice.send_notice(
                     request=request,
                     emails=self.user.email,
