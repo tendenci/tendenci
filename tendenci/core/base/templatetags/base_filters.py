@@ -327,7 +327,10 @@ def thumbnail(file, size='200x200'):
 
     # if the image wasn't already resized, resize it
     if not thumbnail_exist:
-        #image = Image.open(filename)
+
+        if not default_storage.exists(filename):
+            return u''
+
         image = Image.open(default_storage.open(filename))
         image.thumbnail([x, y], Image.ANTIALIAS)
 
