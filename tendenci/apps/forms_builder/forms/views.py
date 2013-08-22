@@ -244,7 +244,7 @@ def entries(request, id, template_name="forms/entries.html"):
     if not has_perm(request.user,'forms.change_form',form):
         raise Http403
 
-    entries = form.entries.all()
+    entries = form.entries.order_by('-create_dt')
 
     EventLog.objects.log(instance=form)
 
