@@ -24,3 +24,4 @@ The [http://www.tendenci.com](http://www.tendenci.com) team.
 ## Credits
 
 Props [https://github.com/tendenci/tendenci/blob/master/docs/credits.md](https://github.com/tendenci/tendenci/blob/master/docs/credits.md)
+
