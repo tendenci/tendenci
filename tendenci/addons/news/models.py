@@ -125,6 +125,4 @@ class News(TendenciBaseModel):
                 self.status_detail in ['active']])
 
 class NewsImage(File):
-    @property
-    def content_type(self):
-        return 'news'
+    pass
