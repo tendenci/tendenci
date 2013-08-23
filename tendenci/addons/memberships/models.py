@@ -2053,14 +2053,17 @@ class MembershipImport(models.Model):
             f = default_storage.open(file_path, 'wb')
             recap_writer = UnicodeWriter(f, encoding='utf-8')
             header_row = self.header_line.split(',')
+            if 'status' in header_row:
+                header_row.remove('status')
+            if 'status_detail' in header_row:
+                header_row.remove('status_detail')
             header_row.extend(['action', 'error'])
             recap_writer.writerow(header_row)
             data_list = MembershipImportData.objects.filter(
                 mimport=self).order_by('row_num')
             for idata in data_list:
                 data_dict = idata.row_data
-                row = [data_dict[k] for k in header_row if k not in [
-                                            'action', 'error']]
+                row = [data_dict[k] for k in header_row if k in data_dict]
                 row.extend([idata.action_taken, idata.error])
                 row = [smart_str(s).decode('utf-8') for s in row]
                 recap_writer.writerow(row)

@@ -1224,6 +1224,7 @@ def membership_default_import_download_recap(request, mimport_id):
     invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport,
                                     pk=mimport_id)
+    mimport.generate_recap()
     filename = os.path.split(mimport.recap_file.name)[1]
 
     recap_path = mimport.recap_file.name
