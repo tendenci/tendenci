@@ -23,7 +23,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.articles.models import Article
-from tendenci.addons.articles.forms import ArticleForm
+from tendenci.addons.articles.forms import ArticleForm, ArticleSearchForm
 from tendenci.apps.notifications import models as notification
 
 
@@ -55,21 +55,33 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
 
 @is_enabled('articles')
 def search(request, template_name="articles/search.html"):
-    get = dict(request.GET)
-    query = get.pop('q', [])
-    get.pop('page', None)  # pop page query string out; page ruins pagination
-    query_extra = ['%s:%s' % (k, v[0]) for k, v in get.items() if v[0].strip()]
-    query = ' '.join(query)
-    if query_extra:
-        query = '%s %s' % (query, ' '.join(query_extra))
+    
+    filters = get_query_filters(request.user, 'articles.view_article')
+    articles = Article.objects.filter(filters).distinct()
+    cat = None
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        articles = Article.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'articles.view_article')
-        articles = Article.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            articles = articles.select_related()
+    if not request.user.is_anonymous():
+        articles = articles.select_related()
+
+    query = request.GET.get('q', None)
+    tag = request.GET.get('tag', None)
+    form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser)
+
+    if tag:
+        articles = articles.filter(tags__icontains=tag)
+
+    if form.is_valid():
+        cat = form.cleaned_data['search_category']
+        filter_date = form.cleaned_data['filter_date']
+        date = form.cleaned_data['date']
+
+        if cat in ('featured', 'syndicate'):
+            articles = articles.filter(**{cat : True } )
+        elif query and cat:
+            articles = articles.filter( **{cat : query} )
+
+        if filter_date and date:
+            articles = articles.filter( release_dt__month=date.month, release_dt__day=date.day, release_dt__year=date.year )
 
     if not has_perm(request.user, 'articles.view_article'):
         articles = articles.filter(release_dt__lte=datetime.now())
@@ -90,8 +102,8 @@ def search(request, template_name="articles/search.html"):
         category = 0
     categories, sub_categories = Article.objects.get_categories(category=category)
 
-    return render_to_response(template_name, {'articles': articles, 'categories': categories,
-        'sub_categories': sub_categories},
+    return render_to_response(template_name, {'articles': articles,
+        'categories': categories, 'form' : form, 'sub_categories': sub_categories},
         context_instance=RequestContext(request))
 
 

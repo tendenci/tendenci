@@ -279,3 +279,65 @@ div.forms fieldset.contact {
 div.forms fieldset.contact legend {
 	padding: 5px;
 }
+
+.clearfix { clear: both; }
+
+form .first-row span,
+form .first-row .search-category,
+form .first-row .q,
+form input[type='submit'] {
+	float: left;
+}
+
+form .first-row #id_search_category {
+	height: 29px;
+	margin-right: 10px;
+	padding-top: 7px;
+}
+
+form .first-row .search-category .errorlist {
+	color: red;
+	margin-left: 3px;
+	margin-top: 5px;
+}
+
+form .first-row .q .errorlist{
+	color: red;
+	margin-left: 3px;
+	margin-top: 5px;
+}
+
+form .first-row #id_q {
+	width: 170px;
+	margin-right: 10px;
+	margin-bottom: 0px;
+}
+
+form input[type="submit"] {
+	width: 100px;
+}
+
+form #form-row {
+	margin-bottom: 10px;
+}
+
+form {
+	margin-top: 20px;
+	margin-bottom: 40px;
+}
+
+form .first-row span {
+	padding-top: 10px;
+	padding-right: 5px;
+}
+
+form #id_date {
+	width: 130px;
+	margin-left: 28px;
+}
+
+form .second-row .errorlist {
+	margin-left: 205px;
+	margin-top: -5px;
+	color: red;
+}

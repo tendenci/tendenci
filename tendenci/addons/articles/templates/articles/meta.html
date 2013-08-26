@@ -42,7 +42,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in article.tags|tag_split %}
-                <a href="{% url articles %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url articles %}?tag={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
