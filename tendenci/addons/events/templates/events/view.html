@@ -6,7 +6,7 @@
 {% load category_tags %}
 {% load humanize %}
 {% load i18n %}
-
+{% load meta_tags %}
 
 {% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
 {% block meta_description %}{{ event.get_description }}{% endblock %}
@@ -14,6 +14,8 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
+{% meta_og_image event "image" %}
+{% meta_og_image event "description" %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">

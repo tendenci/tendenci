@@ -5,6 +5,7 @@
 {% load base_filters %}
 {% load category_tags %}
 {% load i18n %}
+{% load meta_tags %}
 
 {% block title %}{{ news.get_title }}{% endblock %}
 {% block meta_description %}{{ news.get_description }}{% endblock %}
@@ -12,6 +13,8 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
+{% meta_og_image news "thumbnail" %}
+{% meta_og_image news "body" %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
 {% endblock %}
