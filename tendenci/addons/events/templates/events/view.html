@@ -42,7 +42,7 @@
 
             <!-- Event Details -->
             <div class="details-wrap">
-                {% for speaker in speakers|slice:"1" %}
+                {% for speaker in speakers %}
                 <div class="speaker-wrap">
                     {% if speaker.get_photo %}
                     <div class="speaker-photo">
@@ -70,7 +70,7 @@
                     <div style="clear:both;"></div>
                 </div>              
                 {% endfor %}
-                {% if speakers|length > 1 %}
+                {% if speakers_length > 1 %}
                 <a href="{% url event.speakers event.pk %}">{% trans "View all speakers" %}</a>
                 {% endif %}
 	        

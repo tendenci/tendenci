@@ -684,6 +684,22 @@ class SponsorForm(forms.ModelForm):
         model = Sponsor
 
 
+class SpeakerBaseFormSet(BaseModelFormSet):
+    def clean(self):
+        """Checks that no two speakers have the same name."""
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        names = []
+        for i in range(0, self.total_form_count()):
+            form = self.forms[i]
+            if 'name' in form.cleaned_data:
+                name = form.cleaned_data['name']
+                if name in names:
+                    raise forms.ValidationError(_("Speakers in an event must have distinct names. '%s' is already used." % name))
+                names.append(name)
+
+
 class SpeakerForm(BetterModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
@@ -698,12 +714,14 @@ class SpeakerForm(BetterModelForm):
         fields = (
             'name',
             'file',
+            'featured',
             'description',
         )
 
         fieldsets = [('Speaker', {
           'fields': ['name',
                     'file',
+                    'featured',
                     'description'
                     ],
           'legend': '',

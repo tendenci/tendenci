@@ -3,6 +3,13 @@
 
 {% for form in forms %}
 	{% if form.forms %}
+        {% if form.non_form_errors %}
+        <div class="errors">
+            {% for error in form.non_form_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
 		{% for form_set in form.forms %}
 			{% if form_set.errors.values %}
 			<div class="errors">
