@@ -107,12 +107,17 @@ class File(TendenciBaseModel):
             site_display_name = get_setting('site', 'global', 'sitedisplayname')
             site_url = get_setting('site', 'global', 'siteurl')
             if recipients and notification:
-                notification.send_emails(recipients, 'file_added', {
+
+                notification_params = {
                     'object': self,
-                    'author': self.owner.get_full_name() or self.owner,
                     'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
                     'SITE_GLOBAL_SITEURL': site_url,
-                })
+                }
+
+                if self.owner:
+                    notification_params['author'] = self.owner.get_full_name() or self.owner
+
+                notification.send_emails(recipients, 'file_added', notification_params)
 
     def delete(self, *args, **kwargs):
         # Related objects
