@@ -1428,6 +1428,20 @@ class RegistrantForm(forms.Form):
             raise forms.ValidationError('Override price must be a positive number.')
         return override_price
 
+    def clean_use_free_pass(self):
+        from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+        use_free_pass = self.cleaned_data['use_free_pass']
+        email = self.cleaned_data.get('email', '')
+        memberid = self.cleaned_data.get('memberid', '')
+        corp_membership = get_user_corp_membership(
+                                        member_number=memberid,
+                                        email=email)
+        if use_free_pass:
+            if not corp_membership:
+                raise forms.ValidationError('Not a corporate member for free pass')
+            elif not corp_membership.free_pass_avail:
+                raise forms.ValidationError('Free pass not available for "%s".' % corp_membership.corp_profile.name)
+        return use_free_pass
 
 
 # extending the BaseFormSet because i want to pass the event obj
