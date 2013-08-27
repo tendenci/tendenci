@@ -144,6 +144,9 @@ urlpatterns = patterns(
     # custom registration form preview
     url(r'^%s/custom_reg_form/list/(?P<event_id>\d+)/$' % urlpath, 'views.event_custom_reg_form_list', name='event.event_custom_reg_form_list'),
 
+    # free type
+    url(r'^%s/check_free_pass_eligibility/$' % urlpath, 'views.check_free_pass_eligibility', name='event.check_free_pass_eligibility'),
+
     # event types, need to be the last in the urls
     url(r'^%s/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view', name='event.month'),
 

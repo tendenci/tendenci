@@ -13,7 +13,10 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-reg.css" />
 <style>
-
+ .free-pass-wrap{
+ 	margin-left: 2em;
+ 	margin-bottom: 1em;
+ }
 </style>
 
 <style type="text/css">
@@ -196,7 +199,7 @@
 							
 							
 							{% for field in form %}
-							{% if field.label != 'Delete' %}
+							{% if field.label != 'Delete' and field.name != 'use_free_pass' %}
 								{% if field.name == 'override' or field.name == 'override_price' %}
 								<div class="form-field admin-{{ field.name }} override">
 									<div class="error">{{ field.errors }}</div>
@@ -237,7 +240,15 @@
 								{% endif %}
 							{% endif %}
 							{% endfor %}
-						
+							
+							{% if event.registration_configuration.allow_free_pass %}
+							<div class="free-pass-wrap">
+							<button class="fp_chk_btn">Check Free Pass Eligibility</button>
+							*** for corporate members only
+							<div class="free-pass-message"></div>
+							<div class="fp-field">{{ form.use_free_pass }} {{ form.use_free_pass.label }}</div>
+							</div>
+						    {% endif %}
 							
 							{% if form.DELETE %}
 							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
@@ -356,6 +367,63 @@
     {% include 'events/reg8n/include/register.js' %}
 </script>
 
+{% if event.registration_configuration.allow_free_pass %}
+<script type="text/javascript">
+    $(document).ready(function () {
+    	$('.fp-field').hide();
+    	$('button.fp_chk_btn').click(function(){
+    		var $this = $(this);
+    		var registrant_form = $this.closest('.registrant-form');
+    		var id = parseInt($(registrant_form).find('.item-counter').html()) - 1;
+    		var email = $(registrant_form).find('#id_registrant-' + id + '-email_0').val();
+    		var member_number = $(registrant_form).find('#id_registrant-' + id + '-memberid').val();
+    		if (member_number == undefined ){
+    			member_number = '';
+    		}
+    		if (email==''){
+    			alert("Please fill out the email field then try again!");
+    			return false;
+    		}else{
 
+	    		$.post(
+		            '{% url event.check_free_pass_eligibility %}',
+		            {
+		                'email': email,
+		                'member_number': member_number,
+		            },
+		            function(data, textStatus, jqXHR){
+		                json = $.parseJSON(data);
+		                //alert(json['message'])
+		                var fp_message = $(registrant_form).find('.free-pass-message');
+		                $(fp_message).css('padding-left', '2em');
+		                $(fp_message).css('color', '#777');
+		                if (!json["is_corp_member"] || !json['pass_avail']){
+		                    $(registrant_form).find('.fp-field').hide();
+		                    if (!json["is_corp_member"]){
+		                    	$(fp_message).html('Not a corporate member');
+		                    }
+		                    if (!json['pass_avail']){
+		                    	$(fp_message).html('No free pass available');
+		                    }
+		                } else {
+		                    $(registrant_form).find('.fp-field').show();
+		                    var msg = json['pass_avail'] + ' free pass(es) available ';
+		                    msg = msg.concat('for corporate "' + json['corp_name'] + '" ');
+		                    msg = msg.concat(' (total: ' + json['pass_total'] + ', ');
+		                    msg = msg.concat('used: ' + json['pass_used'] + ').<br /> ');
+		                    msg = msg.concat("You're welcome to use one.<br />");
+		                    msg = msg.concat('*** Note that - free passes are based on "first come, first served" policy.<br />');
+		                    msg = msg.concat('Thus, they may not be available upon submission.');
+		                    $(fp_message).html(msg);
+		                }
+		            });
+	        
+	        	return false;
+        	}
+    	})
+    });
+    		
+</script>
+{% endif %}
 {{ block.super }}
 {% endblock %}

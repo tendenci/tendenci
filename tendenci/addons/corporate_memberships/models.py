@@ -496,6 +496,21 @@ class CorpMembership(TendenciBaseModel):
         return self._meta.module_name
 
     @property
+    def free_pass_used(self):
+        return self.passes_used.count()
+    
+    @property
+    def free_pass_total(self):
+        return self.corporate_membership_type.number_passes
+    
+    @property
+    def free_pass_avail(self):
+        total = self.free_pass_total
+        if not total:
+            return 0
+        return total - self.free_pass_used
+
+    @property
     def authentication_method(self):
         app = CorpMembershipApp.objects.current_app()
         if app:

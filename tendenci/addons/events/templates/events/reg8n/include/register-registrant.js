@@ -112,6 +112,12 @@ function addRegistrant(ele, prefix, price) {
       
     });
     
+    {% if event.registration_configuration.allow_free_pass %}
+    $(row).find(".free-pass-message").html('');
+    $(row).find(".fp-field input[type=checkbox]").attr('checked', false);
+    $(row).find(".fp-field").hide();
+    {% endif %}
+    
     $(row).find(".form-field").find('label[for^="id_registrant"]').each(function() {
         updateIndex(this, prefix, formCount);
     });

@@ -1224,6 +1224,10 @@ class RegistrationForm(forms.Form):
         return override_price_table
 
 
+class FreePassCheckForm(forms.Form):
+    email = forms.EmailField(label=_("Email"))
+    member_number = forms.CharField(max_length=50, required=False)
+    
 
 class RegistrantForm(forms.Form):
     """
@@ -1295,6 +1299,9 @@ class RegistrantForm(forms.Form):
                                                             decimal_places=2,
                                                             required=False)
                 self.fields['override_price'].widget.attrs.update({'size': '8'})
+        if reg_conf.allow_free_pass:
+            self.fields['use_free_pass'] = forms.BooleanField(label="Use Free Pass",
+                                                             required=False)
 
 
     def clean_first_name(self):
