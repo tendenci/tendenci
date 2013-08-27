@@ -790,19 +790,17 @@ class MembershipDefault(TendenciBaseModel):
         dupe.application_approved = True
         dupe.application_approved_dt = NOW
 
-        if request_user:  # else: don't set
+        if request_user and not request_user.is_anonymous():  # else: don't set
             dupe.application_approved_user = request_user
+            dupe.application_approved_denied_user = request_user
+            dupe.action_taken_user = request_user
 
         # application approved/denied ---------------
         dupe.application_approved_denied_dt = NOW
-        if request_user:  # else: don't set
-            dupe.application_approved_denied_user = request_user
 
         # action_taken ------------------------------
         dupe.action_taken = True
         dupe.action_taken_dt = NOW
-        if request_user:  # else: don't set
-            dupe.action_taken_user = request_user
 
         dupe.save()
         dupe.set_join_dt()
