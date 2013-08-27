@@ -1514,34 +1514,23 @@ def check_free_pass_eligibility(request, form_class=FreePassCheckForm):
     """
     form = form_class(request.POST or None)
     ret_dict = {'is_corp_member': False}
-    print form.is_valid()
+
     if form.is_valid():
-        from tendenci.addons.memberships.models import MembershipDefault
-        from tendenci.addons.corporate_memberships.models import CorpMembership
+        from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+
         member_number = form.cleaned_data['member_number'].strip()
         email = form.cleaned_data['email'].strip()
-        if member_number:
-            memberships = MembershipDefault.objects.filter(
-                                    member_number=member_number
-                                    )
-        else:
-            memberships = MembershipDefault.objects.filter(
-                                    user__email=email,
-                                    corporate_membership_id__gt=0
-                                    )
-        [corp_membership_id] = memberships.values_list('corporate_membership_id',
-                                              flat=True)[:1] or [0]
-        print corp_membership_id
-        if corp_membership_id:
+        corp_membership = get_user_corp_membership(
+                                member_number=member_number,
+                                email=email)
+        
+        if corp_membership:
             ret_dict['is_corp_member'] = True
-            [corp_membership] = CorpMembership.objects.filter(
-                                        id=corp_membership_id)[:1] or [None]
-            if corp_membership:
-                ret_dict['pass_total'] = corp_membership.free_pass_total
-                ret_dict['pass_used'] = corp_membership.free_pass_used
-                ret_dict['pass_avail'] = corp_membership.free_pass_avail
-                ret_dict['corp_name'] = corp_membership.corp_profile.name
-                ret_dict['corp_id'] = corp_membership.id
+            ret_dict['pass_total'] = corp_membership.free_pass_total
+            ret_dict['pass_used'] = corp_membership.free_pass_used
+            ret_dict['pass_avail'] = corp_membership.free_pass_avail
+            ret_dict['corp_name'] = corp_membership.corp_profile.name
+            ret_dict['corp_id'] = corp_membership.id
 
     return HttpResponse(json.dumps(ret_dict))
                                        

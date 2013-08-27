@@ -24,6 +24,30 @@ from tendenci.core.payments.models import Payment
 from tendenci.core.base.utils import normalize_newline
 
 
+def get_user_corp_membership(member_number='', email=''):
+    """
+    Get corp membership by user member number or email
+    """
+    from tendenci.addons.corporate_memberships.models import CorpMembership
+
+    if member_number:
+        memberships = MembershipDefault.objects.filter(
+                                member_number=member_number
+                                )
+    else:
+        memberships = MembershipDefault.objects.filter(
+                                user__email=email,
+                                corporate_membership_id__gt=0
+                                )
+    [corp_membership_id] = memberships.values_list('corporate_membership_id',
+                                          flat=True)[:1] or [0]
+    if corp_membership_id:
+        [corp_membership] = CorpMembership.objects.filter(
+                        id=corp_membership_id)[:1] or [None]
+        return corp_membership
+    return None
+
+
 def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
     cmt_list = []
     corporate_membership_types = corpmembership_app.corp_memb_type.all()

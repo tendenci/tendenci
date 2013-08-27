@@ -17,6 +17,14 @@
  	margin-left: 2em;
  	margin-bottom: 1em;
  }
+ .free-pass-price{
+ 	text-decoration: line-through;
+ }
+  .free-pass-img{
+ 	background-image: url('/static/images/icons/fp.png');
+ 	background-repeat: no-repeat;
+ 	padding-right: 10px;
+ }
 </style>
 
 <style type="text/css">
@@ -246,7 +254,7 @@
 							<button class="fp_chk_btn">Check Free Pass Eligibility</button>
 							*** for corporate members only
 							<div class="free-pass-message"></div>
-							<div class="fp-field">{{ form.use_free_pass }} {{ form.use_free_pass.label }}</div>
+							<div class="fp-field">{{ form.use_free_pass }}<label for="id_registrant-{{ forloop_counter|add:'-1'}}-use_free_pass"> {{ form.use_free_pass.label }}</label></div>
 							</div>
 						    {% endif %}
 							
@@ -370,7 +378,7 @@
 {% if event.registration_configuration.allow_free_pass %}
 <script type="text/javascript">
     $(document).ready(function () {
-    	$('.fp-field').hide();
+
     	$('button.fp_chk_btn').click(function(){
     		var $this = $(this);
     		var registrant_form = $this.closest('.registrant-form');
@@ -415,12 +423,46 @@
 		                    msg = msg.concat('*** Note that - free passes are based on "first come, first served" policy.<br />');
 		                    msg = msg.concat('Thus, they may not be available upon submission.');
 		                    $(fp_message).html(msg);
+               
 		                }
 		            });
 	        
 	        	return false;
         	}
-    	})
+    	});
+    	
+    	$('.fp-field input[type=checkbox]').each(function() {
+    		var $this = $(this);
+    		var fp_field = $(this).closest('.fp-field');
+  
+    		update_fp_item($this);
+    		if ($this.is(':checked')){
+    		   	$(fp_field).show();
+    		}else{
+    			$(fp_field).hide();
+    		}
+    	 });
+   
+    	$('.fp-field input[type=checkbox]').click(function(){
+			 update_fp_item($(this));                
+    	});
+    	
+    	function update_fp_item(fp_item){
+    		 var $this = $(fp_item);
+    		 var registrant_form = $this.closest('.registrant-form');
+    		 var id = parseInt($(registrant_form).find('.item-counter').html()) - 1;
+			 // update summary
+			 var item_price = $('#summary-registrant-' + id).find('.item-price');
+			 var item_img = '<span class="free-pass-img">&nbsp;</span>';
+			 if ($this.is(':checked')){
+			 	$(item_price).addClass('free-pass-price');
+			 	$(item_price).after(item_img);
+			 }else{
+			 	$(item_price).removeClass('free-pass-price');
+			 	$(item_price).closest('td').find('.free-pass-img').remove();
+			 }
+		     updateSummaryTotal();
+    	}
     });
     		
 </script>

@@ -31,10 +31,14 @@ function updateSummaryTotal(){
     var items = $('#summary-price tr');
     var total_amount = 0.00;
     var discount_amount = parseFloat($('#discount-amount').html());
+    var item_price_node;
     
     for(i=0;i<items.length;i++){
-        item_amount = parseFloat($(items[i]).find('.item-price').html());
-        total_amount = total_amount + item_amount;
+    	item_price_node = $(items[i]).find('.item-price');
+    	if (!$(item_price_node).hasClass('free-pass-price')){
+    		item_amount = parseFloat($(item_price_node).html());
+        	total_amount = total_amount + item_amount;
+    	}
     }
     var final_amount = total_amount - discount_amount;
     if (final_amount < 0){
