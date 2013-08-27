@@ -1257,6 +1257,13 @@ class FreePassesStat(TendenciBaseModel):
     event = models.ForeignKey(Event, related_name="passes_used")
     registrant = models.ForeignKey(Registrant, null=True)
 
+    def set_creator_owner(self, request_user):
+        if request_user and not request_user.is_anonymous():
+            self.creator = request_user
+            self.owner = request_user
+            self.creator_username = request_user.username
+            self.owner_username = request_user.username
+
 
 class CorpMembershipApp(TendenciBaseModel):
     guid = models.CharField(max_length=50)

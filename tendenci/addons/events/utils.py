@@ -776,18 +776,39 @@ def add_registration(*args, **kwargs):
     for i, form in enumerate(registrant_formset.forms):
         override = False
         override_price = Decimal(0)
+        free_pass_stat = None
         if not event.is_table:
-            if request.user.is_superuser:
-                override = form.cleaned_data.get('override', False)
-                override_price = form.cleaned_data.get('override_price', Decimal(0))
-
-            price = form.cleaned_data['pricing']
-
-            # this amount has taken account into admin override and discount code
-            amount = amount_list[i]
-
-            if discount_code and discount_amount:
-                discount_amount = discount_list[i]
+            # set amount = 0 for valid free pass
+            use_free_pass = form.cleaned_data.get('use_free_pass', False)
+            if use_free_pass:
+                from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+                from tendenci.addons.corporate_memberships.models import FreePassesStat
+                # check if free pass is still available
+                email = form.cleaned_data.get('email', '')
+                memberid = form.cleaned_data.get('memberid', '')
+                corp_membership = get_user_corp_membership(
+                                                member_number=memberid,
+                                                email=email)
+                if corp_membership and corp_membership.free_pass_avail:
+                    free_pass_stat = FreePassesStat(corp_membership=corp_membership,
+                                                    event=event)
+                    free_pass_stat.set_creator_owner(request.user)
+                    free_pass_stat.save()
+                    # update free pass status table
+            if free_pass_stat:
+                amount = Decimal(0)
+            else:
+                if request.user.is_superuser:
+                    override = form.cleaned_data.get('override', False)
+                    override_price = form.cleaned_data.get('override_price', Decimal(0))
+    
+                price = form.cleaned_data['pricing']
+    
+                # this amount has taken account into admin override and discount code
+                amount = amount_list[i]
+    
+                if discount_code and discount_amount:
+                    discount_amount = discount_list[i]
         else:
             # table individual
             if i == 0:
@@ -813,11 +834,18 @@ def add_registration(*args, **kwargs):
                                  'override_price': override_price}
             if not event.is_table:
                 registrant_kwargs['discount_amount'] = discount_list[i]
+            if free_pass_stat:
+                registrant_kwargs['use_free_pass'] = True
 
             registrant = create_registrant_from_form(*registrant_args, **registrant_kwargs)
             total_amount += registrant.amount
 
             count += 1
+            
+            if free_pass_stat:
+                free_pass_stat.registrant = registrant
+                free_pass_stat.save()
+                    
 
     # create each regaddon
     for form in addon_formset.forms:
@@ -870,6 +898,7 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.override_price = Decimal(0)
     registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
+    registrant.use_free_pass = True
     registrant.memberid = form.cleaned_data.get('memberid', '')
     registrant.reminder = form.cleaned_data.get('reminder', False)
 
