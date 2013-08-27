@@ -64,7 +64,9 @@ class CustomRegFieldAdmin(admin.TabularInline):
 def clone_forms(modeladmin, request, queryset):
     for form in queryset:
         cloned = form.clone()
-        cloned.name = 'Clone of %s' % cloned.name
+        if not cloned.name.startswith('Clone of'):
+            cloned.name = 'Clone of %s' % cloned.name
+        cloned.name = cloned.name[:50]
         cloned.save()
 
 clone_forms.short_description = 'Clone selected forms'
