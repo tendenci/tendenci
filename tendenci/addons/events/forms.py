@@ -203,7 +203,10 @@ class FormForCustomRegForm(forms.ModelForm):
                                                                 required=False)
                     self.fields['override_price'].widget.attrs.update({'size': '8'})
 
-
+        if self.event:
+            if not self.event.is_table and reg_conf.allow_free_pass:
+                self.fields['use_free_pass'] = forms.BooleanField(label="Use Free Pass",
+                                                                 required=False)
 
 
         # initialize internal variables
@@ -323,6 +326,21 @@ class FormForCustomRegForm(forms.ModelForm):
         if override and override_price <0:
             raise forms.ValidationError('Override price must be a positive number.')
         return override_price
+    
+    def clean_use_free_pass(self):
+        from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+        use_free_pass = self.cleaned_data['use_free_pass']
+        email = self.cleaned_data.get('email', '')
+        memberid = self.cleaned_data.get('memberid', '')
+        corp_membership = get_user_corp_membership(
+                                        member_number=memberid,
+                                        email=email)
+        if use_free_pass:
+            if not corp_membership:
+                raise forms.ValidationError('Not a corporate member for free pass')
+            elif not corp_membership.free_pass_avail:
+                raise forms.ValidationError('Free pass not available for "%s".' % corp_membership.corp_profile.name)
+        return use_free_pass
 
 
     def save(self, event, **kwargs):
