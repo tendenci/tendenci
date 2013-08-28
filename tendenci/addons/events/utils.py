@@ -845,6 +845,8 @@ def add_registration(*args, **kwargs):
             
             if free_pass_stat:
                 free_pass_stat.registrant = registrant
+                if registrant.user:
+                    free_pass_stat.user = registrant.user
                 free_pass_stat.save()
                     
 
