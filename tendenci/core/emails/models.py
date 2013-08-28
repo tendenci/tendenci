@@ -1,7 +1,8 @@
 import uuid
 from django.db import models
-from django.core.mail.message import EmailMessage
 
+from django.core.mail.message import EmailMessage
+from django.conf import settings
 from tendenci.core.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
 from tendenci.core.site_settings.utils import get_setting
@@ -54,7 +55,7 @@ class Email(TendenciBaseModel):
         if self.reply_to:
             headers['Reply-To'] = self.reply_to
         if not self.sender:
-            self.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
+            self.sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
         if self.sender_display:
             headers['From'] = '%s<%s>' % (self.sender_display, self.sender)
         if self.priority and self.priority == 1:
@@ -125,7 +126,6 @@ class Email(TendenciBaseModel):
         """
         import os.path
         from django.template.loader import render_to_string
-        from django.conf import settings
         
         template = email_d.get('template_path_name', '')
         

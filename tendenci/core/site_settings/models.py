@@ -61,6 +61,7 @@ class Setting(models.Model):
             # print "clearing cache for setting: %s" % self.name
             delete_all_settings_cache()
             delete_setting_cache(self.scope, self.scope_category, self.name)
+
         return self.value
         
     def save(self, *args, **kwargs):

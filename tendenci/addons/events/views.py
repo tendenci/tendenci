@@ -2743,7 +2743,6 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
         if form.is_valid():
 
             email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
-            email.sender = email.sender or request.user.email
 
             email.sender_display = request.user.get_full_name()
             email.reply_to = request.user.email

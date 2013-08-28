@@ -100,7 +100,7 @@ class Command(BaseCommand):
                     # send an email to t5@schipul.com
                     now = datetime.now()
                     now_str = now.strftime('%m/%d/%Y %H:%M')
-                    sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
+                    sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
                     recipient = 't5@schipul.com'
                     subject = 'Campaign Monitor New client Account "%s" Created' % company_name
                     email_body = """Company Name: %s

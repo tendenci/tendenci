@@ -392,7 +392,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     sender = extra_context.get('sender', '')
     if not sender:
-        sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
+        sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
         if not sender:
             sender = settings.DEFAULT_FROM_EMAIL
 
