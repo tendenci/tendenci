@@ -215,7 +215,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             if not job.slug:
                 #job.slug = get_job_unique_slug(slugify(job.title))
                 job.slug = '%s-%s' % (slugify(job.title),
-                                        Job.objects.count())
+                                        object_type.objects.count())
 
             job = update_perms_and_save(request, form, job)
 
