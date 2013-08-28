@@ -49,7 +49,22 @@
         border: 1px solid #E1E1E8;
         padding: 8px;
         margin: 2em 0px;
-
+	}
+	.fp-usage-tbl th{
+		background-color: #0E4D84;
+		letter-spacing: 1px;
+		text-align: left;
+		text-transform: uppercase;
+		color: #fff;
+		font-weight: normal;
+	}
+	.fp-usage-tbl td, .fp-usage-tbl th{
+		padding: 3px 3px 3px 6px;
+	}
+	.fp-usage-tbl{
+		border: 1px solid #CCCCCC;
+	}
+	
 </style>
 {% endblock %}
 
@@ -156,6 +171,63 @@
         {% endif %}
 
     {% endfor %}
+    
+    {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+    <div class="section-break">
+    	<h2>Free Passes</h2>
+    </div>
+    <div class="field-row">
+    	<div class="label short-label inline-block">Total Allowed:</div>
+    	<div class="field-value inline-block">{{ corporate_membership.free_pass_total }}</div>
+    </div>
+    <div class="field-row">
+    	<div class="label short-label inline-block"># Used:</div>
+    	<div class="field-value inline-block">{{ corporate_membership.free_pass_used }}</div>  	
+    </div>
+    <div class="field-row">
+    	<div class="label short-label inline-block"># Available:</div>
+    	<div class="field-value inline-block">{{ corporate_membership.free_pass_avail }}</div>
+    
+    </div>
+    
+    <div class="field-row">
+    	<table class="fp-usage-tbl table table-striped">
+    		<tr>
+    			<th width="20%">Used By</th>
+    			<th width="35%">For Event</th>
+    			<th width="25%">Date</th>
+    			<th width="20%">Processed By</th>
+    		</tr>
+    		{% for fp in corporate_membership.passes_used.all %}
+    		<tr>
+  				<td>
+  					{% if fp.user %}
+  					<a href="{% url profile fp.user.username %}">
+  						{{ fp.user.username }}
+  						</a>
+  					{% else %}
+  					{{ fp.registrant.first_name }}
+  					{{ fp.registrant.last_name }}
+  					{{ fp.registrant.email }}
+  					{% endif %}
+  					
+  				</td>
+  				<td>
+  					{% if fp.event %}
+  					<a href="{% url event fp.event.id %}">{{ fp.event.title|truncatechars:30 }}</a>
+  					{% endif %}
+  				</td>
+  				<td>{{ fp.create_dt|date:'n/j/Y P' }}</td>
+  				<td>
+  					{% if fp.creator %}
+  					<a href="{% url profile fp.creator.username %}">{{ fp.creator_username }}</a>
+  					{% endif %}
+  					</td>
+    		</tr>
+    		{% endfor %}
+    	</table>
+    </div>
+    {% endif %}
     
     {% if all_records|length > 1 %}
     <div class="corp-timeline">
