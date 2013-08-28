@@ -171,9 +171,12 @@
             <td class="td-right" width="20%">
             	{% if not registration.is_table %}
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-                {% if registrant.override %}<span class="override-symbol">*</span>{% endif %} 
-                {% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
-                       {{ registrant.amount|format_currency }} 
+                	{% if registrant.override %}<span class="override-symbol">*</span>{% endif %} 
+                	{% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
+                    {{ registrant.amount|format_currency }} 
+                    {% if registrant.use_free_pass %}
+                    <img src="{{ STATIC_URL }}/images/icons/fp.png" title="free pass used" alt="free pass icon" />
+                    {% endif %}
                 </span>
                 {% endif %}
             </td>
