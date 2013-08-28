@@ -153,4 +153,6 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         name="reports-corp-mems-over-time"),
     url(r"^%s/reports/corp_mems_summary/$" % urlpath, "corp_mems_summary",
         name="reports-corp-mems-summary"),
+    url(r"^%s/reports/free_passes_list/$" % urlpath, "free_passes_list",
+        name="corp_memb.reports.free_passes_list"),
 )

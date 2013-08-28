@@ -42,6 +42,7 @@ from tendenci.addons.corporate_memberships.models import (
                                             CorpMembershipRep,
                                             CorpMembership,
                                             CorpProfile,
+                                            FreePassesStat,
                                             IndivMembershipRenewEntry,
                                             CorpMembershipAppField,
                                             CorpMembershipImport,
@@ -99,6 +100,21 @@ from tendenci.apps.profiles.models import Profile
 #from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.core.site_settings.utils import get_setting
 
+
+@staff_member_required
+def free_passes_list(request,
+    template='corporate_memberships/reports/free_passes_list.html'):
+    """
+    List the stat of all free passes.
+    """
+    corp_memberships = CorpMembership.objects.filter(
+                            corporate_membership_type__number_passes__gt=0
+                            ).exclude(status_detail='archive'
+                            ).order_by('corp_profile__name')
+
+    context = {'corp_memberships': corp_memberships}
+    return render_to_response(template, context, RequestContext(request))
+    
 
 @csrf_exempt
 @login_required
