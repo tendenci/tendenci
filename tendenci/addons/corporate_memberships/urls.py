@@ -1,5 +1,8 @@
 from django.conf.urls.defaults import patterns, url, include
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.corporate_membership.signals import init_signals
+
+init_signals()
 
 urlpath = get_setting('module', 'corporate_memberships', 'url')
 if not urlpath:

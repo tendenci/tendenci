@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import url, patterns
 from tendenci.addons.photos.feeds import LatestAlbums, LatestAlbumPhotos
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.photos.signals import init_signals
+
+init_signals()
 
 urlpath = get_setting('module', 'photos', 'url')
 if not urlpath:

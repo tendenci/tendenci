@@ -1,7 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 from tendenci.addons.articles.feeds import LatestEntriesFeed
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.articles.signals import init_signals
 
+init_signals()
 
 urlpath = get_setting('module', 'articles', 'url') or 'articles'
 urlpatterns = patterns('tendenci.addons.articles.views',

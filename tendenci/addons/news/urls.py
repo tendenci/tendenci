@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 from tendenci.addons.news.feeds import LatestEntriesFeed
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.news.signals import init_signals
+
+init_signals()
 
 urlpath = get_setting('module', 'news', 'url')
 if not urlpath:

@@ -1,4 +1,7 @@
 from django.conf.urls.defaults import patterns, url
+from tendenci.addons.make_payments.signals import init_signals
+
+init_signals()
 
 urlpatterns = patterns('tendenci.addons.make_payments.views',
     url(r'^$', 'add', name="make_payment.add"),

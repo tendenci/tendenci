@@ -1,5 +1,7 @@
 from django.conf.urls.defaults import patterns, url, include
+from tendenci.addons.recurring_payments.signals import init_signals
 
+init_signals()
 
 urlpatterns = patterns('tendenci.addons.recurring_payments', 
     url(r'^$', 'views.my_accounts', 
