@@ -249,7 +249,7 @@
 							{% endif %}
 							{% endfor %}
 							
-							{% if event.registration_configuration.allow_free_pass %}
+							{% if not event.is_table and event.registration_configuration.allow_free_pass %}
 							<div class="free-pass-wrap">
 							<button class="fp_chk_btn">Check Free Pass Eligibility</button>
 							*** for corporate members only
@@ -375,7 +375,7 @@
     {% include 'events/reg8n/include/register.js' %}
 </script>
 
-{% if event.registration_configuration.allow_free_pass %}
+{% if not event.is_table and event.registration_configuration.allow_free_pass %}
 <script type="text/javascript">
     $(document).ready(function () {
 

@@ -1299,7 +1299,7 @@ class RegistrantForm(forms.Form):
                                                             decimal_places=2,
                                                             required=False)
                 self.fields['override_price'].widget.attrs.update({'size': '8'})
-        if reg_conf.allow_free_pass:
+        if not self.event.is_table and reg_conf.allow_free_pass:
             self.fields['use_free_pass'] = forms.BooleanField(label="Use Free Pass",
                                                              required=False)
 

@@ -831,7 +831,8 @@ def add_registration(*args, **kwargs):
             registrant_kwargs = {'custom_reg_form': custom_reg_form,
                                  'is_primary': i==0,
                                  'override': override,
-                                 'override_price': override_price}
+                                 'override_price': override_price,
+                                 'use_free_pass': False}
             if not event.is_table:
                 registrant_kwargs['discount_amount'] = discount_list[i]
             if free_pass_stat:
@@ -898,7 +899,7 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.override_price = Decimal(0)
     registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
-    registrant.use_free_pass = True
+    registrant.use_free_pass = kwargs.get('use_free_pass', False)
     registrant.memberid = form.cleaned_data.get('memberid', '')
     registrant.reminder = form.cleaned_data.get('reminder', False)
 
