@@ -51,7 +51,7 @@
         margin: 2em 0px;
 	}
 	.fp-usage-tbl th{
-		background-color: #0E4D84;
+		background-color: #73B530;
 		letter-spacing: 1px;
 		text-align: left;
 		text-transform: uppercase;
@@ -174,18 +174,18 @@
     
     {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
     <div class="section-break">
-    	<h2>Free Passes</h2>
+    	<h2>{% trans "Free Passes" %}</h2>
     </div>
     <div class="field-row">
-    	<div class="label short-label inline-block">Total Allowed:</div>
+    	<div class="label short-label inline-block"><strong>{% trans "Total Allowed:" %}</strong></div>
     	<div class="field-value inline-block">{{ corporate_membership.free_pass_total }}</div>
     </div>
     <div class="field-row">
-    	<div class="label short-label inline-block"># Used:</div>
+    	<div class="label short-label inline-block"><strong>{% trans "# Used:" %}</strong></div>
     	<div class="field-value inline-block">{{ corporate_membership.free_pass_used }}</div>  	
     </div>
     <div class="field-row">
-    	<div class="label short-label inline-block"># Available:</div>
+    	<div class="label short-label inline-block"><strong>{% trans "# Available:" %}</strong></div>
     	<div class="field-value inline-block">{{ corporate_membership.free_pass_avail }}</div>
     
     </div>
@@ -193,10 +193,10 @@
     <div class="field-row">
     	<table class="fp-usage-tbl table table-striped">
     		<tr>
-    			<th width="20%">Used By</th>
-    			<th width="35%">For Event</th>
-    			<th width="25%">Date</th>
-    			<th width="20%">Processed By</th>
+    			<th width="20%">{% trans "Used By" %}</th>
+    			<th width="35%">{% trans "For Event" %}</th>
+    			<th width="25%">{% trans "Date" %}</th>
+    			<th width="20%">{% trans "Processed By" %}</th>
     		</tr>
     		{% for fp in corporate_membership.passes_used.all %}
     		<tr>
