@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -9,7 +10,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
-
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import now_localized
 from tendenci.core.event_logs.models import EventLog
