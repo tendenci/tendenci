@@ -2217,6 +2217,33 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     weekdays = calendar.weekheader(10).split()
     cal = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
 
+    # Check for empty pages for far-reaching years
+    if abs(year - datetime.now().year) > 6:
+        filters = get_query_filters(request.user, 'events.view_event')
+        is_events = Event.objects.filter(filters).filter(
+            (Q(start_dt__gte=cal[0][0]) & Q(start_dt__lte=cal[-1:][0][6])) | (Q(end_dt__gte=cal[0][0]) & Q(end_dt__lte=cal[-1:][0][6])) | (Q(end_dt__gte=cal[-1:][0][6]) & Q(start_dt__lte=cal[0][0]))).distinct()
+        if not is_events:
+            # Try to redirect old dates to the earliest event
+            if year < datetime.now().year:
+                latest_event = Event.objects.filter(start_dt__gte=datetime(month=month, day=1, year=year)).order_by('start_dt')
+                if latest_event.count() > 0:
+                    latest_month = latest_event[0].start_dt.month
+                    latest_year = latest_event[0].start_dt.year
+                    current_date = datetime(month=month, day=1, year=year).strftime('%b %Y')
+                    latest_date = latest_event[0].start_dt.strftime('%b %Y')
+                    messages.add_message(request, messages.INFO, 'No Events were found for %s. The next event is on %s, shown below.' % (current_date, latest_date))
+                    return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month]))
+            # Try to redirect far future dates to the latest event
+            else:
+                latest_event = Event.objects.filter(end_dt__lte=datetime(month=next_month, day=1, year=next_year)).order_by('-end_dt')
+                if latest_event.count() > 0:
+                    latest_month = latest_event[0].end_dt.month
+                    latest_year = latest_event[0].end_dt.year
+                    current_date = datetime(month=month, day=1, year=year).strftime('%b %Y')
+                    latest_date = latest_event[0].end_dt.strftime('%b %Y')
+                    messages.add_message(request, messages.INFO, 'No Events were found for %s. The next event is on %s, shown below.' % (current_date, latest_date))
+                    return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month]))
+
     types = Type.objects.all().order_by('name')
 
     EventLog.objects.log()
@@ -2255,6 +2282,30 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
             int(tomorrow.month),
             int(tomorrow.day)
         ))
+
+    # Check for empty pages for far-reaching years
+    if abs(year - datetime.now().year) > 6:
+        filters = get_query_filters(request.user, 'events.view_event')
+        is_events = Event.objects.filter(filters).filter(end_dt__gte=day_date, start_dt__lte=tomorrow)
+        if not is_events:
+            # Try to redirect old dates to the earliest event
+            if year < datetime.now().year:
+                latest_event = Event.objects.filter(start_dt__gte=day_date).order_by('start_dt')
+                if latest_event.count() > 0:
+                    latest_month = latest_event[0].start_dt.month
+                    latest_year = latest_event[0].start_dt.year
+                    latest_day = latest_event[0].start_dt.day
+                    messages.add_message(request, messages.INFO, 'No Events were found for %s. The next event is on %s, shown below.' % (day_date.strftime('%x'), latest_event[0].start_dt.strftime('%x')))
+                    return HttpResponseRedirect(reverse('event.day', args=[latest_year, latest_month, latest_day]))
+            # Try to redirect far future dates to the latest event
+            else:
+                latest_event = Event.objects.filter(end_dt__lte=day_date).order_by('-end_dt')
+                if latest_event.count() > 0:
+                    latest_month = latest_event[0].end_dt.month
+                    latest_year = latest_event[0].end_dt.year
+                    latest_day = latest_event[0].end_dt.day
+                    messages.add_message(request, messages.INFO, 'No Events were found for %s. The next event is on %s, shown below.' % (day_date.strftime('%x'), latest_event[0].end_dt.strftime('%x')))
+                    return HttpResponseRedirect(reverse('event.day', args=[latest_year, latest_month, latest_day]))
 
     EventLog.objects.log()
 
