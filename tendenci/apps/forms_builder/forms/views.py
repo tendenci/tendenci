@@ -449,8 +449,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             email_from = email_to or email_from # Send from the email entered.
             email_headers = {}  # Reset the email_headers
             email_headers.update({'Reply-To':email_from})
-            email_copies = [e.strip() for e in form.email_copies.split(",")
-                if e.strip()]
+            email_copies = [e.strip() for e in form.email_copies.split(',') if e.strip()]
+
+            subject = subject.encode(errors='ignore')
+            admin_body = admin_body.encode(errors='ignore')
+
             if email_copies:
                 # Send message to the email addresses listed in the copies.
                 msg = EmailMessage(subject, admin_body, sender, email_copies, headers=email_headers)
