@@ -64,6 +64,9 @@
             <li><a href="{% url corp_membership.summary_report %}">{% trans "Summary Report" %}</a></li>
             <li><a href="{% url corpmembership.import %}">{% trans "Import" %}</a></li>
             <li><a href="{% url corpmembership.export %}">{% trans "Export" %}</a></li>
+            {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+        	<li><a href="{% url corp_memb.reports.free_passes_list %}">{% trans "Free Passes List" %}</a></li>
+            {% endif %}
             {% endif %}
         </ul>
         {% if nav_object %}
