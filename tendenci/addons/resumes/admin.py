@@ -29,11 +29,15 @@ class ResumeAdmin(TendenciBaseModelAdmin):
             'group_perms',
             )}),
         ('Status', {'fields': (
-            'status',
             'status_detail',
             )}),
         )
     form = ResumeForm
     ordering = ['-update_dt']
+
+    def get_form(self, request, obj=None, **kwargs):
+      FormModel = super(ResumeAdmin, self).get_form(request, obj, **kwargs)
+      FormModel.user = request.user
+      return FormModel
 
 admin.site.register(Resume, ResumeAdmin)

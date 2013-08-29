@@ -92,7 +92,6 @@ class ResumeForm(TendenciBaseForm):
         'activation_dt',
         'expiration_dt',
         'syndicate',
-        'status',
         'status_detail',
        )
 
@@ -150,8 +149,9 @@ class ResumeForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
     
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(ResumeForm, self).__init__(*args, **kwargs)
+
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
@@ -168,7 +168,6 @@ class ResumeForm(TendenciBaseForm):
                 'activation_dt',
                 'expiration_dt',
                 'syndicate',
-                'status',
                 'status_detail'
             ]
         else:
@@ -184,7 +183,6 @@ class ResumeForm(TendenciBaseForm):
                 'activation_dt',
                 'expiration_dt',
                 'syndicate',
-                'status',
                 'status_detail'
             ]
         for f in list(set(fields_to_pop)):
