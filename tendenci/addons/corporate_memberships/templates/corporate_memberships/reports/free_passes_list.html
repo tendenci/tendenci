@@ -17,16 +17,16 @@
     <table class="table-striped">
         <thead>
             <tr>
-                <th>{% trans 'Corporation' %}</th>
-                <th>{% trans 'Total Allowed' %}</th>
-                <th>{% trans '# Used' %}</th>
-                <th>{% trans '# Available' %}</th>
+                <th width="40%">{% trans 'Corporation' %}</th>
+                <th width="20%">{% trans 'Total Allowed' %}</th>
+                <th width="20%">{% trans '# Used' %}</th>
+                <th width="20%">{% trans '# Available' %}</th>
             </tr>
         </thead>
         <tbody>
             {% for corp_membership in corp_memberships %}
             <tr>
-                <td><a href="{% url corpmembership.view corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></td>
+                <td><a href="{% url corpmembership.view corp_membership.id %}">{{ corp_membership.corp_profile.name|truncatechars:40 }}</a></td>
                 <td class="align_center">{{ corp_membership.free_pass_total }}</td>
                 <td class="align_center">{{ corp_membership.free_pass_used }}</td>
                 <td class="align_center">{{ corp_membership.free_pass_avail }}</td>

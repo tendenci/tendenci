@@ -172,13 +172,17 @@
 
     {% endfor %}
     
-    {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+    {% if user_can_edit and MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
     <div class="section-break">
     	<h2>{% trans "Free Passes" %}</h2>
     </div>
     <div class="field-row">
     	<div class="label short-label inline-block"><strong>{% trans "Total Allowed:" %}</strong></div>
-    	<div class="field-value inline-block">{{ corporate_membership.free_pass_total }}</div>
+    	<div class="field-value inline-block">{{ corporate_membership.free_pass_total }}
+    		{% if request.user.is_superuser %}
+    		<span style="padding-left: 1.5em;"><a href="{% url corpmembership.free_passes_edit corporate_membership.id %}">Edit</a></span>
+    		{% endif %}
+    	</div>
     </div>
     <div class="field-row">
     	<div class="label short-label inline-block"><strong>{% trans "# Used:" %}</strong></div>
@@ -190,8 +194,9 @@
     
     </div>
     
+    {% if corporate_membership.free_pass_used > 0 %}
     <div class="field-row">
-    	<table class="fp-usage-tbl table table-striped">
+    	<table class="fp-usage-tbl table table-striped" width="99%">
     		<tr>
     			<th width="20%">{% trans "Used By" %}</th>
     			<th width="35%">{% trans "For Event" %}</th>
@@ -227,7 +232,9 @@
     		{% endfor %}
     	</table>
     </div>
-    {% endif %}
+   {% endif %} 
+    
+ {% endif %}
     
     {% if all_records|length > 1 %}
     <div class="corp-timeline">
