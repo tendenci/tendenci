@@ -1,15 +1,11 @@
-from datetime import datetime, timedelta
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
@@ -30,9 +26,7 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.jobs.models import Job, JobPricing
 from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
-from tendenci.addons.jobs.utils import (is_free_listing,
-                                        job_set_inv_payment,
-                                        get_job_unique_slug)
+from tendenci.addons.jobs.utils import is_free_listing, job_set_inv_payment
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -649,8 +643,6 @@ def export(request, template_name="jobs/export.html"):
         raise Http403
 
     if request.method == 'POST':
-        # initilize initial values
-        file_name = "jobs.csv"
         fields = [
             'guid',
             'title',
