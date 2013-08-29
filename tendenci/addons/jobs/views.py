@@ -17,13 +17,16 @@ from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import (get_notice_recipients, update_perms_and_save,
-    has_perm, get_query_filters, has_view_perm)
+from tendenci.core.perms.utils import (
+    get_notice_recipients,
+    update_perms_and_save,
+    has_perm,
+    get_query_filters,
+    has_view_perm)
 from tendenci.core.categories.forms import CategoryForm, CategoryForm2
 from tendenci.core.categories.models import Category
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
-
 from tendenci.addons.jobs.models import Job, JobPricing
 from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
 from tendenci.addons.jobs.utils import is_free_listing, job_set_inv_payment
@@ -139,7 +142,7 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
 @is_enabled('jobs')
 @login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html",
-        object_type=Job, success_redirect='job'):
+        object_type=Job, success_redirect='job', thankyou_redirect='job.thank_you'):
 
     require_payment = get_setting('module', 'jobs',
                                     'jobsrequirespayment')
@@ -272,7 +275,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 return HttpResponseRedirect(
                         reverse(success_redirect, args=[job.slug]))
             else:
-                return HttpResponseRedirect(reverse('job.thank_you'))
+                return HttpResponseRedirect(reverse(thankyou_redirect))
     else:
         # Redirect user w/perms to create pricing if none exist
         pricings = JobPricing.objects.all()
