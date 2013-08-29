@@ -96,6 +96,11 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         name="corp_membership.reps_lookup"),
     url(r'^%s/delete_corp_rep/(?P<id>\d+)/$' % urlpath, 'delete_corp_rep',
         name="corp_membership.delete_rep"),
+                       
+    # edit free passes
+    url(r"^%s/free_passes/edit/(?P<id>\d+)/$" % urlpath,
+        "free_passes_edit",
+        name="corpmembership.free_passes_edit"),
 
     # notice
     (r'^%s/notices/' % urlpath, include('tendenci.addons.corporate_memberships.notices.urls')),

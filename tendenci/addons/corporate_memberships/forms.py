@@ -90,6 +90,13 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   )
 
 
+class FreePassesForm(forms.ModelForm):
+
+    class Meta:
+        model = CorpMembership
+        fields = ('total_passes_allowed',)
+
+
 class CorpMembershipAppForm(TendenciBaseForm):
     description = forms.CharField(required=False,
                      widget=TinyMCE(
