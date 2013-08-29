@@ -310,6 +310,8 @@ class CorpProfileForm(forms.ModelForm):
         self.corpmembership_app = kwargs.pop('corpmembership_app')
         super(CorpProfileForm, self).__init__(*args, **kwargs)
 
+        assign_fields(self, app_field_objs)
+
         if self.corpmembership_app.authentication_method == 'email':
             self.fields['authorized_domain'] = forms.CharField(help_text="""
             <span style="color: #990000;">comma separated (ex: mydomain.com,
@@ -324,13 +326,12 @@ class CorpProfileForm(forms.ModelForm):
         if not self.corpmembership_app.authentication_method == 'secret_code':
             del self.fields['secret_code']
         else:
-            self.fields['secret_code'].help_text = 'This is the code that ' + \
-                'your members will need to enter to join under your corporate'
+            self.fields['secret_code'].help_text = 'This is the code ' + \
+                'your members will need when joining under your corporation'
 
         del self.fields['status']
         del self.fields['status_detail']
-
-        assign_fields(self, app_field_objs)
+        
         self.field_names = [name for name in self.fields.keys()]
 
     def clean_secret_code(self):

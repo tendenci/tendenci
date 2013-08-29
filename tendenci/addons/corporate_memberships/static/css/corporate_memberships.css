@@ -347,6 +347,15 @@ label {
     display: block;
     margin-bottom: 5px;
 }
+
+div.form-field{
+	margin-top: 10px !important;
+}
+
+.help-text{
+	font-style: italic;
+}
+
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
     border-radius: 4px 4px 4px 4px;
     color: #555555;
@@ -354,7 +363,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     font-size: 14px;
     height: 20px;
     line-height: 20px;
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
     padding: 4px 6px;
     vertical-align: middle;
 }
