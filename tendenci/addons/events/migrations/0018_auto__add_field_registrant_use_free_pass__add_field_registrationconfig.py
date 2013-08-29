@@ -13,10 +13,18 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
+        # Adding field 'RegistrationConfiguration.allow_free_pass'
+        db.add_column('events_registrationconfiguration', 'allow_free_pass',
+                      self.gf('django.db.models.fields.BooleanField')(default=False),
+                      keep_default=False)
+
 
     def backwards(self, orm):
         # Deleting field 'Registrant.use_free_pass'
         db.delete_column('events_registrant', 'use_free_pass')
+
+        # Deleting field 'RegistrationConfiguration.allow_free_pass'
+        db.delete_column('events_registrationconfiguration', 'allow_free_pass')
 
 
     models = {
@@ -224,7 +232,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'display_event_registrants': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'display_registrants_to': ('django.db.models.fields.CharField', [], {'default': "'admin'", 'max_length': '6'}),
-            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 9, 20, 0, 0)'}),
+            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 9, 28, 0, 0)'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'events_event_entity'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': "orm['entities.Entity']", 'blank': 'True', 'null': 'True'}),
             'external_url': ('django.db.models.fields.URLField', [], {'default': "u''", 'max_length': '200', 'blank': 'True'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True', 'on_delete': 'models.SET_NULL'}),
@@ -241,7 +249,7 @@ class Migration(SchemaMigration):
             'priority': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'private': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'registration_configuration': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['events.RegistrationConfiguration']", 'unique': 'True', 'null': 'True'}),
-            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 9, 20, 0, 0)'}),
+            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 9, 28, 0, 0)'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'tags': ('tagging.fields.TagField', [], {}),
@@ -304,7 +312,7 @@ class Migration(SchemaMigration):
             'allow_anonymous': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 9, 20, 0, 0)'}),
+            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 9, 28, 0, 0)'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'position': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
@@ -312,7 +320,7 @@ class Migration(SchemaMigration):
             'quantity': ('django.db.models.fields.IntegerField', [], {'default': '1', 'blank': 'True'}),
             'reg_conf': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.RegistrationConfiguration']", 'null': 'True', 'blank': 'True'}),
             'reg_form': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'regconfpricings'", 'null': 'True', 'to': "orm['events.CustomRegForm']"}),
-            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 8, 21, 0, 0)'}),
+            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 8, 29, 0, 0)'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
         },
@@ -376,6 +384,7 @@ class Migration(SchemaMigration):
         },
         'events.registrationconfiguration': {
             'Meta': {'object_name': 'RegistrationConfiguration'},
+            'allow_free_pass': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'bind_reg_form_to_conf_only': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'discount_eligible': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -399,8 +408,9 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Speaker'},
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'event': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['events.Event']", 'symmetrical': 'False', 'blank': 'True'}),
+            'featured': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True', 'null': 'True', 'blank': 'True'})
         },
         'events.sponsor': {
