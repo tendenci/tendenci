@@ -436,6 +436,9 @@ class CorpMembership(TendenciBaseModel):
     anonymous_creator = models.ForeignKey('Creator', null=True)
     admin_notes = models.TextField(_('Admin notes'),
                                blank=True, null=True)
+    total_passes_allowed = models.PositiveIntegerField(_('Total Passes Allowed'),
+                                               default=0,
+                                               blank=True)
 
     perms = generic.GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
@@ -501,7 +504,7 @@ class CorpMembership(TendenciBaseModel):
     
     @property
     def free_pass_total(self):
-        return self.corporate_membership_type.number_passes
+        return self.total_passes_allowed
     
     @property
     def free_pass_avail(self):
