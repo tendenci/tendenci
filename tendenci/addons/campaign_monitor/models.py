@@ -154,7 +154,7 @@ cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 auth = {'api_key': cm_api_key}
 if cm_api_key and cm_client_id:
-    from createsend import List, Client, Subscriber, BadRequest, Unauthorized
+    from createsend import List, Client, Subscriber, BadRequest, Unauthorized, ServerError
     #CreateSend.api_key = cm_api_key
 
     def sync_cm_list(sender, instance=None, created=False, **kwargs):
@@ -249,6 +249,7 @@ if cm_api_key and cm_client_id:
            Check if sync_newsletters is True. Do nothing if False.
         """
         from django.core.validators import email_re
+        from tendenci.apps.profiles.models import Profile
 
         if instance and instance.group and not instance.group.sync_newsletters:
             return
@@ -262,7 +263,10 @@ if cm_api_key and cm_client_id:
             # Append custom fields from the profile
             profile = None
             if hasattr(instance, 'member'):
-                profile = instance.member.profile
+                try:
+                    profile = instance.member.profile
+                except Profile.DoesNotExist:
+                    profile = None
             custom_data = []
             if profile:
                 fields = ['city', 'state', 'zipcode', 'country',
@@ -299,6 +303,8 @@ if cm_api_key and cm_client_id:
                     except Unauthorized:
                         alist = List(auth)
                         add_list = True
+                    except ServerError:
+                        pass
             except ListMap.DoesNotExist:
                 alist = List(auth)
                 add_list = True
