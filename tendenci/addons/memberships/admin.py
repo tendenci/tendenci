@@ -535,6 +535,13 @@ class MembershipAppFieldAdmin(admin.TabularInline):
     template = "memberships/admin/membershipapp/tabular.html"
 
 
+def clone_apps(modeladmin, request, queryset):
+    for form in queryset:
+        form.clone()
+
+clone_apps.short_description = 'Clone selected forms'
+
+
 class MembershipAppAdmin(admin.ModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
@@ -559,6 +566,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
 
     form = MembershipAppForm
     change_form_template = "memberships/admin/membershipapp/change_form.html"
+    actions = (clone_apps,)
 
     class Media:
         js = (

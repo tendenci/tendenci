@@ -24,6 +24,7 @@ from django.utils.encoding import smart_str
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from django.db.models.fields import AutoField
 
 from tendenci.core.base.utils import day_validate, is_blank
 from tendenci.core.site_settings.utils import get_setting
@@ -2385,6 +2386,24 @@ class MembershipApp(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(MembershipApp, self).save(*args, **kwargs)
 
+    def clone(self):
+        """
+        Clone this app.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__==AutoField])
+        params['slug'] = 'clone-%d-%s' % (self.id, params['slug'])
+        params['name'] = 'Clone of %s' % params['name']
+        params['slug'] = params['slug'][:200]
+        params['name'] = params['name'][:155]
+        app_cloned = self.__class__.objects.create(**params)
+        # clone fiellds
+        fields = self.fields.all()
+        for field in fields:
+            field.clone(app_cloned)
+            
+        return app_cloned
+
     def application_form_link(self):
         return '<a href="%s">%s</a>' % (
             self.get_absolute_url(), self.slug
@@ -2451,6 +2470,18 @@ class MembershipAppField(OrderingBaseModel):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
+    
+    def clone(self, membership_app):
+        """
+        Clone this field.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__==AutoField])
+        cloned_field = self.__class__.objects.create(**params)
+        
+        cloned_field.membership_app = membership_app
+        cloned_field.save()
+        return cloned_field
 
     def get_field_class(self, initial=None):
         """
