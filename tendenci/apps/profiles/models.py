@@ -127,6 +127,13 @@ class Profile(Person):
     def username(self):
         return self.user.username
 
+    def get_address(self):
+        if self.address_type:
+            return '%s (%s)' % (super(Profile, self).get_address(),
+                                self.address_type)
+        else:
+            return super(Profile, self).get_address()
+
     def get_name(self):
         """
         Returns name first_name + last_name

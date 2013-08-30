@@ -142,6 +142,13 @@
                 <div class="value">{{ membership.user.profile.get_address }}</div>
             </div>
             {% endif %}
+            
+            {% if membership.user.profile.company %}
+            <div class="field">
+                <div class="label">Company</div>
+                <div class="value">{{ membership.user.profile.company }}</div>
+            </div>
+            {% endif %}
 
         </fieldset>
 
