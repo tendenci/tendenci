@@ -204,10 +204,9 @@ class FormForCustomRegForm(forms.ModelForm):
                     self.fields['override_price'].widget.attrs.update({'size': '8'})
 
         if self.event:
-            if not self.event.is_table and reg_conf.allow_free_pass:
-                self.fields['use_free_pass'] = forms.BooleanField(label="Use Free Pass",
-                                                                 required=False)
-
+            if hasattr(self.event, 'is_table') and hasattr(self.event, 'free_event'):
+                if not self.event.is_table and reg_conf.allow_free_pass:
+                    self.fields['use_free_pass'] = forms.BooleanField(label="Use Free Pass", required=False)
 
         # initialize internal variables
         self.price = Decimal('0.00')
