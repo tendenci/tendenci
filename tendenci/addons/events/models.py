@@ -963,10 +963,7 @@ class Event(TendenciBaseModel):
         super(Event, self).save(*args, **kwargs)
 
         if self.image:
-            if self.is_public():
-                set_s3_file_permission(self.image.file, public=True)
-            else:
-                set_s3_file_permission(self.image.file, public=False)
+            set_s3_file_permission(self.image.file, public=self.is_public())
 
     def __unicode__(self):
         return self.title
