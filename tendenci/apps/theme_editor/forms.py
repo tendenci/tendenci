@@ -29,6 +29,10 @@ FILE_EXTENTIONS = (
     '.txt',
     '.xml',
     '.kml',
+    '.eot',
+    '.ttf',
+    '.woff',
+    '.svg',
 )
 
 
