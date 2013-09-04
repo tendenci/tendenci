@@ -123,16 +123,17 @@ class FormAdmin(TendenciBaseModelAdmin):
         columns = []
         field_indexes = {}
         file_field_ids = []
-        for field in form.fields.all():
+        for field in form.fields.all().order_by('position', 'id'):
             columns.append(field.label.encode("utf-8"))
             field_indexes[field.id] = len(field_indexes)
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
         entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
         columns.append(unicode(entry_time_name))
-        columns.append(unicode("Pricing"))
-        columns.append(unicode("Price"))
-        columns.append(unicode("Payment Method"))
+        if form.custom_payment:
+            columns.append(unicode("Pricing"))
+            columns.append(unicode("Price"))
+            columns.append(unicode("Payment Method"))
         csv.writerow(columns)
         # Loop through each field value order by entry, building up each
         # entry as a row.
@@ -142,10 +143,11 @@ class FormAdmin(TendenciBaseModelAdmin):
             row = [""] * len(columns)
             entry_time = entry.entry_time.strftime("%Y-%m-%d %H:%M:%S")
             row[-4] = entry_time
-            if entry.pricing:
-                row[-3] = entry.pricing.label
-                row[-2] = entry.pricing.price
-            row[-1] = entry.payment_method
+            if form.custom_payment:
+                if entry.pricing:
+                    row[-3] = entry.pricing.label
+                    row[-2] = entry.pricing.price
+                row[-1] = entry.payment_method
             for field_entry in values:
                 value = field_entry.value.encode("utf-8")
                 # Create download URL for file fields.
