@@ -674,12 +674,12 @@ def get_over_time_stats():
     today = date.today()
     year = datetime(day=1, month=1, year=today.year)
     times = [
-        ("Last Month", months_back(1), 1),
-        ("Last 3 Months", months_back(3), 2),
-        ("Last 6 Months", months_back(6), 3),
-        ("Last 9 Months", months_back(9), 4),
-        ("Last 12 Months", months_back(12), 5),
-        ("Year to Date", year, 5),
+        ("Last Month", months_back(1)),
+        ("Last 3 Months", months_back(3)),
+        ("Last 6 Months", months_back(6)),
+        ("Last 9 Months", months_back(9)),
+        ("Last 12 Months", months_back(12)),
+        ("Year to Date", year),
     ]
 
     stats = []
@@ -687,18 +687,18 @@ def get_over_time_stats():
         start_dt = time[1]
         d = {}
         active_mems = MembershipDefault.objects.filter(
-            status=True, status_detail='active')
-        active_mems = active_mems.filter(expire_dt__gt=start_dt)
-        d['new'] = active_mems.filter(join_dt__gt=start_dt).count()  # just joined in that time period
-        d['renewing'] = active_mems.filter(renewal=True).count()
-        d['active'] = active_mems.count()
+            status=True, status_detail__in=['active', 'archive'])
+        d['new'] = active_mems.filter(
+                            application_approved_dt__gt=start_dt,
+                            renewal=False).count()
+        d['renewing'] = active_mems.filter(
+                            application_approved_dt__gt=start_dt,
+                            renewal=True).count()
         d['time'] = time[0]
         d['start_dt'] = start_dt
-        d['end_dt'] = today
-        d['order'] = time[2]
         stats.append(d)
 
-    return sorted(stats, key=lambda x: x['order'])
+    return stats
 
 
 def months_back(n):
