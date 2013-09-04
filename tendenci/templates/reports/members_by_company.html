@@ -1,16 +1,73 @@
 {% extends "reports/base.html" %}
 {% load i18n %}
 
+{% block extra_head %}
+{{ block.super }}
+<link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />	
+<style>
+	table.tablesorter{
+		width: 500px;
+	}
+	table.tablesorter th, .align_center{
+		text-align: center;
+	}
+</style>
+{% endblock %}
+
 {% block content %}
 <h1>{% trans "Current Member Totals by Company" %}</h1>
 <div class="mems-wrap">
-<ul>
-{% for company in companies %}
-<li>{{ company.name }} - <a href="{% url profile.search %}?q={{company.name }}&members=on">{{ company.total_members }} member{% if not company.total_members = 1 %}s{% endif %}</a></li>
-{% empty %}
-<li>{% trans "No company data available." %}</li>
-{% endfor %}
-</ul>
+{% if companies %}
+<table class="tablesorter">
+	<thead>
+	<tr>
+		<th>{% trans "Company" %}</th>
+		<th>{% trans "# Members" %}</th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for company in companies %}
+	<tr>
+		<td><a href="{% url profile.search %}?member_only=on&search_criteria=company&search_text={{ company.name }}">{{ company.name|truncatechars:45 }}</a></td>
+		<td class="align_center">{{ company.total_members }}</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% else %}
+	{% trans "No company data available." %}
+{% endif %}
 </div>
 
 {% endblock content %}
+
+{% block extra_body %}
+{{ block.super }}
+{# dynamically load jquery #}
+<script>
+	if (!(window.jQuery)) { 
+		var s = document.createElement('script');
+		s.setAttribute('src', '{{ STATIC_URL }}js/jquery-1.4.2.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script> 
+
+<script type="text/javascript">
+var cname_extraction = function(node)
+{
+	return node.childNodes[0].innerHTML;
+}
+$(document).ready(function(){
+	$.tablesorter.defaults.widgets = ['zebra']; 
+        // extend the default setting to always sort on the first column 
+        $.tablesorter.defaults.sortList = [[0,0]]; 
+	$(".tablesorter").tablesorter({
+		textExtration: cname_extraction
+	}); 
+	
+});
+
+</script>
+
+{% endblock %}
