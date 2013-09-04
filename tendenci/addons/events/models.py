@@ -957,8 +957,7 @@ class Event(TendenciBaseModel):
         return ("registration_event_register", [self.pk])
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         super(Event, self).save(*args, **kwargs)
 
         if self.image:
