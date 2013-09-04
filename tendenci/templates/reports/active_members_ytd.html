@@ -47,4 +47,42 @@
 </table>
 </div>
 
+<div id="chart_div">
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Months');
+      data.addColumn('number', 'New');
+      data.addColumn('number', 'Renewing');
+      {% if include_total %}
+      data.addColumn('number', 'Total Active');
+      {% endif %}
+      data.addRows([
+        {% for  month in months %}
+          ['{{ month.name }}', {{ month.new_mems }},
+          {{ month.renew_mems }}{% if include_total %}, {{ month.total_active }}{% endif %}],
+        {% endfor %}
+      ]);
+      var options = {
+        width: 1000, height: 500,
+        hAxis: {title: 'Month'},
+        vAxis: {title: '# Members'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+  </script>
+</div>
+<div>
+{% if include_total %}
+<a href="{% url reports-active-members-ytd %}">Exclude Total Active from Chart</a>
+{% else %}
+<a href="{% url reports-active-members-ytd%}?include_total=on">Include Total Active to Chart</a>
+{% endif %} 
+ </div>
+ 
 {% endblock content %}

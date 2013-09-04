@@ -2708,7 +2708,14 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'months': months, 'total_new': total_new, 'total_renew': total_renew, 'years': years, 'year': year}, context_instance=RequestContext(request))
+    include_total = request.GET.get('include_total', False)
+    return render_to_response(template_name,
+                              {'months': months,
+                               'total_new': total_new,
+                               'total_renew': total_renew,
+                               'years': years, 'year': year,
+                               'include_total': include_total},
+                              context_instance=RequestContext(request))
 
 
 @staff_member_required
