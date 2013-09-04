@@ -23,16 +23,11 @@
       <td>{{ stat.new|add:stat.renewing }}</td>
     </tr>  
   {% endfor %}
-  </tr></table>
+  </table>
 
 </div>
 
-{% endblock content %}
-
-{% block extra_body %}
-    {{ block.super }}
-  <div id="chart_div"></div>
-
+<div id="chart_div">
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript">
     google.load("visualization", "1", {packages:["corechart"]});
@@ -61,4 +56,6 @@
       chart.draw(data, options);
     }
   </script>
- {% endblock extra_body %}
+</div>
+ 
+{% endblock content %}
