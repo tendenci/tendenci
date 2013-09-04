@@ -693,7 +693,7 @@ def get_over_time_stats():
                             
                             renewal=False).count()
         d['renewing'] = active_mems.filter(
-                            application_approved_dte__gt=start_dt,
+                            application_approved_dt__gte=start_dt,
                             renewal=True).count()
         d['time'] = time[0]
         d['start_dt'] = start_dt
