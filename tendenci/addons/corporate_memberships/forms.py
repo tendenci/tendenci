@@ -329,8 +329,10 @@ class CorpProfileForm(forms.ModelForm):
             self.fields['secret_code'].help_text = 'This is the code ' + \
                 'your members will need when joining under your corporation'
 
-        del self.fields['status']
-        del self.fields['status_detail']
+        if 'status' in self.fields:
+            del self.fields['status']
+        if 'status_detail' in self.fields:
+            del self.fields['status_detail']
         
         self.field_names = [name for name in self.fields.keys()]
 
