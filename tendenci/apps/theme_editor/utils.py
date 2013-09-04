@@ -27,6 +27,10 @@ ALLOWED_EXTENSIONS = (
     '.js',
     '.po',
     '.less',
+    '.eot',
+    '.ttf',
+    '.woff',
+    '.svg',
 )
 
 DEFAULT_THEME_INFO = 'theme.info'
