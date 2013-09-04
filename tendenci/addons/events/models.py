@@ -341,26 +341,6 @@ class RegConfPricing(OrderingBaseModel):
     
     def target_display(self):        
         target_str = ''
-        
-#        if self.allow_anonymous:
-#            pass
-#            #target_str = 'for public'
-#        elif self.allow_user:
-#            target_str = 'for users'
-#        elif self.allow_member:
-#            target_str = 'for members'
-#            
-#        if self.group:
-#            if target_str:
-#                target_str += ' and '
-#            target_str += 'for members of "%s"' % self.group.name
-#            
-#        if not any([self.allow_anonymous,
-#                    self.allow_user,
-#                    self.allow_member,
-#                    self.group
-#                    ]):
-#            target_str = 'admin only' 
             
         if self.quantity > 1:
             if not target_str:
