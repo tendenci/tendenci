@@ -9,6 +9,7 @@ import time as ttime
 import subprocess
 from sets import Set
 import calendar
+from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -2668,17 +2669,21 @@ def report_grace_period_members(request, template_name='reports/grace_period_mem
 
 @staff_member_required
 def report_active_members_ytd(request, template_name='reports/active_members_ytd.html'):
-    import datetime
+    this_year = datetime.now().year
+    years = [this_year - i for i in range(5) ]
+    year_selected = request.GET.get('year', this_year)
+    try:
+        year_selected = int(year_selected)
+    except:
+        year_selected = this_year
+    if year_selected < 1900 or year_selected > this_year:
+        year_selected = this_year
 
-    year = datetime.datetime.now().year
-    years = [year, year - 1, year - 2, year - 3, year - 4]
-    if request.GET.get('year'):
-        year = int(request.GET.get('year'))
+    active_mems = MembershipDefault.objects.filter(status=True,
+                                                   status_detail__in=["active", 'archive'])
 
-    active_mems = MembershipDefault.objects.filter(status=True, status_detail="active")
-
-    total_new = active_mems.filter(join_dt__year=year).count()
-    total_renew = active_mems.filter(renew_dt__year=year).count()
+    total_new = 0
+    total_renew = 0
 
     months = []
     itermonths = iter(calendar.month_abbr)
@@ -2686,35 +2691,36 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
 
     for index, month in enumerate(itermonths):
         index = index + 1
-        new_mems = active_mems.filter(join_dt__year=year, join_dt__month=index).count()
-        renew_mems = active_mems.filter(renew_dt__year=year, renew_dt__month=index).count()
+        start_dt = datetime(year_selected, index, 1)
+        end_dt = start_dt + relativedelta(months=1)
+        members = active_mems.filter(application_approved_dt__gte=start_dt,
+                                      application_approved_dt__lt=end_dt)
+        new_mems = members.filter(renewal=False).count()
+        renew_mems = members.filter(renewal=True).count()
 
-        if index is 12:
-            date = datetime.date(year, 12, 31)
-        else:
-            date = datetime.date(year, index + 1, 1) - datetime.timedelta(days=1)
-        total_active = MembershipDefault.objects.filter(
-            create_dt__lte=date,
-            expire_dt__gt=date,
-        ).count()
+        total_new += new_mems
+        total_renew += renew_mems
 
         month_dict = {
             'name': month,
             'new_mems': new_mems,
             'renew_mems': renew_mems,
-            'total_active': total_active
+            'total_active': (new_mems + renew_mems)
         }
         months.append(month_dict)
 
     EventLog.objects.log()
 
-    include_total = request.GET.get('include_total', False)
+    exclude_total = request.GET.get('exclude_total', False)
+    if request.GET.get('print', False):
+        template_name='reports/active_members_ytd_print.html'
     return render_to_response(template_name,
                               {'months': months,
                                'total_new': total_new,
                                'total_renew': total_renew,
-                               'years': years, 'year': year,
-                               'include_total': include_total},
+                               'years': years,
+                               'year_selected': year_selected,
+                               'exclude_total': exclude_total},
                               context_instance=RequestContext(request))
 
 
