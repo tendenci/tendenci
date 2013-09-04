@@ -66,13 +66,6 @@
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-modal.js"></script>
 {% if request.user.is_superuser %}<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>{% endif %}
 {% if user.is_authenticated %}<script type="text/javascript" src="{{ STATIC_URL }}js/global/authenticated.js"></script>{% endif %}
-{% if request.user.is_authenticated %}
-<script type="text/javascript">
-$(document).keyup(function(e) {
-  if (e.keyCode == 27) { window.location="{% url dashboard %}"; }   // esc
-});
-</script>
-{% endif %}
 {% block extra_body %}{% endblock %}
 {{ NEW_RELIC_FOOTER|safe }}
 </html>
