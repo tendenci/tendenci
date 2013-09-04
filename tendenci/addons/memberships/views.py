@@ -2537,26 +2537,24 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 def report_members_by_company(request, template_name='reports/members_by_company.html'):
     """ Total current members by company.
     """
-    active_mems = MembershipDefault.objects.filter(status=1, status_detail="active")
-    company_list = []
-
-    # get list of distinct companies
-    for member in active_mems:
-        if member.user.profile.company:
-            if member.user.profile.company not in company_list:
-                company_list.append(member.user.profile.company)
+    company_list = Profile.objects.exclude(
+                                Q(member_number='') | 
+                                Q(company='')).values_list(
+                                'company',
+                                flat=True
+                                ).distinct().order_by('company')
 
     # get total number of active members for each company
     companies = []
     for company in company_list:
-        total_members = active_mems.filter(user__profile__company=company).count()
+        total_members = Profile.objects.filter(company=company,
+                                            ).exclude(member_number=''
+                                            ).count()
         company_dict = {
             'name': company,
             'total_members': total_members
         }
         companies.append(company_dict)
-
-    companies = sorted(companies, key=lambda k: k['total_members'], reverse=True)
 
     EventLog.objects.log()
 
