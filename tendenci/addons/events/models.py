@@ -959,7 +959,6 @@ class Event(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())
-        photo_upload = kwargs.pop('photo', None)
         super(Event, self).save(*args, **kwargs)
 
         if self.image:
