@@ -29,6 +29,8 @@
 
 {% endblock content %}
 
+{% block extra_body %}
+    {{ block.super }}
   <div id="chart_div"></div>
 
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -43,15 +45,15 @@
       data.addRows([
         {% for stat in stats|slice:":5" reversed %}
           {% if not forloop.last %}
-          ['{{ stat.start_dt }}', {{ stat.new }}, {{ stat.renewing }}],
+          ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}],
           {% else %}
-          ['{{ stat.start_dt }}', {{ stat.new }}, {{ stat.renewing }}]
+          ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}]
           {% endif %}
         {% endfor %}
       ]);
       var options = {
         width: 1000, height: 500,
-        hAxis: {title: 'Since X Month'},
+        //hAxis: {title: 'Since x Months'},
         vAxis: {title: 'Members'}
       };
 
@@ -59,3 +61,4 @@
       chart.draw(data, options);
     }
   </script>
+ {% endblock extra_body %}
