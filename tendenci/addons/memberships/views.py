@@ -2546,8 +2546,12 @@ def report_members_by_company(request, template_name='reports/members_by_company
 
     # get total number of active members for each company
     companies = []
+    companies_processed = []
     for company in company_list:
-        total_members = Profile.objects.filter(company=company,
+        company = company.strip()
+        if company.lower() in companies_processed:
+            continue
+        total_members = Profile.objects.filter(company__iexact=company,
                                             ).exclude(member_number=''
                                             ).count()
         company_dict = {
@@ -2555,6 +2559,7 @@ def report_members_by_company(request, template_name='reports/members_by_company
             'total_members': total_members
         }
         companies.append(company_dict)
+        companies_processed.append(company.lower())
 
     EventLog.objects.log()
 
