@@ -687,14 +687,12 @@ def get_over_time_stats():
         start_dt = time[1]
         d = {}
         active_mems = MembershipDefault.objects.filter(
-            status=True, status_detail__in=['active', 'archive'])
-        d['new'] = active_mems.filter(
-                            application_approved_dt__gte=start_dt,
-                            
-                            renewal=False).count()
-        d['renewing'] = active_mems.filter(
-                            application_approved_dt__gte=start_dt,
-                            renewal=True).count()
+                        status=True,
+                        status_detail__in=['active', 'archive']
+            ).filter(application_approved_dt__gte=start_dt
+                     ).distinct('user__id', 'membership_type__id')
+        d['new'] = active_mems.filter(renewal=False).count()
+        d['renewing'] = active_mems.filter(renewal=True).count()
         d['time'] = time[0]
         d['start_dt'] = start_dt
         stats.append(d)
