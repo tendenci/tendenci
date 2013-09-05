@@ -2693,8 +2693,12 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
         end_dt = start_dt + relativedelta(months=1)
         members = active_mems.filter(application_approved_dt__gte=start_dt,
                                       application_approved_dt__lt=end_dt)
-        new_mems = members.filter(renewal=False).count()
-        renew_mems = members.filter(renewal=True).count()
+        new_mems = members.filter(renewal=False).distinct('user__id',
+                                                          'membership_type__id'
+                                                          ).count()
+        renew_mems = members.filter(renewal=True).distinct('user__id',
+                                                          'membership_type__id'
+                                                          ).count()
 
         total_new += new_mems
         total_renew += renew_mems
