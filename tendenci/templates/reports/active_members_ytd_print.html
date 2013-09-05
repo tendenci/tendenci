@@ -55,13 +55,13 @@
       data.addColumn('string', 'Months');
       data.addColumn('number', 'New');
       data.addColumn('number', 'Renewing');
-      {% if include_total %}
+      {% if not exclude_total %}
       data.addColumn('number', 'Total Active');
       {% endif %}
       data.addRows([
         {% for  month in months %}
           ['{{ month.name }}', {{ month.new_mems }},
-          {{ month.renew_mems }}{% if include_total %}, {{ month.total_active }}{% endif %}],
+          {{ month.renew_mems }}{% if not exclude_total %}, {{ month.total_active }}{% endif %}],
         {% endfor %}
       ]);
       var options = {
