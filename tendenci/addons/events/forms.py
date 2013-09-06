@@ -474,9 +474,14 @@ class EventForm(TendenciBaseForm):
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
+            'enable_private_slug',
+            'private_slug',
             'status',
             'status_detail',
             )
+        widgets = {
+            'private_slug': forms.HiddenInput()
+        }
 
         fieldsets = [('Event Information', {
                       'fields': ['title',
@@ -499,6 +504,8 @@ class EventForm(TendenciBaseForm):
                                  'user_perms',
                                  'member_perms',
                                  'group_perms',
+                                 'enable_private_slug',
+                                 'private_slug',
                                  ],
                       'classes': ['permissions'],
                       }),
@@ -514,7 +521,11 @@ class EventForm(TendenciBaseForm):
 
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
         else:
+            # kwargs['instance'] always trumps initial
+            self.fields['private_slug'].initial = self.instance.get_private_slug()
+            self.fields['enable_private_slug'].widget = forms.HiddenInput()
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
 
@@ -562,6 +573,7 @@ class EventForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         event = super(EventForm, self).save(*args, **kwargs)
+
         if self.cleaned_data.get('remove_photo'):
             event.image = None
         return event

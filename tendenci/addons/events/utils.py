@@ -1247,7 +1247,7 @@ def copy_event(event, user):
         all_day = event.all_day,
         on_weekend = event.on_weekend,
         mark_registration_ended = event.mark_registration_ended,
-        private = event.private,
+        private_slug = event.private_slug,
         password = event.password,
         tags = event.tags,
         external_url = event.external_url,

@@ -178,8 +178,8 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
 
 
 @is_enabled('events')
-def details(request, id=None, template_name="events/view.html"):
-    if not id:
+def details(request, id=None, private_slug=u'', template_name="events/view.html"):
+    if not id and not private_slug:
         return HttpResponseRedirect(reverse('event.month'))
 
     event = get_object_or_404(Event, pk=id)
@@ -188,8 +188,11 @@ def details(request, id=None, template_name="events/view.html"):
     if not event.on_weekend:
         days = get_active_days(event)
 
-    if not has_view_perm(request.user, 'events.view_event', event):
-        raise Http403
+    if event.is_private(private_slug):
+        pass
+    else:
+        if not has_view_perm(request.user, 'events.view_event', event):
+            raise Http403
 
     if event.registration_configuration:
         event.limit = event.get_limit()

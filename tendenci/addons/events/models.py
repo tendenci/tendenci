@@ -903,7 +903,8 @@ class Event(TendenciBaseModel):
     place = models.ForeignKey('Place', null=True)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
-    private = models.BooleanField() # hide from lists
+    enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True) # hide from lists
+    private_slug = models.CharField(max_length=500, blank=True, default=u'')
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
@@ -932,6 +933,10 @@ class Event(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_event","Can view event"),)
+
+    def __init__(self, *args, **kwargs):
+        super(Event, self).__init__(*args, **kwargs)
+        self.private_slug = self.private_slug or Event.make_slug()
 
     def get_meta(self, name):
         """
@@ -965,7 +970,7 @@ class Event(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
-    
+
     @property
     def has_addons(self):
         return Addon.objects.filter(
@@ -1139,6 +1144,46 @@ class Event(TendenciBaseModel):
         if self.registration_configuration:
             limit = self.registration_configuration.limit
         return int(limit)
+
+    @classmethod
+    def make_slug(self, length=7):
+        """
+        Returns newly generated slug
+        Option: length (default: 7)
+        """
+        return uuid.uuid1().get_hex()[:length]
+
+    def get_private_slug(self, absolute_url=False):
+        """
+        Returns private slug
+        Option to return absolute private URL
+        """
+        from tendenci.core.site_settings.utils import (
+            get_module_setting,
+            get_global_setting)
+
+        pk = self.pk or 'id'
+        private_slug = self.private_slug or Event.make_slug()
+
+        if absolute_url:
+            return '%s/%s/%s/%s' % (
+                get_global_setting('siteurl'),
+                get_module_setting('events', 'url'),
+                pk,
+                private_slug)
+
+        self.private_slug = private_slug
+        return private_slug
+
+    def is_private(self, slug=u''):
+        """
+        Check if event is private (i.e. if private enabled)
+        """
+        # print 'enable_private_slug', self.enable_private_slug
+        # print 'private_slug', self.private_slug
+        # print 'slug', slug
+
+        return all((self.enable_private_slug, self.private_slug, self.private_slug == slug))
 
 
 class CustomRegForm(models.Model):

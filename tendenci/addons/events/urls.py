@@ -123,6 +123,8 @@ urlpatterns = patterns(
         {'roster_view': 'total'},
         name="event.registrant.export.total"),
 
+    url(r'^%s/(?P<id>\d+)/(?P<private_slug>\w+)/$' % urlpath, 'views.details', name='event.private_details'),
+
     # addons
     url(r'^%s/(?P<event_id>\d+)/addons/$' % urlpath, 'views.list_addons', name='event.list_addons'),
     url(r'^%s/(?P<event_id>\d+)/addons/add/$' % urlpath, 'views.add_addon', name='event.add_addon'),
