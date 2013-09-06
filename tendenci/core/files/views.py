@@ -127,6 +127,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         if file.is_public_file():
             file_name = "%s%s" % (file.get_name(), ".jpg")
             file_path = 'cached%s%s' % (request.path, file_name)
+            default_storage.delete(file_path)
             default_storage.save(file_path, ContentFile(response.content))
             full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
             cache.set(cache_key, full_file_path)
