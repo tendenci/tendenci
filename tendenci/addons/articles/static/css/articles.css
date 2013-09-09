@@ -341,3 +341,6 @@ div.forms fieldset.contact legend {
 	margin-top: -5px;
 	color: red;
 }
+#id_filter_date {
+    vertical-align: text-top !important;
+}
