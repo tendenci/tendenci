@@ -724,7 +724,7 @@ class SpeakerBaseFormSet(BaseModelFormSet):
             form = self.forms[i]
             if 'name' in form.cleaned_data:
                 name = form.cleaned_data['name']
-                if name in names:
+                if name and name in names:
                     raise forms.ValidationError(_("Speakers in an event must have distinct names. '%s' is already used." % name))
                 names.append(name)
 
@@ -773,6 +773,20 @@ class SpeakerForm(BetterModelForm):
                 raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
 
         return data
+
+    def clean(self):
+        name = self.cleaned_data['name']
+        data = self.cleaned_data['file'] if 'file' in self.cleaned_data else None
+        description = self.cleaned_data['description']
+
+        if data and not name:
+            raise forms.ValidationError(_('Speaker name is required if a speaker file is given.'))
+
+        if self.instance.pk:
+            if not (name or description):
+                raise forms.ValidationError(_('Speaker details missing. Please add speaker name or delete the speaker.'))
+
+        return self.cleaned_data
 
 
 class OrganizerForm(forms.ModelForm):

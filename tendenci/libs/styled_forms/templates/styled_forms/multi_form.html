@@ -13,6 +13,9 @@
 		{% for form_set in form.forms %}
 			{% if form_set.errors.values %}
 			<div class="errors">
+			    {% for error in form_set.non_field_errors %}
+					<p>{{ error }}</p>
+			    {% endfor %}
 			    {% if form.fieldsets.fieldsets %}
 					{% for fieldset in form.fieldsets %}
 						{% for field in fieldset %}
