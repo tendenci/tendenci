@@ -92,7 +92,6 @@ def sync_templates(request=None):
         html_url = unicode("%s%s"%(site_url, template.get_html_url()))
         html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
         try:
-            from tendenci.addons.events.models import Event, Type
             html_url += "&events=1"
             html_url += "&events_type="
             html_url += "&event_start_dt=%s" % datetime.date.today()
