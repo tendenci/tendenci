@@ -80,25 +80,35 @@ def sync_campaigns():
         campaign.save()
 
 def sync_templates(request=None):
-    if hasattr(cl,'templates'): templates = cl.templates()
-    else: templates = []
+    """
+    Pushes most recent template updates
+    up to Campaign Monitor
+    """
+    templates = []
+    if hasattr(cl,'templates'):
+        templates = cl.templates()
+
     for t in templates:
+
         try:
             template = Template.objects.get(template_id = t.TemplateID)
         except Template.DoesNotExist:
-            template = Template(template_id = t.TemplateID)        
+            template = Template(template_id = t.TemplateID)
+            template.name = t.Name
+            template.cm_preview_url = t.PreviewURL
+            template.cm_screenshot_url = t.ScreenshotURL
+        except Exception as e:
+            print 'sync template exception', e
+
         #set up urls
         site_url = get_setting('site', 'global', 'siteurl')
         html_url = unicode("%s%s"%(site_url, template.get_html_url()))
         html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
-        try:
-            html_url += "&events=1"
-            html_url += "&events_type="
-            html_url += "&event_start_dt=%s" % datetime.date.today()
-            end_dt = datetime.date.today() + timedelta(days=90)
-            html_url += "&event_end_dt=%s" % end_dt
-        except ImportError:
-            pass
+        html_url += "&events=1"
+        html_url += "&events_type="
+        html_url += "&event_start_dt=%s" % datetime.date.today()
+        end_dt = datetime.date.today() + timedelta(days=90)
+        html_url += "&event_end_dt=%s" % end_dt
 
         if template.zip_file:
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
@@ -107,31 +117,33 @@ def sync_templates(request=None):
                 zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
         else:
             zip_url = unicode()
-        
+
         #sync with campaign monitor
         try:
-            t = CST(auth, template_id=template.template_id)
-            t.update(unicode(template.name), html_url, zip_url)
+            cst = CST(auth, template_id=template.template_id)
+            cst.update(unicode(template.name), html_url, zip_url)
+            success = True
         except BadRequest, e:
+            success = False
             if request:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
-                return redirect('campaign_monitor.template_index')
             else:
                 print e.data.Code, e.data.Message
                 return
         except Exception, e:
+            success = False
             if request:
                 messages.add_message(request, messages.ERROR, 'Error: %s' % e)
-                return redirect('campaign_monitor.template_index')
             else:
                 print e.data.Code, e.data.Message
                 return
+
         #get campaign monitor details
-        t = t.details()
         template.name = t.Name
         template.cm_preview_url = t.PreviewURL
         template.cm_screenshot_url = t.ScreenshotURL
         template.save()
+        return success
 
 
 def extract_files(template):
