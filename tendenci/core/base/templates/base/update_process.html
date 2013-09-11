@@ -19,7 +19,7 @@
   $(document).ready(function() {    
     var status_check = function(){
         $.ajax({
-           url: "{% url update_tendenci.check sid %}",
+           url: "{% url update_tendenci.check %}",
            success: function(status_data){
                if (status_data == 'True') {
                   location.reload()
