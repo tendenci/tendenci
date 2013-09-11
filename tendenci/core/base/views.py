@@ -27,6 +27,7 @@ from tendenci import __version__ as version
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.core.base.forms import PasswordForm, AddonUploadForm
 from tendenci.core.base.models import UpdateTracker
+from tendenci.core.base.managers import SubProcessManager
 from tendenci.core.perms.decorators import superuser_required
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.site_settings.utils import get_setting
