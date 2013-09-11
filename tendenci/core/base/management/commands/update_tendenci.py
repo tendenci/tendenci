@@ -16,4 +16,5 @@ class Command(BaseCommand):
 
         print "Restarting Server"
         # This depends on the server used, please update accordingly
+        os.system('reload tendencisite')
         os.system('service nginx restart')

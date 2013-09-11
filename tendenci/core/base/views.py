@@ -26,6 +26,7 @@ from django.contrib import messages
 from tendenci import __version__ as version
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.core.base.forms import PasswordForm, AddonUploadForm
+from tendenci.core.base.managers import SubProcessManager
 from tendenci.core.perms.decorators import superuser_required
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.site_settings.utils import get_setting
@@ -395,9 +396,8 @@ def addon_upload_check(request, sid):
 def update_tendenci(request, template_name="base/update.html"):
 
     if request.method == "POST":
-        subprocess.Popen(["python", "manage.py", "update_tendenci"])
-        messages.add_message(request, messages.INFO, 'Update process has started. Please wait.')
-        return redirect('dashboard')
+        process = SubProcessManager.set_process(["python", "manage.py", "update_tendenci"])
+        return redirect('update_tendenci.process')
 
     pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     latest_version = pypi.package_releases('tendenci')[0]
@@ -410,3 +410,26 @@ def update_tendenci(request, template_name="base/update.html"):
         'latest_version': latest_version,
         'update_available': update_vailable,
     }, context_instance=RequestContext(request))
+
+
+@superuser_required
+def update_tendenci_process(request, template_name="base/update_process.html"):
+
+    if not SubProcessManager.process:
+        raise Http404
+
+    if not SubProcessManager.poll_process() is None:
+        messages.add_message(request, messages.SUCCESS, 'Update complete.')
+        SubProcessManager.process = None
+        return redirect('dashboard')
+
+    return render_to_response(template_name,
+                              context_instance=RequestContext(request))
+
+
+def update_tendenci_check(request):
+
+    if not (request.is_ajax() and SubProcessManager.process):
+        raise Http404
+
+    return HttpResponse(SubProcessManager.poll_process())
