@@ -1,5 +1,5 @@
 import os
-
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from tendenci.core.base.models import UpdateTracker
@@ -16,8 +16,7 @@ class Command(BaseCommand):
         os.system('python deploy.py')
 
         print "Restarting Server"
-        # This depends on the server used, please update accordingly
-        os.system('reload tendencisite')
-
+        os.system('sudo reload %s' % os.path.basename(settings.PROJECT_ROOT))
+        
         UpdateTracker.end()
         call_command('clear_cache')
