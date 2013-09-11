@@ -13,4 +13,5 @@ urlpatterns = patterns('tendenci.core.base.views',
     url(r'addon/upload/preview/(?P<sid>\d+)$', 'addon_upload_preview', name="addon.upload.preview"),
     url(r'addon/upload/status/(?P<sid>\d+)$', 'addon_upload_process', name="addon.upload.process"),
     url(r'addon/upload/check/(?P<sid>\d+)$', 'addon_upload_check', name="addon.upload.check"),
+    url(r'^update-tendenci/$', 'update_tendenci', name="update_tendenci"),
 )

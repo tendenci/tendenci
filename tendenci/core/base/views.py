@@ -8,6 +8,7 @@ import mimetypes
 import shutil
 import subprocess
 import zipfile
+import xmlrpclib
 
 # django
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -22,6 +23,7 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 
 # local
+from tendenci import __version__ as version
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.core.base.forms import PasswordForm, AddonUploadForm
 from tendenci.core.perms.decorators import superuser_required
@@ -388,3 +390,23 @@ def addon_upload_check(request, sid):
         finished = True
 
     return HttpResponse(finished)
+
+
+def update_tendenci(request, template_name="base/update.html"):
+
+    if request.method == "POST":
+        subprocess.Popen(["python", "manage.py", "update_tendenci"])
+        messages.add_message(request, messages.INFO, 'Update process has started. Please wait.')
+        return redirect('dashboard')
+
+    pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+    latest_version = pypi.package_releases('tendenci')[0]
+
+    update_vailable = False
+    if latest_version != version:
+        update_available = True
+
+    return render_to_response(template_name, {
+        'latest_version': latest_version,
+        'update_available': update_vailable,
+    }, context_instance=RequestContext(request))
