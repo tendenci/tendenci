@@ -322,27 +322,6 @@ def password_again(request, template_name="base/password.html"):
 
 
 @superuser_required
-def update_tendenci(request, template_name="base/update.html"):
-
-    if request.method == "POST":
-        UpdateTracker.start()
-        process = subprocess.Popen(["python", "manage.py", "update_tendenci"])
-        return redirect('update_tendenci.process')
-
-    pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
-    latest_version = pypi.package_releases('tendenci')[0]
-
-    update_available = False
-    if latest_version != version:
-        update_available = True
-
-    return render_to_response(template_name, {
-        'latest_version': latest_version,
-        'update_available': update_available,
-    }, context_instance=RequestContext(request))
-
-
-@superuser_required
 def update_tendenci_process(request, template_name="base/update_process.html"):
 
     tracker = UpdateTracker.get_or_create_instance()
@@ -434,7 +413,7 @@ def addon_upload_check(request, sid):
 
     return HttpResponse(finished)
 
-
+@superuser_required
 def update_tendenci(request, template_name="base/update.html"):
 
     if request.method == "POST":
@@ -444,13 +423,13 @@ def update_tendenci(request, template_name="base/update.html"):
     pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     latest_version = pypi.package_releases('tendenci')[0]
 
-    update_vailable = False
+    update_available = False
     if latest_version != version:
         update_available = True
 
     return render_to_response(template_name, {
         'latest_version': latest_version,
-        'update_available': update_vailable,
+        'update_available': update_available,
     }, context_instance=RequestContext(request))
 
 
