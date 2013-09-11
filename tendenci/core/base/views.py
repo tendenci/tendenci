@@ -333,7 +333,7 @@ def update_tendenci(request, template_name="base/update.html"):
     pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     latest_version = pypi.package_releases('tendenci')[0]
 
-    update_vailable = True
+    update_vailable = False
     if latest_version != version:
         update_available = True
 
