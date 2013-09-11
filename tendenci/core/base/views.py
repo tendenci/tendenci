@@ -328,14 +328,12 @@ def update_tendenci(request, template_name="base/update.html"):
         tracker = UpdateTracker.get_or_create_instance()
         tracker.start()
         process = subprocess.Popen(["python", "manage.py", "update_tendenci"])
-        sid = str(int(time.time()))
-        request.session[sid] = process
         return redirect('update_tendenci.process')
 
     pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     latest_version = pypi.package_releases('tendenci')[0]
 
-    update_vailable = False
+    update_vailable = True
     if latest_version != version:
         update_available = True
 
@@ -359,11 +357,8 @@ def update_tendenci_process(request, template_name="base/update_process.html"):
 
 def update_tendenci_check(request):
 
-    #if not sid in request.session:
-    #    raise Http404
-    #process = request.session[sid]
-    #process.wait()
-    #request.session[sid] = process
+    if not request.is_ajax():
+        raise Http404
 
     finished = False
     tracker = UpdateTracker.get_or_create_instance()

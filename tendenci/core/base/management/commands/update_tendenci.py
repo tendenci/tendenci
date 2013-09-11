@@ -11,7 +11,7 @@ class Command(BaseCommand):
         UpdateTracker.start()
 		
         print "Updating tendenci package"
-        #os.system('pip install tendenci --upgrade')
+        os.system('pip install tendenci --upgrade')
 
         print "Updating tendenci site"
         os.system('python deploy.py')

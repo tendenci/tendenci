@@ -25,12 +25,7 @@ class UpdateTracker(models.Model):
         tracker.save()
         
     def save(self, *args, **kwargs):
-        if self.pk is None or self.pk != 1:
-            instance = UT.objects.get()
-            self.pk = 1
-            self.id = 1
-            self.is_updating = instance.is_updating
-            
+        self.__class__.objects.exclude(id=self.id).delete()
         super(UpdateTracker, self).save(*args, **kwargs)
 
     def __unicode__(self):
