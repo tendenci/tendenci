@@ -19,9 +19,9 @@
   $(document).ready(function() {    
     var status_check = function(){
         $.ajax({
-           url: "{% url update_tendenci.check %}",
+           url: "{% url update_tendenci.check sid %}",
            success: function(status_data){
-               if (status_data == '0') {
+               if (status_data == 'True') {
                   location.reload()
                }
            }
@@ -30,7 +30,7 @@
     status_check();
     status_check_intval = setInterval(function() {
         status_check();  // check every 5 seconds
-    }, 5000);
+    }, 30000);
   });
 </script>
 {% endblock %}

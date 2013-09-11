@@ -9,6 +9,10 @@ urlpatterns = patterns('tendenci.core.base.views',
     url(r'^exception-test/$', 'exception_test', name="exception_test"),
     url(r'^timeout-test/$', 'timeout_test', name="timeout_test"),
 
+    url(r'^update-tendenci/$', 'update_tendenci', name="update_tendenci"),
+    url(r'^update-tendenci/status/(?P<sid>\d+)$', 'update_tendenci_process', name="update_tendenci.process"),
+    url(r'^update-tendenci/check/(?P<sid>\d+)$', 'update_tendenci_check', name="update_tendenci.check"),
+
     url(r'addon/upload/$', 'addon_upload', name="addon.upload"),
     url(r'addon/upload/preview/(?P<sid>\d+)$', 'addon_upload_preview', name="addon.upload.preview"),
     url(r'addon/upload/status/(?P<sid>\d+)$', 'addon_upload_process', name="addon.upload.process"),

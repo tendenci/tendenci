@@ -10,14 +10,14 @@
 <div class="t">
     <h1>Tendenci Update</h1>
 {% if update_available %}
-    <p>An update is available for tendenci.</p>
+    <p>{% trans "An update is available for Tendenci." %}</p>
     <p>Current Version: {{ TENDENCI_VERSION }}</p>
     <p>Latest Version: {{ latest_version }}</p>
     <form method='post' action="{% url update_tendenci %}" >{% csrf_token %}
     <input type='submit' value='Update'>
     </form>
 {% else %}
-    <p>You currently have the latest version of Tendenci.</p>
+    <p>{% trans "You currently have the latest version of Tendenci." %}</p>
     <p>Version: {{ TENDENCI_VERSION }}</p>
 {% endif %}
 </div>
