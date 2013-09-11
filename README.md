@@ -9,6 +9,8 @@ You can demo Tendenci here: [http://demo.tendenci.com/](http://demo.tendenci.com
 
 You can download and run a Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md).
 
+You can also view our TKL here: https://github.com/tendenci/tendenci-tkl
+
 ## Installation
 
 For information on how to install Tendenci, please see our docs at [https://tendenci.readthedocs.org/en/latest/](https://tendenci.readthedocs.org/en/latest/).
