@@ -9,6 +9,7 @@ class Command(BaseCommand):
     Update tendenci via pip and restarts the server
     """
     def handle(self, *args, **kwargs):
+        UpdateTracker.start()
         print "Updating tendenci package"
         os.system('pip install tendenci --upgrade')
 
