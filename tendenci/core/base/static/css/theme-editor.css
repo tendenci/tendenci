@@ -403,3 +403,22 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 	overflow: visible; /* ie7 and below: remove extra padding on button */
 	*padding: 0 10px; /* ie7 and below: custom padding */
 }
+
+/* new template */
+#create-tform{
+		display: none;
+	}
+.ui-dialog .ui-state-error { 
+	padding: .3em;
+	}
+.validateTips { 
+	border: 1px solid transparent;
+	padding: 0.3em;
+	}
+#create-tform fieldset{ 
+	padding:0; border:0;
+	margin-top:25px; 
+	}
+#create-tform div{
+	margin: 0.5em 0;
+}

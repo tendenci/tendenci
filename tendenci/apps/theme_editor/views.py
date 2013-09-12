@@ -8,8 +8,10 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
+from django.views.decorators.csrf import csrf_exempt
 
 from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import get_template_list
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.site_settings.models import Setting
 from tendenci.core.perms.utils import has_perm
@@ -17,10 +19,14 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.utils import get_theme, theme_choices as theme_choice_list
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
-from tendenci.apps.theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
+from tendenci.apps.theme_editor.forms import (FileForm,
+                                              ThemeSelectForm,
+                                              UploadForm,
+                                              AddTemplateForm)
 from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
 from tendenci.apps.theme_editor.utils import qstr_is_file, qstr_is_dir, copy
 from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates, ThemeInfo
+from tendenci.libs.boto_s3.utils import save_file_to_s3
 
 DEFAULT_FILE = 'templates/homepage.html'
 
@@ -141,6 +147,44 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'all_files_folders': all_files_folders,
     }, context_instance=RequestContext(request))
 
+
+@permission_required('theme_editor.change_themefileversion')
+@csrf_exempt
+def create_new_template(request, form_class=AddTemplateForm):
+    """
+    Create a new blank template for a given template name
+    """
+    form = form_class(request.POST or None)
+    ret_dict = {'created': False, 'err': ''}
+
+    if form.is_valid():
+        template_name = form.cleaned_data['template_name'].strip()
+        template_full_name = 'default-%s.html' % template_name
+        existing_templates = [t[0] for t in get_template_list()]
+        if not template_full_name in existing_templates:
+            # create a blank template
+            use_s3_storage = getattr(settings, 'USE_S3_STORAGE', '')
+            if use_s3_storage:
+                theme_dir = settings.ORIGINAL_THEMES_DIR
+            else:
+                theme_dir = settings.THEMES_DIR
+            template_full_path = os.path.join(theme_dir,
+                                get_setting('module', 'theme_editor', 'theme'),
+                                'templates',
+                                template_full_name)
+            with open(template_full_path, 'w') as f:
+                f.write('')
+            if use_s3_storage:
+                # django default_storage not set for theme, that's why we cannot use it
+                save_file_to_s3(template_full_path)
+
+            ret_dict['created'] = True
+            ret_dict['template_name'] = template_full_name
+        else:
+            ret_dict['err'] = 'Template "%s" already exists' % template_full_name
+        
+
+    return HttpResponse(json.dumps(ret_dict))
 
 @login_required
 def get_version(request, id):

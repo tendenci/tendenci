@@ -89,6 +89,12 @@ class FileForm(forms.Form):
             return False
 
 
+class AddTemplateForm(forms.Form):
+    template_name = forms.RegexField(label="Template Name",
+                                     regex=r'^[a-z][0-9a-z_]+$',
+                                     max_length=20)
+
+
 class ThemeSelectForm(forms.Form):
     theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[])
 

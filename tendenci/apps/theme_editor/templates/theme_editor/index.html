@@ -11,6 +11,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}codemirror2/lib/codemirror.css" />
@@ -149,15 +150,42 @@
                                
                                </div>
                                
+                               <div class="well well-small">
+                               		<button class="btn new-template-btn">New Template</button>
+                               </div>
+                               
            </div>
                    </td>
     </tr>
 </table>
+
+
+<div id="create-tform" title="Create new template">
+	<p class="validateTips">Please enter template name.</p>
+	<form>
+		<fieldset>
+		<div><label for="tname">Template Name:</label></div>
+		<div>
+		default-<input type="text" name="tname" id="tname" class="text ui-widget-content ui-corner-all" />
+		.html
+		</div>
+		</fieldset>
+	</form>
+</div>
+
+
+
 {% endblock %}
 
 {% block extra_body %}
+
 {{ block.super }}
 <script src="{{ STATIC_URL }}codemirror/js/codemirror.js" type="text/javascript"></script>
+<script src="/static/js/jquery-ui-1.10.3.dialog.min.js"></script>
+<script type="text/javascript">
+{% include 'theme_editor/include/new_template.js' %}
+</script>
+ 
 <script type="text/javascript">
 var editor;
 $(document).ready(function(){
@@ -169,8 +197,7 @@ $(document).ready(function(){
     continuousScanning: 500,
     lineNumbers: true,
     textWrapping: false
-  });
-
+  });	
 })
 
 function open_archive(id)
@@ -260,7 +287,8 @@ function open_archive(id)
         current_file.show();
         current_file.siblings().show();
         current_file.parents().show();
-        current_file.parents().siblings().show();
+        //current_file.parents().siblings().show();
+        current_file.closest('ul').parent().siblings().show();
         
         current_file.parent().parent().children(":first").addClass('open');
         folder_text = current_file.parent().parent().children(":first").text();
