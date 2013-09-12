@@ -280,7 +280,7 @@ div.forms fieldset.contact legend {
 	padding: 5px;
 }
 
-.clearfix { clear: both; }
+.clearfix:after { clear: both; }
 
 .t .search-form .first-row span,
 .t .search-form .first-row .search-category,
