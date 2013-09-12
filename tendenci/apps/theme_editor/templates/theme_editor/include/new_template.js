@@ -48,7 +48,7 @@ $(function() {
 				var is_valid = true;
 				allFields.removeClass( "ui-state-error" );
 				is_valid = is_valid && check_length( tname, "template name", 3, 16 );
-				is_valid = is_valid && check_regexp( tname, /^[a-z]([0-9a-z_])+$/, "Template name may consist of a-z, 0-9, underscores, begin with a letter." );
+				is_valid = is_valid && check_regexp( tname, /^[a-z]([0-9a-z_-])+$/, "Template name may consist of a-z, 0-9, underscores, dashes, begin with a letter." );
 				if ( is_valid ) {
 					// ajax submit form
 					$.post(

@@ -91,7 +91,7 @@ class FileForm(forms.Form):
 
 class AddTemplateForm(forms.Form):
     template_name = forms.RegexField(label="Template Name",
-                                     regex=r'^[a-z][0-9a-z_]+$',
+                                     regex=r'^[a-z][0-9a-z_-]+$',
                                      max_length=20)
 
 
