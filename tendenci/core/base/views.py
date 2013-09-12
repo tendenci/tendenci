@@ -323,27 +323,6 @@ def password_again(request, template_name="base/password.html"):
 
 
 @superuser_required
-def update_tendenci_process(request, template_name="base/update_process.html"):
-
-    tracker = UpdateTracker.get_or_create_instance()
-    if not tracker.is_updating:
-        messages.add_message(request, messages.SUCCESS, 'Update complete.')
-        return redirect('dashboard')
-
-    return render_to_response(template_name,
-                              context_instance=RequestContext(request))
-
-
-def update_tendenci_check(request):
-
-    if not request.is_ajax():
-        raise Http404
-
-    tracker = UpdateTracker.get_or_create_instance()
-    return HttpResponse(tracker.is_updating)
-
-
-@superuser_required
 def addon_upload(request, template_name="base/addon_upload.html"):
 
     form = AddonUploadForm(request.POST or None, request.FILES or None)
@@ -416,7 +395,6 @@ def addon_upload_check(request, sid):
 
 @superuser_required
 def update_tendenci(request, template_name="base/update.html"):
-
     if request.method == "POST":
         process = SubProcessManager.set_process(["python", "manage.py", "update_tendenci"])
         return redirect('update_tendenci.process')
@@ -436,22 +414,19 @@ def update_tendenci(request, template_name="base/update.html"):
 
 @superuser_required
 def update_tendenci_process(request, template_name="base/update_process.html"):
-
-    if not SubProcessManager.process:
-        raise Http404
-
-    if not SubProcessManager.poll_process() is None:
+    tracker = UpdateTracker.get_or_create_instance()
+    if not tracker.is_updating:
         messages.add_message(request, messages.SUCCESS, 'Update complete.')
-        SubProcessManager.process = None
         return redirect('dashboard')
 
-    return render_to_response(template_name,
-                              context_instance=RequestContext(request))
+    return render_to_response(
+        template_name,
+        context_instance=RequestContext(request))
 
 
 def update_tendenci_check(request):
-
-    if not (request.is_ajax() and SubProcessManager.process):
+    if not request.is_ajax():
         raise Http404
 
-    return HttpResponse(SubProcessManager.poll_process())
+    tracker = UpdateTracker.get_or_create_instance()
+    return HttpResponse(tracker.is_updating)
