@@ -81,6 +81,10 @@ $(function() {
 	
 	$('.new-template-btn').click(function(){
 		$('#create-tform').dialog('open');
+		$('.ui-dialog-buttonset .ui-state-default').first()
+				.css({'background': 'none'})
+				.css({'background-color': '#A84524'})
+				.css({'color': '#ffffff'});
 	});
 
 });
