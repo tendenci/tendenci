@@ -20,9 +20,16 @@
 {% block custom_body %}
 <div class="t">
     <div class="page-wrap">
-        {% if page.title %}
-        <h1>{{ page.title }}</h1>
+        {% if page.header_image %}
+        <div class="page-header">
+            <img src="{{ page.get_header_image_url }}" />
+        </div>
         {% endif %}
+
+      {% if page.title %}
+          <h1>{{ page.title }}</h1> 
+      {% endif %}
+
         <div class="content">{{ page.content|safe }}</div>
 
         <!-- Insert custom template code here -->
