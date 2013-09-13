@@ -162,18 +162,35 @@ def create_new_template(request, form_class=AddTemplateForm):
         template_full_name = 'default-%s.html' % template_name
         existing_templates = [t[0] for t in get_template_list()]
         if not template_full_name in existing_templates:
-            # create a blank template
+            # create a new template and assign default content
             use_s3_storage = getattr(settings, 'USE_S3_STORAGE', '')
             if use_s3_storage:
                 theme_dir = settings.ORIGINAL_THEMES_DIR
             else:
                 theme_dir = settings.THEMES_DIR
-            template_full_path = os.path.join(theme_dir,
+            template_dir = os.path.join(theme_dir,
                                 get_setting('module', 'theme_editor', 'theme'),
-                                'templates',
+                                'templates')
+            template_full_path = os.path.join(template_dir,
                                 template_full_name)
+            # grab the content from the new-default-template.html
+            # first check if there is a customized one on the site
+            default_template_name = 'new-default-template.html'
+            default_template_path = os.path.join(template_dir,
+                                'theme_editor',
+                                default_template_name)
+            if not os.path.isfile(default_template_path):
+                # no customized one found, use the default one
+                default_template_path = os.path.join(
+                    os.path.abspath(os.path.dirname(__file__)),
+                    'templates/theme_editor',
+                    default_template_name)
+            if os.path.isfile(default_template_path):
+                default_content = open(default_template_path).read()
+            else:
+                default_content = ''
             with open(template_full_path, 'w') as f:
-                f.write('')
+                f.write(default_content)
             if use_s3_storage:
                 # django default_storage not set for theme, that's why we cannot use it
                 save_file_to_s3(template_full_path)
