@@ -158,7 +158,7 @@ setup(
         "South==0.7.5",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
-        "django-avatar>=1.0.4",
+        "django-avatar==1.0.5",
         "django-form-utils>=0.1.8",
         "django-pagination>=1.0.7",
         "django-photologue==2.5",
