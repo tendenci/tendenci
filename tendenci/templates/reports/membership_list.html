@@ -60,10 +60,10 @@
     {% autopaginate mems 50 %}
 
     {% if active %}
-    <p><a href="{% url reports-active-members %}?output=csv">
+    <p><a href="{% url reports-active-members %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
         Download CSV File</a></p>
     {% else %}
-    <p><a href="{% url reports-expired-members %}?output=csv">
+    <p><a href="{% url reports-expired-members %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
         Download CSV File</a></p>
     {% endif %}
 
