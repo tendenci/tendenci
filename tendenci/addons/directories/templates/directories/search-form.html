@@ -2,6 +2,8 @@
 <form class="search-form" action="{% url directories %}" method="get">
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
 <input type="submit" value="Search" />
+
+{% if category and subcategory %}
 <div class="category-wrap">
     <select name="category" onchange="this.form.submit();">
     <option value="">All Categories ({{ categories|length }})</option>
@@ -26,4 +28,5 @@
     </select>
 </div>
 </form>
+{% endif %}
 {% endif %}
