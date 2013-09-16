@@ -424,6 +424,12 @@ DEFAULT_INSTALLED_APPS = INSTALLED_APPS
 from tendenci.core.registry.utils import update_addons
 INSTALLED_APPS = update_addons(INSTALLED_APPS, SITE_ADDONS_PATH)
 
+# Salesforce Integration
+SALESFORCE_USERNAME = env('SALESFORCE_USERNAME', '')
+SALESFORCE_PASSWORD = env('SALESFORCE_PASSWORD', '')
+SALESFORCE_SECURITY_TOKEN = env('SALESFORCE_SECURITY_TOKEN', '')
+SALESFORCE_AUTO_UPDATE = env('SALESFORCE_AUTO_UPDATE', '')
+
 # local settings for development
 try:
     from local_settings import *
