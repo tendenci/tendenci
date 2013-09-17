@@ -185,11 +185,20 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
             editable = False
             if os.path.splitext(os.path.join(path, f))[1] in ALLOWED_EXTENSIONS:
                 editable = True
-            subdir['contents'].append({'name': f, 'path': os.path.join(path[len(root_dir) + 1:], f), 'editable': editable})
+
+            # Hide hidden folders
+            if not f.startswith('.'):
+                subdir['contents'].append({'name': f, 'path': os.path.join(path[len(root_dir) + 1:], f), 'editable': editable})
         parent = reduce(dict.get, folders[:-1], files_folders)
-        parent[folders[-1]] = subdir
+
+        # Hide hidden folders
+        if not folders[-1].startswith('.'):
+            parent[folders[-1]] = subdir
+
         for parent in files_folders:
-            subdir['contents'].append({'folder_path': path})
+            # Hide hidden folders
+            if not path.split(os.sep)[-1].startswith('.'):
+                subdir['contents'].append({'folder_path': path})
 
     if settings.USE_S3_THEME:
         s3_files_folders = {'contents': []}
