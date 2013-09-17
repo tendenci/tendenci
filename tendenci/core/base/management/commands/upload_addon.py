@@ -40,8 +40,7 @@ class Command(BaseCommand):
         os.system('python manage.py collectstatic --noinput')
 
         print "Restarting Server"
-        # This depends on the server used, please update accordingly
-        os.system('reload tendencisite')
+        os.system('sudo reload %s' % os.path.basename(settings.PROJECT_ROOT))
 
         print 'Deleting zip file'
         default_storage.delete(path)
