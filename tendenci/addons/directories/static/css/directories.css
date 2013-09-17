@@ -77,6 +77,55 @@
 	cursor: pointer;
 }
 
+.t .search-form .first-row span,
+.t .search-form .first-row .search-category,
+.t .search-form .first-row .q,
+.t .search-form input[type='submit'] {
+	float: left;
+}
+
+.t .search-form .first-row #id_search_category {
+	height: 29px;
+	margin-right: 10px;
+	padding-top: 7px;
+}
+
+.t .search-form .first-row .search-category .errorlist {
+	color: red;
+	margin-left: 3px;
+	margin-top: 5px;
+}
+
+.t .search-form .first-row .q .errorlist{
+	color: red;
+	margin-left: 3px;
+	margin-top: 5px;
+}
+
+.t .search-form .first-row #id_q {
+	width: 170px;
+	margin-right: 10px;
+	margin-bottom: 0px;
+}
+
+.t .search-form input[type="submit"] {
+	width: 60px;
+}
+
+.t .search-form #form-row {
+	margin-bottom: 10px;
+}
+
+.t .search-form {
+	margin-top: 20px;
+	margin-bottom: 40px;
+}
+
+.t .search-form .first-row span {
+	padding-top: 10px;
+	padding-right: 5px;
+}
+
 /* id_activation_dt */
 div.forms div.form-field 
 div.id_activation_dt .field input {
@@ -413,3 +462,5 @@ div.id_payment_method input{
 	text-align: left;
 	border-bottom: 1px dashed #ccc;
 }
+
+

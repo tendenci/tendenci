@@ -32,6 +32,7 @@ from tendenci.addons.directories.utils import directory_set_inv_payment, is_free
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
 from tendenci.addons.directories.utils import resize_s3_image
+from tendenci.addons.directories.forms import DirectorySearchForm
 
 
 @is_enabled('directories')
@@ -50,50 +51,41 @@ def details(request, slug=None, template_name="directories/view.html"):
 
 @is_enabled('directories')
 def search(request, template_name="directories/search.html"):
-    query = request.GET.get('q')
-    category = request.GET.get('category')
-    subcategory = request.GET.get('sub_category')
+    filters = get_query_filters(request.user, 'directories.view_directory')
+    directories = Directory.objects.filter(filters).distinct()
+    cat = None
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        if category:
-            try:
-                query = '%s category:%s' % (query, Category.objects.get(id=int(category)).name)
-            except (Category.DoesNotExist, ValueError):
-                pass
+    if not request.user.is_anonymous():
+        directories = directories.select_related()
 
-        if subcategory:
-            try:
-                query = '%s subcategory:%s' % (query, Category.objects.get(id=int(subcategory)).name)
-            except (Category.DoesNotExist, ValueError):
-                pass
+    query = request.GET.get('q', None)
+    # Handle legacy tag links
+    if query and "tag:" in query:
+        return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('directories'), query.replace('tag:', '')))
 
-        directories = Directory.objects.search(query, user=request.user).order_by('headline_exact')
-    else:
-        filters = get_query_filters(request.user, 'directories.view_directory')
-        directories = Directory.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            directories = directories.select_related()
+    form = DirectorySearchForm(request.GET, is_superuser=request.user.is_superuser)
 
-        if category:
-            directories = directories.filter(categories__category=category)
-        if subcategory:
-            directories = directories.filter(categories__parent=subcategory)
+    if form.is_valid():
+        cat = form.cleaned_data['search_category']
 
-        directories = directories.order_by('headline')
+        if query and cat:
+            directories = directories.filter( **{cat : query} )
+
+    directories = directories.order_by('headline')
 
     EventLog.objects.log()
 
+    # Query list of category and subcategory for dropdown filters
+    category = request.GET.get('category')
     try:
         category = int(category)
     except:
         category = 0
     categories, sub_categories = Directory.objects.get_categories(category=category)
 
-    return render_to_response(template_name, {
-        'directories': directories,
-        'categories': categories,
-        'sub_categories': sub_categories,
-    }, context_instance=RequestContext(request))
+    return render_to_response(template_name, {'directories': directories,
+        'categories': categories, 'form' : form, 'sub_categories': sub_categories},
+        context_instance=RequestContext(request))
 
 
 def search_redirect(request):

@@ -3,7 +3,7 @@ from datetime import datetime
 from os.path import splitext, basename
 
 from django import forms
-
+from django.forms.util import ErrorList
 from tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
@@ -31,6 +31,62 @@ request_duration_defaults = {
     'label': _('Requested Duration'),
     'help_text': mark_safe('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/directories/pricing/add/'),
 }
+
+SEARCH_CATEGORIES_ADMIN = (
+    ('', '-- SELECT ONE --' ),
+    ('id', 'Directory ID'),
+    ('body__icontains', 'Body'),
+    ('headline__icontains', 'Headline'),
+    ('city__icontains', 'City'),
+    ('state__iexact', 'State'),
+    ('tags__icontains', 'Tags'),
+
+    ('creator__id', 'Creator Userid(#)'),
+    ('creator__username', 'Creator Username'),
+    ('owner__id', 'Owner Userid(#)'),
+    ('owner__username', 'Owner Username'),
+
+    ('status_detail__icontains', 'Status Detail'),
+)
+
+SEARCH_CATEGORIES = (
+    ('', '-- SELECT ONE --' ),
+    ('id', 'Directory ID'),
+    ('body__icontains', 'Body'),
+    ('headline__icontains', 'Headline'),
+    ('city__icontains', 'City'),
+    ('state__iexact', 'State'),
+    ('tags__icontains', 'Tags'),
+)
+
+class DirectorySearchForm(forms.Form):
+    search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    q = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        is_superuser = kwargs.pop('is_superuser', None)
+        super(DirectorySearchForm, self).__init__(*args, **kwargs)
+
+        if not is_superuser:
+          self.fields['search_category'].choices = SEARCH_CATEGORIES
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        q = self.cleaned_data.get('q', None)
+        cat = self.cleaned_data.get('search_category', None)
+
+        if cat is None or cat == "" :
+            if not (q is None or q == ""):
+                self._errors['search_category'] =  ErrorList(['Select a category'])
+
+        if cat in ('id', 'owner__id', 'creator__id') :
+            try:
+                x = int(q)
+            except ValueError:
+                self._errors['q'] = ErrorList(['ID must be a number.'])
+
+        return cleaned_data
+
 
 class DirectoryForm(TendenciBaseForm):
     body = forms.CharField(required=False,
@@ -91,7 +147,6 @@ class DirectoryForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -144,7 +199,6 @@ class DirectoryForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -185,7 +239,6 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         if self.fields.has_key('payment_method'):
@@ -206,7 +259,6 @@ class DirectoryForm(TendenciBaseForm):
                 'post_dt',
                 'activation_dt',
                 'syndicate',
-                'status',
                 'status_detail'
             ]
 
