@@ -64,6 +64,10 @@ def search(request, template_name="articles/search.html"):
         articles = articles.select_related()
 
     query = request.GET.get('q', None)
+    # Handle legacy tag links
+    if query and "tag:" in query:
+        return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('articles'), query.replace('tag:', '')))
+
     tag = request.GET.get('tag', None)
     form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser)
 

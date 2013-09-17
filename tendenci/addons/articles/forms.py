@@ -20,6 +20,7 @@ SEARCH_CATEGORIES_ADMIN = (
     ('owner__id', 'Article Parent ID(#)'),
 
     ('body__icontains', 'Body'),
+    ('tags__icontains', 'Tags'),
 
     ('creator__id', 'Creator Userid(#)'),
     ('creator__username', 'Creator Username'),
@@ -30,7 +31,7 @@ SEARCH_CATEGORIES_ADMIN = (
     ('owner__id', 'Owner Userid(#)'),
     ('owner__username', 'Owner Username'),
 
-    ('status__icontains', 'Status'),
+    ('status_detail__icontains', 'Status Detail'),
     ('syndicate', 'Syndicate'),
 )
 
@@ -42,6 +43,7 @@ SEARCH_CATEGORIES = (
 
     ('body__icontains', 'Body'),
     ('headline__icontains', 'Headline'),
+    ('tags__icontains', 'Tags'),
 )
 
 class ArticleSearchForm(forms.Form):
@@ -51,11 +53,11 @@ class ArticleSearchForm(forms.Form):
     date = forms.DateField(initial=date.today(), required=False)
 
     def __init__(self, *args, **kwargs):
-		is_superuser = kwargs.pop('is_superuser', None)
-		super(ArticleSearchForm, self).__init__(*args, **kwargs)
+        is_superuser = kwargs.pop('is_superuser', None)
+        super(ArticleSearchForm, self).__init__(*args, **kwargs)
 
-		if not is_superuser:
-			self.fields['search_category'].choices = SEARCH_CATEGORIES
+        if not is_superuser:
+            self.fields['search_category'].choices = SEARCH_CATEGORIES
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -75,8 +77,8 @@ class ArticleSearchForm(forms.Form):
                 self._errors['q'] = ErrorList(['Must be an integer'])
 
         if filter_date:
-			if date is None or date == "":
-				self._errors['date'] = ErrorList(['Please select a date'])
+            if date is None or date == "":
+                self._errors['date'] = ErrorList(['Please select a date'])
 
         return cleaned_data
 
