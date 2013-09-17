@@ -324,6 +324,7 @@ def password_again(request, template_name="base/password.html"):
 
 @superuser_required
 def addon_upload(request, template_name="base/addon_upload.html"):
+    from tendenci.core.event_logs.models import EventLog
 
     form = AddonUploadForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
@@ -332,6 +333,11 @@ def addon_upload(request, template_name="base/addon_upload.html"):
             temp_file_path = 'uploads/addons/%s_%s' % (identifier, form.cleaned_data['addon'])
             default_storage.save(temp_file_path, form.cleaned_data['addon'])
             request.session[identifier] = temp_file_path
+
+            EventLog.objects.log(
+                event_data='%s uploaded by %s' % (form.cleaned_data['addon'], request.user),
+                description='%s' % form.cleaned_data['addon'])
+
             return redirect('addon.upload.preview', identifier)
 
     return render_to_response(template_name, {'form': form},
