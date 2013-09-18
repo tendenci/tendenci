@@ -14,10 +14,10 @@ class Command(BaseCommand):
     timestamptz.
 
     Usage:
-        .manage.py convert_pg_central_timestamp_to_tz
+        .manage.py convert_pg_timestamp_to_tz
     """
     def convert_to_utc(self, timestamp):
-        from_zone = tz.gettz('America/Chicago')
+        from_zone = tz.gettz(settings.TIME_ZONE)
         to_zone = tz.gettz('UTC')
 
         current = timestamp.replace(tzinfo=from_zone)
