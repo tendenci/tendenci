@@ -78,6 +78,24 @@ class PageAdminForm(TendenciBaseForm):
         template_choices += get_template_list()
         self.fields['template'].choices = template_choices
 
+    def clean(self):
+        cleaned_data = super(PageAdminForm, self).clean()
+        slug = cleaned_data.get('slug')
+
+        # Check if duplicate slug from different page (i.e. different guids)
+        # Case 1: Page is edited
+        if self.instance:
+            guid = self.instance.guid
+            if Page.objects.filter(slug=slug).exclude(guid=guid).exists():
+                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                del cleaned_data['slug']
+        # Case 2: Add new Page
+        else:
+            if Page.objects.filter(slug=slug).exists():
+                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                del cleaned_data['slug']
+
+        return cleaned_data  
 
 class PageForm(TendenciBaseForm):
     header_image = forms.ImageField(required=False)
