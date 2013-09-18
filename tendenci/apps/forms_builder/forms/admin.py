@@ -142,12 +142,16 @@ class FormAdmin(TendenciBaseModelAdmin):
             values = FieldEntry.objects.filter(entry=entry)
             row = [""] * len(columns)
             entry_time = entry.entry_time.strftime("%Y-%m-%d %H:%M:%S")
-            row[-4] = entry_time
+
             if form.custom_payment:
                 if entry.pricing:
+                    row[-4] = entry_time
                     row[-3] = entry.pricing.label
                     row[-2] = entry.pricing.price
                 row[-1] = entry.payment_method
+            else:
+                row[-1] = entry_time
+
             for field_entry in values:
                 value = field_entry.value.encode("utf-8")
                 # Create download URL for file fields.
