@@ -40,7 +40,7 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
                      'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
-    option_fields = ['position', ('admin_only', 'status'), 'status_detail']
+    option_fields = ['position', 'status_detail']
     if get_setting('module', 'corporate_memberships', 'usefreepass'):
         option_fields.insert(0, 'number_passes')
     fieldsets = (
@@ -94,8 +94,8 @@ class CorpMembershipAppFieldAdmin(admin.TabularInline):
 class CorpMembershipAppAdmin(admin.ModelAdmin):
     inlines = (CorpMembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'application_form_link', 'status', 'status_detail')
-    search_fields = ('name', 'status', 'status_detail')
+    list_display = ('name', 'application_form_link', 'status_detail')
+    search_fields = ('name', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'authentication_method',
                            'description',
@@ -110,7 +110,6 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
             'group_perms',
         )}),
         ('Status', {'fields': (
-            'status',
             'status_detail',
         )}),
     )
@@ -152,7 +151,7 @@ class CorpAppAdmin(admin.ModelAdmin):
     #fieldsets = (
     #    (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 'notes')}),
     #    ('Other Options', {'fields': (
-    #        ('use_captcha', 'require_login'), 'status', 'status_detail')}),
+    #        ('use_captcha', 'require_login'), 'status_detail')}),
     #)
     
     class Media:
@@ -209,7 +208,7 @@ class CorpAppAdmin(admin.ModelAdmin):
                                            'memb_app', 'payment_methods', 'description', 
                                            'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
-                            'status', 'status_detail')}),
+                            'status_detail',)}),
                     ) 
         else:
             return (
@@ -217,7 +216,7 @@ class CorpAppAdmin(admin.ModelAdmin):
                                            'memb_app', 'payment_methods', 'description', 
                                            'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
-                             'status', 'status_detail')}),
+                             'status_detail',)}),
                         ('Form Fields', {'fields':(), 
                                          'description': 'You will have the chance to add or manage the form fields later on editing.'}),
                     )
@@ -359,13 +358,13 @@ class NoticeAdmin(admin.ModelAdmin):
     notice_log.allow_tags = True
 
     list_display = ['notice_name', notice_log, 'content_type',
-                     'corporate_membership_type', 'status', 'status_detail']
+                     'corporate_membership_type', 'status_detail']
     list_filter = ['notice_type', 'status_detail']
 
     fieldsets = (
         (None, {'fields': ('notice_name', 'notice_time_type', 'corporate_membership_type')}),
         ('Email Fields', {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
-        ('Other Options', {'fields': ('status', 'status_detail')}),
+        ('Other Options', {'fields': ('status_detail',)}),
     )
 
     form = NoticeForm

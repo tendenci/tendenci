@@ -476,7 +476,6 @@ class EventForm(TendenciBaseForm):
             'group_perms',
             'enable_private_slug',
             'private_slug',
-            'status',
             'status_detail',
             )
         widgets = {
@@ -510,8 +509,7 @@ class EventForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })
                     ]
@@ -534,7 +532,6 @@ class EventForm(TendenciBaseForm):
         else:
             self.fields.pop('remove_photo')
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
     def clean_photo_upload(self):
@@ -1712,8 +1709,7 @@ class AddonForm(BetterModelForm):
             'group',
             'allow_anonymous',
             'allow_user',
-            'allow_member',
-            'status')
+            'allow_member',)
         fieldsets = [
             ('Addon Information', {
                 'fields': [
@@ -1728,10 +1724,6 @@ class AddonForm(BetterModelForm):
                     'allow_user',
                     'allow_member',
                 ], 'classes': ['permissions'],
-            }),('Administrator Only', {
-                'fields': [
-                    'status',
-                ],'classes': ['admin-only'],
             }),
         ]
 

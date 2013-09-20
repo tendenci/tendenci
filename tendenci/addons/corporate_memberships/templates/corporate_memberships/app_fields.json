@@ -254,7 +254,7 @@
     {
     "label": "Status Detail",
     "field_name": "status_detail",
-    "display": "true",
+    "display": "false",
     "required": "false",
     "admin_only": "true"
     },

@@ -18,7 +18,6 @@ class NavForm(TendenciBaseForm):
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
-            'status',
             'status_detail',
             )
 
@@ -38,8 +37,7 @@ class NavForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })
                     ]

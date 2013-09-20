@@ -36,7 +36,6 @@ class GroupAdminForm(TendenciBaseForm):
           'members',
           'permissions',
           'user_perms',
-          'status',
           'status_detail',
           )
 
@@ -79,7 +78,6 @@ class GroupForm(TendenciBaseForm):
                   'notes',
                   'allow_anonymous_view',
                   'user_perms',
-                  'status',
                   'status_detail',
                   )
         exclude = ('members', 'group_perms')
@@ -106,16 +104,13 @@ class GroupForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields:
-                self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
         entity = Entity.objects.first()

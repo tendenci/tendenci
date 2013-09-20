@@ -31,7 +31,6 @@ class NewsAdmin(TendenciBaseModelAdmin):
             )}),
         ('Publishing Status', {'fields': (
             'syndicate',
-            'status',
             'status_detail',
         )}),
     )

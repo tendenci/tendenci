@@ -85,7 +85,6 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   'admin_only',
                   'number_passes',
                   'position',
-                  'status',
                   'status_detail',
                   )
 
@@ -135,7 +134,6 @@ class CorpMembershipAppForm(TendenciBaseForm):
                   'user_perms',
                   'member_perms',
                   'group_perms',
-                  'status',
                   'status_detail',
                   )
 
@@ -681,7 +679,6 @@ class CorpAppForm(forms.ModelForm):
                   'notes',
                   #'use_captcha',
                   #'require_login',
-                  'status',
                   'status_detail',
                   )
 
@@ -1291,7 +1288,6 @@ class NoticeForm(forms.ModelForm):
             'sender',
             'sender_display',
             'email_content',
-            'status',
             'status_detail',)
 
     def __init__(self, *args, **kwargs): 

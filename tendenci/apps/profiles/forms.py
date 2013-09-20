@@ -192,7 +192,6 @@ class ProfileForm(TendenciBaseForm):
                   'allow_anonymous_view',
                   'admin_notes',
                   'security_level',
-                  'status',
                   'status_detail',
                 )
         
@@ -237,14 +236,12 @@ class ProfileForm(TendenciBaseForm):
             if not self.user_current.profile.is_superuser:
                 del self.fields['admin_notes']
                 del self.fields['security_level']
-                del self.fields['status']
                 del self.fields['status_detail']
 
             if self.user_current.profile.is_superuser and self.user_current == self.user_this:
                 self.fields['security_level'].choices = (('superuser','Superuser'),)
 
         if not self.user_current.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         # we make first_name, last_name, email, username and password as required field regardless
@@ -393,7 +390,6 @@ class ProfileAdminForm(TendenciBaseForm):
                   'allow_anonymous_view',
                   'admin_notes',
                   'security_level',
-                  'status',
                   'status_detail',
                 )
         

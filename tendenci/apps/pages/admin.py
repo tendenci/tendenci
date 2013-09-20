@@ -16,7 +16,7 @@ except:
     
 class PageAdmin(admin.ModelAdmin):
     list_display = ('view_on_site', 'edit_link', 'title', 'link', 'syndicate', 
-                    'allow_anonymous_view', 'status', 
+                    'allow_anonymous_view',
                     'status_detail')
     search_fields = ('title','content',)
     fieldsets = (
@@ -34,7 +34,6 @@ class PageAdmin(admin.ModelAdmin):
         )}),
         ('Publishing Status', {'fields': (
             'syndicate',
-            'status',
             'status_detail'
         )}),
     )

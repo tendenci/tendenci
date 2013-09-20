@@ -20,7 +20,6 @@ class IndustryForm(TendenciBaseForm):
         'user_perms',
         'member_perms',
         'group_perms',
-        'status',
         'status_detail',
         )
 
@@ -39,8 +38,7 @@ class IndustryForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
 
@@ -48,7 +46,5 @@ class IndustryForm(TendenciBaseForm):
 #        super(IndustryForm, self).__init__(*args, **kwargs)
 #
 #        if not self.user.profile.is_superuser:
-#            if 'status' in self.fields:
-#                self.fields.pop('status')
 #            if 'status_detail' in self.fields:
 #                self.fields.pop('status_detail')

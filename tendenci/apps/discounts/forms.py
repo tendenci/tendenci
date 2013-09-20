@@ -27,7 +27,6 @@ class DiscountForm(TendenciBaseForm):
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
-            'status',
             'status_detail',
             )
 
@@ -51,8 +50,7 @@ class DiscountForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })
                     ]
@@ -65,7 +63,6 @@ class DiscountForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         MODELS_WITH_DISCOUNT = ['registrationconfiguration',

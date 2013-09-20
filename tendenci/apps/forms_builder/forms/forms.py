@@ -221,7 +221,6 @@ class FormAdminForm(TendenciBaseForm):
                   'member_perms',
                   'group_perms',
                   'allow_anonymous_view',
-                  'status',
                   'status_detail',
                   'custom_payment',
                   'recurring_payment',
@@ -295,7 +294,6 @@ class FormForm(TendenciBaseForm):
                   'member_perms',
                   'group_perms',
                   'allow_anonymous_view',
-                  'status',
                   'status_detail',
                  )
         fieldsets = [('Form Information', {
@@ -321,8 +319,7 @@ class FormForm(TendenciBaseForm):
                         'classes': ['permissions'],
                         }),
                     ('Administrator Only', {
-                        'fields': ['status',
-                                    'status_detail'], 
+                        'fields': ['status_detail'], 
                         'classes': ['admin-only'],
                     }),
                     ('Payments', {
@@ -334,8 +331,6 @@ class FormForm(TendenciBaseForm):
         super(FormForm, self).__init__(*args, **kwargs)
 
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields:
-                self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 

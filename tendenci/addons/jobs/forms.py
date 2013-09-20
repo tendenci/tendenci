@@ -131,7 +131,6 @@ class JobForm(TendenciBaseForm):
             'tags',
             'allow_anonymous_view',
             'syndicate',
-            'status',
             'status_detail',
             'payment_method',
         )
@@ -204,7 +203,6 @@ class JobForm(TendenciBaseForm):
             }),
             ('Administrator Only', {
                 'fields': ['syndicate',
-                           'status',
                            'status_detail'],
                 'classes': ['admin-only'],
             })]
@@ -240,7 +238,6 @@ class JobForm(TendenciBaseForm):
                 'activation_dt',
                 'expiration_dt',
                 'syndicate',
-                'status',
                 'status_detail'
             ]
         else:
@@ -261,7 +258,6 @@ class JobForm(TendenciBaseForm):
                 'activation_dt',
                 'expiration_dt',
                 'syndicate',
-                'status',
                 'status_detail'
             ]
 

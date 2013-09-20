@@ -58,7 +58,6 @@ class PageAdminForm(TendenciBaseForm):
         'group_perms',
         'member_perms',
         'syndicate',
-        'status',
         'status_detail',
         )
         
@@ -126,7 +125,6 @@ class PageForm(TendenciBaseForm):
         'user_perms',
         'group_perms',
         'member_perms',
-        'status',
         'status_detail',
         )
 
@@ -150,7 +148,6 @@ class PageForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'], 
                       'classes': ['admin-only'],
                     })]
@@ -212,7 +209,6 @@ class PageForm(TendenciBaseForm):
         
         if not self.user.profile.is_superuser:
             if 'syndicate' in self.fields: self.fields.pop('syndicate')
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
     def save(self, *args, **kwargs):

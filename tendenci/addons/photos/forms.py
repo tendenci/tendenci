@@ -29,7 +29,6 @@ class PhotoAdminForm(TendenciBaseForm):
             'allow_anonymous_view',
             #'syndicate',
             'group',
-            'status',
             'status_detail',
             'license',
         )
@@ -49,8 +48,7 @@ class PhotoAdminForm(TendenciBaseForm):
                 'classes': ['permissions'],
                 }),
             ('Administrator Only', {
-                'fields': ['status',
-                           'status_detail'],
+                'fields': ['status_detail'],
                 'classes': ['admin-only'],
                 })]
 
@@ -85,7 +83,6 @@ class PhotoBatchEditForm(TendenciBaseForm):
             'owner',
             'safetylevel',
             'allow_anonymous_view',
-            'status',
             'status_detail',
         )
 
@@ -116,7 +113,6 @@ class PhotoEditForm(TendenciBaseForm):
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
-            'status',
             'status_detail'
         )
 
@@ -142,7 +138,6 @@ class PhotoEditForm(TendenciBaseForm):
                 ('Administrator Only', {
                       'fields': [
                           'syndicate',
-                          'status',
                           'status_detail',
                       ], 'classes': ['admin-only'],
                   }),
@@ -173,7 +168,6 @@ class PhotoSetAddForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -194,8 +188,7 @@ class PhotoSetAddForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'], 
+                      'fields': ['status_detail'], 
                       'classes': ['admin-only'],
                     })]     
 
@@ -204,11 +197,9 @@ class PhotoSetAddForm(TendenciBaseForm):
         self.fields['group'].initial = Group.objects.get_initial_group_id()
         
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
 #        if self.user.profile.is_superuser:
-#            self.fields['status'] = forms.BooleanField(required=False)
 #            self.fields['status_detail'] = forms.ChoiceField(
 #                choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
@@ -230,7 +221,6 @@ class PhotoSetEditForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -251,8 +241,7 @@ class PhotoSetEditForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'], 
+                      'fields': ['status_detail'], 
                       'classes': ['admin-only'],
                     })] 
         
@@ -261,5 +250,4 @@ class PhotoSetEditForm(TendenciBaseForm):
         self.fields['group'].initial = Group.objects.get_initial_group_id()
 
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

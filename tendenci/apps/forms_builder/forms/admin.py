@@ -72,8 +72,7 @@ class FormAdmin(TendenciBaseModelAdmin):
             'group_perms',
         )}),
         ('Publishing Status', {'fields': (
-            'status',
-            'status_detail'
+            'status_detail',
         )}),
         (_("Payment"), {"fields": ("custom_payment", 'recurring_payment', "payment_methods")}),
     )

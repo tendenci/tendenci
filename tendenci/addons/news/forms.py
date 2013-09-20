@@ -69,7 +69,6 @@ class NewsForm(TendenciBaseForm):
         'user_perms',
         'member_perms',
         'group_perms',
-        'status',
         'status_detail',
         )
 
@@ -107,7 +106,6 @@ class NewsForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -148,8 +146,6 @@ class NewsForm(TendenciBaseForm):
 
         #if not self.user.profile.is_superuser:
         if self.user and not self.user.profile.is_superuser:
-            if 'status' in self.fields:
-                self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 

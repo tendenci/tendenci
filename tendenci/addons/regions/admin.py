@@ -25,7 +25,6 @@ class RegionAdmin(TendenciBaseModelAdmin):
             'group_perms',
             )}),
         ('Status', {'fields': (
-            'status',
             'status_detail',
             )}),
         )
