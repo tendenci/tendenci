@@ -172,7 +172,7 @@
                         
                         {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
 
-                        (grace period: 
+                        &#43; (grace period: 
                         {{ membership.membership_type.expiration_grace_period }} days)
                         
                         {% endif %}
