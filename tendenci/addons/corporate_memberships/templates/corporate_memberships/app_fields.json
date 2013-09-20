@@ -247,14 +247,14 @@
     {
     "label": "Status",
     "field_name": "status",
-    "display": "true",
+    "display": "false",
     "required": "false",
     "admin_only": "true"
     },
     {
     "label": "Status Detail",
     "field_name": "status_detail",
-    "display": "false",
+    "display": "true",
     "required": "false",
     "admin_only": "true"
     },
