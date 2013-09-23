@@ -1554,8 +1554,12 @@ def membership_default_add(request, slug='', template='memberships/applications/
     user = None
     membership = None
     username = request.GET.get('username', u'')
-    membership_type_id = request.GET.get('membership_type_id', u'')
 
+    if not request.user.is_superuser:
+        if request.user.is_authenticated():
+            username = username or request.user.username
+
+    membership_type_id = request.GET.get('membership_type_id', u'')
     if membership_type_id.isdigit():
         membership_type_id = int(membership_type_id)
     else:
