@@ -11,6 +11,9 @@ class Metric(models.Model):
     members = models.IntegerField(_('members'))
     visits = models.IntegerField(_('visits'))
     disk_usage = models.BigIntegerField(_('disk usage'))
+    invoices = models.IntegerField(_('invoices'), null=True)
+    positive_invoices = models.IntegerField(_('invoices with a total that is not 0'), null=True)
+    invoice_totals = models.DecimalField(_("sum of invoices' totals"), max_digits=12, decimal_places=2, null=True)
     create_dt = models.DateTimeField(_('create date/time'), auto_now_add=True)
 
     def __unicode__(self):
