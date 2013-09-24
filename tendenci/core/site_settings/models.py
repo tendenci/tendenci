@@ -49,11 +49,11 @@ class Setting(models.Model):
     def set_value(self, value):
         self.value = encrypt(value)
         self.is_secure = True
-        
+
     def get_value(self):
         try:
             if self.is_secure:
-                return decrypt(self.value)
+                return decrypt(self.value).decode('utf-8')
         except AttributeError: #cached setting with no is_secure
             from tendenci.core.site_settings.utils import (delete_setting_cache,
                 cache_setting, delete_all_settings_cache)
