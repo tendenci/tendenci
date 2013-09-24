@@ -151,18 +151,6 @@ def edit(request, id, form_class=PageForm,
     content_type = get_object_or_404(ContentType, app_label='pages',
                                      model='page')
 
-    #setup categories
-    category = Category.objects.get_for_object(page, 'category')
-    sub_category = Category.objects.get_for_object(page, 'sub_category')
-
-    initial_category_form_data = {
-        'app_label': 'pages',
-        'model': 'page',
-        'pk': page.pk,
-        'category': getattr(category, 'name', '0'),
-        'sub_category': getattr(sub_category, 'name', '0')
-    }
-
     if request.method == "POST":
         form = form_class(request.POST, request.FILES,
                           instance=page,
@@ -172,7 +160,6 @@ def edit(request, id, form_class=PageForm,
                                    prefix='meta')
         categoryform = category_form_class(content_type,
                                            request.POST,
-                                           initial=initial_category_form_data,
                                            prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
             page = form.save()
@@ -196,23 +183,11 @@ def edit(request, id, form_class=PageForm,
             meta = metaform.save()
             page.meta = meta
 
-            ## update the category of the article
-            category_removed = False
-            category = categoryform.cleaned_data['category']
-            if category != '0':
-                Category.objects.update(page, category, 'category')
-            else:  # remove
-                category_removed = True
-                Category.objects.remove(page, 'category')
-                Category.objects.remove(page, 'sub_category')
-
-            if not category_removed:
-                # update the sub category of the article
-                sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0':
-                    Category.objects.update(page, sub_category, 'sub_category')
-                else:  # remove
-                    Category.objects.remove(page, 'sub_category')
+            ## update the category and subcategory
+            page.update_category_subcategory(
+                            categoryform.cleaned_data['category'],
+                            categoryform.cleaned_data['sub_category']
+                            )
 
             # update all permissions
             page = update_perms_and_save(request, form, page)
@@ -238,6 +213,18 @@ def edit(request, id, form_class=PageForm,
     else:
         form = form_class(instance=page, user=request.user)
         metaform = meta_form_class(instance=page.meta, prefix='meta')
+        #setup categories
+        category = Category.objects.get_for_object(page, 'category')
+        sub_category = Category.objects.get_for_object(page, 'sub_category')
+    
+        initial_category_form_data = {
+            'app_label': 'pages',
+            'model': 'page',
+            'pk': page.pk,
+            'category': getattr(category, 'name', '0'),
+            'sub_category': getattr(sub_category, 'name', '0')
+        }
+
         categoryform = category_form_class(content_type,
                                            initial=initial_category_form_data,
                                            prefix='category')
@@ -379,29 +366,11 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
             meta = metaform.save()
             page.meta = meta
 
-            #setup categories
-            category = Category.objects.get_for_object(page, 'category')
-            sub_category = Category.objects.get_for_object(page,
-                                                           'sub_category')
-
-            ## update the category of the article
-            category_removed = False
-            category = categoryform.cleaned_data['category']
-            if category != '0':
-                Category.objects.update(page, category, 'category')
-            else:  # remove
-                category_removed = True
-                Category.objects.remove(page, 'category')
-                Category.objects.remove(page, 'sub_category')
-
-            if not category_removed:
-                # update the sub category of the article
-                sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0':
-
-                    Category.objects.update(page, sub_category, 'sub_category')
-                else:  # remove
-                    Category.objects.remove(page, 'sub_category')
+            ## update the category and subcategory
+            page.update_category_subcategory(
+                                    categoryform.cleaned_data['category'],
+                                    categoryform.cleaned_data['sub_category']
+                                    )
 
             # add all permissions
             page = update_perms_and_save(request, form, page)
