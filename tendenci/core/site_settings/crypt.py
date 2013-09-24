@@ -2,14 +2,17 @@ import base64
 from Crypto.Cipher import AES
 
 from django.conf import settings
-
+import chardet
 
 def encrypt(value):
     """Return the encrypted value of the setting.
     Uses the character '\0' as padding.
     """
     cipher = AES.new(settings.SITE_SETTINGS_KEY, AES.MODE_ECB)
-    value = unicode(value).encode('utf-8')
+    encoding = chardet.detect(value)['encoding']
+    if encoding != 'ascii':
+        value = value.encode(encoding)
+
     padding = cipher.block_size - len(value) % cipher.block_size
     for i in xrange(padding):
         value += '\0'
