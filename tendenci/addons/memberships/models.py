@@ -743,26 +743,23 @@ class MembershipDefault(TendenciBaseModel):
         self.application_approved_dt = \
             self.application_approved_dt or NOW
 
-        if request_user.is_authenticated():  # else: don't set
+        if request_user and request_user.is_authenticated():  # else: don't set
             self.application_approved_user = request_user
+            self.application_approved_denied_user = request_user
+            self.action_taken_user = request_user
 
         # application approved/denied ---------------
         self.application_approved_denied_dt = \
             self.application_approved_denied_dt or NOW
-        if request_user.is_authenticated():  # else: don't set
-            self.application_approved_denied_user = request_user
 
         # action_taken ------------------------------
         self.action_taken = True
         self.action_taken_dt = self.action_taken_dt or NOW
-        if request_user.is_authenticated():  # else: don't set
-            self.action_taken_user = request_user
 
         self.set_join_dt()
         self.set_renew_dt()
         self.set_expire_dt()
-        if not self.member_number:
-            self.set_member_number()
+        self.set_member_number()
         self.save()
 
         # user in [membership] group
