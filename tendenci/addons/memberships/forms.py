@@ -771,8 +771,12 @@ class ProfileForm(forms.ModelForm):
         profile = super(ProfileForm, self).save(*args, **kwargs)
 
         for k, v in self.cleaned_data.items():
+
             if v:
+                if hasattr(profile, k) and isinstance(v, basestring):
+                    v = v.strip() or getattr(profile, k)
                 setattr(profile, k, v)
+
         if not request_user.is_anonymous():
             profile.owner = request_user
             profile.owner_username = request_user.username
