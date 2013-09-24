@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.entities.models import Entity
 from tendenci.core.versions.models import Version
+from tendenci.core.categories.models import Category
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
@@ -138,3 +139,20 @@ class TendenciBaseModel(models.Model):
         
         # delete object from the database.
         super(TendenciBaseModel, self).delete(*args, **kwargs)
+
+    def update_category_subcategory(self, category_value, subcategory_value):
+        category_removed = False
+        if not category_value or category_value == '0':
+            category_removed = True
+            Category.objects.remove(self, 'category')
+            Category.objects.remove(self, 'sub_category')
+        else:
+            Category.objects.update(self, category_value, 'category')
+            
+        if not category_removed:
+            # update the sub category of this object                
+            if not subcategory_value or subcategory_value == '0':  # remove
+                Category.objects.remove(self, 'sub_category')
+            else:
+                Category.objects.update(self, subcategory_value, 'sub_category')
+

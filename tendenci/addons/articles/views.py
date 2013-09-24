@@ -25,6 +25,8 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.addons.articles.models import Article
 from tendenci.addons.articles.forms import ArticleForm, ArticleSearchForm
 from tendenci.apps.notifications import models as notification
+from tendenci.core.categories.forms import CategoryForm
+from tendenci.core.categories.models import Category
 
 
 @is_enabled('articles')
@@ -129,27 +131,53 @@ def print_view(request, slug, template_name="articles/print-view.html"):
 
 @is_enabled('articles')
 @login_required
-def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
+def edit(request, id, form_class=ArticleForm,
+         category_form_class=CategoryForm,
+         template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
+    content_type = get_object_or_404(ContentType, app_label='articles',
+                                     model='article')
 
     if has_perm(request.user, 'articles.change_article', article):
         if request.method == "POST":
-
             form = form_class(request.POST, instance=article, user=request.user)
+            categoryform = category_form_class(content_type,
+                                           request.POST,
+                                           prefix='category')
 
-            if form.is_valid():
-                article = form.save(commit=False)
+            if form.is_valid() and categoryform.is_valid():
+                article = form.save()
+                article.update_category_subcategory(
+                                    categoryform.cleaned_data['category'],
+                                    categoryform.cleaned_data['sub_category']
+                                    )
 
                 # update all permissions and save the model
-                article = update_perms_and_save(request, form, article)
+                update_perms_and_save(request, form, article)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % article)
 
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
             form = form_class(instance=article, user=request.user)
+            category = Category.objects.get_for_object(article, 'category')
+            sub_category = Category.objects.get_for_object(article, 'sub_category')
+        
+            initial_category_form_data = {
+                'app_label': 'articles',
+                'model': 'article',
+                'pk': article.pk,
+                'category': getattr(category, 'name', '0'),
+                'sub_category': getattr(sub_category, 'name', '0')
+            }
+            categoryform = category_form_class(content_type,
+                                           initial=initial_category_form_data,
+                                           prefix='category')
+    
 
-        return render_to_response(template_name, {'article': article, 'form': form},
+        return render_to_response(template_name, {'article': article,
+                                                  'form': form,
+                                                  'categoryform': categoryform,},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -189,12 +217,24 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
 
 @is_enabled('articles')
 @login_required
-def add(request, form_class=ArticleForm, template_name="articles/add.html"):
+def add(request, form_class=ArticleForm,
+        category_form_class=CategoryForm,
+        template_name="articles/add.html"):
+    content_type = get_object_or_404(ContentType,
+                                     app_label='articles',
+                                     model='article')
     if has_perm(request.user, 'articles.add_article'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
-            if form.is_valid():
-                article = form.save(commit=False)
+            categoryform = category_form_class(content_type,
+                                           request.POST,
+                                           prefix='category')
+            if form.is_valid() and categoryform.is_valid():
+                article = form.save()
+                article.update_category_subcategory(
+                                    categoryform.cleaned_data['category'],
+                                    categoryform.cleaned_data['sub_category']
+                                    )
 
                 # add all permissions and save the model
                 update_perms_and_save(request, form, article)
@@ -212,8 +252,18 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
             form = form_class(user=request.user)
+            initial_category_form_data = {
+                'app_label': 'articles',
+                'model': 'article',
+                'pk': 0,
+            }
+            categoryform = category_form_class(content_type,
+                                               initial=initial_category_form_data,
+                                               prefix='category')
 
-        return render_to_response(template_name, {'form': form},
+
+        return render_to_response(template_name, {'form': form,
+                                                  'categoryform': categoryform,},
             context_instance=RequestContext(request))
     else:
         raise Http403
