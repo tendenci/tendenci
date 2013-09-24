@@ -20,7 +20,7 @@
 
     <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
     <div>{{ membership.user.email }}</div>
-    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_current_membership_url }}">
         {% trans "View Submitted Application" %}
     </a></div>
 

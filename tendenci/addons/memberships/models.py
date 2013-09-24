@@ -496,6 +496,15 @@ class MembershipDefault(TendenciBaseModel):
         return ('membership.details', [self.pk])
         # return ('admin:memberships_membershipdefault_change', [self.pk])
 
+    @models.permalink
+    def get_current_membership_url(self):
+        """
+        Returns link to url of the most current membership.
+        """
+        memberships = self.user.membershipdefault_set.filter(membership_type=self.membership_type).order_by('-id')
+
+        return ('membership.details', [memberships[0].pk])
+
     @property
     def group(self):
         return self.membership_type.group
