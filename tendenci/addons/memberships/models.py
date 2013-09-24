@@ -786,9 +786,13 @@ class MembershipDefault(TendenciBaseModel):
         """
         NOW = datetime.now()
 
-        dupe = deepcopy(self)
-
-        dupe.pk = None  # disconnect from db record
+        if self.is_pending():
+            dupe = self
+        elif any((self.is_active(), self.is_expired())):
+            dupe = deepcopy(self)
+            dupe.pk = None  # disconnect from db record
+        else:
+            return False
 
         dupe.status = True,
         dupe.status_detail = 'active'
