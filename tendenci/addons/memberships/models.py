@@ -1580,7 +1580,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         # if member_number; get out
         if self.member_number:
-            return None
+            return self.member_number
 
         memberships = self.qs_memberships().exclude(
             member_number__exact=u'').order_by('-pk')
@@ -1590,6 +1590,8 @@ class MembershipDefault(TendenciBaseModel):
 
         if not self.member_number:
             self.member_number = self.create_member_number()
+
+        return self.member_number
 
     def is_paid_online(self):
         """
