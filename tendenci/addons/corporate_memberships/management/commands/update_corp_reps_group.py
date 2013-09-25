@@ -15,7 +15,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **kwargs):
         from tendenci.core.site_settings.models import Setting
-        from tendenci.apps.user_groups.models import Group
+        from tendenci.apps.user_groups.models import Group, GroupMembership
         from tendenci.addons.corporate_memberships.models import CorpMembershipRep
         verbosity = int(kwargs['verbosity'])
 
@@ -64,7 +64,11 @@ class Command(BaseCommand):
             # remove all non-reps from group
             for user in group.members.all():
                 if not CorpMembershipRep.objects.filter(user=user).exists():
-                    group.members.remove(user)
+                    if verbosity >= 2:
+                        print('Removing user "%s" from group' % user.username)
+                    gm = GroupMembership.objects.get(group=group,
+                                                 member=user)
+                    gm.delete()
 
         # add reps to group
         for rep in CorpMembershipRep.objects.all():
