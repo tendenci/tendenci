@@ -58,7 +58,8 @@ class Setting(models.Model):
                 except UnicodeDecodeError:
                     return decrypt(self.value)
         except AttributeError: #cached setting with no is_secure
-            from tendenci.core.site_settings.utils import (delete_setting_cache,
+            from tendenci.core.site_settings.utils import (
+                delete_setting_cache,
                 delete_all_settings_cache)
             # delete the cache for this setting
             # print "clearing cache for setting: %s" % self.name
