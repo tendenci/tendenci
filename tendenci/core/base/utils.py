@@ -82,9 +82,6 @@ def tcurrency(mymoney):
             -30000.232 -> $(30,000.23)
     """
     currency_symbol = get_setting("site", "global", "currencysymbol")
-    encoding = chardet.detect(currency_symbol)['encoding']
-    if encoding != 'ascii':
-        currency_symbol = currency_symbol.decode(encoding)
 
     if not currency_symbol:
         currency_symbol = "$"
