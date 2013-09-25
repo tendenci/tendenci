@@ -100,5 +100,22 @@
         "scope_category": "memberships", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "false", 
+        "description": "If true, membership renewal reminders will not be sent to individual corp. members.", 
+        "data_type": "boolean", 
+        "update_dt": "2013-09-25 9:38:23", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "renewalreminderexcludecorpmembers", 
+        "value": "false", 
+        "label": "Renewal Reminders Exclude Corp Members", 
+        "input_value": "true, false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
     }
 ]
