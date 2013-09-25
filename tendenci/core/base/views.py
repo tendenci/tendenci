@@ -232,10 +232,10 @@ def memcached_status(request):
 
 
 def feedback(request, template_name="base/feedback.html"):
-    from tendenci.core.event_logs.models import EventLog
-    if not request.user.profile.is_superuser:
-        raise Http404
-    EventLog.objects.log()
+    # This page is deprecated, but some sites might have the url in their
+    # overridden admin bar, so we are leaving it and just raising 404
+    raise Http404
+
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):
