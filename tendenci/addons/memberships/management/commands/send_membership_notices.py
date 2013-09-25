@@ -155,6 +155,9 @@ class Command(BaseCommand):
                                     expire_dt__year=start_dt.year,
                                     expire_dt__month=start_dt.month,
                                     expire_dt__day=start_dt.day)
+                if get_setting('module', 'memberships', 'renewalreminderexcludecorpmembers'):
+                    # exclude corp members
+                    memberships = memberships.exclude(corporate_membership_id__gt=0)
 
             # filter by membership type
             if notice.membership_type:
