@@ -3,6 +3,10 @@ from south.v2 import DataMigration
 from django.core.management import call_command
 
 class Migration(DataMigration):
+    depends_on = (
+        ('campaign_monitor', '0001_initial'),
+        ('user_groups', '0001_initial'),
+    )
 
     def forwards(self, orm):
         call_command('update_corp_reps_group')
