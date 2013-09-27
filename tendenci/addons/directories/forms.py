@@ -275,15 +275,16 @@ class DirectoryForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         from tendenci.core.files.models import File
-
         directory = super(DirectoryForm, self).save(*args, **kwargs)
+
+        content_type = ContentType.objects.get(
+                app_label=Directory._meta.app_label,
+                model=Directory._meta.module_name)
+
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration
 
         if self.cleaned_data['logo']:
-            content_type = ContentType.objects.get(
-                    app_label=Directory._meta.app_label,
-                    model=Directory._meta.module_name)
             file_object, created = File.objects.get_or_create(
                 file=self.cleaned_data['logo'],
                 defaults={
@@ -295,7 +296,15 @@ class DirectoryForm(TendenciBaseForm):
                 })
 
             directory.logo_file = file_object
-            directory.save()
+            directory.save(log=False)
+
+        # clear logo; if box checked
+        if self.cleaned_data['logo'] is False:
+          directory.logo_file = None
+          directory.save(log=False)
+          File.objects.filter(
+            content_type=content_type,
+            object_id=directory.pk).delete()
 
         return directory
 
