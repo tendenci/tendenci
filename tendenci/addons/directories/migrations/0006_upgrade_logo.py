@@ -33,13 +33,14 @@ class Migration(DataMigration):
 
     def backwards(self, orm):
         """
-        Delete all file objects associated with a directory object
-        """
-        content_type = orm['contenttypes.ContentType'].objects.get(
-                app_label=orm['directories.Directory']._meta.app_label,
-                model=orm['directories.Directory']._meta.module_name)
+        We cannot reverse from this object because we no longer
+        have access to the Directory.logo attribute.
 
-        orm['files.File'].objects.filter(content_type=content_type).delete()
+        The Directory.logo attribute is now a convenience method,
+        which prevents us from repopulating this column file paths.
+        """
+        raise RuntimeError(
+            """There is no reverse for this migration.  For more info: view docstring""")
 
     models = {
         'auth.group': {
