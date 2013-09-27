@@ -10,6 +10,8 @@ class Migration(DataMigration):
         """
         Create a file object for every directory logo [FileField]
         """
+        from os.path import basename
+
         content_type = orm['contenttypes.ContentType'].objects.get(
                 app_label=orm['directories.Directory']._meta.app_label,
                 model=orm['directories.Directory']._meta.module_name)
@@ -19,7 +21,7 @@ class Migration(DataMigration):
             file_object, created = orm['files.File'].objects.get_or_create(
                 file=directory.logo,
                 defaults={
-                    'name': directory.logo.name,
+                    'name': basename(directory.logo.name),
                     'content_type': content_type,
                     'object_id': directory.pk,
                     'is_public': True,
