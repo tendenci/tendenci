@@ -11,7 +11,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
-
+from django.contrib.contenttypes.models import ContentType
 from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.addons.directories.utils import (get_payment_method_choices,
     get_duration_choices)
@@ -93,6 +93,10 @@ class DirectoryForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Directory._meta.app_label,
         'storme_model':Directory._meta.module_name.lower()}))
+
+    logo = forms.FileField(
+      required=False,
+      help_text=_('Company logo. Only jpg, gif, or png images.'))
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -238,6 +242,9 @@ class DirectoryForm(TendenciBaseForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
+        if self.instance.logo:
+            self.initial['logo'] = self.instance.logo
+
         if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
@@ -267,9 +274,29 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields.pop(f)
 
     def save(self, *args, **kwargs):
+        from tendenci.core.files.models import File
+
         directory = super(DirectoryForm, self).save(*args, **kwargs)
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration
+
+        if self.cleaned_data['logo']:
+            content_type = ContentType.objects.get(
+                    app_label=Directory._meta.app_label,
+                    model=Directory._meta.module_name)
+            file_object, created = File.objects.get_or_create(
+                file=self.cleaned_data['logo'],
+                defaults={
+                    'name': self.cleaned_data['logo'].name,
+                    'content_type': content_type,
+                    'object_id': directory.pk,
+                    'is_public': directory.allow_anonymous_view,
+                    'tags': directory.tags,
+                })
+
+            directory.logo_file = file_object
+            directory.save()
+
         return directory
 
 

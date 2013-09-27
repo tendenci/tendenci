@@ -18,7 +18,7 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.site_settings.utils import get_setting
-
+from tendenci.core.files.models import File
 from tendenci.addons.directories.module_meta import DirectoryMeta
 from tendenci.addons.directories.managers import DirectoryManager
 from tendenci.addons.directories.choices import ADMIN_DURATION_CHOICES
@@ -38,10 +38,12 @@ class Directory(TendenciBaseModel):
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField()
     source = models.CharField(max_length=300, blank=True)
-    logo = models.FileField(max_length=260, upload_to=file_directory, 
-                            help_text=_('Company logo. Only jpg, gif, or png images.'), 
-                            blank=True)
-    
+    # logo = models.FileField(max_length=260, upload_to=file_directory, 
+    #                         help_text=_('Company logo. Only jpg, gif, or png images.'), 
+    #                         blank=True)
+
+    logo_file = models.ForeignKey(File, null=True)
+
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
     address = models.CharField(_('Address'), max_length=100, blank=True)
@@ -128,14 +130,24 @@ class Directory(TendenciBaseModel):
                 self.status,
                 self.status_detail in ['active']])
 
+    @property
+    def logo(self):
+        """
+        This represents the logo FileField
+
+        Originally this was a FileField, but later
+        we added the attribute logo_file to leverage
+        the File model.  We then replaced the logo
+        property with this convience method for
+        backwards compatibility.
+        """
+        return self.logo_file.file
+
     def get_logo_url(self):
-        if not self.logo:
-            return ''
+        if not self.logo_file:
+            return u''
 
-        if self.is_public():
-            return self.logo.url
-
-        return reverse('directory.logo', args=[self.id])
+        return reverse('file', args=[self.logo_file.pk])
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
