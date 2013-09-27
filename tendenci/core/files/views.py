@@ -207,10 +207,17 @@ def search(request, template_name="files/search.html"):
 
     EventLog.objects.log()
 
+    layout = get_setting("module", "files", "layout")
+    base_template_path = "files/base.html"
+    if layout == 'grid':
+        base_template_path = "base-wide.html"
+
     return render_to_response(
         template_name, {
             'files': files,
             'form': form,
+            'layout': layout,
+            'base_template_path': base_template_path,
         }, context_instance=RequestContext(request))
 
 

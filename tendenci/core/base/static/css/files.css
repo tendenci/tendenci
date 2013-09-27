@@ -1,10 +1,8 @@
-
-
 .t {
-	width: 90%;
+	width: 98%;
 }
 .t h2 {
-	margin: 0 auto 10px 0;
+	margin: 8px auto 8px 0;
 }
 
 .t ul.files-nav {
@@ -24,7 +22,7 @@
 	margin-bottom: 20px;
 }
 
-.t .files-wrap .file-wrap {
+.t .files-wrap .file-wrap.list-wrap {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -32,10 +30,39 @@
 	background-color: white;
 }
 
-.t .files-wrap .file-wrap h2 {
+.t .files-wrap .file-wrap.grid-wrap {
+	width: 215px; 
+	height: 330px; 
+  	float: left;
+	margin: 0 7px 12px;
+  	position: relative;
+  	background-color: #F6F6F6;
+  	word-wrap: break-word;
+}
+  
+.t .files-wrap .grid-wrap .download {
+	margin-left: 15px;
+}
+
+.t .files-wrap .file-wrap.grid-wrap .categories,
+.t .files-wrap .file-wrap.grid-wrap .tags,
+.t .files-wrap .file-wrap.grid-wrap .related-content {
+	display: none;
+}
+
+.t .files-wrap .file-wrap.list-wrap h2 {
 	width: 85%;
 	margin-bottom: 6px;
 }
+
+.t .files-wrap .file-wrap.grid-wrap h2 {
+	text-align: center;
+}
+
+.t .files-wrap .file-wrap.grid-wrap h2 a {
+	font-size: 16px;
+}
+
 .t .files-wrap .file-wrap .content {
 	margin-bottom: 10px;
 }
@@ -56,13 +83,37 @@
 	background-color: white;
 }
 
-.t .file-wrap .icon {
+.t .file-wrap.list-wrap .icon {
 	float: left;
 	margin-right: 10px;
 }
+
+.t .file-wrap.grid-wrap .icon {
+	height: 192px;
+	width: 192px;
+	margin: 12px;
+  	position: relative;
+	/* overflow: hidden; */
+}
+
+.t .file-wrap.grid-wrap .icon img {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	margin: auto;
+}
+
 .t .file-wrap .meta {
 	margin-top: 20px;
 }
+
+.t .files-wrap .grid-wrap .meta {
+	margin-left: -5px;
+	margin-top: -6px;
+}
+
 .t .file-wrap h2 a.broken {
 	text-decoration: line-through;
 }
@@ -77,6 +128,12 @@
 	background-color: #EEE;
 }
 
+.t .file-wrap.grid-wrap .options {
+	display: none;
+}
+.t .file-wrap.grid-wrap:hover .options {
+	display: block;
+}
 .t .options {
 	text-align: right;
 	position: absolute;
@@ -84,6 +141,7 @@
 	background-color: #F6F6F6;
 	padding: 10px 3px 10px 10px;
 	white-space: nowrap;
+	z-index: 999;
 }
 
 .t .quick-options {
@@ -160,7 +218,7 @@
 	padding: 5px 0;
 }
 .t.most-viewed td.file-name {
-	
+
 }
 .t.most-viewed td.change,
 .t.most-viewed td.delete {

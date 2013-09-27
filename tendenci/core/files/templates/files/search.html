@@ -1,4 +1,4 @@
-{% extends "files/base.html" %}
+{% extends base_template_path %}
 {% load pagination_tags %}
 {% load file_tags %}
 {% load base_tags %}
@@ -23,7 +23,7 @@
     {% file_search %}
     <div class="files-found">{{ paginator.count }} {% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %} {% trans "Found" %}</div>
     
-    <div class="files-wrap">
+    <div class="files-wrap clearfix">
     {% for file in files %}
         {% search_result file %}
     {% endfor %}

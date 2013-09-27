@@ -4,18 +4,16 @@
 
 {% tags_for_object file as tags %}
 
-<div class="file-wrap">
+<div class="file-wrap {{ layout }}-wrap">
     <div class="options">
         <div class="quick-options">
             {% file_options request.user file %}           
         </div>
     </div>
 
-    {% if file.icon %}
-    <div class="icon"><img src="{{ file.icon }}" /></div>
-    {% endif %}
+    {% file_thumbnail layout file %}
 
-    <h2><a href="{% url file file.pk %}">{{ file.get_name }}</a></h2>
+    <h2><a href="{% url file file.pk %}">{{ file.get_name|truncatechars:34 }}</a></h2>
 
     <div class="download">
         <a title="Download {{ file.ext }}" href="{% url file file.pk 'download' %}">{% trans "Download" %} this {{ file.type }}</a>
@@ -53,7 +51,15 @@
         </div>
         {% endif %}
 
-        <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.owner }}</a></div>
+        <div class="submitted">
+            <a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">
+            {% trans "Updated" %} 
+            {% if layout == "list" %}{{ file.update_dt|date:"D d M Y P" }} 
+            {% else %}{{ file.update_dt|date:"m/d/y P" }}<br>
+            {% endif %}
+            {% trans "by" %} {{ file.owner }}
+            </a>
+        </div>
     </div>
 
     <!-- delete-file form -->

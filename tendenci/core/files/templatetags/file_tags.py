@@ -28,6 +28,18 @@ def file_search(context):
     return context
 
 
+@register.inclusion_tag("files/thumbnail.html", takes_context=True)
+def file_thumbnail(context, layout, file_obj):
+    use_image = False
+    if layout == 'grid' and file_obj.type() == 'image':
+        use_image = True
+
+    context.update({
+        "use_image": use_image,
+    })
+    return context
+
+
 @register.inclusion_tag('files/reports/most-viewed-result.html', takes_context=True)
 def most_viewed_result(context):
     event_log = context['event_log']

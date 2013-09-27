@@ -49,6 +49,23 @@
         "scope_category": "files", 
         "store": true, 
         "updated_by": ""
+    }, 
+    {
+        "default_value": "list",
+        "description": "The layout style to be followed on the files search page.",
+        "data_type": "string",
+        "update_dt": "2010-08-12 17:19:13",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "layout",
+        "value": "list",
+        "label": "Layout Style",
+        "input_value": "list,grid",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "files",
+        "store": true,
+        "updated_by": ""
     },
     {
         "default_value": "files", 
