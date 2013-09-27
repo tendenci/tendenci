@@ -141,7 +141,8 @@ class Directory(TendenciBaseModel):
         property with this convience method for
         backwards compatibility.
         """
-        return self.logo_file.file
+        if self.logo_file:
+            return self.logo_file.file
 
     def get_logo_url(self):
         if not self.logo_file:
