@@ -54,6 +54,8 @@ def search(request, template_name="directories/search.html"):
     filters = get_query_filters(request.user, 'directories.view_directory')
     directories = Directory.objects.filter(filters).distinct()
     cat = None
+    category = None
+    sub_category = None
 
     if not request.user.is_anonymous():
         directories = directories.select_related()
@@ -67,16 +69,21 @@ def search(request, template_name="directories/search.html"):
 
     if form.is_valid():
         cat = form.cleaned_data['search_category']
+        category = form.cleaned_data['category']
+        sub_category = form.cleaned_data['sub_category']
 
         if query and cat:
             directories = directories.filter( **{cat : query} )
+
+    if category:
+        directories = directories.filter(categories__category__id=category)
+    if sub_category:
+        directories = directories.filter(categories__parent__id=sub_category)
 
     directories = directories.order_by('headline')
 
     EventLog.objects.log()
 
-    # Query list of category and subcategory for dropdown filters
-    category = request.GET.get('category')
     try:
         category = int(category)
     except:

@@ -12,6 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
+from tendenci.core.categories.forms import CategoryField
+from tendenci.core.categories.models import CategoryItem
 from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.addons.directories.utils import (get_payment_method_choices,
     get_duration_choices)
@@ -61,6 +63,8 @@ SEARCH_CATEGORIES = (
 
 class DirectorySearchForm(forms.Form):
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    category = CategoryField(label=_('Category'), choices=[], required=False)
+    sub_category = CategoryField(label=_('Sub Category'), choices=[], required=False)
     q = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
@@ -69,6 +73,15 @@ class DirectorySearchForm(forms.Form):
 
         if not is_superuser:
           self.fields['search_category'].choices = SEARCH_CATEGORIES
+
+        categories, sub_categories = Directory.objects.get_categories()
+
+        categories = [(cat.pk, cat) for cat in categories]
+        sub_categories = [(cat.pk, cat) for cat in sub_categories]
+
+        self.fields['category'].choices = categories
+        self.fields['sub_category'].choices = sub_categories
+
 
     def clean(self):
         cleaned_data = self.cleaned_data
