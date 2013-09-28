@@ -415,7 +415,7 @@ class Command(BaseCommand):
         memberships = MembershipDefault.objects.filter(expire_dt__gte=now,
                                                        expire_dt__lte=dt,
                                                        status_detail="active")
-        memberships = memberships.order_by("-expire_dt")[:items]
+        memberships = memberships.order_by("expire_dt")[:items]
         mem_list = []
         for mem in memberships:
             mem_list.append([mem.user.get_full_name(),
