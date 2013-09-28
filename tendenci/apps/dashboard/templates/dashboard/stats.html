@@ -41,6 +41,50 @@
 </div>
 {% endif %}
 
+{% if type_name == "memberships_30_new" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol>
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_renew" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol>
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_expired" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol>
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_expiring" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol> 
+</div>
+{% endif %}
+
 {% if type_name == "corp_memberships_30_new" %}
 <div class="stat">
     <span>{{ label|striptags|safe }}</span>

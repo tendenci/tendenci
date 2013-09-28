@@ -58,6 +58,42 @@ class Command(BaseCommand):
         members.value = json.dumps(self.get_membership_count(30))
         members.save()
 
+        print "Creating dashboard statistics for new memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_new")
+        if created:
+            stat_type.description = "Memberships in the Past 30 Days"
+            stat_type.save()
+        mem_new = DashboardStat(key=stat_type)
+        mem_new.value = json.dumps(self.get_new_memberships(5, 30))
+        mem_new.save()
+
+        print "Creating dashboard statistics for renewed memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_renew")
+        if created:
+            stat_type.description = "Renewed Memberships in the Past 30 days"
+            stat_type.save()
+        mem_renew = DashboardStat(key=stat_type)
+        mem_renew.value = json.dumps(self.get_renew_memberships(5, 30))
+        mem_renew.save()
+
+        print "Creating dashboard statistics for expired memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expired")
+        if created:
+            stat_type.description = "Expired memberships in the Past 30 days"
+            stat_type.save()
+        mem_expired = DashboardStat(key=stat_type)
+        mem_expired.value = json.dumps(self.get_expired_memberships(5, 30))
+        mem_expired.save()
+
+        print "Creating dashboard statistics for expiring memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expiring")
+        if created:
+            stat_type.description = "Upcoming Expiring Memberships"
+            stat_type.save()
+        mem_expiring = DashboardStat(key=stat_type)
+        mem_expiring.value = json.dumps(self.get_expiring_memberships(5, 30))
+        mem_expiring.save()
+
         print "Creating dashboard statistics for new corporate memberships"
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_memberships_30_new")
         if created:
@@ -322,3 +358,66 @@ class Command(BaseCommand):
                                       expire_dt__lte=dt).count()
 
         return [[active, expiring, new, pending, expired]]
+
+
+    def get_new_memberships(self, items, days):
+        from tendenci.addons.memberships.models import MembershipDefault
+
+        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        memberships = MembershipDefault.objects.filter(join_dt__gte=dt,
+                                                       status_detail="active")
+        memberships = memberships.order_by("-join_dt")[:items]
+        mem_list = []
+        for mem in memberships:
+            mem_list.append([mem.user.get_full_name(),
+                             mem.get_absolute_url()])
+        return mem_list
+
+
+    def get_renew_memberships(self, items, days):
+        from tendenci.addons.memberships.models import MembershipDefault
+
+        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        memberships = MembershipDefault.objects.filter(renew_dt__gte=dt,
+                                                       status_detail="active")
+        memberships = memberships.order_by("-renew_dt")[:items]
+        mem_list = []
+        for mem in memberships:
+            mem_list.append([mem.user.get_full_name(),
+                             mem.get_absolute_url()])
+        return mem_list
+
+
+    def get_expired_memberships(self, items, days):
+        from tendenci.addons.memberships.models import MembershipDefault
+
+        now = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+        dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
+        active_qs = Q(status_detail__iexact='active')
+        expired_qs = Q(status_detail__iexact='expired')
+
+        memberships = MembershipDefault.objects.filter(active_qs|expired_qs)
+        memberships = memberships.filter(expire_dt__gte=dt,
+                                         expire_dt__lte=now)
+        memberships = memberships.order_by("-expire_dt")[:items]
+        mem_list = []
+        for mem in memberships:
+            mem_list.append([mem.user.get_full_name(),
+                             mem.get_absolute_url()])
+        return mem_list
+
+
+    def get_expiring_memberships(self, items, days):
+        from tendenci.addons.memberships.models import MembershipDefault
+
+        now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        dt = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999) + timedelta(days=days)
+        memberships = MembershipDefault.objects.filter(expire_dt__gte=now,
+                                                       expire_dt__lte=dt,
+                                                       status_detail="active")
+        memberships = memberships.order_by("-expire_dt")[:items]
+        mem_list = []
+        for mem in memberships:
+            mem_list.append([mem.user.get_full_name(),
+                             mem.get_absolute_url()])
+        return mem_list
