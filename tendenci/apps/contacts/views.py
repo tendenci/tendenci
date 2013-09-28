@@ -207,8 +207,6 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
             }
 
             contact = Contact(**contact_kwargs)
-            contact.creator_id = 1  # TODO: decide if we should use tendenci base model
-            contact.owner_id = 1  # TODO: decide if we should use tendenci base model
             contact.allow_anonymous_view = False
             contact.save()
 
