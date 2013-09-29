@@ -1020,6 +1020,9 @@ class Reg8nEditForm(BetterModelForm):
         
         if not get_setting('module', 'corporate_memberships', 'usefreepass'):
             del self.fields['allow_free_pass']
+ 
+        if not get_setting('module', 'discounts', 'enabled'):
+            del self.fields['discount_eligible']
 
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
