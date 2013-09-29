@@ -1,10 +1,21 @@
 Local Installation
 ==================
 
-You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs.
+You can use the following installation instructions to install a local Tendenci site on Ubuntu. 
+This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, 
+but it's recommended that you install locally first in order to test your themes and designs.
+
+If working on a Mac or PC, or even Ubuntu, we strongly recommend using VMWare Fusion, or at least
+VirtualBox at a minimum to test different configurations. (Hint: VMWare handles bridge IPs much better
+than VirtualBox which matters if you travel a lot and bounce between networks like us.)
 
 Pre-config
 ----------
+
+Install easy_install if not already installed
+::
+    sudo wget http://python-distribute.org/distribute_setup.py
+    python distribute_setup.py
 
 Install `pip <http://www.pip-installer.org/>`_:
 ::
