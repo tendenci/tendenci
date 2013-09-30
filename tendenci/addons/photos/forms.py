@@ -84,6 +84,7 @@ class PhotoBatchEditForm(TendenciBaseForm):
             'safetylevel',
             'allow_anonymous_view',
             'status_detail',
+            'status',
         )
 
     def __init__(self, *args, **kwargs):
