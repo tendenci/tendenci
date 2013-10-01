@@ -522,8 +522,10 @@ class EventForm(TendenciBaseForm):
             self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
         else:
             # kwargs['instance'] always trumps initial
-            self.fields['private_slug'].initial = self.instance.get_private_slug()
-            self.fields['enable_private_slug'].widget = forms.HiddenInput()
+            if 'private_slug' in self.fields.keys():
+                self.fields['private_slug'].initial = self.instance.get_private_slug()
+                self.fields['enable_private_slug'].widget = forms.HiddenInput()
+
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
 
