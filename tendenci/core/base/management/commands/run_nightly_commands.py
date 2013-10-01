@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -8,6 +9,8 @@ class Command(BaseCommand):
     nightly (daily) basis.
     """
     def handle(self, *args, **options):
+        from tendenci.core.site_settings.utils import get_setting
+
         call_command('collect_metrics')
         call_command('expire_jobs')
         call_command('expire_resumes')
@@ -21,3 +24,9 @@ class Command(BaseCommand):
         call_command('clean_old_exports')
         call_command('update_dashboard_stats')
         call_command('delete_soft_deleted_items')
+
+        if all([get_setting('module', 'recurring_payments', 'enabled'),
+                getattr(settings, 'MERCHANT_LOGIN', ''),
+                getattr(settings, 'MERCHANT_TXN_KEY', '')
+                ]):
+            call_command('make_recurring_payment_transactions')
