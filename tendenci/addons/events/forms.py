@@ -519,7 +519,8 @@ class EventForm(TendenciBaseForm):
 
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-            self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
+            if 'private_slug' in self.fields.keys():
+                self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
         else:
             # kwargs['instance'] always trumps initial
             if 'private_slug' in self.fields.keys():
