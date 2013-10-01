@@ -15,6 +15,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.core.site_settings.utils import get_setting
 
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
 from tendenci.apps.forms_builder.forms.settings import UPLOAD_ROOT
@@ -62,6 +63,11 @@ class FormAdmin(TendenciBaseModelAdmin):
         "email_copies")
 #    radio_fields = {"status": admin.HORIZONTAL}
     prepopulated_fields = {'slug': ['title']}
+
+    if not get_setting('module', 'recurring_payments', 'enabled'):
+        payment_fields = ("custom_payment", "payment_methods")
+    else:
+        payment_fields = ("custom_payment", 'recurring_payment', "payment_methods")
     fieldsets = (
         (None, {"fields": ("title", "slug", "intro", "response", "completion_url", "template")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
@@ -74,7 +80,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         ('Publishing Status', {'fields': (
             'status_detail',
         )}),
-        (_("Payment"), {"fields": ("custom_payment", 'recurring_payment', "payment_methods")}),
+        (_("Payment"), {"fields": payment_fields}),
     )
 
     form = FormAdminForm
