@@ -29,15 +29,16 @@ from tendenci.core.base.utils import tcurrency
 from tendenci.core.site_settings.utils import get_setting
 
 @ssl_required
-@login_required
-def view_account(request, recurring_payment_id, 
+def view_account(request, recurring_payment_id, guid=None, 
                           template_name="recurring_payments/index.html"):
     """View a recurring payment account.
     """
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
     
     # only admin or user self can access this page
-    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
+    if not (request.user.is_authenticated() and \
+        (request.user.profile.is_superuser \
+            or request.user.id == rp.user.id) or rp.guid == guid):
         raise Http403
     
     paid_payment_transactions = PaymentTransaction.objects.filter(

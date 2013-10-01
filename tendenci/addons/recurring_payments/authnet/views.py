@@ -145,13 +145,15 @@ def update_payment_profile_local(request):
         
     return HttpResponse(simplejson.dumps(ret_d))
 
-@login_required
 def retrieve_token(request):
     """
     retrieve a token for a given recurring payment.
     """
     recurring_payment_id = request.POST.get('rpid')
+    guid = request.POST.get('guid')
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
+    if guid != rp.guid:
+        raise Http403
     
     token, gateway_error = get_token(rp, 
                                      CIMCustomerProfile, 
