@@ -32,6 +32,11 @@ template_choices += get_template_list()
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
 
+FIELD_FNAME_LENGTH = 30
+FIELD_LNAME_LENGTH = 30
+FIELD_NAME_LENGTH = 50
+FIELD_PHONE_LENGTH = 50
+
 class FormForForm(forms.ModelForm):
 
     class Meta:
@@ -79,6 +84,15 @@ class FormForForm(forms.ModelForm):
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
+
+            if field.field_function == 'EmailFirstName':
+                field_args["max_length"] = FIELD_FNAME_LENGTH
+            elif field.field_function == 'EmailLastName':
+                field_args["max_length"] = FIELD_LNAME_LENGTH
+            elif field.field_function == 'EmailFullName':
+                field_args["max_length"] = FIELD_NAME_LENGTH
+            elif field.field_function == 'EmailPhoneNumber':
+                field_args["max_length"] = FIELD_PHONE_LENGTH
             
             self.fields[field_key] = field_class(**field_args)
 
