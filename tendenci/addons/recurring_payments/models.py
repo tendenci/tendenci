@@ -104,8 +104,7 @@ class RecurringPayment(models.Model):
         return ("recurring_payment.view_account", [self.id])
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         if self.taxable and self.tax_rate:
             self.tax_exempt = 0
 
