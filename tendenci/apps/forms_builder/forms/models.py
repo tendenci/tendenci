@@ -94,7 +94,7 @@ class Form(TendenciBaseModel):
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,
         help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
     recurring_payment = models.BooleanField(_("Is Recurring Payment"), default=False,
-        help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
+        help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount. Please also add an email field as a required field with type 'email'"))
     payment_methods = models.ManyToManyField("payments.PaymentMethod", blank=True)
 
     perms = generic.GenericRelation(ObjectPermission,
