@@ -28,7 +28,7 @@ from tendenci.core.site_settings.utils import get_setting
 
 
 def file_directory(instance, filename):
-    filename = re.sub(r'[^a-z0-9._]+', '_', filename.lower())
+    filename = re.sub(r'[^a-zA-Z0-9._-]+', '_', filename)
     uuid_hex = uuid.uuid1().get_hex()[:8]
 
     if instance.content_type:
