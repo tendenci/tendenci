@@ -378,13 +378,20 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         raise Http403
 
     # If form has a recurring payment, make sure the user is logged in
-    if form.recurring_payment and request.user.is_anonymous():
-        response = redirect('auth_login')
-        response['Location'] += '?next=%s' % form.get_absolute_url()
-        return response
+    if form.recurring_payment:
+        [email_field] = form.fields.filter(field_type__iexact='EmailVerificationField')[:1] or [None]
+        if request.user.is_anonymous() and not email_field:
+            # anonymous user - if we don't have the email field, redirect to login
+            response = redirect('auth_login')
+            response['Location'] += '?next=%s' % form.get_absolute_url()
+            return response
+        if request.user.is_superuser and not email_field:
+            messages.add_message(request, messages.WARNING, 
+                    'Please edit the form to include an email field ' + \
+                    'as it is required for setting up a recurring ' + \
+                    'payment for anonymous users.')
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
-
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
@@ -489,6 +496,10 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 price = entry.pricing.price or form_for_form.cleaned_data.get('custom_price')
 
                 if form.recurring_payment:
+                    if request.user.is_anonymous():
+                        rp_user = entry.creator
+                    else:
+                        rp_user = request.user
                     billing_start_dt = datetime.datetime.now()
                     trial_period_start_dt = None
                     trial_period_end_dt = None
@@ -498,8 +509,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                         billing_start_dt = trial_period_end_dt
                     # Create recurring payment
                     rp = RecurringPayment(
-                             user=request.user,
-                             description=entry.pricing.label,
+                             user=rp_user,
+                             description=form.title,
                              billing_period=entry.pricing.billing_period,
                              billing_start_dt=billing_start_dt,
                              num_days=entry.pricing.num_days,
@@ -511,17 +522,17 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                              trial_period_start_dt=trial_period_start_dt,
                              trial_period_end_dt=trial_period_end_dt,
                              trial_amount=entry.pricing.trial_amount,
-                             creator=request.user,
-                             creator_username=request.user.username,
-                             owner=request.user,
-                             owner_username=request.user.username,
+                             creator=rp_user,
+                             creator_username=rp_user.username,
+                             owner=rp_user,
+                             owner_username=rp_user.username,
                          )
                     rp.save()
                     rp.add_customer_profile()
 
                     # redirect to recurring payments
                     messages.add_message(request, messages.SUCCESS, 'Successful transaction.')
-                    return redirect('recurring_payment.my_accounts')
+                    return redirect('recurring_payment.view_account', rp.id, rp.guid)
                 else:
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
