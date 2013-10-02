@@ -82,6 +82,11 @@
         
         <h2>{% trans "Group Subscribers" %}</h2>
         <p>{% trans "All subscribers have been converted to members" %}</p>
+        
+        {% if group.description %}
+        <h2>{% trans "Description" %}</h2>
+        {{ group.description }}
+        {% endif %}
 
         {% endif %}
         
