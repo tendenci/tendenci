@@ -48,6 +48,7 @@ class Command(BaseCommand):
                       name='Corporate Membership Representatives',
                       slug='corporate-membership-representatives',
                       label='Corporate Membership Representatives',
+                      type='system_generated',
                       show_as_option=False,
                       allow_self_add=False,
                       allow_self_remove=False,
