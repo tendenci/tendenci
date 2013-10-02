@@ -5,11 +5,11 @@
 
 The main sections are:
 
-- Theme Structure
-- Stylesheet Conventions
-- Template Conventions
-- HTML and Class Name Conventions
-- Full Theme Examples
+- [Theme Structure](#theme-structure)
+- [Stylesheet Conventions](#stylesheet-conventions)
+- [Template Conventions](#template-conventions)
+- [HTML and Class Name Conventions](#html-and-class-name-conventions)
+- [Full Theme Examples](#full-theme-examples)
 
 ## Theme Structure
 
