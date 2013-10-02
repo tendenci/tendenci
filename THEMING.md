@@ -24,36 +24,36 @@ A theme should be installed in the themes folder of the site root. The themename
 
   - media
 
-    - css
+      - css
     
-      - styles.css
+          - styles.css
 
-    - fonts
+      - fonts
 
-      - Font-name.eot
-      - Font-name.svg
-      - Font-name.ttf
-      - Font-name.woff
+          - Font-name.eot
+          - Font-name.svg
+          - Font-name.ttf
+          - Font-name.woff
     
-    - img
+      - img
     
-      - apple-touch-icon.png
-      - favicon.ico
-      - header-background.jpg (optional)
-      - logo.png
+          - apple-touch-icon.png
+          - favicon.ico
+          - header-background.jpg (optional)
+          - logo.png
 
-    - js
+      - js
     
-      - jquery.cycle.all.min.js
-      - jcarousellite.min.js
+          - jquery.cycle.all.min.js
+          - jcarousellite.min.js
 
   - templates
 
-    - homepage.html
-    - default.html
-    - header.html (optional)
-    - footer.html (optional)
-    - sidebar.html (optional)
+      - homepage.html
+      - default.html
+      - header.html (optional)
+      - footer.html (optional)
+      - sidebar.html (optional)
     
 ### Root
 
