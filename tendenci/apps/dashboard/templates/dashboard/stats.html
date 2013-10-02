@@ -43,51 +43,70 @@
 
 {% if type_name == "memberships_30_new" %}
 <div class="stat">
-    <span>{{ value|length }}
-        <a href="{% url reports-memberships-joins %}">{{ label|striptags|safe }}</a>
-    </span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol>
+    <span>{{ value|length }} {{ label|striptags|safe }}</span>
+    {% if value %}
+        <ol>
+        {% for name, url in value %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+        <p><a href="{% url reports-memberships-joins %}">More new memberships.</a></p>
+    {% else %}
+        <p>No new memberships within this time period.
+           <a href="{% url reports-memberships-joins %}"> View all new memberships.</a>
+        </p>
+    {% endif %}
 </div>
 {% endif %}
 
 {% if type_name == "memberships_30_renew" %}
 <div class="stat">
-    <span>{{ value|length }}
-        <a href="{% url reports-renewed-members %}">{{ label|striptags|safe }}</a>
-    </span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol>
+    <span>{{ value|length }} {{ label|striptags|safe }}</span>
+    {% if value %}
+        <ol>
+        {% for name, url in value %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+        <p><a href="{% url reports-renewed-members %}">More renewed memberships.</a></p>
+    {% else %}
+        <p>No renewed memberships within this time period.
+           <a href="{% url reports-renewed-members %}"> View all renewed memberships.</a>
+        </p>
+    {% endif %}
 </div>
 {% endif %}
 
 {% if type_name == "memberships_30_expired" %}
 <div class="stat">
-    <span>{{ value|length }}
-        <a href="{% url reports-expired-members %}">{{ label|striptags|safe }}</a>
-    </span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol>
+    <span>{{ value|length }} {{ label|striptags|safe }}</span>
+    {% if value %}
+        <ol>
+        {% for name, url in value %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+        <p><a href="{% url reports-expired-members %}">More expired memberships.</a></p>
+    {% else %}
+        <p>No expired memberships within this time period.
+            <a href="{% url reports-expired-members %}">View all expired memberships.</a>
+        </p>
+    {% endif %}
 </div>
 {% endif %}
 
 {% if type_name == "memberships_30_expiring" %}
 <div class="stat">
     <span>{{ value|length }} {{ label|striptags|safe }}</span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol> 
+    {% if value %}
+        <ol>
+        {% for name, url in value %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p>No expiring memberships within this time period.</p>
+    {% endif %}
 </div>
 {% endif %}
 
