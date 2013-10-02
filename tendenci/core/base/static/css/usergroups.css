@@ -250,3 +250,7 @@
 	border: 1px solid #ccc;
 	margin-top: 1em;
 }
+
+.system-generated{
+	color: #FF0000;
+}
