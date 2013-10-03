@@ -40,3 +40,9 @@ class InvoiceManager(Manager):
         """
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
+
+    def get_query_set(self):
+        """
+        Exclude void invoices by default
+        """
+        return super(InvoiceManager, self).get_query_set().filter(is_void=False)
