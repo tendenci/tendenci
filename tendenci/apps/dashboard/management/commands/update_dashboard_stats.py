@@ -345,7 +345,7 @@ class Command(BaseCommand):
         # Total active memberships count
         active = active_memberships.count()
         # Latest active memberships
-        new = active_memberships.filter(create_dt__gte=dt).count()
+        new = active_memberships.filter(application_approved_dt__gte=dt).count()
         # Latest pending memberships
         pending = pending_memberships.filter(create_dt__gte=dt).count()
         # Latest expired memberships
@@ -364,11 +364,11 @@ class Command(BaseCommand):
         from tendenci.addons.memberships.models import MembershipDefault
 
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
-        memberships = MembershipDefault.objects.filter(join_dt__gte=dt,
+        memberships = MembershipDefault.objects.filter(application_approved_dt__gte=dt,
                                                        status_detail="active")
         count = memberships.count()
         mem_list = [count]
-        memberships = memberships.order_by("-join_dt")[:items]
+        memberships = memberships.order_by("-application_approved_dt")[:items]
         for mem in memberships:
             mem_list.append([mem.user.get_full_name(),
                              mem.get_absolute_url()])
