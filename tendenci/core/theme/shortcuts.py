@@ -70,6 +70,22 @@ def themed_response(*args, **kwargs):
     return HttpResponse(render_to_theme(*args, **kwargs), **httpresponse_kwargs)
 
 
+def strip_content_above_doctype(html):
+    """Strips any content above the doctype declaration out of the
+    resulting template. If no doctype declaration, it returns the input.
+
+    This was done because content above the doctype in IE8 triggers the
+    browser to go into quirks mode which can break modern HTML5 and CSS3
+    elements from the theme.
+    """
+    try:
+        doctype_position = html.index('<!D')
+        html = html[doctype_position:]
+    except ValueError:
+        pass
+
+    return html
+
 def render_to_theme(template_name, dictionary={}, context_instance=Context):
     """Loads the given template_name and renders it with the given dictionary as
     context. The template_name may be a string to load a single template using
@@ -107,4 +123,5 @@ def render_to_theme(template_name, dictionary={}, context_instance=Context):
             except TemplateDoesNotExist:
                 t = get_default_template(template_name)
                 context_instance["CUSTOM_TEMPLATE"] = False
-    return t.render(context_instance)
+
+    return strip_content_above_doctype(t.render(context_instance))
