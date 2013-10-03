@@ -680,8 +680,6 @@ class MembershipTypeAdmin(admin.ModelAdmin):
 
 class NoticeAdmin(admin.ModelAdmin):
     def notice_log(self):
-        if self.notice_time == 'attimeof':
-            return '--'
         return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
                          reverse('membership.notice.log.search'), self.id)
     notice_log.allow_tags = True

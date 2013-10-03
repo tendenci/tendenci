@@ -1844,6 +1844,8 @@ def membership_default_add(request, slug='', template='memberships/applications/
                     if dmount > 0:
                         DiscountUse.objects.create(discount=discount, invoice=invoice)
 
+            memberships_join_notified = []
+            memberships_renewal_notified = []
             for membership in memberships:
                 membership.membership_set = membership_set
 
@@ -1863,6 +1865,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
                             membership=membership,
                             membership_type=membership.membership_type,
                         )
+                        memberships_renewal_notified.append(membership)
 
                     else:
                         Notice.send_notice(
@@ -1872,6 +1875,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
                             membership=membership,
                             membership_type=membership.membership_type,
                         )
+                        memberships_join_notified.append(membership)
                 else:
                     membership.approve(request_user=customer)
                     membership.send_email(request, 'approve')
@@ -1887,6 +1891,18 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
                 # log an event
                 EventLog.objects.log(instance=membership)
+
+            # log notices
+            if memberships_join_notified:
+                Notice.log_notices(memberships_join_notified,
+                                   notice_type='join',
+                                   notice_time='attimeof'
+                                   )
+            if memberships_renewal_notified:
+                Notice.log_notices(memberships_renewal_notified,
+                                   notice_type='renewal',
+                                   notice_time='attimeof'
+                                   )
 
             # redirect: payment gateway
             if membership_set.is_paid_online():
