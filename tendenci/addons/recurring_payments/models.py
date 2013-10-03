@@ -420,7 +420,7 @@ class RecurringPayment(models.Model):
         inv.total = inv.subtotal + inv.tax
 
         inv.balance = inv.total
-        inv.estimate = 1
+        inv.estimate = True
         inv.status_detail = 'estimate'
         
         inv.set_owner(self.user)

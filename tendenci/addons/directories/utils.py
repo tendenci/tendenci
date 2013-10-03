@@ -104,7 +104,7 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.total = get_directory_price(user, directory, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
-            inv.estimate = 1
+            inv.estimate = True
             inv.status_detail = 'estimate'
             
             if user and not user.is_anonymous():

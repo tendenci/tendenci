@@ -581,7 +581,7 @@ class Registration(models.Model):
 
         # update invoice with details
         invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
-        invoice.estimate = True
+        invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
         invoice.subtotal = self.amount_paid
         invoice.total = self.amount_paid

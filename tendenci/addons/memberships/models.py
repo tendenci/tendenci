@@ -3250,7 +3250,7 @@ class AppEntry(TendenciBaseModel):
             invoice.object_id = self.pk
 
         # update invoice with details
-        invoice.estimate = True
+        invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
 
         invoice.bill_to = '%s %s' % (self.first_name, self.last_name)

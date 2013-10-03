@@ -82,7 +82,7 @@ def job_set_inv_payment(user, job, pricing):
             inv.total = get_job_price(user, job, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
-            inv.estimate = 1
+            inv.estimate = True
             inv.status_detail = 'estimate'
             
             if user and not user.is_anonymous():
