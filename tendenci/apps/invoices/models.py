@@ -247,8 +247,6 @@ class Invoice(models.Model):
         if not self.is_tendered:
             # make accounting entry
             make_acct_entries(user, self, self.total)
-
-            self.estimate = False
             self.status_detail = 'tendered'
             self.status = 1
             self.tender_date = datetime.now()
