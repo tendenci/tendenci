@@ -234,6 +234,17 @@ class Invoice(models.Model):
             pass
         return _object
 
+    def get_status(self):
+        """
+        Return status (string)
+        Use status_detail and is_voide attribute
+        """
+        if self.is_void:
+            return u'void'
+
+        return self.status_detail
+
+
     @property
     def is_tendered(self):
         boo = False
