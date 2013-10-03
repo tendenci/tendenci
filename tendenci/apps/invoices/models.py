@@ -13,6 +13,9 @@ from tendenci.apps.accountings.utils import (make_acct_entries,
                                     make_acct_entries_reversing)
 from tendenci.apps.entities.models import Entity
 
+STATUS_DETAIL_CHOICES = (
+    ('estimate', _('Estimate')),
+    ('tendered', _('Tendered')))
 
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
@@ -20,53 +23,25 @@ class Invoice(models.Model):
     object_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(default=0, blank=True, null=True)
     _object = generic.GenericForeignKey('object_type', 'object_id')
-
     title = models.CharField(max_length=200, blank=True, null=True)
-    #user
-    creator = models.ForeignKey(User, related_name="invoice_creator",
-                                null=True,
-                                on_delete=models.SET_NULL)
+    creator = models.ForeignKey(User, related_name="invoice_creator", null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    # the owner here is the user who owns this invoice
-    owner = models.ForeignKey(User, related_name="invoice_owner",
-                              null=True,
-                              on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, related_name="invoice_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
-    entity = models.ForeignKey(Entity, blank=True, null=True, default=None,
-        on_delete=models.SET_NULL, related_name="invoices")
-    #dates
+    entity = models.ForeignKey(Entity, blank=True, null=True, default=None, on_delete=models.SET_NULL, related_name="invoices")
     create_dt = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
     update_dt = models.DateTimeField(auto_now=True)
     tender_date = models.DateTimeField(null=True)
     arrival_date_time = models.DateTimeField(blank=True, null=True)
-    #payment status
-    status_detail = models.CharField(max_length=50,
-                                     choices=(('estimate', _('Estimate')),
-                                              ('tendered', _('Tendered'))),
-                                     default='estimate')
+    status_detail = models.CharField(max_length=50, choices=STATUS_DETAIL_CHOICES, default='estimate')
     status = models.BooleanField(default=True)
     estimate = models.BooleanField(default=1)
-    payments_credits = models.DecimalField(max_digits=15,
-                                           decimal_places=2,
-                                           blank=True,
-                                           default=0)
-    balance = models.DecimalField(max_digits=15,
-                                  decimal_places=2,
-                                  blank=True,
-                                  default=0)
-    total = models.DecimalField(max_digits=15,
-                                decimal_places=2,
-                                blank=True)
-    #discount info
-    discount_code = models.CharField(_('Discount Code'),
-                                     max_length=100,
-                                     blank=True, null=True)
-    discount_amount = models.DecimalField(_('Discount Amount'),
-                                          max_digits=10,
-                                          decimal_places=2,
-                                          default=0)
-    #other
+    payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    discount_code = models.CharField(_('Discount Code'), max_length=100, blank=True, null=True)
+    discount_amount = models.DecimalField(_('Discount Amount'), max_digits=10, decimal_places=2, default=0)
     variance = models.DecimalField(max_digits=10, decimal_places=4, default=0)
     variance_notes = models.TextField(max_length=1000, blank=True, null=True)
     receipt = models.BooleanField(default=0)
@@ -87,11 +62,8 @@ class Invoice(models.Model):
     tax_rate = models.FloatField(blank=True, default=0)
     taxable = models.BooleanField(default=0)
     tax = models.DecimalField(max_digits=6, decimal_places=4, default=0)
-    #bill/ ship
     bill_to = models.CharField(max_length=120, blank=True)
-    bill_to_first_name = models.CharField(max_length=100,
-                                          blank=True,
-                                          null=True)
+    bill_to_first_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_last_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_company = models.CharField(max_length=100, blank=True, null=True)
     bill_to_address = models.CharField(max_length=250, blank=True, null=True)
@@ -117,14 +89,9 @@ class Invoice(models.Model):
     ship_to_address_type = models.CharField(max_length=50, blank=True, null=True)
     ship_date = models.DateTimeField()
     ship_via = models.CharField(max_length=50, blank=True)
-    shipping = models.DecimalField(max_digits=6, decimal_places=2,
-                                   default=0)
-    shipping_surcharge = models.DecimalField(max_digits=6,
-                                             decimal_places=2,
-                                             default=0)
-    box_and_packing = models.DecimalField(max_digits=6,
-                                          decimal_places=2,
-                                          default=0)
+    shipping = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    shipping_surcharge = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    box_and_packing = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
     objects = InvoiceManager()
 
