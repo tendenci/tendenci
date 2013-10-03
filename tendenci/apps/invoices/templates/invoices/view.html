@@ -52,6 +52,12 @@
 
 <div class="invoice-options">
     <ul>
+        <li><a href="{% url invoice.void_invoice invoice.pk %}">Void Invoice</a></li>
+    </ul>
+</div>
+
+<div class="invoice-options">
+    <ul>
       <li><a href="{% url invoice.print_view invoice.id guid %}">Print Invoice</a></li>
     </ul>
 </div>
@@ -97,9 +103,9 @@
 	  <tr>
 	    <td>{% trans "Invoice Status" %}</td>
 	    {% if invoice.is_tendered %}
-	      <td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %} Tendered {{ tenddate }} {% endblocktrans %}</td>
+	      <td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %} {{ invoice.status_detail|title }} {{ tenddate }} {% endblocktrans %}</td>
 	    {% else %}
-	      <td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
+	      <td class="invoice-status-red td-right">{{ invoice.status_detail|title }}</td>
 	    {% endif %}
 	  </tr>
 	  <tr class="invoice-meta-amount">

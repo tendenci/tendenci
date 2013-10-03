@@ -14,12 +14,11 @@ from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.perms.decorators import is_enabled
+from tendenci.core.perms.decorators import is_enabled, superuser_required
 from tendenci.core.perms.utils import has_perm, update_perms_and_save
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.notifications.utils import send_notifications
-
 from tendenci.core.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
@@ -155,6 +154,16 @@ def void_payment(request, id):
 
     messages.add_message(request, messages.SUCCESS, 'Successfully voided payment for Invoice %s.' % invoice.id)
     return redirect(invoice)
+
+@superuser_required
+def void_invoice(request, id):
+    """
+    Voids invoice
+    """
+    invoice = get_object_or_404(Invoice, pk=id)
+    invoice.void()
+    return redirect(invoice)
+
 
 
 @is_enabled('invoices')
