@@ -653,7 +653,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
                 group.name = '%s%s' % (group.name, str(num))
 
             group.label = instance.name
-            group.type = 'membership'
+            group.type = 'system_generated'
             group.email_recipient = request.user.email
             group.show_as_option = 0
             group.allow_self_add = 0

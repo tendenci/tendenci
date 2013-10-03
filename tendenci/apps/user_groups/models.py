@@ -18,8 +18,10 @@ class Group(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
     type = models.CharField(max_length=75, blank=True, choices=(
-                                                             ('distribution', 'Distribution'),
-                                                             ('security', 'Security'),), default='distribution')
+                                         ('distribution', 'Distribution'),
+                                         ('security', 'Security'),
+                                         ('system_generated', 'System Generated')
+                                            ), default='distribution')
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
     show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)

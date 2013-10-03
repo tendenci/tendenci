@@ -24,6 +24,9 @@
 
     	<h1>{{ group.name }}</h1>
     	{% if can_edit %}
+    	{% if group.type == 'system_generated' %}
+    	<div class="system-generated">System generated groups can not be deleted.</div>
+    	{% endif %}
         <div class="group-section">
             <p>{% blocktrans %}This group currently has {{ count_members }} members.{% endblocktrans %}</p>
             <p><a href="{% url group.members_export group.slug "members" %}">{% trans "Export all members" %}</a></p>
@@ -82,6 +85,11 @@
         
         <h2>{% trans "Group Subscribers" %}</h2>
         <p>{% trans "All subscribers have been converted to members" %}</p>
+        
+        {% if group.description %}
+        <h2>{% trans "Description" %}</h2>
+        {{ group.description }}
+        {% endif %}
 
         {% endif %}
         
