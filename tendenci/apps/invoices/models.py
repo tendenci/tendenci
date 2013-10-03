@@ -338,6 +338,14 @@ class Invoice(models.Model):
         # reverse accounting entries
         make_acct_entries_reversing(user, self, amount)
 
+    def void(self):
+        """
+        Voids invoice. This means the debt is no longer owed.
+        """
+        if not self.is_void:
+            self.is_void = True
+            self.save()
+
     def get_first_approved_payment(self):
         """
         Returns first approved payment in ascending order
