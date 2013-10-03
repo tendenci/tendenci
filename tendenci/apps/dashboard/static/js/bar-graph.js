@@ -24,7 +24,7 @@
 
         var counter = 0;
         while(i >= 0) {
-            temp = bg.clone().html(max_val - counter);
+            temp = bg.clone().html((max_val - counter).toFixed(2));
             root.append(temp);
             i = i - scale;
             counter = counter + max_val/options.data.length;
