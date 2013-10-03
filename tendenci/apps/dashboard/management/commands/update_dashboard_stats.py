@@ -366,8 +366,9 @@ class Command(BaseCommand):
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         memberships = MembershipDefault.objects.filter(join_dt__gte=dt,
                                                        status_detail="active")
+        count = memberships.count()
+        mem_list = [count]
         memberships = memberships.order_by("-join_dt")[:items]
-        mem_list = []
         for mem in memberships:
             mem_list.append([mem.user.get_full_name(),
                              mem.get_absolute_url()])
@@ -380,8 +381,9 @@ class Command(BaseCommand):
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         memberships = MembershipDefault.objects.filter(renew_dt__gte=dt,
                                                        status_detail="active")
+        count = memberships.count()
+        mem_list = [count]
         memberships = memberships.order_by("-renew_dt")[:items]
-        mem_list = []
         for mem in memberships:
             mem_list.append([mem.user.get_full_name(),
                              mem.get_absolute_url()])
@@ -399,8 +401,9 @@ class Command(BaseCommand):
         memberships = MembershipDefault.objects.filter(active_qs|expired_qs)
         memberships = memberships.filter(expire_dt__gte=dt,
                                          expire_dt__lte=now)
+        count = memberships.count()
+        mem_list = [count]
         memberships = memberships.order_by("-expire_dt")[:items]
-        mem_list = []
         for mem in memberships:
             mem_list.append([mem.user.get_full_name(),
                              mem.get_absolute_url()])
@@ -415,8 +418,9 @@ class Command(BaseCommand):
         memberships = MembershipDefault.objects.filter(expire_dt__gte=now,
                                                        expire_dt__lte=dt,
                                                        status_detail="active")
+        count = memberships.count()
+        mem_list = [count]
         memberships = memberships.order_by("expire_dt")[:items]
-        mem_list = []
         for mem in memberships:
             mem_list.append([mem.user.get_full_name(),
                              mem.get_absolute_url()])

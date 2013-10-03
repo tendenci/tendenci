@@ -43,10 +43,10 @@
 
 {% if type_name == "memberships_30_new" %}
 <div class="stat">
-    <span>{{ value|length }} {{ label|striptags|safe }}</span>
-    {% if value %}
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
         <ol>
-        {% for name, url in value %}
+        {% for name, url in value|slice:"1:" %}
             <li><a href="{{ url }}">{{ name }}</a></li>
         {% endfor %}
         </ol>
@@ -61,10 +61,10 @@
 
 {% if type_name == "memberships_30_renew" %}
 <div class="stat">
-    <span>{{ value|length }} {{ label|striptags|safe }}</span>
-    {% if value %}
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
         <ol>
-        {% for name, url in value %}
+        {% for name, url in value|slice:"1:" %}
             <li><a href="{{ url }}">{{ name }}</a></li>
         {% endfor %}
         </ol>
@@ -79,10 +79,10 @@
 
 {% if type_name == "memberships_30_expired" %}
 <div class="stat">
-    <span>{{ value|length }} {{ label|striptags|safe }}</span>
-    {% if value %}
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
         <ol>
-        {% for name, url in value %}
+        {% for name, url in value|slice:"1:" %}
             <li><a href="{{ url }}">{{ name }}</a></li>
         {% endfor %}
         </ol>
@@ -97,10 +97,10 @@
 
 {% if type_name == "memberships_30_expiring" %}
 <div class="stat">
-    <span>{{ value|length }} {{ label|striptags|safe }}</span>
-    {% if value %}
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
         <ol>
-        {% for name, url in value %}
+        {% for name, url in value|slice:"1:" %}
             <li><a href="{{ url }}">{{ name }}</a></li>
         {% endfor %}
         </ol>
