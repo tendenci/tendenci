@@ -460,36 +460,37 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             email_copies = [e.strip() for e in form.email_copies.split(',') if e.strip()]
 
             subject = subject.encode(errors='ignore')
-            admin_body = admin_body.encode(errors='ignore')
-
-            if email_copies:
-                # Send message to the email addresses listed in the copies.
-                msg = EmailMessage(subject, admin_body, sender, email_copies, headers=email_headers)
-                msg.content_subtype = 'html'
-                for f in form_for_form.files.values():
-                    try:
-                        f.open()
-                        f.seek(0)
-                        msg.attach(f.name, f.read())
-                        f.close()
-                    except Exception:
-                        pass
-
-                try:
-                    msg.send(fail_silently=True)
-                except:
-                    pass
-
-            # Email copies to recipient list indicated in the form
             email_recipients = entry.get_function_email_recipients()
-            if email_recipients:
-                # Send message to the email addresses selected in the form.
-                msg = EmailMessage(subject, admin_body, sender, email_recipients, headers=email_headers)
-                msg.content_subtype = 'html'
-                for f in form_for_form.files.values():
-                    f.seek(0)
-                    msg.attach(f.name, f.read())
-                msg.send()
+            
+            if email_copies or email_recipients:
+                # prepare attachments
+                attachments = []
+                try:
+                    for f in form_for_form.files.values():
+                        f.seek(0)
+                        attachments.append((f.name, f.read()))
+                except ValueError:
+                    attachments = []
+                    for field_entry in entry.fields.all():
+                        if field_entry.field.field_type == 'FileField':
+                            try:
+                                f = default_storage.open(field_entry.value)
+                            except IOError:
+                                pass
+                            else:
+                                f.seek(0)
+                                attachments.append((f.name.split('/')[-1], f.read()))
+
+                # Send message to the email addresses listed in the copies
+                if email_copies:
+                    email.body = admin_body
+                    email.recipient = email_copies
+                    email.send(fail_silently=True, attachments=attachments)
+
+                # Email copies to recipient list indicated in the form
+                if email_recipients:
+                    email.recipient = email_recipients
+                    email.send(fail_silently=True, attachments=attachments)
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:
