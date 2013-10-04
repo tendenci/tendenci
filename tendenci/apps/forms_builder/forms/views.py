@@ -42,6 +42,7 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     make_invoice_for_entry, update_invoice_for_entry)
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 from tendenci.apps.forms_builder.forms.tasks import FormEntriesExportTask
+from tendenci.core.emails.models import Email
 
 
 @is_enabled('forms')
@@ -443,13 +444,13 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             email_to = form_for_form.email_to()
             if email_to and form.send_email and form.email_text:
                 # Send message to the person who submitted the form.
-                msg = EmailMessage(subject, submitter_body, sender, [email_to], headers=email_headers)
-                msg.content_subtype = 'html'
-
-                try:
-                    msg.send(fail_silently=True)
-                except:
-                    pass
+                email = Email()
+                email.subject = subject
+                email.body = submitter_body
+                email.sender = sender
+                email.recipient = email_to
+                email.reply_to = form.email_from
+                email.send(fail_silently=True)
 
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form)
