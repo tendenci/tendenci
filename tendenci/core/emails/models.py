@@ -34,23 +34,31 @@ class Email(TendenciBaseModel):
     def __unicode__(self):
         return self.subject
     
-    def send(self, fail_silently=False):
+    def send(self, fail_silently=False, **kwargs):
         recipient_list = []
         recipient_bcc_list = []
-        headers = {}
-        if self.recipient:
+        headers = kwargs.get('headers', {})
+        attachments = kwargs.get('attachments', [])
+
+        if isinstance(self.recipient, basestring):
             recipient_list = self.recipient.split(',')
             recipient_list = [recipient.strip() for recipient in recipient_list \
                               if recipient.strip() <> '']
-        if self.recipient_cc:
+        else:
+            recipient_list = list(self.recipient)
+        if isinstance(self.recipient_cc, basestring):
             recipient_cc_list = self.recipient_cc.split(',')
             recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if \
                                   recipient_cc.strip() <> '']
             recipient_list += recipient_cc_list
-        if self.recipient_bcc:
+        else:
+            recipient_list += list(self.recipient_cc)
+        if isinstance(self.recipient_bcc, basestring):
             recipient_bcc_list = self.recipient_bcc.split(',')
             recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if \
                                    recipient_bcc.strip() <> '']
+        else:
+            recipient_bcc_list = list(self.recipient_bcc)
             
         if self.reply_to:
             headers['Reply-To'] = self.reply_to
@@ -72,6 +80,8 @@ class Email(TendenciBaseModel):
                                headers=headers )
             if self.content_type == 'html' or self.content_type == 'text/html':
                 msg.content_subtype = 'html'
+            if attachments:
+                msg.attachments = attachments
             msg.send(fail_silently=fail_silently)
     
     def save(self, user=None):
