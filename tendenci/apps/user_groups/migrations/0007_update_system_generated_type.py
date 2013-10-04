@@ -5,7 +5,10 @@ from django.core.management import call_command
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        call_command('update_system_generated_type')
+        try:
+            call_command('update_system_generated_type')
+        except:
+            pass
 
     def backwards(self, orm):
         pass
