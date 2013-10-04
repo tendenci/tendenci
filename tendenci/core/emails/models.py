@@ -61,6 +61,7 @@ class Email(TendenciBaseModel):
         if self.priority and self.priority == 1:
             headers['X-Priority'] = '1'
             headers['X-MSMail-Priority'] = 'High'
+        self.body = self.body.encode('ascii', 'xmlcharrefreplace')
             
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
