@@ -6,7 +6,6 @@ import datetime, random, string
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect
@@ -14,17 +13,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
-from django.utils.encoding import smart_str
-from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
-from django.template.loader import get_template
 from django.contrib.auth.models import User
 from djcelery.models import TaskMeta
 
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import check_template, template_exists
+from tendenci.core.base.utils import template_exists
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.core.event_logs.models import EventLog
