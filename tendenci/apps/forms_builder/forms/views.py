@@ -436,16 +436,15 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             # fields aren't included in submitter body to prevent spam
             submitter_body = generate_submitter_email_body(entry, form_for_form)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
-            sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
             email_to = form_for_form.email_to()
+            email = Email()
+            email.subject = subject
+            email.reply_to = form.email_from
+
             if email_to and form.send_email and form.email_text:
                 # Send message to the person who submitted the form.
-                email = Email()
-                email.subject = subject
-                email.body = submitter_body
-                email.sender = sender
                 email.recipient = email_to
-                email.reply_to = form.email_from
+                email.body = submitter_body
                 email.send(fail_silently=True)
 
             # Email copies to admin
@@ -485,6 +484,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
                 # Email copies to recipient list indicated in the form
                 if email_recipients:
+                    email.body = admin_body
                     email.recipient = email_recipients
                     email.send(fail_silently=True, attachments=attachments)
 
