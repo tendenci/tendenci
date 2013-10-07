@@ -190,7 +190,7 @@ setup(
         "slate==0.3",
         "stripe==1.7.7",
         "pycrypto==2.6",
-        "boto==2.5.2",
+        "boto==2.13.3",
         "django-timezones==0.2",
         "django-ses==0.4.1",
         "Geraldo==0.4.16",
