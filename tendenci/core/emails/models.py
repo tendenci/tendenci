@@ -3,7 +3,6 @@ from django.db import models
 
 from django.core.mail.message import EmailMessage
 from django.conf import settings
-from django.utils.encoding import smart_str
 from tendenci.core.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
 from tendenci.core.site_settings.utils import get_setting
@@ -70,7 +69,6 @@ class Email(TendenciBaseModel):
         if self.priority and self.priority == 1:
             headers['X-Priority'] = '1'
             headers['X-MSMail-Priority'] = 'High'
-        self.body = smart_str(self.body, encoding='ascii', errors='xmlcharrefreplace')
             
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
