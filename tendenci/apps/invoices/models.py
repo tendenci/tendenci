@@ -346,6 +346,14 @@ class Invoice(models.Model):
             self.is_void = True
             self.save()
 
+    def unvoid(self):
+        """
+        Remove 'void' from invoice. This means the invoice is active again.
+        """
+        if self.is_void:
+            self.is_void = False
+            self.save()
+
     def get_first_approved_payment(self):
         """
         Returns first approved payment in ascending order
