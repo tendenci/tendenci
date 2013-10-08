@@ -89,11 +89,6 @@ def new(request, template_name="dashboard/new.html"):
 
     statistics = DashboardStatType.objects.filter(displayed=True)
 
-    messages.add_message(
-        request,
-        messages.SUCCESS,
-        '<a target="_blank" href="http://blog.tendenci.com/dashboard-2013/">Click here to learn more about the new Tendenci Dashboard!</a>')
-
     EventLog.objects.log()
     return render_to_response(template_name, {
         'has_paid': has_paid,
