@@ -58,41 +58,41 @@ class Command(BaseCommand):
         members.value = json.dumps(self.get_membership_count(30))
         members.save()
 
-        # print "Creating dashboard statistics for new memberships"
-        # stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_new")
-        # if created:
-        #     stat_type.description = "Memberships in the Past 30 Days"
-        #     stat_type.save()
-        # mem_new = DashboardStat(key=stat_type)
-        # mem_new.value = json.dumps(self.get_new_memberships(5, 30))
-        # mem_new.save()
+        print "Creating dashboard statistics for new memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_new")
+        if created:
+            stat_type.description = "Memberships in the Past 30 Days"
+            stat_type.save()
+        mem_new = DashboardStat(key=stat_type)
+        mem_new.value = json.dumps(self.get_new_memberships(5, 30))
+        mem_new.save()
 
-        # print "Creating dashboard statistics for renewed memberships"
-        # stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_renew")
-        # if created:
-        #     stat_type.description = "Renewed Memberships in the Past 30 days"
-        #     stat_type.save()
-        # mem_renew = DashboardStat(key=stat_type)
-        # mem_renew.value = json.dumps(self.get_renew_memberships(5, 30))
-        # mem_renew.save()
+        print "Creating dashboard statistics for renewed memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_renew")
+        if created:
+            stat_type.description = "Renewed Memberships in the Past 30 days"
+            stat_type.save()
+        mem_renew = DashboardStat(key=stat_type)
+        mem_renew.value = json.dumps(self.get_renew_memberships(5, 30))
+        mem_renew.save()
 
-        # print "Creating dashboard statistics for expired memberships"
-        # stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expired")
-        # if created:
-        #     stat_type.description = "Expired memberships in the Past 30 days"
-        #     stat_type.save()
-        # mem_expired = DashboardStat(key=stat_type)
-        # mem_expired.value = json.dumps(self.get_expired_memberships(5, 30))
-        # mem_expired.save()
+        print "Creating dashboard statistics for expired memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expired")
+        if created:
+            stat_type.description = "Expired memberships in the Past 30 days"
+            stat_type.save()
+        mem_expired = DashboardStat(key=stat_type)
+        mem_expired.value = json.dumps(self.get_expired_memberships(5, 30))
+        mem_expired.save()
 
-        # print "Creating dashboard statistics for expiring memberships"
-        # stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expiring")
-        # if created:
-        #     stat_type.description = "Upcoming Expiring Memberships"
-        #     stat_type.save()
-        # mem_expiring = DashboardStat(key=stat_type)
-        # mem_expiring.value = json.dumps(self.get_expiring_memberships(5, 30))
-        # mem_expiring.save()
+        print "Creating dashboard statistics for expiring memberships"
+        stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expiring")
+        if created:
+            stat_type.description = "Upcoming Expiring Memberships"
+            stat_type.save()
+        mem_expiring = DashboardStat(key=stat_type)
+        mem_expiring.value = json.dumps(self.get_expiring_memberships(5, 30))
+        mem_expiring.save()
 
         print "Creating dashboard statistics for new corporate memberships"
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_memberships_30_new")
