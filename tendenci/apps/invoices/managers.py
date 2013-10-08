@@ -46,3 +46,15 @@ class InvoiceManager(Manager):
         Exclude void invoices by default
         """
         return super(InvoiceManager, self).get_query_set().filter(is_void=False)
+
+    def all_invoices(self):
+      """
+      Returns ALL invoice records
+      """
+      return super(InvoiceManager, self).get_query_set()
+
+    def void(self):
+      """
+      Returns ALL invoice records
+      """
+      return super(InvoiceManager, self).get_query_set().filter(is_void=True)
