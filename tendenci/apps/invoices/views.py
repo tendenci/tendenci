@@ -29,7 +29,8 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     """
     Invoice information, payment attempts (successful and unsuccessful).
     """
-    invoice = get_object_or_404(Invoice, pk=id)
+    invoice = get_object_or_404(Invoice.objects.all_invoices(), pk=id)
+
     if not invoice.allow_view_by(request.user, guid):
         raise Http403
 
@@ -163,7 +164,13 @@ def void_invoice(request, id):
     invoice.void()
     return redirect(invoice)
 
-
+def unvoid_invoice(self, id):
+    """
+    Sets Invoice.is_void=False
+    """
+    invoice = get_object_or_404(Invoice.objects.void(), pk=id)
+    invoice.unvoid()
+    return redirect(invoice)
 
 @is_enabled('invoices')
 @login_required
@@ -199,7 +206,14 @@ def search(request, template_name="invoices/search.html"):
         event = form.cleaned_data.get('event')
         event_id = form.cleaned_data.get('event_id')
 
-    invoices = Invoice.objects.all()
+    if tendered:
+        if 'void' in tendered:
+            invoices = Invoice.objects.void()
+        else:
+            invoices = Invoice.objects.filter(status_detail=tendered)
+    else:
+        invoices = Invoice.objects.all()
+
     if start_dt:
         invoices = invoices.filter(create_dt__gte=datetime.combine(start_dt, time.min))
     if end_dt:
@@ -210,8 +224,6 @@ def search(request, template_name="invoices/search.html"):
     if end_amount:
         invoices = invoices.filter(total__lte=end_amount)
 
-    if tendered:
-        invoices = invoices.filter(status_detail=tendered)
     if balance == '0':
         invoices = invoices.filter(balance=0)
     elif balance == '1':

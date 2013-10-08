@@ -37,6 +37,7 @@ class InvoiceSearchForm(forms.Form):
         ('', _('Show All')),
         ('tendered', _('Tendered')),
         ('estimate', _('Estimate')),
+        ('void', _('Void')),
     )
     BALANCE_CHOICES = (
         ('', _('Show All')),

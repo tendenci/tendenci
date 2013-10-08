@@ -52,7 +52,11 @@
 
 <div class="invoice-options">
     <ul>
+        {% if invoice.is_void %}
+        <li><a href="{% url invoice.unvoid_invoice invoice.pk %}">Un-Void Invoice</a></li>
+        {% else %}
         <li><a href="{% url invoice.void_invoice invoice.pk %}">Void Invoice</a></li>
+        {% endif %}
     </ul>
 </div>
 
@@ -102,10 +106,15 @@
 	  </tr>
 	  <tr>
 	    <td>{% trans "Invoice Status" %}</td>
-	    {% if invoice.is_tendered %}
-	      <td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %} {{ invoice.status_detail|title }} {{ tenddate }} {% endblocktrans %}</td>
-	    {% else %}
-	      <td class="invoice-status-red td-right">{{ invoice.status_detail|title }}</td>
+	    {% if invoice.is_void %}
+            <td class="invoice-status-red td-right">{{ invoice.get_status|title }}</td>
+	    {% elif invoice.is_tendered %}
+            <td class="invoice-status td-right">
+                {{ invoice.get_status|title }}
+                {% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}{{ tenddate }}{% endblocktrans %}
+            </td>
+        {% else %}
+            <td class="invoice-status-red td-right">{{ invoice.get_status|title }}</td>
 	    {% endif %}
 	  </tr>
 	  <tr class="invoice-meta-amount">
