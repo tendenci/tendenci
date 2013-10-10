@@ -97,9 +97,8 @@
 
 .membership.info table tr td:first-child {
     text-align: right;
-    width: 110px;
+    width: 30%;
     padding-right: 20px;
-    white-space: nowrap;
     padding-left: 20px;
 }
 
