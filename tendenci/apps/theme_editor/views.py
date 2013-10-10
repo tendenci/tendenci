@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
+from django.core.management import call_command
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import get_template_list
@@ -385,9 +386,7 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
 
     if request.method == "POST":
         selected_theme = request.POST.get('theme')
-        theme_setting = Setting.objects.get(name='theme')
-        theme_setting.set_value(selected_theme)
-        theme_setting.save()
+        call_command('set_theme', selected_theme)
         messages.add_message(request, messages.SUCCESS, "Your theme has been changed to %s." % selected_theme.title())
 
     current_theme = get_setting('module', 'theme_editor', 'theme')
