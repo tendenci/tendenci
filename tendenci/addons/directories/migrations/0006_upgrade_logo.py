@@ -17,6 +17,10 @@ class Migration(DataMigration):
                 model=orm['directories.Directory']._meta.module_name)
 
         for directory in orm['directories.Directory'].objects.all():
+
+            if not directory.logo:
+                continue  # on to the next one
+
             file_object, created = orm['files.File'].objects.get_or_create(
                 file=directory.logo,
                 defaults={
