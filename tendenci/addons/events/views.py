@@ -3108,7 +3108,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('registration_id', 'registration__pk'),
         ('is_primary', 'is_primary'),
         ('amount', 'amount'),
-        ('price type', 'registration__reg_conf_price__title'),
+        ('price type', 'pricing__title'),
         ('invoice_id', 'registration__invoice__pk'),
         ('registration price', 'registration__invoice__total'),
         ('payment method', 'registration__payment_method__machine_name'),
