@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
-from django.db.models import Count
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -46,6 +46,14 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
     # status=0 has been taken care of in the has_perm function
     if (article.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
+
+    if article.release_dt <= datetime.now():
+        if not any([
+            has_perm(request.user, 'articles.view_article'),
+            request.user == article.owner,
+            request.user == article.creator
+            ]):
+            raise Http403
 
     if has_view_perm(request.user, 'articles.view_article', article):
         EventLog.objects.log(instance=article)
@@ -90,7 +98,10 @@ def search(request, template_name="articles/search.html"):
             articles = articles.filter( release_dt__month=date.month, release_dt__day=date.day, release_dt__year=date.year )
 
     if not has_perm(request.user, 'articles.view_article'):
-        articles = articles.filter(release_dt__lte=datetime.now())
+        if request.user.is_anonymous():
+            articles = articles.filter(release_dt__lte=datetime.now())
+        else:
+            articles = articles.filter(Q(release_dt__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))
 
     # don't use order_by with "whoosh"
     if not query or settings.HAYSTACK_SEARCH_ENGINE.lower() != "whoosh":
@@ -120,6 +131,14 @@ def search_redirect(request):
 @is_enabled('articles')
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)
+
+    if article.release_dt <= datetime.now():
+        if not any([
+            has_view_perm(request.user, 'articles.view_article'),
+            request.user == article.owner,
+            request.user == article.creator
+            ]):
+            raise Http403
 
     if has_perm(request.user, 'articles.view_article', article):
         EventLog.objects.log(instance=article)
