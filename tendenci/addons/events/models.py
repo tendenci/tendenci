@@ -993,8 +993,8 @@ class Event(TendenciBaseModel):
         """
         Total collected from this event
         """
-        total_sum = Registration.objects.filter(event=self).aggregate(
-            Sum('invoice__total'),
+        total_sum = Registration.objects.filter(event=self, canceled=False).aggregate(
+            Sum('invoice__total')
         )['invoice__total__sum']
 
         # total_sum is the amount of money received when all is said and done
@@ -1008,15 +1008,12 @@ class Event(TendenciBaseModel):
         """
         Outstanding balance for this event
         """
-        figures = Registration.objects.filter(event=self).aggregate(
-            Sum('invoice__total'),
-            Sum('invoice__balance'),
-        )
-        balance_sum = figures['invoice__balance__sum']
-        total_sum = figures['invoice__total__sum']
+        balance_sum = Registration.objects.filter(event=self, canceled=False).aggregate(
+            Sum('invoice__balance')
+        )['invoice__balance__sum']
 
-        if total_sum and balance_sum:
-            return total_sum - balance_sum
+        if balance_sum:
+            return balance_sum
         else:
             return 0
 
