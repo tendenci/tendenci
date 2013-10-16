@@ -59,6 +59,9 @@ class ArticleSearchForm(forms.Form):
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
 
+        if 'search_category' not in self.data:
+            self.data['search_category'] = "headline__icontains"
+
     def clean(self):
         cleaned_data = self.cleaned_data
         q = self.cleaned_data.get('q', None)
