@@ -134,13 +134,13 @@ def print_view(request, slug, template_name="articles/print-view.html"):
 
     if article.release_dt <= datetime.now():
         if not any([
-            has_view_perm(request.user, 'articles.view_article'),
+            has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,
             request.user == article.creator
             ]):
             raise Http403
 
-    if has_perm(request.user, 'articles.view_article', article):
+    if has_view_perm(request.user, 'articles.view_article', article):
         EventLog.objects.log(instance=article)
         return render_to_response(template_name, {'article': article},
             context_instance=RequestContext(request))
