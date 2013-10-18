@@ -47,9 +47,9 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
     if (article.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
-    if article.release_dt <= datetime.now():
+    if article.release_dt >= datetime.now():
         if not any([
-            has_perm(request.user, 'articles.view_article', article),
+            has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,
             request.user == article.creator
             ]):
@@ -132,7 +132,7 @@ def search_redirect(request):
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)
 
-    if article.release_dt <= datetime.now():
+    if article.release_dt >= datetime.now():
         if not any([
             has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,
