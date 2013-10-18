@@ -49,7 +49,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
 
     if article.release_dt <= datetime.now():
         if not any([
-            has_perm(request.user, 'articles.view_article'),
+            has_perm(request.user, 'articles.view_article', article),
             request.user == article.owner,
             request.user == article.creator
             ]):
