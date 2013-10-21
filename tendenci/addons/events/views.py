@@ -51,6 +51,7 @@ from tendenci.core.imports.models import Import
 from tendenci.core.base.utils import convert_absolute_urls
 from tendenci.core.imports.utils import (
     render_excel)
+from tendenci.core.base.http import HttpCustomResponseRedirect
 
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.notifications import models as notification
@@ -2177,7 +2178,9 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
 
     if type:  # redirect to /events/month/ if type does not exist
         if not Type.objects.filter(slug=type).exists():
-            return HttpResponseRedirect(reverse('event.month'))
+            # use HttpCustomResponseRedirect to check if event
+            # exists in redirects module
+            return HttpCustomResponseRedirect(reverse('event.month'))
 
     # default/convert month and year
     if month and year:
