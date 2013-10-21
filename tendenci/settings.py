@@ -33,10 +33,9 @@ TIME_ZONE = 'US/Central'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 LANGUAGES = (
     ('en', u'English'),
-    ('en-us', u'English'),
     ('es', u'Espanol'),
 )
 
