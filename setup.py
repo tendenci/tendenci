@@ -177,7 +177,7 @@ setup(
         "pyparseuri>=0.1",
         "pysolr==2.0.15",
         "BeautifulSoup==3.2.1",
-        "beautifulsoup4==4.3.2"
+        "beautifulsoup4==4.3.2",
         "oauth2>=1.5.167",
         "python_openid>=2.2",
         "ordereddict==1.1",
