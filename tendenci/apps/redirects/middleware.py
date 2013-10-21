@@ -4,9 +4,10 @@ from django.utils.http import urlquote
 
 class RedirectMiddleware(object):
     def process_response(self, request, response):
-        if response.status_code != 404:
+        """ search url in redirects for 404 or 302 custom redirect """
+        if response.status_code != 404 and (not (response.status_code == 302 and
+                                           getattr(response, 'custom_redirect', False))):
             return response  # No need to check for a redirect for non-404 responses.
-
         # use urlquote so we can support '?' in the redirect
         path = urlquote(request.get_full_path())
         from tendenci.core.handler404.models import Report404

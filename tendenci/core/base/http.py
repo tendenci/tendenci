@@ -2,7 +2,11 @@ import sys
 
 from django.http import HttpResponseForbidden, HttpResponseServerError
 from django.template import loader
+from django.http import HttpResponseRedirect
 
+
+class HttpCustomResponseRedirect(HttpResponseRedirect):
+    custom_redirect = True
 
 class Http403(Exception):
     pass
