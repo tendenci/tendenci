@@ -120,12 +120,17 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 
     if has_perm(request.user,'locations.change_location',location):    
         if request.method == "POST":
-            form = form_class(request.POST, instance=location, user=request.user)
+            form = form_class(request.POST, request.FILES, instance=location, user=request.user)
             if form.is_valid():
                 location = form.save(commit=False)
 
                 # update all permissions and save the model
                 location = update_perms_and_save(request, form, location)
+
+                if 'photo_upload' in form.cleaned_data:
+                    photo = form.cleaned_data['photo_upload']
+                    if photo:
+                        location.save(photo=photo)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
                                                               
@@ -144,12 +149,17 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 def add(request, form_class=LocationForm, template_name="locations/add.html"):
     if has_perm(request.user,'locations.add_location'):
         if request.method == "POST":
-            form = form_class(request.POST, user=request.user)
+            form = form_class(request.POST, request.FILES, user=request.user)
             if form.is_valid():           
                 location = form.save(commit=False)
 
                 # update all permissions and save the model
                 location = update_perms_and_save(request, form, location)
+
+                if 'photo_upload' in form.cleaned_data:
+                    photo = form.cleaned_data['photo_upload']
+                    if photo:
+                        location.save(photo=photo)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
                 

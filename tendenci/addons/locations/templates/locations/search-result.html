@@ -1,9 +1,15 @@
 {% load i18n %}
 {% load base_filters %}
+{% load base_tags %}
 
 <div class="wrap-search-item">
     <div class="search-item location-search-item">
         <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
+        {% if location.logo %}
+        <div class="logo">
+            <img src="{% image_url location.logo size=200x200 crop=true quality=84 %}" title="{% firstof location.location_name 'Untitled' %}"/>
+        </div>
+        {% endif %}
         <div class="image">
             {% if origin %}
                 <a title="Google Directions" href="http://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">

@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
 from tendenci.core.perms.models import TendenciBaseModel 
@@ -31,6 +32,8 @@ class Location(TendenciBaseModel):
 
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
+    logo = models.ForeignKey(File, null=True, default=None,
+                             help_text=_('Only jpg, gif, or png images.'))
     hq = models.BooleanField(_('Headquarters'))
 
     perms = generic.GenericRelation(ObjectPermission,
@@ -127,7 +130,22 @@ class Location(TendenciBaseModel):
         if not all((self.latitude, self.longitude)):
             self.latitude, self.longitude = get_coordinates(self.get_address())
 
+        photo_upload = kwargs.pop('photo', None)
         super(Location, self).save(*args, **kwargs)
+
+        if photo_upload and self.pk:
+            image = File(content_type=ContentType.objects.get_for_model(self.__class__),
+                         object_id=self.pk,
+                         creator=self.creator,
+                         creator_username=self.creator_username,
+                         owner=self.owner,
+                         owner_username=self.owner_username)
+            photo_upload.file.seek(0)
+            image.file.save(photo_upload.name, photo_upload)
+            image.save()
+
+            self.logo = image
+            self.save()
 
 
 class LocationImport(models.Model):
