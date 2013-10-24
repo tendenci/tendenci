@@ -703,7 +703,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
         if all([form.is_valid() for form in forms]):
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
-            speakers = form_speaker.save()
+            speakers = form_speaker.save(event)
             # make dict (i.e. speaker_bind); bind speaker with speaker image
             pattern = re.compile('speaker-\d+-name')
             speaker_keys = list(set(re.findall(pattern, ' '.join(request.POST))))
@@ -717,8 +717,6 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                         speaker_bind[speaker_name] = speaker_file
 
             for speaker in speakers:
-                speaker.event = [event]
-                speaker.save()
                 assign_files_perms(speaker)
 
                 # match speaker w/ speaker image
@@ -743,6 +741,13 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
 
                 for speaker in speakers:
                     speaker.event = recurring_events
+
+                if form_speaker.deleted_objects:
+                    for recur_event in recurring_events:
+                        for del_speaker in form_speaker.deleted_objects:
+                            del_speaker.event.remove(recur_event)
+                            if not del_speaker.event:
+                                del_speaker.remove()
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -866,47 +871,17 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                 status=True,
             ), prefix='regconfpricing', **regconfpricing_params
         )
-        form_apply_recurring = ApplyRecurringChangesForm(request.POST)
-
-        forms = [form_regconfpricing, form_apply_recurring]
-        if all([form.is_valid() for form in forms]):
-            apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
-
+        if form_apply_recurring.is_valid():
             regconf_pricing = form_regconfpricing.save()
+
             for regconf_price in regconf_pricing:
                 regconf_price.reg_conf = reg_conf
                 if not pricing_reg_form_required:
                     regconf_price.reg_form = None
                 regconf_price.save()
 
-            if apply_changes_to == 'self':
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))
-            else:
-                recurring_events = event.recurring_event.event_set.exclude(pk=event.pk)
-                if apply_changes_to == 'rest':
-                    recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
-
-                for cur_event in recurring_events:
-                    for regconf_price in regconf_pricing:
-                        start_dt_diff = regconf_price.start_dt - event.start_dt
-                        end_dt_diff = regconf_price.end_dt - event.end_dt
-                        new_pricing = RegConfPricing.objects.create(
-                            reg_conf = cur_event.registration_configuration,
-                            title = regconf_price.title,
-                            quantity = regconf_price.quantity,
-                            group = regconf_price.group,
-                            price = regconf_price.price,
-                            reg_form = regconf_price.reg_form,
-                            start_dt = cur_event.start_dt + start_dt_diff,
-                            end_dt = cur_event.end_dt + end_dt_diff,
-                            allow_anonymous = regconf_price.allow_anonymous,
-                            allow_user = regconf_price.allow_user,
-                            allow_member = regconf_price.allow_member,
-                        )
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
-                return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
+            return HttpResponseRedirect(reverse('event', args=[event.pk]))
     else:
         form_regconfpricing = RegConfPricingSet(
             queryset=RegConfPricing.objects.filter(
@@ -916,11 +891,8 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
             **regconfpricing_params
         )
         form_regconfpricing.label = "Pricing(s)"
-        form_apply_recurring = ApplyRecurringChangesForm()
 
     multi_event_forms = [form_regconfpricing]
-    if event.is_recurring_event:
-        multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
     return render_to_response(template_name, 
@@ -1079,7 +1051,6 @@ def add(request, year=None, month=None, day=None, \
                 # pks have to exist; before making relationships
                 place = form_place.save()
                 regconf = form_regconf.save()
-                speakers = form_speaker.save()
                 organizer = form_organizer.save()
                 regconf_pricing = form_regconfpricing.save()
 
@@ -1092,6 +1063,8 @@ def add(request, year=None, month=None, day=None, \
 
                 assign_files_perms(place)
                 assign_files_perms(organizer)
+
+                speakers = form_speaker.save(event)
 
                 # handle image
                 f = form_event.cleaned_data['photo_upload']
@@ -1176,7 +1149,7 @@ def add(request, year=None, month=None, day=None, \
 
                     event_list = get_recurrence_dates(r_type, init_date, end_recurring, freq, recur_every)[:20]
                     for counter in range(1, len(event_list)):
-                        new_event = copy_event(event, request.user)
+                        new_event = copy_event(event, request.user, reuse_speaker=True)
                         new_event.start_dt = event_list[counter]
                         new_event.end_dt = event_list[counter] + event_length
                         new_event.is_recurring_event = True

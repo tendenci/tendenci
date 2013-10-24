@@ -1237,7 +1237,7 @@ def clean_price(price, user):
 
     return price, price_pk, amount
 
-def copy_event(event, user):
+def copy_event(event, user, reuse_speaker=False):
     #copy event
     new_event = Event.objects.create(
         title = event.title,
@@ -1290,12 +1290,15 @@ def copy_event(event, user):
 
     #copy speakers
     for speaker in event.speaker_set.all():
-        new_speaker = Speaker.objects.create(
-            user = speaker.user,
-            name = speaker.name,
-            description = speaker.description,
-        )
-        new_speaker.event.add(new_event)
+        if reuse_speaker:
+            speaker.event.add(new_event)
+        else:
+            new_speaker = Speaker.objects.create(
+                user = speaker.user,
+                name = speaker.name,
+                description = speaker.description,
+            )
+            new_speaker.event.add(new_event)
 
     #copy organizers
     for organizer in event.organizer_set.all():

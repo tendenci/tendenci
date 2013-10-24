@@ -789,6 +789,32 @@ class SpeakerBaseFormSet(BaseModelFormSet):
                     raise forms.ValidationError(_("Speakers in an event must have distinct names. '%s' is already used." % name))
                 names.append(name)
 
+    def save(self, event, *args, **kwargs):
+        self.deleted_objects = []
+        saved_instances = []
+
+        for form in self.initial_forms:
+            pk_name = self._pk_field.name
+            raw_pk_value = form._raw_value(pk_name)
+            pk_value = form.fields[pk_name].clean(raw_pk_value)
+            pk_value = getattr(pk_value, 'pk', pk_value)
+
+            speaker = self._existing_object(pk_value)
+            if self.can_delete and self._should_delete_form(form):
+                self.deleted_objects.append(speaker)
+                speaker.event.remove(event)
+                if not speaker.event.count():
+                    speaker.delete()
+                continue
+            if form.has_changed():
+                saved_instances.append(self.save_existing(form, speaker))
+
+        speakers = self.save_new_objects()
+        for speaker in speakers:
+            speaker.event.add(event)
+
+        return saved_instances + speakers
+
 
 class SpeakerForm(BetterModelForm):
     description = forms.CharField(required=False,
