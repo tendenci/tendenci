@@ -8,7 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
@@ -22,12 +22,39 @@
 
     <div class="event-wrap">
 
-    	<form action="{% url event.edit event.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <ul class="tabs">
+            <li class="dropdown {% if label == 'overview' %}active{% endif %}">
+                <a href="{% url event.edit event.pk %}">{% trans "Overview" %}</a>
+            </li>
+            <li class="dropdown {% if label == 'location' %}active{% endif %}">
+                <a href="{% url event.location_edit event.pk %}">{% trans "Location" %}</a>
+            </li>
+            <li class="dropdown {% if label == 'organizer' %}active{% endif %}">
+                <a href="{% url event.organizer_edit event.pk %}">{% trans "Organizer" %}</a>
+            </li>
+            <li class="dropdown {% if label == 'speakers' %}active{% endif %}">
+                <a href="{% url event.speaker_edit event.pk %}">{% trans "Speaker(s)" %}</a>
+            </li>
+            <li class="dropdown {% if label == 'regconf' %}active{% endif %}">
+                <a href="{% url event.regconf_edit event.pk %}">{% trans "Registration" %}</a>
+            </li>
+            <li class="dropdown {% if label == 'pricing' %}active{% endif %}">
+                <a href="{% url event.pricing_edit event.pk %}">{% trans "Pricing(s)" %}</a>
+            </li>
+        </ul>
+
+    	<form id="event-form" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
 			{{ multi_event_forms|styled_multi_forms }}          
 			<input type="submit" value="Save Changes" />
 		</div>
         </form>
+
+        <div id="confirm-dialog" title="Apply changes to all events?">
+            <p>{% blocktrans %}
+            These changes would be applied to every event part of this series, including past events. Are you sure?
+            {% endblocktrans %}</p>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -35,10 +62,10 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript">
         var slugit = new Slugify({
 			input_element : 'input#id_title',
@@ -47,17 +74,40 @@
 			help: false,
 			limit : 150
 		});
-        
+        var displayConfirmation = true;
+        $('#confirm-dialog').dialog({
+            autoOpen: false,
+            resizable: false,
+            width: 600,
+            modal: true,
+            buttons: {
+                'Yes': function() {
+                    displayConfirmation = false;
+                    $('#event-form').submit();
+                },
+                Cancel: function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('#event-form').submit(function() {
+            if ($('#id_apply_changes_to_2').is(':checked') && displayConfirmation) {
+                $('#confirm-dialog').dialog('open');
+                return false;
+            }
+        });
+	</script>
+
+	<script type="text/javascript">
+        {% include 'events/include/event_place.js' %}
+    </script>
+
+    <script type="text/javascript">
+     {% include 'events/include/event_form_custom_reg.js' %}
+    </script>
+    <script type="text/javascript">        
         $(document).ready(function() {
             $('.regconfpricing_formset .section-description').addClass('well');
         });
 	</script>
-	
-	<script type="text/javascript">
-        {% include 'events/include/event_place.js' %}
-    </script>
-	
-<script type="text/javascript">
- {% include 'events/include/event_form_custom_reg.js' %}
-</script>
 {% endblock %}
