@@ -76,7 +76,6 @@ class InvoiceExportTask(Task):
             'total',
             'payments_credits',
             'balance',
-            'estimate',
             'disclaimer',
             'variance_notes',
             'admin_notes',
@@ -114,7 +113,7 @@ class InvoiceExportTask(Task):
                     else:
                         value = f.value_from_object(item)
                     d[f.name] = value
-            
+
             # append the accumulated values as a data row
             # keep in mind the ordering of the fields
             data_row = []
