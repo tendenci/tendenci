@@ -158,8 +158,6 @@ def get_ACRF_queryset(event=None):
         initial = {"status": "active",
                    "name": "Default Custom Registration Form",
                    "notes": "This is a default custom registration form.",
-                   "creator_id": 1,
-                   "owner_id": 1,
                    "creator_username": "default",
                    "owner_username": "default"}
 
@@ -734,7 +732,7 @@ def add_registration(*args, **kwargs):
                 override = form.cleaned_data.get('override', False)
                 override_price = form.cleaned_data.get('override_price', Decimal(0))
 
-            price = form.cleaned_data['pricing']
+            price = form.cleaned_data.get('pricing', 0)
 
             if override:
                 amount = override_price
@@ -750,9 +748,11 @@ def add_registration(*args, **kwargs):
     discount_amount = Decimal(0)
     discount_list = [Decimal(0) for i in range(len(amount_list))]
     if discount_code:
-        [discount] = Discount.objects.filter(discount_code=discount_code)[:1] or [None]
+        [discount] = Discount.objects.filter(discount_code=discount_code,
+                        apps__model=RegistrationConfiguration._meta.module_name)[:1] or [None]
         if discount and discount.available_for(1):
             amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
+    invoice_discount_amount = discount_amount
 
     reg8n_attrs = {
         "event": event,
@@ -763,10 +763,6 @@ def add_registration(*args, **kwargs):
         'override_table': override_table,
         'override_price_table': override_price_table
     }
-    if discount_code and discount_amount:
-        reg8n_attrs.update({'discount_code': discount_code,
-                            'discount_amount': discount_amount})
-
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity
     if request.user.is_authenticated():
@@ -783,18 +779,39 @@ def add_registration(*args, **kwargs):
     for i, form in enumerate(registrant_formset.forms):
         override = False
         override_price = Decimal(0)
+        free_pass_stat = None
         if not event.is_table:
-            if request.user.is_superuser:
-                override = form.cleaned_data.get('override', False)
-                override_price = form.cleaned_data.get('override_price', Decimal(0))
-
-            price = form.cleaned_data['pricing']
-
-            # this amount has taken account into admin override and discount code
-            amount = amount_list[i]
-
-            if discount_code and discount_amount:
-                discount_amount = discount_list[i]
+            # set amount = 0 for valid free pass
+            use_free_pass = form.cleaned_data.get('use_free_pass', False)
+            if use_free_pass:
+                from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+                from tendenci.addons.corporate_memberships.models import FreePassesStat
+                # check if free pass is still available
+                email = form.cleaned_data.get('email', '')
+                memberid = form.cleaned_data.get('memberid', '')
+                corp_membership = get_user_corp_membership(
+                                                member_number=memberid,
+                                                email=email)
+                if corp_membership and corp_membership.free_pass_avail:
+                    free_pass_stat = FreePassesStat(corp_membership=corp_membership,
+                                                    event=event)
+                    free_pass_stat.set_creator_owner(request.user)
+                    free_pass_stat.save()
+                    # update free pass status table
+            if free_pass_stat:
+                amount = Decimal(0)
+            else:
+                if request.user.is_superuser:
+                    override = form.cleaned_data.get('override', False)
+                    override_price = form.cleaned_data.get('override_price', Decimal(0))
+    
+                price = form.cleaned_data['pricing']
+    
+                # this amount has taken account into admin override and discount code
+                amount = amount_list[i]
+    
+                if discount_code and discount_amount:
+                    discount_amount = discount_list[i]
         else:
             # table individual
             if i == 0:
@@ -817,14 +834,24 @@ def add_registration(*args, **kwargs):
             registrant_kwargs = {'custom_reg_form': custom_reg_form,
                                  'is_primary': i==0,
                                  'override': override,
-                                 'override_price': override_price}
+                                 'override_price': override_price,
+                                 'use_free_pass': False}
             if not event.is_table:
                 registrant_kwargs['discount_amount'] = discount_list[i]
+            if free_pass_stat:
+                registrant_kwargs['use_free_pass'] = True
 
             registrant = create_registrant_from_form(*registrant_args, **registrant_kwargs)
             total_amount += registrant.amount
 
             count += 1
+            
+            if free_pass_stat:
+                free_pass_stat.registrant = registrant
+                if registrant.user:
+                    free_pass_stat.user = registrant.user
+                free_pass_stat.save()
+                    
 
     # create each regaddon
     for form in addon_formset.forms:
@@ -838,6 +865,11 @@ def add_registration(*args, **kwargs):
 
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
+    if discount_code and invoice_discount_amount:
+        invoice.discount_code = discount_code
+        invoice.discount_amount = invoice_discount_amount
+        invoice.save()
+
     if discount_code and discount:
         for dmount in discount_list:
             if dmount > 0:
@@ -872,6 +904,7 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.override_price = Decimal(0)
     registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
+    registrant.use_free_pass = kwargs.get('use_free_pass', False)
     registrant.memberid = form.cleaned_data.get('memberid', '')
     registrant.reminder = form.cleaned_data.get('reminder', False)
 
@@ -910,6 +943,7 @@ def create_registrant_from_form(*args, **kwargs):
                     registrant.position_title = user_profile.position_title
 
     registrant.save()
+    add_sf_attendance(registrant, event)
     return registrant
 
 
@@ -1211,9 +1245,20 @@ def copy_event(event, user):
         description = event.description,
         timezone = event.timezone,
         type = event.type,
+        group = event.group,
+        image = event.image,
+        start_dt = event.start_dt,
+        end_dt = event.end_dt,
         all_day = event.all_day,
-        private = event.private,
+        on_weekend = event.on_weekend,
+        mark_registration_ended = event.mark_registration_ended,
+        private_slug = event.private_slug,
         password = event.password,
+        tags = event.tags,
+        external_url = event.external_url,
+        priority = event.priority,
+        display_event_registrants = event.display_event_registrants,
+        display_registrants_to = event.display_registrants_to,
         allow_anonymous_view = False,
         allow_user_view = event.allow_user_view,
         allow_member_view = event.allow_member_view,
@@ -1225,7 +1270,6 @@ def copy_event(event, user):
         owner_username = user.username,
         status = event.status,
         status_detail = event.status_detail,
-        tags = event.tags,
     )
 
     #copy place
@@ -1269,7 +1313,17 @@ def copy_event(event, user):
             payment_required = old_regconf.payment_required,
             limit = old_regconf.limit,
             enabled = old_regconf.enabled,
+            require_guests_info = old_regconf.require_guests_info,
             is_guest_price = old_regconf.is_guest_price,
+            discount_eligible = old_regconf.discount_eligible,
+            display_registration_stats = old_regconf.display_registration_stats,
+            use_custom_reg_form = old_regconf.use_custom_reg_form,
+            reg_form = old_regconf.reg_form,
+            bind_reg_form_to_conf_only = old_regconf.bind_reg_form_to_conf_only,
+            email = old_regconf.email,
+            send_reminder = old_regconf.send_reminder,
+            reminder_days = old_regconf.reminder_days,
+            registration_email_text = old_regconf.registration_email_text,
         )
         new_regconf.payment_method = old_regconf.payment_method.all()
         new_regconf.save()
@@ -1284,6 +1338,9 @@ def copy_event(event, user):
                 quantity = pricing.quantity,
                 group = pricing.group,
                 price = pricing.price,
+                reg_form = pricing.reg_form,
+                start_dt = pricing.start_dt,
+                end_dt = pricing.end_dt,
                 allow_anonymous = pricing.allow_anonymous,
                 allow_user = pricing.allow_user,
                 allow_member = pricing.allow_member,
@@ -1717,3 +1774,79 @@ def handle_recurring_event_edit(request, event, params, form_class=EventForm):
 
         params['event'] = event
         event_update_util(request, form_event, params)
+
+
+def add_sf_attendance(registrant, event):
+
+    from django.conf import settings
+    from tendenci.core.base.utils import get_salesforce_access, create_salesforce_contact
+    from tendenci.apps.profiles.models import Profile
+
+    if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:
+        sf = get_salesforce_access()
+        if sf:
+            # Make sure we have a complete user detail from registrants
+            # which do not have an associated user. This is because the
+            # contact ID will not be stored.
+            contact_requirements = (registrant.first_name,
+                                    registrant.last_name,
+                                    registrant.email)
+            contact_id = None
+            # Get Salesforce Contact ID
+            if registrant.user:
+                try:
+                    profile = registrant.user.get_profile()
+                except Profile.DoesNotExist:
+                    profile = Profile.objects.create_profile(user=registrant.user)
+                contact_id = create_salesforce_contact(profile)
+                    
+            elif all(contact_requirements):
+                # Query for a duplicate entry in salesforce
+                result = sf.query("SELECT Id FROM Contact WHERE FirstName='%s' AND LastName='%s' AND Email='%s'"
+                                  %(registrant.first_name, registrant.last_name, registrant.email) )
+                if result['records']:
+                    contact_id = result['records'][0]['Id']
+                else:
+                    contact = sf.Contact.create({
+                        'FirstName':registrant.first_name,
+                        'LastName':registrant.last_name,
+                        'Email':registrant.email})
+                    contact_id = contact['id']
+
+            if contact_id:
+                result = sf.Event.create({
+                    'WhoId':contact_id,
+                    'Subject':event.title,
+                    'StartDateTime':event.start_dt.isoformat(),
+                    'EndDateTime':event.end_dt.isoformat()})
+
+
+def create_member_registration(user, event, form):
+
+    from tendenci.apps.profiles.models import Profile
+
+    pricing = form.cleaned_data['pricing']
+    reg_attrs = {'event': event,
+                 'reg_conf_price': pricing,
+                 'amount_paid': pricing.price,
+                 'creator': user,
+                 'owner': user}
+
+    for mem_id in form.cleaned_data['member_ids'].split(','):
+        mem_id = mem_id.strip()
+        [member] = Profile.objects.filter(member_number=mem_id,
+                                          status_detail='active')[:1] or [None]
+        if member:
+            exists = event.registrants().filter(user=member.user)
+            if not exists:
+                registration = Registration.objects.create(**reg_attrs)
+                registrant_attrs = {'registration': registration,
+                                    'user': member.user,
+                                    'first_name': member.user.first_name,
+                                    'last_name': member.user.last_name,
+                                    'email': member.user.email,
+                                    'is_primary': True,
+                                    'amount': pricing.price,
+                                    'pricing': pricing}
+                registrant = Registrant.objects.create(**registrant_attrs)
+                invoice = registration.save_invoice()

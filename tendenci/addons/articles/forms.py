@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from django import forms
+from django.forms.util import ErrorList
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.articles.models import Article
@@ -9,6 +10,75 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.base.fields import EmailVerificationField
 from tendenci.apps.user_groups.models import Group
+
+
+SEARCH_CATEGORIES_ADMIN = (
+    ('headline__icontains', 'Headline'),
+    ('first_name__icontains', 'Author First Name'),
+    ('last_name__icontains', 'Author Last Name'),
+    ('id', 'Article ID'),
+    ('owner__id', 'Article Parent ID(#)'),
+
+    ('body__icontains', 'Body'),
+    ('tags__icontains', 'Tags'),
+
+    ('creator__id', 'Creator Userid(#)'),
+    ('creator__username', 'Creator Username'),
+
+    ('featured', 'Featured Article'),
+
+    ('owner__id', 'Owner Userid(#)'),
+    ('owner__username', 'Owner Username'),
+
+    ('status_detail__icontains', 'Status Detail'),
+    ('syndicate', 'Syndicate'),
+)
+
+SEARCH_CATEGORIES = (
+    ('headline__icontains', 'Headline'),
+    ('last_name__icontains', 'Author Last Name'),
+    ('first_name__icontains', 'Author First Name'),
+    ('id', 'Article ID'),
+
+    ('body__icontains', 'Body'),
+    ('tags__icontains', 'Tags'),
+)
+
+class ArticleSearchForm(forms.Form):
+    search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    q = forms.CharField(required=False)
+    filter_date = forms.BooleanField(required=False)
+    date = forms.DateField(initial=date.today(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        is_superuser = kwargs.pop('is_superuser', None)
+        super(ArticleSearchForm, self).__init__(*args, **kwargs)
+
+        if not is_superuser:
+            self.fields['search_category'].choices = SEARCH_CATEGORIES
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        q = self.cleaned_data.get('q', None)
+        cat = self.cleaned_data.get('search_category', None)
+        filter_date = self.cleaned_data.get('filter_date', None)
+        date = self.cleaned_data.get('date', None)
+
+        if cat is None or cat == "" :
+            if not (q is None or q == ""):
+                self._errors['search_category'] =  ErrorList(['Select a category'])
+
+        if cat in ('id', 'owner__id', 'creator__id') :
+            try:
+                x = int(q)
+            except ValueError:
+                self._errors['q'] = ErrorList(['Must be an integer'])
+
+        if filter_date:
+            if date is None or date == "":
+                self._errors['date'] = ErrorList(['Please select a date'])
+
+        return cleaned_data
 
 
 class ArticleForm(TendenciBaseForm):
@@ -48,7 +118,6 @@ class ArticleForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -85,7 +154,6 @@ class ArticleForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -96,9 +164,8 @@ class ArticleForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['group'].initial = Group.objects.get_initial_group_id()
 
         if self.user and not self.user.profile.is_superuser:
-            if 'status' in self.fields:
-                self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')

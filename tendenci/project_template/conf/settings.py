@@ -32,8 +32,6 @@ SITE_ADDONS_PATH = os.path.join(PROJECT_ROOT, 'addons')
 
 DATABASES = env('DATABASES', {'default': dj_database_url.config(default='postgres://localhost')})
 
-DATABASES['default']['OPTIONS'] = {'autocommit': True}
-
 
 # -------------------------------------- #
 # DATABASES - EXAMPLE FROM DJANGO 1.4
@@ -69,6 +67,9 @@ DATABASES = {
     }
 }
 """
+
+if "postgresql" in DATABASES['default']['ENGINE']:
+    DATABASES['default']['OPTIONS'] = {'autocommit': True}
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -167,17 +168,19 @@ AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', '')
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', '')
 
-USE_S3_STORAGE = all([AWS_LOCATION,
-                    AWS_ACCESS_KEY_ID,
-                    AWS_SECRET_ACCESS_KEY,
-                    AWS_STORAGE_BUCKET_NAME])
+USE_S3_STORAGE = all([
+    AWS_LOCATION,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_STORAGE_BUCKET_NAME
+])
 
 if USE_S3_STORAGE:
 
     INSTALLED_APPS += (
-                       'storages',
-                       's3_folder_storage',
-                       )
+        'storages',
+        's3_folder_storage',
+    )
     # media
     DEFAULT_S3_PATH = "%s/media" % AWS_LOCATION
     DEFAULT_FILE_STORAGE = 'tendenci.libs.boto_s3.utils.DefaultStorage'
@@ -239,6 +242,7 @@ if HAYSTACK_SEARCH_ENGINE == "solr":
 if HAYSTACK_SEARCH_ENGINE == 'whoosh':
     HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, 'index.whoosh')
 
+INDEX_FILE_CONTENT = env('INDEX_FILE_CONTENT', False)
 
 # ---------------------------------------#
 # PAYMENT GATEWAY
@@ -271,6 +275,7 @@ if SITE_SETTINGS_KEY_ENV:
 
 CACHE_PRE_KEY = SITE_CACHE_KEY
 JOHNNY_MIDDLEWARE_KEY_PREFIX = SITE_CACHE_KEY
+JOHNNY_TABLE_BLACKLIST = ('base_updatetracker')
 
 LOCAL_CACHE_PATH = env('LOCAL_CACHE_PATH', os.path.join(PROJECT_ROOT, "cache"))
 
@@ -359,10 +364,12 @@ MAILGUN_SMTP_LOGIN = env('MAILGUN_SMTP_LOGIN', '')
 MAILGUN_SMTP_PASSWORD = env('MAILGUN_SMTP_PASSWORD', '')
 MAILGUN_SMTP_PORT = env('MAILGUN_SMTP_PORT', '')
 
-USE_MAILGUN = all([MAILGUN_SMTP_SERVER,
-                MAILGUN_SMTP_LOGIN,
-                MAILGUN_SMTP_PASSWORD,
-                MAILGUN_SMTP_PORT])
+USE_MAILGUN = all([
+    MAILGUN_SMTP_SERVER,
+    MAILGUN_SMTP_LOGIN,
+    MAILGUN_SMTP_PASSWORD,
+    MAILGUN_SMTP_PORT
+])
 
 if USE_MAILGUN:
     EMAIL_USE_TLS = True
@@ -416,6 +423,12 @@ if os.path.exists(os.path.join(PROJECT_ROOT, 'addons/impersonation/')):
 DEFAULT_INSTALLED_APPS = INSTALLED_APPS
 from tendenci.core.registry.utils import update_addons
 INSTALLED_APPS = update_addons(INSTALLED_APPS, SITE_ADDONS_PATH)
+
+# Salesforce Integration
+SALESFORCE_USERNAME = env('SALESFORCE_USERNAME', '')
+SALESFORCE_PASSWORD = env('SALESFORCE_PASSWORD', '')
+SALESFORCE_SECURITY_TOKEN = env('SALESFORCE_SECURITY_TOKEN', '')
+SALESFORCE_AUTO_UPDATE = env('SALESFORCE_AUTO_UPDATE', '')
 
 # local settings for development
 try:

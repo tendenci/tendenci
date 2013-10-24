@@ -1,4 +1,7 @@
 from django.conf.urls.defaults import patterns, url
+from tendenci.addons.campaign_monitor.signals import init_signals
+
+init_signals()
 
 urlpatterns = patterns('tendenci.addons.campaign_monitor.views',
     url(r'^$', 'template_index'),

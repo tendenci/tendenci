@@ -17,13 +17,13 @@ class CorpMembershipIndex(TendenciBaseSearchIndex):
     is_pending = indexes.IntegerField(model_attr='is_pending', default=0)
 
     def prepare_authorized_domains(self, obj):
-        if obj.authorized_domains:
-            return list(obj.auth_domains.all())
+        if obj.corp_profile.authorized_domains:
+            return list(obj.corp_profile.authorized_domains.all())
         return None
 
     def prepare_reps(self, obj):
-        if obj.reps:
-            return [rep.user for rep in obj.reps.all()]
+        if obj.corp_profile.reps:
+            return [rep.user for rep in obj.corp_profile.reps.all()]
         return None
 
     def prepare_corporate_membership_type(self, obj):

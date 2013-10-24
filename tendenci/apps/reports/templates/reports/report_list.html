@@ -1,0 +1,34 @@
+{% extends 'reports/report_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Reports List' %}{% endblock title %}
+
+{% block body %}
+<h1>{% trans 'Reports' %}</h1>
+<p><a class="btn" href="{% url report_create %}">{% trans 'Create a new report' %}</a></p>
+<p>{% blocktrans %}Each report is for a specific type of information (e.g. Invoices) and can have different options saved to be used in the future. All reports can be run multiple times with different date ranges, and are stored for future access.{% endblocktrans %}</p>
+
+{% if reports %}
+    <p>{% blocktrans %}Click on a link below to access a report and either view a past date range or run a new version with a new date range.{% endblocktrans %}</p>
+    <table>
+        <tr>
+            <th width="30px">{% trans 'ID' %}</th>
+            <th width="100px">{% trans 'Creator' %}</th>
+            <th width="80px">{% trans 'View' %}</th>
+            <th width="70px">{% trans 'Type' %}</th>
+            <th width="300px">{% trans 'Options' %}</th>
+        </tr>
+    {% for report in reports %}
+        <tr>
+            <td>{{ report.pk }}</td>
+            <td>{% if report.creator_username %}<a href="{% url profile report.creator_username %}">{{ report.creator_username }}</a>{% endif %}</td>
+            <td><a href="{{ report.get_absolute_url }}">{% trans 'Go to Report' %}</a></td>
+            <td>{{ report.type|title }}</td>
+            <td>{{ report.config_options_string }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+
+
+{% endblock body %}

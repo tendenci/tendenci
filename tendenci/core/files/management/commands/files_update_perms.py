@@ -9,5 +9,5 @@ class Command(BaseCommand):
         from django.db import connection, transaction
         cursor = connection.cursor()
 
-        cursor.execute("UPDATE files_file SET allow_anonymous_view = 1 WHERE is_public = 1")
+        cursor.execute("UPDATE files_file SET allow_anonymous_view = True WHERE is_public = True")
         transaction.commit_unless_managed()

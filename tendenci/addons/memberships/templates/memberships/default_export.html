@@ -1,4 +1,4 @@
-{% extends "memberships/base.html" %}
+{% extends "memberships/base-wide.html" %}
 {% load base_tags %}
 {% load base_filters %}
 {% load i18n %}
@@ -7,24 +7,35 @@
 
 {% block extra_head %}
 {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
-    <style>
-       #membership-export ul li{
-          list-style: none;  
-        }
-    </style>
+    <style>#membership-export ul li {list-style: none;}</style>
 {% endblock %}
 
 {% block body %}
 <div id="membership-export-wrap">
-    
-    <h1>{% trans "Membership CSV Export" %}</h1>
+
+    {% if corp_profile %}
+    <h1>{% trans "Roster Export for Corp. Membership: " %}{{ corp_profile.name }}</h1>
+    {% else %}
+    <h1>{% trans "Membership Export" %}</h1>
+    {% endif %}
+
+    <div class="alert">
+        <strong>Note</strong>: An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.
+    </div>
    
     <div id="membership-export">
         
-        <form method="post" action="">{% csrf_token %}
-        {{ form.as_p }}
-        <input class="btn" type='submit' value='Export'>
+        <form method="post" action="">
+        {% csrf_token %}
+        {% for field in form %}
+            {{ field.errors }}
+            {{ field }}
+        {% endfor %}
+
+        <div><input class="btn" type='submit' value='Export Memberships'></div>
+
         </form>
     
     </div>

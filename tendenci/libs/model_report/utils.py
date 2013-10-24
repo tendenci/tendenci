@@ -3,6 +3,16 @@ from decimal import Decimal
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.contrib.contenttypes.models import ContentType
+from tendenci.apps.entities.models import Entity
+
+
+OBJECT_TYPE_DICT = dict((ct.id, '%s: %s' % (ct.app_label, ct.name))
+                        for ct in ContentType.objects.all())
+DEFAULT_OBJ_TYPES = ('registration', 'membershipdefault',
+                     'membershipset', 'makepayment',
+                     'corpmembership', 'job')
+ENTITY_DICT = dict((e.id, e.entity_name) for e in Entity.objects.all())
+
 
 def base_label(report, field):
     if hasattr(field, 'verbose_name'):
@@ -50,15 +60,30 @@ def yesno_format(value, instance):
 def round_format(value, instance):
     return Decimal('%.2f' % Decimal(value))
 
+
 def us_date_format(value, instance):
     return value.strftime("%m/%d/%Y")
 
+
 def date_label(report, field):
     return _("Date")
-    
+
+
 def obj_type_format(value, instance):
-    obj_type = ContentType.objects.get(id=value)
-    return "%s: %s" % (obj_type.app_label, obj_type.name)
+    return OBJECT_TYPE_DICT.get(value)
+
+
+def entity_format(value):
+    return '%s (Entity ID: %s)' % (ENTITY_DICT.get(value), value)
+
+
+def date_from_datetime(value):
+    return value.date()
+
+
+def get_obj_type_choices():
+    choices = ContentType.objects.filter(model__in=DEFAULT_OBJ_TYPES)
+    return choices
 
 
 class ReportValue(object):

@@ -133,7 +133,6 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
 
             # set it to pending if the user does not have add permission
             if not can_add_active:
-                resume.status = 0
                 resume.status_detail = 'pending'
 
             # set up the expiration time based on requested duration
@@ -268,7 +267,7 @@ def delete(request, id, template_name="resumes/delete.html"):
 def pending(request, template_name="resumes/pending.html"):
     if not request.user.profile.is_superuser:
         raise Http403
-    resumes = Resume.objects.filter(status=0, status_detail='pending')
+    resumes = Resume.objects.filter(status_detail='pending')
     return render_to_response(template_name, {'resumes': resumes},
             context_instance=RequestContext(request))
 

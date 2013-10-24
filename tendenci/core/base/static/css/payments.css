@@ -14,3 +14,19 @@
 .body-copy-yellow{
 	background-color: yellow;
 }
+.payment-search-item {
+    border: 1px solid #CCC;
+}
+.payment-search-item .payment-id {
+    width: 10%;
+    float: left;
+}
+.payment-search-item .payment-info {
+    width: 45%;
+    float: left;
+}
+.payment-search-item .payment-status {
+    width: 45%;
+    float: left;
+    text-align: right;
+}

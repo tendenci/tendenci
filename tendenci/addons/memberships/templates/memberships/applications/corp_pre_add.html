@@ -20,6 +20,11 @@
         <form method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
+
+            {% if 'username' in request.GET %}
+            <input name="username" type="hidden" value="{{ request.GET.username }}">
+            {% endif %}
+
             <input type="submit" value="Submit &raquo;" />
         </div>
         </form>

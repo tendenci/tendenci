@@ -1,10 +1,12 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from django.template.defaultfilters import filesizeformat
 
 from tendenci.core.categories.forms import CategoryField
 from tendenci.core.categories.models import CategoryItem
 from tendenci.core.files.models import File
+from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.apps.user_groups.models import Group
 
@@ -25,7 +27,6 @@ class FileForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
         )
 
         fieldsets = [('', {
@@ -48,8 +49,7 @@ class FileForm(TendenciBaseForm):
                       }),
 
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
 
@@ -60,6 +60,14 @@ class FileForm(TendenciBaseForm):
             self.user = None
 
         super(FileForm, self).__init__(*args, **kwargs)
+
+    def clean_file(self):
+        data = self.cleaned_data['file']
+        max_upload_size = get_max_file_upload_size(file_module=True)
+        if data.size > max_upload_size:
+            raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+
+        return data
 
 
 class SwfFileForm(TendenciBaseForm):

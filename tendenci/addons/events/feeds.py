@@ -5,10 +5,11 @@ from tendenci.core.sitemaps import TendenciSitemap
 
 from tendenci.addons.events.models import Event
 
+
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Events' % get_setting('site','global','sitedisplayname')
-    link =  "/events/"
-    description =  "Latest Events by %s" % get_setting('site','global','sitedisplayname')
+    title = '%s Latest Events' % get_setting('site', 'global', 'sitedisplayname')
+    link = "/events/"
+    description = "Latest Events by %s" % get_setting('site', 'global', 'sitedisplayname')
 
     def items(self):
         items = Event.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')[:20]
@@ -26,11 +27,12 @@ class LatestEntriesFeed(SubFeed):
     def item_link(self, item):
         return item.get_absolute_url()
 
+
 class EventSitemap(TendenciSitemap):
     """ Sitemap information for events """
     changefreq = "monthly"
     priority = 0.5
-    
+
     def items(self):
         items = Event.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items

@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url, include
+from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('tendenci.apps.invoices.views',  
     url(r'^$',                                'search', name="invoices"),
@@ -8,7 +8,9 @@ urlpatterns = patterns('tendenci.apps.invoices.views',
         {'template_name': 'invoices/print_view.html'}, name="invoice.print_view"),
     url(r'^adjust/(?P<id>\d+)/$',             'adjust', name="invoice.adjust"),
     url(r'^detail/(?P<id>\d+)/$',             'detail', name="invoice.detail"),
-    url(r'^mark_as_paid/(?P<id>\d+)/$', 'mark_as_paid', name="invoice.mark_as_paid"),
+    url(r'^mark-as-paid/(?P<id>\d+)/$', 'mark_as_paid', name="invoice.mark_as_paid"),
+    url(r'^unvoid-invoice/(?P<id>\d+)/$', 'unvoid_invoice', name="invoice.unvoid_invoice"),
+    url(r'^void-invoice/(?P<id>\d+)/$', 'void_invoice', name="invoice.void_invoice"),
     url(r'^void_payment/(?P<id>\d+)/$', 'void_payment', name="invoice.void_payment"),
     url(r'^search/$',                         'search', name="invoice.search"),
     # invoice reports

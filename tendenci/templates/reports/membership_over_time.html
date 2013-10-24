@@ -23,14 +23,11 @@
       <td>{{ stat.new|add:stat.renewing }}</td>
     </tr>  
   {% endfor %}
-  </tr></table>
+  </table>
 
 </div>
 
-{% endblock content %}
-
-  <div id="chart_div"></div>
-
+<div id="chart_div">
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript">
     google.load("visualization", "1", {packages:["corechart"]});
@@ -43,15 +40,15 @@
       data.addRows([
         {% for stat in stats|slice:":5" reversed %}
           {% if not forloop.last %}
-          ['{{ stat.start_dt }}', {{ stat.new }}, {{ stat.renewing }}],
+          ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}],
           {% else %}
-          ['{{ stat.start_dt }}', {{ stat.new }}, {{ stat.renewing }}]
+          ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}]
           {% endif %}
         {% endfor %}
       ]);
       var options = {
         width: 1000, height: 500,
-        hAxis: {title: 'Since X Month'},
+        //hAxis: {title: 'Since x Months'},
         vAxis: {title: 'Members'}
       };
 
@@ -59,3 +56,6 @@
       chart.draw(data, options);
     }
   </script>
+</div>
+ 
+{% endblock content %}

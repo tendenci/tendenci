@@ -57,4 +57,12 @@
         {% endif %}
         </div>
     </li>
+    {% if user.is_authenticated %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Payments" %}</a>
+        <ul class="dropdown-menu">
+            <li><a href="{% url payment.search %}">{% trans "Search Payments" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
 </ul>

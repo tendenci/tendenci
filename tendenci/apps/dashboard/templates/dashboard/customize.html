@@ -1,0 +1,61 @@
+{% load theme_tags %}
+{% load dashboard_tags %}
+{% load i18n %}
+{% theme_extends "site_base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
+{% endblock %}
+
+{% block body %}
+{% dashboard_nav user %}
+<h1>{% trans "Customize Dashboard Statistics" %}</h1>
+
+<p>{% blocktrans %}
+Customize the dashboard statistics that would show up in the dashboard page by either reordering the following statistics types or choosing which type would be visible at a current time.
+{% endblocktrans %}</p>
+
+<form method="POST" action="" class="dashboard-customize-form">{% csrf_token %}
+    {{ formset.management_form }}
+    {{ formset.non_form_errors.as_ul }}
+    <table id="formset" class="form">
+    {% for form in formset.forms %}
+      {% if forloop.first %}
+      <thead><tr>
+        {% for field in form.visible_fields %}
+        <th>{{ field.label|capfirst }}</th>
+        {% endfor %}
+      </tr></thead>
+      {% endif %}
+      <tr class="{% cycle row1,row2 %}">
+      {% for field in form.visible_fields %}
+        <td class="field-{{ field.label|lower }}">
+        {# Include the hidden fields in the form #}
+        {% if forloop.first %}
+          {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+          {% endfor %}
+        {% endif %}
+          {{ field.errors.as_ul }}
+          {{ field }}
+        </td>
+      {% endfor %}
+      </tr>
+    {% endfor %}
+    </table>
+    <input type="submit" value="Save changes"/>
+</form>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+<script>
+// This hotfix makes older versions of jQuery UI drag-and-drop work in IE10 and IE9
+(function($){var a=$.ui.mouse.prototype._mouseMove;$.ui.mouse.prototype._mouseMove=function(b){if($.browser.msie&&document.documentMode>=9){b.button=1};a.apply(this,[b]);}}(jQuery));
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/dashboard-stats-ordering.js"></script>
+{% endblock %}

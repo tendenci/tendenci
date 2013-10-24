@@ -5,10 +5,12 @@ from datetime import timedelta
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import filesizeformat
 
 from tendenci.apps.stories.models import Story
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (
@@ -56,7 +58,6 @@ class StoryForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -84,7 +85,6 @@ class StoryForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'], 
                       'classes': ['admin-only'],
                     })]   
@@ -103,16 +103,20 @@ class StoryForm(TendenciBaseForm):
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
 
+            max_upload_size = get_max_file_upload_size()
+            if photo_upload.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
+
         return photo_upload
                  
     def __init__(self, *args, **kwargs):
         super(StoryForm, self).__init__(*args, **kwargs)
+        self.fields['group'].initial = Group.objects.get_initial_group_id()
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
     def save(self, *args, **kwargs):
@@ -153,7 +157,6 @@ class StoryAdminForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -180,7 +183,6 @@ class StoryAdminForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -198,6 +200,11 @@ class StoryAdminForm(TendenciBaseForm):
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
+
+            max_upload_size = get_max_file_upload_size()
+            if photo_upload.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
+
         return photo_upload
 
     def __init__(self, *args, **kwargs):

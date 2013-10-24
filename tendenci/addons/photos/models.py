@@ -573,7 +573,7 @@ class PhotoSet(TendenciBaseModel):
     def __unicode__(self):
         return self.name
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.guid = self.guid or unicode(uuid.uuid1())
 
         super(PhotoSet, self).save()
@@ -716,7 +716,8 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
        # caching.instance_cache_add(self, self.pk)
 
         if not self.is_public_photo() or not self.is_public_photoset():
-            set_s3_file_permission(self.image.file, public=False)
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE and hasattr(self.image, 'file'):
+                set_s3_file_permission(self.image.file, public=False)
             cache_set = cache.get("photos_cache_set.%s" % self.pk)
             if cache_set is not None:
                 # TODO remove cached images
@@ -727,23 +728,27 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         """
         Delete image-file and all resized versions
         """
-        cache_path = self.cache_path()
-
-        # delete cached [resized] versions
-        try:
-            filename_list = default_storage.listdir(cache_path)[1]
-            for filename in filename_list:
-                try:
-                    default_storage.delete(os.path.join(cache_path, filename))
-                except OSError:
-                    pass
-        except OSError:
-            pass
-
-        # delete actual image; do not save() self.instance
-        self.image.delete(save=False)
-
+        
         super(Image, self).delete(*args, **kwargs)
+        
+        if self.image:
+            cache_path = self.cache_path()
+
+            # delete cached [resized] versions
+            try:
+                filename_list = default_storage.listdir(cache_path)[1]
+                for filename in filename_list:
+                    try:
+                        default_storage.delete(os.path.join(cache_path, filename))
+                    except OSError:
+                        pass
+            except OSError:
+                pass
+
+            # delete actual image; do not save() self.instance
+            self.image.delete(save=False)
+
+        
 
     @models.permalink
     def get_absolute_url(self):
@@ -775,28 +780,32 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     def get_next(self, set=None):
         # decide which set to pull from
         if set:
-            images = Image.objects.filter(photoset=set, id__lt=self.id)
+            images = Image.objects.filter(photoset=set, position__gt=self.position)
         else:
-            images = Image.objects.filter(id__lt=self.id)
-        images = images.values_list("id", flat=True)
-        images = images.order_by('-id')
-        try:
-            return Image.objects.get(id=max(images))
-        except ValueError:
-            return None
+            images = Image.objects.filter(position__gt=self.position)
+        images = images.values_list("position", flat=True)
+        images = images.order_by('-position')
+        if set:
+            try:
+                return Image.objects.get(photoset=set, position=min(images))
+            except (ValueError, Image.MultipleObjectsReturned):
+                return None
+        return None
 
     def get_prev(self, set=None):
         # decide which set to pull from
         if set:
-            images = Image.objects.filter(photoset=set, id__gt=self.id)
+            images = Image.objects.filter(photoset=set, position__lt=self.position)
         else:
-            images = Image.objects.filter(id__gt=self.id)
-        images = images.values_list("id", flat=True)
-        images = images.order_by('-id')
-        try:
-            return Image.objects.get(id=min(images))
-        except ValueError:
-            return None
+            images = Image.objects.filter(position__lt=self.position)
+        images = images.values_list("position", flat=True)
+        images = images.order_by('-position')
+        if set:
+            try:
+                return Image.objects.get(photoset=set, position=max(images))
+            except (ValueError, Image.MultipleObjectsReturned):
+                return None
+        return None
 
     def get_first(self, set=None):
         # decide which set to pull from
@@ -804,12 +813,23 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             images = Image.objects.filter(photoset=set)
         else:
             return None
-        images = images.values_list("id", flat=True)
-        images = images.order_by('-id')
-        try:
-            return Image.objects.get(id=max(images))
-        except ValueError:
-            return None
+        images = images.values_list("position", flat=True)
+        images = images.order_by('-position')
+        if set:
+            try:
+                return Image.objects.get(photoset=set, position=min(images))
+            except (ValueError, Image.MultipleObjectsReturned):
+                return None
+        return None
+
+    def get_position(self, set=None):
+        # decide which set to pull from
+        if set:
+            images = Image.objects.filter(photoset=set, position__lte=self.position)
+        else:
+            images = Image.objects.filter(position__lte=self.position)
+        position = images.count()
+        return position
 
     def is_public_photo(self):
         return all([self.is_public,

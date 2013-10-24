@@ -66,5 +66,22 @@
         "scope_category": "groups", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "groups", 
+        "description": "The root url for the groups app. Use letters and dashes only.", 
+        "data_type": "string",
+        "update_dt": "2012-02-16 15:25:04",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "url", 
+        "value": "groups", 
+        "label": "Root URL", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "user_groups", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

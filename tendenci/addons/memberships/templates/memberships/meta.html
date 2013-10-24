@@ -5,13 +5,12 @@
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
-        {% if user.profile.is_superuser or user == membership.creator or user == membership.owner or user == membership.user %}
+        {% if user.profile.is_superuser or user.pk == membership.creator_id or user == membership.owner_id or user == membership.user_id %}
                 {% meta_creator_owner membership %}
             {% endif %}
     </div>
     
     <div class="meta-right">
-        <a class="share-link" >{% trans "Share" %}</a>
     </div>
     
 </div>

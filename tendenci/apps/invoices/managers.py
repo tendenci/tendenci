@@ -5,7 +5,7 @@ from django.db.models import Manager
 class InvoiceManager(Manager):
     def create_invoice(self, user, **kwargs):
         return self.create(title=kwargs.get('title', ''), 
-                           estimate=kwargs.get('estimate', True),
+                           estimate=('estimate' == kwargs.get('status_detail', 'estimate')),
                            status=kwargs.get('status', True), 
                            status_detail=kwargs.get('status_detail', 'estimate'),
                            object_type=kwargs.get('object_type', None),
@@ -40,3 +40,21 @@ class InvoiceManager(Manager):
         """
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
+
+    def get_query_set(self):
+        """
+        Exclude void invoices by default
+        """
+        return super(InvoiceManager, self).get_query_set().filter(is_void=False)
+
+    def all_invoices(self):
+      """
+      Returns ALL invoice records
+      """
+      return super(InvoiceManager, self).get_query_set()
+
+    def void(self):
+      """
+      Returns ALL invoice records
+      """
+      return super(InvoiceManager, self).get_query_set().filter(is_void=True)

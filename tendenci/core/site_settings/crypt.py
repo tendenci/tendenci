@@ -9,9 +9,9 @@ def encrypt(value):
     Uses the character '\0' as padding.
     """
     cipher = AES.new(settings.SITE_SETTINGS_KEY, AES.MODE_ECB)
-    value = unicode(value)
+    value = unicode(value).encode('utf-8')
     padding = cipher.block_size - len(value) % cipher.block_size
-    for i in range(padding):
+    for i in xrange(padding):
         value += '\0'
     ciphertext = cipher.encrypt(value)
     ciphertext = base64.b64encode(ciphertext) # make it database friendly

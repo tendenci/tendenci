@@ -16,8 +16,7 @@ def save_to_disk(f, instance):
     Takes file object and instance (or model).
     Returns back relative path of file.
     """
-
-    file_name = re.sub(r'[^a-zA-Z0-9._]+', '-', f.name)
+    file_name = re.sub(r'[^a-zA-Z0-9._-]+', '_', f.name)
 
     # make dir with app and module name
     relative_directory = os.path.join(
@@ -27,11 +26,10 @@ def save_to_disk(f, instance):
     )
 
     # make directory with pk
-    if isinstance(instance.pk, long):
+    if isinstance(instance.pk, (int, long)):
         relative_directory = os.path.join(
             relative_directory,
-            unicode(instance.pk),
-        )
+            unicode(instance.pk))
 
     default_storage.save(os.path.join(relative_directory, file_name), f)
 
@@ -90,7 +88,7 @@ class FileManager(TendenciBaseManager):
 
             try:
                 file = self.get(file=file_path)
-                file.name = file.name
+                file.name = re.sub(r'[^a-z0-9._]+', '_', file.name.lower())
                 file.owner = user
                 file.owner_username = user.username
                 file.update_dt = datetime.now()
@@ -126,6 +124,8 @@ class FileManager(TendenciBaseManager):
         files_saved = []
         for file in files:
 
+            # what to save; where to save it
+            file.file.seek(0)
             file_path = save_to_disk(file, instance)
 
             # update file record; or create new file record
@@ -136,7 +136,7 @@ class FileManager(TendenciBaseManager):
 
             try:
                 file = self.get(file=file_path)
-                file.name = file.name
+                file.name = re.sub(r'[^a-zA-Z0-9._-]+', '_', file.name)
                 file.owner = request.user
                 file.owner_username = request.user.username
                 file.update_dt = datetime.now()
@@ -154,7 +154,7 @@ class FileManager(TendenciBaseManager):
                     'owner_username': request.user.username,
                 })
 
-            file.save() # auto generate GUID if missing
+            file.save()  # auto generate GUID if missing
             files_saved.append(file)
 
         return files_saved

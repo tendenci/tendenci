@@ -35,7 +35,6 @@ class LocationForm(TendenciBaseForm):
         'user_perms',
         'member_perms',
         'group_perms',
-        'status',
         'status_detail',
         )
 
@@ -72,8 +71,7 @@ class LocationForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'], 
+                      'fields': ['status_detail'], 
                       'classes': ['admin-only'],
                     })]   
            
@@ -81,5 +79,4 @@ class LocationForm(TendenciBaseForm):
         super(LocationForm, self).__init__(*args, **kwargs)
 
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

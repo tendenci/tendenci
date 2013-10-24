@@ -327,7 +327,10 @@ def thumbnail(file, size='200x200'):
 
     # if the image wasn't already resized, resize it
     if not thumbnail_exist:
-        #image = Image.open(filename)
+
+        if not default_storage.exists(filename):
+            return u''
+
         image = Image.open(default_storage.open(filename))
         image.thumbnail([x, y], Image.ANTIALIAS)
 
@@ -405,6 +408,10 @@ def multiply(value, arg):
     return Decimal(str(value)) * Decimal(str(arg))
 
 @register.filter
+def add_decimal(value, arg):
+    return Decimal(str(value)) + Decimal(str(arg))
+
+@register.filter
 def phonenumber(value):
     if value:
         # split number from extension or any text
@@ -424,7 +431,7 @@ def phonenumber(value):
 
         # attach additional text extension
         ext = ''
-        for i in range(1, len(x)):
+        for i in xrange(1, len(x)):
             ext = ''.join((ext, x[i]))
         if ext:
             return ' '.join((number, ext))

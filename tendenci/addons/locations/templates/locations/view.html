@@ -23,9 +23,15 @@
             </div>
 
             <div class="details">
-                <p>{{ location.address }} <br />{{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
-                <p>{{ location.phone|phonenumber }}</p>
-                <p>{{ location.email }}</p>
+                {% if location.contact %}<p><strong>{{ location.contact }}</strong></p>{% endif %}
+                <p>{{ location.address }}<br />
+                {% if location.address2 %}{{ location.address2 }}<br />{% endif %}
+                {{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
+                {% if location.country %}<p>{{ location.country }}</p>{% endif %}
+                {% if location.phone %}<p>{{ location.phone|phonenumber }}</p>{% endif %}
+                {% if location.fax %}<p>Fax: {{ location.fax|phonenumber }}</p>{% endif %}
+                {% if location.email %}<p>{{ location.email|obfuscate_email }}</p>{% endif %}
+                {% if location.website %}<p>{{ location.website|urlize }}</p>{% endif %}
             </div>
 
             <div style="clear:both;"><!--ie-bug--></div>

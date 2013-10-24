@@ -1,7 +1,27 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="search-form" action="{% url articles %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="Search" />
+	<div class="first-row" id="form-row">
+		<span>Search by: </span> 
+		<div class="search-category">		
+			{{ form.search_category}}
+			{{ form.search_category.errors }}
+		</div>
+		<div class="q">
+			{{ form.q }}
+			{{ form.q.errors }}
+		</div>
+		<input type="submit" value="Search" />
+		<div class="clearfix"></div>
+	</div>
+  <!--
+	<div class="second-row" id="form-row">
+		{{form.filter_date}}
+		<span>Search By Release Date: </span>
+		{{form.date}}
+		{{form.date.errors}}
+		<div class="clearfix"></div>
+	</div> -->
+
 <!-- <div class="category-wrap">
 <select name="category" onchange="this.form.submit();">
     <option value="">All Categories ({{ categories|length }})</option>

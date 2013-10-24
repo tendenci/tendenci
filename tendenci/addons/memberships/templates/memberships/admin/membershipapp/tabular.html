@@ -185,34 +185,76 @@
                // remove add another
                $('tr.add-row td').html('');
         }
+
+        var disableTakenFields = function(arr){
+          $('#fields-group .form-row').each(function(key, value){
+              var val = $(this).find('.field-field_name input').val();
+              // if in list then disable
+              if(arr.indexOf(val) != -1) {
+                $(this).find('input').attr('disabled', true);
+              }
+          })
+
+        }
         
-        
+
+        var disabledFields = [];
+
         if ($('.dynamic-fields').length == 0){
             $.ajax({
                type: "POST",
                url: "{% url memberships.get_app_fields %}",
                success: function(status_data){
+                  disabledFields = status_data;
                    var objs = $.parseJSON(status_data);
                     for (var i=0; i<objs.length; i++){
                        addMappedField(objs[i]);
                         
                     }
     
-                  disableFields(); 
+                  disableFields();
+
+                  $.ajax({
+                      type: "POST",
+                      dataType: "json",
+                      url: "{% url memberships.get_taken_fields %}",
+                      success: function(status_data){  
+                        disabledFields = status_data;
+                        disableTakenFields(status_data);
+                      },
+                  });
+
                 },
-               
              });
          }else{
-             disableFields(); 
-             
+             disableFields();
+
+              $.ajax({
+                  type: "POST",
+                  dataType: "json",
+                  data: {app_pk: "{{ object_id }}"},
+                  url: "{% url memberships.get_taken_fields %}",
+                  success: function(status_data){
+                    disabledFields = status_data;
+                    disableTakenFields(status_data);
+                  },
+              });
+
          }
-        
-        
+
          // form on submit
         $('input[type="submit"]').click(function(){
             $('.field-field_name input').removeAttr('disabled');
             $('.field-display input').removeAttr('disabled');
             $('.field-required input').removeAttr('disabled');
+
+          $('#fields-group .form-row').each(function(key, value){
+              var val = $(this).find('.field-field_name input').val();
+              // if in list then disable
+              if(disabledFields.indexOf(val) != -1) {
+                $(this).find('input').attr('disabled', false);
+              }
+          })
         });
          
     });

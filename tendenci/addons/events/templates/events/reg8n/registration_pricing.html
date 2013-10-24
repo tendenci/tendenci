@@ -28,21 +28,27 @@
             {% if pricing %}
                 <div class="pricing-list-wrap">
                 	<form action="{% url event.register event.pk %}" method="get">
+
                 	{% if pricing|length == 1 and pricing.0.amount == 0 %}
-                	 <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register for Free' %}" />
+                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register for Free' %}" />
                 	{% else %}
-                	<ul>
-                		{% for price in pricing %}
-                		<li>
-                		    {{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %} - &nbsp;<strong>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ price.price }}</strong><br>
+                    <ul>
+                        {% for price in pricing %}
+                        <li>
+                            {{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %} - &nbsp;<strong>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ price.price }}</strong><br>
                             ({% trans "ends" %} {{ price.end_dt|date:"m/d/Y" }})
-                		</li>
-                		
-                		{% endfor %}
-                	</ul>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 	<input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
                 	{% endif %}
-                	
+
+                    {% if event.registration_configuration.has_member_price %}
+                    {% if not request.user.profile.is_member %}
+                    <a class="become-a-member" href="{% url membership-referer-url %}?next={% url membership-applications %}">Become a member</a>
+                    {% endif %}
+                    {% endif %}
+
                 	</form>
                 	
                 {% include "events/include/spots_status.html" %}	

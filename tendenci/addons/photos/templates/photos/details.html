@@ -16,6 +16,11 @@
 
 {% block extra_head %}
 {{ block.super }}
+<meta property="og:title" content="{{ photo.title }}"/>
+<meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_medium_640_url }}"/>
+<meta property="og:description" content="{{ photo.caption|striptags }} {{ photo.get_license.name }}"/>
+<meta property="og:url" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_absolute_url }}" />
+<meta property="og:site_name" content="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
 {% endblock %}
 
@@ -34,6 +39,7 @@
         <div class="photo-traverse">
             <ul>
 				{% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
+                {% if photo_set_count %}<li>({{ photo_position }} {% trans "of" %} {{ photo_set_count }})</li>{% endif %}
                 {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">{% trans "Next" %} &raquo;</a></li>
                 {% else %}
                     {% if photo_first_url %}<li><a id="photo-next" href="{{ photo_first_url }}">{% trans "Go to First" %} &raquo;</a></li>{% endif %}
@@ -59,7 +65,7 @@
                     <br />
                     <div id="photo-rights">
                     <span property="dct:title">{{ photo.title }}</span>
-                    by <a href="{{ photo.creator.get_absolute_url }}"
+                    uploaded by <a href="{{ photo.creator.get_absolute_url }}"
                         property="cc:attributionName" 
                         rel="cc:attributionURL dct:creator">{{ photo.creator.get_full_name }}</a>.
                     {% if photo.get_license == photo.default_license %}
@@ -69,6 +75,7 @@
                         <a rel="license" href="{{ photo_deed }}"> 
                             {{ photo_name }}</a>.{% endblocktrans %}
                     {% endif %}
+                    <br />{% fb_like_button_iframe photo.get_absolute_url %}
                     </div>
                 </div>
             </div>

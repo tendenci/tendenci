@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -44,6 +45,11 @@ class EventLog(models.Model):
     class Meta:
         permissions = (("view_eventlog", "Can view eventlog"),)
 
+    def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = str(uuid.uuid1())
+        super(EventLog, self).save(*args, **kwargs)
+
     def color(self):
         return get_color(str(self.event_id))
 
@@ -66,11 +72,11 @@ class CachedColorModel(models.Model):
     "Cache to avoid re-looking up eventlog color objects all over the place."
     class Meta:
         abstract = True
-    
+
     def save(self, *args, **kwargs):
         self.__class__._cache = {}
         super(CachedColorModel, self).save(*args, **kwargs)
-    
+
     @classmethod
     def cache_get(cls, key, field):
         if not hasattr(cls, '_cache'):
@@ -79,23 +85,25 @@ class CachedColorModel(models.Model):
             return cls._cache[key]
         except KeyError:
             try:
-                cls._cache[key] = cls.objects.get(**{field:key}).hex_color
+                cls._cache[key] = cls.objects.get(**{field: key}).hex_color
             except cls.DoesNotExist:
                 return None
             return cls._cache[key]
+
 
 class EventLogBaseColor(CachedColorModel):
     """
         Event Log Base Colors is for reporting only
     """
     source = models.CharField(max_length=50)
-    event_id = models.IntegerField() 
+    event_id = models.IntegerField()
     hex_color = models.CharField(max_length=6)
-    
+
     @classmethod
     def get_color(cls, source):
-        return cls.cache_get(source, 'source') or '333333' # indeed some 
-    
+        return cls.cache_get(source, 'source') or '17ABB9'  # indeed some
+
+
 class EventLogColor(CachedColorModel):
     """
         Event Log Colors is for reporting only
@@ -103,7 +111,7 @@ class EventLogColor(CachedColorModel):
     event_id = models.IntegerField()
     hex_color = models.CharField(max_length=6)
     rgb_color = models.CommaSeparatedIntegerField(max_length=11)
-    
+
     @classmethod
     def get_color(cls, event_id):
         return cls.cache_get(event_id, 'event_id') or '333333'

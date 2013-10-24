@@ -114,7 +114,7 @@
 	    		</td>
 	    		<td  style="text-align: right;padding:0 20px; font-weight:bold;">
 	    			{% if registration.override_table %}<span class="override-symbol">*</span>{% endif %}
-	    			 {% if registration.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
+	    			 {% if registration.invoice.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
 	    			{% with registrants|first as registrant %}{{ registrant.amount|format_currency }}{% endwith %}
 	    		</td>
 	    	</tr>
@@ -171,9 +171,12 @@
             <td class="td-right" width="20%">
             	{% if not registration.is_table %}
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-                {% if registrant.override %}<span class="override-symbol">*</span>{% endif %} 
-                {% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
-                       {{ registrant.amount|format_currency }} 
+                	{% if registrant.override %}<span class="override-symbol">*</span>{% endif %} 
+                	{% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
+                    {{ registrant.amount|format_currency }} 
+                    {% if registrant.use_free_pass %}
+                    <img src="{{ STATIC_URL }}/images/icons/fp.png" title="free pass used" alt="free pass icon" />
+                    {% endif %}
                 </span>
                 {% endif %}
             </td>
@@ -188,10 +191,10 @@
         </tr>
         {% endif %}
         
-         {% if registration.discount_amount > 0 %}
+         {% if registration.invoice.discount_amount > 0 %}
         <tr>
         	 <td class="td-right" colspan="2">
-        	 <span class="discount-symbol">d</span> discount applied (discount code: {{ registration.discount_code }})
+        	 <span class="discount-symbol">d</span> discount applied (discount code: <a href="{{ registration.invoice.get_discount_url }}">{{ registration.invoice.discount_code }}</a>)
         	 </td>
         </tr>
         {% endif %}
@@ -236,6 +239,9 @@
         </div>
 
         <div class="payment-accounting">
+            {% if registration.invoice.discount_amount > 0 %}
+            <div>{% blocktrans with registration.invoice.discount_amount|floatformat:"2" as discount %}Discount Applied ${{ discount }}{% endblocktrans %}</div>
+            {% endif %}
             <div>{% blocktrans with registration.invoice.total|floatformat:"2" as total %}Total ${{ total }}{% endblocktrans %}</div>
             <div><strong>{% blocktrans with registration.invoice.balance|floatformat:"2" as balance %}Balance ${{ balance }}{% endblocktrans %}</strong></div>
         </div>

@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 from tendenci.addons.directories.feeds import LatestEntriesFeed
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.directories.signals import init_signals
+
+init_signals()
 
 urlpath = get_setting('module', 'directories', 'url')
 if not urlpath:
@@ -12,6 +15,7 @@ urlpatterns = patterns('tendenci.addons.directories.views',
     url(r'^%s/export/$' % urlpath, 'export', name="directory.export"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="directory.print_view"),
     url(r'^%s/add/$' % urlpath, 'add', name="directory.add"),
+    url(r'^%s/query_price/$' % urlpath, 'query_price', name="directory.query_price"),
     url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="directory.edit"),
     url(r'^%s/renew/(?P<id>\d+)/$' % urlpath, 'renew', name="directory.renew"),
     url(r'^%s/edit/meta/(?P<id>\d+)/$' % urlpath, 'edit_meta', name="directory.edit.meta"),

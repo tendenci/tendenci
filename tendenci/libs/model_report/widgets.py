@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import date, timedelta
+
 from django import forms
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
@@ -28,7 +30,8 @@ class RangeField(forms.MultiValueField):
 
     def __init__(self, field_class, widget=forms.TextInput, *args, **kwargs):
         if not 'initial' in kwargs:
-            kwargs['initial'] = ['', '']
+            now = date.today()
+            kwargs['initial'] = [str(now - timedelta(days=30)), str(now)]
 
         fields = (field_class(), field_class())
 

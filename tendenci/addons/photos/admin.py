@@ -20,7 +20,6 @@ class PhotoAdmin(admin.ModelAdmin):
                     'user_perms',
                     'member_perms',
                     'group_perms',
-                    'status',
                     'status_detail',
                 )
             }),

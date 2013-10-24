@@ -115,8 +115,8 @@ class EmailVerificationField(fields.MultiValueField):
         won't get any data to our compress method.
         """
         all_fields = (
-            fields.EmailField(max_length=100),
-            fields.EmailField(max_length=100, label=_("Verfiy Email Address")),
+            fields.EmailField(max_length=75),
+            fields.EmailField(max_length=75, label=_("Verfiy Email Address")),
             )
         label = kwargs.pop('label', '') + ' (Enter twice to verify)'
         super(EmailVerificationField, self).__init__(all_fields, label=label, *args, **kwargs)

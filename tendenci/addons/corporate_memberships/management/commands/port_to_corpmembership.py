@@ -18,7 +18,10 @@ class Command(BaseCommand):
         from tendenci.addons.corporate_memberships.models import (
                                                   CorpProfile,
                                                   CorpMembership,
+                                                  CorpMembershipRep,
+                                                  CorpMembershipAuthDomain,
                                                   CorporateMembership)
+        from tendenci.addons.corporate_memberships.utils import corp_membership_update_perms
         from tendenci.addons.memberships.models import MembershipDefault
         verbosity = int(options['verbosity'])
 
@@ -96,7 +99,12 @@ class Command(BaseCommand):
                 corp_membership = None
             else:
                 # check if corp_membership exists
-                corp_membership = corp_profile.corp_membership
+                [corp_membership] = corp_profile.corp_memberships.all(
+                                            ).exclude(
+                                            status_detail='archive'
+                                            ).order_by(
+                                            '-expiration_dt'
+                                            )[:1] or [None]
             if not corp_membership:
                 corp_membership = CorpMembership()
                 for field_name in corp_membership_field_names:
@@ -123,6 +131,28 @@ class Command(BaseCommand):
 
                 if verbosity >= 2:
                     print 'Insert corp_membership (id=%d) for: ' % corp_membership.id, corp_profile
+
+            # dues reps
+            reps = corporate.reps.all()
+            if reps:
+                for rep in reps:
+                    if not corp_profile.reps.filter(user=rep.user).exists():
+                        CorpMembershipRep.objects.create(
+                                corp_profile=corp_profile,
+                                user=rep.user,
+                                is_dues_rep=rep.is_dues_rep,
+                                is_member_rep=rep.is_member_rep)
+                        corp_membership_update_perms(corp_membership)
+
+            # auth domains
+            auth_domains = corporate.auth_domains.all()
+            if auth_domains:
+                for auth_domain in auth_domains:
+                    if not corp_profile.authorized_domains.filter(
+                                name=auth_domain.name).exists():
+                        CorpMembershipAuthDomain.objects.create(
+                                corp_profile=corp_profile,
+                                name=auth_domain.name)
 
             # update individual membership entries
             memberships = MembershipDefault.objects.filter(

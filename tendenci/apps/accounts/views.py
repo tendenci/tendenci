@@ -8,8 +8,6 @@ from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 from django.contrib.auth.views import password_reset as auth_password_reset
 from django.contrib.auth.models import User
-
-
 from tendenci.apps.registration.forms import RegistrationForm
 from forms import LoginForm
 from tendenci.core.event_logs.models import EventLog
@@ -17,15 +15,19 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.decorators import ssl_required
 from tendenci.apps.accounts.forms import PasswordResetForm
 
+
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
+
+    redirect_to = request.REQUEST.get('next', u'')
+
     if request.method == "POST":
         default_redirect_to = getattr(settings, "LOGIN_REDIRECT_URLNAME", None)
         if default_redirect_to:
             default_redirect_to = reverse(default_redirect_to)
         else:
             default_redirect_to = settings.LOGIN_REDIRECT_URL
-        redirect_to = request.REQUEST.get("next", "")
+
         # light security check -- make sure redirect_to isn't garabage.
         if not redirect_to or "://" in redirect_to or " " in redirect_to:
             redirect_to = default_redirect_to
@@ -44,7 +46,10 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
             return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
         form = form_class()
-    
+
+        if request.user.is_authenticated() and redirect_to:
+                return HttpResponseRedirect(redirect_to)
+
     return render_to_response(template_name, {
         "form": form
     }, context_instance=RequestContext(request))

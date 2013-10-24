@@ -18,8 +18,14 @@
     {% endif%}
 	<tr>
 		<td>{% trans "Sub Total:" %}</td>
-		<td class="td-right">{{ invoice.subtotal|format_currency }}</td>
+		<td class="td-right">{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
 	</tr>
+    {% if invoice.discount_amount > 0 %}
+	<tr>
+		<td>{% trans "Discount Applied (discount code" %}: <a href="{{ invoice.get_discount_url }}">{{ invoice.discount_code }}</a>):</td>
+		<td class="td-right">-{{ invoice.discount_amount|format_currency }}</td>
+	</tr>
+    {% endif %}
 	{% if invoice.tax %}
 	<tr>
 		<td>{% trans "Tax:" %}</td>

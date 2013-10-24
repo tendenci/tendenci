@@ -46,10 +46,12 @@ class ArticleIndex(TendenciBaseSearchIndex):
 
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.syndicate \
-                and obj.status == 1 and obj.status_detail == 'active' \
-                and obj.release_dt <= datetime.now()
+            and obj.status and obj.status_detail == 'active' \
+            and obj.release_dt <= datetime.now()
 
     def prepare_order(self, obj):
+        if not obj.release_dt:
+            return obj.create_dt
         return obj.release_dt
 
 site.register(Article, ArticleIndex)

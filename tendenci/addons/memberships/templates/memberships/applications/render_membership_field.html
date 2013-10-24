@@ -4,6 +4,9 @@
     {% if field_obj.field_name == '' %}
         <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
             <h2>{{ field_obj.label  }}</h2>
+            {% if field_obj.description %}
+            <div>{{ field_obj.description }}</div>
+            {% endif %}
         </div>
     {% endif %}
 {% else %}
@@ -33,35 +36,56 @@
                 <div style="clear: both"><!-- IE7 --></div>
             {% else %}
                     
-                    
-                    <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
-                        {{ field_obj.label }}
-                    </div>
-                    
-                    <div class="field {{ field_obj.field_div_class }}">
-                        {% if field.errors %}
-                         <div class="error">
-                             {% for error in field.errors %}
-                                <p>{{ error }}</p>
-                             {% endfor %}
-                         </div>
-                        {% endif %}
-                    
-                        {{ field }}
-                        {% if field.help_text %}
-                            <span class="help-text"><small>{{ field.help_text }}</small></span>
-                        {% endif %}
-                    </div>
-                    
                     {% if field_obj.field_name == 'password' %}
-                    <br />
-                    <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
-                        {{ field_pwd.label_tag }}
-                    </div>
-                    
-                    <div class="field {{ field_obj.field_div_class }}">
-                        {{ field_pwd }}
-                    </div>
+
+                        <div class="label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
+                            {{ field_obj.label }}
+                        </div>
+
+                        <div class="field {{ field_obj.field_div_class }}">
+                            {% if field.errors %}
+                             <div class="error">
+                                 {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                 {% endfor %}
+                             </div>
+                            {% endif %}
+                        
+                            {{ field }}
+                            {% if field.help_text %}
+                                <span class="help-text"><small>{{ field.help_text }}</small></span>
+                            {% endif %}
+                        </div>
+
+                        <br />
+                        <div class="label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
+                            {{ field_pwd.label_tag }}
+                        </div>
+
+                        <div class="field {{ field_obj.field_div_class }}">
+                            {{ field_pwd }}
+                        </div>
+
+                    {% else %}
+
+                        <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
+                            {{ field_obj.label }}
+                        </div>
+
+                        <div class="field {{ field_obj.field_div_class }}">
+                            {% if field.errors %}
+                             <div class="error">
+                                 {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                 {% endfor %}
+                             </div>
+                            {% endif %}
+                        
+                            {{ field }}
+                            {% if field.help_text %}
+                                <span class="help-text"><small>{{ field.help_text }}</small></span>
+                            {% endif %}
+                        </div>
 
                     {% endif %}
                     
@@ -69,11 +93,10 @@
                     <div class="clear"></div>
                     {% endif %}
                     
-                    
-                    
                     {% if field|is_radioselect or field|is_checkboxselectmultiple %}
                     <div style="clear: both"><!-- IE7 --></div>
                     {% endif %}
+
             {% endif %}
          </div>       
     </div>

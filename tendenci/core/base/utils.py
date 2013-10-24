@@ -3,12 +3,19 @@ import re
 from datetime import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+import codecs
+import cStringIO
+import csv
+import chardet
 
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
+
+from simple_salesforce import Salesforce
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.utils import get_theme_root
@@ -34,7 +41,6 @@ THEME_ROOT = get_theme_root()
 
 # this function is not necessary - datetime.now() *is* localized in django
 def now_localized():
-    from datetime import datetime
     from timezones.utils import adjust_datetime_to_timezone
     from time import strftime, gmtime
     
@@ -68,23 +74,24 @@ def localize_date(date, from_tz=None, to_tz=None):
         
     return adjust_datetime_to_timezone(date,from_tz=from_tz,to_tz=to_tz)
 
+
 def tcurrency(mymoney):
     """
         format currency - GJQ
         ex: 30000.232 -> $30,000.23
             -30000.232 -> $(30,000.23)
     """
-    import locale
-    locale.setlocale(locale.LC_ALL, '')
     currency_symbol = get_setting("site", "global", "currencysymbol")
-   
-    if not currency_symbol: currency_symbol = "$"
 
-    if not isinstance(mymoney, str):
+    if not currency_symbol:
+        currency_symbol = "$"
+
+    if not isinstance(mymoney, basestring):
         if mymoney >= 0:
-            return currency_symbol + locale.format('%.2f', mymoney, True)
+            fmt = '%s%s'
         else:
-            return currency_symbol + '(%s)' % (locale.format('%.2f', abs(mymoney), True))
+            fmt = '%s(%s)'
+        return fmt % (currency_symbol, intcomma(mymoney))
     else:
         return mymoney
     
@@ -381,7 +388,6 @@ def url_exists(url):
         return False
 
 def parse_image_sources(string):
-    import re
     p = re.compile('<img[^>]* src=\"([^\"]*)\"[^>]*>')
     image_sources = re.findall(p, string)
     return image_sources
@@ -417,10 +423,12 @@ def make_image_object_from_url(image_url):
         im = None
     return im
 
+
 def image_rescale(img, size, force=True):
     """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
     import Image as pil
-    
+
+    format = img.format  # temp. save format
     max_width, max_height = size
 
     if not force:
@@ -430,7 +438,7 @@ def image_rescale(img, size, force=True):
         src_ratio = float(src_width) / float(src_height)
         dst_width, dst_height = max_width, max_height
         dst_ratio = float(dst_width) / float(dst_height)
-        
+
         if dst_ratio < src_ratio:
             crop_height = src_height
             crop_width = crop_height * dst_ratio
@@ -443,7 +451,8 @@ def image_rescale(img, size, force=True):
             y_offset = float(src_height - crop_height) / 3
         img = img.crop((int(x_offset), int(y_offset), int(x_offset)+int(crop_width), int(y_offset)+int(crop_height)))
         img = img.resize((dst_width, dst_height), pil.ANTIALIAS)
-    
+
+    img.format = format  # add format back
     return img
 
 def in_group(user, group):
@@ -452,7 +461,8 @@ def in_group(user, group):
         in_group(user,'administrator')
         returns boolean
     """
-    return group in [dict['name'].lower() for dict in user.groups.values('name')]
+    return user.groups.filter(id=group.id).exists()
+
 
 def detect_template_tags(string):
     """
@@ -460,7 +470,6 @@ def detect_template_tags(string):
         template tags in the system
         returns boolean
     """
-    import re
     p = re.compile('{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
     return p.search(string)
 
@@ -513,7 +522,7 @@ def template_exists(template):
         return False
     return True
 
-def fieldify(str):
+def fieldify(s):
     """Convert the fields in the square brackets to the django field type. 
     
         Example: "[First Name]: Lisa" 
@@ -522,7 +531,7 @@ def fieldify(str):
     """
     #p = re.compile('(\[([\w\d\s_-]+)\])')
     p = re.compile('(\[(.*?)\])')
-    return p.sub(slugify_fields, str)
+    return p.sub(slugify_fields, s)
 
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
@@ -597,3 +606,121 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
     return page_range
 
 
+class UTF8Recoder:
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.reader.next().encode("utf-8")
+
+
+class UnicodeReader:
+    """
+    A CSV reader which will iterate over lines in the CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        f = UTF8Recoder(f, encoding)
+        self.reader = csv.reader(f, dialect=dialect, **kwds)
+
+    def next(self):
+        row = self.reader.next()
+        return [unicode(s, "utf-8") for s in row]
+
+    def __iter__(self):
+        return self
+
+
+class UnicodeWriter:
+    """
+    A CSV writer which will write rows to CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        # Redirect output to a queue
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        self.writer.writerow([s.encode("utf-8") for s in row])
+        # Fetch UTF-8 output from the queue ...
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        # ... and reencode it into the target encoding
+        data = self.encoder.encode(data)
+        # write to the target stream
+        self.stream.write(data)
+        # empty queue
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+
+
+def get_salesforce_access():
+
+    required_settings = (hasattr(settings, 'SALESFORCE_USERNAME'),
+                         hasattr(settings, 'SALESFORCE_PASSWORD'),
+                         hasattr(settings, 'SALESFORCE_SECURITY_TOKEN'))
+
+    if all(required_settings):
+        try:
+            sf = Salesforce(username=settings.SALESFORCE_USERNAME,
+                            password=settings.SALESFORCE_PASSWORD,
+                            security_token=settings.SALESFORCE_SECURITY_TOKEN)
+            return sf
+        except:
+            print 'Salesforce authentication failed'
+
+    return None
+
+
+def create_salesforce_contact(profile):
+
+    if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:
+        if profile.sf_contact_id:
+            return profile.sf_contact_id
+        else:
+            sf = get_salesforce_access()
+            # Make sure that user last name is not blank
+            # since that is a required field for Salesforce Contact.
+            if sf and profile.user.last_name:
+                contact = sf.Contact.create({
+                    'FirstName':profile.user.first_name,
+                    'LastName':profile.user.last_name,
+                    'Email':profile.user.email})
+                
+                profile.sf_contact_id = contact['id']
+                profile.save()
+                return contact['id']
+    return None
+
+
+def directory_cleanup(dir_path, ndays):
+    """
+    Delete the files that are older than 'ndays' in the directory 'dir_path'
+    The 'dir_path' should be a relative path. We cannot use os.walk.
+    """
+    foldernames, filenames = default_storage.listdir(dir_path)
+    for filename in filenames:
+        if not filename:
+            continue
+        file_path = os.path.join(dir_path, filename)
+        modified_dt = default_storage.modified_time(file_path)
+        if modified_dt + timedelta(days=ndays) < datetime.now():
+            # the file is older than ndays, delete it
+            default_storage.delete(file_path)
+    for foldername in foldernames:
+        folder_path = os.path.join(dir_path, foldername)
+        directory_cleanup(folder_path, ndays)

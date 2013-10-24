@@ -24,6 +24,30 @@ from tendenci.core.payments.models import Payment
 from tendenci.core.base.utils import normalize_newline
 
 
+def get_user_corp_membership(member_number='', email=''):
+    """
+    Get corp membership by user member number or email
+    """
+    from tendenci.addons.corporate_memberships.models import CorpMembership
+
+    if member_number:
+        memberships = MembershipDefault.objects.filter(
+                                member_number=member_number
+                                )
+    else:
+        memberships = MembershipDefault.objects.filter(
+                                user__email=email,
+                                corporate_membership_id__gt=0
+                                )
+    [corp_membership_id] = memberships.values_list('corporate_membership_id',
+                                          flat=True)[:1] or [0]
+    if corp_membership_id:
+        [corp_membership] = CorpMembership.objects.filter(
+                        id=corp_membership_id)[:1] or [None]
+        return corp_membership
+    return None
+
+
 def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
     cmt_list = []
     corporate_membership_types = corpmembership_app.corp_memb_type.all()
@@ -173,12 +197,15 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
                                       app_label=corp_memb._meta.app_label,
                                       model=corp_memb._meta.module_name)
         inv.object_id = corp_memb.id
-        inv.title = "Corporate Membership Invoice"
+        inv.title = corp_memb.corp_profile.name
+
         if not user.is_anonymous():
             inv.bill_to = '%s %s' % (user.first_name, user.last_name)
             inv.bill_to_first_name = user.first_name
             inv.bill_to_last_name = user.last_name
             inv.bill_to_email = user.email
+            inv.set_creator(user)
+            inv.set_owner(user)
         else:
             if corp_memb.anonymous_creator:
                 cmc = corp_memb.anonymous_creator
@@ -217,7 +244,7 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
             inv.total = renewal_total
         inv.subtotal = inv.total
         inv.balance = inv.total
-        inv.estimate = 1
+        inv.estimate = True
         inv.status_detail = 'estimate'
         inv.save(user)
 
@@ -786,3 +813,135 @@ def last_n_month(n):
     now = datetime.now()
     last = now - relativedelta(months=n)
     return datetime(day=1, month=last.month, year=last.year)
+
+
+def get_notice_token_help_text(notice=None):
+    """Get the help text for how to add the token in the email content,
+        and display a list of available token.
+    """
+    from tendenci.addons.corporate_memberships.models import (
+        CorporateMembershipType, CorpMembershipApp, CorpMembershipAppField)
+    help_text = ''
+    if notice and notice.corporate_membership_type:
+        membership_types = [notice.corporate_membership_type]
+    else:
+        membership_types = CorporateMembershipType.objects.filter(
+                                             status=True,
+                                             status_detail='active')
+
+    # get a list of apps from membership types
+    apps_list = []
+    for mt in membership_types:
+        apps = CorpMembershipApp.objects.filter(corp_memb_type=mt)
+        if apps:
+            apps_list.extend(apps)
+
+    apps_list = set(apps_list)
+    apps_len = len(apps_list)
+
+    # render the tokens
+    help_text += '<div style="margin: 1em 10em;">'
+    help_text += """
+                <div style="margin-bottom: 1em;">
+                You can use tokens to display member info or site specific
+                information.
+                A token is a field name wrapped in
+                {{ }} or [ ]. <br />
+                For example, token for name field: {{ name }}.
+                </div>
+                """
+
+    help_text += '<div id="toggle_token_view"><a href="javascript:;">' + \
+                'Click to view available tokens</a></div>'
+    help_text += '<div id="notice_token_list">'
+    if apps_list:
+        for app in apps_list:
+            if apps_len > 1:
+                help_text += '<div style="font-weight: bold;">%s</div>' % (
+                                                            app.name)
+            fields = CorpMembershipAppField.objects.filter(
+                                        corp_app=app,
+                                        display=True,
+                                        ).exclude(
+                                        field_name=''
+                                        ).order_by('position')
+            help_text += "<ul>"
+            for field in fields:
+                help_text += '<li>{{ %s }} - (for %s)</li>' % (
+                                                       field.field_name,
+                                                       field.label)
+            help_text += "</ul>"
+    else:
+        help_text += '<div>No field tokens because there is no ' + \
+                    'applications.</div>'
+
+    other_labels = ['site_contact_name',
+                    'site_contact_email',
+                    'site_display_name',
+                    'time_submitted',
+                    'view_link',
+                    'renew_link',
+                    'rep_first_name',
+                    'total_individuals_renewed',
+                    'renewed_individuals_list',
+                    'invoice_link',
+                    'individuals_join_url',
+                    'anonymous_join_login_info',
+                    'authentication_info'
+                    ]
+    help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
+    help_text += "<ul>"
+    for label in other_labels:
+        help_text += '<li>{{ %s }}</li>' % label
+    help_text += "</ul>"
+    help_text += "</div>"
+    help_text += "</div>"
+
+    help_text += """
+                <script>
+                    $(document).ready(function() {
+                        $('#notice_token_list').hide();
+                         $('#toggle_token_view').click(function () {
+                        $('#notice_token_list').toggle();
+                         });
+                    });
+                </script>
+                """
+
+    return help_text
+
+
+def create_salesforce_lead(sf, corporate_profile):
+    if corporate_profile.ud1:
+        # Update Salesforce Lead object
+        try:
+            sf.Lead.update(corporate_profile.ud1, {
+                'LastName':corporate_profile.name,
+                'Company':corporate_profile.name,
+                'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
+                'City':corporate_profile.city,
+                'State':corporate_profile.state,
+                'PostalCode':corporate_profile.zip,
+                'Country':corporate_profile.country,
+                'Phone':corporate_profile.phone,
+                'Email':corporate_profile.email,
+                'Website':corporate_profile.url})
+        except:
+            print 'Salesforce lead not found'
+
+    else:
+        # Create a new Salesforce Lead object
+        result = sf.Lead.create({
+            'LastName':corporate_profile.name,
+            'Company':corporate_profile.name,
+            'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
+            'City':corporate_profile.city,
+            'State':corporate_profile.state,
+            'PostalCode':corporate_profile.zip,
+            'Country':corporate_profile.country,
+            'Phone':corporate_profile.phone,
+            'Email':corporate_profile.email,
+            'Website':corporate_profile.url})
+
+        corporate_profile.ud1 = result['id']
+        corporate_profile.save()

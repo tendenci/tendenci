@@ -1,10 +1,21 @@
 Local Installation
 ==================
 
-You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs.
+You can use the following installation instructions to install a local Tendenci site on Ubuntu (deb). 
+This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, 
+but it's recommended that you install locally first in order to test your themes and designs.
+
+If working on a Mac or PC, or even Ubuntu, we strongly recommend using VMWare Fusion, or at least
+VirtualBox at a minimum to test different configurations. (Hint: VMWare handles bridge IPs much better
+than VirtualBox which matters if you travel a lot and bounce between networks like us.)
 
 Pre-config
 ----------
+
+Install distribute if not already installed. Required to install easy_install.
+::
+    sudo wget http://python-distribute.org/distribute_setup.py
+    python distribute_setup.py
 
 Install `pip <http://www.pip-installer.org/>`_:
 ::
@@ -23,8 +34,27 @@ If you are using OS X, you may need to sudo that command with:
 
 You'll also need to have Git set up (see `this Github help article <https://help.github.com/articles/set-up-git>`_ for instructions).
 
-On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
+OS X Pre-config
+~~~~~~~~~~~~~~~
 
+In order for images to correctly render, you will need to install the jpeg libraries with the commands below:
+::
+
+    curl -O http://www.ijg.org/files/jpegsrc.v9.tar.gz
+    tar -xvzf jpegsrc.v9.tar.gz
+    cd jpeg-9
+    ./configure
+    make
+    sudo make install
+
+You can remove the downloaded files with these commands:
+::
+
+    cd ..
+    rm -r jpeg-9
+    rm jpegsrc.v9.tar.gz
+
+On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
 
 Setting up the database
 -----------------------
@@ -53,7 +83,7 @@ Make a folder for your site and cd into it. Replace 'sitename' with the name of 
 It's best practice to make a virtual environment for your site. You will need `virtualenv <http://www.virtualenv.org/>`_ installed for the next step. If you don't have it, you can install it with ``pip install virtualenv``. Make a virtual environment called 'venv' and activate it.
 ::
 
-    virtualenv venv
+    virtualenv --distribute venv
     source venv/bin/activate
 
 Install Tendenci. This download and install step may take a few minutes.

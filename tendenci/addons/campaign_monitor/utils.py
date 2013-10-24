@@ -23,8 +23,8 @@ from tendenci.core.site_settings.utils import get_setting
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 api_password = getattr(settings, 'CAMPAIGNMONITOR_API_PASSWORD', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
-CreateSend.api_key = api_key
-cl = Client(client_id)
+auth = {'api_key': api_key}
+cl = Client(auth, client_id)
 
 def random_string(n=32):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(n))
@@ -79,27 +79,36 @@ def sync_campaigns():
         campaign.preview_url = c.PreviewURL
         campaign.save()
 
-def sync_templates(request):
-    if hasattr(cl,'templates'): templates = cl.templates()
-    else: templates = []
+def sync_templates(request=None):
+    """
+    Pushes most recent template updates
+    up to Campaign Monitor
+    """
+    templates = []
+    if hasattr(cl,'templates'):
+        templates = cl.templates()
+
     for t in templates:
+
         try:
             template = Template.objects.get(template_id = t.TemplateID)
         except Template.DoesNotExist:
-            template = Template(template_id = t.TemplateID)        
+            template = Template(template_id = t.TemplateID)
+            template.name = t.Name
+            template.cm_preview_url = t.PreviewURL
+            template.cm_screenshot_url = t.ScreenshotURL
+        except Exception as e:
+            print 'sync template exception', e
+
         #set up urls
         site_url = get_setting('site', 'global', 'siteurl')
         html_url = unicode("%s%s"%(site_url, template.get_html_url()))
         html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
-        try:
-            from tendenci.addons.events.models import Event, Type
-            html_url += "&events=1"
-            html_url += "&events_type="
-            html_url += "&event_start_dt=%s" % datetime.date.today()
-            end_dt = datetime.date.today() + timedelta(days=90)
-            html_url += "&event_end_dt=%s" % end_dt
-        except ImportError:
-            pass
+        html_url += "&events=1"
+        html_url += "&events_type="
+        html_url += "&event_start_dt=%s" % datetime.date.today()
+        end_dt = datetime.date.today() + timedelta(days=90)
+        html_url += "&event_end_dt=%s" % end_dt
 
         if template.zip_file:
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
@@ -108,23 +117,33 @@ def sync_templates(request):
                 zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
         else:
             zip_url = unicode()
-        
+
         #sync with campaign monitor
         try:
-            t = CST(template_id = template.template_id)
-            t.update(unicode(template.name), html_url, zip_url)
+            cst = CST(auth, template_id=template.template_id)
+            cst.update(unicode(template.name), html_url, zip_url)
+            success = True
         except BadRequest, e:
-            messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
-            return redirect('campaign_monitor.template_index')
+            success = False
+            if request:
+                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+            else:
+                print e.data.Code, e.data.Message
+                return
         except Exception, e:
-            messages.add_message(request, messages.ERROR, 'Error: %s' % e)
-            return redirect('campaign_monitor.template_index')
+            success = False
+            if request:
+                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+            else:
+                print e.data.Code, e.data.Message
+                return
+
         #get campaign monitor details
-        t = t.details()
         template.name = t.Name
         template.cm_preview_url = t.PreviewURL
         template.cm_screenshot_url = t.ScreenshotURL
         template.save()
+        return success
 
 
 def extract_files(template):
@@ -173,7 +192,7 @@ def update_subscription(profile, old_email):
         user = profile.user
         for group in profile.get_groups():
             for listmap in group.listmap_set.all():
-                subscriber = Subscriber(listmap.list_id, old_email)
+                subscriber = Subscriber(auth, listmap.list_id, old_email)
                 try:
                     subscriber.update(user.email, user.get_full_name(), [], False)
                 except BadRequest, e:

@@ -17,7 +17,7 @@ except ImportError:
     from haystack.utils import importlib
 
 
-DEFAULT_BATCH_SIZE = getattr(settings, 'HAYSTACK_BATCH_SIZE', 100000)
+DEFAULT_BATCH_SIZE = getattr(settings, 'HAYSTACK_BATCH_SIZE', 100)
 DEFAULT_AGE = None
 
 
@@ -232,7 +232,7 @@ class Command(AppCommand):
             if self.workers > 0:
                 ghetto_queue = []
             
-            for start in range(0, total, self.batchsize):
+            for start in xrange(0, total, self.batchsize):
                 end = min(start + self.batchsize, total)
                 
                 if self.workers == 0:
@@ -255,7 +255,7 @@ class Command(AppCommand):
                 if self.workers > 0:
                     ghetto_queue = []
                 
-                for start in range(0, total, self.batchsize):
+                for start in xrange(0, total, self.batchsize):
                     upper_bound = start + self.batchsize
                     
                     if self.workers == 0:

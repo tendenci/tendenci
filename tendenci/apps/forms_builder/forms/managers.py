@@ -1,10 +1,10 @@
-from django.db.models import Manager
 from django.contrib.auth.models import User
+from tendenci.core.perms.managers import TendenciBaseManager
 
 from haystack.query import SearchQuerySet
 
 
-class FormManager(Manager):
+class FormManager(TendenciBaseManager):
     """
     Only show published forms for non-staff users.
     """

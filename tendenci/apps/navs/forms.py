@@ -18,7 +18,6 @@ class NavForm(TendenciBaseForm):
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
-            'status',
             'status_detail',
             )
 
@@ -38,15 +37,14 @@ class NavForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'],
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })
                     ]
 
 class PageSelectForm(forms.Form):
     pages = forms.ModelMultipleChoiceField(label = _('Pages'),
-                queryset = Page.objects.all(), widget=forms.CheckboxSelectMultiple)
+                queryset = Page.objects.exclude(status_detail='archive').order_by('title'), widget=forms.CheckboxSelectMultiple)
     
     def __init__(self, *args, **kwargs):
         super(PageSelectForm, self).__init__(*args, **kwargs)

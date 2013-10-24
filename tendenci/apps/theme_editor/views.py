@@ -6,19 +6,27 @@ from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
+from django.views.decorators.csrf import csrf_exempt
+from django.core.management import call_command
 
 from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import get_template_list
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.site_settings.models import Setting
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.utils import get_theme, theme_choices as theme_choice_list
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
-from tendenci.apps.theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
+from tendenci.apps.theme_editor.forms import (FileForm,
+                                              ThemeSelectForm,
+                                              UploadForm,
+                                              AddTemplateForm)
 from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
 from tendenci.apps.theme_editor.utils import qstr_is_file, qstr_is_dir, copy
-from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates
+from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates, ThemeInfo
+from tendenci.libs.boto_s3.utils import save_file_to_s3
 
 DEFAULT_FILE = 'templates/homepage.html'
 
@@ -48,6 +56,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     is_file = qstr_is_file(default_file, ROOT_DIR=theme_root)
     is_dir = qstr_is_dir(default_file, ROOT_DIR=theme_root)
+
     if is_file:
         pass
     elif is_dir:
@@ -138,6 +147,61 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'all_files_folders': all_files_folders,
     }, context_instance=RequestContext(request))
 
+
+@permission_required('theme_editor.change_themefileversion')
+@csrf_exempt
+def create_new_template(request, form_class=AddTemplateForm):
+    """
+    Create a new blank template for a given template name
+    """
+    form = form_class(request.POST or None)
+    ret_dict = {'created': False, 'err': ''}
+
+    if form.is_valid():
+        template_name = form.cleaned_data['template_name'].strip()
+        template_full_name = 'default-%s.html' % template_name
+        existing_templates = [t[0] for t in get_template_list()]
+        if not template_full_name in existing_templates:
+            # create a new template and assign default content
+            use_s3_storage = getattr(settings, 'USE_S3_STORAGE', '')
+            if use_s3_storage:
+                theme_dir = settings.ORIGINAL_THEMES_DIR
+            else:
+                theme_dir = settings.THEMES_DIR
+            template_dir = os.path.join(theme_dir,
+                                get_setting('module', 'theme_editor', 'theme'),
+                                'templates')
+            template_full_path = os.path.join(template_dir,
+                                template_full_name)
+            # grab the content from the new-default-template.html
+            # first check if there is a customized one on the site
+            default_template_name = 'new-default-template.html'
+            default_template_path = os.path.join(template_dir,
+                                'theme_editor',
+                                default_template_name)
+            if not os.path.isfile(default_template_path):
+                # no customized one found, use the default one
+                default_template_path = os.path.join(
+                    os.path.abspath(os.path.dirname(__file__)),
+                    'templates/theme_editor',
+                    default_template_name)
+            if os.path.isfile(default_template_path):
+                default_content = open(default_template_path).read()
+            else:
+                default_content = ''
+            with open(template_full_path, 'w') as f:
+                f.write(default_content)
+            if use_s3_storage:
+                # django default_storage not set for theme, that's why we cannot use it
+                save_file_to_s3(template_full_path)
+
+            ret_dict['created'] = True
+            ret_dict['template_name'] = template_full_name
+        else:
+            ret_dict['err'] = 'Template "%s" already exists' % template_full_name
+        
+
+    return HttpResponse(json.dumps(ret_dict))
 
 @login_required
 def get_version(request, id):
@@ -308,3 +372,28 @@ def upload_file(request):
         form = UploadForm()
 
     return HttpResponseRedirect('/theme-editor/editor/')
+
+
+@login_required
+def theme_picker(request, template_name="theme_editor/theme_picker.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    themes = []
+    for theme in theme_choice_list():
+        theme_info = ThemeInfo(theme)
+        themes.append(theme_info)
+
+    if request.method == "POST":
+        selected_theme = request.POST.get('theme')
+        call_command('set_theme', selected_theme)
+        messages.add_message(request, messages.SUCCESS, "Your theme has been changed to %s." % selected_theme.title())
+
+    current_theme = get_setting('module', 'theme_editor', 'theme')
+    themes = sorted(themes, key=lambda theme: theme.create_dt)
+
+    return render_to_response(template_name, {
+        'themes': themes,
+        'current_theme': current_theme,
+        'theme_choices': theme_choice_list(),
+    }, context_instance=RequestContext(request))

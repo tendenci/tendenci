@@ -20,7 +20,6 @@ class EntityForm(TendenciBaseForm):
         'summary',
         'notes',
         'admin_notes',
-        'status',
         'status_detail',
         )
 
@@ -45,7 +44,6 @@ class EntityForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['admin_notes',
-                                 'status',
                                  'status_detail'], 
                       'classes': ['admin-only'],
                     })]
@@ -55,6 +53,5 @@ class EntityForm(TendenciBaseForm):
 
         if not self.user.profile.is_superuser:
             if 'admin_notes' in self.fields: self.fields.pop('admin_notes')
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             

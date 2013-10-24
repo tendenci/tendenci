@@ -14,7 +14,7 @@ def read(*path):
 
 # Provided as an attribute, so you can append to these instead
 # of replicating them:
-standard_exclude = ["*.pyc", "*~", "*.bak"]
+standard_exclude = ["*.pyc", "*~", "*.bak", ".DS_Store"]
 standard_exclude_directories = [
     ".*", "CVS", "_darcs", "./build",
     "./dist", "EGG-INFO", "*.egg-info"
@@ -115,6 +115,7 @@ setup(
     version=version,
     packages=find_packages(),
     package_data=package_data,
+    include_package_data=True,
     author='Schipul',
     author_email='programmers@schipul.com',
     url='http://github.com/tendenci/tendenci/',
@@ -144,9 +145,8 @@ setup(
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
-    include_package_data=True,
     dependency_links=[
-        "http://b.pypi.python.org/",
+        "http://a.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
     install_requires=[
@@ -158,12 +158,12 @@ setup(
         "South==0.7.5",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
-        "django-avatar>=1.0.4",
+        "django-avatar==1.0.5",
         "django-form-utils>=0.1.8",
         "django-pagination>=1.0.7",
-        "django-photologue>=2.3",
+        "django-photologue==2.5",
         "django-picklefield>=0.1.6",
-        "django-simple-captcha>=0.1.7",
+        "django-simple-captcha==0.3.6",
         "django-tagging>=0.3.1",
         "django-tinymce==1.5.1.dev100",
         "django-haystack==1.2.7",
@@ -177,12 +177,13 @@ setup(
         "pyparseuri>=0.1",
         "pysolr==2.0.15",
         "BeautifulSoup==3.2.1",
+        "beautifulsoup4==4.3.2",
         "oauth2>=1.5.167",
         "python_openid>=2.2",
         "ordereddict==1.1",
-        "createsend>=2.3.0",
-        "celery==2.4.6",
-        "django-celery==2.3.0",
+        "createsend==3.1.0",
+        "celery==2.2.7",
+        "django-celery==2.2.7",
         "django-kombu>=0.9.4",
         "mimeparse>=0.1.3",
         "python-dateutil==1.5",
@@ -190,20 +191,22 @@ setup(
         "slate==0.3",
         "stripe==1.7.7",
         "pycrypto==2.6",
-        "boto==2.5.2",
+        "boto==2.13.3",
         "django-timezones==0.2",
         "django-ses==0.4.1",
         "Geraldo==0.4.16",
-        "django-tastypie",
+        "django-tastypie==0.9.12",
         "johnny-cache==1.4",
         "docutils==0.9.1",
         'chardet==2.1.1',
         "dj-database-url==0.2.1",
         "psycopg2==2.4.5",
-        "gunicorn==0.16.1",
+        "gunicorn==0.17.2",
         "django-s3-folder-storage==0.1",
         "django-storages==1.1.5",
         "python-memcached==1.48",
         "Whoosh==2.4.1",
+        "simple-salesforce==0.51",
+        "static==0.4",
     ],
 )

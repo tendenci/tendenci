@@ -1,4 +1,4 @@
-{% extends "files/base.html" %}
+{% extends base_template_path %}
 {% load pagination_tags %}
 {% load file_tags %}
 {% load base_tags %}
@@ -23,21 +23,9 @@
     {% file_search %}
     <div class="files-found">{{ paginator.count }} {% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %} {% trans "Found" %}</div>
     
-    <div class="files-wrap">
+    <div class="files-wrap clearfix">
     {% for file in files %}
         {% search_result file %}
-    {% empty %}
-        {% if request.user.is_superuser %}
-            {% if request.GET.q %}
-                <div>{% trans "0 Results Found" %}</div>
-            {% else %}
-                <div style="color:#666; font-size:.9em">
-                    {% trans "No files in here at all."%}  <a href="{% url file.add %}">{% trans "Add a file."%}</a>
-                </div>
-            {% endif %}
-        {% else %}
-
-        {% endif %}
     {% endfor %}
     </div>
 

@@ -21,7 +21,18 @@
   <link href="{{ STATIC_URL }}authnet_cim/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
  <![endif]-->
   
-  
+ <style>
+ 	.bs-callout-warning{
+ 		background-color: #FEFBED;
+    	border-left: 5px solid #F1E7BC;
+    	padding: 1em;
+    	color: red;
+    	display: block;
+ 	}
+ 	.rp-warning-wrap{
+ 		margin: 1em 0;
+ 	}
+ </style> 
 
 {% endblock %}
 
@@ -48,6 +59,9 @@
 	    </div>
 	    {% endif %}
 
+		{% if not payment_profile %}
+		<div class="rp-warning-wrap"><span class="bs-callout-warning">NOT complete yet! <br />Please click the button at right to add a payment method.</span></div>
+		{% endif %}
 	    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
 	    {% if rp.url %}
 	    <div class="rp-dname">URL: {{ rp.url|urlize }}</div>
@@ -319,7 +333,7 @@ $(document).ready(function(){
      	$.ajax({
 		   type: "POST",
 		   url: "{% url recurring_payment.authnet.retrieve_token %}",
-		   data: {rpid : {{rp.id}} },
+		   data: {rpid : {{rp.id}}, guid : '{{rp.guid}}' },
 		   success: function(t){
 		     $("input[name=Token]").val(t);
 		     {% if payment_profile %}

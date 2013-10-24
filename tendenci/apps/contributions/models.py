@@ -5,7 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.contributions.managers import ContributionManager
 from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.apps.entities.models import Entity
 
 class Contribution(TendenciBaseModel):
     guid = models.CharField(max_length=40) 

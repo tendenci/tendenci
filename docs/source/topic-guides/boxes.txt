@@ -1,0 +1,28 @@
+Boxes
+=====
+
+Boxes are specialized areas that are added to your theme. You can add HTML content to a box via a WYSIWYG. Boxes can be included based on their ID or based on tags.
+
+To use boxes, they must be added to your theme.
+
+Adding Boxes to your Theme
+--------------------------
+
+Boxes can be embedded into the theme with only a couple lines of code.
+
+.. code-block:: django
+   :emphasize-lines: 1,7
+
+   {% load boxes_tags %}
+
+   {% block html_body %}
+
+       ...
+
+       {% box 1 %}
+
+       ...
+
+   {% endblock html_body %}
+
+Boxes are referenced by their ID, which is visible in the admin area list of boxes.

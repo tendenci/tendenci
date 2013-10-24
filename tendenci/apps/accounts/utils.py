@@ -26,6 +26,6 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
                                  'event_url': event_url,
                                  'site_url': site_url })
     
-    from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
+    from_email = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
     
     send_mail(subject, message, from_email, [user.email])

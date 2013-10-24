@@ -61,5 +61,7 @@ class PhotoIndex(TendenciBaseSearchIndex):
         return obj.update_dt
         
 
-site.register(PhotoSet, PhotoSetIndex)
-site.register(Image, PhotoIndex)
+# Removed from index after search view was updated to perform
+# all searches on the database.
+# site.register(PhotoSet, PhotoSetIndex)
+# site.register(Image, PhotoIndex)

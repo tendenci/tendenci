@@ -2,8 +2,7 @@
 
 {% if jobs %}
 {% load base_filters %}
-	<font face="Arial" size="3"><b>
-	<font color=#000000>
+	<h3 style="font-size: 24px; font-family: Helvetica, Arial, sans-serif; margin: 0px;">
 	{# named area for jump links #}
 	<a name="jobs" id="jobs"></a>
 	{% if start_dt %}
@@ -11,8 +10,7 @@
 	{% else %}
 		{% trans "All Jobs" %}
 	{% endif %}
-	
-	</font></b></font>							   
+	</h3>
 							   
 	{% for job in jobs %}
 		

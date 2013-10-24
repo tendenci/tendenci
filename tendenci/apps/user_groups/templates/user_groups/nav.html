@@ -55,7 +55,7 @@
             <ul>
                 <li class="heading">{% trans "This Group" %}</li>
                 <li class="divider"></li>
-                {% if group.type != "membership" %}
+                {% if group.type != "system_generated" %}
                 {% if can_view_group %}
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Group" %}</a></li>
                 {% endif %}
@@ -64,7 +64,7 @@
                     <li><a href="{% url group.edit nav_object.slug %}">{% trans "Edit Group" %}</a></li>
                     <a href="{% url group.edit_perms nav_object.id %}">{% trans "Edit Permissions" %}</a></li>
                 {% endif %}
-                {% if group.type != "membership" %}
+                {% if group.type != "system_generated" %}
                 <li class="divider"></li>
                 {% if can_add_member %} 
                 <li><a href="{% url group.adduser nav_object.slug %}">{% trans "Add Users" %}</a></li>

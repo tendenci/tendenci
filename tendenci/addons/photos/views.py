@@ -19,6 +19,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage
 from django.forms.models import modelformset_factory
 from django.core.files.base import ContentFile
+from django.db.models import Q
 from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -43,13 +44,16 @@ from tendenci.addons.photos.tasks import ZipPhotoSetTask
 def search(request, template_name="photos/search.html"):
     """ Photos search """
     query = request.GET.get('q', None)
-    if get_setting('site', 'global', 'searchindex') and query:
-        photos = Image.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'photos.view_image')
-        photos = Image.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            photos = photos.select_related()
+    filters = get_query_filters(request.user, 'photos.view_image')
+    photos = Image.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        photos = photos.select_related()
+
+    if query:
+        photos = photos.filter(Q(title__icontains=query)|
+                               Q(caption__icontains=query)|
+                               Q(tags__icontains=query)|
+                               Q(license__name__icontains=query))
 
     photos = photos.order_by('-create_dt')
 
@@ -108,6 +112,8 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
 @is_enabled('photos')
 def photo(request, id, set_id=0, partial=False, template_name="photos/details.html"):
     """ photo details """
+    photo_set = None
+    set_count = None
     photo = get_object_or_404(Image, id=id)
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
@@ -129,10 +135,11 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         photo_prev = photo.get_prev(set=set_id)
         photo_next = photo.get_next(set=set_id)
         photo_first = photo.get_first(set=set_id)
+        photo_position = photo.get_position(set=set_id)
 
-        if photo_prev: photo_prev_url = reverse("photo", args= [photo_prev.id, set_id])
-        if photo_next: photo_next_url = reverse("photo", args= [photo_next.id, set_id])
-        if photo_first: photo_first_url = reverse("photo", args= [photo_first.id, set_id])
+        if photo_prev: photo_prev_url = reverse("photo", args=[photo_prev.id, set_id])
+        if photo_next: photo_next_url = reverse("photo", args=[photo_next.id, set_id])
+        if photo_first: photo_first_url = reverse("photo", args=[photo_first.id, set_id])
 
         photo_sets = list(photo.photoset.all())
         if photo_set in photo_sets:
@@ -143,13 +150,18 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     else:
         photo_prev = photo.get_prev()
         photo_next = photo.get_next()
+        photo_position = photo.get_position()
 
-        if photo_prev: photo_prev_url = reverse("photo", args= [photo_prev.id])
-        if photo_next: photo_next_url = reverse("photo", args= [photo_next.id])
+        if photo_prev: photo_prev_url = reverse("photo", args=[photo_prev.id])
+        if photo_next: photo_next_url = reverse("photo", args=[photo_next.id])
 
         photo_sets = photo.photoset.all()
         if photo_sets:
             set_id = photo_sets[0].id
+            photo_set = get_object_or_404(PhotoSet, id=set_id)
+
+    if photo_set:
+        set_count = photo_set.get_images(user=request.user).count()
 
     # "is me" variable
     is_me = photo.member == request.user
@@ -158,12 +170,14 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         template_name = "photos/partial-details.html"
 
     return render_to_response(template_name, {
+        "photo_position": photo_position,
         "photo_prev_url": photo_prev_url,
         "photo_next_url": photo_next_url,
         "photo_first_url": photo_first_url,
         "photo": photo,
         "photo_sets": photo_sets,
         "photo_set_id": set_id,
+        "photo_set_count": set_count,
         "id": id,
         "set_id": set_id,
         "is_me": is_me,
@@ -216,6 +230,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     if photo.is_public_photo() and photo.is_public_photoset():
         file_name = photo.image_filename()
         file_path = 'cached%s%s' % (request.path, file_name)
+        default_storage.delete(file_path)
         default_storage.save(file_path, ContentFile(response.content))
         full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
         cache.set(cache_key, full_file_path)
@@ -230,15 +245,21 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     return response
 
-@login_required
+
 def photo_original(request, id):
     """
     Returns a reponse with the original image.
     """
     photo = get_object_or_404(Image, id=id)
 
-    # check permissions
-    if not has_perm(request.user, 'photos.view_image', photo):
+    allowed_to_view_original = [
+        request.user.profile.is_superuser,
+        request.user == photo.creator,
+        request.user == photo.owner,
+        photo.get_license().name != 'All Rights Reserved',
+    ]
+
+    if not any(allowed_to_view_original):
         raise Http403
 
     image_data = default_storage.open(unicode(photo.image.file), 'rb').read()
@@ -458,13 +479,16 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
 def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
     query = request.GET.get('q', None)
-    if get_setting('site', 'global', 'searchindex') and query:
-        photo_sets = PhotoSet.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'photos.view_photoset')
-        photo_sets = PhotoSet.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            photo_sets = photo_sets.select_related()
+    filters = get_query_filters(request.user, 'photos.view_photoset')
+    photo_sets = PhotoSet.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        photo_sets = photo_sets.select_related()
+
+    if query:
+        photo_sets = photo_sets.filter(Q(name__icontains=query)|
+                                       Q(description__icontains=query)|
+                                       Q(tags__icontains=query))
+
     photo_sets = photo_sets.order_by('-create_dt')
 
     EventLog.objects.log()
@@ -586,7 +610,7 @@ def photos_batch_add(request, photoset_id=0):
             HttpResponseRedirect(reverse('photoset_latest'))
         photo_set = get_object_or_404(PhotoSet, id=photoset_id)
         # current limit for photo set images is hard coded to 50
-        image_slot_left = 50 - photo_set.image_set.count()
+        image_slot_left = 150 - photo_set.image_set.count()
 
         # show the upload UI
         return render_to_response('photos/batch-add.html', {
@@ -629,8 +653,8 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
         form = PhotoBatchEditForm(request.POST, instance=photo)
 
         if form.is_valid():
-            delete_photo = request.POST.get('delete')
-            if delete_photo:
+
+            if 'delete' in request.POST:
                 photo.delete()
 
             photo = form.save()
@@ -671,12 +695,15 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
 
+    default_group_id = Group.objects.get_initial_group_id()
+
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
         "photo_set": photo_set,
         "cc_licenses": cc_licenses,
         "tag_help_text": tag_help_text,
         "groups": groups,
+        'default_group_id': default_group_id
     }, context_instance=RequestContext(request))
 
 

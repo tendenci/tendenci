@@ -1,6 +1,3 @@
-.t {
-	width: 90%;
-}
 .t h2 {
 	margin: 0 auto 10px 0;
 }
@@ -92,6 +89,11 @@
 .t form.search-form input[type="submit"] {
 	padding: 5px;	
 	cursor: pointer;
+}
+
+.attend-wrap .spots-taken {
+	float: left;
+	margin-top: 15px;
 }
 
 /*= Details View
@@ -269,6 +271,13 @@ div.id_regconf-reminder_days{
 }
 div.id_regconf-reminder_days label{
     font-size: 0.8em;
+}
+
+.become-a-member {
+	display: block;
+	padding-top: 10px;
+	margin-top: 10px;
+	border-top: 1px solid silver;
 }
 
 
@@ -941,4 +950,33 @@ table.pricing-list .price-disabled label {
 
 .clear-both {
     clear: both;
+}
+
+.t .files-wrap {
+	margin-bottom: 20px;
+}
+
+.t .files-wrap .file-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .files-wrap .file-wrap h2 {
+	width: 85%;
+	margin-bottom: 6px;
+}
+
+.t .file-wrap .icon {
+	float: left;
+	margin-right: 10px;
+}
+
+.t .file-wrap h2 a.broken {
+	text-decoration: line-through;
+}
+.t .event-wrap .dropdown {
+    z-index: 0;
 }

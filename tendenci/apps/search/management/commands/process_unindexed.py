@@ -2,9 +2,9 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.search.models import UnindexedItem
+
 
 class Command(BaseCommand):
     """
@@ -29,12 +29,15 @@ class Command(BaseCommand):
                 ages.append(int(age))
 
         # If we have items, then we find the max age and run a single
-        # update_index command for those apps with the longest age
+        # update_index command for those apps with the longest age.
         if items and ages:
             ages.sort()
             ages.reverse()
             max_age = ages[0]
-            params = {'age': max_age, 'remove': True}
+            # Remove is required because soft-deletes cannot be updated
+            # in the index as the index cannot query for them to update
+            # them.
+            params = {'age': max_age, 'batch-size': 50, 'remove': True}
 
             call_command('update_index', *items, **params)
             unindexed_items.delete()

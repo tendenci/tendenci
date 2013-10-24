@@ -13,7 +13,7 @@ from django.db.models import Q
 from django import forms
 from django.forms.models import fields_for_model
 
-from tendenci.libs.model_report.utils import base_label, ReportValue, ReportRow
+from tendenci.libs.model_report.utils import base_label, ReportValue, ReportRow, get_obj_type_choices
 from tendenci.libs.model_report.highcharts import HighchartRender
 from tendenci.libs.model_report.widgets import RangeField
 from tendenci.libs.model_report.export_pdf import render_to_pdf
@@ -110,6 +110,7 @@ class ReportAdmin(object):
     override_field_values = {}
     override_field_formats = {}
     override_field_labels = {}
+    override_group_value = {}
     chart_types = ()
     exports = ('excel', 'pdf')
     inlines = []
@@ -235,7 +236,14 @@ class ReportAdmin(object):
 
     @cache_return
     def get_query_set(self, filter_kwargs):
-        qs = self.model.objects.all()
+        # Filter out invoices based on hardcoded object types specified
+        if self.model._meta.verbose_name == 'invoice':
+            try:
+                qs = self.model.objects.filter(object_type__in=get_obj_type_choices())
+            except Exception:
+                qs = self.model.objects.all()
+        else:
+            qs = self.model.objects.all()
         for k, v in filter_kwargs.items():
             if not v is None and v != '':
                 if hasattr(v, 'values_list'):
@@ -479,6 +487,8 @@ class ReportAdmin(object):
                 data = kwargs.get('data', {})
                 if data:
                     self.fields['groupby'].initial = data.get('groupby', '')
+                elif len(self.groupby_fields) < 2:
+                    self.fields['groupby'].initial = field
 
             def get_cleaned_data(self):
                 cleaned_data = getattr(self, 'cleaned_data', {})
@@ -530,6 +540,24 @@ class ReportAdmin(object):
                         model_field = opts.get_field_by_name(field_name)[0]
                         form_fields.pop(k)
                         form_fields[k] = RangeField(model_field.formfield)
+                    # Change filter form fields specific to invoice reports
+                    elif opts.verbose_name == 'invoice':
+                        if k == 'status_detail':
+                            form_fields.pop(k)
+                            form_fields[k] = forms.ChoiceField()
+                            form_fields[k].label = v.label
+                            form_fields[k].help_text = v.help_text
+                            form_fields[k].choices = (
+                                ('', _('All')),
+                                ('estimate', _('Estimate')),
+                                ('tendered', _('Tendered')),
+                            )
+                            form_fields[k].initial = 'tendered'
+                        elif k == 'object_type':
+                            form_fields.pop(k)
+                            form_fields[k] = forms.ModelChoiceField(queryset=get_obj_type_choices())
+                            form_fields[k].label = v.label
+                            form_fields[k].help_text = v.help_text
 
         form_class = type('FilterFormBase', (forms.BaseForm,), {'base_fields': form_fields})
 
@@ -732,10 +760,19 @@ class ReportAdmin(object):
         if self.model_m2m_fields:
             qs_list = group_m2m_field_values(qs_list)
 
+        groupby_fn = None
         if groupby_data and groupby_data['groupby']:
-            g = groupby(qs_list, lambda x: x[ffields.index(groupby_data['groupby'])])
+            groupby_field = groupby_data['groupby']
+            if groupby_field in self.override_group_value:
+                transform_fn = self.override_group_value.get(groupby_field)
+                groupby_fn = lambda x: transform_fn(x[ffields.index(groupby_field)])
+            else:
+                groupby_fn = lambda x: x[ffields.index(groupby_field)]
         else:
-            g = groupby(qs_list, lambda x: None)
+            groupby_fn = lambda x: None
+
+        qs_list.sort(key=groupby_fn)
+        g = groupby(qs_list, key=groupby_fn)
 
         row_report_totals = self.get_empty_row_asdict(self.report_totals, [])
         for grouper, resources in g:

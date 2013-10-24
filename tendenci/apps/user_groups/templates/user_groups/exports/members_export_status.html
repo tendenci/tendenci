@@ -1,0 +1,54 @@
+{% extends "user_groups/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Export Group Members - Status" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/usergroups.css">
+    <style>
+        .display-hide{
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <h1>Group Members Export - Status</h1>
+    <p style="font-size: 1.1em;">Group: <strong>{{ group.name }}</strong></p>
+   
+    <div id="group-export">
+       
+       <div id="display-content"{% if not download_ready %} class="display-hide"{% endif %}>
+       <p>The export file is ready, click the download link below to download.</p>
+       <div>
+           <a href="{% url group.members_export_download group.slug, export_target, identifier %}">Download Now</a>  
+       </div>
+       <div>&nbsp;</div>
+       <div>&nbsp;</div>
+       <div>
+           <a href="{% url group.detail group.slug %}">{% trans "Back to Group" %} &raquo;</a>
+       </div>
+       </div>
+       
+    </div>
+    
+    {% if not download_ready %}
+       <p>
+          Your request is being processed. Please check later by <strong>refreshing this page</strong>. <br /><br />
+          In the meantime, {% if email_recipient %}an email will be sent to you at <strong>{{ email_recipient }}</strong>
+          {% else %}
+          we'll notify you via email
+          {% endif %}
+           once the export is ready. <br />
+           Thank you for your patience!
+          
+        </p>
+   {% endif %}
+
+{% endblock %}
+
+

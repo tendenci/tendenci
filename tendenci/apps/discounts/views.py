@@ -15,6 +15,8 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
+from tendenci.addons.events.models import Registration
+from tendenci.addons.memberships.models import MembershipSet
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.forms import DiscountForm, DiscountCodeForm, DiscountHandlingForm
 from tendenci.core.site_settings.utils import get_setting
@@ -50,11 +52,24 @@ def detail(request, id, template_name="discounts/detail.html"):
     if not has_perm(request.user, 'discounts.view_discount', discount):
         raise Http403
 
+    registrations = Registration.objects.filter(invoice__discount_code=discount.discount_code)
+    registrant_list = []
+    for registration in registrations:
+        registrant_list += registration.registrant_set.filter(discount_amount__gt=0)
+
+    memberships = MembershipSet.objects.filter(invoice__discount_code=discount.discount_code)
+    membership_list = []
+    for membership in memberships:
+        count = DiscountUse.objects.filter(invoice=membership.invoice).count()
+        membership_list += membership.membershipdefault_set.all()[:count]
+
     EventLog.objects.log(instance=discount)
 
     return render_to_response(
         template_name, 
-        {'discount':discount},
+        {'discount':discount,
+         'registrant_list':registrant_list,
+         'membership_list':membership_list},
         context_instance=RequestContext(request)
     )
 
@@ -70,7 +85,7 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
         if form.is_valid():
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
-
+            form.save_m2m()
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
@@ -95,7 +110,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
         if form.is_valid():
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
-
+            form.save_m2m()
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
@@ -156,10 +171,17 @@ def discounted_price(request, form_class=DiscountCodeForm):
 
 @is_enabled('discounts')
 @csrf_exempt
-def discounted_prices(request, form_class=DiscountHandlingForm):
+def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
+            if check:
+                return HttpResponse(json.dumps(
+                {
+                    "error": False,
+                    "message": "A discount of $%s has been added." % (form.discount.value),
+                }), mimetype="text/plain")
+
             price_list, discount_total, discount_list, msg = form.get_discounted_prices()
             total = sum(price_list)
             new_prices = ';'.join([str(price) for price in price_list])
@@ -186,7 +208,6 @@ def discounted_prices(request, form_class=DiscountHandlingForm):
     return HttpResponse(
         "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
         mimetype="text/html")
-
 
 @is_enabled('discounts')
 @login_required

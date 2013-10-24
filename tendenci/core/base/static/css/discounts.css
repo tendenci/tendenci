@@ -154,3 +154,11 @@ div.content table td{
 div.content table td.label{
     width: 140px;
 }
+
+/* usage report */
+div.usage-report table {
+    width: 100%;
+}
+div.usage-report table th {
+    background: #EEE;
+}

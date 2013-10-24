@@ -33,10 +33,9 @@ TIME_ZONE = 'US/Central'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 LANGUAGES = (
     ('en', u'English'),
-    ('en-us', u'English'),
     ('es', u'Espanol'),
 )
 
@@ -79,6 +78,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'tendenci.libs.swfupload.middleware.SSLRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'johnny.middleware.LocalStoreClearMiddleware',
     'johnny.middleware.QueryCacheMiddleware',
@@ -252,6 +252,7 @@ INSTALLED_APPS = (
     'tendenci.addons.events.ics',
     'tendenci.core.imports',
     'tendenci.core.handler404',
+    'tendenci.apps.reports',
     # celery task system, must stay at the bottom of installed apps
     'djkombu',
     'djcelery',
@@ -270,6 +271,23 @@ AUTHENTICATION_BACKENDS = (
     'tendenci.core.perms.backend.ObjectPermBackend',
     'tendenci.addons.social_auth.backends.facebook.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
+)
+
+#--------------------------------------------------
+# DEBUG TOOLBAR
+#--------------------------------------------------
+INTERNAL_IPS = ('127.0.0.1', '192.168.0.1',)
+DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False,}
+DEBUG_TOOLBAR_PANELS = (
+    'debug_toolbar.panels.version.VersionDebugPanel',
+    'debug_toolbar.panels.timer.TimerDebugPanel',
+    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+    'debug_toolbar.panels.headers.HeaderDebugPanel',
+    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+    'debug_toolbar.panels.template.TemplateDebugPanel',
+    'debug_toolbar.panels.sql.SQLDebugPanel',
+    'debug_toolbar.panels.signals.SignalDebugPanel',
+    'debug_toolbar.panels.logger.LoggingPanel',
 )
 
 # -------------------------------------- #
@@ -369,6 +387,8 @@ HAYSTACK_SOLR_TIMEOUT = 20
 HAYSTACK_INDEX_LIMITS = {
     'event_logs': 3000,
 }
+
+INDEX_FILE_CONTENT = False
 
 # --------------------------------------#
 # PAYMENT GATEWAYS

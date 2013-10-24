@@ -1,4 +1,6 @@
+import random
 import hashlib
+import random
 from datetime import datetime, timedelta
 from operator import or_
 
@@ -77,7 +79,6 @@ def global_registrant_search(context):
 def registration_pricing_and_button(context, event, user):
     limit = event.get_limit()
     spots_taken = 0
-    spots_left = limit - spots_taken
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(user, is_strict=False)
@@ -86,7 +87,6 @@ def registration_pricing_and_button(context, event, user):
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
     earliest_time = registration_earliest_time(event, pricing=pricing)
-    
 
     # spots taken
     if limit > 0:
@@ -99,7 +99,7 @@ def registration_pricing_and_button(context, event, user):
     if hasattr(user, 'registrant_set'):
         is_registrant = user.registrant_set.filter(
             registration__event=event).exists()
-    
+
     context.update({
         'now': datetime.now(),
         'event': event,
@@ -118,9 +118,16 @@ def registration_pricing_and_button(context, event, user):
     return context
 
 
+@register.inclusion_tag('events/files_view.html', takes_context=True)
+def file_detail(context, attachment):
+    context.update({
+        "file": attachment
+    })
+    return context
+
+
 class EventListNode(Node):
     def __init__(self, day, type_slug, ordering, context_var):
-        #print ordering
         self.day = Variable(day)
         self.type_slug = Variable(type_slug)
         self.ordering = ordering
@@ -267,8 +274,15 @@ class ListEventsNode(ListNode):
         order = 'next_upcoming'
         event_type = ''
         group = u''
+        start_dt = u''
 
         randomize = False
+
+        if 'start_dt' in self.kwargs:
+            try:
+                start_dt = datetime.strptime(self.kwargs['start_dt'].replace('"', '').replace('"', ''), '%m/%d/%Y-%H:%M')
+            except ValueError:
+                pass
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -367,17 +381,29 @@ class ListEventsNode(ListNode):
 
         objects = []
 
+        if start_dt:
+            items = items.filter(start_dt__gte=start_dt)
+
         # if order is not specified it sorts by relevance
         if order:
             if order == "next_upcoming":
-                # Removed seconds and microseconds so we can cache the query better
-                now = datetime.now().replace(second=0, microsecond=0)
-                items = items.filter(start_dt__gt = now)
+                if not start_dt:
+                    # Removed seconds and microseconds so we can cache the query better
+                    now = datetime.now().replace(second=0, microsecond=0)
+                    items = items.filter(start_dt__gt=now)
                 items = items.order_by("start_dt")
             elif order == "current_and_upcoming":
-                now = datetime.now().replace(second=0, microsecond=0)
-                items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
+                if not start_dt:
+                    now = datetime.now().replace(second=0, microsecond=0)
+                    items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
                 items = items.order_by("start_dt")
+            elif order == "current_and_upcoming_by_hour":
+                now = datetime.now().replace(second=0, microsecond=0)
+                today = datetime.now().replace(second=0, hour=0, minute=0, microsecond=0)
+                tomorrow = today + timedelta(days=1)
+                items = items.filter(Q(start_dt__lte=tomorrow) & Q(end_dt__gte=today)).extra(select={'hour': 'extract( hour from start_dt )'}).extra(select={'minute': 'extract( minute from start_dt )'}).extra(where=["extract( hour from start_dt ) >= %s"], params=[now.hour])
+                items = items.distinct()
+                items = items.order_by('hour', 'minute')
             else:
                 items = items.order_by(order)
 
@@ -399,14 +425,14 @@ def list_events(parser, token):
 
         {% list_events as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``events_sidebar`` or 
+    Be sure the [varname] has a specific name like ``events_sidebar`` or
     ``events_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
-           The order of the items. Custom options include ``next_upcoming`` for the 
+           The order of the items. Custom options include ``next_upcoming`` for the
            events starting after now, and ``current_and_upcoming`` for events going on
            as well as upcoming. **Default: Next Upcoming by date**
         ``user``
@@ -419,6 +445,8 @@ def list_events(parser, token):
            The group id associated with items to be included.
         ``random``
            Use this with a value of true to randomize the items included.
+        ``start_dt``
+           Specify the date that events should start after to be shown. MUST be in the format 1/20/2013-06:45
 
     Example::
 
@@ -445,4 +473,3 @@ def list_events(parser, token):
         kwargs['order'] = 'next_upcoming'
 
     return ListEventsNode(context_var, *args, **kwargs)
-

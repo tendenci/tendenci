@@ -64,6 +64,7 @@
                 {% if 'state' in fieldnames %}
                 <th>State</th>
                 {% endif %}
+                <th>Status</th>
                 <th>Reason if to be skipped</th>
             </tr>
             
@@ -84,6 +85,7 @@
                 {% if 'state' in fieldnames %}
                 <td>{{ cm.state }}</td>
                 {% endif %}
+                <td>{{ cm.status_detail }}</td>
                 <td>
                     {% if cm.error %}
                     {{ cm.error }}

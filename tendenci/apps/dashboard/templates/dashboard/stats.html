@@ -1,0 +1,230 @@
+{% load i18n %}
+
+{% if type_name == "events_upcoming" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <table class="events-table">
+        <tr>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Registrations" %}</th>
+            <th>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</th>
+            <th>{% trans "Paid" %} %</th>
+        </tr>
+    {% for date,name,url,reg,total,percentage in value %}
+        <tr>
+            <td>{{ date }}</td>
+            <td><a href="{{ url }}">{{ name }}</a></td>
+            <td>{{ reg }}</td>
+            <td>{{ total }}</td>
+            <td>{{ percentage }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_count" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    {% for active, expiring, new, pending, expired in value %}
+    <h2>{{ active }} Active | {{ expiring }} Expire in 30 days</h2>
+    <div id="members-info" new="{{ new }}" pending="{{ pending }}" expired="{{ expired }}">
+        Last 30 days
+        <p>New: {{ new }}</p>
+        <p>Pending: {{ pending }}</p>
+        <p>Expired: {{ expired }}</p>
+    </div>
+    {% endfor %}
+    <div id="members-graph"></div>
+    <div style="clear:both;"></div>
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_new" %}
+<div class="stat">
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
+        <ol>
+        {% for name, url in value|slice:"1:" %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+        <p><a href="{% url reports-memberships-joins %}">More new memberships.</a></p>
+    {% else %}
+        <p>No new memberships within this time period.
+           <a href="{% url reports-memberships-joins %}"> View all new memberships.</a>
+        </p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_renew" %}
+<div class="stat">
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
+        <ol>
+        {% for name, url in value|slice:"1:" %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+        <p><a href="{% url reports-renewed-members %}">More renewed memberships.</a></p>
+    {% else %}
+        <p>No renewed memberships within this time period.
+           <a href="{% url reports-renewed-members %}"> View all renewed memberships.</a>
+        </p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_expired" %}
+<div class="stat">
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
+        <ol>
+        {% for name, url in value|slice:"1:" %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+        <p><a href="{% url reports-expired-members %}">More expired memberships.</a></p>
+    {% else %}
+        <p>No expired memberships within this time period.
+            <a href="{% url reports-expired-members %}">View all expired memberships.</a>
+        </p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if type_name == "memberships_30_expiring" %}
+<div class="stat">
+    <span>{{ value.0 }} {{ label|striptags|safe }}</span>
+    {% if value|slice:"1:" %}
+        <ol>
+        {% for name, url in value|slice:"1:" %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p>No expiring memberships within this time period.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if type_name == "corp_memberships_30_new" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol>
+</div>
+{% endif %}
+
+{% if type_name == "corp_memberships_30_renew" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol>
+</div>
+{% endif %}
+
+{% if type_name == "corp_memberships_30_expired" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol>
+</div>
+{% endif %}
+
+{% if type_name == "corp_memberships_30_expiring" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <ol>
+    {% for name, url in value %}
+        <li><a href="{{ url }}">{{ name }}</a></li>
+    {% endfor %}
+    </ol> 
+</div>
+{% endif %}
+
+{% if type_name == "forms_30_submissions" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <table>
+        <tr>
+            <th>{% trans "Name" %}</th>
+            <th>30 {% trans "Day Submissions" %}</th>
+        </tr>
+    {% for title, url, count, link in value %}
+        <tr>
+            <td><a href="{{ url }}">{{ title }}</a></td>
+            <td><a href="{{ link }}">{{ count }}</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if type_name == "pages_30_traffic" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <table>
+    {% for title, url, count in value %}
+        <tr>
+        {% if forloop.first %}
+            <th>{% trans "Pages" %}</th>
+            <th>30 {% trans "Day Traffic" %}</th>
+        {% else %}
+            <td><a href="{{ url }}">{{ title }}</a></td>
+            <td>{{ count }}</td>
+        {% endif %}
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if type_name == "events_30_traffic" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <table>
+    {% for title, url, count in value %}
+        <tr>
+        {% if forloop.first %}
+            <th>{% trans "Events" %}</th>
+            <th>30 {% trans "Day Traffic" %}</th>
+        {% else %}
+            <td><a href="{{ url }}">{{ title }}</a></td>
+            <td>{{ count }}</td>
+        {% endif %}
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if type_name == "corp_members_top" %}
+<div class="stat">
+    <span>{{ label|striptags|safe }}</span>
+    <table>
+    {% for title, url, count in value %}
+        <tr>
+        {% if forloop.first %}
+            <th>{% trans "Corporate Members" %}</th>
+            <th>{{ count }}</th>
+        {% else %}
+            <td><a href="{{ url }}">{{ title }}</a></td>
+            <td>{{ count }}</td>
+        {% endif %}
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}

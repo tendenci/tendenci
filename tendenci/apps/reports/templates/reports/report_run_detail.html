@@ -1,0 +1,35 @@
+{% extends 'reports/report_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Report' %} {{ run.report.pk }} - {{ run.report.type|title }} - {% trans 'Run' %} {{ run.pk }}{% endblock title %}
+
+{% block body %}
+<h1>{% trans 'Report' %} {{ run.report.pk }} - {{ run.report.type|title }} - {% trans 'Run' %} {{ run.pk }}</h1>
+
+<p>
+    <strong>{% trans 'Range' %}:</strong> {{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans 'to' %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}<br />
+
+    <strong>{% trans 'Status' %}:</strong> {{ run.status }}<br />
+{% if not run.complete_dt %}* this page auto-reloads until the report is complete{% endif %}
+</p>
+{% if run.status == "complete" %}
+    <p><a class="btn" href="{{ run.get_output_url }}">{% trans 'View Report Output' %} ({{ run.output_type }})</a></p>
+{% endif %}
+
+
+<p><a href="{{ run.report.get_absolute_url }}">&larr; {% trans "Back to Report page" %}</a></p>
+
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% if not run.complete_dt %}
+<script type="text/javascript">
+function reloadPage() {
+    location.reload(true);
+}
+var page_reload = setInterval(reloadPage, 4000);
+</script>
+{% endif %}
+{% endblock extra_body %}

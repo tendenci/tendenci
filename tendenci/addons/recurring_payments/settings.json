@@ -13,7 +13,7 @@
         "parent_id": 0, 
         "scope": "module", 
         "scope_category": "recurring_payments", 
-        "store": true, 
+        "store": false, 
         "updated_by": ""
     }
 

@@ -338,7 +338,12 @@ footer ul li a:hover { text-decoration: underline; color: #FAA141; }
       #header-links { text-align: center; } 
       #header-cta { margin: 0 auto; }
       #search { margin: 4% auto; }
-      #rotator-container { display: none; }
+      #rotator-container { height: auto; }
+      #rotator-wrap { width: 106%; box-shadow: 4px 6px 13px -3px rgba(0, 0, 0, 0.5); background-color: rgba(255, 255, 255, 1); }
+      .rotator-item { height: 300px; }
+      .rotator-image { top: 8px; }
+      .rotator-content { width: 100%; bottom: 0; left: 5px; right: 5px; top: 140px;}
+      #stories-pager { top: auto; right: 2%; bottom: 20px;}
       #home-body { width: 106%; }
       #home-feed-content { width: 106%; }
       #home-body-shadow , #home-feed-shadow{ display: none; }

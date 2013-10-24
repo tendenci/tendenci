@@ -1,7 +1,9 @@
 import commands
 from datetime import date, timedelta
+from decimal import Decimal
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Sum
 from django.conf import settings
 
 from tendenci.apps.metrics.models import Metric
@@ -17,6 +19,9 @@ class Command(BaseCommand):
     2. Total users from auth_users
     3. Total members from auth_users
     4. Total visits from event_logs by day
+    5. Total number of invoices from invoices
+    6. Total number of positive invoices (total > 0)
+    7. Sum of total field for invoices
     """
     def handle(self, *app_names, **options):
         """
@@ -36,12 +41,18 @@ class Command(BaseCommand):
         metric.members = len(self.members)
         metric.visits = len(self.get_visits())
         metric.disk_usage = self.get_site_size()
+        metric.invoices = self.get_invoices().count()
+        metric.positive_invoices = self.get_positive_invoices().count()
+        metric.invoice_totals = Decimal(self.get_invoice_totals())
 
         if verbosity >= 2:
             print 'metric.users', metric.users
             print 'metric.members', metric.members
             print 'metric.visits', metric.visits
             print 'metric.disk_usage', metric.disk_usage
+            print 'metric.invoices', metric.invoices
+            print 'metric.positive_invoices', metric.positive_invoices
+            print 'metric.invoice_totals', metric.invoice_totals
 
         metric.save()
 
@@ -96,3 +107,33 @@ class Command(BaseCommand):
             size_in_kb = int(output.split()[0].strip())
 
         return size_in_kb * 1024
+
+    def get_invoices(self):
+        """
+        Get all invoices from the invoices_invoice table
+        """
+        from tendenci.apps.invoices.models import Invoice
+        today = date.today()
+        
+        # if the script runs today, we collect the data from yesterday
+        yesterday = today - timedelta(days=1)
+
+        filters = {
+            'status_detail': 'tendered',
+            'create_dt__range': (yesterday, today)
+        }
+
+        return Invoice.objects.filter(**filters)
+
+    def get_positive_invoices(self):
+        """
+        Get all invoices that have a total that is greater than 0
+        """
+        return self.get_invoices().filter(total__gt=0)
+
+    def get_invoice_totals(self):
+        """
+        Get the sum of all invoice totals
+        """
+        # if there are no invoices, we return 0 for our decimal field
+        return self.get_invoices().aggregate(Sum('total'))['total__sum'] or 0

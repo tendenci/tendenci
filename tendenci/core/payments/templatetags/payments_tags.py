@@ -3,6 +3,15 @@ from django.conf import settings
 
 register = Library()
 
+
+@register.inclusion_tag("payments/nav.html", takes_context=True)
+def payment_nav(context, payment=None):
+    context.update({
+        "nav_object" : payment,
+    })
+    return context
+
+
 @register.inclusion_tag("payments/thankyou_display.html")
 def payment_thankyou_display(request, payment):
     obj_header = None
@@ -12,8 +21,8 @@ def payment_thankyou_display(request, payment):
         obj = None
     else:
         obj = payment.invoice.get_object()
-
-        #print 'obj', obj._meta.app_label
+        if obj._meta.module_name == 'membershipset':
+            [obj] = obj.memberships()[:1] or [None]
 
         if obj:
             from django.template.loader import render_to_string

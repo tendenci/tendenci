@@ -94,10 +94,10 @@ class Command(BaseCommand):
         from tendenci.core.files.models import File
 
         if reset_nav:
-            from tendenci.apps.navs.models import Nav
+            from tendenci.apps.navs.models import NavItem
             try:
-                main_nav = Nav.objects.get(pk=1)
-                main_nav.delete()
+                main_nav_items = NavItem.objects.filter(nav_id=1)
+                main_nav_items.delete()
             except:
                 pass
 

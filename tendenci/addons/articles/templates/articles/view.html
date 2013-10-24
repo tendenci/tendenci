@@ -3,6 +3,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load i18n %}
+{% load meta_tags %}
 
 {% block title %}{{ article.get_title }}{% endblock %}
 {% block meta_description %}{{ article.get_description }}{% endblock %}
@@ -10,6 +11,7 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
+{% meta_og_image article "body" %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 {% endblock %}

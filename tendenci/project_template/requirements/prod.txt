@@ -10,4 +10,4 @@ pylibmc==1.2.2
 django-pylibmc-sasl==0.2.4
 
 # For Sentry
-raven==2.0.2
+raven==3.4.0

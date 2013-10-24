@@ -3,18 +3,24 @@ from datetime import datetime
 from os.path import splitext, basename
 
 from django import forms
-
+from django.forms.util import ErrorList
 from tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
+from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
-
+from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.models import ContentType
+from tendenci.core.categories.forms import CategoryField
+from tendenci.core.categories.models import CategoryItem
 from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.addons.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
 from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.files.utils import get_max_file_upload_size
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -23,11 +29,87 @@ ALLOWED_LOGO_EXT = (
     '.png'
 )
 
+request_duration_defaults = {
+    'label': _('Requested Duration'),
+    'help_text': mark_safe('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/directories/pricing/add/'),
+}
+
+SEARCH_CATEGORIES_ADMIN = (
+    ('', '-- SELECT ONE --' ),
+    ('id', 'Directory ID'),
+    ('body__icontains', 'Body'),
+    ('headline__icontains', 'Headline'),
+    ('city__icontains', 'City'),
+    ('state__iexact', 'State'),
+    ('tags__icontains', 'Tags'),
+
+    ('creator__id', 'Creator Userid(#)'),
+    ('creator__username', 'Creator Username'),
+    ('owner__id', 'Owner Userid(#)'),
+    ('owner__username', 'Owner Username'),
+
+    ('status_detail__icontains', 'Status Detail'),
+)
+
+SEARCH_CATEGORIES = (
+    ('', '-- SELECT ONE --' ),
+    ('id', 'Directory ID'),
+    ('body__icontains', 'Body'),
+    ('headline__icontains', 'Headline'),
+    ('city__icontains', 'City'),
+    ('state__iexact', 'State'),
+    ('tags__icontains', 'Tags'),
+)
+
+class DirectorySearchForm(forms.Form):
+    search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    category = CategoryField(label=_('Category'), choices=[], required=False)
+    sub_category = CategoryField(label=_('Sub Category'), choices=[], required=False)
+    q = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        is_superuser = kwargs.pop('is_superuser', None)
+        super(DirectorySearchForm, self).__init__(*args, **kwargs)
+
+        if not is_superuser:
+          self.fields['search_category'].choices = SEARCH_CATEGORIES
+
+        categories, sub_categories = Directory.objects.get_categories()
+
+        categories = [(cat.pk, cat) for cat in categories]
+        sub_categories = [(cat.pk, cat) for cat in sub_categories]
+
+        self.fields['category'].choices = categories
+        self.fields['sub_category'].choices = sub_categories
+
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        q = self.cleaned_data.get('q', None)
+        cat = self.cleaned_data.get('search_category', None)
+
+        if cat is None or cat == "" :
+            if not (q is None or q == ""):
+                self._errors['search_category'] =  ErrorList(['Select a category'])
+
+        if cat in ('id', 'owner__id', 'creator__id') :
+            try:
+                x = int(q)
+            except ValueError:
+                self._errors['q'] = ErrorList(['ID must be a number.'])
+
+        return cleaned_data
+
+
 class DirectoryForm(TendenciBaseForm):
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Directory._meta.app_label,
         'storme_model':Directory._meta.module_name.lower()}))
+
+    logo = forms.FileField(
+      required=False,
+      help_text=_('Company logo. Only jpg, gif, or png images.'))
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -35,16 +117,15 @@ class DirectoryForm(TendenciBaseForm):
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
-    remove_photo = forms.BooleanField(label=_('Remove the current logo'), required=False)
 
     activation_dt = SplitDateTimeField(initial=datetime.now())
     expiration_dt = SplitDateTimeField(initial=datetime.now())
 
     email = EmailVerificationField(label=_("Email"), required=False)
     email2 = EmailVerificationField(label=_("Email 2"), required=False)
-
-    pricing = forms.ModelChoiceField(label=_('Requested Duration'),
-                    queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
+    
+    pricing = forms.ModelChoiceField(queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'),
+                    **request_duration_defaults)
 
     class Meta:
         model = Directory
@@ -83,7 +164,6 @@ class DirectoryForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -136,7 +216,6 @@ class DirectoryForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -144,16 +223,23 @@ class DirectoryForm(TendenciBaseForm):
     def clean_logo(self):
         logo = self.cleaned_data['logo']
         if logo:
-            extension = splitext(logo.name)[1]
+            try:
+                extension = splitext(logo.name)[1]
 
-            # check the extension
-            if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
+                # check the extension
+                if extension.lower() not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
 
-            # check the image header
-            image_type = '.%s' % imghdr.what('', logo.read())
-            if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+                # check the image header
+                image_type = '.%s' % imghdr.what('', logo.read())
+                if image_type not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+
+                max_upload_size = get_max_file_upload_size()
+                if logo.size > max_upload_size:
+                    raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(logo.size)))
+            except IOError:
+                logo = None
 
         return logo
 
@@ -170,12 +256,9 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
         if self.instance.logo:
-            self.fields['logo'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current logo: <a target="_blank" href="/site_media/media/%s">%s</a>' % (self.instance.logo, basename(self.instance.logo.file.name))
-        else:
-            self.fields.pop('remove_photo')
+            self.initial['logo'] = self.instance.logo
 
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         if self.fields.has_key('payment_method'):
@@ -196,7 +279,6 @@ class DirectoryForm(TendenciBaseForm):
                 'post_dt',
                 'activation_dt',
                 'syndicate',
-                'status',
                 'status_detail'
             ]
 
@@ -205,11 +287,38 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields.pop(f)
 
     def save(self, *args, **kwargs):
+        from tendenci.core.files.models import File
         directory = super(DirectoryForm, self).save(*args, **kwargs)
+
+        content_type = ContentType.objects.get(
+                app_label=Directory._meta.app_label,
+                model=Directory._meta.module_name)
+
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration
-        if self.cleaned_data.get('remove_photo'):
-            directory.logo = None
+
+        if self.cleaned_data['logo']:
+            file_object, created = File.objects.get_or_create(
+                file=self.cleaned_data['logo'],
+                defaults={
+                    'name': self.cleaned_data['logo'].name,
+                    'content_type': content_type,
+                    'object_id': directory.pk,
+                    'is_public': directory.allow_anonymous_view,
+                    'tags': directory.tags,
+                })
+
+            directory.logo_file = file_object
+            directory.save(log=False)
+
+        # clear logo; if box checked
+        if self.cleaned_data['logo'] is False:
+          directory.logo_file = None
+          directory.save(log=False)
+          File.objects.filter(
+            content_type=content_type,
+            object_id=directory.pk).delete()
+
         return directory
 
 

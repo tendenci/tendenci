@@ -104,8 +104,13 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.total = get_directory_price(user, directory, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
-            inv.estimate = 1
+            inv.estimate = True
             inv.status_detail = 'estimate'
+            
+            if user and not user.is_anonymous():
+                inv.set_creator(user)
+                inv.set_owner(user)
+                
             inv.save(user)
             
             # tender the invoice
@@ -128,18 +133,24 @@ def directory_set_inv_payment(user, directory, pricing):
                     
                     # this will make accounting entry
                     inv.make_payment(user, payment.amount)
-                    
-            
+
+
 def get_directory_price(user, directory, pricing):
-    directory_price = 0
-    if user.profile.is_member:
-        if directory.list_type == 'regular':
-            return  pricing.regular_price_member
-        else:
-            return pricing.premium_price_member
-    else:
-        if directory.list_type == 'regular':
-            return  pricing.regular_price
-        else:
-            return pricing.premium_price
-                
+    return pricing.get_price_for_user(
+                      user=user,
+                      list_type=directory.list_type)
+
+
+def is_free_listing(user, pricing_id, list_type):
+    """
+    Check if a directory listing with the specified pricing and list type is free.
+    """
+    try:
+        pricing_id = int(pricing_id)
+    except:
+        pricing_id = 0
+    [pricing] = pricing_id and DirectoryPricing.objects.filter(pk=pricing_id)[:1] or [None]
+
+    if pricing:
+        return pricing.get_price_for_user(user, list_type=list_type) <= 0
+    return False

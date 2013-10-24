@@ -33,6 +33,10 @@
         <ol>
             <li><a href="{% url 'corpmembership.search' %}">{% trans "Search" %}</a></li>
              <li><a href="{% url 'corp_membership.summary_report' %}">{% trans "Summary Report" %}</a></li>
+        
+        	{% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+        	<li><a href="{% url 'corp_memb.reports.free_passes_list' %}">{% trans "Free Passes List" %}</a></li>
+            {% endif %}
         </ol>
     
     </div>

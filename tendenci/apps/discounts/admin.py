@@ -24,7 +24,6 @@ class DiscountAdmin(TendenciBaseModelAdmin):
             'group_perms',
             )}),
         ('Status', {'fields': (
-            'status',
             'status_detail',
             )}),
         )

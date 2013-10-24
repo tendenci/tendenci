@@ -4,8 +4,8 @@ import uuid
 import Image
 import re
 from slate import PDF
-import urllib
 import cStringIO
+from base64 import b64encode
 
 from django.db import models, connection
 from django.conf import settings
@@ -15,28 +15,24 @@ from django.contrib.contenttypes import generic
 from django.core.files.storage import default_storage
 
 from tagging.fields import TagField
-
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
-
+from tendenci.apps.notifications import models as notification
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.files.managers import FileManager
-from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.categories.models import CategoryItem
-
-from tendenci.apps.redirects.models import Redirect
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from tendenci.core.site_settings.utils import get_setting
 
 
 def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    filename = re.sub(r'[^a-zA-Z0-9._-]+', '_', filename)
     uuid_hex = uuid.uuid1().get_hex()[:8]
 
     if instance.content_type:
-        content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', unicode(instance.content_type))
+        content_type = re.sub(r'[^a-zA-Z0-9._]+', '_', unicode(instance.content_type))
         return 'files/%s/%s/%s' % (content_type, uuid_hex, filename)
 
     return 'files/files/%s/%s' % (uuid_hex, filename)
@@ -50,19 +46,31 @@ class File(TendenciBaseModel):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
-    group = models.ForeignKey(Group, null=True,
-        default=get_default_group, on_delete=models.SET_NULL)
+    group = models.ForeignKey(
+        Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
     categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
 
-    perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    perms = generic.GenericRelation(
+        ObjectPermission,
+        object_id_field="object_id",
+        content_type_field="content_type")
 
     objects = FileManager()
 
     class Meta:
         permissions = (("view_file", "Can view file"),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("file", [self.pk])
+
+    @models.permalink
+    def get_absolute_download_url(self):
+        return ("file", [self.pk, 'download'])
+
+    def __unicode__(self):
+        return self.get_name()
 
     @property
     def category_set(self):
@@ -75,8 +83,10 @@ class File(TendenciBaseModel):
         return items
 
     def save(self, *args, **kwargs):
+        created = False
         if not self.id:
             self.guid = unicode(uuid.uuid1())
+            created = True
 
         super(File, self).save(*args, **kwargs)
 
@@ -84,11 +94,30 @@ class File(TendenciBaseModel):
             set_s3_file_permission(self.file, public=True)
         else:
             set_s3_file_permission(self.file, public=False)
-            cache_set = cache.get("files_cache_set.%s" % self.pk)
-            if cache_set is not None:
-                # TODO remove cached images
-                cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
-                cache.delete("files_cache_set.%s" % self.pk)
+
+        cache_set = cache.get("files_cache_set.%s" % self.pk)
+        if cache_set is not None:
+            # TODO remove cached images
+            cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
+            cache.delete("files_cache_set.%s" % self.pk)
+
+        # send notification to administrator(s) and module recipient(s)
+        if created:
+            recipients = get_notice_recipients('module', 'files', 'filerecipients')
+            site_display_name = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+            if recipients and notification:
+
+                notification_params = {
+                    'object': self,
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+                    'SITE_GLOBAL_SITEURL': site_url,
+                }
+
+                if self.owner:
+                    notification_params['author'] = self.owner.get_full_name() or self.owner
+
+                notification.send_emails(recipients, 'file_added', notification_params)
 
     def delete(self, *args, **kwargs):
         # Related objects
@@ -115,6 +144,16 @@ class File(TendenciBaseModel):
         # end of transaction block"
         connection._rollback()
 
+        # send notification to administrator(s) and module recipient(s)
+        recipients = get_notice_recipients('module', 'files', 'filerecipients')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        if recipients and notification:
+            notification.send_emails(recipients, 'file_deleted', {
+                'object': self,
+                'author': self.owner.get_full_name() or self.owner,
+                'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+            })
+
         # delete actual file; do not save() self.instance
         self.file.delete(save=False)
 
@@ -138,8 +177,7 @@ class File(TendenciBaseModel):
 
         # map file-type to extension
         types = {
-            'image': ('.jpg', '.jpeg', '.gif', '.png', 
-                      '.tif', '.tiff', '.bmp'),
+            'image': ('.jpg', '.jpeg', '.gif', '.png', '.tif', '.tiff', '.bmp'),
             'text': ('.txt', '.doc', '.docx'),
             'spreadsheet': ('.csv', '.xls', '.xlsx'),
             'powerpoint': ('.ppt', '.pptx'),
@@ -218,34 +256,24 @@ class File(TendenciBaseModel):
             if not os.path.exists(self.file.path):
                 return unicode()
 
-        if self.type() == 'pdf':
+        if settings.INDEX_FILE_CONTENT:
+            if self.type() == 'pdf':
 
-            try:
-                doc = PDF(self.file.file)
-            except:
-                return unicode()
+                try:
+                    doc = PDF(self.file.file)
+                except:
+                    return unicode()
 
-            return doc.text()
+                return doc.text()
 
         return unicode()
 
-    @models.permalink
-    def get_absolute_url(self):
-        return ("file", [self.pk])
-
-    @models.permalink
-    def get_absolute_download_url(self):
-        return ("file", [self.pk, 'download'])
-
-    def __unicode__(self):
-        return self.get_name()
-
     def is_public_file(self):
-        return all([self.is_public,
+        return all([
+            self.is_public,
             self.allow_anonymous_view,
             self.status,
-            self.status_detail.lower() == "active"]
-            )
+            self.status_detail.lower() == "active"])
 
     def get_file_public_url(self):
         if self.is_public_file():
@@ -254,3 +282,26 @@ class File(TendenciBaseModel):
             else:
                 return "%s%s" % (settings.MEDIA_URL, self.file)
         return None
+
+    def get_content(self):
+        if self.content_type and self.object_id:
+            try:
+                model = self.content_type.model_class()
+                return model.objects.get(pk=self.object_id)
+            except:
+                return None
+        else:
+            for r_object in self._meta.get_all_related_objects():
+                if hasattr(self, r_object.var_name):
+                    return getattr(self, r_object.var_name)
+            return None
+
+    def get_binary(self, **kwargs):
+        """
+        Returns binary in encoding base64.
+        """
+        from tendenci.core.files.utils import build_image
+        size = kwargs.get('size') or self.image_dimensions()
+
+        binary = build_image(self.file, size, 'FILE_IMAGE_PRE_KEY')
+        return b64encode(binary)

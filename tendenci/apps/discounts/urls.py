@@ -8,5 +8,6 @@ urlpatterns = patterns('tendenci.apps.discounts.views',
     url(r'^delete/(?P<id>\d+)/$', 'delete', name="discount.delete"),
     url(r'^discounted_price/$', 'discounted_price', name='discount.discounted_price'),
     url(r'^discounted_prices/$', 'discounted_prices', name='discount.discounted_prices'),
+    url(r'^check_discount/$', 'discounted_prices', {'check':True}, name='discount.check_discount'),
     url(r'^export/$', 'export', name='discount.export'),
 )

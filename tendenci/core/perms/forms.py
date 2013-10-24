@@ -61,7 +61,9 @@ class TendenciBaseForm(BetterModelForm):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
         else:
-            self.user = None
+            if not hasattr(self, 'user'):
+                self.user = None
+
         super(TendenciBaseForm, self).__init__(*args, **kwargs)
 
         # needs to update the choices on every pull

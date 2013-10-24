@@ -1,0 +1,77 @@
+Memberships
+===========
+
+#. The membership module handles a person's membership.  It allows people to become a member of your website and with that membership may come special privileges.  Such as discounts on attending an event or when posting a job.
+
+#. Memberships are capable of expiring and people may be allowed to renew their membership and regain their privileges.
+
+#. Every time someone becomes a member, a new membership record is created and this set of memberships is recorded. A new membership record can be created by joining the organization for the first time or renewing your membership.
+
+#. This allows you to view the history of a person and the length of their membership with an organization.
+
+#. It also helps determine gaps in a persons membershipship with the organization and how much they've contributed to the organization through membership fees
+
+
+Membership
+------------------
+
+#. A membership record is an agreement between a user and your website.  This agreement may be offered at a price or for free.  Having a membership record on your website means that this person is now considered a "member."
+
+#. A membership record mostly tells your website that this person is a "member."  A membership record could also hold custom information about that member.
+
+#. All members have a membership of a specific type.  In fact a person can have multiple memberships all of different types.  A person cannot have multiple memberships of the same "membership type."
+
+Membership Type
+----------------
+
+#. A membership type holds meta information about a membership record.
+
+    #. The length of a membership (e.g. expiration date/time, renewal period)
+    #. Prices; join, renew, and admin fees
+    #. Used for grouping and managing of members
+
+#. Membership types are powerful because they allow you to group members into specific sets and target these groups specifically.  You can offer discounts or invite them to privileged information or events.  As well as send targeted emails to these specific types of members.
+
+Membership Application
+------------------------
+
+#. A membership application is literally the form that someone fills out in order to become a member or to renew their membership.
+
+#. A membership application collects basic information about a person such as who they are, where they work, and contact information.  It can also collect custom information.
+
+#. Common information is collected in the person's profile.
+
+#. Custom information is located within the membership record.
+
+#. All information can be exported.
+
+#. Detailed reports and graphs are created from profile information.  Detailed reports and graphs are not created from custom information.  Because custom information is custom, it's difficult for us to know how to report on that information.
+
+#. Your website can have as many applications as you would like.
+
+#. Visiblity of an application can be limited to any group or type of person.
+
+#. An application can allow you to sign up for one or many membership types.
+
+#. You decide the different ways of paying for a membership.
+
+#. You can fill out the application for someone else and have them receive the confirmation.
+
+
+Notices
+-------
+
+Notices are predetermined emails sent to members or membership applicants. They can be sent out based on the following criteria:
+
+- # if days
+- before, after, or at time of
+- Join, Renewal, Expiration, Approval, and Disapproval dates
+
+The Join date is set when they apply. You may want to set up notices to go out:
+
+- 7 days before expiration to remind members to renew
+- At time of (0 days) Approval, letting them know they have been accepted
+- 15 days after Approval, again touching base and thanking them for joining
+- 7 days after expiration, to see if they still want to renew (usually they can based on the Membership Type grace period)
+
+Notices cannot be sent manually. Notices are more geared towards information related to a single member (their join date, their expiration date) and not really members on a whole. If several members are expiring at once, they will all receive an individual notice with information relevant to them. There is a list of available "tokens" that can be used to in the Notice Email content that are replaced with info relevant to that person.

@@ -1,8 +1,11 @@
+# Special encoding for sending the email messsages with
+# non-ascii characters.
+# from __future__ import must occur at the beginning of the file
+from __future__ import unicode_literals
 import datetime, random, string
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect
@@ -10,17 +13,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
-from django.utils.encoding import smart_str
-from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
-from django.template.loader import get_template
 from django.contrib.auth.models import User
 from djcelery.models import TaskMeta
 
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import check_template, template_exists
+from tendenci.core.base.utils import template_exists
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.core.event_logs.models import EventLog
@@ -38,6 +38,7 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     make_invoice_for_entry, update_invoice_for_entry)
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 from tendenci.apps.forms_builder.forms.tasks import FormEntriesExportTask
+from tendenci.core.emails.models import Email
 
 
 @is_enabled('forms')
@@ -220,7 +221,6 @@ def copy(request, id):
             label = field.label,
             field_type = field.field_type,
             field_function = field.field_function,
-            function_params = field.function_params,
             required = field.required,
             visible = field.visible,
             choices = field.choices,
@@ -241,7 +241,7 @@ def entries(request, id, template_name="forms/entries.html"):
     if not has_perm(request.user,'forms.change_form',form):
         raise Http403
 
-    entries = form.entries.all()
+    entries = form.entries.order_by('-entry_time')
 
     EventLog.objects.log(instance=form)
 
@@ -375,13 +375,20 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         raise Http403
 
     # If form has a recurring payment, make sure the user is logged in
-    if form.recurring_payment and request.user.is_anonymous():
-        response = redirect('auth_login')
-        response['Location'] += '?next=%s' % form.get_absolute_url()
-        return response
+    if form.recurring_payment:
+        [email_field] = form.fields.filter(field_type__iexact='EmailVerificationField')[:1] or [None]
+        if request.user.is_anonymous() and not email_field:
+            # anonymous user - if we don't have the email field, redirect to login
+            response = redirect('auth_login')
+            response['Location'] += '?next=%s' % form.get_absolute_url()
+            return response
+        if request.user.is_superuser and not email_field:
+            messages.add_message(request, messages.WARNING, 
+                    'Please edit the form to include an email field ' + \
+                    'as it is required for setting up a recurring ' + \
+                    'payment for anonymous users.')
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
-
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
@@ -417,6 +424,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             else:
                 entry.creator = request.user
             entry.save()
+            entry.set_group_subscribers()
 
             # Email
             subject = generate_email_subject(form, entry)
@@ -428,31 +436,57 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             # fields aren't included in submitter body to prevent spam
             submitter_body = generate_submitter_email_body(entry, form_for_form)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
-            sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
             email_to = form_for_form.email_to()
+            email = Email()
+            email.subject = subject
+            email.reply_to = form.email_from
+
             if email_to and form.send_email and form.email_text:
                 # Send message to the person who submitted the form.
-                msg = EmailMessage(subject, submitter_body, sender, [email_to], headers=email_headers)
-                msg.content_subtype = 'html'
-                msg.send()
+                email.recipient = email_to
+                email.body = submitter_body
+                email.send(fail_silently=True)
 
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form)
             email_from = email_to or email_from # Send from the email entered.
             email_headers = {}  # Reset the email_headers
             email_headers.update({'Reply-To':email_from})
-            email_copies = [e.strip() for e in form.email_copies.split(",")
-                if e.strip()]
-            if email_copies:
-                # Send message to the email addresses listed in the copies.
-                msg = EmailMessage(subject, admin_body, sender, email_copies, headers=email_headers)
-                msg.content_subtype = 'html'
-                for f in form_for_form.files.values():
-                    f.open()
-                    f.seek(0)
-                    msg.attach(f.name, f.read())
-                    f.close()
-                msg.send()
+            email_copies = [e.strip() for e in form.email_copies.split(',') if e.strip()]
+
+            subject = subject.encode(errors='ignore')
+            email_recipients = entry.get_function_email_recipients()
+            
+            if email_copies or email_recipients:
+                # prepare attachments
+                attachments = []
+                try:
+                    for f in form_for_form.files.values():
+                        f.seek(0)
+                        attachments.append((f.name, f.read()))
+                except ValueError:
+                    attachments = []
+                    for field_entry in entry.fields.all():
+                        if field_entry.field.field_type == 'FileField':
+                            try:
+                                f = default_storage.open(field_entry.value)
+                            except IOError:
+                                pass
+                            else:
+                                f.seek(0)
+                                attachments.append((f.name.split('/')[-1], f.read()))
+
+                # Send message to the email addresses listed in the copies
+                if email_copies:
+                    email.body = admin_body
+                    email.recipient = email_copies
+                    email.send(fail_silently=True, attachments=attachments)
+
+                # Email copies to recipient list indicated in the form
+                if email_recipients:
+                    email.body = admin_body
+                    email.recipient = email_recipients
+                    email.send(fail_silently=True, attachments=attachments)
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:
@@ -460,6 +494,10 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 price = entry.pricing.price or form_for_form.cleaned_data.get('custom_price')
 
                 if form.recurring_payment:
+                    if request.user.is_anonymous():
+                        rp_user = entry.creator
+                    else:
+                        rp_user = request.user
                     billing_start_dt = datetime.datetime.now()
                     trial_period_start_dt = None
                     trial_period_end_dt = None
@@ -469,8 +507,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                         billing_start_dt = trial_period_end_dt
                     # Create recurring payment
                     rp = RecurringPayment(
-                             user=request.user,
-                             description=entry.pricing.label,
+                             user=rp_user,
+                             description=form.title,
                              billing_period=entry.pricing.billing_period,
                              billing_start_dt=billing_start_dt,
                              num_days=entry.pricing.num_days,
@@ -482,17 +520,17 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                              trial_period_start_dt=trial_period_start_dt,
                              trial_period_end_dt=trial_period_end_dt,
                              trial_amount=entry.pricing.trial_amount,
-                             creator=request.user,
-                             creator_username=request.user.username,
-                             owner=request.user,
-                             owner_username=request.user.username,
+                             creator=rp_user,
+                             creator_username=rp_user.username,
+                             owner=rp_user,
+                             owner_username=rp_user.username,
                          )
                     rp.save()
                     rp.add_customer_profile()
 
                     # redirect to recurring payments
                     messages.add_message(request, messages.SUCCESS, 'Successful transaction.')
-                    return redirect('recurring_payment.my_accounts')
+                    return redirect('recurring_payment.view_account', rp.id, rp.guid)
                 else:
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
@@ -505,7 +543,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
             # default redirect
             if form.completion_url:
-                return redirect(form.completion_url)
+                return HttpResponseRedirect(form.completion_url)
             return redirect("form_sent", form.slug)
     # set form's template to default if no template or template doesn't exist
     if not form.template or not template_exists(form.template):

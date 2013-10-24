@@ -1,11 +1,13 @@
 from django.conf.urls.defaults import patterns, url, include
+from tendenci.addons.recurring_payments.signals import init_signals
 
+init_signals()
 
 urlpatterns = patterns('tendenci.addons.recurring_payments', 
     url(r'^$', 'views.my_accounts', 
          name="recurring_payment.my_accounts"),                 
     (r'^authnet/', include('tendenci.addons.recurring_payments.authnet.urls')),
-    url(r'^(?P<recurring_payment_id>\d+)/$', 'views.view_account', 
+    url(r'^(?P<recurring_payment_id>\d+)/(?P<guid>[\d\w-]+)?$', 'views.view_account', 
          name="recurring_payment.view_account"),
     url(r'^disable/(?P<rp_id>\d+)/$', 'views.disable_account', 
          name="recurring_payment.disable_account"),

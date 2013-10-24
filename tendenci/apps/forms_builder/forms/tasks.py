@@ -60,7 +60,6 @@ class FormsExportTask(Task):
             'label',
             'field_type',
             'field_function',
-            'function_params',
             'required',
             'visible',
             'choices',
@@ -150,16 +149,15 @@ class FormEntriesExportTask(Task):
             writer = csv.writer(response, delimiter=',')
 
         # get the header for headers for the csv
-        headers.append('submitted on')
-        for field in entries[0].fields.all():
+        for field in entries[0].fields.all().order_by('field__position', 'id'):
             headers.append(smart_str(field.field.label))
+        headers.append('submitted on')
         writer.writerow(headers)
 
         # write out the values
         for entry in entries:
             values = []
-            values.append(entry.entry_time)
-            for field in entry.fields.all():
+            for field in entry.fields.all().order_by('field__position', 'id'):
                 if has_files and field.field.field_type == 'FileField':
                     archive_name = join('files',field.value)
                     if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
@@ -178,6 +176,7 @@ class FormEntriesExportTask(Task):
                     values.append(yesno(smart_str(field.value)))
                 else:
                     values.append(smart_str(field.value))
+            values.append(entry.entry_time)
             writer.writerow(values)
 
         # add the csv file to the zip, close it, and set the response

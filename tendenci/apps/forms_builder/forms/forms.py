@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
+from django.core.validators import email_re
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.payments.models import PaymentMethod
@@ -30,6 +31,11 @@ template_choices = [('default.html','Default')]
 template_choices += get_template_list()
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
+
+FIELD_FNAME_LENGTH = 30
+FIELD_LNAME_LENGTH = 30
+FIELD_NAME_LENGTH = 50
+FIELD_PHONE_LENGTH = 50
 
 class FormForForm(forms.ModelForm):
 
@@ -63,8 +69,8 @@ class FormForForm(forms.ModelForm):
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
-                choices = field.choices.split(",")
-                field_args["choices"] = zip(choices, choices)
+                field_args["choices"] = field.get_choices()
+                #field_args["choices"] = zip(choices, choices)
             if "initial" in arg_names:
                 default = field.default.lower()
                 if field_class == "BooleanField":
@@ -78,6 +84,15 @@ class FormForForm(forms.ModelForm):
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
+
+            if field.field_function == 'EmailFirstName':
+                field_args["max_length"] = FIELD_FNAME_LENGTH
+            elif field.field_function == 'EmailLastName':
+                field_args["max_length"] = FIELD_LNAME_LENGTH
+            elif field.field_function == 'EmailFullName':
+                field_args["max_length"] = FIELD_NAME_LENGTH
+            elif field.field_function == 'EmailPhoneNumber':
+                field_args["max_length"] = FIELD_PHONE_LENGTH
             
             self.fields[field_key] = field_class(**field_args)
 
@@ -166,10 +181,7 @@ class FormForForm(forms.ModelForm):
                 value = ','.join(value)
             if not value: value=''
             field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
-            if self.user.is_authenticated():
-                field_entry.save(user = self.user)
-            else:
-                field_entry.save()
+            field_entry.save()
 
         # save selected pricing and payment method if any
         if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():
@@ -223,7 +235,6 @@ class FormAdminForm(TendenciBaseForm):
                   'member_perms',
                   'group_perms',
                   'allow_anonymous_view',
-                  'status',
                   'status_detail',
                   'custom_payment',
                   'recurring_payment',
@@ -297,7 +308,6 @@ class FormForm(TendenciBaseForm):
                   'member_perms',
                   'group_perms',
                   'allow_anonymous_view',
-                  'status',
                   'status_detail',
                  )
         fieldsets = [('Form Information', {
@@ -323,8 +333,7 @@ class FormForm(TendenciBaseForm):
                         'classes': ['permissions'],
                         }),
                     ('Administrator Only', {
-                        'fields': ['status',
-                                    'status_detail'], 
+                        'fields': ['status_detail'], 
                         'classes': ['admin-only'],
                     }),
                     ('Payments', {
@@ -336,8 +345,6 @@ class FormForm(TendenciBaseForm):
         super(FormForm, self).__init__(*args, **kwargs)
 
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields:
-                self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
@@ -361,32 +368,51 @@ class FormForField(forms.ModelForm):
     class Meta:
         model = Field
         exclude = ["position"]
-    
-    def clean_function_params(self):
-        function_params = self.cleaned_data['function_params']
-        clean_params = ''
-        for val in function_params.split(','):
-            clean_params = val.strip() + ',' + clean_params
-        return clean_params[0:len(clean_params)-1]
         
     def clean(self):
         cleaned_data = self.cleaned_data
         field_function = cleaned_data.get("field_function")
-        function_params = cleaned_data.get("function_params")
+        choices = cleaned_data.get("choices")
         field_type = cleaned_data.get("field_type")
         required = cleaned_data.get("required")
         
         if field_function == "GroupSubscription":
             if field_type != "BooleanField":
                 raise forms.ValidationError("This field's function requires Checkbox as a field type")
-            if not function_params:
+            if not choices:
                 raise forms.ValidationError("This field's function requires at least 1 group specified.")
             else:
-                for val in function_params.split(','):
+                for val in choices.split(','):
                     try:
-                        Group.objects.get(name=val)
+                        Group.objects.get(name=val.strip())
                     except Group.DoesNotExist:
                         raise forms.ValidationError("The group \"%s\" does not exist" % (val))
+
+        if field_function == "Recipients":
+            if (field_type != "MultipleChoiceField/django.forms.CheckboxSelectMultiple" and 
+                field_type != "MultipleChoiceField" and
+                field_type != "BooleanField" and
+                field_type != "ChoiceField"):
+                raise forms.ValidationError("The \"Email to Recipients\" function requires Multi-select - Checkboxes "
+                                            + "or Multi-select - Select Many as field type")
+
+            if field_type == "BooleanField":
+                if not choices:
+                    raise forms.ValidationError("The \"Email to Recipients\" function requires at least 1 email specified.")
+                else:
+                    for val in choices.split(','):
+                        if not email_re.match(val.strip()):
+                            raise forms.ValidationError("\"%s\" is not a valid email address" % (val))
+            else:
+                if not choices:
+                    raise forms.ValidationError("The \"Email to Recipients\" function requires at least 1 choice specified.")
+                else:
+                    for val in choices.split(','):
+                        val = val.split(':')
+                        if len(val) < 2:
+                            raise forms.ValidationError("The \"Email to Recipients\" function requires choices to be in the following format: <choice_label>:<email_address>.")
+                        if not email_re.match(val[1].strip()):
+                            raise forms.ValidationError("\"%s\" is not a valid email address" % (val[1]))
                     
         if field_function != None and field_function.startswith("Email"):
             if field_type != "CharField":

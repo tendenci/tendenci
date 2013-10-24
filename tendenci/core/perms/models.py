@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.entities.models import Entity
 from tendenci.core.versions.models import Version
-
+from tendenci.core.categories.models import Category
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
@@ -103,6 +103,56 @@ class TendenciBaseModel(models.Model):
             if log:
                 application = self.__module__
                 EventLog.objects.log(instance=self, application=application)
-        if "log" in kwargs:
-            kwargs.pop('log')
+
+        # Soft-delete all base-model objects. This means we
+        # set status to False and then save(). We do NOT
+        # actually delete anything from the database.
+        self.status = False
+
+        # Making slugs unique by appending pk
+        # This prevents Integrity errors if
+        # an object w/ the same slug is added
+        for f in self._meta.fields:
+            if 'SlugField' == f.get_internal_type():
+                setattr(self, f.name, '%s@%s' % (getattr(self, f.name), self.pk))
+
+        try:
+            self.save(**{'log': False})
+        except TypeError:
+            self.save()
+
+        # Leave this commented out. We do not want Django to
+        # delete our objects from the database.
+        # super(TendenciBaseModel, self).delete(*args, **kwargs)
+
+    def hard_delete(self, *args, **kwargs):
+        """
+        Delete object physically from database
+        """
+        if self.pk:
+            # if status == False, object already be soft-deleted
+            if not hasattr(self, 'status') or self.status:
+                log = kwargs.get('log', True)
+                if log:
+                    application = self.__module__
+                    EventLog.objects.log(instance=self, application=application)
+        
+        # delete object from the database.
         super(TendenciBaseModel, self).delete(*args, **kwargs)
+
+    def update_category_subcategory(self, category_value, subcategory_value):
+        category_removed = False
+        if not category_value or category_value == '0':
+            category_removed = True
+            Category.objects.remove(self, 'category')
+            Category.objects.remove(self, 'sub_category')
+        else:
+            Category.objects.update(self, category_value, 'category')
+            
+        if not category_removed:
+            # update the sub category of this object                
+            if not subcategory_value or subcategory_value == '0':  # remove
+                Category.objects.remove(self, 'sub_category')
+            else:
+                Category.objects.update(self, subcategory_value, 'sub_category')
+

@@ -1,14 +1,19 @@
 from django.conf.urls.defaults import patterns, url
 from tendenci.apps.stories.feeds import LatestEntriesFeed
+from tendenci.core.site_settings.utils import get_setting
+
+urlpath = get_setting('module', 'stories', 'url')
+if not urlpath:
+    urlpath = "stories"
 
 urlpatterns = patterns('tendenci.apps.stories.views',
-    url(r'^$', 'search', name="stories"),
-    url(r'^(?P<id>\d+)/$', 'details', name="story"),
-    url(r'^print/(?P<id>\d+)/$', 'print_details', name="story.print_details"),
-    url(r'^search/$', 'search_redirect', name="story.search"),
-    url(r'^add/$', 'add', name="story.add"),
-    url(r'^edit/(?P<id>\d+)/$', 'edit', name="story.edit"),
-    url(r'^delete/(?P<id>\d+)/$', 'delete', name="story.delete"),
-    url(r'^export/$', 'export', name="story.export"),
-    url(r'^feed/$', LatestEntriesFeed(), name='story.feed'),
+    url(r'^%s/$' % urlpath, 'search', name="stories"),
+    url(r'^%s/(?P<id>\d+)/$' % urlpath, 'details', name="story"),
+    url(r'^%s/print/(?P<id>\d+)/$' % urlpath, 'print_details', name="story.print_details"),
+    url(r'^%s/search/$' % urlpath, 'search_redirect', name="story.search"),
+    url(r'^%s/add/$' % urlpath, 'add', name="story.add"),
+    url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="story.edit"),
+    url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="story.delete"),
+    url(r'^%s/export/$' % urlpath, 'export', name="story.export"),
+    url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='story.feed'),
 )

@@ -32,7 +32,6 @@ class StoryAdmin(TendenciBaseModelAdmin):
                     )}),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]

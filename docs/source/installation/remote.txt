@@ -9,6 +9,7 @@ Server packages
 You can install all of the necessary Ubuntu packages with the following command:
 ::
 
+    sudo apt-get update
     sudo apt-get install git python-pip postgresql build-essential python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
 
 Along with this, we need to add some symlinks for our jpeg and freetype libraries:
@@ -36,6 +37,7 @@ It's best practice to make a virtual environment for your site. You will need `v
 
     virtualenv venv
     source venv/bin/activate
+    pip install setuptools --upgrade
 
 Install Tendenci. This download and install step may take a few minutes.
 ::
@@ -56,14 +58,24 @@ Next, we install requirements for the project. We add tendenci videos as an exam
 Setting up the Database
 -----------------------
 
+Change the postgres default user password as the postgres user. Lines that start postgres=# are prompts:
+::
+
+    sudo -u postgres psql postgres
+    postgres=# \password postgres
+    Enter new password: your-pgsql-password-here
+    Enter it again: your-pgsql-password-here
+
+Type Control+D to exit the posgreSQL prompt.
+
 From here, we need to create our database. We can create a database and a new user with the following commands:
 ::
 
-    psql -U postgres -c "CREATE USER tendenci WITH PASSWORD 'yourgreatpassword'";
-    psql -U postgres -c "CREATE DATABASE tendenci WITH OWNER tendenci;"
-    psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE tendenci TO tendenci;"
+    sudo -u postgres psql postgres -c "CREATE USER tendenci WITH PASSWORD 'yourgreatpassword'";
+    sudo -u postgres psql postgres -c "CREATE DATABASE tendenci WITH OWNER tendenci;"
+    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE tendenci TO tendenci;"
 
-This will create a database named ``tendenci`` with the user named ``tendenci``. Next we need to update our ``.env`` file in our site folder. Replace the following line:
+This will create a database named ``tendenci`` with the user named ``tendenci``. Next we need to update our ``.env`` file in our site folder (``/var/www/sitename`` and then ``ls -a`` then vi or nano. Replace the following line:
 ::
 
     DATABASE_URL='postgres://localhost/tendenci'
@@ -112,7 +124,13 @@ Setting up Upstart
 
 On Ubuntu, we can use the Upstart functionality to add our site as a service.
 
-First, we create a file at the path ``/etc/init/tendenci.conf``. The contents of that file should match the example below:
+First, we create a file at the path ``/etc/init/tendenci.conf``. 
+::
+
+    cd /etc/init/
+    sudo touch tendenci.conf
+    
+The contents of that file should match the example below:
 ::
 
     description "Tendenci Upstart Script"

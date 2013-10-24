@@ -3,6 +3,7 @@ $(document).ready(function(){
         code = $('#id_discount_code').val();
        // price = $('#total-amount').html();
         //count = 1;
+        var model = 'registrationconfiguration';
         var prices = '';
         {% if event.is_table %}
          prices = $('#summary-total-price span#total-amount').html();
@@ -20,7 +21,8 @@ $(document).ready(function(){
             '{% url discount.discounted_prices %}',
             {
                 'code':code,
-                'prices':prices
+                'prices':prices,
+                'model':model,
             },
             function(data, textStatus, jqXHR){
                 json = $.parseJSON(data);

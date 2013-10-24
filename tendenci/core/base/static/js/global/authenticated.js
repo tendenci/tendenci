@@ -2,9 +2,14 @@ $(document).ready(function(){
     if ($("#id_allow_anonymous_view").length > 0) {
         if ($("#id_allow_anonymous_view:checked").length == 1) {
             $('fieldset.permissions .form-field:not(fieldset.permissions .form-field:first)').hide();
-            $('fieldset.permissions .form-field:first').append('<a id="adv-perms" href="#id_allow_anonymous_view">+ Show Advanced Permissions</a>');
+
+            if($('fieldset.permissions > .form-field').length > 1) {
+                $('fieldset.permissions .form-field:first').append('<a id="adv-perms" href="#id_allow_anonymous_view">+ Show Advanced Permissions</a>');
+            }
         } else {
-            $('fieldset.permissions .form-field:first').append('<a id="adv-perms" href="#id_allow_anonymous_view">- Hide Advanced Permissions</a>');
+            if($('fieldset.permissions > .form-field').length > 1) {
+                $('fieldset.permissions .form-field:first').append('<a id="adv-perms" href="#id_allow_anonymous_view">- Hide Advanced Permissions</a>');
+            }
         }
         $('#adv-perms').click(function() {
             $('fieldset.permissions .form-field:not(fieldset.permissions .form-field:first)').slideToggle('fast');
@@ -22,4 +27,5 @@ $(document).ready(function(){
             }
         });
     }
+
 });

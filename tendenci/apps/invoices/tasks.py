@@ -72,6 +72,7 @@ class InvoiceExportTask(Task):
             'taxable',
             'tax',
             'variance',
+            'discount_amount',
             'total',
             'payments_credits',
             'balance',

@@ -80,6 +80,9 @@
 	{% if has_addons %}
 	<th width="8%" title="Addon Amount">{% trans "Addon$" %}</th>
 	{% endif %}
+    {% if discount_available %}
+    <th width="8%" title="Discount Amount">{% trans "Discount$" %}</th>
+    {% endif %}
 	<th width="8%" title="Balance">{% trans "Balance" %}</th>
 	<th width="6%" class='attended' title="Attendance Checkbox">Attend</th>
 </tr>
@@ -122,7 +125,13 @@
 	<td>{% if registrant.invoice_dict.id %}<a href="{% url invoice.view registrant.invoice_dict.id %}">I-{{ registrant.invoice_dict.id }}</a>{% endif %}</td> <!-- invoice number -->
 	<td>${{ registrant.invoice_dict.total }}</td> <!-- invoice amount -->
 	<td><a href="{% url event.registration_confirmation event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
-	<td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
+
+    {% if discount_available %}
+        <td>${{ registrant.amount|add_decimal:registrant.discount_amount|floatformat:"2" }}</td> <!-- registration amount -->
+    {% else %}
+	    <td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
+	{% endif %}
+
 	{% if has_addons %}
 	{% if registrant.is_primary and registrant.addons %}
 	<td>${{ registrant.addons_amount|floatformat:"2" }}</td> <!-- addon amount -->
@@ -130,6 +139,11 @@
 	<td></td>
 	{% endif %}
 	{% endif %}
+
+    {% if discount_available %}
+        <td>-${{ registrant.discount_amount|floatformat:"2" }}</div></td> <!-- discount amount -->
+    {% endif %}
+
 	<td>${{ registrant.invoice_dict.balance|floatformat:"2" }}</td> <!-- balance -->
 	<td class="attended-checkbox"><input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}" value="1" {% if registrant.checked_in %}checked{% endif %} /></td>
 </tr>
@@ -167,7 +181,7 @@
    {% if registrant.email %}{{ registrant.email }}{% endif %}
    <div>Registered as: {% firstof registrant.price_title 'Untitled' %}</div>
     </td>
-    <td colspan="{% if has_addons %}6{% else %}5{% endif %}">
+    <td colspan="{% if has_addons %}5{% else %}4{% endif %}">
 
         {% if registrant.invoice_dict.tender_date %}
             {% trans "TENDERED: " %}{{ registrant.invoice_dict.tender_date|date_long }}
@@ -175,6 +189,19 @@
             {% trans "Not Tendered" %}
         {% endif %}
     </td>
+    {% if discount_available %}
+    <td colspan="2">
+        {% if registrant.discount_amount > 0 %}
+            {% if registrant.registration.invoice.discount_code and registrant.registration.invoice.get_discount_url %}
+                {% trans "discount code" %}(<a href="{{ registrant.registration.invoice.get_discount_url }}">{{ registrant.registration.invoice.discount_code }}</a>)
+            {% else %}
+                discount
+            {% endif %}
+        {% endif %}
+    </td>
+    {% else %}
+    <td></td>
+    {% endif %}
     <td class="attended-checkedin-text">{% if registrant.checked_in and registrant.checked_in_dt %}{{ registrant.checked_in_dt|date:'m/d h:iA' }}{% endif %}</td>
 </tr>
 

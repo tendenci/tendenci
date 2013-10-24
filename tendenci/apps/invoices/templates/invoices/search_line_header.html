@@ -12,7 +12,7 @@
                 <td>
                 
                     <a href="{% url invoice.view invoice.pk %}">{{ invoice.pk}}</a>  
-                    {% if invoice.estimate  %}
+                    {% if not invoice.is_tendered  %}
                         {% if 'cancel' in invoice.status_detail %}
                             <span class="body_copy_yellow">{% trans "CANCELLED" %}</span>
                         {% else %}
@@ -48,7 +48,7 @@
             
                 {# total #}
                 <td>
-	                {% if not invoice.estimate and invoice.total > 0  %}
+	                {% if invoice.is_tendered and invoice.total > 0  %}
 	                   {{ invoice.total|format_currency }}
 	                {% else %}
 	                    ----

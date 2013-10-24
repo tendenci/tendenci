@@ -22,7 +22,6 @@ class BoxForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
             )
 

@@ -25,6 +25,8 @@ def generate_admin_email_body(entry, form_for_form):
     context['media_url'] = site_url + settings.MEDIA_URL
     # form details to show in the email
     context['form'] = entry.form
+    context['entry'] = entry
+    context['custom_price'] = form_for_form.cleaned_data.get('custom_price')
     output = template.render(context)
 
     return output
@@ -105,6 +107,10 @@ def make_invoice_for_entry(entry, **kwargs):
     inv.balance = price
     inv.due_date = now
     inv.ship_date = now
+    
+    if entry.creator and not entry.creator.is_anonymous():
+        inv.set_owner(entry.creator)
+
     inv.save()
     
     return inv

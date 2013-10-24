@@ -1,16 +1,15 @@
-from datetime import datetime, timedelta
-
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
-
+from django.utils import simplejson
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.html import escape
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import now_localized
 from tendenci.core.event_logs.models import EventLog
@@ -18,16 +17,19 @@ from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import (get_notice_recipients, update_perms_and_save,
-    has_perm, get_query_filters, has_view_perm)
+from tendenci.core.perms.utils import (
+    get_notice_recipients,
+    update_perms_and_save,
+    has_perm,
+    get_query_filters,
+    has_view_perm)
 from tendenci.core.categories.forms import CategoryForm, CategoryForm2
 from tendenci.core.categories.models import Category
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
-
 from tendenci.addons.jobs.models import Job, JobPricing
 from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
-from tendenci.addons.jobs.utils import job_set_inv_payment, get_job_unique_slug
+from tendenci.addons.jobs.utils import is_free_listing, job_set_inv_payment
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -66,7 +68,7 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
-            
+
     form = JobSearchForm(request.GET)
     if form.is_valid():
         query = form.cleaned_data.get('q')
@@ -77,21 +79,24 @@ def search(request, template_name="jobs/search.html"):
         jobs = jobs.filter(categories__category=category)
     if subcategory:
         jobs = jobs.filter(categories__parent=subcategory)
-    
+
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
         template_name = "jobs/my_pending_jobs.html"
         jobs = jobs.filter(
             creator_username=request.user.username,
             status_detail__contains='pending'
-            )
+        )
 
     jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'jobs': jobs, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_response(
+        template_name,
+        {'jobs': jobs, 'form': form},
+        context_instance=RequestContext(request)
+    )
 
 
 def search_redirect(request):
@@ -137,7 +142,7 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
 @is_enabled('jobs')
 @login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html",
-        object_type=Job, success_redirect='job'):
+        object_type=Job, success_redirect='job', thankyou_redirect='job.thank_you'):
 
     require_payment = get_setting('module', 'jobs',
                                     'jobsrequirespayment')
@@ -155,21 +160,31 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
     else:
         category_form_class = CategoryForm2
 
+    form = form_class(request.POST or None, request.FILES or None, user=request.user)
+    # adjust the fields depending on user type
+    if not require_payment:
+        del form.fields['payment_method']
+        del form.fields['list_type']
+
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        if require_payment:
+            is_free = is_free_listing(request.user,
+                               request.POST.get('pricing', 0),
+                               request.POST.get('list_type'))
+            if is_free:
+                del form.fields['payment_method']
+
         categoryform = category_form_class(
                         content_type,
                         request.POST,
                         prefix='category')
 
-        # adjust the fields depending on user type
-        if not require_payment:
-            del form.fields['payment_method']
-            del form.fields['list_type']
-
         if form.is_valid() and categoryform.is_valid():
             job = form.save(commit=False)
             pricing = form.cleaned_data['pricing']
+
+            if require_payment and is_free:
+                job.payment_method = 'paid - cc'
 
             # set it to pending if the user is anonymous or not an admin
             if not can_add_active:
@@ -197,7 +212,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             if not job.slug:
                 #job.slug = get_job_unique_slug(slugify(job.title))
                 job.slug = '%s-%s' % (slugify(job.title),
-                                        Job.objects.count())
+                                        object_type.objects.count())
 
             job = update_perms_and_save(request, form, job)
 
@@ -260,7 +275,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 return HttpResponseRedirect(
                         reverse(success_redirect, args=[job.slug]))
             else:
-                return HttpResponseRedirect(reverse('job.thank_you'))
+                return HttpResponseRedirect(reverse(thankyou_redirect))
     else:
         # Redirect user w/perms to create pricing if none exist
         pricings = JobPricing.objects.all()
@@ -268,7 +283,6 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label')))
             return HttpResponseRedirect(reverse('job_pricing.add'))
 
-        form = form_class(user=request.user)
         initial_category_form_data = {
             'app_label': 'jobs',
             'model': 'job',
@@ -279,22 +293,32 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                         initial=initial_category_form_data,
                         prefix='category')
 
-        # adjust the fields depending on user type
-        if not require_payment:
-            del form.fields['payment_method']
-            del form.fields['list_type']
-
     return render_to_response(template_name,
-            {'form': form, 'categoryform':categoryform},
+            {'form': form,
+             'require_payment': require_payment,
+             'categoryform': categoryform},
             context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def query_price(request):
+    """
+    Get the price for user with the selected list type.
+    """
+    pricing_id = request.POST.get('pricing_id', 0)
+    list_type = request.POST.get('list_type', '')
+    pricing = get_object_or_404(JobPricing, pk=pricing_id)
+    price = pricing.get_price_for_user(request.user, list_type=list_type)
+    return HttpResponse(simplejson.dumps({'price': price}))
 
 
 @is_enabled('jobs')
 @login_required
-def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object_type=Job, success_redirect='job'):
-    job = get_object_or_404(Job, pk=id)
+def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object_type=Job, success_redirect='job', job_change_perm='jobs.change_job'):
+    job = get_object_or_404(object_type, pk=id)
 
-    if not has_perm(request.user, 'jobs.change_job', job):
+    if not has_perm(request.user, job_change_perm, job):
         raise Http403
 
     form = form_class(request.POST or None,
@@ -302,9 +326,11 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
                         user=request.user)
 
     #setup categories
-    content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
+    content_type = get_object_or_404(ContentType, app_label=object_type._meta.app_label, model=object_type._meta.module_name)
+
     category = Category.objects.get_for_object(job,'category')
     sub_category = Category.objects.get_for_object(job,'sub_category')
+
     initial_category_form_data = {
         'app_label': 'jobs',
         'model': 'job',
@@ -446,6 +472,7 @@ def delete(request, id, template_name="jobs/delete.html"):
 @login_required
 def pricing_add(request, form_class=JobPricingForm,
                     template_name="jobs/pricing-add.html"):
+
     if has_perm(request.user, 'jobs.add_jobpricing'):
         if request.method == "POST":
             form = form_class(request.POST)
@@ -456,10 +483,16 @@ def pricing_add(request, form_class=JobPricingForm,
 
                 EventLog.objects.log(instance=job_pricing)
 
+                if "_popup" in request.REQUEST:
+                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(job_pricing.pk), escape(job_pricing)))
+
                 return HttpResponseRedirect(
                     reverse('job_pricing.view', args=[job_pricing.id]))
         else:
             form = form_class()
+
+        if "_popup" in request.REQUEST:
+            template_name="jobs/pricing-add-popup.html"
 
         return render_to_response(template_name, {'form': form},
             context_instance=RequestContext(request))
@@ -613,8 +646,6 @@ def export(request, template_name="jobs/export.html"):
         raise Http403
 
     if request.method == 'POST':
-        # initilize initial values
-        file_name = "jobs.csv"
         fields = [
             'guid',
             'title',

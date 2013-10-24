@@ -39,7 +39,6 @@ class HelpFileAdminForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -49,6 +48,7 @@ class HelpFileAdminForm(TendenciBaseForm):
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['group'].initial = Group.objects.get_initial_group_id()
 
 
 class HelpFileForm(TendenciBaseForm):
@@ -78,7 +78,6 @@ class HelpFileForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
 
@@ -108,7 +107,6 @@ class HelpFileForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status',
                                  'status_detail'], 
                       'classes': ['admin-only'],
                     })]
@@ -121,7 +119,6 @@ class HelpFileForm(TendenciBaseForm):
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = 0
 
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             if 'allow_anonymous_view' in self.fields: self.fields.pop('allow_anonymous_view')
             if 'user_perms' in self.fields: self.fields.pop('user_perms')

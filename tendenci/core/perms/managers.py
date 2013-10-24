@@ -515,7 +515,7 @@ class TendenciBaseManager(models.Manager):
 
     def _permissions_sqs(self, sqs, user, status, status_detail, **kwargs):
         if user.is_authenticated() and user.profile.is_superuser:
-            sqs = sqs.all()
+            sqs = sqs.filter(status=status)
         else:
             if user.is_anonymous():
                 sqs = self._anon_sqs(sqs, status=status, status_detail=status_detail)
@@ -549,7 +549,7 @@ class TendenciBaseManager(models.Manager):
         # if the status_detail is something like "published"
         # then you can specify the kwargs to override
         status_detail = kwargs.get('status_detail', 'active')
-        status = kwargs.get('status', True)
+        status = True
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
@@ -566,3 +566,20 @@ class TendenciBaseManager(models.Manager):
 
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
+
+    def get_query_set(self):
+        """
+        Returns the queryset only with active objects that have
+        a status=True. Objects with status=False are considered
+        deleted and should not appear in querysets.
+        """
+        return super(TendenciBaseManager, self).get_query_set().filter(status=True)
+
+    def all_inactive(self):
+        """
+        Returns the queryset only with inactive objects that have
+        a status=False. It can be chained with filter and other functions,
+        but be sure to call this function first.
+        """
+        return super(TendenciBaseManager, self).get_query_set().filter(status=False)
+

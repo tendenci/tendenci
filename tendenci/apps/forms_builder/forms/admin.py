@@ -15,6 +15,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.core.site_settings.utils import get_setting
 
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
 from tendenci.apps.forms_builder.forms.settings import UPLOAD_ROOT
@@ -62,6 +63,11 @@ class FormAdmin(TendenciBaseModelAdmin):
         "email_copies")
 #    radio_fields = {"status": admin.HORIZONTAL}
     prepopulated_fields = {'slug': ['title']}
+
+    if not get_setting('module', 'recurring_payments', 'enabled'):
+        payment_fields = ("custom_payment", "payment_methods")
+    else:
+        payment_fields = ("custom_payment", 'recurring_payment', "payment_methods")
     fieldsets = (
         (None, {"fields": ("title", "slug", "intro", "response", "completion_url", "template")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
@@ -72,10 +78,9 @@ class FormAdmin(TendenciBaseModelAdmin):
             'group_perms',
         )}),
         ('Publishing Status', {'fields': (
-            'status',
-            'status_detail'
+            'status_detail',
         )}),
-        (_("Payment"), {"fields": ("custom_payment", 'recurring_payment', "payment_methods")}),
+        (_("Payment"), {"fields": payment_fields}),
     )
 
     form = FormAdminForm
@@ -123,16 +128,17 @@ class FormAdmin(TendenciBaseModelAdmin):
         columns = []
         field_indexes = {}
         file_field_ids = []
-        for field in form.fields.all():
+        for field in form.fields.all().order_by('position', 'id'):
             columns.append(field.label.encode("utf-8"))
             field_indexes[field.id] = len(field_indexes)
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
         entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
         columns.append(unicode(entry_time_name))
-        columns.append(unicode("Pricing"))
-        columns.append(unicode("Price"))
-        columns.append(unicode("Payment Method"))
+        if form.custom_payment:
+            columns.append(unicode("Pricing"))
+            columns.append(unicode("Price"))
+            columns.append(unicode("Payment Method"))
         csv.writerow(columns)
         # Loop through each field value order by entry, building up each
         # entry as a row.
@@ -141,11 +147,16 @@ class FormAdmin(TendenciBaseModelAdmin):
             values = FieldEntry.objects.filter(entry=entry)
             row = [""] * len(columns)
             entry_time = entry.entry_time.strftime("%Y-%m-%d %H:%M:%S")
-            row[-4] = entry_time
-            if entry.pricing:
-                row[-3] = entry.pricing.label
-                row[-2] = entry.pricing.price
-            row[-1] = entry.payment_method
+
+            if form.custom_payment:
+                if entry.pricing:
+                    row[-4] = entry_time
+                    row[-3] = entry.pricing.label
+                    row[-2] = entry.pricing.price
+                row[-1] = entry.payment_method
+            else:
+                row[-1] = entry_time
+
             for field_entry in values:
                 value = field_entry.value.encode("utf-8")
                 # Create download URL for file fields.

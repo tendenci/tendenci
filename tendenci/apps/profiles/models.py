@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.contrib.contenttypes import generic
 
+from tendenci.core.base.utils import create_salesforce_contact
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
@@ -67,6 +68,8 @@ class Profile(Person):
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
 
+    sf_contact_id = models.CharField(max_length=100, blank=True, null=True)
+
     objects = ProfileManager()
     actives = ProfileActiveManager()
 
@@ -81,6 +84,11 @@ class Profile(Person):
 
     @models.permalink
     def get_absolute_url(self):
+        from tendenci.apps.profiles.utils import clean_username
+        cleaned_username = clean_username(self.user.username)
+        if cleaned_username != self.user.username:
+            self.user.username = cleaned_username
+            self.user.save()
         return ('profile', [self.user.username])
 
     def _can_login(self):
@@ -110,10 +118,27 @@ class Profile(Person):
     def is_superuser(self):
         return all([self._can_login(), self.user.is_superuser])
 
+    def first_name(self):
+        return self.user.first_name
+
+    def last_name(self):
+        return self.user.last_name
+
+    def username(self):
+        return self.user.username
+
+    def get_address(self):
+        if self.address_type:
+            return '%s (%s)' % (super(Profile, self).get_address(),
+                                self.address_type)
+        else:
+            return super(Profile, self).get_address()
+
     def get_name(self):
-
+        """
+        Returns name first_name + last_name
+        """
         user = self.user
-
         name = "%s %s" % (user.first_name, user.last_name)
         name = name.strip()
 
@@ -217,18 +242,20 @@ class Profile(Person):
         return False
 
     def get_groups(self):
-        memberships = self.user.group_member.all()
+        memberships = self.user.group_member.filter(group__status=True)
         return [membership.group for membership in memberships]
 
     def refresh_member_number(self):
-        memberships = self.user.membershipdefault_set.filter(
+        """
+        Adds or removes member number from profile.
+        """
+        membership = self.user.membershipdefault_set.first(
             status=True, status_detail__iexact='active'
         )
 
-        if memberships:
-            self.member_number = memberships[0].member_number
-        else:
-            self.member_number = u''
+        self.member_number = u''
+        if membership:
+            self.member_number = membership.member_number
 
         self.save()
         return self.member_number
@@ -316,7 +343,8 @@ class Profile(Person):
         user.save()
 
         if created:
-            Profile.objects.create_profile(user)
+            profile = Profile.objects.create_profile(user)
+            sf_id = create_salesforce_contact(profile)
 
         return user, created
 

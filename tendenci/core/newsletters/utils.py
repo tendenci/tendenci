@@ -1,6 +1,15 @@
+import os
+import re
+import shutil
+import zipfile
 import datetime
+from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from tendenci.core.site_settings.utils import get_setting
+
 
 def get_start_dt(duration_days, end_dt=None):
     if not end_dt:
@@ -110,3 +119,69 @@ def newsletter_jobs_list(request, jobs_days, simplified):
     except ImportError:
         pass
     return jobs, job_content
+
+
+def newsletter_events_list(request, start_dt, end_dt, simplified):
+    events = []
+    event_content = u''
+    try:
+        from tendenci.addons.events.models import Event
+
+        events = Event.objects.filter(
+            start_dt=start_dt,
+            end_dt=end_dt,
+            status_detail='active',
+            status=True,
+            allow_anonymous_view=True).order_by('start_dt')
+
+        event_content = render_to_string(
+            'newsletters/events_list.txt', {
+            'events': events,
+            'start_dt': start_dt,
+            'end_dt': end_dt,
+            'simplified':simplified},
+            context_instance=RequestContext(request))
+
+    except ImportError:
+        pass
+    return events, event_content
+
+
+def extract_files(template):
+    if template.zip_file:
+        zip_file = zipfile.ZipFile(template.zip_file.file)
+        if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            # create a tmp directory to extract the zip file
+            tmp_dir = 'tmp_%d' % template.id
+            path = './%s/newsletters/%s' % (tmp_dir, template.template_id)
+            zip_file.extractall(path)
+            # upload extracted files to s3
+            for root, dirs, files in os.walk(path):
+                for name in files:
+                    file_path = os.path.join(root, name)
+                    dst_file_path = file_path.replace('./%s/' % tmp_dir, '')
+                    default_storage.save(dst_file_path,
+                                ContentFile(open(file_path).read()))
+            # remove the tmp directory
+            shutil.rmtree(tmp_dir)
+        else:
+            path = os.path.join(settings.MEDIA_ROOT,
+                                'newsletters',
+                                template.template_id)
+            zip_file.extractall(path)
+
+
+def apply_template_media(template):
+    """
+    Prepends files in content to the media path
+    of a given template's zip file contents
+    """
+    site_url = get_setting('site', 'global', 'siteurl')
+    content = unicode(template.html_file.file.read(), "utf-8")
+    pattern = r'"[^"]*?\.(?:(?i)jpg|(?i)jpeg|(?i)png|(?i)gif|(?i)bmp|(?i)tif|(?i)css)"'
+    repl = lambda x: '"%s/%s/%s"' % (
+        site_url,
+        template.get_media_url(),
+        x.group(0).replace('"', ''))
+    new_content = re.sub(pattern, repl, content)
+    return new_content

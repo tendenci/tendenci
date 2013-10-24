@@ -2,17 +2,15 @@ from ordereddict import OrderedDict
 from ast import literal_eval
 
 from django import forms
-from django.conf import settings as d_settings
-from django.core.cache import cache
 from django.core.files import File
-from django.core.files.base import ContentFile
-from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
 
-from tendenci.core.site_settings.utils import (delete_setting_cache, cache_setting,
-    delete_all_settings_cache, get_form_list, get_box_list)
-from tendenci.core.site_settings.cache import SETTING_PRE_KEY
+from tendenci.core.site_settings.utils import (get_form_list,
+                                               get_box_list,
+                                               get_group_list)
+
 
 def clean_settings_form(self):
     """
@@ -34,7 +32,7 @@ def clean_settings_form(self):
                         raise forms.ValidationError("'%s' must be a file" % setting.label)
 
             if setting.name == "siteurl" and setting.scope == "site":
-                field_value = self.cleaned_data["siteurl"] 
+                field_value = self.cleaned_data["siteurl"]
                 if field_value:
                     if field_value[-1:] == "/":
                         field_value = field_value[:-1]
@@ -43,10 +41,11 @@ def clean_settings_form(self):
             pass
 
     return self.cleaned_data
-    
+
+
 def save_settings_form(self):
     """
-        Save the updated settings in the database 
+        Save the updated settings in the database
         Setting's save will trigger a cache update.
         If the field type is 'file' a file entry will be created.
     """
@@ -70,23 +69,23 @@ def save_settings_form(self):
                 else:
                     #retain the old file if no file is set
                     field_value = setting.get_value()
-            
+
             # update value if changed and save
             if old_value != field_value:
                 setting.set_value(field_value)
-                setting.save() # save updates the cash automatically
-            
+                setting.save()  # save updates the cash automatically
+
             # update the django site value in the contrib backend
             if setting.name == "siteurl" and setting.scope == "site":
                 if field_value:
                     django_site = Site.objects.get(pk=1)
-                    django_site.domain = field_value.replace("http://","")
-                    django_site.name = field_value.replace("http://","")
+                    django_site.domain = field_value.replace("http://", "")
+                    django_site.name = field_value.replace("http://", "")
                     django_site.save()
-                    
+
         except KeyError:
             pass
-            
+
 
 def build_settings_form(user, settings):
     """
@@ -95,19 +94,25 @@ def build_settings_form(user, settings):
     """
     fields = OrderedDict()
     for setting in settings:
+
+        try:
+            setting_value = force_unicode(setting.get_value())
+        except DjangoUnicodeDecodeError:
+            setting_value = ''
+
         if setting.input_type == 'text':
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
-                'initial': setting.get_value(),
+                'initial': setting_value,
                 'required': False
             }
             if setting.client_editable:
-                fields.update({"%s" % setting.name : forms.CharField(**options) })
+                fields.update({"%s" % setting.name: forms.CharField(**options)})
             else:
                 if user.is_superuser:
-                    fields.update({"%s" % setting.name : forms.CharField(**options) })
-                    
+                    fields.update({"%s" % setting.name: forms.CharField(**options)})
+
         elif setting.input_type == 'select':
             if setting.input_value == '<form_list>':
                 choices = get_form_list(user)
@@ -115,45 +120,52 @@ def build_settings_form(user, settings):
             elif setting.input_value == '<box_list>':
                 choices = get_box_list(user)
                 required = False
+            elif setting.input_value == '<group_list>':
+                choices, initial = get_group_list(user)
+                required = True
+                if not setting_value:
+                    setting_value = initial
             else:
                 # Allow literal_eval in settings in order to pass a list from the setting
                 # This is useful if you want different values and labels for the select options
                 try:
-                    choices = tuple([(k,v)for k,v in literal_eval(setting.input_value)])
+                    choices = tuple([(k, v)for k, v in literal_eval(setting.input_value)])
                     required = False
 
                     # By adding #<box_list> on to the end of a setting, this will append the boxes
                     # as select items in the list as well.
                     if '<box_list>' in setting.input_value:
                         box_choices = get_box_list(user)[1:]
-                        choices = (('Content',choices),('Boxes',box_choices))
+                        choices = (('Content', choices), ('Boxes', box_choices))
                 except:
-                    choices = tuple([(s.strip(),s.strip())for s in setting.input_value.split(',')])
+                    choices = tuple([(s.strip(), s.strip())for s in setting.input_value.split(',')])
                     required = True
 
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
-                'initial': setting.get_value(),
+                'initial': setting_value,
                 'choices': choices,
                 'required': required,
             }
             if setting.client_editable:
-                fields.update({"%s" % setting.name : forms.ChoiceField(**options) }) 
+                fields.update({"%s" % setting.name: forms.ChoiceField(**options)})
             else:
                 if user.is_superuser:
-                    fields.update({"%s" % setting.name : forms.ChoiceField(**options) })
+                    fields.update({"%s" % setting.name: forms.ChoiceField(**options)})
 
         elif setting.input_type == 'file':
             from tendenci.core.files.models import File as TendenciFile
             file_display = ''
             try:
-                try: val = int(setting.get_value())
-                except: val = 0
-                
+                try:
+                    val = int(setting_value)
+                except ValueError:
+                    val = 0
+
                 try:
                     tfile = TendenciFile.objects.get(pk=val)
-                except:
+                except Exception:
                     tfile = None
 
                 if tfile:
@@ -170,16 +182,16 @@ def build_settings_form(user, settings):
                 'required': False
             }
             if setting.client_editable:
-                fields.update({"%s" % setting.name : forms.FileField(**options) })
+                fields.update({"%s" % setting.name: forms.FileField(**options)})
             else:
                 if user.is_superuser:
-                    fields.update({"%s" % setting.name : forms.FileField(**options) })
-       
+                    fields.update({"%s" % setting.name: forms.FileField(**options)})
+
     attributes = {
         'settings': settings,
         'base_fields': fields,
         'clean': clean_settings_form,
         'save': save_settings_form,
         'user': user,
-    }     
+    }
     return type('SettingForm', (forms.BaseForm,), attributes)

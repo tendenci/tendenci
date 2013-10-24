@@ -1,6 +1,7 @@
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import authenticate, login
@@ -18,6 +19,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.accounts.utils import send_registration_activation_email
+from tendenci.core.base.utils import create_salesforce_contact
 
 
 class SetPasswordCustomForm(SetPasswordForm):
@@ -49,8 +51,6 @@ class RegistrationCustomForm(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         self.allow_same_email = kwargs.pop('allow_same_email', False)
-        print 'In Form'
-        print self.allow_same_email
         super(RegistrationCustomForm, self).__init__(*args, **kwargs)
 
     def clean_password1(self):
@@ -112,6 +112,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_profile.owner = new_user
         new_profile.owner_username = new_user.username
         new_profile.save()
+        sf_id = create_salesforce_contact(new_profile)
                     
         return new_user
 
@@ -231,6 +232,6 @@ class PasswordResetForm(forms.Form):
             'protocol': use_https and 'https' or 'http',
         }
 
-        from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
+        from_email = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
         send_mail(_("Password reset on %s") % site_name,
             t.render(Context(c)), from_email, [user.email])

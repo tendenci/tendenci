@@ -1,12 +1,12 @@
 position_field = 'position'; // Name of inline model field (integer) used for ordering. Defaults to "position".
 
-jQuery(function($) {    
+jQuery(function($) {
     // This script is applied to all TABULAR inlines
     $('div.inline-group div.tabular').each(function() {
         table = $(this).find('table');
 
         // Drag and drop functionality - only used if a position field exists
-        if (position_field != '' && table.find('td').is('.field-' + position_field))
+        if (position_field !== '' && table.find('td').is('.field-' + position_field))
         {
             // Hide "position"-field (both td:s and th:s)
             $(this).find('td.field-' + position_field).hide();
@@ -25,11 +25,10 @@ jQuery(function($) {
                 cancel: 'input,button,select,a',
                 helper: 'clone',
                 update: function() {
-                    update_positions($(this));
+                    update_positions($(this), true);
                 }
             });
-            
-            
+
             // Re-order <tr>:s based on the "position"-field values.
             // This is a very simple ordering which only works with correct position number sequences,
             // which the rest of this script (hopefully) guarantees.
@@ -39,47 +38,71 @@ jQuery(function($) {
                 rows[position] = $(this);
                 
                 // Add move cursor to table row.
-                table.find('tr:has(td)').css('cursor', 'move')
+                table.find('tr:has(td)').css('cursor', 'move');
             });
             
             for (var i in rows) { table.append(rows[i]); } // Move <tr> to its correct position
-            update_positions($(this), true);
+            update_positions($(this));
         }
         else
             position_field = '';
     });
+
+    $('fieldset .add-row a').click(function(){
+        var table = $(this).parents('table');
+        var inputs = table.find('tbody tr.dynamic-fields:not(.add_template):not(.deleted_row) .field-position input');
+        inputs.each(function(){
+            if(this.value == '0'){
+                this.value = inputs.length.toString();
+            }
+        });
+
+    });
+
 });
 
 // Updates "position"-field values based on row order in table
-function update_positions(table, update_ids)
+function update_positions(table, update_position)
 {
-    even = true
-    num_rows = 0
+    even = true;
+    num_rows = 0;
     position = 0;
 
     // Set correct position: Filter through all trs, excluding first th tr and last hidden template tr
     table.find('tbody tr:not(.add_template):not(.deleted_row)').each(function() {
-        if (position_field != '')
-        {
-            // Update position field
-            $(this).find('td.field-' + position_field + ' input').val(position + 1);
-            position++;
-            
-            // Update row coloring
-            $(this).removeClass('row1 row2');
-            if (even)
-            {
-                $(this).addClass('row1');
-                even = false;
+        if (position_field !== '') {
+
+            input = $(this).find('td.field-' + position_field + ' input');
+
+            var attr_id = input.attr('id');
+
+            var is_prefix = -1;
+            if(attr_id){
+                is_prefix = attr_id.indexOf('__prefix__');
             }
-            else
-            {
-                $(this).addClass('row2');
-                even = true;
+
+            if(is_prefix < 0){
+
+                if(update_position){
+                    input.val(position+1);
+                    position++;
+                }
+
+                // Update row coloring
+                $(this).removeClass('row1 row2');
+                if (even)
+                {
+                    $(this).addClass('row1');
+                    even = false;
+                }
+                else
+                {
+                    $(this).addClass('row2');
+                    even = true;
+                }
             }
         }
     });
-    
 }
 
 // Updates actual id and name attributes of inputs, selects and so on.
@@ -93,12 +116,12 @@ function update_id_fields(row, new_position)
         // id=...
         old_id = $(this).attr('id').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
-        $(this).attr('id', new_id)
+        $(this).attr('id', new_id);
         
         // name=...
         old_id = $(this).attr('name').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
-        $(this).attr('name', new_id)
+        $(this).attr('name', new_id);
     });
     
     // <input ...>
@@ -106,12 +129,12 @@ function update_id_fields(row, new_position)
         // id=...
         old_id = $(this).attr('id').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
-        $(this).attr('id', new_id)
+        $(this).attr('id', new_id);
         
         // name=...
         old_id = $(this).attr('name').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
-        $(this).attr('name', new_id)
+        $(this).attr('name', new_id);
     });
     
     // <a ...>
@@ -119,7 +142,7 @@ function update_id_fields(row, new_position)
         // id=...
         old_id = $(this).attr('id').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
-        $(this).attr('id', new_id)
+        $(this).attr('id', new_id);
     });
     
     // Are there other element types...? Add here.

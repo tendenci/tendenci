@@ -78,6 +78,7 @@
                 <li class="heading">{% trans "This Event" %}</li>
                 <li class="divider"></li>
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Event" %}</a></li>
+                    <li><a href="{% url event.print_view nav_object.pk %}">{% trans "Print Event" %}</a></li>
             {% if can_view_attendees %}
                     <li><a href="{% url event.attendees nav_object.pk %}">{% trans "View Attendees" %}</a></li>
             {% endif %}
@@ -109,6 +110,10 @@
                 {% if can_edit_event %}
                     <li><a href="{% url event.message nav_object.pk %}">{% trans "E-mail Registrants" %}</a></li>
                 {% endif %}
+                {% if request.user.is_superuser %}
+                    <li class="divider"></li>
+                    <li><a href="{% url event.member_register nav_object.pk %}">{% trans "Register Members" %}</a></li>
+                {% endif %}
                 {% if can_delete_event %}
                     <li class="divider"></li>
                     <li><a class="delete" href="{% url event.delete nav_object.pk %}">{% trans "Delete Event" %}</a></li>
@@ -119,7 +124,9 @@
         </div>
     </li>
     {% if request.user.is_superuser %}
+    {% if MODULE_DISCOUNTS_ENABLED %}
     <li><a href="{% url discounts %}">{% firstof MODULE_DISCOUNTS_LABEL 'Discounts' %}</a></li>
+    {% endif %}
     {% else %}
     {% if MODULE_NEWS_ENABLED %}
     <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>

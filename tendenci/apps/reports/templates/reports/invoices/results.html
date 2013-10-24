@@ -1,0 +1,125 @@
+{% load base_filters %}
+{% load i18n %}
+
+<div class="row invoice-resultset">
+    <div class="span6">
+        <h2>Totals</h2>
+        <table>
+            <tr>
+                <th>App</th>
+                <th>Count</th>
+                <th>Total</th>
+                <th>Payments</th>
+                <th>Balance</th>
+            </tr>
+            {% for item in results %}
+            <tr class="totals {% cycle "even" "odd" %}">
+                <td class="title"><a href="#app-{{ forloop.counter }}">{{ item.object_type }}</a></td>
+                <td>{{ item.count }} invoices</td>
+                <td>{{ item.total__sum|format_currency }}</td>
+                <td>{{ item.payments_credits__sum|format_currency }}</td>
+                <td>{{ item.balance__sum|format_currency }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th>TOTAL</th>
+                <th>{{ totals.count }} invoices</th>
+                <th>{{ totals.total|format_currency }}</th>
+                <th>{{ totals.payments_credits|format_currency }}</th>
+                <th>{{ totals.balance|format_currency }}</th>
+            </tr>
+        </table>
+    </div> <!-- /.span6 -->
+    <div class="span6">
+        <p>The following apps had data for the selected date range and are included in this report. Click to jump to a specific section:</p>
+        <ol>
+            {% for item in results %}
+            <li><a href="#app-{{ forloop.counter }}">{{ item.object_type }}</a></li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+
+{% for item in results %}
+<div class="row invoice-resultset{% if forloop.last %} last{% endif %}">
+    <div class="span12">
+        <h3 id="app-{{ forloop.counter }}">{{ forloop.counter }}. {{ item.object_type }} <a class="back-to-top no-print" href="#top">Back to Top</a></h3>
+
+        <table class="">
+            <tr>
+                <th>Count</th>
+                <th>Total</th>
+                <th>Payments</th>
+                <th>Balance</th>
+            </tr>
+            <tr class="summary-labels">
+                <th>{{ item.count }} invoices</th>
+                <th>{{ item.total__sum|format_currency }}</th>
+                <th>{{ item.payments_credits__sum|format_currency }}</th>
+                <th>{{ item.balance__sum|format_currency }}</th>
+            </tr>
+        </table>
+
+        <p>Invoices for {{ item.object_type }} sorted by Date</p>
+
+        <table class="invoice-list">
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Title</th>
+                <th>Total</th>
+                <th>Payments</th>
+                <th>Balance</th>
+            </tr>
+        {% for invoice in item.invoices %}
+            <tr class="{% cycle "even" "odd" %} {% if invoice.payments_credits > invoice.total %} pay-extra{% endif %} {% if invoice.payments_credits == invoice.total and invoice.balance == invoice.total and invoice.total > 0 %} all-match{% endif %}">
+                <td><a href="{{ invoice.get_absolute_url }}">{{ invoice.id }}</a></td>
+                <td>{{ invoice.create_dt|date:"SHORT_DATE_FORMAT" }}</td>
+                <td>{% if invoice.is_tendered %}{% trans 'tendered' %}{% else %}{% trans 'estimate' %}{% endif %}</td>
+                <td>{{ invoice.bill_to_first_name }}</td>
+                <td>{{ invoice.bill_to_last_name }}</td>
+                <td>{{ invoice.bill_to_phone }}</td>
+                <td>{{ invoice.bill_to_email }}</td>
+                <td>
+                    {% if invoice.get_object.event.pk %}
+                    <a href="{% url event invoice.get_object.event.pk %}">{{ invoice.get_object.event.pk }}</a> - {{ invoice.get_object.event.title|truncatewords:"3" }}
+
+                    {% elif invoice.get_object.membership_type.pk %}
+                    {{ invoice.get_object.membership_type.name }}
+
+                    {% elif invoice.title %}{{ invoice.title }}{% endif %}</td>
+                <td class="inv-total">{{ invoice.total|format_currency }}</td>
+                <td class="inv-payments-credits">{{ invoice.payments_credits|format_currency }}</td>
+                <td class="inv-balance">{{ invoice.balance|format_currency }}</td>
+            </tr>
+        {% endfor %}
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Title</th>
+                <th>Total</th>
+                <th>Payments</th>
+                <th>Balance</th>
+            </tr>
+            <tr class="summary-labels">
+                <th colspan="8">Summary of {{ item.count }} invoices for {{ item.object_type }}</th>
+                <th>{{ item.total__sum|format_currency }}</th>
+                <th>{{ item.payments_credits__sum|format_currency }}</th>
+                <th>{{ item.balance__sum|format_currency }}</th>
+            </tr>
+        </table>
+    </div> <!-- /.span12 -->
+</div>
+
+
+{% endfor %}

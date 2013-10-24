@@ -23,8 +23,7 @@ class HelpFileAdmin(TendenciBaseModelAdmin):
             'group_perms',
         )}),
         ('Publishing Status', {'fields': (
-            'status',
-            'status_detail'
+            'status_detail',
         )}),
     )
     prepopulated_fields = {'slug': ['question']}

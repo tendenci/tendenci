@@ -2,7 +2,10 @@ from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+
+from tendenci.core.payments.forms import PaymentSearchForm
 from tendenci.core.payments.models import Payment
 from tendenci.core.payments.authorizenet.utils import prepare_authorizenet_sim_form
 from tendenci.apps.invoices.models import Invoice
@@ -81,4 +84,37 @@ def receipt(request, id, guid, template_name='payments/receipt.html'):
         raise Http403
 
     return render_to_response(template_name, {'payment': payment},
+                              context_instance=RequestContext(request))
+
+
+@login_required
+def search(request, template_name='payments/search.html'):
+    search_criteria = None
+    search_text = None
+    search_method = None
+
+    form = PaymentSearchForm(request.GET)
+    if form.is_valid():
+        search_criteria = form.cleaned_data.get('search_criteria')
+        search_text = form.cleaned_data.get('search_text')
+        search_method = form.cleaned_data.get('search_method')
+
+    payments = Payment.objects.all()
+    if search_criteria and search_text:
+        search_type = '__iexact'
+        if search_method == 'starts_with':
+            search_type = '__istartswith'
+        elif search_method == 'contains':
+            search_type = '__icontains'
+        search_filter = {'%s%s' % (search_criteria,
+                                   search_type): search_text}
+        payments = payments.filter(**search_filter)
+
+    if request.user.profile.is_superuser:
+        payments = payments.order_by('-create_dt')
+    else:
+        from django.db.models import Q
+        payments = payments.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
+
+    return render_to_response(template_name, {'payments': payments, 'form': form},
                               context_instance=RequestContext(request))

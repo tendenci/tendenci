@@ -1,0 +1,44 @@
+{% extends 'reports/report_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Report' %} {{ report.pk }} - {{ report.type|title }}{% endblock title %}
+
+{% block body %}
+<h1>{% trans 'Report' %} {{ report.pk }} - {{ report.type|title }}</h1>
+
+{% if report.config %}
+<p>{% trans "Report configuration settings" %}</p>
+<ul>
+    {% for option in report.config_options %}
+        <li>{{ option.label }}: {{ option.value }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<p><a class="btn" href="{% url report_run_create report.pk %}">{% trans 'Run this report with a new date range' %}</a></p>
+
+{% if report.runs %}
+    <h3>{% trans "Previous report runs" %}</h3>
+    <table>
+        <tr>
+            <th width="50px">{% trans "Run ID" %}</th>
+            <th width="70px">{% trans "Run Date" %}</th>
+            <th width="66px">{% trans "Status" %}</th>
+            <th width="170px">{% trans "Date Range" %}</th>
+            <th width="50px">{% trans "Result" %}</th>
+        </tr>
+    {% for run in report.runs %}
+        <tr>
+            <td><a href="{{ run.get_absolute_url }}">{{ run.pk }}</a></td>
+            <td>{{ run.create_dt|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ run.status }}</td>
+            <td>{{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans "to" %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{% if run.status == "complete" %}<a href="{{ run.get_output_url }}">{{ run.output_type }}</a>{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+
+<p><a href="{% url report_list %}">&larr; {% trans "Back to All Reports page" %}</a></p>
+
+{% endblock body %}

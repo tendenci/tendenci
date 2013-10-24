@@ -1,12 +1,17 @@
 import re
 from string import digits
 from random import choice
+
 from django.conf import settings
 from django.contrib.auth.models import User
-from tendenci.core.site_settings.utils import get_setting
+from django.core.urlresolvers import reverse
+from django.db.models import Q
+
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.addons.memberships.models import Membership, App
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.site_settings.utils import get_setting
+
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
     from django.core.mail.message import EmailMessage
@@ -128,14 +133,6 @@ def group_choices(user):
 
     return choices
 
-def app_choices(user):
-    """
-    returns a list of (app.pk, app.name) for apps viewable for a given user.
-    """
-    apps = App.objects.search(user=user)
-    choices = [(app.pk, app.name) for app in apps]
-    
-    return choices
 
 def update_user(user, **kwargs):
     for k, v in kwargs.iteritems():
@@ -204,3 +201,61 @@ def spawn_username(fn=u'', ln=u'', em=u''):
 
     int_string = ''.join([choice(digits) for x in xrange(10)])
     return 'user.%s' % int_string
+
+
+def get_member_reminders(user):
+    active_qs = Q(status_detail__iexact='active')
+    expired_qs = Q(status_detail__iexact='expired')
+
+    memberships = user.membershipdefault_set.filter(
+        status=True) & user.membershipdefault_set.filter(
+            active_qs | expired_qs).order_by('expire_dt')
+
+    reminders = ()
+    for membership in memberships:
+
+        renew_link = u''
+        if hasattr(membership, 'app') and membership.app:
+            renew_link = '%s%s?username=%s&membership_type_id=%s' % (
+                get_setting('site', 'global', 'siteurl'),
+                reverse('membership_default.add',
+                        kwargs={'slug': membership.app.slug}),
+                membership.user.username,
+                membership.membership_type.pk)
+
+        if membership.in_grace_period() or membership.is_expired():
+            if membership.can_renew():
+                # expired but can renew
+                message = 'Your membership for %s has expired. Renewal is available until %s.' % (
+                    membership.membership_type.name,
+                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p'))
+                reminders += ((message, renew_link, 'Renew your membership now'),)
+            else:
+                # expired and out of renewal period
+                message = 'Your membership for %s has expired.' % (
+                    membership.membership_type.name)
+                reminders += ((message, renew_link, 'Re-register as a member here'),)
+        else:
+            # not expired, but in renewal period
+            if membership.can_renew():
+                message = 'Your membership for %s will expire on %s. Renewal is available until %s.' % (
+                    membership.membership_type.name,
+                    membership.expire_dt.strftime('%d-%b-%Y'),
+                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p')
+                )
+                reminders += ((message, renew_link, 'Renew your membership here'),)
+
+    return reminders
+
+
+def clean_username(username):
+    """
+    Removes improper characters from a username
+    """
+    bad_characters = " !#$%^&*()[]'\""
+
+    for char in bad_characters:
+        if char in username:
+            username = username.replace(char, '')
+
+    return username

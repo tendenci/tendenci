@@ -49,18 +49,23 @@ class Setting(models.Model):
     def set_value(self, value):
         self.value = encrypt(value)
         self.is_secure = True
-        
+
     def get_value(self):
         try:
             if self.is_secure:
-                return decrypt(self.value)
+                try:
+                    return decrypt(self.value).decode('utf-8')
+                except UnicodeDecodeError:
+                    return decrypt(self.value)
         except AttributeError: #cached setting with no is_secure
-            from tendenci.core.site_settings.utils import (delete_setting_cache,
-                cache_setting, delete_all_settings_cache)
+            from tendenci.core.site_settings.utils import (
+                delete_setting_cache,
+                delete_all_settings_cache)
             # delete the cache for this setting
             # print "clearing cache for setting: %s" % self.name
             delete_all_settings_cache()
             delete_setting_cache(self.scope, self.scope_category, self.name)
+
         return self.value
         
     def save(self, *args, **kwargs):

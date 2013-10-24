@@ -64,3 +64,17 @@ margin: 1em 0;
 .item-label{
 white-space: nowrap;
 }
+
+/* free pass */
+ .free-pass-wrap{
+ 	margin-left: 2em;
+ 	margin-bottom: 1em;
+ }
+ .free-pass-price{
+ 	text-decoration: line-through;
+ }
+  .free-pass-img{
+ 	background-image: url('/static/images/icons/fp.png');
+ 	background-repeat: no-repeat;
+ 	padding-right: 10px;
+ }

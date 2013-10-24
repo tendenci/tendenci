@@ -34,11 +34,16 @@
 
     </div>
 
+    <div class="loading-message">
+        <img src="{{ STATIC_URL }}images/loadingicon.gif"/>
+    </div>
+
 </div>
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-blockUI.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
@@ -58,6 +63,7 @@
 				if (sub_category) select_box.append(option_html) 
 				return false;
 			});
+            $('.loading-message').hide();
 		});
     </script>
     <script type="text/javascript">
@@ -67,6 +73,11 @@
              if ($('#category-title span').text() == '+') {
                 $('#category-title span').text('-');}
             else {$('#category-title span').text('+');}
+        });
+        $('.file-wrap form input[type="submit"]').click(function() { 
+            $.blockUI({
+                message: $('.loading-message')
+            });
         });
     </script>
 {% endblock %}

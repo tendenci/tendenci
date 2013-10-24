@@ -45,6 +45,7 @@ FIELD_FUNCTIONS = (
     ("EmailLastName", _("Last Name")),
     ("EmailFullName", _("Full Name")),
     ("EmailPhoneNumber", _("Phone Number")),
+    ("Recipients", _("Email to Recipients")),
 )
 
 BILLING_PERIOD_CHOICES = (
@@ -85,15 +86,15 @@ class Form(TendenciBaseModel):
     email_copies = models.CharField(_("Send copies to"), blank=True,
         help_text=_("One or more email addresses, separated by commas"),
         max_length=2000)
-    completion_url = models.URLField(_("Completion URL"), blank=True, null=True,
-        help_text=_("Redirect to this page after form completion."))
+    completion_url = models.CharField(_("Completion URL"), max_length=1000, blank=True, null=True,
+        help_text=_("Redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))
     template = models.CharField(_('Template'), max_length=50, blank=True)
 
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,
         help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
     recurring_payment = models.BooleanField(_("Is Recurring Payment"), default=False,
-        help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
+        help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount. Please also add an email field as a required field with type 'email'"))
     payment_methods = models.ManyToManyField("payments.PaymentMethod", blank=True)
 
     perms = generic.GenericRelation(ObjectPermission,
@@ -134,10 +135,9 @@ class Form(TendenciBaseModel):
     admin_link_export.short_description = ""
 
     def has_files(self):
-        for entry in self.entries.all():
-            for field in entry.fields.all():
-                if field.field.field_type == 'FileField':
-                    return True
+        for field in self.fields.all():
+            if field.field_type == 'FileField':
+                return True
         return False
 
 
@@ -168,8 +168,6 @@ class Field(OrderingBaseModel):
         max_length=64)
     field_function = models.CharField(_("Special Functionality"),
         choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
-    function_params = models.CharField(_("Group Name or Names"),
-        max_length=100, null=True, blank=True, help_text="Comma separated if more than one")
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
@@ -201,11 +199,18 @@ class Field(OrderingBaseModel):
             field_class, field_widget = self.field_type, None
         return field_widget
 
+    def get_choices(self):
+        if self.field_function == 'Recipients':
+            choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
+        else:
+            choices = [(val, val) for val in self.choices.split(",")]
+        return choices
+
     def execute_function(self, entry, value, user=None):
         if self.field_function == "GroupSubscription":
             if value:
-                for val in self.function_params.split(','):
-                    group = Group.objects.get(name=val)
+                for val in self.choices.split(','):
+                    group = Group.objects.get(name=val.strip())
                     if user:
                         try:
                             group_membership = GroupMembership.objects.get(group=group, member=user)
@@ -217,8 +222,6 @@ class Field(OrderingBaseModel):
                             group_membership.owner_id = user.id
                             group_membership.owner_username = user.username
                             group_membership.save()
-                    else:
-                        entry.subscribe(group)  # subscribe form-entry to a group
 
 
 class FormEntry(models.Model):
@@ -245,29 +248,6 @@ class FormEntry(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("form_entry_detail", (), {"id": self.pk})
-
-    def subscribe(self, group):
-        """
-        Subscribe FormEntry to group specified.
-        """
-        # avoiding circular imports
-        from tendenci.apps.subscribers.models import GroupSubscription as GS
-        try:
-            GS.objects.get(group=group, subscriber=self)
-        except GS.DoesNotExist:
-            GS.objects.create(group=group, subscriber=self)
-
-    def unsubscribe(self, group):
-        """
-        Unsubscribe FormEntry from group specified
-        """
-        # avoiding circular imports
-        from tendenci.apps.subscribers.models import GroupSubscription as GS
-        try:
-            sub = GS.objects.get(group=group, subscriber=self)
-            sub.delete()
-        except GS.DoesNotExist:
-            pass
 
     def entry_fields(self):
         return self.fields.all().order_by('field__position')
@@ -318,7 +298,7 @@ class FormEntry(models.Model):
         Returns the value of the a field entry based
         on the field_function specified
         """
-        for entry in self.fields.all():
+        for entry in self.fields.order_by('field__position'):
             if entry.field.field_function == field_function:
                 return entry.value
         return ''
@@ -345,6 +325,20 @@ class FormEntry(models.Model):
     def get_phone_number(self):
         return self.get_value_of("EmailPhoneNumber")
 
+    def get_function_email_recipients(self):
+        email_list = set()
+        for entry in self.fields.order_by('field__position'):
+            if entry.field.field_function == 'Recipients' and entry.value:
+                if entry.field.field_type == 'BooleanField':
+                    for email in entry.field.choices.split(","):
+                        email_list.add(email.strip())
+                else:
+                    for email in entry.value.split(","):
+                        email = email.split(":")
+                        if len(email) > 1:
+                            email_list.add(email[1].strip())
+        return email_list
+
     def get_email_address(self):
         return self.get_type_of("emailverificationfield")
 
@@ -366,6 +360,10 @@ class FormEntry(models.Model):
         )
 
         return description
+
+    def set_group_subscribers(self):
+        for entry in self.fields.filter(field__field_function="GroupSubscription"):
+            entry.field.execute_function(self, entry.value, user=self.creator)
 
 
 class FieldEntry(models.Model):
@@ -394,11 +392,6 @@ class FieldEntry(models.Model):
         if field_class == 'FileField':
             return False
         return True
-
-    def save(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super(FieldEntry, self).save(*args, **kwargs)
-        self.field.execute_function(self.entry, self.value, user=user)
 
 
 class Pricing(models.Model):
@@ -429,6 +422,9 @@ class Pricing(models.Model):
     has_trial_period = models.BooleanField(default=False)
     trial_period_days = models.IntegerField(default=0)
     trial_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True, default=0.0)
+
+    class Meta:
+        ordering = ["pk"]
 
     def __unicode__(self):
         currency_symbol = get_setting("site", "global", "currencysymbol")

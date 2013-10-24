@@ -3,9 +3,7 @@
 
 {% block content %}
 
-<h1>{% trans "User Access" %}</h1>
-
-{% trans "The following users have access times" %}
+<h1>{% trans "Active User Logins" %}</h1>
 
 <table>
 <tr>
@@ -16,15 +14,19 @@
 </tr>
 </table>
 
+<h2>{% trans 'Unique User Logins' %}</h2>
+<table class="user-access-report">
+    <tr>
+        <th>Last x Days</th>
+        <th>Logins</th>
+    </tr>
 {% for days, count in day_logins %}
-<table>
+
 <tr>
-	<th>{% blocktrans %}LAST {{ days }} DAYS{% endblocktrans %}</th>
+	<td>{% blocktrans %}{{ days }} Day{% endblocktrans %}</td>
+	<td>{% blocktrans %}{{ count }}{% endblocktrans %}</td>
 </tr>
-<tr>
-	<td>{% blocktrans %}Event 125200 - User Login: {{ count }}{% endblocktrans %}</td>
-</tr>
-</table>
 {% endfor %}
+</table>
 
 {% endblock content %}

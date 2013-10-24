@@ -19,6 +19,7 @@ from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 from tendenci.core.files.models import File as TFile
 from tendenci.core.files.models import file_directory
+from tendenci.core.site_settings.utils import get_setting
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
@@ -57,10 +58,9 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     """
     Builds a resized image based off of the original image.
     """
-
     try:
         quality = int(quality)
-    except:
+    except TypeError:
         quality = 90
 
     if settings.USE_S3_STORAGE:
@@ -72,25 +72,48 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         else:
             raise Http404
 
-    # handle infamous error
-    # IOError: cannot write mode P as JPEG
-    if image.mode != "RGB":
-        image = image.convert("RGB")
+    image_options = {'quality': quality}
+    if image.format == 'GIF':
+        image_options['transparency'] = 0
+
+    format = image.format
+    if image.format in ('GIF', 'PNG'):
+        if image.mode != "RGBA":
+            image = image.convert("RGBA")
+        image.format = format  # this is lost in conversion
+
+    elif image.format == 'JPEG':
+        # handle infamous error
+        # IOError: cannot write mode P as JPEG
+        if image.mode != "RGB":
+            image = image.convert("RGB")
 
     if crop:
         image = image_rescale(image, size)  # thumbnail image
     else:
+        format = image.format
         image = image.resize(size, Image.ANTIALIAS)  # resize image
+        image.format = format
 
-    # mission: get binary
-    output = StringIO()
-    image.save(output, "JPEG", quality=quality)
-    binary = output.getvalue()  # mission accomplished
-    output.close()
+    binary = get_image_binary(image, **image_options)
 
     if cache:
         key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, constrain)
         django_cache.add(key, binary, 60 * 60 * 24 * 30)  # cache for 30 days #issue/134
+
+    return binary
+
+
+def get_image_binary(image, **options):
+    """
+    Returns image binary
+    """
+    image.format = image.format or 'JPEG'
+
+    output = StringIO()
+    image.save(output, image.format, **options)
+    binary = output.getvalue()
+    output.close()
 
     return binary
 
@@ -111,7 +134,7 @@ def validate_image_size(size):
         else:
             new_size.append(item[0])
 
-    return new_size
+    return tuple(new_size)
 
 
 def aspect_ratio(image_size, new_size, constrain=False):
@@ -125,9 +148,10 @@ def aspect_ratio(image_size, new_size, constrain=False):
 
     # check if file size is 0, which means there's an exception
     if orig_w != 0 and orig_h != 0:
-        if orig_w < w or orig_h < h:
-            # prevent upscaling of images
-            return orig_w, orig_h
+        if not constrain:
+            if orig_w < w or orig_h < h:
+                # prevent upscaling of images
+                return orig_w, orig_h
 
     if not constrain and (w and h):
         return w, h
@@ -152,6 +176,21 @@ def aspect_ratio(image_size, new_size, constrain=False):
         h2 = w2
     if w2 == 0:
         w2 = h2
+
+    if constrain:
+        # check if h1,w1 breaks the boundaries of the constrain
+        if h1 > h or w1 > w:
+            # check for upscaling
+            if orig_w < w2 or orig_h < h2:
+                return orig_w, orig_h
+            else:
+                return w2, h2
+        else:
+            # check for upscaling
+            if orig_w < w1 or orig_h < h1:
+                return orig_w, orig_h
+            else:
+                return w1, h1
 
     if h1 <= h:
         return w1, h1
@@ -467,7 +506,15 @@ class AppRetrieveFiles(object):
         if hasattr(instance, 'owner_username'):
             tfile.owner_username = instance.owner_username
 
-        file_path = file_directory(tfile, tfile.name)
-        tfile.file.save(file_path, ContentFile(urllib2.urlopen(url).read()))
+        #file_path = file_directory(tfile, tfile.name)
+        tfile.file.save(file_name, ContentFile(urllib2.urlopen(url).read()))
         tfile.save()
         return tfile
+
+
+def get_max_file_upload_size(file_module=False):
+    global_max_upload_size = (get_setting('site', 'global', 'maxfilesize') or 
+                              "26214400")  # default value if ever site setting is missing
+    if file_module:
+        return int(get_setting('module', 'files', 'maxfilesize') or global_max_upload_size)
+    return int(global_max_upload_size)

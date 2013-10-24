@@ -1,3 +1,6 @@
+include README.md
+include LICENSE.md
+include THEMING.md
 recursive-include tendenci/addons *
 recursive-include tendenci/apps *
 recursive-include tendenci/bin *

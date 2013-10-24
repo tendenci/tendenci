@@ -42,7 +42,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in article.tags|tag_split %}
-                <a href="{% url articles %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url articles %}?tag={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
@@ -59,7 +59,6 @@
     </div>
     <div class="meta-right">
         <!-- <a class="print-link" href="{# url article.print_view article.slug #}">Print</a> -->
-        <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>
 {% if user.profile.is_superuser %}

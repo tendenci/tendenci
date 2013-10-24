@@ -93,7 +93,7 @@ class EventTypeManager(Manager):
         return sqs.models(self.model)
 
 
-class RegistrantManager(TendenciBaseManager):
+class RegistrantManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
         Uses haystack to query events.

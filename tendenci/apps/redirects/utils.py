@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import url, patterns
+from django.utils.http import urlquote
 from tendenci.apps.redirects.models import Redirect
 
 def group_aruments(seq, group=254):
@@ -20,7 +21,9 @@ def get_redirect_patterns():
     url_list = []
     for redirect in redirects:
         extra = {}
-        pattern = r'^%s/?$' % redirect.from_url
+
+        # use urlquote so we can support '?' in the redirect
+        pattern = r'^%s/?$' % urlquote(redirect.from_url)
 
         if 'http' in redirect.to_url:
             extra.update({'url':'%s' % redirect.to_url}) 

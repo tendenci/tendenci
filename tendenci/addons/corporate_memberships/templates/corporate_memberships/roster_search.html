@@ -10,7 +10,6 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships-roster_search.css">
 <style>
@@ -89,19 +88,23 @@
 {% endif %}
 <br />
 <form name="roster-search" class="roster-search-form" method="get">
-<div class="form-field">Company Name: {{ form.cm_id }}</div>
+<div class="form-field">{{ form.cm_id.label }}: {{ form.cm_id }}</div>
 <div class="float-left">
     <div class="form-field">
-        First Name: {{ form.first_name }}
+        {{ form.first_name.label }}: {{ form.first_name }}
     </div>
     <div class="form-field">
-        Last Name:  {{ form.last_name }}
+        {{ form.last_name.label }}:  {{ form.last_name }}
     </div>
 </div>
 <div class="float-left">
       <div class="form-field" style="margin-left: 3em;">
-        Email: {{ form.email }}
-    </div>  
+        {{ form.email.label }}: {{ form.email }}
+    </div> 
+     <div class="form-field" style="margin-left: 3em;">
+    {{ form.active_only }} <label for="id_active_only" style="display: inline;">{{ form.active_only.label }}</label> 
+    </div>
+     
 </div>
 <div class="clear-left"></div>
 <div class="form-field">
@@ -109,18 +112,15 @@
     <input type="submit" name="search" value="Search" />
 </div>
 
-
 </form>
 
 {% autopaginate memberships 10 %}
 <div class="roster-search-wrap">
-    {% if memberships %}
-        <a id="showHideInactive">Show all</a>
-    {% endif %}
-
+<span><em>{{ paginator.count }} {% if active_only %}{% trans "Active" %}{% endif %} {% trans "Member" %}{{ paginator.count|pluralize }} {% trans "Found" %}</em></span>
+    
     {% for membership in memberships %}
 	    {% with membership|get_object as membership %}
-			<div class="member-line {% if membership.status_detail == 'inactive' %}inactive{% endif %}">
+			<div class="member-line {% if membership.status_detail != 'active' %}inactive{% endif %}">
 				<div class="avatar">{% avatar membership.user 56 %}</div>
 				<div class="member-details">
 					<div class="member-name">
@@ -145,6 +145,15 @@
 				    							{% trans "Never Expire" %}
 				    							{% endif %}
 				    	</div>
+				    	<div class="status-{{ membership.status_detail }}">
+				    	    {% trans "Status: " %}
+				    	    {% if request.user.profile.is_superuser %}
+				    	    <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.status_detail|capfirst }}</a>
+				    	    
+				    	    {% else %}
+				    	    {{ membership.status_detail|capfirst }}
+				    	    {% endif %}
+				    	</div>
 					</div>
 					
 				</div>
@@ -166,39 +175,3 @@
 
 {% endblock %}
 
-{% block extra_body %}
-{{ block.super }}
-<script type="text/javascript">
-	$(document).ready(function(){
-		//$('select#id_name').change(function(){
-		//	var form = document.forms["roster-search"];
-		//	form.submit();
-		//});
-		
-	});
-</script>
-
-<script type="text/javascript">
-	$(document).ready(function(){
-		{% if memberships %}
-		//Hide all inactive at first
-		$('div.inactive').hide();
-		
-		//Set show/hide link
-		$('#showHideInactive').click(function() {
-			var text = $(this).html();
-			if(text == 'Show all') {
-				$(this).html('Hide inactive');
-				$('div.inactive').show();
-			}
-			else {
-				$(this).html('Show all');
-				$('div.inactive').hide();
-			}
-		});
-		{% endif %}
-	});
-</script>
-
-	
-{% endblock %}

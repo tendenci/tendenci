@@ -1,0 +1,103 @@
+{% extends 'base-print.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Invoices Financial Report" %} {% trans "for" %} {{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans "to" %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}{% endblock title %}
+
+{% block body %}
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+<style>
+.print-only { display: none; }
+
+h1 small { color: #333; }
+h2 { font-size: 28px; }
+h3 { font-size: 24px; }
+
+td { font-size: 12px; }
+th { font-size: 13px; border-top: solid 1px #333; border-bottom: solid 2px #333;}
+td, th { padding: 1px 4px; border-right: solid 1px #333; }
+tr.even { background-color: #fff; }
+tr.odd { background-color: #ddd; }
+tr.summary-labels th { border-top: none; }
+
+tr.totals td { text-align: right; }
+tr.totals td.title { text-align: left; }
+
+table { border-spacing: 0; border-left: solid 1px #333; margin-bottom: 10px; }
+.invoice-resultset { border-bottom: solid 2px #333; padding-bottom: 30px; margin-bottom: 30px; }
+.invoice-resultset.last { border-bottom: none; }
+
+.pay-extra .inv-payments-credits { font-weight: bold; }
+.all-match .inv-payments-credits,
+.all-match .inv-total,
+.all-match .inv-balance { font-weight: bold; }
+
+a.back-to-top { float: right; font-size: 12px; }
+
+</style>
+
+<style type="text/css" media="print">
+
+a[href]:after { content: ""; }
+
+table tr.even { background-color: transparent; }
+table tr.odd { background-color: transparent; }
+
+table td {
+    background-color: transparent;
+    overflow: hidden;
+    z-index: 1;
+    border-right: solid 1px #333;
+    border-bottom: 0;
+}
+
+table td:before {
+    content: "";
+    padding: 0;
+    height: 1px;
+    line-height: 1px;
+    width: 1px;
+    margin: -4px -994px -996px -6px;
+    display: block;
+    border: 0;
+    z-index: -1;
+    position:relative;
+    top: -500px;
+}
+
+table tr.odd td:before {
+    border-top: 999px solid #ddd;
+    border-left: 999px solid #ddd;
+}
+
+table tr.even td:before {
+    border-top: 999px solid #fff;
+    border-left: 999px solid #fff;
+}
+
+.no-print { display: none; }
+.print-only {display: block; }
+
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="span12">
+
+            <h1 id="top">{% trans "Invoices Financial Report" %} <small> {% trans "for" %} {{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans "to" %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}</small></h1>
+
+            <p class="no-print"><a href="{% url report_detail run.report.pk %}">{% trans "Back to Report page" %}</a></p>
+
+            <p class="print-only">{{ SITE_GLOBAL_SITEURL }}{{ request.get_full_path }}</p>
+
+            <p>{% trans "Report Options" %}:</p>
+            <ul>
+                {% for option in run.report.config_options %}
+                    <li>{{ option.label }}: {{ option.value }}</li>
+                {% endfor %}
+            </ul>
+
+            {{ run.output|safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,10 +7,12 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
+from django.contrib.auth.models import AnonymousUser
 
 from tendenci.core.categories.models import CategoryItem
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
+from tendenci.core.base.utils import now_localized
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.jobs.managers import JobManager
@@ -79,12 +81,16 @@ class BaseJob(TendenciBaseModel):
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
 
-    categories = generic.GenericRelation(CategoryItem,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
-    perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    categories = generic.GenericRelation(
+        CategoryItem,
+        object_id_field="object_id",
+        content_type_field="content_type"
+    )
+    perms = generic.GenericRelation(
+        ObjectPermission,
+        object_id_field="object_id",
+        content_type_field="content_type"
+    )
 
     objects = JobManager()
 
@@ -143,6 +149,8 @@ class BaseJob(TendenciBaseModel):
         """
         if not request.user.profile.is_superuser:
             self.status_detail = 'paid - pending approval'
+
+        self.activation_dt = now_localized()
         self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
         self.save()
 
@@ -210,9 +218,8 @@ class JobPricing(models.Model):
         permissions = (("view_jobpricing", "Can view job pricing"),)
 
     def __unicode__(self):
-        if self.title:
-            return self.title
-        return "Untitled: %s Days" % self.duration
+        price = "%s/%s" % (self.regular_price, self.premium_price)
+        return "%s: %s Days for %s" % (self.get_title(), self.duration, price)
 
     def get_title(self):
         if self.title:
@@ -238,3 +245,15 @@ class JobPricing(models.Model):
             self.premium_price = 0
 
         super(JobPricing, self).save(*args, **kwargs)
+
+    def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
+        if not user.is_anonymous() and user.profile.is_member:
+            if list_type == 'regular':
+                return self.regular_price_member
+            else:
+                return self.premium_price_member
+        else:
+            if list_type == 'regular':
+                return self.regular_price
+            else:
+                return self.premium_price

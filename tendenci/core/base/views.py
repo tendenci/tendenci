@@ -5,6 +5,10 @@ import re
 import Image as Pil
 import os
 import mimetypes
+import shutil
+import subprocess
+import zipfile
+import xmlrpclib
 
 # django
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -16,10 +20,15 @@ from django.template.loader import get_template
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.files.storage import default_storage
+from django.contrib import messages
 
 # local
+from tendenci import __version__ as version
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
-from tendenci.core.base.forms import PasswordForm
+from tendenci.core.base.forms import PasswordForm, AddonUploadForm
+from tendenci.core.base.models import UpdateTracker
+from tendenci.core.base.managers import SubProcessManager
+from tendenci.core.perms.decorators import superuser_required
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.site_settings.utils import get_setting
 
@@ -223,10 +232,10 @@ def memcached_status(request):
 
 
 def feedback(request, template_name="base/feedback.html"):
-    from tendenci.core.event_logs.models import EventLog
-    if not request.user.profile.is_superuser:
-        raise Http404
-    EventLog.objects.log()
+    # This page is deprecated, but some sites might have the url in their
+    # overridden admin bar, so we are leaving it and just raising 404
+    raise Http404
+
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):
@@ -311,3 +320,119 @@ def password_again(request, template_name="base/password.html"):
         'next': next,
         'form': form,
     }, context_instance=RequestContext(request))
+
+
+@superuser_required
+def addon_upload(request, template_name="base/addon_upload.html"):
+    from tendenci.core.event_logs.models import EventLog
+
+    form = AddonUploadForm(request.POST or None, request.FILES or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            identifier = str(int(time.time()))
+            temp_file_path = 'uploads/addons/%s_%s' % (identifier, form.cleaned_data['addon'])
+            default_storage.save(temp_file_path, form.cleaned_data['addon'])
+            request.session[identifier] = temp_file_path
+
+            EventLog.objects.log(
+                event_data='%s uploaded by %s' % (form.cleaned_data['addon'], request.user),
+                description='%s' % form.cleaned_data['addon'])
+
+            return redirect('addon.upload.preview', identifier)
+
+    return render_to_response(template_name, {'form': form},
+                              context_instance=RequestContext(request))
+
+
+@superuser_required
+def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.html"):
+
+    if not sid in request.session:
+        raise Http404
+    path = request.session[sid]
+
+    addon_zip = zipfile.ZipFile(default_storage.open(path))
+    addon_name = addon_zip.namelist()[0]
+    addon_name = addon_name.strip('/')
+    if not os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon_name)):
+        subprocess.Popen(["python", "manage.py",
+                          "upload_addon",
+                          '--zip_path=%s' % path])
+        return redirect('addon.upload.process', sid)
+
+    if request.method == "POST":
+        shutil.rmtree(os.path.join(settings.SITE_ADDONS_PATH, addon_name))
+        subprocess.Popen(["python", "manage.py",
+                          "upload_addon",
+                          '--zip_path=%s' % path])
+        return redirect('addon.upload.process', sid)
+    
+    return render_to_response(template_name, {'addon_name': addon_name, 'sid':sid },
+                              context_instance=RequestContext(request))
+
+
+@superuser_required
+def addon_upload_process(request, sid, template_name="base/addon_upload_process.html"):
+
+    if not sid in request.session:
+        raise Http404
+    path = request.session[sid]
+
+    if not default_storage.exists(path):
+        messages.add_message(request, messages.SUCCESS, 'Addon upload complete.')
+        del request.session[sid]
+        return redirect('dashboard')
+
+    return render_to_response(template_name, {'sid': sid },
+                              context_instance=RequestContext(request))
+
+
+def addon_upload_check(request, sid):
+
+    if not sid in request.session:
+        raise Http404
+    path = request.session[sid]
+
+    finished = False
+    if not default_storage.exists(path):
+        finished = True
+
+    return HttpResponse(finished)
+
+@superuser_required
+def update_tendenci(request, template_name="base/update.html"):
+    if request.method == "POST":
+        process = SubProcessManager.set_process(["python", "manage.py", "update_tendenci"])
+        return redirect('update_tendenci.process')
+
+    pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+    latest_version = pypi.package_releases('tendenci')[0]
+
+    update_available = False
+    if latest_version != version:
+        update_available = True
+
+    return render_to_response(template_name, {
+        'latest_version': latest_version,
+        'update_available': update_available,
+    }, context_instance=RequestContext(request))
+
+
+@superuser_required
+def update_tendenci_process(request, template_name="base/update_process.html"):
+    tracker = UpdateTracker.get_or_create_instance()
+    if not tracker.is_updating:
+        messages.add_message(request, messages.SUCCESS, 'Update complete.')
+        return redirect('dashboard')
+
+    return render_to_response(
+        template_name,
+        context_instance=RequestContext(request))
+
+
+def update_tendenci_check(request):
+    if not request.is_ajax():
+        raise Http404
+
+    tracker = UpdateTracker.get_or_create_instance()
+    return HttpResponse(tracker.is_updating)

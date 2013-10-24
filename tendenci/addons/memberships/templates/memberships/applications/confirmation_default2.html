@@ -18,15 +18,61 @@
 
         <h1>{% trans "Membership Confirmation" %}</h1>
 
-        {% if app.confirmation_text %}
-        {{ app.confirmation_text|safe }}
-        {% else %}
-        <p>Thank you for your submission!</p>
-        {% endif %}
+        {% firstof app.confirmation_text|safe "Thank you for your submission!" %}
 
         {% if membership.is_pending %}
-        <p><span style="background-color: #ECF716;">{% trans "Your membership is pending for admin approvel." %}</span></p>
+            <p><span style="background-color: #ECF716;">
+                    {% if request.user.profile.is_superuser %}
+                    {% trans "This membership is pending." %}
+                    {% else %}
+                    {% trans "Your membership is pending for admin approval." %}
+                    <br />{% trans "You will be notified shortly after your application is approved." %} 
+                    {% endif %}
+            </span></p>
+        {% else %}
+            {% if membership.referer_url %}
+            <p><a href="{% url auth_login %}?next={{ membership.referer_url }}">Please continue registering for your event as a member.</a></p>
+            {% endif %}
         {% endif %}
+        
+        <h4>What would you like to do now?</h4>
+        <ul>
+        	{% if membership.is_pending and request.user.profile.is_superuser %}
+        	<li>
+        		<a href="{% url admin:memberships_membershipdefault_change membership.id %}">Admin: Click here to edit and approve this membership</a>
+        	</li>
+        	{% endif %}
+        	 {% with membership.get_invoice as invoice %}
+	        {% if invoice and invoice.total > 0 %}
+	        <li>
+	            <a href="{% url invoice.view invoice.id invoice.guid %}">View Invoice{% if invoice.balance > 0 and SITE_GLOBAL_MERCHANTACCOUNT %} and Make Online Payment{% endif %}</a>
+	        </li>
+	        {% endif %}
+	        {% endwith %}
+	        
+	        {% if membership.corporate_membership_id %}
+	        {% with membership.corpmembership as corpmembership %}
+	        {% if corpmembership %}
+	        <li>
+	            <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}">Add <strong>More</strong> Members Under "{{ corpmembership.corp_profile.name }}"  </a>
+	        </li>
+	        <li><a href="{% url corpmembership.view membership.corporate_membership_id %}">Back to Corporate Membership - {{ corpmembership.corp_profile.name }}</a></li>
+	        {% endif %}
+	        {% endwith %}
+	        
+	        
+
+	        {% endif %}
+	        
+	        {% if membership.user.profile.is_active %}
+	        <li><a href="{% url profile membership.user.username %}">View Profile</a></li>
+	        {% endif %}
+        	
+        </ul>
+       
+        
+        
+        
         <p>&nbsp;</p>
 </div>
 </div>

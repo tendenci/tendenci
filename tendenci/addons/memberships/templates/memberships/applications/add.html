@@ -136,9 +136,18 @@
         </div>
       {% endif %}
            
-       {% for field_obj in app_fields %}
+        {% for field_obj in app_fields %}
             {% render_membership_field request field_obj user_form profile_form demographics_form membership_form %} 
         {% endfor %}
+
+        {% if membership_form.discount_code %}
+        <div class="form-field discount-field-wrap">
+            <div id="discount-message" class="error">{{ membership_form.discount_code.errors }}</div>
+			<div class="required">{% trans "Discount Code" %}</div>
+			<div class="field">{{ membership_form.discount_code }}</div>
+            <button type="button" id="discount_check">Check Discount</button>
+        </div>
+        {% endif %}
 
         {{ captcha_form.as_p }}
 
@@ -161,5 +170,27 @@
               show24Hours: false,
               step: 15
             });
+
+        $(document).ready(function(){
+            $('#discount_check').click(function(){
+                var code = $('#id_discount_code').val();
+                var model = 'membershipset';
+                var prices = '0';
+                
+                $.post(
+                    '{% url discount.check_discount %}',
+                    {
+                        'code':code,
+                        'prices':prices,
+                        'model':model,
+                    },
+                    function(data, textStatus, jqXHR){
+                        json = $.parseJSON(data);
+                        //alert(json['message'])
+                        $('#discount-message').html(json["message"]);
+                    }
+                );
+            });
+        });
       </script>
 {% endblock extra_body %}

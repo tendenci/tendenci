@@ -1,0 +1,269 @@
+{% load theme_tags %}
+{% load cache %}
+{% load dashboard_tags %}
+{% load perm_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+{% theme_extends "base-wide.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
+{% endblock %}
+
+{% block body %}
+
+{% has_perm user events.view_event as view_events %}
+{% has_perm user articles.view_article as view_articles %}
+{% has_perm user jobs.view_job as view_jobs %}
+{% has_perm user news.view_news as view_news %}
+{% has_perm user directories.view_directory as view_directories %}
+{% has_perm user photos.view_image as view_photos %}
+{% has_perm user stories.view_story as view_stories %}
+{% has_perm user pages.view_page as view_pages %}
+{% has_perm user entities.view_entity as view_entities %}
+{% has_perm user files.view_file as view_files %}
+{% has_perm user contributions.view_contribution as view_contributions %}
+{% has_perm user locations.view_location as view_locations %}
+{% has_perm user directories.view_directory as view_directories %}
+{% has_perm user settings.view_setting as view_settings %}
+{% has_perm user settings.view_contact as view_contacts %}
+{% has_perm user settings.view_invoice as view_invoices %}
+{% has_perm user settings.view_group as view_groups %}
+{% has_perm user eventlogs.view_eventlog as view_eventlogs %}
+{% has_perm user eventlogs.view_setting as view_settings %}
+{% has_perm user forms.view_form as view_forms %}
+{% has_perm user resumes.view_reume as view_resumes %}
+{% dashboard_nav user %}    
+
+<div class="main-panel">
+
+    {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
+        {% if user.is_superuser %}
+            {% if not has_paid and activate_url %}
+            <div class=" alert-message block-message fade in" data-alert="alert">
+                <a class="close" href="#">×</a>
+                Your free trial period {% if expired %}expired{% else %}expires{% endif %} on {{ expiration_dt }}.
+                <div class="alert-actions">
+                    <a class="btn" href="{{ activate_url }}">Activate Your Account</a>
+                </div> 
+            </div>
+            {% endif %}
+        
+        
+        <div class="alert-message block-message fade in success" data-alert="alert">
+        <a class="close" href="#">×</a>
+        <p><strong>Welcome to the Tendenci Dashboard!</strong></p>
+        <p>Your Tendenci site comes with a built-in guide to get you started. In includes basic concepts like adding pages and other content, editing your navigation, uploading photos, and other general topics.</p>
+        <div class="alert-actions">
+            <a class="btn" href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">Go to the Guide</a>
+        </div>
+    </div>
+    
+        {% endif %}
+    {% endif %}
+
+    {% if user.is_superuser %}
+        <div class="dashboard-stats">
+        <a href="{% url dashboard_customize %}" class="readmorelarge">Customize Dashboard Statistics</a>
+        {% for stat_type in statistics %}
+            {% dashboard_stat stat_type %}
+        {% endfor %}
+        </div>
+        <p style="text-align:center;"><a href="#" class="dashboard-icons-toggle readmorelarge">Dashboard Icons</a></p>
+    {% endif %}
+
+    <div class="modules {% if user.is_superuser %}hide{% endif %}">
+    <ul>
+
+        {% if MODULE_USERS_ENABLED %}
+        <li class="users"><a href="{% url profile.search %}"><span>{% trans "Users" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_GROUPS_ENABLED %}
+        <li class="groups"><a href="{% url group.search %}"><span>{% trans "Groups" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_ARTICLES_ENABLED %}
+        <li class="articles"><a href="{% url article.search %}"><span>{% trans "Articles" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_NEWS_ENABLED %}
+        <li class="news"><a href="{% url news.search %}"><span>{%  trans "News" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_DIRECTORIES_ENABLED %}
+        <li class="directories"><a href="{% url directory.search %}"><span>{% trans "Directories" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_JOBS_ENABLED %}
+        <li class="jobs"><a href="{% url job.search %}"><span>{%  trans "Jobs" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_RESUMES_ENABLED %}
+        <li class="resumes"><a href="{% url resume.search %}"><span>{%  trans "Resumes" %}</span></a></li>
+        {% endif %}
+ 
+        {% if MODULE_MEMBERSHIPS_ENABLED %}
+        <li class="memberships">
+            <a href="{% url membership.search %}"><span>{%  trans "Memberships" %}</span></a></li>
+        {% endif %}
+        {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+        <li class="corporatememberships">
+            <a href="{% url corpmembership.search %}"><span>{% trans "Corp. Memb." %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_EVENTS_ENABLED %}
+        <li class="events"><a href="{% url event.month %}"><span>{% trans "Events" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_PHOTOS_ENABLED %}
+        <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% trans "Photo Albums" %}</span></a></li>
+        {% endif %}
+        
+        {% if MODULE_STORIES_ENABLED %}
+        <li class="stories"><a href="{% url story.search %}"><span>{% trans "Stories" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_PAGES_ENABLED %}
+        <li class="pages"><a href="{% url page.search %}"><span>{% trans "Pages" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_FILES_ENABLED %}
+        <li class="files"><a href="{% url file.search %}"><span>{% trans "Files" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_LOCATIONS_ENABLED %}
+        <li class="locations"><a href="{% url location.search %}"><span>{%  trans "Locations" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_CONTRIBUTIONS_ENABLED %}
+        <li class="contributions"><a href="{% url contribution.search %}"><span>{% trans "Contributions" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_INVOICES_ENABLED %}
+         <li class="invoices"><a href="{% url invoice.search %}"><span>{%  trans "Invoices" %}</span></a></li>
+        {% endif %}
+
+        {% if MODULE_FORMS_ENABLED %}
+         <li class="forms"><a href="{% url forms %}"><span>{%  trans "Forms" %}</span></a></li>
+        {% endif %}
+        
+        {% if user.is_superuser %}
+         <li class="redirects"><a href="{% url redirects %}"><span>{% trans "Redirects" %}</span></a></li>
+        <li class="contacts"><a href="{% url contact.search %}"><span>{%  trans "Contacts" %}</span></a></li>
+        <li class="settings"><a href="{% url settings %}"><span>{% trans "Settings" %}</span></a></li>
+        <li class="event-logs"><a href="{% url event_logs %}"><span>{% trans "Event Logs" %}</span></a></li>
+        <li class="rss"><a href="/rss/"><span>RSS</span></a></li>
+        {% endif %}
+
+        <div style="clear: both"><!-- IE7 --></div>
+    </ul>
+    </div> <!-- modules -->
+
+</div> <!-- main-panel -->
+
+
+<div class="side-panel">
+    {% if user.is_superuser %}
+    <div class="admin-quick-links">
+    <h3>{% trans "Admin Quick Links" %}</h3>
+    <ul>
+        {% if MODULE_PAGES_ENABLED %}
+        <li><a href="{% url page.add %}">{% trans "Add a page" %}</a></li>
+        {% endif %}
+
+        <li><a href="{% url haystack_search %}">{% trans "Search All Modules" %}</a></li>
+
+        <!--<li><a href="{% url entity.search %}">Search entities</a></li>
+        <li><a href="javascript:;">Edit navigation</a></li>
+        <li><a href="{% url event_log.search %}">Search event logs</a></li>
+        <li><a href="{% url profile.search %}">Search users</a></li>-->
+        <li><a href="{% url import.user_upload_add %}">{% trans "Import Users" %}</a></li>
+        <!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
+        <li><a href="{% url settings %}">{% trans "Enable/Disable modules" %}</a></li>
+        <!-- <li><a href="javascript:;">Update SEM</a></li> -->
+        <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
+       <li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
+        <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
+        {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
+        <li><a href="{% url recurring_payment.customers %}">{% trans "Recurring Payments" %}</a></li>
+        {% endif %}
+    </ul>
+    </div>
+
+    <div class="theme-management">
+    <h3>{% trans "Update Theme" %}</h3>
+    <ul>
+        <li><a href="{% url theme_editor.editor %}?file=/media/css/styles.css">{% trans "Update Styles" %}</a></li>
+        <li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
+        <li><a href="{% url theme_editor.editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
+        <li><a href="{% url theme_editor.editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
+        <li><a href="/settings/module/theme_editor/">{% trans "Change Themes" %}</a></li>
+        <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
+    </ul>
+    </div>
+    {% endif %}
+
+    <div class="new-rss-feed">
+        <br />
+        <h3>{% trans "Tendenci Blog" %}</h3>
+        {% cache 86400 tendenci_blog_rss %}
+            {% get_rss "http://blog.tendenci.com/feed/" as rss %}
+            <ul>
+            {% for entry in rss.entries|slice:":3" %}
+                <li>
+                    <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
+                    <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endcache %}
+    </div>
+
+    <div class="new-rss-feed">
+        <h3>{% trans "Tendenci Help" %}</h3>
+        {% cache 86400 tendenci_help_rss %}
+            {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
+            <ul>
+            {% for entry in rss.entries|slice:":3" %}
+                <li>
+                    <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
+                    <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endcache %}
+    </div>
+
+</div>
+
+<div style="clear:both;"></div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/bar-graph.js"></script>
+<script type="text/javascript">
+$(function(){
+    var active = $("#members-info").attr('new');
+    var pending = $("#members-info").attr('pending');
+    var expired = $("#members-info").attr('expired');
+    var d = [parseInt(active, 10), parseInt(pending, 10), parseInt(expired, 10)];
+    var c = ["New","Pending","Expired"];
+    var h = "Last 30 days";
+    $("#members-graph").graph({data:d,categories:c,legend:h,width:400});
+
+    $('a.dashboard-icons-toggle').click(function() {
+        $('div.modules').toggleClass('hide');
+        return false;
+    });
+});
+</script>
+{% endblock %}

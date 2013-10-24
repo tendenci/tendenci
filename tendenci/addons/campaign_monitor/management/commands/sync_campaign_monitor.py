@@ -11,8 +11,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import Group
         from tendenci.apps.profiles.models import Profile
-        from tendenci.apps.subscribers.models import GroupSubscription as GS, SubscriberData as SD
-        from tendenci.apps.subscribers.utils import get_subscriber_name_email
         from tendenci.addons.campaign_monitor.models import (ListMap, Campaign, Template, setup_custom_fields)
         from tendenci.addons.campaign_monitor.utils import sync_campaigns, sync_templates
         from createsend import (CreateSend, Client, List, Subscriber,
@@ -40,9 +38,10 @@ class Command(BaseCommand):
 
         api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
         client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
-        CreateSend.api_key = api_key
+        #CreateSend.api_key = api_key
+        auth = {'api_key': api_key}
+        cl = Client(auth, client_id)
 
-        cl = Client(client_id)
         lists = cl.lists()
         list_ids = [list.ListID for list in lists]
         list_names = [list.Name for list in lists]
@@ -51,7 +50,7 @@ class Command(BaseCommand):
         groups = Group.objects.filter(status=1, status_detail='active', sync_newsletters=1)
         listmaps = ListMap.objects.filter(group__sync_newsletters=1)
         syncd_groups = [listmap.group for listmap in listmaps]
-        cm_list = List()
+        cm_list = List(auth)
 
         print "Starting to sync groups with campaign monitor..."
         print
@@ -122,22 +121,8 @@ class Command(BaseCommand):
                         custom_data.append(data)
                 email = member.email
                 name = member.get_full_name()
-                subscriber_obj = Subscriber(list_id, email)
+                subscriber_obj = Subscriber(auth, list_id, email)
                 subscribe_to_list(subscriber_obj, list_id, name, email, custom_data)
-
-            # sync subscribers in this group's subscription
-            gss = GS.objects.filter(group=group)
-            for gs in gss:
-                if gs.subscriber:
-                    form_entry = gs.subscriber
-                    (name, email) = form_entry.get_name_email()
-                else:
-                    gs_data = SD.objects.filter(subscription=gs)
-                    (name, email) = get_subscriber_name_email(gs_data)
-
-                if email:
-                    subscriber_obj = Subscriber(list_id, email)
-                    subscribe_to_list(subscriber_obj, list_id, name, email, [])
 
         print 'Done'
 

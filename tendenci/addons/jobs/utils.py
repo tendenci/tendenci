@@ -82,8 +82,13 @@ def job_set_inv_payment(user, job, pricing):
             inv.total = get_job_price(user, job, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
-            inv.estimate = 1
+            inv.estimate = True
             inv.status_detail = 'estimate'
+            
+            if user and not user.is_anonymous():
+                inv.set_creator(user)
+                inv.set_owner(user)
+            
             inv.save(user)
 
             # tender the invoice
@@ -109,18 +114,26 @@ def job_set_inv_payment(user, job, pricing):
                     
             
 def get_job_price(user, job, pricing):
-    if user.profile.is_member:
-        if job.list_type == 'regular':
-            return pricing.regular_price_member
-        else:
-            return pricing.premium_price_member
-    else:
-        if job.list_type == 'regular':
-            return pricing.regular_price
-        else:
-            return pricing.premium_price
-    
-    
+    return pricing.get_price_for_user(
+                      user=user,
+                      list_type=job.list_type)
+
+
+def is_free_listing(user, pricing_id, list_type):
+    """
+    Check if a directory listing with the specified pricing and list type is free.
+    """
+    try:
+        pricing_id = int(pricing_id)
+    except:
+        pricing_id = 0
+    [pricing] = pricing_id and JobPricing.objects.filter(pk=pricing_id)[:1] or [None]
+
+    if pricing:
+        return pricing.get_price_for_user(user, list_type=list_type) <= 0
+    return False
+
+
 def pricing_choices(user):
     """
     Since the list type of a job cannot be determined without the job,
@@ -128,12 +141,17 @@ def pricing_choices(user):
     """
     choices = []
     pricings = JobPricing.objects.all()
-    for pricing in pricings:
+    member = False
+    if user.profile:
         if user.profile.is_member:
+            member = True
+
+    for pricing in pricings:
+        if member:
             prices = "%s/%s" % (pricing.regular_price_member, pricing.premium_price_member)
         else:
             prices = "%s/%s" % (pricing.regular_price, pricing.premium_price)
-            
+
         label = "%s: %s Days for %s" % (pricing.get_title(), pricing.duration, prices)
         choices.append((pricing.pk, label))
     return choices

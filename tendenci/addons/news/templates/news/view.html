@@ -5,6 +5,7 @@
 {% load base_filters %}
 {% load category_tags %}
 {% load i18n %}
+{% load meta_tags %}
 
 {% block title %}{{ news.get_title }}{% endblock %}
 {% block meta_description %}{{ news.get_description }}{% endblock %}
@@ -12,6 +13,8 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
+{% meta_og_image news "thumbnail" %}
+{% meta_og_image news "body" %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
 {% endblock %}
@@ -52,9 +55,7 @@
         </div>
         {% include "news/meta.html" %}
 		<br />
-        {% with news.get_absolute_url as the_url %}
-        <p>{% fb_like_button_iframe the_url %}</p>
-        {% endwith %}
+        <p>{% fb_like_button_iframe news.get_absolute_url %}</p>
     </div>
 
 </div>

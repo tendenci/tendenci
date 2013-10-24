@@ -114,6 +114,15 @@ class Person(TendenciBaseModel):
     class Meta:
         abstract = True
 
+    def get_address(self):
+        """
+        Returns full address depending on which attributes are available.
+        """
+        state_zip = ' '.join([s for s in (self.state, self.zipcode) if s])
+        city_state_zip = ', '.join([s for s in (self.city, state_zip, self.country) if s])
+
+        return '%s %s %s' % (self.address, self.address2, city_state_zip)
+
 
 class Address(models.Model):
     """

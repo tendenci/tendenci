@@ -31,7 +31,8 @@
         </ol>
         <h3>{% trans "Member Data" %}</h3>
         <ol>
-            <li><a href="{% url 'profile.search' %}?members=on">{% trans "Search Members" %}</a></li>
+            <li><a href="{% url 'profile.search' %}?member_only=on">{% trans "Search Members" %}</a></li>
+            <li><a href="{% url 'reports-memberships'%}">{% trans "Reports for Members" %}</a></li>
         </ol>
     
     </div>

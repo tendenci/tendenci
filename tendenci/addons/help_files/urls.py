@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import *
 from tendenci.addons.help_files.feeds import LatestEntriesFeed
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.help_files.signals import init_signals
+
+init_signals()
 
 urlpath = get_setting('module', 'help_files', 'url')
 if not urlpath:

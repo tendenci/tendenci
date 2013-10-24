@@ -39,6 +39,13 @@ def navigation(context, nav_id):
     if 'user' in context:
         if isinstance(context['user'], User):
             user = context['user']
+
+    try:
+        nav_id = Variable(nav_id)
+        nav_id = nav_id.resolve(context)
+    except:
+        pass
+
     try:
         filters = get_query_filters(user, 'navs.view_nav')
         navs = Nav.objects.filter(filters).filter(id=nav_id)
@@ -55,7 +62,7 @@ def navigation(context, nav_id):
     return context
 
 @register.inclusion_tag("navs/load_nav.html", takes_context=True)
-def load_nav(context, nav_id):
+def load_nav(context, nav_id, show_title=False):
     """
     Renders the nav and its nav items.
     This will call nav_item that will call itself recursively nesting 
@@ -69,6 +76,7 @@ def load_nav(context, nav_id):
     context.update({
         "nav": nav,
         "items": nav.top_items,
+        "show_title": show_title,
     })
     return context
 
@@ -83,7 +91,8 @@ def nav_item(context, item):
     return context
 
 @register.inclusion_tag("navs/cached_nav.html", takes_context=True)
-def nav(context, nav_id):
+def nav(context, nav_id, show_title=False):
+    
     """
     Renders the nav from cache
     if not will use the navigation tag for rendering the nav
@@ -110,13 +119,14 @@ def nav(context, nav_id):
         nav_object = navs[0]
         nav = get_nav(nav_object.pk)
         if not nav:
-            cache_nav(nav_object)
+            cache_nav(nav_object, show_title)
     except:
         return None
 
     context.update({
         "cached": nav,
         "nav_id": nav_id,
+        "show_title": show_title,
     })
     return context
 

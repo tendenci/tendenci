@@ -1,0 +1,24 @@
+{% extends "site_base.html" %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>Tendenci Update</h1>
+{% if update_available %}
+    <p>{% trans "An update is available for Tendenci." %}</p>
+    <p>Current Version: {{ TENDENCI_VERSION }}</p>
+    <p>Latest Version: {{ latest_version }}</p>
+    <form method='post' action="{% url update_tendenci %}" >{% csrf_token %}
+    <input type='submit' value='Update'>
+    </form>
+{% else %}
+    <p>{% trans "You currently have the latest version of Tendenci." %}</p>
+    <p>Version: {{ TENDENCI_VERSION }}</p>
+{% endif %}
+</div>
+{% endblock %}

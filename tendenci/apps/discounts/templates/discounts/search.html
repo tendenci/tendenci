@@ -28,7 +28,7 @@
             </tr>
     {% for discount in discounts %}	
 		<tr>
-            <td class="left">{{ discount.discount_code }}</td>
+            <td class="left"><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></td>
             <td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ discount.value }}</td>
             <td>{{ discount.num_of_uses }}</td>
             <td>{{ discount.cap }}</td>

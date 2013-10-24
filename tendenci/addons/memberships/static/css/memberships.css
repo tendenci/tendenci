@@ -115,164 +115,303 @@
 /* Membership details
  ------------------------- */
  .t .memberships-wrap .membership-wrap-search {
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
-	border: 1px solid #DDD;
-	border-top: none;
+    margin-bottom: 20px;
+    position: relative;
+    background-color: white;
+    border: 1px solid #DDD;
+    border-top: none;
 }
 
 .t .memberships-wrap .membership-wrap-search:last-child {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .result-head {
-	padding: 10px;
+    padding: 10px;
 
 }
 .result-head.approved {
-	border-top: 10px solid #7AE309;
+    border-top: 10px solid #7AE309;
 }
 .result-head.disapproved {
-	border-top: 10px solid #E30918;
+    border-top: 10px solid #E30918;
 }
 .result-head.pending {
-	border-top: 10px solid #FFE44B;
+    border-top: 10px solid #FFE44B;
 }
 .result-head .member-requires-approval {
-	font-weight: bold;
-	float: left;
+    font-weight: bold;
+    float: left;
 }
 .result-head .member-number {
-	font-weight: bold;
-	float: left;
+    font-weight: bold;
+    float: left;
 }
 .result-head .member-subscription {
-	float: left;
-	margin-top: 4px;
+    float: left;
+    margin-top: 4px;
 }
 
 .result-head .member-status {
-	text-align: right;
+    text-align: right;
 }
 .result-head .member-status a {
-	color: black;
-	text-decoration: underline;
+    color: black;
+    text-decoration: underline;
 }
 .result-head .member-date {
-	font-size: .8em;
-	text-align: right;
-	margin-top: 4px;
-	float: right;
+    font-size: .8em;
+    text-align: right;
+    margin-top: 4px;
+    float: right;
 }
 .result-head .balance {
-	text-align: right;
-	padding-top: 10px;
+    text-align: right;
+    padding-top: 10px;
 }
 
 .result-content {
-	margin-top: 4px;
-	float: left;
+    margin-top: 4px;
+    float: left;
 }
 
 .result-content a {
-	color: black;
-	text-decoration: underline;
+    color: black;
+    text-decoration: underline;
 }
 
 .result-content .member-name,
 .result-content .member-email {
-	margin-bottom: 3px;
+    margin-bottom: 3px;
 }
 
 .t .membership-wrap .meta, .t .membership-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
+    border: 1px solid silver;
+    padding: 10px;
+    background-color: #F7F7F7;
+    margin-top: 10px;
 }
 .t .memberships-wrap .membership-wrap h2 {
-	width: 85%;
+    width: 85%;
 }
 .t .memberships-wrap .membership-wrap .content {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 .t .memberships-wrap .category {
     margin-top: 5px;
 }
 .t .membership-wrap .meta .tags {
-	margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 .t .membership-wrap .fb-connect {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 /* form */
 div.forms div.form-field div.id_release_dt .field input {
-	width: 30%;
+    width: 30%;
 }
 
 div.forms div.form-field div.id_first_name .field input {
-	width: 30%;
+    width: 30%;
 }
 
 div.forms div.form-field div.id_last_name .field input {
-	width: 30%;
+    width: 30%;
 }
 
 div.forms div.form-field div.id_phone .field input {
-	width: 18%;
+    width: 18%;
 }
 
 div.forms div.form-field div.id_fax .field input {
-	width: 18%;
+    width: 18%;
 }
 div.forms div.form-field div.id_release_dt .field input {
-	margin: 0 5px 0 0;
-	width: 18%;
+    margin: 0 5px 0 0;
+    width: 18%;
 }
 div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
-	width: 80px;
+    width: 80px;
 }
 
 div.pending-entries {
-	border: 1px solid silver;
-	background-color: #EEE;
-	padding: 10px;
-	margin-bottom: 10px;
+    border: 1px solid silver;
+    background-color: #EEE;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.t .membership-detail-wrap fieldset {
+    background-color: #FAFAFA;
+    padding: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.t .membership-detail-wrap fieldset .fieldset-label {
+    font-size: 20px;
+    float: left;
+    margin-bottom: 7px;
+}
+
+.t .membership-detail-wrap #member-number {
+    font-size: 1.5em;
+    /*background-color: red;*/
+    padding: 10px;
+}
+.t .membership-detail-wrap .field {
+    background-color: white;
+    border: 1px solid silver;
+    padding: 10px;
+    margin: 0 0 10px;
+}
+.t .membership-detail-wrap .field .label {
+    font-weight: bold;
+    border-bottom: 1px solid #DDD;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+}
+.t .membership-detail-wrap .entry_dt {
+    font-size: .9em;
+    margin-bottom: 3px;
+}
+.t .membership-detail-wrap .pending,
+.t .membership-detail-wrap .approved_dt,
+.t .membership-detail-wrap .denied_dt {
+    font-size: .9em;
+}
+
+.t .membership-details-inner-wrap {
+    background-color: white;
+    border: 1px solid silver;
+    padding: 10px;
+}
+
+.t .membership-details-name {
+    border-bottom: 1px solid #DDD;
+    position: relative;
+}
+
+.t .membership-details-name h1 {
+    padding-bottom: 5px;
+}
+
+.t .membership-details-balance {
+    font-size: 1.4em;
+    position: absolute;
+    top: 5px;
+    right: 1px;
+}
+
+.t .membership-details-balance a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.t .go-to-profile {
+    position: absolute;
+    top: 5px;
+    right: 1px;
+}
+
+.t .membership-detail-nav {
+    float: right;
+    margin-top: 7px;
+}
+
+.t .membership-detail-nav a {
+    margin: 0 2px;
 }
 
 
-/* Membership Details (print)
+.t .membership-details-info {
+    position: relative;
+}
+
+.t #membership-details-info {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.t #membership-details-info #status {
+    border-left: 1px solid #DDD;
+    width: 400px;
+    padding-bottom: 10px;
+}
+
+.t #membership-details-info #status .status-label {
+    padding: 10px;
+    background-color: #FAFAFA;
+}
+
+.t .membership-details-status .status-label {
+    border-bottom: 1px solid #DDD;
+    padding: 10px;
+    background-color: #FAFAFA;
+}
+
+.t #membership-details-info #status .status-label.active {
+    color: white;
+    background-color: #468847;
+}
+
+.t #membership-details-info #status .status-label.pending {
+    color: white;
+    background-color: #FB9406;
+}
+
+.t #membership-details-info #status .status-label.expired,
+.t #membership-details-info #status .status-label.disapproved,
+.t #membership-details-info #status .status-label.revoked {
+    color: white;
+    background-color: #B94A4B;
+}
+
+.t #membership-details-info #status .status-action ul {
+    padding: 10px 10px 0;
+    margin-bottom: 0;
+}
+
+
+/* Membership Details Print
  ------------------------- */
-.t-print .membership-wrap {
-	width: 8in;
-	padding: .25in;
-	margin: 20px 0;
-	border: 1px solid silver;
+.t .membership-detail-print .membership-details-status .status-label {
+    color: black;
+    font-size: 1em;
+    background-color: white;
+    padding: 0;
+    width: 0;
+    white-space: nowrap;
+    border-bottom: none;
 }
-.t-print .hide-this {
-	width: 8.5in;
-	margin: 20px 0;
-	position: relative;
+.t .membership-detail-print .membership-detail-nav {
+    display: none;
 }
-.t-print .guide {
-	position: absolute;
-	top: 0; right: 0;
+.t .membership-detail-print .membership-details-status p:last-child {
+    margin: 0;
 }
-.t-print object {
-	visibility: hidden;
+.t .membership-detail-wrap.membership-detail-print fieldset legend {
+    margin-bottom: 2px;
 }
+
 
 @media print {
-	.hide-this {
-		display: none;
-	}
-	.t-print .membership-wrap {
-		width: 100%;
-		border: none;
-		padding: 0; margin: 0;
-	}
+    .t .membership-detail-print {
+        font-size: 50%;
+        line-height: .8em;
+    }
+    .t .membership-detail-wrap.membership-detail-print fieldset {
+        padding: 0px 10px 0px;
+        border: none;
+    }
+    .t .membership-detail-wrap.membership-detail-print .field {
+        padding: 5px 10px;
+        margin-bottom: 3px;
+    }
+    .t .membership-detail-wrap.membership-detail-print .field .label {
+        margin-bottom: 5px;
+    }
 }
 
 /* Membership Add/Edit
@@ -676,4 +815,9 @@ form.connect-with li {
 /* Members YTD by Type */
 .totals-row {
     background: #ccc;
+}
+
+.download-pdf-version {
+    float: right;
+    margin-bottom: 3px;
 }

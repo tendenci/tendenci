@@ -12,9 +12,6 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-registration.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-reg.css" />
-<style>
-
-</style>
 
 <style type="text/css">
     input.registrant-pricing {
@@ -196,7 +193,7 @@
 							
 							
 							{% for field in form %}
-							{% if field.label != 'Delete' %}
+							{% if field.label != 'Delete' and field.name != 'use_free_pass' %}
 								{% if field.name == 'override' or field.name == 'override_price' %}
 								<div class="form-field admin-{{ field.name }} override">
 									<div class="error">{{ field.errors }}</div>
@@ -237,7 +234,15 @@
 								{% endif %}
 							{% endif %}
 							{% endfor %}
-						
+							
+							{% if not event.is_table and event.registration_configuration.allow_free_pass %}
+							<div class="free-pass-wrap">
+							<button class="fp_chk_btn">Check Free Pass Eligibility</button>
+							*** for corporate members only
+							<div class="free-pass-message"></div>
+							<div class="fp-field">{{ form.use_free_pass }}<label for="id_registrant-{{ forloop_counter|add:'-1'}}-use_free_pass"> {{ form.use_free_pass.label }}</label></div>
+							</div>
+						    {% endif %}
 							
 							{% if form.DELETE %}
 							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
@@ -356,6 +361,10 @@
     {% include 'events/reg8n/include/register.js' %}
 </script>
 
-
+{% if not event.is_table and event.registration_configuration.allow_free_pass %}
+<script type="text/javascript"> 
+    {% include 'events/reg8n/include/free_passes.js' %}		
+</script>
+{% endif %}
 {{ block.super }}
 {% endblock %}

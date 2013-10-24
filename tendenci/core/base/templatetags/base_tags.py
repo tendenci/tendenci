@@ -13,7 +13,6 @@ from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.conf import settings
 
-from tendenci.libs.boto_s3.utils import StaticStorage
 from tendenci.core.base.template_tags import parse_tag_kwargs
 from tendenci.core.base.utils import url_exists
 from tendenci.apps.profiles.models import Profile
@@ -341,6 +340,13 @@ class RssParserNode(Node):
             except:
                 cache_timeout = self.kwargs['cache']
 
+        try:
+            url = Variable(self.url)
+            url = url.resolve(context)
+            self.url = url
+        except:
+            pass
+
         cache_key = md5(self.url).hexdigest()
         url_content = cache.get(cache_key)
 
@@ -470,7 +476,7 @@ class PhotoImageURL(Node):
 
         # return empty unicode string
         if not photo.pk:
-            return StaticStorage().url(getattr(settings, 'DEFAULT_IMAGE_URL'))
+            return "%s%s" % (getattr(settings, 'STATIC_URL'), getattr(settings, 'DEFAULT_IMAGE_URL'))
 
         cache_key = generate_image_cache_key(file=str(photo.pk), size=self.size, pre_key="photo", crop=self.crop, unique_key=str(photo.pk), quality=self.quality, constrain=self.constrain)
         cached_image_url = cache.get(cache_key)
@@ -558,7 +564,7 @@ class ImageURL(Node):
             return url
 
         # return the default image url
-        return StaticStorage().url(getattr(settings, 'DEFAULT_IMAGE_URL'))
+        return "%s%s" % (getattr(settings, 'STATIC_URL'), getattr(settings, 'DEFAULT_IMAGE_URL'))
 
 
 @register.tag
