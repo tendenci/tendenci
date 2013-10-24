@@ -58,6 +58,9 @@
                                 {% if event.priority %}
                                 <div class="event-priority"></div>
                                 {% endif %}
+                                {% if event.is_recurring_event %}
+                                <div class="event-recurring"></div>
+                                {% endif %}
 								<a href="{{ event.get_absolute_url }}" 
 									class="time-stamp">{{ event.start_dt|date:"f a" }}</a>
 								<a href="{{ event.get_absolute_url }}" 

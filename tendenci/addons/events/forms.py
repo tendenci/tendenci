@@ -629,6 +629,7 @@ class EventForm(TendenciBaseForm):
             event.image = None
         return event
 
+
 class DisplayAttendeesForm(forms.Form):
     display_event_registrants = forms.BooleanField(required=False)
     DISPLAY_REGISTRANTS_TO_CHOICES=(("public","Everyone"),
@@ -640,8 +641,14 @@ class DisplayAttendeesForm(forms.Form):
                                                 initial='public')
     label = 'Display Attendees'
 
+
 class ApplyRecurringChangesForm(forms.Form):
-    apply_to_all = forms.BooleanField(label=_('Apply changes to all recurring events in series'), required=False)
+    APPLY_CHANGES_CHOICES = (("self","This event only"),
+                             ("rest","The following events in series"),
+                             ("all","All events in series"))
+    apply_changes_to = forms.ChoiceField(choices=APPLY_CHANGES_CHOICES,
+                                         widget=forms.RadioSelect, initial="self")
+
 
 class TypeChoiceField(forms.ModelChoiceField):
 
@@ -1030,6 +1037,7 @@ class Reg8nEditForm(BetterModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
+        self.recurring_edit = kwargs.pop('recurring_edit', False)
         super(Reg8nEditForm, self).__init__(*args, **kwargs)
 
         #custom_reg_form = CustomRegForm.objects.all()
@@ -1081,6 +1089,9 @@ class Reg8nEditForm(BetterModelForm):
         if not get_setting('module', 'discounts', 'enabled'):
             del self.fields['discount_eligible']
 
+        if self.recurring_edit:
+            del self.fields['use_custom_reg']
+
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
         data_list = value.split(',')
@@ -1121,28 +1132,29 @@ class Reg8nEditForm(BetterModelForm):
         # handle three fields here - use_custom_reg_form, reg_form,
         # and bind_reg_form_to_conf_only
         # split the value from use_custom_reg and assign to the 3 fields
-        use_custom_reg_data_list = (self.cleaned_data['use_custom_reg']).split(',')
-        try:
-            self.instance.use_custom_reg_form = int(use_custom_reg_data_list[0])
-        except:
-            self.instance.use_custom_reg_form = 0
+        if not self.recurring_edit:
+            use_custom_reg_data_list = (self.cleaned_data['use_custom_reg']).split(',')
+            try:
+                self.instance.use_custom_reg_form = int(use_custom_reg_data_list[0])
+            except:
+                self.instance.use_custom_reg_form = 0
 
-        try:
-            self.instance.bind_reg_form_to_conf_only = int(use_custom_reg_data_list[2])
-        except:
-            self.instance.bind_reg_form_to_conf_only = 0
+            try:
+                self.instance.bind_reg_form_to_conf_only = int(use_custom_reg_data_list[2])
+            except:
+                self.instance.bind_reg_form_to_conf_only = 0
 
-        try:
-            reg_form_id = int(use_custom_reg_data_list[1])
-        except:
-            reg_form_id = 0
+            try:
+                reg_form_id = int(use_custom_reg_data_list[1])
+            except:
+                reg_form_id = 0
 
-        if reg_form_id:
-            if self.instance.use_custom_reg_form and self.instance.bind_reg_form_to_conf_only:
-                reg_form = CustomRegForm.objects.get(id=reg_form_id)
-                self.instance.reg_form = reg_form
-            else:
-                self.instance.reg_form = None
+            if reg_form_id:
+                if self.instance.use_custom_reg_form and self.instance.bind_reg_form_to_conf_only:
+                    reg_form = CustomRegForm.objects.get(id=reg_form_id)
+                    self.instance.reg_form = reg_form
+                else:
+                    self.instance.reg_form = None
 
         return super(Reg8nEditForm, self).save(*args, **kwargs)
 

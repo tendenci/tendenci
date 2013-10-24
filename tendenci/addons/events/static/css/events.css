@@ -604,6 +604,12 @@ div.event-priority {
     height: 16px;
     width: 16px;
 }
+div.event-recurring {
+    display: inline-block;
+    background: url('../images/icons/myevents12x12.gif') no-repeat;
+    height: 12px;
+    width: 12px;
+}
 
 
 .month-names {

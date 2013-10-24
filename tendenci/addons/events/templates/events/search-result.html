@@ -42,6 +42,9 @@
         {% if event.priority %}
             <div class="event-priority"></div>
         {% endif %}
+        {% if event.is_recurring_event %}
+            <div class="event-recurring"></div>
+        {% endif %}
         <a href="{% url event event.pk %}">{{ event.title }}</a>
         </h3>
         {% if event.place %}

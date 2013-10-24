@@ -888,6 +888,7 @@ class Speaker(models.Model):
 
         return photo
 
+
 class RecurringEvent(models.Model):
     RECUR_DAILY = 1
     RECUR_WEEKLY = 2
@@ -907,6 +908,7 @@ class RecurringEvent(models.Model):
     class Meta:
         verbose_name = _("Recurring Event")
         verbose_name_plural = _("Recurring Events")
+
 
 class Event(TendenciBaseModel):
     """

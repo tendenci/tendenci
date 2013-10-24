@@ -29,7 +29,14 @@
     {% event_nav user event %}
     <div class="event-wrap">
 		<div class="info">
-	        <h1>{{ event.title }}</h1>
+	        <h1>
+            {% if event.priority %}
+                <div class="event-priority"></div>
+            {% endif %}
+            {% if event.is_recurring_event %}
+                <div class="event-recurring"></div>
+            {% endif %}
+            {{ event.title }}</h1>
 
             <ul class="tabs">
                 <li class="dropdown active">

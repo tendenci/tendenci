@@ -1,0 +1,31 @@
+{% extends "events/base.html" %}
+{% load pagination_tags %}
+{% load event_tags %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events-search.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t search-view">
+{% event_nav request.user event %}
+    <h1>{% trans 'Recurring Event List' %}</h1>  
+
+    {% autopaginate events 10 %}
+
+    <div class="events-wrap">
+    {% for event in events %}
+        {% search_result event %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

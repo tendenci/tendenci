@@ -29,14 +29,22 @@ urlpatterns = patterns(
 
     url(r'^%s/add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.add', name="event.add"),
 
-    url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'views.edit', name="event.edit"),
+    url(r'^%s/overview/edit/(?P<id>\d+)/$' % urlpath, 'views.edit', name="event.edit"),
+    url(r'^%s/location/edit/(?P<id>\d+)/$' % urlpath, 'views.location_edit', name="event.location_edit"),
+    url(r'^%s/organizer/edit/(?P<id>\d+)/$' % urlpath, 'views.organizer_edit', name="event.organizer_edit"),
+    url(r'^%s/speakers/edit/(?P<id>\d+)/$' % urlpath, 'views.speaker_edit', name="event.speaker_edit"),
+    url(r'^%s/regconf/edit/(?P<id>\d+)/$' % urlpath, 'views.regconf_edit', name="event.regconf_edit"),
+    url(r'^%s/pricing/edit/(?P<id>\d+)/$' % urlpath, 'views.pricing_edit', name="event.pricing_edit"),
+
     url(r'^%s/copy/(?P<id>\d+)/$' % urlpath, 'views.copy', name="event.copy"),
     url(r'^%s/edit/meta/(?P<id>\d+)/$' % urlpath, 'views.edit_meta', name="event.edit.meta"),
     url(r'^%s/edit/email/(?P<event_id>\d+)/$' % urlpath, 'views.edit_email', name="event.edit.email"),
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'views.delete', name="event.delete"),
+    url(r'^%s/delete_recurring/(?P<id>\d+)/$' % urlpath, 'views.delete_recurring', name="event.delete_recurring"),
     url(r'^%s/ics/(?P<id>\d+)/$' % urlpath, 'views.icalendar_single', name="event.ics_single"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='event.feed'),
     url(r'^%s/(?P<id>\d+)/$' % urlpath, 'views.details', name="event"),
+    url(r'^%s/recurring/(?P<id>\d+)/$' % urlpath, 'views.recurring_details', name="event.recurring"),
 
     # speakers_list view does not exist
     url(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, 'views.speaker_list', name="event.speakers"),

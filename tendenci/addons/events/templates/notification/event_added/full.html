@@ -19,6 +19,11 @@
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "View event details" %}</a></p>
 </div>
 
+{% if event.is_recurring_event %}
+<p style="margin:2px">{% trans "This is a recurring event, you can view the rest of the events here" %}:
+<a href="{% url event.recurring event.pk %}">{% trans "View recurring event list" %}</a></p>
+{% endif %}
+
 <p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">
 {% trans "Remove my email from this notification list" %}</a></p>
 
