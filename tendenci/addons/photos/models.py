@@ -1,6 +1,8 @@
 import uuid
 import os
-import Image as rImage
+import Image as PILImage
+import ImageFile
+import ImageFilter
 
 from datetime import datetime
 from inspect import isclass
@@ -33,11 +35,6 @@ from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
-
-import Image as PILImage
-import ImageFile
-import ImageFilter
-import ImageEnhance
 
 from tendenci.addons.photos.utils import EXIF
 from tendenci.addons.photos.utils.reflection import add_reflection
@@ -867,9 +864,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     def image_dimensions(self):
         try:
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                im = rImage.open(self.get_file_from_remote_storage())
+                im = PILImage.open(self.get_file_from_remote_storage())
             else:
-                im = rImage.open(self.image.path)
+                im = PILImage.open(self.image.path)
             return im.size
         except Exception:
             return (0, 0)
