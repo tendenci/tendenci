@@ -27,6 +27,7 @@ from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.base.fields import DictField
 from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.photos.module_meta import PhotoMeta
@@ -685,6 +686,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
+    exif_data = DictField(_('exif'), null=True)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
