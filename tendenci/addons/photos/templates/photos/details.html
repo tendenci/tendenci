@@ -7,6 +7,7 @@
 {% load pagination_tags %}
 {% load smart_if %}
 {% load base_tags %}
+{% load base_filters %}
 
 {% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
 {% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
@@ -83,6 +84,30 @@
         <div class="photo-caption-wrap">
             {{ photo.caption|safe|urlize }}
         </div>
+        {% if photo.exif_data %}
+        {% if photo.exif_data.DateTimeOriginal %}
+        <div>
+        	<stong>{% trans "Taken on:" %} </stong> {{ photo.exif_data.DateTimeOriginal|exif_to_date|date:'F j, Y' }}
+        </div>
+        {% endif %}
+        
+        {% if photo.exif_data.Make %}
+        <div>
+        	{% trans "Camera:" %} {{ photo.exif_data.Make }}
+        	{% if photo.exif_data.Model %}
+        	- {{ photo.exif_data.Model }}
+        	 {% endif %}		
+        </div>
+        {% endif %}	
+        
+        {% if photo.exif_data.lat and photo.exif_data.lng %}
+        <div>
+        	{% trans "Location:" %}
+        	<a href="https://maps.google.com/maps?q={{ photo.exif_data.lat }},{{ photo.exif_data.lng }}" target="_blank">view map</a>
+        </div>
+        {% endif %}	
+        	
+        {% endif %}
         <div class="hr"></div>
         <div class="photo-options">
 			{% photo_options request.user photo %}
