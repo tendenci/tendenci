@@ -1,6 +1,7 @@
 import uuid
 import os
 import Image as PILImage
+from PIL.ExifTags import TAGS as PILTAGS
 import ImageFile
 import ImageFilter
 
@@ -671,6 +672,21 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         (1, _('Safe')),
         (2, _('Not Safe')),
     )
+    EXIF_KEYS = ('DateTimeOriginal',
+                 'DateTime',
+                 'ApertureValue',
+                 'GPSInfo',
+                 'Make',
+                 'Model',
+                 'Software',
+                 'ExifImageWidth',
+                 'ExifImageHeight',
+                 'XResolution',
+                 'YResolution',
+                 'ResolutionUnit',
+                 'SubjectLocation',
+                 )
+    
     guid = models.CharField(max_length=40, editable=False)
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
@@ -704,8 +720,10 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         permissions = (("view_image", "Can view image"),)
 
     def save(self, *args, **kwargs):
+        initial_save = not self.id
         if not self.id:
             self.guid = str(uuid.uuid1())
+        
         super(Image, self).save(*args, **kwargs)
        # # clear the cache
        # caching.instance_cache_clear(self, self.pk)
@@ -722,6 +740,10 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                 # TODO remove cached images
                 cache.delete_many(cache.get("photos_cache_set.%s" % self.pk))
                 cache.delete("photos_cache_set.%s" % self.pk)
+
+        if initial_save:
+            self.get_exif_data()
+            self.save()
 
     def delete(self, *args, **kwargs):
         """
@@ -756,6 +778,40 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         except IndexError:
             return ("photo", [self.pk])
         return ("photo", [self.pk, photo_set.pk])
+    
+    def get_exif_data(self):
+        """
+        Extract EXIF data from image and store in the field exif_data.
+        """
+        img = PILImage.open(default_storage.open(self.image.name))
+        exif = img._getexif()
+        if exif:
+            for tag, value in exif.items():
+                key = PILTAGS.get(tag, tag)
+                if key in self.EXIF_KEYS:
+                    self.exif_data[key] = value
+                       
+        self.exif_data['lat'], self.exif_data['lng'] = self.get_lat_lng(
+                                    self.exif_data.get('GPSInfo'))
+
+    def get_lat_lng(self, gps_info):
+        """
+        Calculate the latitude and longitude from gps_info.
+        """
+        lat, lng = None, None
+        if isinstance(gps_info, dict):
+            lat = [float(x)/float(y) for x, y in gps_info[2]]
+            latref = gps_info[1]
+            lng = [float(x)/float(y) for x, y in gps_info[4]]
+            lngref = gps_info[3]
+            
+            lat = lat[0] + lat[1]/60 + lat[2]/3600
+            lng = lng[0] + lng[1]/60 + lng[2]/3600
+            if latref == 'S':
+                lat = -lat
+            if lngref == 'W':
+                lng = -lng
+        return lat, lng
 
     def meta_keywords(self):
         return ''

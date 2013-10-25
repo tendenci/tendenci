@@ -64,7 +64,8 @@ class PhotoUploadForm(TendenciBaseForm):
           'effect',
           'crop_from',
           'group',
-          'position'
+          'position',
+          'exif_data'
         )
 
     def __init__(self, *args, **kwargs):
