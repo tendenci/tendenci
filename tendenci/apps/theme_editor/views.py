@@ -108,22 +108,21 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
 
-    if request.method == "POST":
+    if request.is_ajax() and request.method == "POST":
         file_form = form_class(request.POST)
+        response_status = 'FAIL'
+        response_message = 'Cannot update file.'
         if file_form.is_valid():
             if file_form.save(request, default_file, ROOT_DIR=theme_root, ORIG_ROOT_DIR=original_theme_root):
-                message = "Successfully updated %s" % current_file
-                message_status = messages.SUCCESS
-
+                response_status = 'SUCCESS'
+                response_message = 'Your changes have been saved.'
                 EventLog.objects.log()
-            else:
-                message = "Cannot update"
-                message_status = messages.WARNING
-            messages.add_message(request, message_status, message)
 
-    else:
-        content = get_file_content(default_file,  ROOT_DIR=theme_root)
-        file_form = form_class({"content": content, "rf_path": default_file})
+        response = json.dumps({'status':response_status, 'message':response_message})
+        return HttpResponse(response, mimetype="application/json")
+
+    content = get_file_content(default_file,  ROOT_DIR=theme_root)
+    file_form = form_class({"content": content, "rf_path": default_file})
 
     theme_form = ThemeSelectForm(initial={'theme_edit': selected_theme})
 

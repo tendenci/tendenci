@@ -27,7 +27,7 @@
     <tr>
         <td width="80%" id="editor-td" >
             {% if is_file %}
-            <form class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
+            <form id="editorForm" class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
                 {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
 					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
    					{{ file_form.rf_path }}
@@ -35,7 +35,8 @@
     				<div id="fileupdatemessage"></div>
     				<div class="form_block">
     					<input type="hidden" name="action" value="edit" />
-                    	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/> 
+                    	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
+                        <span id="save_message" class="highlight"></span>
                     </div>
               </form>
             {% if current_file not in non_deletable_files  %}
@@ -186,6 +187,7 @@
 <script src="/static/js/jquery-ui-1.10.3.dialog.min.js"></script>
 <script type="text/javascript">
 {% include 'theme_editor/include/new_template.js' %}
+{% include 'theme_editor/include/editor_submit.js' %}
 </script>
  
 <script type="text/javascript">

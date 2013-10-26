@@ -1,0 +1,22 @@
+$("#editorForm").submit(function() {
+    var data = {'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+                'content': editor.getCode(),
+                'rf_path': $('input#id_rf_path').val()};
+    $.ajax({
+        type: 'post',
+        dataType: 'json',
+        data: data,
+        url: '',
+        success: function(response) {
+            $('#save_message').text(response.message);
+            $('#save_message').show();
+            setTimeout(function () {
+                $('#save_message').hide();
+            }, 5000);
+            if (response.status === 'FAIL') {
+                $('#save_message').addClass('fail');
+            }
+        }
+    });
+    return false;
+});

@@ -165,6 +165,20 @@ input.btn {
     margin: 10px;
 }
 
+#save_message {
+  padding: 4px 10px 4px;
+  float: right;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 18px;
+  color: #333333;
+  display: none;
+}
+
+#save_message.fail {
+  color: red;
+}
+
 .btn {
   display: inline-block;
   *display: inline;
