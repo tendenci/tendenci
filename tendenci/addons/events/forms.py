@@ -29,6 +29,7 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
+from tendenci.core.base.widgets import PriceWidget
 from tendenci.core.emails.models import Email
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.site_settings.utils import get_setting, get_global_setting
@@ -832,6 +833,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                         + timedelta(days=29))}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
+        self.fields['price'].widget = PriceWidget()
 
         # skip the field if there is no custom registration forms
         if not reg_form_queryset:

@@ -1,5 +1,9 @@
 from django.forms.widgets import MultiWidget, DateInput, TextInput
+from django.utils.safestring import mark_safe
 from time import strftime
+
+from tendenci.core.site_settings.utils import get_setting
+
 
 class SplitDateTimeWidget(MultiWidget):
     def __init__(self, attrs={}, date_format=None, time_format=None):
@@ -85,3 +89,11 @@ class EmailVerificationWidget(MultiWidget):
         """
         label = "<label generated='true' style='display:none; color:red; margin-left: 5px;' class='email-verfication-error'>Please enter similar email addresses.</label>"
         return "%s%s<br>%s" % (rendered_widgets[0], label, rendered_widgets[1])
+
+
+class PriceWidget(TextInput):
+    def render(self, name, value, attrs=None):
+        currency_symbol = get_setting('site', 'global', 'currencysymbol') or '$'
+        html = super(PriceWidget, self).render(name, value, attrs)
+        return mark_safe("%s %s" %(currency_symbol, html))
+
