@@ -30,8 +30,8 @@ class StoryForm(TendenciBaseForm):
     expires = forms.BooleanField(
         label=_('Expires'),
         required=False,
-        help_text=_('Uncheck if you want this story to never expire'),
-        initial=True,
+        help_text=_('Check if you want this story to expire and be sure to specify the end date.'),
+        initial=False,
     )
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -125,14 +125,15 @@ class StoryForm(TendenciBaseForm):
             story.image = None
         return story
 
+
 class StoryAdminForm(TendenciBaseForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     expires = forms.BooleanField(
         label=_('Expires'),
         required=False,
-        help_text=_('Uncheck if you want this story to never expire'),
-        initial=True,
+        help_text=_('Check if you want this story to expire and be sure to specify the end date.'),
+        initial=False,
     )
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
