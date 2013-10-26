@@ -823,6 +823,8 @@ class Reg8nConfPricingForm(BetterModelForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
+    payment_required = forms.ChoiceField(required=False,
+                            choices=((None,_('Inherit from event')),('True',_('Yes')),('False',_('No'))))
 
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
@@ -864,6 +866,7 @@ class Reg8nConfPricingForm(BetterModelForm):
         fields = [
             'title',
             'quantity',
+            'payment_required',
             'price',
             'start_dt',
             'end_dt',
@@ -878,6 +881,7 @@ class Reg8nConfPricingForm(BetterModelForm):
         fieldsets = [('Registration Pricing', {
           'fields': ['title',
                     'quantity',
+                    'payment_required',
                     'price',
                     'dates',
                     'reg_form',
