@@ -823,14 +823,13 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             except (KeyError, ZeroDivisionError):
                 return None, None
                 
-                lat = lat[0] + lat[1]/60 + lat[2]/3600
-                lng = lng[0] + lng[1]/60 + lng[2]/3600
-                if latref == 'S':
-                    lat = -lat
-                if lngref == 'W':
-                    lng = -lng
+            lat = lat[0] + lat[1]/60 + lat[2]/3600
+            lng = lng[0] + lng[1]/60 + lng[2]/3600
+            if latref == 'S':
+                lat = -lat
+            if lngref == 'W':
+                lng = -lng
             
-                pass
         return lat, lng
     
     def get_location_via_latlng(self, lat, lng):
