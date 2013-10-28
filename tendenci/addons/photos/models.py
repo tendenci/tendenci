@@ -745,8 +745,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
 
         if initial_save:
             try:
-                self.get_exif_data()
-                self.save()
+                exif_exists = self.get_exif_data()
+                if exif_exists:
+                    self.save()
             except AttributeError:
                 pass
 
@@ -788,8 +789,12 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         """
         Extract EXIF data from image and store in the field exif_data.
         """
-        img = PILImage.open(default_storage.open(self.image.name))
-        exif = img._getexif()
+        try:
+            img = PILImage.open(default_storage.open(self.image.name))
+            exif = img._getexif()
+        except (AttributeError, IOError):
+            return False
+
         if exif:
             for tag, value in exif.items():
                 key = PILTAGS.get(tag, tag)
@@ -802,7 +807,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                                             self.exif_data['lat'],
                                             self.exif_data['lng']
                                         )
-        print 'Location: ', self.exif_data['location']
+        return True
 
     def get_lat_lng(self, gps_info):
         """
@@ -810,17 +815,22 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         """
         lat, lng = None, None
         if isinstance(gps_info, dict):
-            lat = [float(x)/float(y) for x, y in gps_info[2]]
-            latref = gps_info[1]
-            lng = [float(x)/float(y) for x, y in gps_info[4]]
-            lngref = gps_info[3]
+            try:
+                lat = [float(x)/float(y) for x, y in gps_info[2]]
+                latref = gps_info[1]
+                lng = [float(x)/float(y) for x, y in gps_info[4]]
+                lngref = gps_info[3]
+            except (KeyError, ZeroDivisionError):
+                return None, None
+                
+                lat = lat[0] + lat[1]/60 + lat[2]/3600
+                lng = lng[0] + lng[1]/60 + lng[2]/3600
+                if latref == 'S':
+                    lat = -lat
+                if lngref == 'W':
+                    lng = -lng
             
-            lat = lat[0] + lat[1]/60 + lat[2]/3600
-            lng = lng[0] + lng[1]/60 + lng[2]/3600
-            if latref == 'S':
-                lat = -lat
-            if lngref == 'W':
-                lng = -lng
+                pass
         return lat, lng
     
     def get_location_via_latlng(self, lat, lng):

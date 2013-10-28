@@ -13,6 +13,6 @@ class Command(BaseCommand):
         for image in images:
             if not image.exif_data:
                 if default_storage.exists(image.image.name):
-                    image.get_exif_data()
-                    if image.exif_data:
+                    exif_exists = image.get_exif_data()
+                    if exif_exists:
                         image.save()
