@@ -744,8 +744,11 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                 cache.delete("photos_cache_set.%s" % self.pk)
 
         if initial_save:
-            self.get_exif_data()
-            self.save()
+            try:
+                self.get_exif_data()
+                self.save()
+            except AttributeError:
+                pass
 
     def delete(self, *args, **kwargs):
         """
