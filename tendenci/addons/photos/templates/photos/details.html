@@ -100,10 +100,10 @@
         </div>
         {% endif %}	
         
-        {% if photo.exif_data.lat and photo.exif_data.lng %}
+        {% if photo.exif_data.location %}
         <div>
         	{% trans "Location:" %}
-        	<a href="https://maps.google.com/maps?q={{ photo.exif_data.lat }},{{ photo.exif_data.lng }}" target="_blank">view map</a>
+        	{{ photo.exif_data.location }}
         </div>
         {% endif %}	
         	

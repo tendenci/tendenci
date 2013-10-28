@@ -22,6 +22,8 @@ from django.core.cache import cache
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
+from django.utils import simplejson
+import requests
 
 from tagging.fields import TagField
 
@@ -793,6 +795,11 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                        
         self.exif_data['lat'], self.exif_data['lng'] = self.get_lat_lng(
                                     self.exif_data.get('GPSInfo'))
+        self.exif_data['location'] = self.get_location_via_latlng(
+                                            self.exif_data['lat'],
+                                            self.exif_data['lng']
+                                        )
+        print 'Location: ', self.exif_data['location']
 
     def get_lat_lng(self, gps_info):
         """
@@ -812,6 +819,21 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             if lngref == 'W':
                 lng = -lng
         return lat, lng
+    
+    def get_location_via_latlng(self, lat, lng):
+        """
+        Get location via lat and lng.
+        """
+        if lat and lng:
+            url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat, lng)
+            r = requests.get(url)
+            if r.status_code == 200:
+                data = simplejson.loads(r.content)
+                for result in data.get('results'):
+                    types = result.get('types')
+                    if types and types[0] == 'postal_code':
+                        return result.get('formatted_address')
+        return None
 
     def meta_keywords(self):
         return ''
