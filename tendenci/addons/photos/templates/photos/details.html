@@ -91,12 +91,14 @@
         </div>
         {% endif %}
         
-        {% if photo.exif_data.Make %}
+        {% if photo.exif_data.Make or photo.exif_data.Model %}
         <div>
-        	{% trans "Camera:" %} {{ photo.exif_data.Make }}
+        	{% trans "Camera:" %} 
         	{% if photo.exif_data.Model %}
-        	- {{ photo.exif_data.Model }}
-        	 {% endif %}		
+        		{{ photo.exif_data.Model }}
+        	{% else %}
+        	    {{ photo.exif_data.Make }}
+        	{% endif %}		
         </div>
         {% endif %}	
         
