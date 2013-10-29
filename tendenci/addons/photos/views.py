@@ -521,6 +521,7 @@ def photos_batch_add(request, photoset_id=0):
         photoset_id is passed via url
     """
     import uuid
+    from django.db.models import Max
     from tendenci.core.perms.object_perms import ObjectPermission
 
     # photoset permission required to add photos
@@ -562,7 +563,11 @@ def photos_batch_add(request, photoset_id=0):
                 photo.member = request.user
                 photo.safetylevel = 3
                 photo.allow_anonymous_view = True
-                photo.position = 0
+
+                position_max = Image.objects.filter(
+                    photoset=photoset_id).aggregate(Max('position'))['position__max'] or 0
+
+                photo.position = position_max + 1
 
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, photo_form, photo)
