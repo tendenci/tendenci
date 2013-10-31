@@ -702,6 +702,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
     exif_data = DictField(_('exif'), null=True)
+    photographer = models.CharField(_('Photographer'),
+                                    blank=True, null=True,
+                                    max_length=100)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
