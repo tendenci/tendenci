@@ -577,6 +577,11 @@ class EventForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
+        if self.instance.is_recurring_event:
+            message = 'Changes here would be ignored if applied to other events in series.'
+            self.fields['start_dt'].help_text = message
+            self.fields['end_dt'].help_text = message
+
         if edit_mode:
             self.fields.pop('is_recurring_event')
             self.fields.pop('repeat_type')
@@ -587,6 +592,7 @@ class EventForm(TendenciBaseForm):
         if edit_mode and recurring_mode:
             self.fields.pop('start_dt')
             self.fields.pop('end_dt')
+            self.fields.pop('photo_upload')
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
@@ -806,8 +812,7 @@ class SpeakerBaseFormSet(BaseModelFormSet):
                 if not speaker.event.count():
                     speaker.delete()
                 continue
-            if form.has_changed():
-                saved_instances.append(self.save_existing(form, speaker))
+            saved_instances.append(self.save_existing(form, speaker))
 
         speakers = self.save_new_objects()
         for speaker in speakers:
@@ -1097,6 +1102,10 @@ class Reg8nEditForm(BetterModelForm):
                                           )
             reminder_edit_link = '<a href="%s" target="_blank">Edit Reminder Email</a>' % \
                                 reverse('event.edit.email', args=[self.instance.event.id])
+            if self.instance.event.is_recurring_event:
+                message = 'Changes here would be ignored if applied to other events in series.'
+                self.fields['use_custom_reg'].help_text = message
+
             self.fields['reminder_days'].help_text = '%s<br /><br />%s' % \
                                         (self.fields['reminder_days'].help_text,
                                          reminder_edit_link)

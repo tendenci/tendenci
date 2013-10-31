@@ -20,8 +20,7 @@
 
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %}{% trans " Edit" %}</h1>
 
-    <div class="event-wrap">
-
+    <div class="event-tabs">
         <ul class="tabs">
             <li class="dropdown {% if label == 'overview' %}active{% endif %}">
                 <a href="{% url event.edit event.pk %}">{% trans "Overview" %}</a>
@@ -42,11 +41,16 @@
                 <a href="{% url event.pricing_edit event.pk %}">{% trans "Pricing(s)" %}</a>
             </li>
         </ul>
+    </div>
 
+    <div class="event-wrap">
     	<form id="event-form" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
-			{{ multi_event_forms|styled_multi_forms }}          
-			<input type="submit" value="Save Changes" />
+			{{ multi_event_forms|styled_multi_forms }}
+            {% if label != "pricing" %}
+            <input type="submit" value="Save and Continue Editing" name="_continue"/>
+            {% endif %}
+			<input type="submit" value="Save Changes" name="_save"/>
 		</div>
         </form>
 

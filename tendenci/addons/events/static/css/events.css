@@ -983,6 +983,6 @@ table.pricing-list .price-disabled label {
 .t .file-wrap h2 a.broken {
 	text-decoration: line-through;
 }
-.t .event-wrap .dropdown {
+.t .event-tabs .dropdown {
     z-index: 0;
 }

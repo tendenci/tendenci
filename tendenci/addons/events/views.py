@@ -484,29 +484,31 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             display_registrants = form_attendees.cleaned_data.get('display_event_registrants')
             display_registrants_to = form_attendees.cleaned_data.get('display_registrants_to')
 
+            f = form_event.cleaned_data['photo_upload']
+            if f:
+                image = EventPhoto()
+                image.content_type = ContentType.objects.get_for_model(event.__class__)
+                image.creator = request.user
+                image.creator_username = request.user.username
+                image.owner = request.user
+                image.owner_username = request.user.username
+                filename = "%s" % (f.name)
+                f.file.seek(0)
+                image.file.save(filename, f)
+
             if apply_changes_to == 'self':
                 event = form_event.save(commit=False)
                 event.display_event_registrants = display_registrants
                 event.display_registrants_to = display_registrants_to
-
-                f = form_event.cleaned_data['photo_upload']
                 if f:
-                    image = EventPhoto()
-                    image.object_id = event.id
-                    image.content_type = ContentType.objects.get_for_model(event.__class__)
-                    image.creator = request.user
-                    image.creator_username = request.user.username
-                    image.owner = request.user
-                    image.owner_username = request.user.username
-                    filename = "%s-%s" % (event.id, f.name)
-                    f.file.seek(0)
-                    image.file.save(filename, f)
                     event.image = image
 
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.location_edit', args=[event.pk]))
             else:
                 eventform_params2 = {'edit_mode': True, 'recurring_mode': True}
                 recurring_events = event.recurring_event.event_set.all()
@@ -517,28 +519,20 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     form_event2 = form_class(request.POST, request.FILES, instance=cur_event,
                                              user=request.user, **eventform_params2)
                     if form_event2.is_valid():
-                        event = form_event2.save(commit=False)
-                        event.display_event_registrants = display_registrants
-                        event.display_registrants_to = display_registrants_to
-
-                        f = form_event2.cleaned_data['photo_upload']
+                        cur_event = form_event2.save(commit=False)
+                        cur_event.display_event_registrants = display_registrants
+                        cur_event.display_registrants_to = display_registrants_to
                         if f:
-                            image = EventPhoto()
-                            image.object_id = event.id
-                            image.content_type = ContentType.objects.get_for_model(event.__class__)
-                            image.creator = request.user
-                            image.creator_username = request.user.username
-                            image.owner = request.user
-                            image.owner_username = request.user.username
-                            filename = "%s-%s" % (event.id, f.name)
-                            f.file.seek(0)
-                            image.file.save(filename, f)
-                            event.image = image
+                            cur_event.image = image
+                        else:
+                            cur_event.image = event.image
 
                         # update all permissions and save the model
-                        event = update_perms_and_save(request, form_event2, event)
+                        cur_event = update_perms_and_save(request, form_event2, cur_event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
-                return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.location_edit', args=[event.pk]))
     else:
         eventform_params = {'edit_mode': True}
         form_event = form_class(instance=event, user=request.user, **eventform_params)
@@ -582,7 +576,9 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
                 event.save(log=False)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.organizer_edit', args=[event.pk]))
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
@@ -597,7 +593,9 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
                         cur_event.save(log=False)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
-                return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.organizer_edit', args=[event.pk]))
     else:
         form_place = form_class(instance=event.place, prefix='place')
         form_apply_recurring = ApplyRecurringChangesForm()
@@ -641,7 +639,9 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                 organizer = form_organizer.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
@@ -661,7 +661,9 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                         organizer = form_organizer2.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
-                return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
     else:
         form_organizer = form_class(instance=organizer, prefix='organizer')
         form_apply_recurring = ApplyRecurringChangesForm()
@@ -733,7 +735,9 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
 
             if apply_changes_to == 'self':
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.regconf_edit', args=[event.pk]))
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
@@ -750,7 +754,9 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                                 del_speaker.remove()
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
-                return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.regconf_edit', args=[event.pk]))
     else:
         form_speaker = SpeakerFormSet(
             queryset=event.speaker_set.all(),
@@ -802,7 +808,9 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                         regconf.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
@@ -817,7 +825,9 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                         regconf = form_regconf2.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
-                return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.pricing_edit', args=[event.pk]))
     else:
         form_regconf = Reg8nEditForm(
             instance=event.registration_configuration,
@@ -871,7 +881,7 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                 status=True,
             ), prefix='regconfpricing', **regconfpricing_params
         )
-        if form_apply_recurring.is_valid():
+        if form_regconfpricing.is_valid():
             regconf_pricing = form_regconfpricing.save()
 
             for regconf_price in regconf_pricing:
@@ -1366,9 +1376,11 @@ def recurring_details(request, id, template_name="events/recurring_view.html"):
     if not event.is_recurring_event:
         raise Http404
 
-    event_list = event.recurring_event.event_set.order_by('start_dt')
+    recurring_detail = event.recurring_event
+    event_list = recurring_detail.event_set.order_by('start_dt')
 
-    return render_to_response(template_name, {'event': event, 'events': event_list}, 
+    return render_to_response(template_name,
+            {'event':event, 'recurring_event':recurring_detail, 'events':event_list},
             context_instance=RequestContext(request))
 
 

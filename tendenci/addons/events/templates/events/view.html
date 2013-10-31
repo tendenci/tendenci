@@ -38,14 +38,16 @@
             {% endif %}
             {{ event.title }}</h1>
 
-            <ul class="tabs">
-                <li class="dropdown active">
-                    <a id="event_detail_tab" href="#">{% trans "Event Details" %}</a>
-                </li>
-                <li class="dropdown">
-                    <a id="event_files_tab" href="#">{% trans "Event Files" %}</a>
-                </li>
-            </ul>
+            <div class="event-tabs">
+                <ul class="tabs">
+                    <li class="dropdown active">
+                        <a id="event_detail_tab" href="#">{% trans "Event Details" %}</a>
+                    </li>
+                    <li class="dropdown">
+                        <a id="event_files_tab" href="#">{% trans "Event Files" %}</a>
+                    </li>
+                </ul>
+            </div>
 
             <!-- Event Details -->
             <div class="details-wrap">

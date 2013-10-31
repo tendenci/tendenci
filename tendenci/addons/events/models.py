@@ -909,6 +909,18 @@ class RecurringEvent(models.Model):
         verbose_name = _("Recurring Event")
         verbose_name_plural = _("Recurring Events")
 
+    def get_info(self):
+        if self.repeat_type == self.RECUR_DAILY:
+            repeat_type = 'day'
+        elif self.repeat_type == self.RECUR_WEEKLY:
+            repeat_type = 'week'
+        elif self.repeat_type == self.RECUR_MONTHLY:
+            repeat_type = 'month'
+        elif self.repeat_type == self.RECUR_YEARLY:
+            repeat_type = 'year'
+        ends_on = self.ends_on.strftime("%b %d %Y %I:%M %p")
+        return _("Repeats every %s %s until %s" %(self.frequency, repeat_type, ends_on))
+
 
 class Event(TendenciBaseModel):
     """

@@ -59,9 +59,15 @@ $(document).ready(function() {
     
     var toggle_custom_reg_form = function(){
     	if (reg_enabled_checkbox.is(':checked')){
-    		user_custom_reg_block.show();
     		discount_eligible_box.show();
-    		toggle_use_custom_reg_options();
+            if (!$("#id_is_recurring_event").is(':checked')) {
+        		user_custom_reg_block.show();
+        		toggle_use_custom_reg_options();
+            }else {
+        		use_custom_reg_checkbox.attr('checked', false);
+        		user_custom_reg_block.hide();
+        		pricing_reg_forms.hide();
+            }
     	}else{
     		use_custom_reg_checkbox.attr('checked', false);
     		user_custom_reg_block.hide();
@@ -102,7 +108,7 @@ $(document).ready(function() {
         toggle_email_reminder($this);
     });
     
-    if ($("#id_display_event_registrants:checked").length == 1) {
+    if ($("#id_display_event_registrants").is(':checked')) {
         //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').show();
         $('div.id_display_registrants_to').parent().show();
     }else {
@@ -110,7 +116,7 @@ $(document).ready(function() {
         $('div.id_display_registrants_to').parent().hide();
     }
     $('#id_display_event_registrants').click(function(){
-        if($("#id_display_event_registrants:checked").length == 1){
+        if($("#id_display_event_registrants").is(':checked')){
             //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').slideDown('fast');
             $('div.id_display_registrants_to').parent().slideDown('fast');
         }else{
@@ -119,16 +125,18 @@ $(document).ready(function() {
         }
     });
 
-    if ($("#id_is_recurring_event:checked").length == 1) {
+    if ($("#id_is_recurring_event").is(':checked')) {
         $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').show();
     }else {
         $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').hide();
     }
     $('#id_is_recurring_event').click(function(){
-        if($("#id_is_recurring_event:checked").length == 1){
+        if($("#id_is_recurring_event").is(':checked')){
             $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').slideDown('fast');
+            toggle_custom_reg_form();
         }else{
             $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').slideUp('fast');
+            toggle_custom_reg_form();
         }
     });
 
