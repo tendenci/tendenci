@@ -66,9 +66,13 @@
                     <br />
                     <div id="photo-rights">
                     <span property="dct:title">{{ photo.title }}</span>
+                    {% if photo.photographer %}
+                    	taken by {{ photo.photographer }}
+                    {% else %}
                     uploaded by <a href="{{ photo.creator.get_absolute_url }}"
                         property="cc:attributionName" 
-                        rel="cc:attributionURL dct:creator">{{ photo.creator.get_full_name }}</a>.
+                        rel="cc:attributionURL dct:creator">{% if photo.creator.get_full_name %}{{ photo.creator.get_full_name }}{% else %}{{ photo.creator.username }}{% endif %}</a>.
+                    {% endif %}
                     {% if photo.get_license == photo.default_license %}
                         {{ photo.default_license.name }}.
                     {% else %}

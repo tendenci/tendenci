@@ -109,6 +109,7 @@ class PhotoEditForm(TendenciBaseForm):
         fields = (
             'title',
             'caption',
+            'photographer',
             'license',
             'tags',
             'group',
@@ -123,6 +124,7 @@ class PhotoEditForm(TendenciBaseForm):
                       'fields': [
                           'title',
                           'caption',
+                          'photographer',
                           'tags',
                           'group',
                           'license',
