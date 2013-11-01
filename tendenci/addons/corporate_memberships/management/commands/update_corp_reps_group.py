@@ -44,6 +44,10 @@ class Command(BaseCommand):
             [group] = Group.objects.filter(id=group_id)[:1] or [None]
 
         if not group:
+            # first check if we have a default group. if not, create one
+            # so that this reps group won't become the one with id=1
+            Group.objects.get_or_create_default()
+ 
             group = Group(
                       name='Corporate Membership Representatives',
                       slug='corporate-membership-representatives',
