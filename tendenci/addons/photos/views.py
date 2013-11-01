@@ -645,6 +645,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             'is_public',
             'owner',
             'safetylevel',
+            'exif_data',
             'allow_anonymous_view',
             'status',
             'status_detail',

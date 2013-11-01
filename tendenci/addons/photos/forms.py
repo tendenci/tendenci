@@ -83,6 +83,7 @@ class PhotoBatchEditForm(TendenciBaseForm):
             'is_public',
             'owner',
             'safetylevel',
+            'exif_data',
             'allow_anonymous_view',
             'status_detail',
             'status',
