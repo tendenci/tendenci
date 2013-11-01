@@ -206,6 +206,7 @@ def get_group_list(user):
     from tendenci.apps.user_groups.models import Group
     groups = Group.objects.filter(status=True,
                                   status_detail='active'
+                                  ).exclude(type='system_generated'
                                   ).order_by('name')
     if not groups.exists():
         # no groups - create one
