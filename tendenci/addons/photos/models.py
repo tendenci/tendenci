@@ -640,7 +640,11 @@ class PhotoSet(TendenciBaseModel):
         user = user or AnonymousUser()
 
         filters = get_query_filters(user, 'photos.view_image')
+
         photos = Image.objects.filter(filters).filter(photoset=self.pk)
+
+        if user.is_authenticated():
+            photos = photos.distinct()
 
         return photos
 
