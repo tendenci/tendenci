@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
+from django.db.utils import DatabaseError
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Image.photographer'
-        db.add_column('photos_image', 'photographer',
-                      self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True),
-                      keep_default=False)
+        try:
+            db.add_column('photos_image', 'photographer',
+                          self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True),
+                          keep_default=False)
+        except DatabaseError:
+            pass
 
 
     def backwards(self, orm):
