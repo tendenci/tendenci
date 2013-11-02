@@ -15,11 +15,13 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}codemirror2/lib/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}swfupload/swfupload.visual.css">
 {% endblock %}
         
 {% block body %}
 <h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
+<div id="swf-progress"></div>
 {% if current_file %}
 <div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> <span class="highlight">{{ pwd }}/{{ current_file }}</span> in your theme <span class="highlight">{{ current_theme }}</span></big>
 {% endif %}
@@ -185,6 +187,7 @@
 {{ block.super }}
 <script src="{{ STATIC_URL }}codemirror/js/codemirror.js" type="text/javascript"></script>
 <script src="/static/js/jquery-ui-1.10.3.dialog.min.js"></script>
+{% include 'theme_editor/include/multi_upload.html' %}
 <script type="text/javascript">
 {% include 'theme_editor/include/new_template.js' %}
 {% include 'theme_editor/include/editor_submit.js' %}

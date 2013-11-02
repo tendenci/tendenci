@@ -1,0 +1,59 @@
+<script src="{{ STATIC_URL }}swfupload/swfupload.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}swfupload/swfupload.cookies.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}swfupload/swfupload.handlers.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}swfupload/swfupload.swfobject.js" type="text/javascript"></script>
+<script type="text/javascript">
+    window.onload = function() {
+        var file_types_available = "*.html;*.js;*.css;*.less;*.jpg;*.jpeg;*.png;*.ico;*.gif;*.txt;*.xml;*.kml;*.eot;*.ttf;*.woff;*.svg;";
+
+        $(".upload-link").each(function() {
+            var file_dir = $(this).children('.glyph').attr('path');
+            var swfupload = new SWFUpload({
+            debug: false,
+        
+            upload_url: "{% url theme_editor.upload %}",
+            flash_url: "{{ LOCAL_STATIC_URL }}swfupload/swfupload.swf",
+            post_params: {
+                "file_dir" : file_dir,
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+            },
+
+            // File upload settings
+            file_size_limit : "20480",    // 20 MB
+		    file_types : file_types_available,
+            file_types_description : "Theme Files",
+            file_post_name: "upload",
+        
+            // Button settings (opens file-browse dialogue)
+            button_placeholder_id: "glyph_mask",
+            button_width: $(this).width(),
+            button_height: $(this).height(),
+            button_cursor: SWFUpload.CURSOR.HAND,
+            button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+
+            // Event handlers
+            swfupload_loaded_handler : swfUploadLoaded,
+            swfupload_pre_load_handler : swfUploadPreLoad,
+            swfupload_load_failed_handler : swfUploadLoadFailed,
+            upload_complete_handler : uploadComplete,
+            file_queued_handler : fileQueued,
+            file_queue_error_handler : fileQueueError,
+            file_dialog_complete_handler : fileDialogComplete,
+            upload_start_handler : uploadStart,
+            upload_progress_handler : uploadProgress,
+            upload_error_handler : uploadError,
+            upload_success_handler : uploadSuccess,
+
+		    custom_settings : {
+			    progressTarget : "swf-progress",
+			    redirect: "{% url theme_editor.editor %}"
+		    },
+
+            // SWFObject settings
+            minimum_flash_version : "9.0.28",
+            debug: false
+
+            });
+        });
+    };
+</script>

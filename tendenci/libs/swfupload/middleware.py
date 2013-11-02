@@ -18,8 +18,11 @@ class SWFUploadMiddleware(object):
                         request.POST.has_key(swf_cookie_name):
                     
                     request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
-                if request.POST.has_key('csrftoken'):           
-                    request.COOKIES["csrftoken"] = request.POST['csrftoken']
+            elif request.path == reverse('theme_editor.upload') and \
+                    request.POST.has_key(swf_cookie_name):
+                request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
+            if request.POST.has_key('csrftoken'):           
+                request.COOKIES["csrftoken"] = request.POST['csrftoken']
 
 
 class MediaUploadMiddleware(object):

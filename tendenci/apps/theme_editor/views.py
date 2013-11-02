@@ -355,18 +355,19 @@ def upload_file(request):
 
             if os.path.isfile(full_filename) and not overwrite:
                 messages.add_message(request, messages.ERROR, ('File %s already exists in that folder.' % (upload.name)))
-                return HttpResponseRedirect('/theme-editor/editor')
+                return HttpResponse('invalid', mimetype="text/plain")
             else:
                 handle_uploaded_file(upload, file_dir)
                 messages.add_message(request, messages.SUCCESS, ('Successfully uploaded %s.' % (upload.name)))
 
                 EventLog.objects.log()
-
-                return HttpResponseRedirect('/theme-editor/editor/')
+                # returning a response of "ok" (flash likes this)
+                # response is for flash, not humans
+                return HttpResponse('valid', mimetype="text/plain")
 
         else:  # not valid
             messages.add_message(request, messages.ERROR, form.errors)
-
+            return HttpResponse('invalid', mimetype="text/plain")
     else:
         form = UploadForm()
 

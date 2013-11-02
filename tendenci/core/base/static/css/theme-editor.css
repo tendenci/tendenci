@@ -179,6 +179,19 @@ input.btn {
   color: red;
 }
 
+.upload-link {
+  display: inline-block;
+  width: 13px;
+  height: 16px;
+  position: relative;
+}
+
+.upload-link .swfupload {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .btn {
   display: inline-block;
   *display: inline;
