@@ -752,6 +752,7 @@ class PlaceForm(forms.ModelForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
     def save(self, *args, **kwargs):
+        commit = kwargs.pop('commit', True)
         place = super(PlaceForm, self).save(commit=False)
         # Handle case if place is given
         if self.cleaned_data.get('place'):
@@ -766,11 +767,13 @@ class PlaceForm(forms.ModelForm):
                 place_obj.country != place.country or \
                 place_obj.url != place.url:
                 place.pk = None
-                place.save()
+                if commit:
+                    place.save()
             else:
                 place = place_obj
         else:
-            place.save()
+            if commit:
+                place.save()
         return place
 
 
@@ -795,8 +798,11 @@ class SpeakerBaseFormSet(BaseModelFormSet):
                     raise forms.ValidationError(_("Speakers in an event must have distinct names. '%s' is already used." % name))
                 names.append(name)
 
-    def save(self, event, *args, **kwargs):
+    def save(self, *args, **kwargs):
+        commit = kwargs.pop('commit', True)
         self.deleted_objects = []
+        if not commit:
+            self.saved_forms = []
         saved_instances = []
 
         for form in self.initial_forms:
@@ -808,17 +814,12 @@ class SpeakerBaseFormSet(BaseModelFormSet):
             speaker = self._existing_object(pk_value)
             if self.can_delete and self._should_delete_form(form):
                 self.deleted_objects.append(speaker)
-                speaker.event.remove(event)
-                if not speaker.event.count():
-                    speaker.delete()
                 continue
-            saved_instances.append(self.save_existing(form, speaker))
+            saved_instances.append(self.save_existing(form, speaker, commit=commit))
 
-        speakers = self.save_new_objects()
-        for speaker in speakers:
-            speaker.event.add(event)
+        new_instances = self.save_new_objects(commit)
 
-        return saved_instances + speakers
+        return saved_instances + new_instances
 
 
 class SpeakerForm(BetterModelForm):

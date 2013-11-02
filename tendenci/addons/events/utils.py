@@ -1237,7 +1237,7 @@ def clean_price(price, user):
 
     return price, price_pk, amount
 
-def copy_event(event, user, reuse_speaker=False):
+def copy_event(event, user, reuse_rel=False):
     #copy event
     new_event = Event.objects.create(
         title = event.title,
@@ -1275,22 +1275,25 @@ def copy_event(event, user, reuse_speaker=False):
     #copy place
     place = event.place
     if place:
-        new_place = Place.objects.create(
-            name = place.name,
-            description = place.description,
-            address = place.address,
-            city = place.city,
-            state = place.state,
-            zip = place.zip,
-            country = place.country,
-            url = place.url,
-        )
-        new_event.place = new_place
+        if reuse_rel:
+            new_event.place = place
+        else:
+            new_place = Place.objects.create(
+                name = place.name,
+                description = place.description,
+                address = place.address,
+                city = place.city,
+                state = place.state,
+                zip = place.zip,
+                country = place.country,
+                url = place.url,
+            )
+            new_event.place = new_place
         new_event.save()
 
     #copy speakers
     for speaker in event.speaker_set.all():
-        if reuse_speaker:
+        if reuse_rel:
             speaker.event.add(new_event)
         else:
             new_speaker = Speaker.objects.create(
@@ -1302,12 +1305,15 @@ def copy_event(event, user, reuse_speaker=False):
 
     #copy organizers
     for organizer in event.organizer_set.all():
-        new_organizer = Organizer.objects.create(
-            user = organizer.user,
-            name = organizer.name,
-            description = organizer.description,
-        )
-        new_organizer.event.add(new_event)
+        if reuse_rel:
+            organizer.event.add(new_event)
+        else:
+            new_organizer = Organizer.objects.create(
+                user = organizer.user,
+                name = organizer.name,
+                description = organizer.description,
+            )
+            new_organizer.event.add(new_event)
 
     #copy registration configuration
     old_regconf = event.registration_configuration

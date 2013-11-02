@@ -93,6 +93,8 @@ class Place(models.Model):
     An event can only be in one place
     A place can be used for multiple events
     """
+    _original_name = None
+
     name = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
 
@@ -105,6 +107,10 @@ class Place(models.Model):
 
     # online location
     url = models.URLField(blank=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Place, self).__init__(*args, **kwargs)
+        self._original_name = self.name
 
     def __unicode__(self):
         str_place = '%s %s %s %s %s' % (
@@ -845,10 +851,16 @@ class Organizer(models.Model):
     Event can have multiple organizers
     Organizer can maintain multiple events
     """
+    _original_name = None
+
     event = models.ManyToManyField('Event', blank=True)
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
+
+    def __init__(self, *args, **kwargs):
+        super(Organizer, self).__init__(*args, **kwargs)
+        self._original_name = self.name
 
     def __unicode__(self):
         return self.name
@@ -859,6 +871,8 @@ class Speaker(models.Model):
     Event can have multiple speakers
     Speaker can attend multiple events
     """
+    _original_name = None
+
     event = models.ManyToManyField('Event', blank=True)
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(_('Speaker Name'), blank=True, max_length=100) # static info.
@@ -866,6 +880,10 @@ class Speaker(models.Model):
     featured = models.BooleanField(
         default=False,
         help_text=_("All speakers marked as featured will be displayed when viewing the event."))
+
+    def __init__(self, *args, **kwargs):
+        super(Speaker, self).__init__(*args, **kwargs)
+        self._original_name = self.name
 
     def __unicode__(self):
         return self.name
