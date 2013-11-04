@@ -500,7 +500,7 @@ class Registration(models.Model):
         config = self.event.registration_configuration
 
         balance = self.invoice.balance
-        if self.reg_conf_price.payment_required is None:
+        if self.reg_conf_price is None or self.reg_conf_price.payment_required is None:
             payment_required = config.payment_required
         else:
             payment_required = self.reg_conf_price.payment_required
@@ -762,7 +762,7 @@ class Registrant(models.Model):
         else:
             balance = 0
 
-        if self.pricing.payment_required is None:
+        if self.pricing is None or self.pricing.payment_required is None:
             payment_required = config.payment_required
         else:
             payment_required = self.pricing.payment_required
