@@ -55,6 +55,17 @@ class ListNode(Node):
         if not hasattr(self.model.objects, 'search'):
             raise AttributeError(_('Model.objects does not have a search method'))
 
+    def custom_model_filter(self, items, user):
+        """Returns a queryset that may have custom filtering.
+
+        This is useful for models that filter on a datefield to prevent
+        items published in the future from displaying.
+
+        The user object is also included if permissions are relevant to
+        the filtering.
+        """
+        return items
+
     def render(self, context):
         tags = u''
         query = u''
@@ -180,6 +191,8 @@ class ListNode(Node):
 
             if hasattr(self.model(), 'status_detail'):
                 items = items.filter(status_detail__iexact=status_detail)
+
+            items = self.custom_model_filter(items, user)
 
         objects = []
 
