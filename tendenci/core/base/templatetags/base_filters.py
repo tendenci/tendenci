@@ -117,7 +117,10 @@ def exif_to_date(s, fmt='%Y:%m:%d %H:%M:%S'):
         %Y:%m:%d %H:%M:%S
     Convert the string with this format to a datetime object.
     """
-    return datetime.strptime(s, fmt)
+    try:
+        return datetime.strptime(s, fmt)
+    except ValueError:
+        return None
 
 @register.filter_function
 def in_group(user, group):

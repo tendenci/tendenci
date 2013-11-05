@@ -89,11 +89,14 @@
             {{ photo.caption|safe|urlize }}
         </div>
         {% if photo.exif_data %}
-        {% if photo.exif_data.DateTimeOriginal %}
+        
+        {% with photo.exif_data.DateTimeOriginal|exif_to_date|date:'F j, Y' as taken_dt %}
+        {% if taken_dt %}
         <div>
-        	<stong>{% trans "Taken on:" %} </stong> {{ photo.exif_data.DateTimeOriginal|exif_to_date|date:'F j, Y' }}
+        	<stong>{% trans "Taken on:" %} </stong> {{ taken_dt }}
         </div>
         {% endif %}
+        {% endwith %}
         
         {% if photo.exif_data.Make or photo.exif_data.Model %}
         <div>
