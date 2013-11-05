@@ -23,7 +23,7 @@ from tendenci.core.files.models import File
 from djcelery.models import TaskMeta
 
 from tendenci.addons.locations.models import Location, LocationImport
-from tendenci.addons.locations.forms import LocationForm
+from tendenci.addons.locations.forms import LocationForm, LocationFilterForm
 from tendenci.addons.locations.utils import get_coordinates
 from tendenci.addons.locations.importer.forms import UploadForm, ImportMapForm
 from tendenci.addons.locations.importer.utils import is_import_valid, parse_locs_from_csv
@@ -49,21 +49,25 @@ def detail(request, id=None, template_name="locations/view.html"):
 
 @is_enabled('locations')
 def search(request, template_name="locations/search.html"):
-    query = request.GET.get('q', None)
+    filters = get_query_filters(request.user, 'locations.view_location')
+    locations = Location.objects.filter(filters).distinct()
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        locations = Location.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'locations.view_location')
-        locations = Location.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            locations = locations.select_related()
+    if not request.user.is_anonymous():
+        locations = locations.select_related()
+
+    data = {'country':request.POST.get('country', ''),
+            'state':request.POST.get('state', ''),
+            'city':request.POST.get('city', '')}
+    form = LocationFilterForm(data, request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        locations = form.filter_results(locations)
 
     locations = locations.order_by('location_name')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'locations':locations}, 
+    return render_to_response(template_name, {'locations':locations, 'form':form}, 
         context_instance=RequestContext(request))
 
 

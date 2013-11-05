@@ -4,6 +4,7 @@ from os.path import splitext, basename
 from tendenci.addons.locations.models import Location
 from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
+from django.db.models import Q
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _ 
 
@@ -131,3 +132,61 @@ class LocationForm(TendenciBaseForm):
         if self.cleaned_data.get('remove_photo'):
             location.logo = None
         return location
+
+
+class LocationFilterForm(forms.Form):
+    query = forms.CharField(required=False)
+    country = forms.ChoiceField(choices=[], required=False)
+    state = forms.ChoiceField(choices=[], required=False)
+    city = forms.ChoiceField(choices=[], required=False)
+    # zipcode = forms.ChoiceField(choices=[], required=False)
+
+    def __init__(self, data={}, *args, **kwargs):
+        super(LocationFilterForm, self).__init__(*args, **kwargs)
+        # self.update_field_choices('zipcode', data)
+        del data['city']
+        self.update_field_choices('city', data)
+        del data['state']
+        self.update_field_choices('state', data)
+        self.update_field_choices('country')
+
+    def update_field_choices(self, field_name, data={}):
+        choices = Location.objects.exclude(**{'%s' % field_name: ''})
+        for key,value in data.iteritems():
+            if value:
+                choices = choices.filter(**{'%s' % key:value})
+        choices = choices.values_list(field_name, field_name).distinct().order_by(field_name)
+
+        if choices.count() > 1:
+            self.fields[field_name].choices = choices
+            # Adding empty value since we can't add on a ValuesListQuerySet
+            self.fields[field_name].choices = [('','----')] + self.fields[field_name].choices
+        else:
+            del self.fields[field_name]
+
+    def filter_results(self, queryset):
+        query = self.cleaned_data.get('query', '')
+        country = self.cleaned_data.get('country', '')
+        state = self.cleaned_data.get('state', '')
+        city = self.cleaned_data.get('city', '')
+        # zipcode = self.cleaned_data.get('zipcode', '')
+
+        filter_params = {}
+        if country:
+            filter_params['country'] = country
+        if state:
+            filter_params['state'] = state
+        if city:
+            filter_params['city'] = city
+        # if zipcode:
+        #     filter_params['zipcode'] = zipcode
+
+        queryset = queryset.filter(**filter_params)
+
+        if query:
+            queryset = queryset.filter(Q(location_name__icontains=query)|
+                                       Q(contact__icontains=query)|
+                                       Q(address__icontains=query)|
+                                       Q(phone__icontains=query)|
+                                       Q(email__icontains=query))
+        return queryset

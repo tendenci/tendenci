@@ -34,3 +34,27 @@
     {% paginate %}
 </div>
 {% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    var countryFilter = $('form.search-form select#id_country');
+    var stateFilter = $('form.search-form select#id_state');
+    var cityFilter = $('form.search-form select#id_city');
+    var searchForm = $('form.search-form');
+
+    countryFilter.on('change', function() {
+        // Reset the values of succeeding select fields first before submit
+        stateFilter.val('');
+        cityFilter.val('');
+        searchForm.submit();
+    });
+    stateFilter.on('change', function() {
+        // Reset the values of succeeding select fields first before submit
+        cityFilter.val('');
+        searchForm.submit();
+    });
+    cityFilter.on('change', function() {
+        searchForm.submit();
+    });
+</script>
+{% endblock %}
