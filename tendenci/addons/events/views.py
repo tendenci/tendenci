@@ -509,6 +509,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             event = update_perms_and_save(request, form_event, event)
 
             if apply_changes_to == 'self':
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -533,6 +534,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
                         # update all permissions and save the model
                         cur_event = update_perms_and_save(request, form_event2, cur_event)
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -587,30 +589,29 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
                 event.place = place
                 event.save(log=False)
 
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
                 return HttpResponseRedirect(reverse('event.organizer_edit', args=[event.pk]))
             else:
-                create_new = False
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
-                    past_events = recurring_events.filter(start_dt__lt=event.start_dt)
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
+                    # Check if place is associated to a previous event
+                    place_in_past_events = place.event_set.filter(start_dt__lt=event.start_dt,
+                                                  recurring_event=event.recurring_event
+                                                  ).exists()
 
-                    if (place._original_name != place.name) and past_events:
-                        # Check if place is associated to a previous event
-                        for rel_event in place.event_set.all():
-                            if rel_event in past_events:
-                                create_new = True
-                                break
-                if create_new:
-                    place.pk = None
+                    if (place._original_name != place.name) and place_in_past_events:
+                        place.pk = None
+                        
                 place.save()
                 for cur_event in recurring_events:
                     cur_event.place = place
                     cur_event.save(log=False)
 
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -669,25 +670,24 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                 # Readd event to organizer
                 organizer.event.add(event)
 
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
                 return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
             else:
-                create_new = False
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
-                    past_events = recurring_events.filter(start_dt__lt=event.start_dt)
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
+                    # Check if organizer is associated to a previous event
+                    organizer_in_past_events = organizer.event.filter(
+                                                 start_dt__lt=event.start_dt,
+                                                  recurring_event=event.recurring_event
+                                                  ).exists()
 
-                    if (organizer._original_name != organizer.name) and past_events:
-                        # Check if organizer is associated to a previous event
-                        for rel_event in organizer.event.all():
-                            if rel_event in past_events:
-                                create_new = True
-                                break
-                if create_new:
-                    organizer.pk = None
+                    if (organizer._original_name != organizer.name) and organizer_in_past_events:
+                        organizer.pk = None
+                        
                 organizer.save()
                 for cur_event in recurring_events:
                     # Remove previous organizer from event
@@ -696,6 +696,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                     # Add new organizer
                     organizer.event.add(cur_event)
 
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -762,39 +763,49 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                     del_speaker.event.remove(event)
                     if not del_speaker.event.count():
                         del_speaker.delete()
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 redirect_url = reverse('event', args=[event.pk])
             else:
-                past_events = None
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
-                    past_events = recurring_events.filter(start_dt__lt=event.start_dt)
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
 
                 for speaker in speakers:
-                    create_new = False
-                    if speaker.pk and (speaker._original_name != speaker.name) and past_events:
+                    if speaker.pk and (speaker._original_name != speaker.name):
                         # Check if speaker is associated to a previous event
-                        for rel_event in speaker.event.all():
-                            if rel_event in past_events:
-                                create_new = True
-                                break
-                    if create_new:
-                        # Remove the events from previous speaker
-                        for recur_event in recurring_events:
-                            speaker.event.remove(recur_event)
-                        speaker.pk = None
+                        if speaker.event.filter(
+                                                start_dt__lt=event.start_dt,
+                                                recurring_event=event.recurring_event
+                                                  ).exists():                                                  
+#                             # Remove the events from previous speaker
+#                             for recur_event in recurring_events:
+#                                 speaker.event.remove(recur_event)
+                            speaker.pk = None
                     speaker.save()
                     speaker.event = recurring_events
+
+                speaker_ids = [speaker.pk for speaker in speakers]
+                for recur_event in recurring_events:
+                    # remove other speakers that previously associated to some of the occurrences
+                    # but are not being added/edited
+                    speakers_to_remove = recur_event.speaker_set.exclude(id__in=speaker_ids)
+                    if speakers_to_remove:
+                        for speaker in speakers_to_remove:
+                            speaker.event.remove(recur_event)
 
                 # Only delete when speaker has no more events associated to it
                 if form_speaker.deleted_objects:
                     for recur_event in recurring_events:
                         for del_speaker in form_speaker.deleted_objects:
-                            del_speaker.event.remove(recur_event)
+                            try:
+                                del_speaker.event.remove(recur_event)
+                            except ValueError:
+                                pass
                             if not del_speaker.event.count():
                                 del_speaker.delete()
 
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 redirect_url = reverse('event.recurring', args=[event.pk])
 
@@ -881,6 +892,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     regconf.save()
 
             if apply_changes_to == 'self':
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -898,6 +910,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     if form_regconf2.is_valid():
                         regconf = form_regconf2.save()
 
+                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -964,6 +977,7 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                     regconf_price.reg_form = None
                 regconf_price.save()
 
+            EventLog.objects.log(instance=event)
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
             return HttpResponseRedirect(reverse('event', args=[event.pk]))
     else:
@@ -1237,7 +1251,7 @@ def add(request, year=None, month=None, day=None, \
                         new_event.end_dt = event_list[counter] + event_length
                         new_event.is_recurring_event = True
                         new_event.recurring_event = recur_event
-                        new_event.allow_anonymous_view = True
+                        new_event.allow_anonymous_view = event.allow_anonymous_view
                         new_event.save()
 
                         reg_conf = new_event.registration_configuration

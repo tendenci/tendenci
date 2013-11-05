@@ -650,7 +650,7 @@ class DisplayAttendeesForm(forms.Form):
 
 class ApplyRecurringChangesForm(forms.Form):
     APPLY_CHANGES_CHOICES = (("self","This event only"),
-                             ("rest","The following events in series"),
+                             ("rest","This and the following events in series"),
                              ("all","All events in series"))
     apply_changes_to = forms.ChoiceField(choices=APPLY_CHANGES_CHOICES,
                                          widget=forms.RadioSelect, initial="self")
