@@ -150,7 +150,7 @@ setup(
         "http://g.pypi.python.org/",
     ],
     install_requires=[
-        "Django==1.4.3",
+        "Django==1.4.9",
         "pisa",
         "Reportlab==2.5",
         "html5lib",
