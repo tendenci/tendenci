@@ -1,5 +1,4 @@
 from datetime import datetime
-import os
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -11,7 +10,6 @@ from django.contrib import messages
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
-from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (has_perm, has_view_perm,
@@ -29,9 +27,6 @@ from tendenci.addons.locations.importer.forms import UploadForm, ImportMapForm
 from tendenci.addons.locations.importer.utils import is_import_valid, parse_locs_from_csv
 from tendenci.addons.locations.importer.tasks import ImportLocationsTask
 from tendenci.core.imports.utils import render_excel
-from tendenci.core.files.models import File
-from tendenci.apps.redirects.models import Redirect
-from djcelery.models import TaskMeta
 
 
 @is_enabled('locations')
@@ -208,11 +203,9 @@ def locations_import_upload(request, template_name='locations/import-upload-file
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            cleaned_data = form.cleaned_data
             
             locport = LocationImport.objects.create(creator=request.user)
             csv = File.objects.save_files_for_instance(request, locport)[0]
-            #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
             file_path = str(csv.file.name)
             import_valid, import_errs = is_import_valid(file_path)
 
@@ -346,7 +339,6 @@ def export(request, template_name="locations/export.html"):
 
     if request.method == 'POST':
         # initilize initial values
-        file_name = "locations.csv"
         fields = [
             'guid',
             'location_name',
