@@ -467,7 +467,7 @@ class EventForm(TendenciBaseForm):
         (9, '9'),
         (10, '10'),
     )
-    is_recurring_event = forms.BooleanField(label=_('Is Recurring'), required=False)
+    is_recurring_event = forms.BooleanField(label=_('Is Recurring?'), required=False)
     repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RecurringEvent.RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
     frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
     end_recurring = forms.DateField(
