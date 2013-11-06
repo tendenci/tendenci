@@ -188,7 +188,8 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
 
     (deleted_objects, perms_needed, protected) = get_deleted_objects(
             group, request.user)
-    object_name = force_unicode(group._meta.verbose_name)
+    object_name = group.label or group.name
+
     if perms_needed or protected:
         title = _("Cannot delete %(name)s") % {"name": object_name}
     else:
