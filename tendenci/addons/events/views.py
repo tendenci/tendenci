@@ -507,9 +507,9 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             # update all permissions and save the model
             event = update_perms_and_save(request, form_event, event)
+            EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -534,7 +534,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
                         # update all permissions and save the model
                         cur_event = update_perms_and_save(request, form_event2, cur_event)
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -580,6 +579,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
             place = form_place.save(commit=False)
+            EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
                 if place.event_set.count() > 1 and (place._original_name != place.name):
@@ -589,7 +589,6 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
                 event.place = place
                 event.save(log=False)
 
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -611,7 +610,6 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
                     cur_event.place = place
                     cur_event.save(log=False)
 
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -659,6 +657,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
             organizer = form_organizer.save(commit=False)
+            EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
                 if organizer.event.count() > 1 and (organizer._original_name != organizer.name):
@@ -670,7 +669,6 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                 # Readd event to organizer
                 organizer.event.add(event)
 
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -696,7 +694,6 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                     # Add new organizer
                     organizer.event.add(cur_event)
 
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -746,6 +743,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
             speakers = form_speaker.save(commit=False)
+            EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
                 for speaker in speakers:
@@ -763,7 +761,6 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                     del_speaker.event.remove(event)
                     if not del_speaker.event.count():
                         del_speaker.delete()
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 redirect_url = reverse('event', args=[event.pk])
             else:
@@ -805,7 +802,6 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                             if not del_speaker.event.count():
                                 del_speaker.delete()
 
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 redirect_url = reverse('event.recurring', args=[event.pk])
 
@@ -891,8 +887,9 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     regconf.reg_form = None
                     regconf.save()
 
+            EventLog.objects.log(instance=event)
+
             if apply_changes_to == 'self':
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -910,7 +907,6 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     if form_regconf2.is_valid():
                         regconf = form_regconf2.save()
 
-                EventLog.objects.log(instance=event)
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
