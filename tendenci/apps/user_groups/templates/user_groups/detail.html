@@ -71,7 +71,7 @@
             <div class="group-member {% cycle 'gray' '' %}">
              <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) - {{ gm.role }}</a>
              {% if can_delete %}
-                &nbsp;<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
+                &nbsp;<span class="delete-member"><a href="{% url group.deleteuser group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
              <!-- delete-member form -->
                 <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">{% csrf_token %}
                     <input type="hidden" name="action" value="delete">
@@ -101,7 +101,7 @@
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation for members
-			$('.delete').click(function(){
+			$('.delete-member').click(function(){
 				var delete_member = confirm('Remove this member from the group?');	// confirm
 				if(delete_member) $(this).parent().find('form[name="member-delete"]').submit() // delete: if OK
 				return false;	// cancel
