@@ -1606,6 +1606,13 @@ def add_sf_attendance(registrant, event):
                     profile = registrant.user.get_profile()
                 except Profile.DoesNotExist:
                     profile = Profile.objects.create_profile(user=registrant.user)
+
+                # first, last, and email required
+                profile.user.first_name = profile.user.first_name or registrant.first_name
+                profile.user.last_name = profile.user.last_name or registrant.last_name
+                profile.user.email = profile.user.email or registrant.email
+                profile.user.save()
+
                 contact_id = create_salesforce_contact(profile)
                     
             elif all(contact_requirements):
