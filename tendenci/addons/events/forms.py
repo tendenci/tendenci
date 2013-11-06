@@ -1,7 +1,7 @@
 import re
 import imghdr
 from os.path import splitext, basename
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from django import forms
@@ -470,8 +470,10 @@ class EventForm(TendenciBaseForm):
     is_recurring_event = forms.BooleanField(label=_('Is Recurring'), required=False)
     repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RecurringEvent.RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
     frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
-    end_recurring = SplitDateTimeField(label=_('Ends On'), initial=datetime.now()+timedelta(days=30,hours=6))
-    recurs_on = forms.ChoiceField(widget=forms.RadioSelect, initial='weekday',
+    end_recurring = forms.DateField(
+        label=_('Ends On'), initial=date.today()+timedelta(days=30),
+        widget=forms.DateInput(attrs={'class':'datepicker'}))
+    recurs_on = forms.ChoiceField(label=_('Recurs On'), widget=forms.RadioSelect, initial='weekday',
         choices=(('weekday', 'the same day of the week'),('date','the same date'),))
 
     status_detail = forms.ChoiceField(
@@ -510,19 +512,15 @@ class EventForm(TendenciBaseForm):
         fieldsets = [('Event Information', {
                       'fields': ['title',
                                  'description',
+                                 'is_recurring_event',
+                                 'frequency',
+                                 'repeat_type',
                                  'start_dt',
                                  'end_dt',
+                                 'recurs_on',
+                                 'end_recurring',
                                  ],
                       'legend': ''
-                      }),
-                      ('Recurring Event', {
-                       'fields': ['is_recurring_event',
-                                  'repeat_type',
-                                  'frequency',
-                                  'end_recurring',
-                                  'recurs_on',
-                                 ],
-                      'classes': ['recurring'],
                       }),
                       ('Event Information', {
                        'fields': ['on_weekend',
@@ -613,6 +611,12 @@ class EventForm(TendenciBaseForm):
                 raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
 
         return photo_upload
+
+    def clean_end_recurring(self):
+        end_recurring = self.cleaned_data.get('end_recurring', None)
+        if end_recurring:
+            return datetime.combine(end_recurring, datetime.max.time())
+        return end_recurring
 
     def clean(self):
         cleaned_data = self.cleaned_data

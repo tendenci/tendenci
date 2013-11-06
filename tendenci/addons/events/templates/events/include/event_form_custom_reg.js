@@ -125,32 +125,51 @@ $(document).ready(function() {
         }
     });
 
-    if ($("#id_is_recurring_event").is(':checked')) {
-        $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').show();
+    var recurringCheck = $('#id_is_recurring_event');
+    var repeatFreq = $('.form-field .id_frequency');
+    var repeatType = $('.form-field .id_repeat_type');
+    var recurOn = $('.form-field .id_recurs_on');
+    var endRecurring = $('.form-field .id_end_recurring');
+    var repeatValue = repeatType.find('select#id_repeat_type');
+
+    if (recurringCheck.is(':checked')) {
+        repeatFreq.show();
+        repeatType.show();
+        endRecurring.show();
     }else {
-        $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').hide();
+        repeatFreq.hide();
+        repeatType.hide();
+        endRecurring.hide();
     }
-    $('#id_is_recurring_event').click(function(){
-        if($("#id_is_recurring_event").is(':checked')){
-            $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').slideDown('fast');
+    // Hide Recurs On field when 'Daily' or 'Weekly' types are selected
+    if ((repeatValue.val() == 3) || (repeatValue.val() == 4)) {
+        recurOn.show();
+    }else {
+        recurOn.hide();
+    }
+
+    recurringCheck.click(function(){
+        if(recurringCheck.is(':checked')){
+            repeatFreq.slideDown('fast');
+            repeatType.slideDown('fast');
+            endRecurring.slideDown('fast');
+            if ((repeatValue.val() == 3) || (repeatValue.val() == 4)) {
+                recurOn.slideDown('fast');
+            }
             toggle_custom_reg_form();
         }else{
-            $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').slideUp('fast');
+            repeatFreq.slideUp('fast');
+            repeatType.slideUp('fast');
+            recurOn.slideUp('fast');
+            endRecurring.slideUp('fast');
             toggle_custom_reg_form();
         }
     });
-
-    // Hide Recurs On field when 'Daily' or 'Weekly' types are selected
-    if (($(this).val() == 3) || ($(this).val() == 4)) {
-        $('fieldset.recurring .form-field div.id_recurs_on').show();
-    }else {
-        $('fieldset.recurring .form-field div.id_recurs_on').hide();
-    }
-    $('#id_repeat_type').change(function(){
+    repeatValue.change(function(){
         if (($(this).val() == 3) || ($(this).val() == 4)) {
-            $('fieldset.recurring .form-field div.id_recurs_on').slideDown('fast');
+            recurOn.slideDown('fast');
         }else {
-            $('fieldset.recurring .form-field div.id_recurs_on').slideUp('fast');
+            recurOn.slideUp('fast');
         }
     });
 });

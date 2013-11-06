@@ -1229,7 +1229,7 @@ def add(request, year=None, month=None, day=None, \
                     event_length = init_end - init_date
                     freq = int(form_event.cleaned_data['frequency'])
                     r_type = int(form_event.cleaned_data['repeat_type'])
-                    end_recurring = datetime.strptime(form_event.cleaned_data['end_recurring'], '%Y-%m-%d %H:%M')
+                    end_recurring = form_event.cleaned_data['end_recurring']
                     recur_every = form_event.cleaned_data['recurs_on']
                     recur_event = RecurringEvent(repeat_type=r_type,
                                                  frequency=freq,

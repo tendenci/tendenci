@@ -228,6 +228,19 @@ div.forms div.form-field .field input.timepicker {
     width: 90px;
 }
 
+div.forms div.form-field .id_frequency {
+    width: 18%;
+    float: left;
+}
+div.forms div.form-field .id_repeat_type .label {
+    visibility: hidden;
+}
+div.forms div.form-field .id_frequency select,
+div.forms div.form-field .id_repeat_type select {
+	margin: 0 5px 0 0;
+    width: 90px;
+}
+
 div.forms div.form-field .field input.reg8n_price {
     width: 80px;
 }
@@ -245,13 +258,6 @@ div.forms div.form-field .field input[name*='late_price'] {
 }
 
 div.forms fieldset.attendees {
-    background-color: #EFEFEF;
-    border-radius: 3px 3px 3px 3px;
-    margin-bottom: 10px;
-    padding: 10px;
-}
-
-div.forms fieldset.recurring {
     background-color: #EFEFEF;
     border-radius: 3px 3px 3px 3px;
     margin-bottom: 10px;

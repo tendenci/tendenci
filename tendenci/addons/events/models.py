@@ -936,7 +936,7 @@ class RecurringEvent(models.Model):
             repeat_type = 'month'
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year'
-        ends_on = self.ends_on.strftime("%b %d %Y %I:%M %p")
+        ends_on = self.ends_on.strftime("%b %d %Y")
         return _("Repeats every %s %s until %s" %(self.frequency, repeat_type, ends_on))
 
 
