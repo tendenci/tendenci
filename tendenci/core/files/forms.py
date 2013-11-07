@@ -137,9 +137,15 @@ class FileSearchForm(forms.Form):
         user = self.user or AnonymousUser()
         filters = get_query_filters(user, 'user_groups.view_group', **{'perms_field': False})
         groups = Group.objects.filter(filters).distinct()
-        groups = [[g.id, g.name] for g in groups]
-        groups.insert(0, ['', '------------'])
-        self.fields['group'].choices = tuple(groups)
+        groups_list = [[g.id, g.name] for g in groups]
+        if self.user.is_authenticated():
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+
+        groups_list.insert(0, ['', '------------'])
+        self.fields['group'].choices = tuple(groups_list)
 
         content_type = ContentType.objects.get(app_label='files', model='file')
         categories = CategoryItem.objects.filter(content_type=content_type,
