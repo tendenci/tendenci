@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
 from tendenci.core.categories.forms import CategoryField
@@ -8,6 +9,7 @@ from tendenci.core.categories.models import CategoryItem
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
 
@@ -125,9 +127,16 @@ class FileSearchForm(forms.Form):
     group = forms.ChoiceField(label=_('Group'), choices=[], required=False)
 
     def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user', None)
+        else:
+            self.user = None
+
         super(FileSearchForm, self).__init__(*args, **kwargs)
 
-        groups = Group.objects.filter(status=True, status_detail='active')
+        user = self.user or AnonymousUser()
+        filters = get_query_filters(user, 'user_groups.view_group', **{'perms_field': False})
+        groups = Group.objects.filter(filters).distinct()
         groups = [[g.id, g.name] for g in groups]
         groups.insert(0, ['', '------------'])
         self.fields['group'].choices = tuple(groups)
