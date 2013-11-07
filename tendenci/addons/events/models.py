@@ -913,10 +913,10 @@ class RecurringEvent(models.Model):
     RECUR_MONTHLY = 3
     RECUR_YEARLY = 4
     RECURRENCE_CHOICES = (
-        (RECUR_DAILY, 'Daily'),
-        (RECUR_WEEKLY, 'Weekly'),
-        (RECUR_MONTHLY, 'Monthly'),
-        (RECUR_YEARLY, 'Yearly')
+        (RECUR_DAILY, 'Day(s)'),
+        (RECUR_WEEKLY, 'Week(s)'),
+        (RECUR_MONTHLY, 'Month(s)'),
+        (RECUR_YEARLY, 'Year(s)')
     )
     repeat_type = models.IntegerField(_("Repeats"), choices=RECURRENCE_CHOICES)
     frequency = models.IntegerField(_("Repeats every"))
@@ -929,13 +929,13 @@ class RecurringEvent(models.Model):
 
     def get_info(self):
         if self.repeat_type == self.RECUR_DAILY:
-            repeat_type = 'day'
+            repeat_type = 'day(s)'
         elif self.repeat_type == self.RECUR_WEEKLY:
-            repeat_type = 'week'
+            repeat_type = 'week(s)'
         elif self.repeat_type == self.RECUR_MONTHLY:
-            repeat_type = 'month'
+            repeat_type = 'month(s)'
         elif self.repeat_type == self.RECUR_YEARLY:
-            repeat_type = 'year'
+            repeat_type = 'year(s)'
         ends_on = self.ends_on.strftime("%b %d %Y")
         return _("Repeats every %s %s until %s" %(self.frequency, repeat_type, ends_on))
 
