@@ -1,4 +1,4 @@
-import Image
+from PIL import Image
 from os.path import exists
 from cStringIO import StringIO
 import os

@@ -1,6 +1,6 @@
 import re
 import os
-import Image
+from PIL import Image
 from dateutil.parser import parse
 from datetime import datetime
 

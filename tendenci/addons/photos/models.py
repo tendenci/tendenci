@@ -1,9 +1,9 @@
 import uuid
 import os
-import Image as PILImage
+from PIL import Image as PILImage
 from PIL.ExifTags import TAGS as PILTAGS
-import ImageFile
-import ImageFilter
+from PIL import ImageFile
+from PIL import ImageFilter
 
 from datetime import datetime
 from inspect import isclass

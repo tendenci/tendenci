@@ -2,7 +2,7 @@
 import datetime
 import time
 import re
-import Image as Pil
+from PIL import Image as Pil
 import os
 import mimetypes
 import shutil

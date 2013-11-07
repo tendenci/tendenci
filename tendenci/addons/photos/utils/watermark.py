@@ -4,8 +4,8 @@ Original found here:
 http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/362879
 
 """
-import Image
-import ImageEnhance
+from PIL import Image
+from PIL import ImageEnhance
 
 def reduce_opacity(im, opacity):
     """Returns an image with reduced opacity."""

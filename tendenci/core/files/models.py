@@ -1,7 +1,7 @@
 import os
 import mimetypes
 import uuid
-import Image
+from PIL import Image
 import re
 from slate import PDF
 import cStringIO
