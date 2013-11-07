@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import simplejson as json
 
+from django.db import connection
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
@@ -31,7 +32,7 @@ class Command(BaseCommand):
         forms.value = json.dumps(self.get_forms(5, 30))
         forms.save()
 
-        print "Creating dashboard statistics for pages traffic"
+        print "Creating dashboard statistics for pages traffic", datetime.now()
         stat_type,created = DashboardStatType.objects.get_or_create(name="pages_30_traffic")
         if created:
             stat_type.description = "Top 5 Pages"
@@ -40,7 +41,7 @@ class Command(BaseCommand):
         pages_traffic.value = json.dumps(self.get_pages_traffic(5, 30))
         pages_traffic.save()
 
-        print "Creating dashboard statistics for events traffic"
+        print "Creating dashboard statistics for events traffic", datetime.now()
         stat_type,created = DashboardStatType.objects.get_or_create(name="events_30_traffic")
         if created:
             stat_type.description = "Top 5 Events"
@@ -49,7 +50,7 @@ class Command(BaseCommand):
         events_traffic.value = json.dumps(self.get_events_traffic(5, 30))
         events_traffic.save()
 
-        print "Creating dashboard statistics for memberships"
+        print "Creating dashboard statistics for memberships", datetime.now()
         stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_count")
         if created:
             stat_type.description = "Members"
@@ -206,20 +207,24 @@ class Command(BaseCommand):
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         cid = ContentType.objects.get_for_model(Page)
         total_count = EventLog.objects.filter(content_type=cid, create_dt__gte=dt).count()
-        pages = Page.objects.extra(select={
-            'logs': "SELECT COUNT(*) " + \
-                    "FROM event_logs_eventlog " + \
-                         "WHERE event_logs_eventlog.object_id = " + \
-                               "pages_page.id AND " + \
-                               "event_logs_eventlog.content_type_id = " + \
-                               "%s AND " % cid.pk + \
-                               "event_logs_eventlog.create_dt >= TIMESTAMP '%s'" % dt})
-        pages = pages.order_by("-logs")[:items]
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT object_id, count(*) as total_views
+            FROM event_logs_eventlog
+            WHERE create_dt >= '%s'
+            AND content_type_id = %s
+            GROUP BY object_id
+            ORDER BY total_views DESC
+            LIMIT %s""" % (dt, cid.pk, items))
+        rows = cursor.fetchall()
+
         pages_list = [['','',total_count]]
-        for page in pages:
-            pages_list.append([page.title,
-                               page.get_absolute_url(),
-                               page.logs])
+        for page in rows:
+            page_obj = Page.objects.get(id=page[0])
+            pages_list.append([page_obj.title,
+                               page_obj.get_absolute_url(),
+                               page[1]])
         return pages_list
 
 
@@ -230,20 +235,24 @@ class Command(BaseCommand):
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         cid = ContentType.objects.get_for_model(Event)
         total_count = EventLog.objects.filter(content_type=cid, create_dt__gte=dt).count()
-        events = Event.objects.extra(select={
-            'logs': "SELECT COUNT(*) " + \
-                    "FROM event_logs_eventlog " + \
-                         "WHERE event_logs_eventlog.object_id = " + \
-                               "events_event.id AND " + \
-                               "event_logs_eventlog.content_type_id = " + \
-                               "%s AND " % cid.pk + \
-                               "event_logs_eventlog.create_dt >= TIMESTAMP '%s'" % dt})
-        events = events.order_by("-logs")[:items]
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT object_id, count(*) as total_views
+            FROM event_logs_eventlog
+            WHERE create_dt >= '%s'
+            AND content_type_id = %s
+            GROUP BY object_id
+            ORDER BY total_views DESC
+            LIMIT %s""" % (dt, cid.pk, items))
+        rows = cursor.fetchall()
+
         events_list = [['','',total_count]]
-        for event in events:
-            events_list.append([event.title,
-                                event.get_absolute_url(),
-                                event.logs])
+        for event in rows:
+            event_obj = Event.objects.get(id=event[0])
+            events_list.append([event_obj.title,
+                                event_obj.get_absolute_url(),
+                                event[1]])
         return events_list
 
 
