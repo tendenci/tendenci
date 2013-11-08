@@ -446,6 +446,11 @@ ul.errorlist {;
 	width: 64%;
 	float: left;
 }
+
+.event-wrap .info .meta {
+	border-top: none;
+}
+
 .event-wrap .vitals {
 	float: right;
 	margin: 60px 15px 0 0;
