@@ -19,6 +19,8 @@ from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.http import Http404
+from django.utils.encoding import force_unicode
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
@@ -38,6 +40,7 @@ from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembership
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
 from tendenci.apps.user_groups.importer.utils import user_groups_import_process
 from tendenci.apps.notifications import models as notification
+from tendenci.core.base.utils import get_deleted_objects
 
 
 def search(request, template_name="user_groups/search.html"):
@@ -183,7 +186,24 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
         group.delete()
         return HttpResponseRedirect(reverse('group.search'))
 
-    return render_to_response(template_name, {'group':group},
+    (deleted_objects, perms_needed, protected) = get_deleted_objects(
+            group, request.user)
+    object_name = group.label or group.name
+
+    if perms_needed or protected:
+        title = _("Cannot delete %(name)s") % {"name": object_name}
+    else:
+        title = _("Are you sure?")
+
+    return render_to_response(template_name,
+            {'group':group,
+             "title": title,
+             "object_name": object_name,
+             "deleted_objects": deleted_objects,
+             "perms_lacking": perms_needed,
+             "protected": protected,
+             "opts": group._meta,
+             },
         context_instance=RequestContext(request))
 
 def group_membership_self_add(request, slug, user_id):

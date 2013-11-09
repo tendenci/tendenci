@@ -181,7 +181,7 @@ def search(request, template_name="files/search.html"):
     sub_category = u''
     group = None
 
-    form = FileSearchForm(request.GET)
+    form = FileSearchForm(request.GET, **{'user': request.user})
 
     if form.is_valid():
         query = form.cleaned_data['q']

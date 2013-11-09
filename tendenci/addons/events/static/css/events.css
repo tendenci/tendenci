@@ -459,6 +459,11 @@ ul.errorlist {;
 	width: 64%;
 	float: left;
 }
+
+.event-wrap .info .meta {
+	border-top: none;
+}
+
 .event-wrap .vitals {
 	float: right;
 	margin: 60px 15px 0 0;
@@ -989,6 +994,8 @@ table.pricing-list .price-disabled label {
 .t .file-wrap h2 a.broken {
 	text-decoration: line-through;
 }
-.t .event-tabs .dropdown {
+
+.t .event-tabs .dropdown,
+.t .search-tabs .dropdown {
     z-index: 0;
 }

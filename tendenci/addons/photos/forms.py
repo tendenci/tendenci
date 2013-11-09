@@ -64,7 +64,8 @@ class PhotoUploadForm(TendenciBaseForm):
           'effect',
           'crop_from',
           'group',
-          'position'
+          'position',
+          'exif_data'
         )
 
     def __init__(self, *args, **kwargs):
@@ -82,6 +83,7 @@ class PhotoBatchEditForm(TendenciBaseForm):
             'is_public',
             'owner',
             'safetylevel',
+            'exif_data',
             'allow_anonymous_view',
             'status_detail',
             'status',
@@ -108,6 +110,7 @@ class PhotoEditForm(TendenciBaseForm):
         fields = (
             'title',
             'caption',
+            'photographer',
             'license',
             'tags',
             'group',
@@ -122,6 +125,7 @@ class PhotoEditForm(TendenciBaseForm):
                       'fields': [
                           'title',
                           'caption',
+                          'photographer',
                           'tags',
                           'group',
                           'license',

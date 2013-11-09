@@ -1,4 +1,4 @@
-<form class="search-form" action="{% url event.search %}" method="get">
+<form class="search-form" action="{% if past %}{% url event.past_search %}{% else %}{% url event.search %}{% endif %}" method="get">
 
 <div class="form-field clearfix">
     <div class="id_start_dt">

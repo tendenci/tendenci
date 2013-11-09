@@ -6,6 +6,7 @@ class Migration(DataMigration):
     depends_on = (
         ('campaign_monitor', '0001_initial'),
         ('user_groups', '0001_initial'),
+        ('entities', '0001_initial'),
     )
 
     def forwards(self, orm):

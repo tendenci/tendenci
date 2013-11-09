@@ -15,11 +15,13 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}codemirror2/lib/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}swfupload/swfupload.visual.css">
 {% endblock %}
         
 {% block body %}
 <h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
+<div id="swf-progress"></div>
 {% if current_file %}
 <div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> <span class="highlight">{{ pwd }}/{{ current_file }}</span> in your theme <span class="highlight">{{ current_theme }}</span></big>
 {% endif %}
@@ -27,7 +29,7 @@
     <tr>
         <td width="80%" id="editor-td" >
             {% if is_file %}
-            <form class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
+            <form id="editorForm" class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
                 {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
 					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
    					{{ file_form.rf_path }}
@@ -35,7 +37,8 @@
     				<div id="fileupdatemessage"></div>
     				<div class="form_block">
     					<input type="hidden" name="action" value="edit" />
-                    	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/> 
+                    	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
+                        <span id="save_message" class="highlight"></span>
                     </div>
               </form>
             {% if current_file not in non_deletable_files  %}
@@ -184,8 +187,10 @@
 {{ block.super }}
 <script src="{{ STATIC_URL }}codemirror/js/codemirror.js" type="text/javascript"></script>
 <script src="/static/js/jquery-ui-1.10.3.dialog.min.js"></script>
+{% include 'theme_editor/include/multi_upload.html' %}
 <script type="text/javascript">
 {% include 'theme_editor/include/new_template.js' %}
+{% include 'theme_editor/include/editor_submit.js' %}
 </script>
  
 <script type="text/javascript">

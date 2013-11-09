@@ -15,20 +15,36 @@
 <h1>{% trans "Delete a User Group" %}</h1>
 <h3>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}
 ({{ group.members.count }} member{{group.members.count|pluralize }})</a></h3>
-<div style="color:red;font-weight:bold;">{% trans "Are you sure you want to delete this Group?" %}</div>
-<div>
-    {% trans "Clicking Delete User Group will" %} 
-    <ul>
-        <li>{% trans "remove all members from the group" %}</li>
-        <li>{% trans "the group will be deleted from the system" %}</li>
-        <li>{% trans "Deleted items cannot be recovered!" %}</li>
-    </ul>
-</div>
-<form action="{% url group.delete group.id %}" method="post">{% csrf_token %}
-<input type="hidden" name="id" value="{{group.id}}" />
-<input type="submit" value="{% trans "Delete User Group" %}" />
-</form>
 
+{% if perms_lacking or protected %}
+    {% if perms_lacking %}
+        <p>{% blocktrans %}Deleting the group {{ object_name }} would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktrans %}</p>
+        <ul>
+        {% for obj in perms_lacking %}
+            <li>{{ obj }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% if protected %}
+        <p>{% blocktrans %}Deleting the group {{ object_name }} would require deleting the following protected related objects:{% endblocktrans %}</p>
+        <ul>
+        {% for obj in protected %}
+            <li>{{ obj }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% else %}
+    <p>{% blocktrans %}Are you sure you want to delete the group {{ object_name }}? All of the following objects and their related items will be deleted:{% endblocktrans %}</p>
+    
+        <ul>{{ deleted_objects|unordered_list }}</ul>
+
+    <form action="" method="post">{% csrf_token %}
+    <div>
+    <input type="hidden" name="id" value="{{group.id}}" />
+    <input type="submit" value="{% trans "Yes, I'm sure" %}" />
+    </div>
+    </form>
+{% endif %}
 
 </div>
 {% endblock %}

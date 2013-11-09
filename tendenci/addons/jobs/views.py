@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -11,7 +11,6 @@ from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import now_localized
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
@@ -198,7 +197,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 job.list_type = 'regular'
 
             # set up all the times
-            now = now_localized()
+            now = datetime.now()
             job.activation_dt = now
             if not job.post_dt:
                 job.post_dt = now
@@ -596,7 +595,7 @@ def approve(request, id, template_name="jobs/approve.html"):
     job = get_object_or_404(Job, pk=id)
 
     if request.method == "POST":
-        job.activation_dt = now_localized()
+        job.activation_dt = datetime.now()
         job.allow_anonymous_view = True
         job.status = True
         job.status_detail = 'active'

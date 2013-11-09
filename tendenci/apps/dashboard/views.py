@@ -61,6 +61,8 @@ def index(request, template_name="dashboard/index.html"):
 def new(request, template_name="dashboard/new.html"):
     profile_redirect = get_setting('site', 'global', 'profile_redirect')
     if profile_redirect and profile_redirect != '/dashboard' and not request.user.profile.is_superuser:
+        if "<username>" in profile_redirect:
+            profile_redirect = profile_redirect.replace("<username>", request.user.username)
         return redirect(profile_redirect)
 
     # self signup  free trial version

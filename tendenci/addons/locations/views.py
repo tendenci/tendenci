@@ -1,5 +1,4 @@
 from datetime import datetime
-import os
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -11,7 +10,6 @@ from django.contrib import messages
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
-from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (has_perm, has_view_perm,
@@ -23,15 +21,12 @@ from tendenci.core.files.models import File
 from djcelery.models import TaskMeta
 
 from tendenci.addons.locations.models import Location, LocationImport
-from tendenci.addons.locations.forms import LocationForm
+from tendenci.addons.locations.forms import LocationForm, LocationFilterForm
 from tendenci.addons.locations.utils import get_coordinates
 from tendenci.addons.locations.importer.forms import UploadForm, ImportMapForm
 from tendenci.addons.locations.importer.utils import is_import_valid, parse_locs_from_csv
 from tendenci.addons.locations.importer.tasks import ImportLocationsTask
 from tendenci.core.imports.utils import render_excel
-from tendenci.core.files.models import File
-from tendenci.apps.redirects.models import Redirect
-from djcelery.models import TaskMeta
 
 
 @is_enabled('locations')
@@ -49,21 +44,25 @@ def detail(request, id=None, template_name="locations/view.html"):
 
 @is_enabled('locations')
 def search(request, template_name="locations/search.html"):
-    query = request.GET.get('q', None)
+    filters = get_query_filters(request.user, 'locations.view_location')
+    locations = Location.objects.filter(filters).distinct()
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        locations = Location.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'locations.view_location')
-        locations = Location.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            locations = locations.select_related()
+    if not request.user.is_anonymous():
+        locations = locations.select_related()
+
+    data = {'country':request.POST.get('country', ''),
+            'state':request.POST.get('state', ''),
+            'city':request.POST.get('city', '')}
+    form = LocationFilterForm(data, request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        locations = form.filter_results(locations)
 
     locations = locations.order_by('location_name')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'locations':locations}, 
+    return render_to_response(template_name, {'locations':locations, 'form':form}, 
         context_instance=RequestContext(request))
 
 
@@ -120,12 +119,17 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 
     if has_perm(request.user,'locations.change_location',location):    
         if request.method == "POST":
-            form = form_class(request.POST, instance=location, user=request.user)
+            form = form_class(request.POST, request.FILES, instance=location, user=request.user)
             if form.is_valid():
                 location = form.save(commit=False)
 
                 # update all permissions and save the model
                 location = update_perms_and_save(request, form, location)
+
+                if 'photo_upload' in form.cleaned_data:
+                    photo = form.cleaned_data['photo_upload']
+                    if photo:
+                        location.save(photo=photo)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
                                                               
@@ -144,12 +148,17 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 def add(request, form_class=LocationForm, template_name="locations/add.html"):
     if has_perm(request.user,'locations.add_location'):
         if request.method == "POST":
-            form = form_class(request.POST, user=request.user)
+            form = form_class(request.POST, request.FILES, user=request.user)
             if form.is_valid():           
                 location = form.save(commit=False)
 
                 # update all permissions and save the model
                 location = update_perms_and_save(request, form, location)
+
+                if 'photo_upload' in form.cleaned_data:
+                    photo = form.cleaned_data['photo_upload']
+                    if photo:
+                        location.save(photo=photo)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
                 
@@ -194,11 +203,9 @@ def locations_import_upload(request, template_name='locations/import-upload-file
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            cleaned_data = form.cleaned_data
             
             locport = LocationImport.objects.create(creator=request.user)
             csv = File.objects.save_files_for_instance(request, locport)[0]
-            #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
             file_path = str(csv.file.name)
             import_valid, import_errs = is_import_valid(file_path)
 
@@ -332,7 +339,6 @@ def export(request, template_name="locations/export.html"):
 
     if request.method == 'POST':
         # initilize initial values
-        file_name = "locations.csv"
         fields = [
             'guid',
             'location_name',

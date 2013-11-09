@@ -32,6 +32,7 @@ apps_not_to_search = [
     'user',
     'story',
     'member',
+    'nav',
 ]
 
 registered_apps = registry_site.get_registered_apps()
@@ -48,7 +49,8 @@ def model_choices(site=None):
     choices = []
     for m in site.get_indexed_models():
         if m._meta.module_name.lower() in registered_apps_names:
-            choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
+            if get_setting("module", m._meta.app_label, "enabled") is not False:
+                choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
                                 capfirst(unicode(m._meta.verbose_name_plural))))
             
     return sorted(choices, key=lambda x: x[1])

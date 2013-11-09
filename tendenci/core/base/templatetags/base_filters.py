@@ -1,7 +1,8 @@
 import re
 import os
-import Image
+from PIL import Image
 from dateutil.parser import parse
+from datetime import datetime
 
 from decimal import Decimal
 from django.template import Library
@@ -108,6 +109,18 @@ def str_to_date(string, args=None):
     if date:
         return date
     return ''
+
+@register.filter_function
+def exif_to_date(s, fmt='%Y:%m:%d %H:%M:%S'):
+    """
+    The format of datetime in exif is as follows:
+        %Y:%m:%d %H:%M:%S
+    Convert the string with this format to a datetime object.
+    """
+    try:
+        return datetime.strptime(s, fmt)
+    except ValueError:
+        return None
 
 @register.filter_function
 def in_group(user, group):

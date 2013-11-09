@@ -1,6 +1,9 @@
 import uuid
 import os
-import Image as rImage
+from PIL import Image as PILImage
+from PIL.ExifTags import TAGS as PILTAGS
+from PIL import ImageFile
+from PIL import ImageFilter
 
 from datetime import datetime
 from inspect import isclass
@@ -19,6 +22,8 @@ from django.core.cache import cache
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
+from django.utils import simplejson
+import requests
 
 from tagging.fields import TagField
 
@@ -27,16 +32,12 @@ from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.base.fields import DictField
 from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
-
-import Image as PILImage
-import ImageFile
-import ImageFilter
-import ImageEnhance
 
 from tendenci.addons.photos.utils import EXIF
 from tendenci.addons.photos.utils.reflection import add_reflection
@@ -639,7 +640,11 @@ class PhotoSet(TendenciBaseModel):
         user = user or AnonymousUser()
 
         filters = get_query_filters(user, 'photos.view_image')
+
         photos = Image.objects.filter(filters).filter(photoset=self.pk)
+
+        if user.is_authenticated():
+            photos = photos.distinct()
 
         return photos
 
@@ -673,6 +678,21 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         (1, _('Safe')),
         (2, _('Not Safe')),
     )
+    EXIF_KEYS = ('DateTimeOriginal',
+                 'DateTime',
+                 'ApertureValue',
+                 'GPSInfo',
+                 'Make',
+                 'Model',
+                 'Software',
+                 'ExifImageWidth',
+                 'ExifImageHeight',
+                 'XResolution',
+                 'YResolution',
+                 'ResolutionUnit',
+                 'SubjectLocation',
+                 )
+    
     guid = models.CharField(max_length=40, editable=False)
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
@@ -685,6 +705,10 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
+    exif_data = DictField(_('exif'), null=True)
+    photographer = models.CharField(_('Photographer'),
+                                    blank=True, null=True,
+                                    max_length=100)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
@@ -705,8 +729,10 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         permissions = (("view_image", "Can view image"),)
 
     def save(self, *args, **kwargs):
+        initial_save = not self.id
         if not self.id:
             self.guid = str(uuid.uuid1())
+        
         super(Image, self).save(*args, **kwargs)
        # # clear the cache
        # caching.instance_cache_clear(self, self.pk)
@@ -723,6 +749,14 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                 # TODO remove cached images
                 cache.delete_many(cache.get("photos_cache_set.%s" % self.pk))
                 cache.delete("photos_cache_set.%s" % self.pk)
+
+        if initial_save:
+            try:
+                exif_exists = self.get_exif_data()
+                if exif_exists:
+                    self.save()
+            except AttributeError:
+                pass
 
     def delete(self, *args, **kwargs):
         """
@@ -757,6 +791,68 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         except IndexError:
             return ("photo", [self.pk])
         return ("photo", [self.pk, photo_set.pk])
+    
+    def get_exif_data(self):
+        """
+        Extract EXIF data from image and store in the field exif_data.
+        """
+        try:
+            img = PILImage.open(default_storage.open(self.image.name))
+            exif = img._getexif()
+        except (AttributeError, IOError):
+            return False
+
+        if exif:
+            for tag, value in exif.items():
+                key = PILTAGS.get(tag, tag)
+                if key in self.EXIF_KEYS:
+                    self.exif_data[key] = value
+                       
+        self.exif_data['lat'], self.exif_data['lng'] = self.get_lat_lng(
+                                    self.exif_data.get('GPSInfo'))
+        self.exif_data['location'] = self.get_location_via_latlng(
+                                            self.exif_data['lat'],
+                                            self.exif_data['lng']
+                                        )
+        return True
+
+    def get_lat_lng(self, gps_info):
+        """
+        Calculate the latitude and longitude from gps_info.
+        """
+        lat, lng = None, None
+        if isinstance(gps_info, dict):
+            try:
+                lat = [float(x)/float(y) for x, y in gps_info[2]]
+                latref = gps_info[1]
+                lng = [float(x)/float(y) for x, y in gps_info[4]]
+                lngref = gps_info[3]
+            except (KeyError, ZeroDivisionError):
+                return None, None
+                
+            lat = lat[0] + lat[1]/60 + lat[2]/3600
+            lng = lng[0] + lng[1]/60 + lng[2]/3600
+            if latref == 'S':
+                lat = -lat
+            if lngref == 'W':
+                lng = -lng
+            
+        return lat, lng
+    
+    def get_location_via_latlng(self, lat, lng):
+        """
+        Get location via lat and lng.
+        """
+        if lat and lng:
+            url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat, lng)
+            r = requests.get(url)
+            if r.status_code == 200:
+                data = simplejson.loads(r.content)
+                for result in data.get('results'):
+                    types = result.get('types')
+                    if types and types[0] == 'postal_code':
+                        return result.get('formatted_address')
+        return None
 
     def meta_keywords(self):
         return ''
@@ -865,9 +961,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     def image_dimensions(self):
         try:
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                im = rImage.open(self.get_file_from_remote_storage())
+                im = PILImage.open(self.get_file_from_remote_storage())
             else:
-                im = rImage.open(self.image.path)
+                im = PILImage.open(self.image.path)
             return im.size
         except Exception:
             return (0, 0)

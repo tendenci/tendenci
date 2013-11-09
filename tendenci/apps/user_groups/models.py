@@ -121,7 +121,10 @@ class Group(TendenciBaseModel):
                         'status': kwargs.get('status') or True,
                         'status_detail': kwargs.get('status_detail') or 'active'
                         }
-                GroupMembership.objects.create(**params)
+                try:
+                    GroupMembership.objects.create(**params)
+                except IntegrityError:
+                    return user, False
 
                 return user, True  # created
 

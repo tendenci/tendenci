@@ -30,6 +30,7 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
+from tendenci.core.base.widgets import PriceWidget
 from tendenci.core.emails.models import Email
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.site_settings.utils import get_setting, get_global_setting
@@ -919,6 +920,8 @@ class Reg8nConfPricingForm(BetterModelForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
+    payment_required = forms.ChoiceField(required=False,
+                            choices=((None,_('Inherit from event')),('True',_('Yes')),('False',_('No'))))
 
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
@@ -929,6 +932,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                         + timedelta(days=29))}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
+        self.fields['price'].widget = PriceWidget()
 
         # skip the field if there is no custom registration forms
         if not reg_form_queryset:
@@ -959,6 +963,7 @@ class Reg8nConfPricingForm(BetterModelForm):
         fields = [
             'title',
             'quantity',
+            'payment_required',
             'price',
             'start_dt',
             'end_dt',
@@ -973,6 +978,7 @@ class Reg8nConfPricingForm(BetterModelForm):
         fieldsets = [('Registration Pricing', {
           'fields': ['title',
                     'quantity',
+                    'payment_required',
                     'price',
                     'dates',
                     'reg_form',

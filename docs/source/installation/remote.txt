@@ -1,18 +1,20 @@
 Remote Installation
 ===================
 
-Below are some instructions to create a Tendenci site on an Ubunutu server. We recommend using 12.04, though 10.04 will work as well.
+Below are some instructions to create a Tendenci site on an Ubuntu server. 12.04 is recommended, though 10.04 will work as well.
+
+All of the commands below should be run on the command line after you are connected to the server.
 
 Server packages
 ---------------
 
-You can install all of the necessary Ubuntu packages with the following command:
+You can install all of the necessary Ubuntu packages with the following commands:
 ::
 
     sudo apt-get update
     sudo apt-get install git python-pip postgresql build-essential python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
 
-Along with this, we need to add some symlinks for our jpeg and freetype libraries:
+Along with this, add the necessary symlinks for the jpeg and freetype libraries:
 ::
 
     sudo ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib
@@ -23,7 +25,7 @@ Along with this, we need to add some symlinks for our jpeg and freetype librarie
 Creating the Tendenci site folder
 ---------------------------------
 
-Go to the path on your server where you'd like to keep your site. For this example, we will use ``/var/www``. Make a folder for your site, update it's permissions, and cd into it. Replace 'sitename' with the name of your site.
+Go to the path on the server where the site should be installed. For this example, use ``/var/www``. Make a folder for the site, update it's permissions, and cd into it. Replace 'sitename' with the name of the site.
 ::
 
     cd /var/www
@@ -32,7 +34,7 @@ Go to the path on your server where you'd like to keep your site. For this examp
     chmod 755 sitename
     cd sitename
 
-It's best practice to make a virtual environment for your site. You will need `virtualenv <http://www.virtualenv.org/>`_ installed for the next step. If you don't have it, you can install it with ``pip install virtualenv``. Make a virtual environment called 'venv' and activate it.
+It's best practice to make a virtual environment for the site. You will need `virtualenv <http://www.virtualenv.org/>`_ installed for the next step. If you don't have it, you can install it with ``pip install virtualenv``. Make a virtual environment called 'venv' and activate it.
 ::
 
     virtualenv venv
@@ -49,7 +51,7 @@ Once this is done, you can setup django project with the following:
 
     create-tendenci-project
 
-Next, we install requirements for the project. We add tendenci videos as an example to use.
+Next, install requirements for the project.
 ::
 
     pip install -r requirements/dev.txt
@@ -57,6 +59,10 @@ Next, we install requirements for the project. We add tendenci videos as an exam
 
 Setting up the Database
 -----------------------
+
+The Postgres database server was installed as part of the step to install server packages. It is a separate application from Tendenci, but is needed as the database backend that will be used for Tendenci.
+
+The steps to configure Postgres can be run from anywhere (i.e. you do not need to be in the tendenci folder at /var/www/sitename to configure postgres).
 
 Change the postgres default user password as the postgres user. Lines that start postgres=# are prompts:
 ::
@@ -68,28 +74,29 @@ Change the postgres default user password as the postgres user. Lines that start
 
 Type Control+D to exit the posgreSQL prompt.
 
-From here, we need to create our database. We can create a database and a new user with the following commands:
+From here, create the database and a new postgres user with the following commands:
 ::
 
     sudo -u postgres psql postgres -c "CREATE USER tendenci WITH PASSWORD 'yourgreatpassword'";
     sudo -u postgres psql postgres -c "CREATE DATABASE tendenci WITH OWNER tendenci;"
     sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE tendenci TO tendenci;"
 
-This will create a database named ``tendenci`` with the user named ``tendenci``. Next we need to update our ``.env`` file in our site folder (``/var/www/sitename`` and then ``ls -a`` then vi or nano. Replace the following line:
+This will create a database named ``tendenci`` with the user named ``tendenci``. Next update the ``.env`` file in the site folder (``/var/www/sitename``). First, list files with ``ls -a`` then open the file for editing with ``nano /var/www/sitename/.env`` which will allow editing of the contents. Replace the following line:
 ::
 
     DATABASE_URL='postgres://localhost/tendenci'
 
-with this (including your real password):
+with this (including the real password):
 ::
 
     DATABASE_URL='postgres://tendenci:yourgreatpassword@localhost/tendenci'
 
+Finally, save the file with Control+O and exit nano with Control+X.
 
 Creating the database tables
 ----------------------------
 
-Along with that, we should add the folloing lines to our ``.env`` file:
+Along with that, the following lines should be added to the ``.env`` file, using ``nano`` like in the previous step with the DATABASE_URL:
 ::
 
     LOCAL_MEMCACHED_URL = '127.0.0.1:11211'
@@ -98,22 +105,22 @@ Along with that, we should add the folloing lines to our ``.env`` file:
     HAYSTACK_SEARCH_ENGINE='whoosh'
     SECRET_KEY='random_16_characters'
 
-The ``random_16_characters`` should be replaced with a real random 16 characters.
+The ``random_16_characters`` should be replaced with a real random 16 characters. Then save the changes to the file.
 
-Now we are ready to use our deploy script.
+Now, use the deploy script to create the database tables and static media.
 ::
 
     python deploy.py
 
 .. Note:: 
 
-    If this is your first time using Tendenci, we **recommend** you install some default data and our twenty-thirteen theme to get a feel of what a full Tendenci site is like. You can install this data and theme with the command:
+    If this is your first time using Tendenci, it's **recommended** to install the available default data and the twenty-thirteen theme to get a feel of what a full Tendenci site is like. You can install this data and theme with the command:
     ::
 
         python manage.py load_npo_defaults
 
 
-To create your login, run the following command and fill in the prompts:
+To create an administrator login, run the following command and fill in the prompts:
 ::
 
     python manage.py createsuperuser
@@ -122,9 +129,9 @@ To create your login, run the following command and fill in the prompts:
 Setting up Upstart
 ------------------
 
-On Ubuntu, we can use the Upstart functionality to add our site as a service.
+On Ubuntu, the Upstart functionality can be used to add the site as a service.
 
-First, we create a file at the path ``/etc/init/tendenci.conf``. 
+First, create a file at the path ``/etc/init/tendenci.conf``. 
 ::
 
     cd /etc/init/
@@ -140,9 +147,9 @@ The contents of that file should match the example below:
     respawn limit 10 5
     exec /var/www/sitename/.upstart.sh
 
-You will need to replace the ``/var/www/sitename`` with the location of your site.
+You will need to replace the ``/var/www/sitename`` with the location of the site.
 
-Along with this, we need to add a ``.upstart.sh`` to our site folder. This will live at ``/var/www/sitename/.upstart.sh`` or whatever the location of your path. This ``.upstart.sh`` file should match the example below:
+Along with this, create a ``.upstart.sh`` to the site folder. This will live at ``/var/www/sitename/.upstart.sh`` or whatever the location of the path. This ``.upstart.sh`` file should match the example below:
 ::
 
     #!/bin/bash
@@ -151,18 +158,18 @@ Along with this, we need to add a ``.upstart.sh`` to our site folder. This will 
     . venv/bin/activate
     exec gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi
 
-Again, replace ``/var/www/sitename`` with your real path. Next, we need to adjust the permissions on our new file:
+Again, replace ``/var/www/sitename`` with the real path. Next, adjust the permissions on the new file:
 ::
 
     chown root:www-data /var/www/sitename/.upstart.sh
     chmod u+x /var/www/sitename/.upstart.sh
 
-To start this service, we can use the following command:
+To start this service, use the following command:
 ::
 
     service tendenci start
 
-If we make any changes in the future to our environment file (``.env``), we should restart our server with this command:
+If any changes in the future are made to the environment file (``.env``), the service should be restarted with this command:
 ::
 
     service tendenci restart
@@ -171,7 +178,7 @@ If we make any changes in the future to our environment file (``.env``), we shou
 Setting up nginx
 ----------------
 
-We will need to make an nginx configuration file for our site. This will be created at ``/etc/nginx/sites-available/sitename`` and should match the example below:
+First, make an nginx configuration file for the site. This will be created at ``/etc/nginx/sites-available/sitename`` and should match the example below:
 ::
 
     server {
@@ -181,21 +188,19 @@ We will need to make an nginx configuration file for our site. This will be crea
         charset   utf-8;
         keepalive_timeout  65;
         client_max_body_size  30M;
+        root /var/www/sitename/;
 
         location /static/ {
-            root //var/www/sitename/;
             access_log off;
             expires 30d;
         }
      
         location /media/ {
-            root /var/www/sitename/;
             access_log off;
             expires 30d;
         }
 
-        location /themes/([a-zA-Z0-9\-\_]+)/media/ {
-            root /var/www/sitename/themes/$1/media/;
+        location ~ /themes/([a-zA-Z0-9\-\_]+)/media/ {
             access_log off;
         }
 
@@ -207,19 +212,19 @@ We will need to make an nginx configuration file for our site. This will be crea
         }
     }
 
-Again, replace ``/var/www/sitename`` with your real path. If you have a domain name pointed at the server, add it to the ``server_name`` line in the place of ``localhost``.
+Again, replace ``/var/www/sitename/`` with the real path. If you have a domain name like ``example.com`` pointed at the server, add it to the ``server_name`` line in the place of ``localhost``.
 
-Next, we create a symlink to our new file at ``/etc/nginx/sites-enabled/sitename`` with this command:
+Next, create a symlink to the new file at ``/etc/nginx/sites-enabled/sitename`` with this command:
 ::
 
     ln -s /etc/nginx/sites-available/sitename /etc/nginx/sites-enabled/sitename
 
-We also recommend removing the default record from the sites-enabled with this command:
+Remove the default record from the sites-enabled with this command:
 ::
 
     rm /etc/nginx/sites-enabled/default
 
-Finally, we restart our nginx service:
+Finally, restart the nginx service:
 ::
 
     service nginx restart
@@ -228,18 +233,32 @@ Finally, we restart our nginx service:
 Setup Mail and Memcached
 ------------------------
 
-For a mail server, we will install postfix. This package has 3 steps that you must respond to in order to complete the installation. If you have a domain name, you should enter it in the prompts. Otherwise, leave the defaults in place. To install the package, run this command:
+For a mail server, install postfix. This package has 3 steps that you must respond to in order to complete the installation. If the server is alreadly configured with a domain name, enter that domain in the prompts. Otherwise, leave the defaults in place. To install the package, run this command:
 ::
 
     apt-get install postfix
 
-Memcache was already installed at our first line. We need to turn the service on with this command:
+Memcache was already installed at the server packages step. Turn the service on with this command:
 ::
 
     service memcached start
 
 
-Load your site
+Load the site
 --------------
 
-You should now be able to view your site, either at the ip address of the server, or at the domain name you have setup.
+The site should now be viewable, either at the ip address of the server, or at the domain name that has been setup.
+
+
+Running Multiple sites on one server
+------------------------------------
+
+The process outlined above to install Tendenci can be used multiple times on a single server.
+
+The steps to install Server Packages and the steps to replace the main postgres password do not need to be repeated.
+
+When installing any additional Tendenci sites, replace the ``sitename`` used throughout the examples with a unique name.
+
+When creating the database for any additional sites, be sure to use a unique database name and username. In the instructions above, the database name and username were both ``tendenci``. Change this to something unique for each site.
+
+Each additional Tendenci site will need to run on a different port internally. In the instructions, port 8000 was used. This will be changed for additional sites in the nginx configuration file as well as the ``.upstart.sh`` file for each new site.

@@ -1,6 +1,6 @@
 import uuid
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db import models
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
@@ -150,7 +150,7 @@ class BaseJob(TendenciBaseModel):
         if not request.user.profile.is_superuser:
             self.status_detail = 'paid - pending approval'
 
-        self.activation_dt = now_localized()
+        self.activation_dt = datetime.now()
         self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
         self.save()
 

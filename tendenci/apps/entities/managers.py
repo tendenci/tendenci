@@ -16,7 +16,7 @@ class EntityManager(models.Manager):
         entity = self.first()
         if not entity:
             params = {'id': 1,
-                      'entity_name': get_global_setting('sitedisplayname'),
+                      'entity_name': get_global_setting('sitedisplayname') or 'Tendenci',
                       'entity_type': '',
                       'contact_name': get_global_setting('sitecontactname'),
                       'phone': get_global_setting('sitephonenumber'),

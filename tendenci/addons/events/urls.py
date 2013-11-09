@@ -15,6 +15,7 @@ urlpatterns = patterns(
     url(r'^%s/month/$' % urlpath, 'views.month_view', name="event.month"),
     url(r'^%s/today/$' % urlpath, 'views.today_redirect', name="event.today"),
     url(r'^%s/search/$' % urlpath, 'views.search', name="event.search"),
+    url(r'^%s/search/past/$' % urlpath, 'views.search', {'past': True}, name="event.past_search"),
     url(r'^%s/ics/$' % urlpath, 'views.icalendar', name="event.ics"),
     url(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, 'views.print_view', name="event.print_view"),
     url(r'^%s/add/$' % urlpath, 'views.add', name="event.add"),

@@ -134,7 +134,7 @@ var ImageDialog = {
             var old_width = this.getAttrib(n, 'width');
             
             // maintain proportions
-            if(img_width > old_width){
+            if(img_width != old_width){
                 // Resize with width
                 img_height = parseInt(orig_height * img_width / orig_width);
             }else{

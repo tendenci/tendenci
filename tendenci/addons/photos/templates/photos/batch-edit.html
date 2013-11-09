@@ -35,6 +35,8 @@
                         <div><input class="title" type="text" /></div>
                         <div>{% trans "Replace all captions" %}</div>
                         <div><textarea class="caption"></textarea></div>
+                        <div>{% trans "Replace all photographers" %}</div>
+                        <div><input class="photographer" type="text" /></div>
                         <div>{% trans "Replace all tags" %}</div>
                         <div><input class="tags" type="text" /></div>
                         <div>{{ tag_help_text }}</div>
@@ -92,6 +94,10 @@
                         <div class="label">{{ photo_form.caption.label_tag }}</div>
                         <div class="field">{{ photo_form.caption }}</div>
                     </div>
+                    <div class="photographer-wrap">
+                        <div class="label">{{ photo_form.photographer.label_tag }}</div>
+                        <div class="field">{{ photo_form.photographer }}</div>
+                    </div>
                     <div class="position-wrap">
                         <div class="label">{{ photo_form.position.label_tag }}</div>
                         <div class="field">{{ photo_form.position }}</div>
@@ -107,6 +113,7 @@
                             <div class="label">{{ photo_form.license.label_tag }}</div>
                             <div class="field">{{ photo_form.license }}</div>
                         </div>
+                        
                         <div class="group-wrap">
                             <div class="label">{{ photo_form.group.label_tag }}</div>
                             <div class="field">{{ photo_form.group }}</div>
@@ -146,7 +153,11 @@
     });
     $(".photo-bulk-editor .tags").keyup(function(event){
 	    $('.tags-wrap input').val($(this).val())
-    });
+    }); 
+    
+    $(".photo-bulk-editor .photographer").keyup(function(event){
+        $('.photographer-wrap input').val($(this).val())
+    }); 
 
     $(".bulk-license select").change(function(event) {
         $(".license-wrap select").val($(this).val());
@@ -163,6 +174,7 @@
             $(this).parent().toggleClass('minimize-photo');
             $(this).parent().find('.title-wrap').toggle();
             $(this).parent().find('.caption-wrap').toggle();
+            $(this).parent().find('.photographer-wrap').toggle();
             $(this).parent().find('.license-wrap').toggle();
             $(this).parent().find('.tags-wrap').toggle();
             $(this).parent().find('.group-wrap').toggle();
@@ -252,6 +264,7 @@
                 $(this).addClass('minimize-photo');
                 $(this).find('.title-wrap').hide();
                 $(this).find('.caption-wrap').hide();
+                $(this).find('.photographer-wrap').hide();
                 $(this).find('.license-wrap').hide();
                 $(this).find('.tags-wrap').hide();
                 $(this).find('.group-wrap').hide();
@@ -267,6 +280,7 @@
                 $(this).removeClass('minimize-photo');
                 $(this).find('.title-wrap').show();
                 $(this).find('.caption-wrap').show();
+                $(this).find('.photographer-wrap').show();
                 $(this).find('.license-wrap').show();
                 $(this).find('.tags-wrap').show();
                 $(this).find('.group-wrap').show();

@@ -1,4 +1,6 @@
-from django.template import Library, TemplateSyntaxError, Variable
+from datetime import datetime
+
+from django.template import Library, TemplateSyntaxError
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.addons.articles.models import Article
@@ -32,6 +34,14 @@ def article_search(context):
 class ListArticlesNode(ListNode):
     model = Article
     perms = 'articles.view_article'
+
+    def custom_model_filter(self, items, user):
+        """
+        Filters out articles that aren't yet released.
+        """
+        now = datetime.now().replace(second=0, microsecond=0)
+        items = items.filter(release_dt__lte=now)
+        return items
 
 
 @register.tag

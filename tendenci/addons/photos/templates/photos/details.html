@@ -7,6 +7,7 @@
 {% load pagination_tags %}
 {% load smart_if %}
 {% load base_tags %}
+{% load base_filters %}
 
 {% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
 {% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
@@ -65,9 +66,13 @@
                     <br />
                     <div id="photo-rights">
                     <span property="dct:title">{{ photo.title }}</span>
+                    {% if photo.photographer %}
+                    	taken by {{ photo.photographer }}
+                    {% else %}
                     uploaded by <a href="{{ photo.creator.get_absolute_url }}"
                         property="cc:attributionName" 
-                        rel="cc:attributionURL dct:creator">{{ photo.creator.get_full_name }}</a>.
+                        rel="cc:attributionURL dct:creator">{% if photo.creator.get_full_name %}{{ photo.creator.get_full_name }}{% else %}{{ photo.creator.username }}{% endif %}</a>.
+                    {% endif %}
                     {% if photo.get_license == photo.default_license %}
                         {{ photo.default_license.name }}.
                     {% else %}
@@ -83,6 +88,35 @@
         <div class="photo-caption-wrap">
             {{ photo.caption|safe|urlize }}
         </div>
+        {% if photo.exif_data %}
+        
+        {% with photo.exif_data.DateTimeOriginal|exif_to_date|date:'F j, Y' as taken_dt %}
+        {% if taken_dt %}
+        <div>
+        	<stong>{% trans "Taken on:" %} </stong> {{ taken_dt }}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        {% if photo.exif_data.Make or photo.exif_data.Model %}
+        <div>
+        	{% trans "Camera:" %} 
+        	{% if photo.exif_data.Model %}
+        		{{ photo.exif_data.Model }}
+        	{% else %}
+        	    {{ photo.exif_data.Make }}
+        	{% endif %}		
+        </div>
+        {% endif %}	
+        
+        {% if photo.exif_data.location %}
+        <div>
+        	{% trans "Location:" %}
+        	{{ photo.exif_data.location }}
+        </div>
+        {% endif %}	
+        	
+        {% endif %}
         <div class="hr"></div>
         <div class="photo-options">
 			{% photo_options request.user photo %}

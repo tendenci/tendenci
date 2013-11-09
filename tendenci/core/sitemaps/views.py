@@ -66,7 +66,7 @@ def sitemap(request, sitemaps, section=None,
             else:
                 site_key = site.__name__
             # Cache the sitemap urls
-            sitemap_cache_key = '.'.join([settings.SITE_CACHE_KEY, 'sitemap_cache', site_key])
+            sitemap_cache_key = '.'.join([settings.SITE_CACHE_KEY, 'sitemap_cache', site_key, req_protocol])
             site_urls = cache.get(sitemap_cache_key)
             if not isinstance(site_urls, list):
                 if not cached:
