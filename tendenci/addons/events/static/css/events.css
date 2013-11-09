@@ -229,7 +229,7 @@ div.forms div.form-field .field input.timepicker {
 }
 
 div.forms div.form-field .id_frequency {
-    width: 18%;
+    width: 120px;
     float: left;
 }
 div.forms div.form-field .id_repeat_type .label {
@@ -995,7 +995,6 @@ table.pricing-list .price-disabled label {
 	text-decoration: line-through;
 }
 
-.t .event-tabs .dropdown,
-.t .search-tabs .dropdown {
+.t .event-tabs .dropdown {
     z-index: 0;
 }
