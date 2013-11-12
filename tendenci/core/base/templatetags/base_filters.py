@@ -117,6 +117,8 @@ def exif_to_date(s, fmt='%Y:%m:%d %H:%M:%S'):
         %Y:%m:%d %H:%M:%S
     Convert the string with this format to a datetime object.
     """
+    if not s:
+        return None
     try:
         return datetime.strptime(s, fmt)
     except ValueError:
