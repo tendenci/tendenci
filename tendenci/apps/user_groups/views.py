@@ -76,18 +76,21 @@ def search_redirect(request):
 def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
 
-    if not has_view_perm(request.user,'user_groups.view_group',group): raise Http403
+    if not has_view_perm(request.user,'user_groups.view_group',group):
+        raise Http403
 
     EventLog.objects.log(instance=group)
 
-    groupmemberships = GroupMembership.objects.filter(group=group, 
-                                                      status=True, 
-                                                      status_detail='active'
-                                                      ).order_by('member__last_name')
-    #members = group.members.all()
-    count_members = len(groupmemberships)
+    groupmemberships = GroupMembership.objects.filter(
+        group=group,
+        status=True,
+        status_detail='active').order_by('member__last_name')
 
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    count_members = len(groupmemberships)
+    return render_to_response(
+        template_name,
+        locals(),
+        context_instance=RequestContext(request))
 
 
 def group_add_edit(request, group_slug=None,
