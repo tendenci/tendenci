@@ -15,9 +15,6 @@
         {% else %}
             {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
         {% endif %}({{ profile.user.username }})</a> 	
-        {% if profile.is_member %}
-        <span style="font-size: 12px;">Member</span> <!-- replace with Icon -->
-        {% endif %}
     </h2>
     
     <div class="clear-right"></div>
