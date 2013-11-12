@@ -1582,6 +1582,9 @@ def membership_default_add(request, slug='', template='memberships/applications/
             raise Http404
 
         app = corp_app.memb_app
+        
+        if not has_perm(request.user, 'memberships.view_app', app):
+            raise Http403
 
         cm_id = kwargs.get('cm_id')
         if not cm_id:
@@ -1630,6 +1633,9 @@ def membership_default_add(request, slug='', template='memberships/applications/
     else:  # regular membership
 
         app = get_object_or_404(MembershipApp, slug=slug)
+        
+        if not has_perm(request.user, 'memberships.view_app', app):
+            raise Http403
 
         if app.use_for_corp:
             redirect_url = reverse('membership_default.corp_pre_add')
