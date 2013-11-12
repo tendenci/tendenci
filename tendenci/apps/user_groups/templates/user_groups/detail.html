@@ -96,16 +96,17 @@
         {% include "user_groups/meta.html" %}
     </div>
 </div>
+{% endblock %}
 
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+{% block extra_body %}
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation for members
-			$('.delete-member').click(function(){
-				var delete_member = confirm('Remove this member from the group?');	// confirm
-				if(delete_member) $(this).parent().find('form[name="member-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+        $(document).ready(function(){
+            // delete confirmation for members
+            $('.delete-member').click(function(){
+                var delete_member = confirm('Remove this member from the group?');  // confirm
+                if(delete_member) $(this).parent().find('form[name="member-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+        });
     </script>
 {% endblock %}
