@@ -66,6 +66,9 @@ class ProfileSearchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         mts = kwargs.pop('mts')
         super(ProfileSearchForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs.update({'placeholder': 'Exact Match Search'})
+        self.fields['last_name'].widget.attrs.update({'placeholder': 'Exact Match Search'})
+        self.fields['email'].widget.attrs.update({'placeholder': 'Exact Match Search'})
 
         if not mts:
             del self.fields['membership_type']
