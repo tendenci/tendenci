@@ -15,7 +15,7 @@ If you want to test it locally quickly (e.g. client demo etc), you can try it AS
 
 1) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
 2) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
-3) Linux TKL (repo requires build/make): [https://github.com/tendenci/tendenci-tkl](https://github.com/tendenci/tendenci-tkl)  
+3) TurnKeyLinux Virtual Appliances: [http://www.turnkeylinux.org/tendenci](http://www.turnkeylinux.org/tendenci)  
 
 ## Developer Installing Tendenci?  
 
