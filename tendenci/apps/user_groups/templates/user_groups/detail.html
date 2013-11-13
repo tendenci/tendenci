@@ -23,70 +23,75 @@
     	{% user_group_nav request.user group %}
 
     	<h1>{{ group.name }}</h1>
-    	{% if can_edit %}
-    	{% if group.type == 'system_generated' %}
-    	<div class="system-generated">System generated groups can not be deleted.</div>
-    	{% endif %}
-        <div class="group-section">
-            <p>{% blocktrans %}This group currently has {{ count_members }} members.{% endblocktrans %}</p>
-            <p><a href="{% url group.members_export group.slug "members" %}">{% trans "Export all members" %}</a></p>
-        </div>
+
+        {% if can_edit and group.type == 'system_generated' %}
+            <div class="system-generated">System generated groups can not be deleted.</div>
         {% endif %}
 
-        <h2>{% trans "Group Information" %}</h2>
-        <div class="group-section">
-            {% if group.type %}<p>{% trans "Type" %}: {{ group.type|capfirst }}</p>{% endif %}
-            <!-- <p>This group is displayed as an option in the Users Module</p> -->
-            {% if group.allow_self_add %}
-            <p>{% trans "Users can add themselves to this group" %}</p>
-            {%  endif %}
-            {% if group.allow_self_remove %}
-            <p>{% trans "Users can remove themselves from this group" %}</p>
-            {% endif %}
-            {% if can_edit %}
-            <p><a href="{% url group.edit_perms group.pk %}">{% trans "Edit Security Permissions for Group Members" %}</a></p>
-            {% endif %}
+        <div id="group-options">
+
+            <ul>
+                {% if can_edit %}
+                <li><a href="{% url group.members_export group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
+                {% endif %}
+
+                {% if can_edit %}
+                <li><a href="{% url group.edit_perms group.pk %}">
+                    {% trans "Change Group Member Permissions" %}</a></li>
+                {% endif %}
+
+                {% if can_edit %}
+                    {% if group.email_recipient %}
+                        <li><a href="{% url group.edit group.slug %}">{% blocktrans %}Emails regarding group activity will be sent to{% endblocktrans %} <strong>{{ group.email_recipient }}</strong></a></li>
+                    {% else %}
+                        <li>{% blocktrans %}Please set a {% endblocktrans%}
+                        <a href="{% url group.edit group.slug %}">{% blocktrans %}recipient{% endblocktrans %}</a>{% blocktrans %} for this group{% endblocktrans %}</li>
+                    {% endif %}
+                {% endif %}
+
+                {% if group.type %}
+                <li>{% trans "Type" %}: {{ group.type|capfirst }}</li>
+                {% endif %}
+
+                {% if group.allow_self_add %}
+                    <li><a href="{% url group.edit group.slug %}">
+                        {% blocktrans %}Users can add themselves to this group{% endblocktrans %}</a></li>
+                {% else %}
+                    <li><a href="{% url group.edit group.slug %}">
+                        {% blocktrans %}Users cannot add themselves to this group{% endblocktrans %}</a></li>
+                {% endif %}
+
+                {% if group.allow_self.remove %}
+                    <li><a href="{% url group.edit group.slug %}">
+                        {% blocktrans %}Users can remove themselves from this group{% endblocktrans %}</a></li>
+                {% else %}
+                    <li><a href="{% url group.edit group.slug %}">
+                        {% blocktrans %}Users cannot remove themsleves{% endblocktrans %}</a></li>
+                {% endif %}
+            </ul>
         </div>
 
-        {% if can_edit %}
-        <h2>{% trans "Group Contact" %}</h2>
-        <div class="group-section">
-            {% if group.email_recipient %}
-                <p>{% trans "Emails regarding activity in this group will be sent to:" %} </p>
-                <p>{{ group.email_recipient }}</p>
-            {% else %}
-                <p>{% trans "There is no email recipient set for this group."  %}  <a href="{% url group.edit group.slug %}">{% trans "Edit group." %}</a></p>
-            {% endif %}
-        </div>
-
-        <h2>{% trans "Group Members" %}</h2>
         {% if not groupmemberships %}
-        <p>{% trans "This group has no members" %}</p>
+            <p>{% trans "This group has no members" %}</p>
         {% else %}
-        {% autopaginate groupmemberships 100 %}
-        {% paginate %}
-        <div class="group-member-list">
-        <p>Group members in sets of 100</p>
-        {% for gm in groupmemberships %}
-            <div class="group-member {% cycle 'gray' '' %}">
-             <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) - {{ gm.role }}</a>
-             {% if can_delete %}
-                &nbsp;<span class="delete-member"><a href="{% url group.deleteuser group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
-             <!-- delete-member form -->
-                <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">{% csrf_token %}
-                    <input type="hidden" name="action" value="delete">
-                </form>
-            {% endif %}
-            </div>
-        {% endfor %}
+            {% autopaginate groupmemberships 100 %}
+            {% paginate %}
+            <div class="group-member-list">
+            <p>Group members in sets of 100</p>
+            {% for gm in groupmemberships %}
+                <div class="group-member {% cycle 'gray' '' %}">
+                 <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) - {{ gm.role }}</a>
+                 {% if can_delete %}
+                    &nbsp;<span class="delete-member"><a href="{% url group.deleteuser group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
+                 <!-- delete-member form -->
+                    <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">{% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                    </form>
+                {% endif %}
+                </div>
+            {% endfor %}
         </div>
         {% paginate %}
-        {% endif %}
-
-        {% if group.description %}
-        <h2>{% trans "Description" %}</h2>
-        {{ group.description }}
-        {% endif %}
 
         {% endif %}
         

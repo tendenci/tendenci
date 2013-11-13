@@ -88,19 +88,31 @@
   .t .t-group .t-perm .field-wrapper{
   	margin: 1em 0;
   }
+.t .group-view #group-options {
+	width: 300px;
+	border: 1px solid silver;
+	padding: 10px;
+	float: right;
+	margin-right: 10px;
+	background-color: white;
+
+	-moz-box-shadow: 0 0 5px #BBB;
+	-webkit-box-shadow: 0 0 5px #BBB;
+	box-shadow: 0 0 5px #BBB;
+}
+
+.t .group-view #group-options ul {
+	margin-left: 0;
+}
+
+.t .group-view #group-options li {
+	margin-bottom: 10px;
+	list-style-type: none;
+}
 
 /* Group View Page */
 .t .group-view h2 {
     margin: 10px 0 10px 0;
-}
-
-.t .group-view .group-section {
-    padding: 10px 0 10px 0;
-    border-bottom: 1px solid #CCC;
-}
-
-.t .group-view .group-section p {
-    margin: 5px;
 }
 
 .t .group-view .group-member-list {
