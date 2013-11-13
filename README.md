@@ -13,9 +13,10 @@ Can I see a demo now? Yup. [http://demo.tendenci.com/](http://demo.tendenci.com/
 
 If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP three ways (do NOT use thse in production).  
 
-1) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
-2) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
-3) TurnKeyLinux Virtual Appliances: [http://www.turnkeylinux.org/tendenci](http://www.turnkeylinux.org/tendenci)  
+1) TurnKey Tendenci Virtual Appliances: [http://www.turnkeylinux.org/tendenci](http://www.turnkeylinux.org/tendenci) 
+2) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
+3) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
+ 
 
 ## Developer Installing Tendenci?  
 
