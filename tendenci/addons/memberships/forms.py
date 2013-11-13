@@ -612,7 +612,7 @@ class UserForm(forms.ModelForm):
         model = User
 
     def __init__(self, app_field_objs, *args, **kwargs):
-        request = kwargs.pop('request')
+        self.request = kwargs.pop('request')
         super(UserForm, self).__init__(*args, **kwargs)
 
         del self.fields['groups']
@@ -620,8 +620,8 @@ class UserForm(forms.ModelForm):
         assign_fields(self, app_field_objs)
         self_fields_keys = self.fields.keys()
 
-        is_renewal = 'username' in request.GET
-        if request.user.is_superuser and is_renewal:
+        is_renewal = 'username' in self.request.GET
+        if self.request.user.is_superuser and is_renewal:
             if 'username' in self_fields_keys:
                 self_fields_keys.remove('username')
             if 'password' in self_fields_keys:
@@ -723,7 +723,19 @@ class UserForm(forms.ModelForm):
 
         # all fields are required in order to pull
         # an existing user record
-        if not all(user_attrs.values()):
+        if all(user_attrs.values()):
+            user, created = User.objects.get_or_create(username=user_attrs['username'])
+            user.set_password(user_attrs['password'])
+            user.email = user.email or user_attrs['email']
+            user.first_name = user.first_name or user_attrs['first_name']
+            user.last_name = user.last_name or user_attrs['last_name']
+        elif self.request.user.is_authenticated() and not self.request.user.is_superuser:
+            created = False
+            user = self.request.user
+            user.email = user.email or user_attrs['email']
+            user.first_name = user.first_name or user_attrs['first_name']
+            user.last_name = user.last_name or user_attrs['last_name']
+        else:
             created = True
             user_attrs['username'] = user_attrs['username'] or \
                 Profile.spawn_username(user_attrs['first_name'][:1], user_attrs['last_name'])
@@ -735,17 +747,8 @@ class UserForm(forms.ModelForm):
 
             user.first_name = user_attrs['first_name']
             user.last_name = user_attrs['last_name']
-            user.save()
 
-        else:
-
-            user, created = User.objects.get_or_create(username=user_attrs['username'])
-            user.set_password(user_attrs['password'])
-            user.email = user.email or user_attrs['email']
-            user.first_name = user.first_name or user_attrs['first_name']
-            user.last_name = user.last_name or user_attrs['last_name']
-            user.save()
-
+        user.save()
         if created:
             send_welcome_email(user)
 
