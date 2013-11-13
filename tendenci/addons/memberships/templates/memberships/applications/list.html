@@ -19,7 +19,7 @@
 	{% for app in apps %}
 		<li>
 			<h3><a href="{{ app.get_absolute_url }}">{{ app }}</a></h3>
-			<p>{% firstof "No Description" app.description %}</p>
+			<p>{% firstof app.description "No Description" %}</p>
 		</li>
 	{% endfor %}
 	</ol>
