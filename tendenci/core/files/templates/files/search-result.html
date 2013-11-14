@@ -52,6 +52,7 @@
         {% endif %}
 
         <div class="submitted">
+            {% if layout == "list" %}<span>{% trans "Created" %} {{ file.create_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</span><br />{% endif %}
             <a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">
             {% trans "Updated" %} 
             {% if layout == "list" %}{{ file.update_dt|date:"D d M Y P" }} 
