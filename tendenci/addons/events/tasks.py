@@ -30,7 +30,7 @@ class EventsExportTask(Task):
             'start_dt',
             'end_dt',
             'timezone',
-            'private',
+            'private_slug',
             'password',
             'on_weekend',
             'external_url',
@@ -111,7 +111,7 @@ class EventsExportTask(Task):
                 elif field == 'type':
                     if event.type:
                         value = event.type.name
-                else:
+                elif field in event_d:
                     value = event_d[field]
                 value = unicode(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
