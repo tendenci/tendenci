@@ -965,7 +965,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             self.fields['reg_form'].queryset = reg_form_queryset
             if self.reg_form_required:
                 self.fields['reg_form'].required = True
-  
+
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if self.user and not self.user.profile.is_superuser:
