@@ -948,7 +948,8 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
     reg_form_queryset = get_ACRF_queryset(event)
     pricing_reg_form_required = (reg_conf.use_custom_reg_form and
                                  not reg_conf.bind_reg_form_to_conf_only)
-    regconfpricing_params = {'reg_form_queryset': reg_form_queryset,
+    regconfpricing_params = {'user': request.user,
+                             'reg_form_queryset': reg_form_queryset,
                              'reg_form_required': pricing_reg_form_required}
 
     if reg_conf and reg_conf.regconfpricing_set.all():
@@ -1079,7 +1080,8 @@ def add(request, year=None, month=None, day=None, \
     """
     # custom reg_form queryset
     reg_form_queryset = get_ACRF_queryset()
-    regconfpricing_params = {'reg_form_queryset': reg_form_queryset}
+    regconfpricing_params = {'user': request.user,
+                             'reg_form_queryset': reg_form_queryset}
 
     SpeakerFormSet = modelformset_factory(
         Speaker,

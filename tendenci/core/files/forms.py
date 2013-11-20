@@ -15,7 +15,7 @@ from tendenci.apps.user_groups.models import Group
 
 class FileForm(TendenciBaseForm):
 
-    group = forms.ModelChoiceField(required=True, queryset=Group.objects.filter(status=True, status_detail='active'), empty_label=None)
+    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = File
@@ -56,12 +56,22 @@ class FileForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user', None)
-        else:
-            self.user = None
-
         super(FileForm, self).__init__(*args, **kwargs)
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
+        if self.user and not self.user.profile.is_superuser:
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            groups = default_groups.filter(filters).distinct()
+            groups_list = list(groups.values_list('pk', 'name'))
+
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+        else:
+            groups_list = default_groups.values_list('pk', 'name')
+
+        self.fields['group'].choices = groups_list
 
     def clean_file(self):
         data = self.cleaned_data['file']
@@ -70,6 +80,15 @@ class FileForm(TendenciBaseForm):
             raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
 
         return data
+
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            group = Group.objects.get(pk=group_id)
+            return group
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
 
 
 class SwfFileForm(TendenciBaseForm):
@@ -138,7 +157,7 @@ class FileSearchForm(forms.Form):
         filters = get_query_filters(user, 'user_groups.view_group', **{'perms_field': False})
         groups = Group.objects.filter(filters).distinct()
         groups_list = [[g.id, g.name] for g in groups]
-        if self.user.is_authenticated():
+        if user.is_authenticated():
             users_groups = self.user.profile.get_groups()
             for g in users_groups:
                 if [g.id, g.name] not in groups_list:

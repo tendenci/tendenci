@@ -9,6 +9,7 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
 
@@ -93,7 +94,7 @@ class ArticleForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending'),))
     email = EmailVerificationField(label=_("Email"), required=False)
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
+    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = Article
@@ -166,6 +167,31 @@ class ArticleForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
 
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
         if self.user and not self.user.profile.is_superuser:
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
+
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            groups = default_groups.filter(filters).distinct()
+            groups_list = list(groups.values_list('pk', 'name'))
+
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+        else:
+            groups_list = default_groups.values_list('pk', 'name')
+
+        self.fields['group'].choices = groups_list
+
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            group = Group.objects.get(pk=group_id)
+            return group
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
+

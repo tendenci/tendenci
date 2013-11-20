@@ -11,6 +11,7 @@ from tendenci.apps.stories.models import Story
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (
@@ -37,7 +38,7 @@ class StoryForm(TendenciBaseForm):
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
+    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = Story
@@ -108,16 +109,41 @@ class StoryForm(TendenciBaseForm):
                 raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
 
         return photo_upload
+
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            group = Group.objects.get(pk=group_id)
+            return group
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
                  
     def __init__(self, *args, **kwargs):
         super(StoryForm, self).__init__(*args, **kwargs)
-        self.fields['group'].initial = Group.objects.get_initial_group_id()
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
-        if not self.user.profile.is_superuser:
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
+        if self.user and not self.user.profile.is_superuser:
+            if 'status_detail' in self.fields:
+                self.fields.pop('status_detail')
+
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            groups = default_groups.filter(filters).distinct()
+            groups_list = list(groups.values_list('pk', 'name'))
+
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+        else:
+            groups_list = default_groups.values_list('pk', 'name')
+
+        self.fields['group'].choices = groups_list
 
     def save(self, *args, **kwargs):
         story = super(StoryForm, self).save(*args, **kwargs)

@@ -699,6 +699,15 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     groups = Group.objects.filter(status=True, status_detail="active")
 
+    if not request.user.profile.is_superuser:
+        filters = get_query_filters(request.user, 'user_groups.view_group', **{'perms_field': False})
+        groups = list(groups.filter(filters).distinct())
+
+        users_groups = request.user.profile.get_groups()
+        for g in users_groups:
+            if g not in groups:
+                groups.append(g)
+
     tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
 
     default_group_id = Group.objects.get_initial_group_id()

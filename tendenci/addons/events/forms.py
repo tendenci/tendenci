@@ -33,6 +33,7 @@ from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.core.base.widgets import PriceWidget
 from tendenci.core.emails.models import Email
 from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.core.perms.utils import get_query_filters
 from tendenci.core.site_settings.utils import get_setting, get_global_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
@@ -449,12 +450,7 @@ class EventForm(TendenciBaseForm):
 
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    group = forms.ModelChoiceField(
-                queryset=Group.objects.filter(
-                        status=True,
-                        status_detail="active").order_by('name'),
-                required=True,
-                empty_label=None)
+    group = forms.ChoiceField(required=True, choices=[])
 
     FREQUENCY_CHOICES = (
         (1, '1'),
@@ -593,6 +589,23 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('end_dt')
             self.fields.pop('photo_upload')
 
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
+        if self.user and not self.user.profile.is_superuser:
+
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            groups = default_groups.filter(filters).distinct()
+            groups_list = list(groups.values_list('pk', 'name'))
+
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+        else:
+            groups_list = default_groups.values_list('pk', 'name')
+
+        self.fields['group'].choices = groups_list
+
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:
@@ -612,6 +625,15 @@ class EventForm(TendenciBaseForm):
                 raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
 
         return photo_upload
+
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            group = Group.objects.get(pk=group_id)
+            return group
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
 
     def clean_end_recurring(self):
         end_recurring = self.cleaned_data.get('end_recurring', None)
@@ -920,11 +942,13 @@ class Reg8nConfPricingForm(BetterModelForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
+    group = forms.ChoiceField(required=False, choices=[])
     payment_required = forms.ChoiceField(required=False,
                             choices=((None,_('Inherit from event')),('True',_('Yes')),('False',_('No'))))
 
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
+        self.user = kwargs.pop('user', None)
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         kwargs.update({'initial': {'start_dt':datetime.now(),
@@ -941,6 +965,33 @@ class Reg8nConfPricingForm(BetterModelForm):
             self.fields['reg_form'].queryset = reg_form_queryset
             if self.reg_form_required:
                 self.fields['reg_form'].required = True
+  
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
+        if self.user and not self.user.profile.is_superuser:
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            groups = default_groups.filter(filters).distinct()
+            groups_list = list(groups.values_list('pk', 'name'))
+
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+        else:
+            groups_list = list(default_groups.values_list('pk', 'name'))
+
+        groups_list.insert(0, ['', '------------'])
+        self.fields['group'].choices = groups_list
+
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        if group_id:
+            try:
+                group = Group.objects.get(pk=group_id)
+                return group
+            except Group.DoesNotExist:
+                raise forms.ValidationError(_('Invalid group selected.'))
 
 
     def clean_quantity(self):
@@ -1669,10 +1720,13 @@ class RegConfPricingBaseFormSet(BaseFormSet):
                  initial=None, error_class=ErrorList, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         reg_form_required = kwargs.pop('reg_form_required', None)
+        user = kwargs.pop('user', None)
         if reg_form_queryset:
             self.reg_form_queryset = reg_form_queryset
         if reg_form_required:
             self.reg_form_required = reg_form_required
+        if user:
+            self.user = user
 
         super(RegConfPricingBaseFormSet, self).__init__(data, files, auto_id, prefix,
                  initial, error_class)
@@ -1688,6 +1742,8 @@ class RegConfPricingBaseFormSet(BaseFormSet):
             defaults['reg_form_queryset'] = self.reg_form_queryset
         if hasattr(self, 'reg_form_required'):
             defaults['reg_form_required'] = self.reg_form_required
+        if hasattr(self, 'user'):
+            defaults['user'] = self.user
 
         if self.data or self.files:
             defaults['data'] = self.data
