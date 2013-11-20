@@ -14,6 +14,7 @@ def cache_nav(nav, show_title=False):
     key = '.'.join(keys)
     value = render_to_string("navs/render_nav.html", {'nav':nav, "show_title": show_title})
     cache.set(key, value, 432000) #5 days
+    return value
 
 def get_nav(id):
     """

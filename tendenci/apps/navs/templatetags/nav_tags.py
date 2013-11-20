@@ -119,7 +119,7 @@ def nav(context, nav_id, show_title=False):
         nav_object = navs[0]
         nav = get_nav(nav_object.pk)
         if not nav:
-            cache_nav(nav_object, show_title)
+            nav = cache_nav(nav_object, show_title)
     except:
         return None
 
