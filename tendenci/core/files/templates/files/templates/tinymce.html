@@ -70,21 +70,20 @@
 					<div id="flashUI">
 					
 						<fieldset id="chosen-photos">
-							<legend><span id="photo-queue">{{ all_media.count }}</span>&nbsp;{% trans "Files" %}</legend>
-							<div class="flash" id="fsUploadProgress">
+							<legend>{% trans "Files" %}</legend>
+							<div class="flash" id="galleryWrapper">
                                 {% for file in all_media %}
-                                	<div class="progressWrapper">
-                                    <div class="progressContainer blue">
-                                    {% include 'files/templates/tinymce_upload.html' %}
-                                    </div> <!-- END progressContainer -->
-                                    </div> <!-- END progressWrapper -->
+                                    {% include 'files/templates/tinymce_gallery.html' %}
                                 {% endfor %}
-							</div> <!-- END fsUploadProgress -->
+							</div> <!-- END galleryWrapper -->
 						</fieldset>
 
 					</div> <!-- flash uploader -->
 					<div id="degradedUI"></div>
 					<div id="stop-upload"></div>
+                    <div class="actions">
+                        <a class="insert-btn" onclick="insertFile();"  href="javascript:;">{% trans 'Insert Selected' %}</a>
+                    </div>
 			</div>
 
 			<div id="imageedit_panel" class="panel">
@@ -426,9 +425,56 @@
 			// SWFObject settings
 			minimum_flash_version : "9.0.28",
 			});
-			
+
+            // Add scroll handler to gallery page
+            $('div#gallery_panel div#galleryWrapper').scroll(function() {
+                if($(this).scrollTop() + $(this).height() > $(this)[0].scrollHeight - 100) {
+                    requestFiles();
+                }
+            });
+            // Add handler for adding styling in selected file
+            $('div#gallery_panel input[name="file_selected"]').change(function() {
+                $('div#gallery_panel .photo-wrapper').removeClass('selected');
+                $(this).parents('.photo-wrapper').addClass('selected');
+            });
 		};
-		
+        var current_page = 1;
+        var load_page = true;
+        function requestFiles() {
+            if (load_page) {
+                // Prevent further loading until this finishes
+                load_page = false;
+                current_page += 1;
+                var gallery = $('div#gallery_panel div#galleryWrapper');
+
+                // send ajax request
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    data: {'page_num': current_page},
+                    url: '{% url file.tinymce_get_files %}',
+                    success: function(response) {
+                        gallery.append(response.content);
+                        // Reapply handler for adding styling in selected file
+                        $('div#gallery_panel input[name="file_selected"]').change(function() {
+                            $('div#gallery_panel .photo-wrapper').removeClass('selected');
+                            $(this).parents('.photo-wrapper').addClass('selected');
+                        });
+                        load_page = true;
+                    }
+                });
+            }
+        };
+        function insertFile() {
+            var element = $('div#gallery_panel input[name="file_selected"]:radio:checked');
+            var type = element.attr('target');
+            var id = parseInt(element.val(), 10);
+            if (type == 'image') {
+                ImageDialog.insert_image(element, id);
+            } else {
+                ImageDialog.insert(element, id);
+            }
+        }
     </script>
 </body> 
 </html> 

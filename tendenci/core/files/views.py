@@ -6,6 +6,7 @@ import mimetypes
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.http import (
     HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError)
 from django.utils import simplejson
@@ -16,8 +17,10 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.core.paginator import Paginator
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
@@ -494,7 +497,9 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
     from django.contrib.contenttypes.models import ContentType
     params = {'app_label': 0, 'model': 0, 'instance_id': 0}
     files = File.objects.none()  # EmptyQuerySet
-    all_files = None
+    all_files = File.objects.order_by('-create_dt')
+    paginator = Paginator(all_files, 10)
+    all_media = paginator.page(1)
 
     # if all required parameters are in the GET.keys() list
     if not set(params.keys()) - set(request.GET.keys()):
@@ -525,9 +530,29 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
     return render_to_response(
         template_name, {
             "media": files,
-            "all_media": all_files,
+            "all_media": all_media,
             'csrf_token': csrf_get_token(request),
         }, context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def tinymce_get_files(request):
+    if request.is_ajax() and request.method == "POST":
+        all_files = File.objects.order_by('-create_dt')
+        paginator = Paginator(all_files, 10)
+        page_num = request.POST.get('page_num', '')
+        try:
+            files = paginator.page(page_num)
+        except Exception:
+            return JSONResponse({'content': ''})
+
+        return_string = ''
+        for file_item in files:
+            return_string += render_to_string('files/templates/tinymce_gallery.html', {'file': file_item})
+
+        return JSONResponse({'content': return_string})
+    raise Http404
 
 
 def swfupload(request):

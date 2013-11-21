@@ -135,7 +135,8 @@ a.progressCancel:hover
 	background-position: 0px 0px;
 }
 
-#flashUI #fsUploadProgress {
+#flashUI #fsUploadProgress,
+#flashUI #galleryWrapper {
 	border: 1px solid #F7F7F7;
 	height: 240px;
 	overflow: auto;
@@ -272,5 +273,29 @@ div.simple-upload h2 {
 .actions a.delete-btn {
 	background-color: #F7DEDE;
 	border: 1px solid #DC6E6E;
+}
+#gallery_panel .actions {
+    margin: 0;
+    padding-top: 10px;
+    border: none;
+}
+#galleryWrapper .photo-wrapper {
+    float: left;
+}
+#galleryWrapper .photo-wrapper.selected {
+    background-color: #D7F9DB;
+}
+#galleryWrapper .icon {
+    display: table-cell;
+    width: 200px;
+    height: 200px;
+    text-align: center;
+    vertical-align: middle;
+}
+#galleryWrapper .icon img {
+    max-width: 150px;
+}
+#galleryWrapper input[type="radio"] {
+    display: none;
 }
 

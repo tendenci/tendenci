@@ -188,7 +188,7 @@ var ImageDialog = {
 		if(icon_url != 'None'){
 			var file_element = '<div class="t5_file"> '+ 
 				'<a href="'+ file_download_url +'">'+
-				'<img src="'+ icon_url +'" /> ' + '</a> ' +
+				'<img src="'+ icon_url +'" />' + '</a> ' +
 				'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';	
 		}
 		else {

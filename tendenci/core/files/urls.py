@@ -33,6 +33,7 @@ urlpatterns = patterns('tendenci.core.files.views',
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="file.delete"),
 
     url(r'^%s/tinymce/$' % urlpath, 'tinymce', name="file.tinymce"),
+    url(r'^%s/tinymce/get-files/$' % urlpath, 'tinymce_get_files', name="file.tinymce_get_files"),
     url(r'^%s/tinymce/template/(?P<id>\d+)/$' % urlpath, 'tinymce_upload_template'),
     url(r'^%s/swfupload/$' % urlpath, 'swfupload', name="file.swfupload"),
 
