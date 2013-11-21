@@ -192,6 +192,10 @@ html {
 	background-color:#01437D;
 }
 
+input#admin-search-submit {
+	width: 20px;
+}
+
 /*Alt color for admin-bar
 #admin-bar, #admin-bar ul, #admin-bar a, #admin-bar li li, #admin-bar li li a:hover,
 #admin-bar #admin-search-box input#admin-search-submit { background-color: #3a3; }

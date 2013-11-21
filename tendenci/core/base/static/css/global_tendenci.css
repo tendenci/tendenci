@@ -27,7 +27,7 @@
 .editor-bar .perm-status li {margin: 0 10px 0 0;}
 
 .editor-bar .edit-links {float: right; position: relative; font-size: 12px; padding: 0;}
-.editor-bar ul {margin: 0; padding: 0; font-size: 12px;}
+.editor-bar ul {margin: 0; padding: 0; font-size: 12px; list-style: none;}
 .editor-bar li {float: left; list-style-type: none; margin-left: 14px; font-size: 12px;}
 .editor-bar li a {display: block; padding: 6px 0; font-size: 12px; text-decoration: underline; color: #06C;}
 .editor-bar li a:hover {color: #026;}
