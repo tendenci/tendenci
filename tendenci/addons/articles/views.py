@@ -26,7 +26,7 @@ from tendenci.addons.articles.models import Article
 from tendenci.addons.articles.forms import ArticleForm, ArticleSearchForm
 from tendenci.apps.notifications import models as notification
 from tendenci.core.categories.forms import CategoryForm
-from tendenci.core.categories.models import Category
+from tendenci.core.categories.models import Category, CategoryItem
 
 
 @is_enabled('articles')
@@ -103,6 +103,27 @@ def search(request, template_name="articles/search.html"):
         else:
             articles = articles.filter(Q(release_dt__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))
 
+    # Query list of category and subcategory for dropdown filters
+    category = request.GET.get('category')
+    sub_cat = request.GET.get('sub_category')
+    try:
+        category = int(category)
+    except:
+        category = 0
+    categories, sub_categories = Article.objects.get_categories(category=category)
+
+    if category > 0:
+        cat_article_ids = CategoryItem.objects.filter(content_type_id=ContentType.objects.get_for_model(Article), category_id=category, parent_id__isnull=True).values('object_id')
+        articles = articles.filter(id__in=[c['object_id'] for c in cat_article_ids])
+
+    if sub_cat:
+        try:
+            sub_cat = int(sub_cat)
+            subcat_article_ids = CategoryItem.objects.filter(content_type_id=ContentType.objects.get_for_model(Article), parent_id=sub_cat, category_id__isnull=True).values('object_id')
+            articles = articles.filter(id__in=[c['object_id'] for c in subcat_article_ids])
+        except Exception, e:
+            pass
+
     # don't use order_by with "whoosh"
     if not query or settings.HAYSTACK_SEARCH_ENGINE.lower() != "whoosh":
         articles = articles.order_by('-release_dt')
@@ -110,14 +131,6 @@ def search(request, template_name="articles/search.html"):
         articles = articles.order_by('-create_dt')
 
     EventLog.objects.log()
-
-    # Query list of category and subcategory for dropdown filters
-    category = request.GET.get('category')
-    try:
-        category = int(category)
-    except:
-        category = 0
-    categories, sub_categories = Article.objects.get_categories(category=category)
 
     return render_to_response(template_name, {'articles': articles,
         'categories': categories, 'form' : form, 'sub_categories': sub_categories},
