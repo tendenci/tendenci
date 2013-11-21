@@ -1,5 +1,6 @@
 from django.conf import settings
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.theme.utils import get_theme_info
 
 
 def theme(request):
@@ -24,5 +25,7 @@ def theme(request):
 
     contexts['LOCAL_THEME_URL'] = '/themes/' + theme + '/'
     contexts['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
+
+    contexts['THEME_INFO'] = get_theme_info(theme)
 
     return contexts

@@ -61,17 +61,18 @@ class ThemeInfo(object):
             # set attributes according to data in info file
             for datum in data:
                 datum = datum.replace('\n', '')
-                label, value = datum.split('=')
-                label = label.strip().replace(' ', '_').lower()
-                value = value.strip()
+                if "=" in datum:
+                    label, value = datum.split('=', 1)
+                    label = label.strip().replace(' ', '_').lower()
+                    value = value.strip()
 
-                if label == 'create_dt':
-                    value = parse(value)
+                    if label == 'create_dt':
+                        value = parse(value)
 
-                if label in ('screenshot', 'screenshot_thumbnail'):
-                    value = os.path.join('/themes', theme, value)
+                    if label in ('screenshot', 'screenshot_thumbnail'):
+                        value = os.path.join('/themes', theme, value)
 
-                setattr(self, label, value)
+                    setattr(self, label, value)
 
 # At compile time, cache the directories to search.
 fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()

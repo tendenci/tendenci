@@ -1,5 +1,7 @@
 import os
+import ConfigParser
 from django.conf import settings
+from django.core.cache import cache
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.middleware import get_current_request
 
@@ -57,3 +59,45 @@ def theme_choices():
             # catch hidden directories
             if not theme.startswith('.'):
                 yield theme
+
+
+def prepend_file(filename, prep_text="[General]\n"):
+    f = open(filename)
+    text = f.read()
+    f.close()
+    # open the file again for writing
+    f = open(filename, 'w')
+    f.write(prep_text)
+    # write the original contents
+    f.write(text)
+    f.close()
+
+
+def get_theme_info(theme=None):
+    """Returns a dict of the fields from the theme.info file for the theme.
+    A dict is preferred so we can loop through the fields.
+
+    """
+
+    if not theme:
+        theme = get_theme()
+    theme_root = get_theme_root(theme)
+    keys = [settings.CACHE_PRE_KEY, str(theme)]
+    key = '.'.join(keys)
+    cached = cache.get(key)
+    if cached is None:
+        # Get a dict of the fields, not the object itself.
+
+        config = ConfigParser.ConfigParser()
+        try:
+            config.read(os.path.join(theme_root, 'theme.info'))
+        except ConfigParser.MissingSectionHeaderError:
+            prepend_file(os.path.join(theme_root, 'theme.info'))
+            config.read(os.path.join(theme_root, 'theme.info'))
+
+        cached = config._sections
+
+        # Only cache if DEBUG is disabled.
+        if not settings.DEBUG:
+            cache.set(key, cached)
+    return cached

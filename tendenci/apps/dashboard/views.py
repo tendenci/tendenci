@@ -59,6 +59,14 @@ def index(request, template_name="dashboard/index.html"):
 
 @login_required
 def new(request, template_name="dashboard/new.html"):
+
+    if get_setting('module', 'dashboard', 'themeredirect'):
+        redirect_setting = Setting.objects.get(scope_category='dashboard',
+                                               name='themeredirect')
+        redirect_setting.set_value(False)
+        redirect_setting.save()
+        return redirect('tendenci.apps.theme_editor.views.theme_picker')
+
     profile_redirect = get_setting('site', 'global', 'profile_redirect')
     if profile_redirect and profile_redirect != '/dashboard' and not request.user.profile.is_superuser:
         if "<username>" in profile_redirect:

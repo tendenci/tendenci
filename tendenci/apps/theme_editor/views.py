@@ -388,6 +388,7 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
         selected_theme = request.POST.get('theme')
         call_command('set_theme', selected_theme)
         messages.add_message(request, messages.SUCCESS, "Your theme has been changed to %s." % selected_theme.title())
+        return redirect('home')
 
     current_theme = get_setting('module', 'theme_editor', 'theme')
     themes = sorted(themes, key=lambda theme: theme.create_dt)

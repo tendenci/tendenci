@@ -1,0 +1,19 @@
+[
+	{
+        "default_value": "true", 
+        "description": "Redirect users to the Theme Picker page the first time they log in.", 
+        "data_type": "boolean", 
+        "update_dt": "2010-08-12 17:19:11", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "themeredirect", 
+        "value": "true", 
+        "label": "Theme Picker Redirect", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "dashboard", 
+        "store": true, 
+        "updated_by": ""
+    }
+]
