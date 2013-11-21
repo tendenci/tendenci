@@ -167,12 +167,12 @@ Again, replace ``/var/www/sitename`` with the real path. Next, adjust the permis
 To start this service, use the following command:
 ::
 
-    service tendenci start
+    sudo service tendenci start
 
 If any changes in the future are made to the environment file (``.env``), the service should be restarted with this command:
 ::
 
-    service tendenci restart
+    sudo service tendenci restart
 
 
 Setting up nginx
@@ -227,7 +227,7 @@ Remove the default record from the sites-enabled with this command:
 Finally, restart the nginx service:
 ::
 
-    service nginx restart
+    sudo service nginx restart
 
 
 Setup Mail and Memcached
