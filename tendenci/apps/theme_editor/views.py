@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 
 from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import get_template_list
+from tendenci.core.base.utils import get_template_list, checklist_update
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.site_settings.models import Setting
 from tendenci.core.perms.utils import has_perm
@@ -387,6 +387,7 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
     if request.method == "POST":
         selected_theme = request.POST.get('theme')
         call_command('set_theme', selected_theme)
+        checklist_update('choose-theme')
         messages.add_message(request, messages.SUCCESS, "Your theme has been changed to %s." % selected_theme.title())
         return redirect('home')
 
@@ -412,6 +413,7 @@ def theme_color(request):
                                                 name='colorvars')
             color_setting.set_value(request.POST.get('colors'))
             color_setting.save()
+            checklist_update('customize-color')
             
             message = 'Successfully updated theme colors.'
             response = json.dumps({'message': message})

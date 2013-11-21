@@ -143,6 +143,9 @@
                         <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url admin:index %}">{% trans "Admin Backend" %}</a></li>
                         <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
+                        {% if THEME_INFO.SSU.checklist %}
+                        <li><a href="{% url completion_checklist %}">{% trans "Completion Status" %}</a></li>
+                        {% endif %}
                         <li><a href="{% url addon.upload %}">{% trans "Module Upload" %}</a></li>
                         <li><a href="/newsletter_generator/">{% trans "Newsletter Generator" %}</a></li>
                         <li><a href="{% url event_log.search %}">{% trans "Event Logs" %}</a></li>

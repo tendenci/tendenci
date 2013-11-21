@@ -1,4 +1,5 @@
 # python
+from decimal import Decimal
 import datetime
 import time
 import re
@@ -26,11 +27,12 @@ from django.contrib import messages
 from tendenci import __version__ as version
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.core.base.forms import PasswordForm, AddonUploadForm
-from tendenci.core.base.models import UpdateTracker
+from tendenci.core.base.models import UpdateTracker, ChecklistItem
 from tendenci.core.base.managers import SubProcessManager
 from tendenci.core.perms.decorators import superuser_required
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.theme.utils import get_theme_info
 
 BASEFILE_EXTENSIONS = (
     'txt',
@@ -320,6 +322,29 @@ def password_again(request, template_name="base/password.html"):
         'next': next,
         'form': form,
     }, context_instance=RequestContext(request))
+
+
+@superuser_required
+def checklist(request, template_name="base/checklist.html"):
+    theme_info = get_theme_info()
+    try:
+        checklist_enabled = theme_info['SSU']['checklist']
+    except KeyError:
+        raise Http404
+    if not checklist_enabled:
+        raise Http404
+
+    checklist = ChecklistItem.objects.all()
+
+    total_count = checklist.count()
+    completed = checklist.filter(done=True)
+    completed_count = completed.count()
+
+    percent = (Decimal(completed_count) / Decimal(total_count)) * 100
+
+    return render_to_response(template_name,
+                              {'checklist': checklist, "percent": percent},
+                              context_instance=RequestContext(request))
 
 
 @superuser_required

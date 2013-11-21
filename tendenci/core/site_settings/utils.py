@@ -173,7 +173,7 @@ def get_form_list(user):
     forms = Form.objects.filter(filters)
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
-    l = [('', 'None')]
+    l = []
     for form in forms:
         l.append((form.pk, form.title))
 

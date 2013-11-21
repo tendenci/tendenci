@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import template_exists
+from tendenci.core.base.utils import template_exists, checklist_update
 from tendenci.core.base.views import file_display
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
@@ -188,6 +188,8 @@ def edit(request, id, form_class=PageForm,
 
             # update all permissions
             page = update_perms_and_save(request, form, page)
+            if page.pk == 1:  # the about page has id 1 in the npo defaults fixture
+                checklist_update('update-about')
 
             messages.add_message(request, messages.SUCCESS,
                                  'Successfully updated %s' % page)
@@ -374,6 +376,8 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
 
             messages.add_message(request, messages.SUCCESS,
                                  'Successfully added %s' % page)
+
+            checklist_update('add-page')
 
             if not request.user.profile.is_superuser:
                 # send notification to administrators

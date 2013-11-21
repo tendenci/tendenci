@@ -13,6 +13,7 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.base.utils import checklist_update
 from tendenci.apps.redirects.models import Redirect
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
@@ -109,6 +110,12 @@ class Form(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        # If this is the current contact form, update checklist
+        if str(self.pk) == get_setting('site', 'global', 'contact_form'):
+            checklist_update('update-contact')
+        super(Form, self).save(*args, **kwargs)
 
     @models.permalink
     def get_absolute_url(self):

@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib import messages
 
 from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import checklist_update
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.core.event_logs.models import EventLog
@@ -92,6 +93,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 if photo:
                     story.save(photo=photo)
                     assign_files_perms(story, files=[story.image])
+
+                if 'rotator' in story.tags:
+                    checklist_update('add-story')
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % story) 
 

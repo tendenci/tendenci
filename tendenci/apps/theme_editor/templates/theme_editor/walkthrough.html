@@ -139,7 +139,7 @@
                     alert("{% trans 'You can not close before you finish all the walkthrough steps.' %}");
                     return false;
                 }
-                window.location = "{% url dashboard %}";
+                window.location = "{% url completion_checklist %}";
                 return true;
             }
         });

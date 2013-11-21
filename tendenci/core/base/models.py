@@ -1,5 +1,8 @@
 from django.db import models
 
+from tendenci.libs.abstracts.models import OrderingBaseModel
+
+
 class UpdateTracker(models.Model):
     is_updating = models.BooleanField(default=False)
     
@@ -30,3 +33,12 @@ class UpdateTracker(models.Model):
 
     def __unicode__(self):
         return "%s: status = %s" % (self.id, self.is_updating)
+
+
+class ChecklistItem(OrderingBaseModel):
+    key = models.CharField(max_length=20, unique=True)
+    label = models.CharField(max_length=200)
+    done = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.label

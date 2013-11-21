@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
 
+from tendenci.core.base.utils import checklist_update
 from tendenci.core.site_settings.utils import (get_form_list,
                                                get_box_list,
                                                get_group_list)
@@ -83,6 +84,14 @@ def save_settings_form(self):
                     django_site.name = field_value.replace("http://", "")
                     django_site.save()
 
+            # update checklist for theme logo
+            if setting.name == 'logo' and setting.scope_category == 'theme':
+                checklist_update('upload-logo')
+
+            # update checklist for contact form
+            if setting.name == 'contact_form' and setting.scope == "site":
+                checklist_update('update-contact')
+
         except KeyError:
             pass
 
@@ -116,7 +125,7 @@ def build_settings_form(user, settings):
         elif setting.input_type == 'select':
             if setting.input_value == '<form_list>':
                 choices = get_form_list(user)
-                required = False
+                required = True
             elif setting.input_value == '<box_list>':
                 choices = get_box_list(user)
                 required = False

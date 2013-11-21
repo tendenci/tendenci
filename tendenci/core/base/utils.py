@@ -23,6 +23,7 @@ from django.db import router
 
 from simple_salesforce import Salesforce
 
+from tendenci.core.base.models import ChecklistItem
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.utils import get_theme_root
 
@@ -771,3 +772,14 @@ def directory_cleanup(dir_path, ndays):
     for foldername in foldernames:
         folder_path = os.path.join(dir_path, foldername)
         directory_cleanup(folder_path, ndays)
+
+
+def checklist_update(key):
+    try:
+        item = ChecklistItem.objects.get(key=key)
+    except ChecklistItem.DoesNotExist:
+        return None
+
+    if not item.done:
+        item.done = True
+        item.save()

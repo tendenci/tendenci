@@ -1,0 +1,109 @@
+[
+    {
+        "pk": 1,
+        "model": "forms.form",
+        "fields": {
+            "title": "Contact Us",
+            "slug": "contact-us",
+            "intro": "<p>Please fill out the form below.</p>",
+            "response": "<p>Thank you for contacting us! We will be in touch shortly.</p>",
+            "send_email": false,
+            "email_text": "",
+            "email_from": "",
+            "email_copies": "",
+            "subject_template": "[title] - [first name]  [last name] - [phone]",
+            "completion_url": "",
+            "custom_payment": false,
+            "recurring_payment": false,
+            "payment_methods": "",
+            "allow_anonymous_view": true,
+            "allow_user_view": false,
+            "allow_member_view": false,
+            "allow_user_edit": false,
+            "allow_member_edit": false,
+            "update_dt": "2012-12-31T15:10:47.597",
+            "create_dt": "2012-12-31T13:22:50.064",
+            "creator": 18,
+            "creator_username": "m_stripe",
+            "owner": 18,
+            "owner_username": "m_stripe",
+            "status": true,
+            "status_detail": "published"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "forms.field",
+        "fields": {
+            "form": 1,
+            "label": "First Name",
+            "field_type": "CharField",
+            "field_function": "EmailFirstName",
+            "required": true,
+            "visible": true,
+            "choices": "",
+            "default": "",
+            "position": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "forms.field",
+        "fields": {
+            "form": 1,
+            "label": "Last Name",
+            "field_type": "CharField",
+            "field_function": "EmailLastName",
+            "required": true,
+            "visible": true,
+            "choices": "",
+            "default": "",
+            "position": 2
+        }
+    },
+    {
+        "pk": 3,
+        "model": "forms.field",
+        "fields": {
+            "form": 1,
+            "label": "Email address",
+            "field_type": "EmailVerificationField",
+            "field_function": null,
+            "required": true,
+            "visible": true,
+            "choices": "",
+            "default": "",
+            "position": 3
+        }
+    },
+    {
+        "pk": 4,
+        "model": "forms.field",
+        "fields": {
+            "form": 1,
+            "label": "Phone Number",
+            "field_type": "CharField",
+            "field_function": "EmailPhoneNumber",
+            "required": false,
+            "visible": true,
+            "choices": "",
+            "default": "",
+            "position": 4
+        }
+    },
+    {
+        "pk": 5,
+        "model": "forms.field",
+        "fields": {
+            "form": 1,
+            "label": "Message",
+            "field_type": "CharField/django.forms.Textarea",
+            "field_function": null,
+            "required": true,
+            "visible": true,
+            "choices": "",
+            "default": "",
+            "position": 5
+        }
+    }
+]

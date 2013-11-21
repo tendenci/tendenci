@@ -24,6 +24,7 @@ from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import checklist_update
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from tendenci.core.site_settings.utils import get_setting
@@ -393,6 +394,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 
                 # update all permissions and save the model
                 photo_set = update_perms_and_save(request, form, photo_set)
+                checklist_update('add-album')
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added photo set!')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))

@@ -12,6 +12,7 @@ from django.db.models import Q
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import checklist_update
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import is_enabled
@@ -135,6 +136,8 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
                 item.save()
             cache_nav(nav)
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
+            if nav.pk == 1:  # the main nav has id 1 in the npo defaults fixture
+                checklist_update('update-nav')
 
             EventLog.objects.log(instance=nav)
 

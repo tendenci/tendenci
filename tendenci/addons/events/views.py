@@ -48,7 +48,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 from tendenci.core.imports.forms import ImportForm
 from tendenci.core.imports.models import Import
-from tendenci.core.base.utils import convert_absolute_urls
+from tendenci.core.base.utils import convert_absolute_urls, checklist_update
 from tendenci.core.imports.utils import (
     render_excel)
 from tendenci.core.base.http import HttpCustomResponseRedirect
@@ -1293,6 +1293,7 @@ def add(request, year=None, month=None, day=None, \
                         'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                         'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                     })
+                checklist_update('add-event')
                 return HttpResponseRedirect(redirect_url)
 
         else:  # if not post request

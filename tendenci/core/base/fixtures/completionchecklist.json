@@ -1,0 +1,92 @@
+[
+    {
+        "pk": 1,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "choose-theme",
+            "label": "<a href=\"/theme-editor/theme_picker/\" target=\"_blank\">Choose your theme</a>",
+            "position": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "customize-color",
+            "label": "<a href=\"#\" onclick=\"open_color_palette(); return false;\">Customize your color scheme</a>",
+            "position": 2
+        }
+    },
+    {
+        "pk": 3,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "upload-logo",
+            "label": "<a href=\"/settings/module/theme/logo/\" target=\"_blank\">Upload your logo</a>",
+            "position": 3
+        }
+    },
+    {
+        "pk": 4,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "update-nav",
+            "label": "<a href=\"/navs/edit/1/items/?next=/\" target=\"_blank\">Update your navigation items</a>",
+            "position": 4
+        }
+    },
+    {
+        "pk": 5,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "update-about",
+            "label": "<a href=\"/pages/edit/1/\" target=\"_blank\">Update your about page</a>",
+            "position": 5
+        }
+    },
+    {
+        "pk": 6,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "add-story",
+            "label": "<a href=\"/stories/add/?next=/\" target=\"_blank\">Add a story to your rotator</a> (Don't forget to tag your Story with \"rotator\" for it to show up in the Rotator!)",
+            "position": 6
+        }
+    },
+    {
+        "pk": 7,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "update-contact",
+            "label": "<a href=\"/admin/forms/form/1/?next=/contact/\" target=\"_blank\">Update your contact form</a>",
+            "position": 7
+        }
+    },
+    {
+        "pk": 8,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "add-event",
+            "label": "<a href=\"/events/add/\" target=\"_blank\">Add an event to your calendar</a>",
+            "position": 8
+        }
+    },
+    {
+        "pk": 9,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "add-album",
+            "label": "<a href=\"/photos/set/add/\" target=\"_blank\">Add a photo album</a>",
+            "position": 9
+        }
+    },
+    {
+        "pk": 10,
+        "model": "base.checklistitem",
+        "fields": {
+            "key": "add-page",
+            "label": "<a href=\"/pages/add/\" target=\"_blank\">Add a new page</a> (<a href=\"/navs/edit/1/items/\" target=\"_blank\">Don't forget to link it from your nav!</a>)",
+            "position": 10
+        }
+    }
+]

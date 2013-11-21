@@ -9,6 +9,8 @@ urlpatterns = patterns('tendenci.core.base.views',
     url(r'^exception-test/$', 'exception_test', name="exception_test"),
     url(r'^timeout-test/$', 'timeout_test', name="timeout_test"),
 
+    url(r'^checklist/$', 'checklist', name="completion_checklist"),
+
     url(r'^update-tendenci/$', 'update_tendenci', name="update_tendenci"),
     url(r'^update-tendenci/status/$', 'update_tendenci_process', name="update_tendenci.process"),
     url(r'^update-tendenci/check/$', 'update_tendenci_check', name="update_tendenci.check"),

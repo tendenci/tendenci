@@ -646,14 +646,14 @@
         "updated_by": ""
     },
     {
-        "default_value": "", 
+        "default_value": "1", 
         "description": "Select the name of the form that will be used at /contact/.", 
         "data_type": "string", 
         "update_dt": "2011-11-04 14:13:58", 
         "input_type": "select", 
         "client_editable": true, 
         "name": "contact_form", 
-        "value": "", 
+        "value": "1", 
         "label": "Contact Form", 
         "input_value": "<form_list>", 
         "parent_id": 0, 
