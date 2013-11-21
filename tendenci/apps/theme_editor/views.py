@@ -398,3 +398,24 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
         'current_theme': current_theme,
         'theme_choices': theme_choice_list(),
     }, context_instance=RequestContext(request))
+
+
+@login_required
+def theme_color(request):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if request.is_ajax() and request.method == 'POST':
+        if request.POST.get('colors', None):
+            color_setting = Setting.objects.get(scope='module',
+                                                scope_category='theme',
+                                                name='colorvars')
+            color_setting.set_value(request.POST.get('colors'))
+            color_setting.save()
+            
+            message = 'Successfully updated theme colors.'
+            response = json.dumps({'message': message})
+            return HttpResponse(response, mimetype="application/json")
+
+    raise Http404
+

@@ -21,6 +21,9 @@
         <link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />
         <link href="{{ STATIC_URL }}css/theme_bar.css" rel="stylesheet" type="text/css" />
     {% endif %}
+    {% if request.user.is_superuser and THEME_INFO.SSU.color %}
+        <link href="{{ STATIC_URL }}css/spectrum.css" rel="stylesheet" type="text/css" />
+    {% endif %}
     {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
     <script type="text/javascript">
       var _gaq = _gaq || [];
@@ -67,6 +70,11 @@
 {% if request.user.is_superuser %}<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>{% endif %}
 {% if user.is_authenticated %}<script type="text/javascript" src="{{ STATIC_URL }}js/global/authenticated.js"></script>{% endif %}
 {% block extra_body %}{% endblock %}
+
+{% if request.user.is_superuser and THEME_INFO.SSU.color %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_plugins/spectrum.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/theme_color_admin.js"></script>
+{% endif %}
 
 {% if request.user.is_superuser and request.path == '/' %}
     {% include 'theme_editor/walkthrough.html' %}

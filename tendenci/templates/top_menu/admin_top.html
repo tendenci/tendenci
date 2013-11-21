@@ -191,6 +191,20 @@
             <form action="/search/" method="get" name="search" id="admin-search-box">
                             <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
         </li>
+
+        {% if THEME_INFO.SSU.color %}
+        <li class="right" id="themecolor">
+            <a href="#">
+                <img class="themecolorLogo" src="{{ STATIC_URL }}images/icons/color-palette-16x16.png">
+                &nbsp;&nbsp;{% trans "Colors" %}
+            </a>
+            <div class="sub themecolor">
+                <div class="column app-list">
+                    {% include 'theme_editor/theme_color_admin.html' %}
+                </div>
+            </div>
+        </li>
+        {% endif %}
     </ul>
 
 </div>
