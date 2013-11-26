@@ -34,7 +34,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.event_logs.utils import request_month_range, day_bars
 from tendenci.core.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
-from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm
+from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, GroupSearchForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
 #from tendenci.apps.user_groups.importer.forms import UploadForm
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
@@ -49,21 +49,27 @@ def search(request, template_name="user_groups/search.html"):
     is available, this page also allows you to search through
     user groups.
     """
-    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
+    form = GroupSearchForm(request.GET)
+    cat = None
 
-    if has_index and query:
-        groups = Group.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'groups.view_group', perms_field=False)
-        groups = Group.objects.filter(filters).distinct()
-        if request.user.is_authenticated():
-            groups = groups.select_related()
-        groups = groups.order_by('slug')
+    filters = get_query_filters(request.user, 'groups.view_group', perms_field=False)
+    groups = Group.objects.filter(filters).distinct()
+
+    if request.user.is_authenticated():
+        groups = groups.select_related()
+
+    if form.is_valid():
+        cat = form.cleaned_data['search_category']
+
+        if query and cat:
+            groups = groups.filter(**{cat: query} )
+
+    groups = groups.order_by('slug')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'groups':groups},
+    return render_to_response(template_name, {'groups':groups, 'form': form},
         context_instance=RequestContext(request))
 
 def search_redirect(request):

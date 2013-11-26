@@ -76,9 +76,45 @@
 
 /* group search */
 .t form.search-form input[type="text"] {
-	margin-bottom:10px;
 	padding:5px;
-	width:500px;
+	width:273px;
+}
+
+.t form.search-form {
+    margin-bottom: 45px;
+}
+
+.t form.search-form div .errorlist {
+    margin-left: 15px;
+    margin-top: 2px;
+    color: red;
+}
+
+.t form.search-form .q .errorlist {
+    margin-left: 6px;
+}
+
+.t form.search-form input[type="submit"] {
+    height: 28px;
+    width: 100px;
+    margin-left: 4px;
+    vertical-align: -10px;
+}
+
+.t form.search-form #id_search_category {
+    height: 30px;
+    margin-top: 2px;
+}
+
+.t form.search-form span  {
+    padding-top: 10px;
+    padding-right: 6px;
+}
+
+.t form.search-form div.search-category,
+.t form.search-form div.q, 
+.t form.search-form span  {
+    float: left;
 }
 
 /* edit perms */
