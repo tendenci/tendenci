@@ -24,11 +24,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.decorators import superuser_required
 from tendenci.core.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.core.imports.forms import ImportForm
 from tendenci.core.imports.models import Import
-from tendenci.core.imports.utils import (extract_from_excel,
-                render_excel)
+from tendenci.core.imports.utils import extract_from_excel, render_excel
 from tendenci.apps.entities.models import Entity
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.event_logs.utils import request_month_range, day_bars
@@ -99,7 +99,7 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
         locals(),
         context_instance=RequestContext(request))
 
-@login_required
+@superuser_required
 def message(request, group_slug, template_name='user_groups/message.html'):
     """
     Send a message to the group
