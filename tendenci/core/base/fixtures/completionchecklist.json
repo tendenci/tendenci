@@ -49,7 +49,7 @@
         "model": "base.checklistitem",
         "fields": {
             "key": "add-story",
-            "label": "<a href=\"/stories/add/?next=/\" target=\"_blank\">Add a story to your rotator</a> (Don't forget to tag your Story with \"rotator\" for it to show up in the Rotator!)",
+            "label": "<a href=\"/stories/add/?next=/&tags=rotator\" target=\"_blank\">Add a story to your rotator</a> (Don't forget to tag your Story with \"rotator\" for it to show up in the Rotator!)",
             "position": 6
         }
     },

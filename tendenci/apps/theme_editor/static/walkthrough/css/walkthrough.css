@@ -272,6 +272,7 @@
 
 #jpWalkthrough #jpwTooltip #tooltipInner a{
     font-size: 16px;
+    color: #ff4;
 }
 
 #jpWalkthrough #jpwTooltip #tooltipInner .tooltipTitle{
