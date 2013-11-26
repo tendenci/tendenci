@@ -83,7 +83,9 @@
             <p>Group members in sets of 100</p>
             {% for gm in groupmemberships %}
                 <div class="group-member {% cycle 'gray' '' %}">
-                 <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) - {{ gm.role }}</a>
+
+                 <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if gm.role %}- {{ gm.role }}{% endif %}</a>
+
                  {% if can_delete %}
                     &nbsp;<span class="delete-member"><a href="{% url group.deleteuser group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
                  <!-- delete-member form -->
