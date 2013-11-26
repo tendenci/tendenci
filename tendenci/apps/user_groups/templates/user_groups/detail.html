@@ -33,6 +33,9 @@
             <ul>
                 {% if can_edit %}
                 <li><a href="{% url group.members_export group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
+
+                <li><a href="{% url group.message group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
+
                 {% endif %}
 
                 {% if can_edit %}
