@@ -9,12 +9,14 @@ $("#editorForm").submit(function() {
         url: '',
         success: function(response) {
             $('#save_message').text(response.message);
+            $('#save_message').addClass('success');
             $('#save_message').show();
             setTimeout(function () {
-                $('#save_message').hide();
+                $('#save_message').fadeOut();
             }, 5000);
             if (response.status === 'FAIL') {
-                $('#save_message').addClass('fail');
+                $('#save_message').removeClass('success');
+                $('#save_message').addClass('error');
             }
         }
     });
