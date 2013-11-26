@@ -214,3 +214,35 @@ class GroupMembershipEditForm(forms.ModelForm):
     class Meta:
         model = GroupMembership
         fields = ('role', 'status', 'status_detail')
+
+
+class MessageForm(forms.Form):
+  """Handles Message Form"""
+  to_addr = forms.CharField(label=u'To')
+  from_addr = forms.CharField(label=u'From')
+  subject = forms.CharField()
+  body = forms.CharField(widget=forms.Textarea)
+  is_test = forms.BooleanField(label=u'Send test email to me only', required=False, initial=True)
+
+  def __init__(self, *args, **kwargs):
+    from django.template.defaultfilters import pluralize
+    request = kwargs.pop('request')
+    num_members = kwargs.pop('num_members')
+    super(MessageForm, self).__init__(*args, **kwargs)
+
+    self.fields['to_addr'].initial = 'All %s member%s' % (num_members, pluralize(num_members))
+    self.fields['to_addr'].widget.attrs['readonly'] = True
+
+    self.fields['from_addr'].initial = '%s <%s>' % (
+      request.user.profile.get_name(), request.user.email)
+    self.fields['from_addr'].widget.attrs['readonly'] = True
+
+
+
+
+
+
+
+
+
+

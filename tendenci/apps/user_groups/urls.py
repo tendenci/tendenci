@@ -22,6 +22,7 @@ urlpatterns = patterns('tendenci.apps.user_groups.views',
     url(r'^%s/import/download_template/$' % urlpath, 'import_download_template', name='group.import_download_template'),
 
     url(r'^%s/(?P<group_slug>[-.\w]+)/$' % urlpath, 'group_detail', name='group.detail'),
+    url(r'^%s/(?P<group_slug>[-.\w]+)/message/$' % urlpath, "message", name='group.message'),
     url(r'^%s/(?P<group_slug>[-.\w]+)/export/(?P<export_target>\w+)/$' % urlpath, 'group_members_export', name='group.members_export'),
     url(r'^%s/(?P<group_slug>[-.\w]+)/export/(?P<export_target>\w+)/status/(?P<identifier>[_\d]+)/$' % urlpath, 'group_members_export_status', name='group.members_export_status'),
     url(r'^%s/(?P<group_slug>[-.\w]+)/export/(?P<export_target>\w+)/download/(?P<identifier>[_\d]+)/$' % urlpath, 'group_members_export_download', name='group.members_export_download'),

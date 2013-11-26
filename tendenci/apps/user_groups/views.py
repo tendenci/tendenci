@@ -6,7 +6,7 @@ from djcelery.models import TaskMeta
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
@@ -35,6 +35,7 @@ from tendenci.core.event_logs.utils import request_month_range, day_bars
 from tendenci.core.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, GroupSearchForm
+from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, MessageForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
 #from tendenci.apps.user_groups.importer.forms import UploadForm
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
@@ -97,6 +98,72 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
         template_name,
         locals(),
         context_instance=RequestContext(request))
+
+@login_required
+def message(request, group_slug, template_name='user_groups/message.html'):
+    """
+    Send a message to the group
+    """
+    from tendenci.core.emails.models import Email
+
+    group = get_object_or_404(Group, slug=group_slug)
+    EventLog.objects.log(instance=group)
+
+    members = GroupMembership.objects.filter(
+        group=group,
+        status=True,
+        status_detail='active')
+
+    num_members = members.count()
+
+    form = MessageForm(request.POST or None,
+        request=request,
+        num_members=num_members)
+
+
+    if request.method == 'POST' and form.is_valid():
+
+        email = Email()
+        email.sender_display = request.user.get_full_name()
+        email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
+        email.reply_to = email.sender
+        email.content_type = 'text/html'
+        email.subject = form.cleaned_data['subject']
+        email.body = form.cleaned_data['body']
+        email.save(request.user)
+
+        # send email to myself (testing email)
+        if form.cleaned_data['is_test']:
+            email.recipient = request.user.email
+            email.send()
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Successfully sent test email to yourself')
+
+            EventLog.objects.log(instance=email)
+
+        else:
+            # send email to members
+            for member in members:
+                email.recipient = member.member.email
+                email.send()
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Successfully sent email to all %s members in this group' % num_members)
+
+            EventLog.objects.log(instance=email)
+    else:
+        print 'form errors', form.errors.items()
+
+
+    return render(request, template_name, {
+        'group': group,
+        'num_members': num_members,
+        'form': form})
 
 
 def group_add_edit(request, group_slug=None,
@@ -967,4 +1034,10 @@ def import_download_template(request, file_ext='.csv'):
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)
+
+
+
+
+
+
 
