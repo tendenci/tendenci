@@ -39,6 +39,9 @@
 		{% for weekday in weekdays %}
 			<div class="weekday">{{ weekday }}</div>
 		{% endfor %}
+		{% for weekday in weekdays %}
+			<div class="weekday-mobile">{{ weekday|slice:":3" }}</div>
+		{% endfor %}
 		<div style="clear:both;"></div>
 		</div>
 	

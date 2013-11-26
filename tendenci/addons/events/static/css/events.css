@@ -551,10 +551,15 @@ ul.errorlist {;
 .month-view h1 {
 	text-align: center;
 }
-.month-view div.weekday {
+.month-view div.weekday,
+.month-view div.weekday-mobile {
 	width: 14.28%;
 	float: left;
 	text-align: center;
+}
+
+.month-view div.weekday-mobile {
+	display: none;
 }
 
 .month-view .calendar-wrap {
@@ -997,4 +1002,43 @@ table.pricing-list .price-disabled label {
 
 .t .event-tabs .dropdown {
     z-index: 0;
+}
+
+/* Mobile phones */
+@media (max-width: 480px){
+	.month-view .calendar-wrap .month-wrap,
+	.month-view .calendar-wrap .side-bar {
+		padding-right: 0px;
+		width: 100%;
+	}
+
+	.month-view .month-labels .weekday,
+	.month-view .event-title {
+		display: none;
+	}
+
+	.month-view .month-labels .weekday-mobile {
+		display: block;
+	}
+
+	.month-view .month-grid .day {
+		width: 13.9%;
+		height: 88px;
+	}
+
+	.month-view .side-bar .types {
+		width: 100%;
+		margin: 0;
+	}
+
+	.month-view .side-bar .types .type a {
+		width: 100%;
+		padding: 5px;
+	}
+
+	.event-wrap .info,
+	.event-wrap .vitals {
+		margin: 0;
+		width: 100%;
+	}
 }
