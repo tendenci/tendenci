@@ -111,19 +111,22 @@ class FormForForm(forms.ModelForm):
                 if pricing.price == None:
                     pricing_options.append(
                         (pricing.pk, mark_safe(
-                            '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> %s' % 
-                            (pricing.pk, self.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label)))
+                            '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' % 
+                            (pricing.pk, self.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label, pricing.description)))
                     )
                 else:
                     if self.form.recurring_payment:
                         pricing_options.append(
-                            (pricing.pk, '%s%s per %s %s - %s' % (currency_symbol, pricing.price,
-                                                                  pricing.billing_frequency, pricing.billing_period,
-                                                                  pricing.label))
+                            (pricing.pk, mark_safe('<strong>%s%s per %s %s - %s</strong><br>%s' %
+                                                    (currency_symbol, pricing.price,
+                                                     pricing.billing_frequency, pricing.billing_period,
+                                                     pricing.label, pricing.description)))
                         )
                     else:
                         pricing_options.append(
-                            (pricing.pk, '%s%s %s' % (currency_symbol, pricing.price, pricing.label))
+                            (pricing.pk, mark_safe('<strong>%s%s %s</strong><br>%s' %
+                                                   (currency_symbol, pricing.price,
+                                                    pricing.label, pricing.description)))
                         )
 
             self.fields['pricing_option'] = forms.ChoiceField(
