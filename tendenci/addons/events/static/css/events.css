@@ -1034,6 +1034,7 @@ table.pricing-list .price-disabled label {
 	.month-view .side-bar .types .type a {
 		width: 100%;
 		padding: 5px;
+		box-sizing: border-box;
 	}
 
 	.event-wrap .info,
