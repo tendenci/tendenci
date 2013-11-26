@@ -81,7 +81,8 @@
 #jpWalkthrough #jpwTooltip{    
     overflow: visible;
     padding:10px;
-    background: none;
+    background: #222;
+    background: rgba(10,10,10,0.7);
 }
 
 #jpWalkthrough #jpwTooltip #tooltipWrapper{
