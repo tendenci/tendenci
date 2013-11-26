@@ -28,28 +28,24 @@
             <div class="system-generated">System generated groups can not be deleted.</div>
         {% endif %}
 
+        {% if can_edit %}
         <div id="group-options">
 
             <ul>
-                {% if can_edit %}
                 <li><a href="{% url group.members_export group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
 
+                {% if request.user.profile.is_superuser %}
                 <li><a href="{% url group.message group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
-
                 {% endif %}
 
-                {% if can_edit %}
                 <li><a href="{% url group.edit_perms group.pk %}">
                     {% trans "Change Group Member Permissions" %}</a></li>
-                {% endif %}
 
-                {% if can_edit %}
-                    {% if group.email_recipient %}
-                        <li><a href="{% url group.edit group.slug %}">{% blocktrans %}Emails regarding group activity will be sent to{% endblocktrans %} <strong>{{ group.email_recipient }}</strong></a></li>
-                    {% else %}
-                        <li>{% blocktrans %}Please set a {% endblocktrans%}
-                        <a href="{% url group.edit group.slug %}">{% blocktrans %}recipient{% endblocktrans %}</a>{% blocktrans %} for this group{% endblocktrans %}</li>
-                    {% endif %}
+                {% if group.email_recipient %}
+                    <li><a href="{% url group.edit group.slug %}">{% blocktrans %}Emails regarding group activity will be sent to{% endblocktrans %} <strong>{{ group.email_recipient }}</strong></a></li>
+                {% else %}
+                    <li>{% blocktrans %}Please set a {% endblocktrans%}
+                    <a href="{% url group.edit group.slug %}">{% blocktrans %}recipient{% endblocktrans %}</a>{% blocktrans %} for this group{% endblocktrans %}</li>
                 {% endif %}
 
                 {% if group.type %}
@@ -73,6 +69,7 @@
                 {% endif %}
             </ul>
         </div>
+        {% endif %}
 
         {% if not groupmemberships %}
             <p>{% trans "This group has no members" %}</p>
