@@ -415,6 +415,12 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     display: none;
 }
 
+@media (max-width: 360px) {
+	#admin-bar #admin-search-bar {
+		width: 98px;
+	}
+}
+
 @media only screen and (max-width: 767px) {
 	#admin-bar > ul > li {display: none; }
 	#admin-bar li.visible-mobile { display: list-item; }
