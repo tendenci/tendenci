@@ -62,6 +62,8 @@ class FormForForm(forms.ModelForm):
 
             if field.field_type == 'EmailVerificationField':
                 field_class = EmailVerificationField
+            elif field.field_type == 'CountryField' or field.field_type == 'StateProvinceField':
+                field_class = getattr(forms, 'ChoiceField')
             else:
                 field_class = getattr(forms, field_class)
             field_args = {"label": mark_safe(field.label), "required": field.required}

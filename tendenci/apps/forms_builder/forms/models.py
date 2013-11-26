@@ -6,6 +6,10 @@ from django.contrib.contenttypes import generic
 
 from django.shortcuts import get_object_or_404
 
+from django_countries.countries import COUNTRIES
+from localflavor.us.us_states import STATE_CHOICES
+from localflavor.ca.ca_provinces import PROVINCE_CHOICES
+
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from tendenci.apps.forms_builder.forms.managers import FormManager
 from tendenci.core.perms.models import TendenciBaseModel
@@ -32,6 +36,8 @@ FIELD_CHOICES = (
     ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi-select - Checkboxes")),
     ("MultipleChoiceField", _("Multi-select - Select Many")),
     ("EmailVerificationField", _("Email")),
+    ("CountryField", _("Countries")),
+    ("StateProvinceField", _("States/Provinces")),
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date - Select")),
     ("DateField/django.forms.DateInput", _("Date - Text Input")),
@@ -207,7 +213,18 @@ class Field(OrderingBaseModel):
         return field_widget
 
     def get_choices(self):
-        if self.field_function == 'Recipients':
+        if self.field_type == 'CountryField':
+            exclude_list = ['GB', 'US', 'CA']
+            countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
+            initial_choices = ((_('United States'), _('United States')),
+                               (_('Canada'), _('Canada')),
+                               (_('United Kingdom'), _('United Kingdom')),
+                               ('','-----------'))
+            choices = initial_choices + tuple(countries)
+        elif self.field_type == 'StateProvinceField':
+            choices = (('','-----------'),) + STATE_CHOICES + PROVINCE_CHOICES
+            choices = sorted(choices)
+        elif self.field_function == 'Recipients':
             choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
         else:
             choices = [(val, val) for val in self.choices.split(",")]

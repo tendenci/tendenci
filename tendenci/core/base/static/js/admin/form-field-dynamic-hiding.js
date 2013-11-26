@@ -69,14 +69,17 @@ jQuery(function($) {
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents(".dynamic-fields");
 
-        triggers = ['CharField/tendenci.apps.forms_builder.forms.widgets.Header', 'CharField/tendenci.apps.forms_builder.forms.widgets.Description', 'FileField', 'DateField/django.forms.extras.SelectDateWidget', 'DateField/django.forms.DateInput', 'DateTimeField', 'EmailVerificationField', 'CharField', 'CharField/django.forms.Textarea']
+        triggers = ['ChoiceField', 
+                    'BooleanField',
+                    'MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
+                    'MultipleChoiceField']
 
     	// toggle help text field 
         if (in_list(selected_value, triggers)){
-            fieldset.find(".field-default input").css('visibility', 'hidden');
+            fieldset.find(".field-default input").css('visibility', 'visible');
     	}
     	else {
-            fieldset.find(".field-default input").css('visibility', 'visible');
+            fieldset.find(".field-default input").css('visibility', 'hidden');
     	}
 
     }

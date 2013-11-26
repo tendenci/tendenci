@@ -33,15 +33,19 @@ jQuery(function($) {
             // This is a very simple ordering which only works with correct position number sequences,
             // which the rest of this script (hopefully) guarantees.
             rows = [];
-            table.find('tbody tr').each(function() {
+            table.find('tbody tr:not(.empty-form):not(.add-row)').each(function() {
                 position = $(this).find('td.field-' + position_field + ' input').val();
                 rows[position] = $(this);
                 
                 // Add move cursor to table row.
                 table.find('tr:has(td)').css('cursor', 'move');
             });
+            empty_field = table.find('tbody tr.empty-form');
+            add_field = table.find('tbody tr.add-row');
             
             for (var i in rows) { table.append(rows[i]); } // Move <tr> to its correct position
+            table.append(empty_field);
+            table.append(add_field);
             update_positions($(this));
         }
         else
