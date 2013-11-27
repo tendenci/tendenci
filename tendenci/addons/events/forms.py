@@ -1874,6 +1874,14 @@ class PendingEventForm(EventForm):
 
         if 'status_detail' in self.fields:
             self.fields.pop('status_detail')
+        if 'repeat_type' in self.fields:
+            self.fields.pop('repeat_type')
+        if 'frequency' in self.fields:
+            self.fields.pop('frequency')
+        if 'end_recurring' in self.fields:
+            self.fields.pop('end_recurring')
+        if 'recurs_on' in self.fields:
+            self.fields.pop('recurs_on')
 
 class AddonForm(BetterModelForm):
     class Meta:
