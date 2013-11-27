@@ -7,7 +7,7 @@ Replace these with more appropriate tests for your application.
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
-from tendenci.addons.location.models import Location
+from tendenci.addons.locations.models import Location
 
 class LocationLocationTest(TestCase):
     def setUp(self):

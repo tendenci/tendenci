@@ -210,5 +210,6 @@ setup(
         "Whoosh==2.4.1",
         "simple-salesforce==0.51",
         "static==0.4",
+        "selenium==2.37.2",
     ],
 )

@@ -29,7 +29,7 @@ from django.core import management
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from registration import forms
+from tendenci.apps.registration import forms
 from tendenci.apps.registration.models import RegistrationProfile
 
 

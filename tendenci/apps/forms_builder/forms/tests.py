@@ -2,8 +2,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from tendenci.apps.forms_builder.forms.models import Form, FIELD_CHOICES, \
-    STATUS_DRAFT, STATUS_PUBLISHED
+from tendenci.apps.forms_builder.forms.models import Form, FIELD_CHOICES
 
 
 class Tests(TestCase):
@@ -14,7 +13,7 @@ class Tests(TestCase):
         both optional and required fields.
         """
         for required in (True, False):
-            form = Form.objects.create(title="Test", status=STATUS_PUBLISHED)
+            form = Form.objects.create(title="Test", status='published')
             for field in FIELD_CHOICES:
                 form.fields.create(label=field[0], field_type=field[0], 
                     required=required, visible=True)
@@ -33,7 +32,7 @@ class Tests(TestCase):
         password = "test"
         User.objects.create_superuser(username, "", password)
         self.client.logout()
-        draft = Form.objects.create(title="Draft", status=STATUS_DRAFT)
+        draft = Form.objects.create(title="Draft", status='draft')
         response = self.client.get(draft.get_absolute_url())
         self.assertEqual(response.status_code, 404)
         self.client.login(username=username, password=password)

@@ -7,6 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
     depends_on = (
         ('payments', '0001_initial'),
+        ('meta', '0001_initial'),
     )
 
     def forwards(self, orm):
