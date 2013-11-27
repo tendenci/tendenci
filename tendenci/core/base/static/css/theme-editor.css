@@ -352,7 +352,7 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
   float: left;
   width: 400px;
   margin: 8px;
-  height: 160px;
+  height: 200px;
 
 }
 .theme-info.selected {
