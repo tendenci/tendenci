@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 
 from fnmatch import fnmatchcase
 from distutils.util import convert_path
@@ -106,9 +107,9 @@ DESCRIPTION = "Tendenci - A CMS for Nonprofits"
 
 LONG_DESCRIPTION = None
 try:
-    LONG_DESCRIPTION = open('README.md').read()
+    LONG_DESCRIPTION = subprocess.check_output(['pandoc', '-f', 'markdown', '-t', 'rst', 'README.md'])
 except:
-    pass
+    LONG_DESCRIPTION = open('README.md').read()
 
 setup(
     name='tendenci',
