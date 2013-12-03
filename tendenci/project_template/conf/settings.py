@@ -32,6 +32,10 @@ SITE_ADDONS_PATH = os.path.join(PROJECT_ROOT, 'addons')
 
 DATABASES = env('DATABASES', {'default': dj_database_url.config(default='postgres://localhost')})
 
+UNACCENT = env('UNACCENT', False)
+if UNACCENT:
+    DATABASES['default']['ENGINE'] = 'tendenci.core.base.database'
+    SOUTH_DATABASE_ADAPTERS = {'default':'south.db.postgresql_psycopg2'}
 
 # -------------------------------------- #
 # DATABASES - EXAMPLE FROM DJANGO 1.4
