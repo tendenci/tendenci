@@ -107,7 +107,7 @@ DESCRIPTION = "Tendenci - A CMS for Nonprofits"
 
 LONG_DESCRIPTION = None
 try:
-    LONG_DESCRIPTION = subprocess.check_output(['pandoc', '-f', 'markdown', '-t', 'html', 'README.md'])
+    LONG_DESCRIPTION = subprocess.check_output(['pandoc', '-f', 'markdown', '-t', 'rst', 'README.md'])
 except:
     LONG_DESCRIPTION = open('README.md').read()
 
