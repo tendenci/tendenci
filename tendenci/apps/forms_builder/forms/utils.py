@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from os.path import basename
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
@@ -14,14 +13,12 @@ def generate_admin_email_body(entry, form_for_form):
     """
     context = Context()
     site_url = get_setting('site', 'global', 'siteurl')
-
-    if site_url[-1:] == "/":
-        site_url = site_url[:-1]
     template = get_template('forms/admin_email_content.html')
-    
+
     # fields to loop through in the template
     context['fields'] = entry.entry_fields()
     # media_url necessary for file upload fields
+    context['site_url'] = site_url
     context['media_url'] = site_url + settings.MEDIA_URL
     # form details to show in the email
     context['form'] = entry.form
