@@ -11,6 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 
 from tendenci.core.base.http import Http403
+from tendenci.core.base.managers import SubProcessManager
+from tendenci.core.base.models import UpdateTracker
 from tendenci.core.base.utils import get_template_list, checklist_update
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.site_settings.models import Setting
@@ -418,6 +420,22 @@ def theme_color(request):
             message = 'Successfully updated theme colors.'
             response = json.dumps({'message': message})
             return HttpResponse(response, mimetype="application/json")
+
+    raise Http404
+
+
+@login_required
+def get_themes(request, template_name="theme_editor/get_themes.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if request.is_ajax():
+        tracker = UpdateTracker.get_or_create_instance()
+        return HttpResponse(tracker.is_updating)
+
+    if request.method == 'POST':
+        process = SubProcessManager.set_process(["python", "manage.py", "install_theme", "--all"])
+        return render_to_response(template_name, context_instance=RequestContext(request))
 
     raise Http404
 
