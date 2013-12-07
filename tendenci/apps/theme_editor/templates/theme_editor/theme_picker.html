@@ -13,7 +13,7 @@
         
 {% block body %}
 <h1>{% trans "Theme Picker" %}</h1>
-  
+
 <form method="POST" action="{% url theme_editor.get_themes %}">{% csrf_token %}
     <input style="padding:3px;" type="submit" value="Get more themes"/>
 </form>
