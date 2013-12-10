@@ -197,7 +197,7 @@ class MemberApproveForm(forms.Form):
             )
 
 
-class MembershipTypeForm(forms.ModelForm):
+class MembershipTypeForm(TendenciBaseForm):
     type_exp_method = TypeExpMethodField(label='Period Type')
     description = forms.CharField(label=_('Notes'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows': '3'}))

@@ -368,3 +368,6 @@ class MembershipAppManager(Manager):
                            ).order_by('id')[:1] or [None]
 
         return current_app
+
+class MembershipTypeManager(TendenciBaseManager):
+    pass

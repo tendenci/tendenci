@@ -22,6 +22,7 @@ from tendenci.core.base.http import Http403
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import tcurrency
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.addons.memberships.models import (
     Membership, MembershipDefault, MembershipType, Notice,
@@ -579,7 +580,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
                        '%scss/memberships-admin.css' % settings.STATIC_URL], }
 
 
-class MembershipTypeAdmin(admin.ModelAdmin):
+class MembershipTypeAdmin(TendenciBaseModelAdmin):
     list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
                      'allow_renewal', 'renewal_price', 'renewal',
                      'admin_only', 'status_detail']
@@ -602,6 +603,10 @@ class MembershipTypeAdmin(admin.ModelAdmin):
 
     form = MembershipTypeForm
     ordering = ['position']
+
+    def get_actions(self, request):
+        actions = super(MembershipTypeAdmin, self).get_actions(request)
+        return actions
 
     def add_view(self, request):
         num_types = MembershipType.objects.all().count()
