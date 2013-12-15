@@ -1733,9 +1733,6 @@ class MembershipDefault(TendenciBaseModel):
                     action='membership_approved'
                 )
 
-            # user in [membership] group
-            self.group_refresh()
-
             if self.corporate_membership_id:
                 # notify corp reps
                 self.email_corp_reps(request)
