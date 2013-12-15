@@ -222,7 +222,7 @@ class RegConfPricing(OrderingBaseModel):
     """
     reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
     
-    title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
+    title = models.CharField(_('Pricing display name'), max_length=500, blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
     
