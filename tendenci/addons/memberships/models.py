@@ -782,7 +782,7 @@ class MembershipDefault(TendenciBaseModel):
         # show member number on profile
         self.user.profile.refresh_member_number()
 
-        return True
+        return self
 
     def renew(self, request_user):
         """
@@ -839,7 +839,7 @@ class MembershipDefault(TendenciBaseModel):
         # show member number on profile
         dupe.user.profile.refresh_member_number()
 
-        return True
+        return dupe
 
     def disapprove(self, request_user=None):
         """
@@ -1705,7 +1705,9 @@ class MembershipDefault(TendenciBaseModel):
                 send_welcome_email(self.user)
 
             if self.is_renewal():
-                self.renew(request.user)
+                # renewal returns new MembershipDefault instance
+                # old MembershipDefault instance is marked status_detail = "archive"
+                self = self.renew(request.user)
                 Notice.send_notice(
                     request=request,
                     emails=self.user.email,
