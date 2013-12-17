@@ -357,7 +357,7 @@ class MembershipDefaultManager(TendenciBaseManager):
         return qs
 
 
-class MembershipAppManager(Manager):
+class MembershipAppManager(TendenciBaseManager):
     def current_app(self, **kwargs):
         """
         Returns the app being used currently.
