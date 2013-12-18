@@ -61,6 +61,34 @@ class File(TendenciBaseModel):
     class Meta:
         permissions = (("view_file", "Can view file"),)
 
+    def __init__(self, *args, **kwargs):
+        from django.db.models.related import RelatedObject
+        super(File, self).__init__(*args, **kwargs)
+
+        self._originaldict = {}
+        for field_name in self._meta.get_all_field_names():
+
+            if isinstance(self._meta.get_field_by_name(field_name)[0], RelatedObject):
+                continue  # preventing circular reference
+
+            if hasattr(self, field_name):
+                value = getattr(self, field_name)
+                # skip Manager type objects
+                if not isinstance(value, models.Manager):
+                    self._originaldict[field_name] = value
+
+    def has_changed(self):
+        """
+        Loop through key fields and return True
+        if a key field has changed.
+        """
+        for field_name in self._originaldict.keys():
+            if getattr(self, field_name) != self._originaldict[field_name]:
+                return True
+
+        return False
+
+
     @models.permalink
     def get_absolute_url(self):
         return ("file", [self.pk])

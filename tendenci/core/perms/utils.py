@@ -148,7 +148,10 @@ def assign_files_perms(instance, **kwargs):
             file.owner = instance.owner
         if hasattr(instance, 'owner_username'):
             file.owner_username = instance.owner_username
-        file.save()
+
+        # only update file instances that have changed
+        if file.has_changed():
+            file.save()
 
 def has_perm(user, perm, obj=None):
     """

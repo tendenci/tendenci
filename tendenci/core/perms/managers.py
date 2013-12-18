@@ -292,6 +292,17 @@ class ObjectPermissionManager(models.Manager):
                     except self.model.MultipleObjectsReturned as e:
                         pass
 
+    def list_all(self, object):
+        """
+        Return a list of all permissions
+        """
+        content_type = ContentType.objects.get_for_model(object)
+        perms = self.filter(
+            content_type=content_type,
+            object_id=object.pk)
+
+        return perms
+
     def remove_all(self, object):
         """
             Remove all permissions on object (instance)
