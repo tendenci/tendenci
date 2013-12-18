@@ -1,0 +1,24 @@
+{% load nav_tags %}
+{% load base_tags %}
+{% load theme_tags %}
+
+<div class="container">
+					<div class="row">
+						<div class="col-md-9 col-sm-12">
+							<div id="logo" class="logo">
+<a class="clearfix" href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/120x60/crop/90/{% else %} http://placehold.it/120x60{% endif %}" />
+                <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
+                {% theme_include 'theme_includes/logo_edit_form.html' %}
+							</div>
+						</div>
+						<div class="search-box col-md-3 col-sm-12 clearfix">
+							<form method="get" action="/search/">
+                  <input name="q" id="q" class="search-input" type="text" title="Search" />
+                  <input class="btn btn-xs" type="submit" name="Go" value="GO" id="search-box-submit" />
+              </form>
+						</div>
+						<div id="nav" class="navigation pull-right col-md-12 clearfix">
+							{% nav 1 %}
+						</div>
+					</div>
+				</div>

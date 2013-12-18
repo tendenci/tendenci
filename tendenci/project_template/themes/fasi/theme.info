@@ -1,0 +1,22 @@
+[General]
+name = Fasi
+author = Schipul
+author uri = http://schipul.com
+description = Fasi theme for Tendenci CMS with spaces and color picker.
+tags = homepage rotator, spaces, color picker
+screenshot = screenshot.png
+version = 1.0
+
+[SSU]
+color = enabled
+checklist = enabled
+walkthrough = enabled
+default_colors = @background:Background Color:#fff; @primary:Primary Color:#293778; @secondary:Secondary Color:#28BDFB; @complimentary:Complimentary Color:#166B28; @text:Text Color:#333; @offtext:Offtext Color:#eee;
+
+[Walkthrough]
+admin-bar = bottom
+logo = bottom
+nav = bottom
+rotator = bottom
+space_1 = top
+footer = top
