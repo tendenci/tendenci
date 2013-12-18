@@ -40,6 +40,10 @@ class Command(BaseCommand):
                 kwargs = {'app': export.memb_app}
                 result = MembershipsExportTask()
                 response = result.run(**kwargs)
+            elif export.app_label == 'profiles' and export.model_name == 'profile':
+                from tendenci.apps.profiles.tasks import ExportProfilesTask
+                result = ExportProfilesTask()
+                response = result.run()
             else:
                 model = get_model(export.app_label, export.model_name)
                 result = TendenciExportTask()

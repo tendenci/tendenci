@@ -25,6 +25,7 @@ from johnny.cache import invalidate
 from tendenci.core.base.decorators import ssl_required, password_required
 from tendenci.core.base.utils import get_pagination_page_range
 
+from tendenci.core.exports.utils import run_export_task
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
                                        get_notice_recipients,
@@ -1248,61 +1249,15 @@ def export(request, template_name="profiles/export.html"):
     if not request.user.profile.is_staff:
         raise Http404
 
+    form = ExportForm(request.POST or None, user=request.user)
+
     if request.method == 'POST':
-        form = ExportForm(request.POST, user=request.user)
         if form.is_valid():
-            if not settings.CELERY_IS_ACTIVE:
-                task = ExportProfilesTask()
-                response = task.run()
-                return response
-            else:
-                task = ExportProfilesTask.delay()
-                task_id = task.task_id
-                return redirect('profile.export_status', task_id)
-    else:
-        form = ExportForm(user=request.user)
+            export_id = run_export_task('profiles', 'profile', [])
+            return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
         'form':form,
         'user_this':None,
     }, context_instance=RequestContext(request))
 
-
-def export_status(request, task_id, template_name="profiles/export_status.html"):
-    invalidate('celery_taskmeta')
-    try:
-        task = TaskMeta.objects.get(task_id=task_id)
-    except TaskMeta.DoesNotExist:
-        task = None
-
-    return render_to_response(template_name, {
-        'task':task,
-        'task_id':task_id,
-        'user_this':None,
-    }, context_instance=RequestContext(request))
-
-
-def export_check(request, task_id):
-    invalidate('celery_taskmeta')
-    try:
-        task = TaskMeta.objects.get(task_id=task_id)
-    except TaskMeta.DoesNotExist:
-        task = None
-
-    if task and task.status == "SUCCESS":
-        return HttpResponse("OK")
-    else:
-        return HttpResponse("DNE")
-
-
-def export_download(request, task_id):
-    invalidate('celery_taskmeta')
-    try:
-        task = TaskMeta.objects.get(task_id=task_id)
-    except TaskMeta.DoesNotExist:
-        task = None
-
-    if task and task.status == "SUCCESS":
-        return task.result
-    else:
-        raise Http404
