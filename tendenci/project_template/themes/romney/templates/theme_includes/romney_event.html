@@ -1,0 +1,26 @@
+{% load theme_tags %}
+{% load base_tags %}
+{% load i18n %}
+{% load event_tags %}
+{% list_events as events_list limit=2 %}
+<section id="single-event" class="clearfix">
+    <h3>{% firstof TEMPLATE_SINGLE_EVENT_TITLE 'Next Event' %}</h3>
+        {% if events_list %}
+        {% for event in events_list %}
+        <div class="event-info">
+                    <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
+            <p class="event-date">{{ event.start_dt|date:"F d, Y" }}</p>
+            <p>{{ event.description|striptags|truncatewords:"30"|safe }}</p>
+            <p><span><a class="readmore" href="{{ event.get_absolute_url }}">{% trans 'Read More …' %}</a></span></p>
+        </div>
+        {% endfor %}
+        {% else %}
+        
+       {% if admin %}
+       <a href="/events/add/">Add Your First Event!</a>
+       {% endif %}
+       {% endif %}
+    
+
+</section>
+{% theme_setting setting_name %}

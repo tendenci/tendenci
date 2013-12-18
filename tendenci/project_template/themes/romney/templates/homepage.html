@@ -1,0 +1,306 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load box_tags %}
+{% load nav_tags %}
+{% load photo_tags %}
+
+{% theme_extends 'base.html' %}
+
+{% block extra_head %}
+<!-- Mobile Specific Metas
+================================================== -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+<!-- Favicons
+================================================== -->
+  <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+  <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+
+  <!-- CSS
+================================================== -->
+
+  <!-- Google web font -->
+  <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href="{{ THEME_URL }}media/css/bootstrap.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ THEME_URL }}media/css/font-awesome.css">
+  <!--[if IE 7]>
+  <link rel="stylesheet" href="style/font-awesome-ie7.css">
+  <![endif]-->    
+  <link href="{{ THEME_URL }}media/css/prettyPhoto.css" rel="stylesheet">
+  <link href="{{ THEME_URL }}media/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="{{ THEME_URL }}media/css/style.css" rel="stylesheet">
+
+<!-- IE Specific Compatibility
+================================================== -->
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <!--[if lt IE 9]>   
+  <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+  <![endif]-->
+  
+  <!-- HTML5 Support for IE -->
+  <!--[if lt IE 9]>
+  <script src="{{ THEME_URL }}media/js/html5shim.js"></script>
+  <![endif]-->
+{% endblock extra_head %}
+
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+
+<!-- Primary Page Layout
+================================================== -->
+{% block html_body %}
+
+
+<!-- Navbar -->
+<div class="navigation">
+   <div class="container">
+      <div class="row">
+         <div class="span3">
+            <!-- Site Logo -->
+            <div class="logo">
+               <h1><a href="/">Tendenci<span>.</span></a></h1>
+            </div>
+         </div>
+         <div class="span7 offset2">
+            <div class="navi">
+               <!-- Navigation Links -->
+               <div class="navi-main">
+                 {% nav 2 %}
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<!-- Hero unit -->
+
+<div class="hero">
+   <div class="container">
+      <div class="row">
+<div id="rotator-container">
+        {% list_stories as stories_list limit=5 tags="featured" %}
+        {% for story in stories_list %}
+        <div id="rotator-item">
+         <div class="span6">
+            <div class="hleft">
+               <div class="padd">
+                  <!-- Screenshot (I used Mac) -->
+                  <a href="{{ story.get_absolute_url }}"><img src="{% image_url story.image %}" alt="{{ story.title }}" /></a>
+               </div><!--padd-->
+            </div><!--hleft-->
+         </div><!--span6-->
+         <div class="span6">
+            <div class="hright">
+               <div class="padd">
+                  <!-- Title -->
+                  <h2><a href="{{ story.get_absolute_url }}"><span>{{ story.title }}</span></a></h2>
+                  <!-- Para -->
+                  <p>{{ story.content|striptags|truncatewords:"24" }}</p>
+                  <!-- Buttons -->
+                  <div class="buttons"><a href="#" class="btn btn-warning btn-large">Buy Now</a> <a href="#" class="btn btn-primary btn-large">Take a Tour</a></div><!--buttons-->
+               </div><!--padd-->
+            </div><!--hright-->
+         </div><!--span6-->
+         </div><!--rotator-item-->
+        {% endfor %}
+   </div><!--rotator-container-->
+   <div id="pager"></div>
+      </div><!--row-->
+   </div><!--container-->
+</div><!--hero--> 
+
+<!-- Main -->
+
+<div class="main">
+   <div class="container">
+      <div class="row">
+         <div class="span12">
+            <div class="padd">
+               <!-- Title -->
+               <h2><span>Our Services</span></h2>
+            </div>
+         </div>
+      </div>
+      <!-- Features list -->
+      <div class="features">
+         <div class="row">
+            <div class="span4">
+               <div class="padd">
+                  <!-- Title with Font awesome icon -->
+                  {% box 13 %}
+                  <div class="clearfix"></div>
+               </div>
+            </div>         
+            <div class="span4">
+               <div class="padd">
+                  <!-- Title with Font awesome icon -->
+                  {% box 14 %}
+                  <div class="clearfix"></div>
+               </div>
+            </div>
+            <div class="span4">
+               <div class="padd space">
+                  <!-- Title with Font awesome icon -->
+                   {% space_include MODULE_THEME_TOP_RIGHT_SPACE %}
+                  <div class="clearfix"></div>
+               </div>
+            </div>
+         </diV>
+      </div>
+      <div class="row">
+         <div class="span12">
+            {% box 12 %}
+         </div>
+      </div>
+      <div class="row">
+         <div class="span5">
+            <div class="padd">
+               <!-- Title -->
+               <h3><span>Browse Our Templates</span></h3>
+               <!-- Para -->
+               <p>Integer id est sed nibh tincidunt condimentum. Vivamus mauris eros, faucibus tincidunt lacinia sit amet, ultrices ut tortor. Sed metus purus, elementum ac dapibus ut, suscipit id sem. Quisque scelerisque pretium nunc, quis consectetur faucibus tincidunt lacinia sit amet, leo porttitor faucibus tincidunt lacinia sit amet, sit amet.</p>
+               <!-- Buttons -->
+               <div class="buttons"><a href="#" class="btn btn-warning">Buy Now</a> <a href="#" class="btn btn-primary">Take a Tour</a></div>
+            </div>
+         </div>
+         <div class="span7">
+
+           <div id="photos" class="clearfix">
+             {% list_photos as photos_list limit=6 random=True %}
+             <ul>
+               {% for photo in photos_list %}
+               <li><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=62x56 crop=True %}" /></a></li>
+               {% endfor %}
+             </ul>
+             <p style="text-align: center; margin: 15px 0;"><a  class="readmorelarge" href="/photos/">View More Photos &raquo;</a></p>
+           </div><!--/#photos-->
+
+        </div><!--span7-->
+      </div>
+      <div class="row">
+         <div class="span12">
+            <div class="padd">
+               <h2><span>Featured Tendenci Templates</span></h2>
+            </div>
+         </div>
+         <!-- Product -->
+         <div class="span6">
+            <div class="padd">
+               <div class="prod">
+                  <div class="prod-details">
+                    {% box 16 %}
+                  </div><!--prod-details-->                        
+               </div>
+            </div>
+         </div>
+         <div class="span6">
+            <div class="padd">
+               <div class="prod">
+                  <div class="prod-details"> 
+                    {% box 17 %}
+                  </div><!--prod-details-->                        
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="span12">
+            <div class="padd">
+               <h2><span>Client Testimonials</span></h2>
+               <!-- Testimonial -->
+               <blockquote>
+                <p>Aliquam tempor posuere pretium. Duis laoreet vestibulum massa, condimentum placerat neque porttitor. Nullam dapibus fermentum metus, id fringilla libero accumsan nec. In tortor sem, vestibulum ut dignissim sit amet, sodales vel velit.</p>
+               <!-- Author name should be given inside <small> tag -->
+               <small>Ashok, CEO of Googl</small>
+             </blockquote>
+            </div>
+         </div>
+         <div class="span6">
+            <div class="padd">
+               <div class="border"></div>
+               <!-- Testimonial -->
+               <blockquote>
+                <p>Aliquam tempor posuere pretium. Duis laoreet vestibulum massa, condimentum placerat neque porttitor. Nullam dapibus fermentum metus, id fringilla libero accumsan nec. In tortor sem, vestibulum ut dignissim sit amet, sodales vel velit.</p>
+               <!-- Author name should be given inside <small> tag -->
+               <small>Ravi, CTO of Googl</small>
+             </blockquote>
+            </div>
+         </div>
+         <div class="span6">
+            <div class="padd">
+               <div class="border"></div>
+               <!-- Testimonial -->
+               <blockquote>
+                <p>Aliquam tempor posuere pretium. Duis laoreet vestibulum massa, condimentum placerat neque porttitor. Nullam dapibus fermentum metus, id fringilla libero accumsan nec. In tortor sem, vestibulum ut dignissim sit amet, sodales vel velit.</p>
+               <!-- Author name should be given inside <small> tag -->
+               <small>Ravi, CTO of Googl</small>
+             </blockquote>
+            </div>
+         </div>
+      </div>
+      <div class="stripe">
+         <div class="row">
+            <div class="span10">
+               <div class="text">
+                  <p class="biggy">
+                     <!-- Small para -->
+                     Donec varius dui at ligula facilisis aliquam sed consequat, dolor sit amet facilisis sagittis, ante nisi tincidunt erat.
+                  </p>
+               </div>
+            </div>
+            <div class="span2">
+               <div class="button">
+                  <!-- Button -->
+                  <p class="buttons"><a href="#" class="btn btn-warning">Buy Now</a></p>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+   
+<!-- Footer -->
+<section id="footer">
+ {% theme_include "footer.html" %} <!-- Pulls in the Footer Document -->
+</section><!-- /#footer -->
+
+<!-- End Document
+================================================== -->
+{% endblock %}
+
+<!-- JQuery & Scripts
+================================================== -->
+{% block extra_body %}
+{{ block.super }}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.js"></script>
+    <script src="{{ THEME_URL }}media/js/bootstrap.js"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.prettyPhoto.js"></script>
+    <script src="{{ THEME_URL }}media/js/isotype.js"></script>
+    <script src="{{ THEME_URL }}media/js/custom.js"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.hint.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/jcarousellite_1.0.1.pack.js" type="text/javascript"></script>
+    <script type="text/javascript">      
+    $('input[title!=""]').hint();     
+    $(document).ready(function() {         
+    $("#rotator-container").cycle({              
+    // Controls the Rotator             
+    timeout: 8000,             
+    speed: 2000,             
+    pager: '#pager',             
+    pagerEvent: 'mouseover'         
+    });       
+    });     
+    </script>  
+{% endblock %}

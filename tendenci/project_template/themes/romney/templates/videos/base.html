@@ -1,0 +1,47 @@
+{% extends "site_base.html" %}
+{% load video_tags %}
+{% load perm_tags %}
+
+{% has_perm user videos.add_video as can_add_video %}
+
+{% block title %}Videos{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/video.css">
+{% endblock %}
+
+{% block sidebar %}
+<div id="videos-sidebar">
+
+	{% if can_add_video %}
+	    <div><a href="{% url admin:videos_video_add %}">Add Video</a></div>
+	{% endif %}
+
+	{% if SITE_GLOBAL_SEARCHINDEX %}
+	<form class="search" action="{% url video.search %}" method="get">
+	<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+	<input type="submit" value="Search" />
+	</form>
+
+	<ul>
+		<li>
+			<h2>Categories</h2> 
+			<ul>
+				<li><a href="{% url video %}">All</a></li>
+				{% for cat in categories %}
+					<li><a class="{% ifequal cat video.category %}active{% endifequal %}{% ifequal cat category %}active{% endifequal %}" href="{{ cat.get_absolute_url }}">{{ cat|title }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+	</ul>
+	{% endif %}
+
+</div>
+
+{{ block.super }}
+{% endblock sidebar %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}
