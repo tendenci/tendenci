@@ -1,0 +1,38 @@
+{% extends "videos/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+{% load video_tags %}
+{% load video_filters %}
+
+{% block title %}{{ video.title }} - {{ video.category|title }} Videos{% endblock %}
+{% block meta_description %}{{ video.category }} Videos from {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ video.title }} - {{ video.description|striptags|truncatewords:40 }}{% endblock %}
+
+{% block body %}
+<div class="t">
+{% tags_for_object video as tags %}
+
+<h1>{{ video.title }}</h1>
+
+{{ video|video_embed:"600" }}
+
+<br>
+{{ video.description|safe }}
+<div class="meta">
+  {% if tags %}
+    <div class="tags">
+Tags: {% for tag in tags %}
+<a href="{% url video.search %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %} 
+    </div>
+  {% endif %}    
+    {% if video.status_detail != "active" %}
+      <span class="copyright body-copy-alerts"><em>{{ video.status_detail }}</em></span>
+    {% endif %}
+{% video_options request.user video %}
+
+</div>
+</div>
+<div class="clear"></div>
+{% endblock body %}

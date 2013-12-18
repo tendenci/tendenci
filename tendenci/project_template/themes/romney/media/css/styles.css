@@ -1,0 +1,109 @@
+/* STYLES TABLE OF CONTENTS
+==================================================
+    Font-Face
+    Reset HTML
+    Base HTML
+    Site Base 
+    Header 
+     -Header Elements
+     -Navigation Elements
+    Homepage Content
+    -Rotator
+    -Home Body Content
+    -Home Carousel
+    -Home Sidebar
+    Home Feed Content
+    Footer
+    ----------------------
+    Media Queries
+    -Tablet Portrait
+    -Tablet Landscape
+    -Mobile Portrait + Landscape
+*/
+
+/* FONT FACE
+================================================== */
+@font-face {
+    font-family: 'HattoriHanzoLight';
+    src: url('../fonts/Hattori_Hanzo-webfont.eot');
+    src: url('../fonts/Hattori_Hanzo-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Hattori_Hanzo-webfont.woff') format('woff'),
+         url('../fonts/Hattori_Hanzo-webfont.ttf') format('truetype'),
+         url('../fonts/Hattori_Hanzo-webfont.svg#HattoriHanzoLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'HattoriHanzoLightItalic';
+    src: url('../fonts/Hattori_Hanzo_Italic-webfont.eot');
+    src: url('../fonts/Hattori_Hanzo_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Hattori_Hanzo_Italic-webfont.woff') format('woff'),
+         url('../fonts/Hattori_Hanzo_Italic-webfont.ttf') format('truetype'),
+         url('../fonts/Hattori_Hanzo_Italic-webfont.svg#HattoriHanzoLightItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+/* RESET HTML
+================================================== */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section {
+  display: block;
+}
+
+/* BASE HTML
+================================================== */
+
+body  {  font-family: Helvetica, Arial, "sans-serif";  font:13px/1.25  sans-serif; *font-size: small; margin: 0;  background:  url('../images/body-bg.png') repeat-x top left;  background-color:  #ebebeb; }
+
+h1,  h1 a { font-size:  32px; line-height: 34px; text-decoration: none;  margin-bottom: 10px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #17ABB9; }
+h2, h2 a  { font-size: 24px;  line-height: 26px; text-decoration: none;  margin-bottom: 10px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #666; }
+h3, h3 a {  font-size: 20px;  line-height: 22px; text-decoration: none;  margin-bottom: 6px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #FAA141; }
+h4, h4 a  { font-size: 16px;  line-height: 20px;  text-decoration: none;  margin-bottom: 6px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #999; }
+
+a { font-family: arial, helvetica, sans-serif; color: #FAA141; text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:visited, a:active { }
+a.readmore { text-decoration:  none; color: #faa141; font-family:Arial, Helvetica, sans-serif;  font-size: 13px;}
+a.readmore:hover { text-decoration: underline; }
+a.readmorelarge  {  background: #FAA141; border-radius: 4px; box-shadow: 1px 1px 2px  #666;  color: #fff; font-family: Arial,Helvetica,sans-serif;  font-size:  13px;padding: 6px; text-decoration: none; }
+a.readmorelarge:hover { text-decoration: underline; }
+
+a.edit-box { color: #17abb9; }
+p { margin-bottom: 10px; line-height: 18px; color: #666;font-family:Arial, Helvetica, sans-serif; }
+
+ul, ol { margin: 0 0 10px 24px; color: #666;font-family:Arial, Helvetica, sans-serif; }
+ol { list-style-type: decimal; color: #666;font-family:Arial, Helvetica, sans-serif; }
+
+select, input, textarea, button { font: 99% sans-serif; }
+pre, code, kbd, samp { font-family: monospace, sans-serif; margin-bottom: 10px; padding: 8px; }
+
+small { font-size: 85%; }
+strong, th { font-weight: bold; }
+
+td, td img { vertical-align: top; } 
+
+sub { vertical-align: sub; font-size: smaller; }
+sup { vertical-align: super; font-size: smaller; }
+
+blockquote { margin: 0 0 10px 20px; }
