@@ -142,15 +142,15 @@ def assign_files_perms(instance, **kwargs):
             # example: file.status = instance.status
             setattr(file, attr, getattr(instance, attr))
 
-        # Update the owner and owner_username since we are
-        # updating the update_dt automatically.
-        if hasattr(instance, 'owner'):
-            file.owner = instance.owner
-        if hasattr(instance, 'owner_username'):
-            file.owner_username = instance.owner_username
-
         # only update file instances that have changed
         if file.has_changed():
+            # Update the owner and owner_username since we are
+            # updating the update_dt automatically.
+            if hasattr(instance, 'owner'):
+                file.owner = instance.owner
+            if hasattr(instance, 'owner_username'):
+                file.owner_username = instance.owner_username
+
             file.save()
 
 def has_perm(user, perm, obj=None):
