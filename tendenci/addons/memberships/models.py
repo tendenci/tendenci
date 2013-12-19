@@ -828,7 +828,7 @@ class MembershipDefault(TendenciBaseModel):
         dupe.save()
 
         # add to [membership] group
-        dupe.group_refresh()
+        dupe.membership_type.group.add_user(self.user)
 
         # new invoice; bound via ct and object_id
         dupe.save_invoice(status_detail='tendered')
