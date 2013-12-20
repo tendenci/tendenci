@@ -44,14 +44,13 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.core.base.fields import DictField
 
 from tendenci.apps.notifications import models as notification
-from tendenci.core.base.utils import send_email_notification, day_validate, fieldify
+from tendenci.core.base.utils import send_email_notification, day_validate, fieldify, get_salesforce_access
 from tendenci.core.event_logs.models import EventLog
 from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.addons.corporate_memberships.utils import (
                                             corp_membership_update_perms,
                                             dues_rep_emails_list,
                                             corp_memb_update_perms,
-                                            get_salesforce_access,
                                             create_salesforce_lead)
 from tendenci.core.imports.utils import get_unique_username
 from tendenci.libs.abstracts.models import OrderingBaseModel
