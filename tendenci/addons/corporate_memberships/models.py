@@ -50,7 +50,9 @@ from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.addons.corporate_memberships.utils import (
                                             corp_membership_update_perms,
                                             dues_rep_emails_list,
-                                            corp_memb_update_perms)
+                                            corp_memb_update_perms,
+                                            get_salesforce_access,
+                                            create_salesforce_lead)
 from tendenci.core.imports.utils import get_unique_username
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.addons.industries.models import Industry
@@ -831,6 +833,11 @@ class CorpMembership(TendenciBaseModel):
         self.mark_invoice_as_paid(request.user)
 
         created, username, password = self.handle_anonymous_creator(**kwargs)
+
+        # create salesforce lead if applicable
+        sf = get_salesforce_access()
+        if sf:
+            create_salesforce_lead(sf, self.corp_profile)
 
         if Notice.objects.filter(notice_time='attimeof',
                                  notice_type='approve_join',
@@ -1875,6 +1882,12 @@ class CorporateMembership(TendenciBaseModel):
                             'status':True,
                             'status_detail':'active',
                         })
+
+                # create salesforce lead if applicable
+                sf = get_salesforce_access()
+                if sf:
+                  create_salesforce_lead(sf, self.corp_profile)
+
                 # email dues reps that corporate membership has been approved
                 recipients = dues_rep_emails_list(self)
                 if not recipients and self.creator:
@@ -1909,7 +1922,9 @@ class CorporateMembership(TendenciBaseModel):
         self.save()
         
         created, username, password = self.handle_anonymous_creator(**kwargs)
-             
+
+
+  
         # send an email to dues reps
         recipients = dues_rep_emails_list(self)
         recipients.append(self.creator.email)

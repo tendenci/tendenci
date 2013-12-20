@@ -306,9 +306,9 @@ def corpmembership_add(request, slug='',
             corp_membership_update_perms(corp_membership)
 
             # create salesforce lead if applicable
-            sf = get_salesforce_access()
-            if sf:
-                create_salesforce_lead(sf, corp_membership.corp_profile)
+            # sf = get_salesforce_access()
+            # if sf:
+            #     create_salesforce_lead(sf, corp_membership.corp_profile)
 
             # email to user who created the corporate membership
             # include the secret code in the email
@@ -430,9 +430,9 @@ def corpmembership_edit(request, id,
             corp_membership_update_perms(corp_membership)
 
             # update salesforce lead if applicable
-            sf = get_salesforce_access()
-            if sf:
-                create_salesforce_lead(sf, corp_membership.corp_profile)
+            # sf = get_salesforce_access()
+            # if sf:
+            #     create_salesforce_lead(sf, corp_membership.corp_profile)
 
             # send notification to administrators
             if not is_superuser:
