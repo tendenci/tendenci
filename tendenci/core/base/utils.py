@@ -722,11 +722,14 @@ def get_salesforce_access():
                          hasattr(settings, 'SALESFORCE_PASSWORD'),
                          hasattr(settings, 'SALESFORCE_SECURITY_TOKEN'))
 
+    is_sandbox = getattr(settings, 'SALESFORCE_SANDBOX', False)
+
     if all(required_settings):
         try:
             sf = Salesforce(username=settings.SALESFORCE_USERNAME,
                             password=settings.SALESFORCE_PASSWORD,
-                            security_token=settings.SALESFORCE_SECURITY_TOKEN)
+                            security_token=settings.SALESFORCE_SECURITY_TOKEN,
+                            sandbox=is_sandbox)
             return sf
         except:
             print 'Salesforce authentication failed'
