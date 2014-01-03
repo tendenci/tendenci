@@ -158,4 +158,3 @@ class Command(BaseCommand):
             print filename
             call_command('loaddata', filename)
 
-        call_command('set_theme', 'twenty-thirteen')
