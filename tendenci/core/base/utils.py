@@ -474,7 +474,7 @@ def make_image_object_from_url(image_url):
 
 def image_rescale(img, size, force=True):
     """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
-    import Image as pil
+    from PIL import Image as pil
 
     format = img.format  # temp. save format
     max_width, max_height = size
