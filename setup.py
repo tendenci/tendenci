@@ -148,7 +148,7 @@ setup(
         """,
     dependency_links=[
         "http://a.pypi.python.org/",
-        "http://g.pypi.python.org/",
+        "http://pypi.crate.io/",
     ],
     install_requires=[
         "Django==1.4.9",
