@@ -552,7 +552,6 @@
         "fields": {
             "creator": null,
             "allow_user_view": false,
-            "private": false,
             "allow_member_view": false,
             "on_weekend": true,
             "owner": null,
@@ -594,7 +593,6 @@
         "fields": {
             "creator": null,
             "allow_user_view": false,
-            "private": false,
             "allow_member_view": false,
             "on_weekend": true,
             "owner": null,
@@ -636,7 +634,6 @@
         "fields": {
             "creator": null,
             "allow_user_view": false,
-            "private": false,
             "allow_member_view": false,
             "on_weekend": true,
             "owner": null,
@@ -678,7 +675,6 @@
         "fields": {
             "creator": null,
             "allow_user_view": false,
-            "private": false,
             "allow_member_view": false,
             "on_weekend": true,
             "owner": null,
@@ -720,7 +716,6 @@
         "fields": {
             "creator": null,
             "allow_user_view": false,
-            "private": false,
             "allow_member_view": false,
             "on_weekend": true,
             "owner": null,
@@ -762,7 +757,6 @@
         "fields": {
             "creator": null,
             "allow_user_view": false,
-            "private": false,
             "allow_member_view": false,
             "on_weekend": true,
             "owner": null,
