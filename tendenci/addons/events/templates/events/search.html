@@ -25,10 +25,10 @@
     <div class="event-tabs">
         <ul class="tabs">
             <li class="dropdown {% if not past %}active{% endif %}">
-                <a href="{% url event.search %}">{% trans "Ongoing Events" %}</a>
+                <a href="{% url event.search %}?{{ request.GET.urlencode }}">{% trans "Ongoing Events" %}</a>
             </li>
             <li class="dropdown {% if past %}active{% endif %}">
-                <a href="{% url event.past_search %}">{% trans "Past Events" %}</a>
+                <a href="{% url event.past_search %}?{{ request.GET.urlencode }}">{% trans "Past Events" %}</a>
             </li>
         </ul>
     </div>
