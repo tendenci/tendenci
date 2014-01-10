@@ -98,8 +98,7 @@ class Command(BaseCommand):
             print
 
         # GROUP - check if we have a group associated with
-        group_exists = Group.objects.filter(
-            name=site_display_name, entity=entity).exists()
+        group_exists = Group.objects.filter(entity=entity).exists()
         if not group_exists:
             params = {'name': site_display_name,
                       'entity': entity,
@@ -121,7 +120,10 @@ class Command(BaseCommand):
                                })
             group = Group(**params)
 
-            group.save()
-            print 'Group created: ', group.name
-
+            try:
+                group.save()
+                print 'Group created: ', group.name
+            except Exception as e:
+                print e
+            
         print 'All done.'
