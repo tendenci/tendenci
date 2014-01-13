@@ -17,7 +17,7 @@
         {% endfor %}
         {% else %}
         {% for item in TEMPLATE_STORIES_SPONSORS_LIMIT|make_range %}
-            <img alt="Visit our Sponsor" src="{% stock_image_url '180x120' %}" />
+            <img alt="Visit our Sponsor" src="{% stock_image_url '140x80' %}" />
         {% endfor %}
             {% if user.is_authenticated %}<p><a href="/stories/add/?tags={{ TEMPLATE_STORIES_SPONSORS_TAG }}">Add a story</a> and tag it <strong>sponsors</strong> to have it appear as an image above.</p>{% endif %}
         {% endif %}
