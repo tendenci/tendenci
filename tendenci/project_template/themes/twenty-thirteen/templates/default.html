@@ -58,6 +58,7 @@
             
             {% block sidebar %}
             <div id="sidebar-right" class="sidebar five columns">
+                {% block extra_sidebar %}{% endblock %}
                 {% theme_include "sidebar.html" %}
             </div><!-- /#sidebar -->
             {% endblock %}

@@ -1,6 +1,20 @@
 [
     {"_themename": "Twenty-Thirteen", "_filename": "settings.json"},
     {
+    "name": "logo",
+    "label": "Logo",
+    "description": "The logo image used for the theme. Supports .jpg, .jpeg, and .png files.",
+    "data_type": "string",
+    "default_value": "",
+    "input_type": "file",
+    "value": "",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+    },
+    {
     "name": "header_cta_link",
     "label": "Header CTA link",
     "description": "The link for the call to action in the header above the search box. Use /relative-links/ or absolute like http://tendenci.com",
