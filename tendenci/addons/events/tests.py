@@ -1,23 +1,45 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
+import logging
 
 from django.test import TestCase
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+from tendenci.addons.events.models import RegConfPricing
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
 
->>> 1 + 1 == 2
-True
-"""}
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(message)s')
+handler.setFormatter(formatter)
+
+
+logger = logging.getLogger(__name__)
+logger.addHandler(handler) 
+logger.setLevel(logging.DEBUG)
+
+
+class EventTest(TestCase):
+
+    def setUp(self):
+        self.pricing = RegConfPricing()
+
+    def tearDown(self):    
+        self.pricing = None
+
+    def test_pricing_description(self):
+        self.pricing.title = "Test Pricing"
+        self.pricing.price = 10.00
+        self.pricing.allow_anonymous = True
+        self.pricing.allow_user = True
+        self.pricing.allow_member = True
+        self.pricing.save()
+
+        logger.info('Testing existence of description field')
+        self.assertTrue(hasattr(self.pricing, 'description'))
+        logger.info('Complete.')
+
+        sample_description = "Test Description"
+        self.pricing.description = sample_description
+        self.pricing.save()
+
+        logger.info('Testing description field update')
+        self.assertTrue(self.pricing.description == sample_description)
+        logger.info('Complete.')
 

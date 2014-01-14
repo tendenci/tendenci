@@ -28,87 +28,54 @@
     <div class="pricing-info-wrap">
 		<h2>Pricing Information</h2>
 	
-		{% if individual_pricings %}
+    {% if individual_pricings %}
 		{% if table_pricings %}
 		<div style="font-weight: bold; font-size: 1.2em;">For Individuals:</div>
 		{% endif %}
-		<table class="table table-striped" cellspacing="0">
-			<tr class="header-row">
-				<th class="header align-left" width="40%">Price Type</th>
-				<th class="header align-right" width="22%" nowrap="1">Available Before</th>
-				<th class="header align-right" width="18%">Price</th>
-				<th class="header align-right" width="20%"></th>
-			</tr>
-			{% for pricing in individual_pricings %}
-			<tr>
-				<td class="align-left">{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</td>
-				<td class="align-right">{{ pricing.end_dt|date:'M j g:i A' }}</td>
-				<td class="align-right">{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</td>
-				<td class="align-right">
-					<form action="{% url event.register_individual event.id pricing.id %}" method="get">
-					<input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
-					</form>
-				</td>
-			</tr>
-			
-			{% endfor %}
-			
-		</table>
-	{% endif %}	
-	
-	
+        <div class="pricing-list">
+            {% for pricing in individual_pricings %}
+            <div class="pricing-item clearfix {% cycle '' 'alt' %}">
+                <p class="pricing-header">
+                    <strong>{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</strong></p>
+                <div class="pricing-info">
+                    <p><strong>{% trans "Available Before" %}:</strong>
+                       {{ pricing.end_dt|date:'M j g:i A' }}</p>
+                    <p>{{ pricing.description|safe }}</p>
+                    <p><strong>{% trans "Price" %}:</strong>
+                       {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</p>
+                </div>
+                <form action="{% url event.register_individual event.id pricing.id %}" method="get">
+                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+	{% endif %}
+
 	{% if table_pricings %}
 		{% if individual_pricings %}
 		<div style="font-weight: bold; font-size: 1.2em;">For Table/Team:</div>
 		{% endif %}
-		<table class="table table-striped" cellspacing="0">
-			<tr  class="header-row">
-				<th class="header align-left" width="40%">Price Type</th>
-				<th class="header align-right" width="22%" nowrap="1">Available Before</th>
-				<th class="header align-right" width="18%">Table Price</th>
-				<th class="header align-right" width="20%"></th>
-			</tr>
-			{% for pricing in table_pricings %}
-			<tr>
-				<td class="align-left">{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</td>
-				<td class="align-right">{{ pricing.end_dt|date:'M j g:i A' }}</td>
-				<td class="align-right">{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</td>
-				<td class="align-right">
-					<form action="{% url event.register_table event.id pricing.id %}" method="get">
-					<input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
-					</form>
-				</td>
-			</tr>
-			
-			{% endfor %}
-			
-		
-		</table>
-	{% endif %}	
-	
-	
-	</div>
-	
-    
+        <div class="pricing-list">
+            {% for pricing in table_pricings %}
+            <div class="pricing-item clearfix {% cycle '' 'alt' %}">
+                <p class="pricing-header">
+                    <strong>{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</strong></p>
+                <div class="pricing-info">
+                    <p><strong>{% trans "Available Before" %}:</strong>
+                       {{ pricing.end_dt|date:'M j g:i A' }}</p>
+                    <p>{{ pricing.description|safe }}</p>
+                    <p><strong>{% trans "Price" %}:</strong>
+                       {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</p>
+                </div>
+                <form action="{% url event.register_table event.id pricing.id %}" method="get">
+                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+	{% endif %}
+
+	</div>    
 </div>
-
-
-{% endblock %}
-
-{% block extra_body %}
-<script>
-	$(document).ready(function(){
-		$(".table-striped tr:even").addClass("alt");
-		$(".table-striped tr")
-			.mouseover(function(){
-				$(this).addClass("over");
-			})
-			.mouseout(function(){
-				$(this).removeClass("over");
-			});
-	});
-	
-</script>
-
-{{ block.super }}
 {% endblock %}

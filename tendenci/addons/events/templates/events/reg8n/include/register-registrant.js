@@ -122,7 +122,7 @@ function addRegistrant(ele, prefix, price) {
         updateIndex(this, prefix, formCount);
     });
 
-    var price = $(row).find('.registrant-pricing:checked').next('span').data('price');
+    var price = $(row).find('.registrant-pricing:checked').next('strong').find('span').data('price');
     if (isNaN(price)){
     	price = 0;
     }
@@ -165,7 +165,7 @@ function get_registrant_pricing_obj(pricing_item){
 
     	var $this = $(pricing_item);
 	    var name_attr = $this.attr('name');
-	    var this_price = $this.next('span').data('price');
+	    var this_price = $this.next('strong').find('span').data('price');
 	    if (isNaN(this_price)){
 	     	this_price = 0;
 	    }
@@ -356,7 +356,7 @@ $(document).ready(function(){
 		if (!override_checked || isNaN(override_checked)){
 			
 			var name_attr = $this.attr('name');
-		     var this_price = $this.next('span').data('price');
+		     var this_price = $this.next('strong').find('span').data('price');
 		     //var id_regex = new RegExp('(registrant_(\\d+))');
 		     var idx = get_idx(name_regexp, name_attr);
 		
