@@ -15,27 +15,27 @@
         <div class="{{ field.auto_id }}">
             {% if field_obj.field_stype == 'checkboxinput' %}
                 <div class="checkbox">
-                    {% if field.errors %}         
+                    {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
-                    {% endif %}  
+                    {% endif %}
                     <div class="field">
                         {{ field }}
                         <span class="label{% if field.field.required %} required{% endif %}">
                             {{ field.label_tag }}
                         </span> 
                     </div> 
-                    
+
                     {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text }}</div>   
+                        <div class="help-text">{{ field.help_text }}</div>
                     {% endif %}
                 </div>
                 <div style="clear: both"><!-- IE7 --></div>
             {% else %}
-                    
+
                     {% if field_obj.field_name == 'password' %}
 
                         <div class="label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
@@ -50,7 +50,7 @@
                                  {% endfor %}
                              </div>
                             {% endif %}
-                        
+
                             {{ field }}
                             {% if field.help_text %}
                                 <span class="help-text"><small>{{ field.help_text }}</small></span>
@@ -71,6 +71,11 @@
                         <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
                             {{ field_obj.label }}
                         </div>
+                        {% if field|is_checkboxselectmultiple %}
+                            {% if field.help_text %}
+                            <span class="help-text checkmultiple"><small>{{ field.help_text }}</small></span>
+                            {% endif %}
+                        {% endif %}
 
                         <div class="field {{ field_obj.field_div_class }}">
                             {% if field.errors %}
@@ -80,11 +85,14 @@
                                  {% endfor %}
                              </div>
                             {% endif %}
-                        
+
                             {{ field }}
+                            {% if not field|is_checkboxselectmultiple %}
                             {% if field.help_text %}
-                                <span class="help-text"><small>{{ field.help_text }}</small></span>
+                            <span class="help-text"><small>{{ field.help_text }}</small></span>
                             {% endif %}
+                        {% endif %}
+
                         </div>
 
                     {% endif %}
@@ -92,13 +100,13 @@
                     {% if field_obj.field_stype == 'textarea' %}
                     <div class="clear"></div>
                     {% endif %}
-                    
+
                     {% if field|is_radioselect or field|is_checkboxselectmultiple %}
                     <div style="clear: both"><!-- IE7 --></div>
                     {% endif %}
 
             {% endif %}
-         </div>       
+         </div>
     </div>
     {% endif %}
 {% endif %}
