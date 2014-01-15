@@ -14,6 +14,7 @@ class NewsIndex(TendenciBaseSearchIndex):
     body = indexes.CharField(model_attr='body')
     release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
+    tags = indexes.CharField(model_attr='tags')
     
     # categories
     category = indexes.CharField()

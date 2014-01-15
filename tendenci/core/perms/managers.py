@@ -563,7 +563,12 @@ class TendenciBaseManager(models.Manager):
         status = True
 
         if query:
-            sqs = sqs.auto_query(sqs.query.clean(query))
+            tags_query = kwargs.get('tags-query', False)
+            if tags_query:
+                query = query.split(':')[1]
+                sqs = sqs.filter(tags=sqs.query.clean(query))
+            else:
+                sqs = sqs.auto_query(sqs.query.clean(query))
 
         sqs = self._permissions_sqs(sqs, user, status, status_detail, direct_db=direct_db)
 

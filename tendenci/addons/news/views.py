@@ -48,6 +48,7 @@ def detail(request, slug=None, template_name="news/view.html"):
 @is_enabled('news')
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
+
     if get_setting('site', 'global', 'searchindex') and query:
         news = News.objects.search(query, user=request.user)
     else:
