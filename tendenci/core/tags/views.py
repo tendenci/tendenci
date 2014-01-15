@@ -2,9 +2,11 @@ from tagging.models import Tag, TaggedItem
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
+from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from django.utils import simplejson
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 
@@ -30,3 +32,13 @@ def detail(request, id=None, template_name="tags/detail.html"):
     tagged_items = TaggedItem.objects.filter(tag=tag).order_by('content_type__name', 'tag__name')
     return render_to_response(template_name, {'tag': tag, 'tagged_items': tagged_items},
         context_instance=RequestContext(request))
+
+
+def autocomplete(request):
+    q = request.GET.get('term', '')
+    if request.is_ajax() and q:
+        tags = Tag.objects.filter(name__istartswith=q)
+        tag_list = [{'id':tag.pk, 'label':tag.name, 'value':tag.name} for tag in tags]
+        return HttpResponse(simplejson.dumps(tag_list),mimetype='application/json')
+    raise Http404
+

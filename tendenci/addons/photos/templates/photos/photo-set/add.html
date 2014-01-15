@@ -16,3 +16,8 @@
     </form>
 	</div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}
