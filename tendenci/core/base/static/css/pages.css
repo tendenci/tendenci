@@ -234,3 +234,9 @@
  #preview-close {
      text-align: right;
  }
+
+ /* Privacy Icons
+ --------------------------*/
+ .fa { margin: 5px 10px; }
+ .red { color: #FF0000; }
+ .green { color: #009800; }
