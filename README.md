@@ -5,6 +5,9 @@ It is a content management system (CMS) with powerful features for event registr
 
 Tendenci allows membership management organizations to communicate, manage and conduct transactions with web site visitors. Tendenci is easy to use and offers many modules as one customizable software package. The 5.x version is open source and built on Django/Python/Postgres and Ubuntu.
 
+[![Downloads](https://pypip.in/d/tendenci/badge.png)](https://pypi.python.org/pypi/tendenci/)
+
+
 ## Demo?  
 
 Can I see a demo now? Yup. [http://demo.tendenci.com/](http://demo.tendenci.com/).  
