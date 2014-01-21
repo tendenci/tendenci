@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from tagging.models import TaggedItem
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.stories.models import Story
@@ -8,10 +10,26 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import update_perms_and_save
 
 
+class TagListFilter(admin.SimpleListFilter):
+
+    title = 'tags'
+    parameter_name = 'tag'
+
+    def lookups(self, request, model_admin):
+        ct = ContentType.objects.get_for_model(Story)
+        tags = TaggedItem.objects.filter(content_type=ct)
+        return tags.values_list('tag__name', 'tag__name').distinct()
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(tags__icontains=self.value())
+
+
 class StoryAdmin(TendenciBaseModelAdmin):
     list_display = ('image_preview', 'title', 'tags', 'status', 'position')
     search_fields = ('title', 'content')
     list_editable = ['title', 'tags', 'position']
+    list_filter = [TagListFilter]
     fieldsets = [('Story Information', {
                       'fields': ['title',
                                  'content',
