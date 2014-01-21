@@ -125,7 +125,7 @@ def build_settings_form(user, settings):
         elif setting.input_type == 'select':
             if setting.input_value == '<form_list>':
                 choices = get_form_list(user)
-                required = True
+                required = False
             elif setting.input_value == '<box_list>':
                 choices = get_box_list(user)
                 required = False
