@@ -52,5 +52,6 @@ class RegAddonBaseFormSet(BaseFormSet):
         total_price = Decimal('0.00')
         for form in self.forms:
             addon = form.chosen_addon
-            total_price += addon.price
+            if addon:
+                total_price += addon.price
         return total_price
