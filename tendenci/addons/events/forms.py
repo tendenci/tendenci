@@ -262,8 +262,10 @@ class FormForCustomRegForm(forms.ModelForm):
                 if pricing.allow_member and registrant_profile and registrant_profile.is_member:
                     return pricing
 
-                if pricing.group and pricing.group.is_member(registrant_user):
-                    return pricing
+                if pricing.groups.all():
+                    for group in pricing.groups.all():
+                        if group.is_member(registrant_user):
+                            return pricing
 
             currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
             err_msg = ""
@@ -277,8 +279,8 @@ class FormForCustomRegForm(forms.ModelForm):
                     if pricing.allow_member:
                         err_msg = "We do not detect %s as the member." % email
                     else:
-                        if pricing.group:
-                            err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
+                        if pricing.groups.all():
+                            err_msg = "We do not detect %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
                 if not err_msg:
 
                     err_msg = 'Not eligible for the price.%s%s %s.' % (
@@ -944,7 +946,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
-    group = forms.ChoiceField(required=False, choices=[])
+    groups = forms.MultipleChoiceField(required=False, choices=[])
     payment_required = forms.ChoiceField(required=False,
                             choices=((None,_('Inherit from event')),('True',_('Yes')),('False',_('No'))))
 
@@ -983,17 +985,21 @@ class Reg8nConfPricingForm(BetterModelForm):
             groups_list = list(default_groups.values_list('pk', 'name'))
 
         groups_list.insert(0, ['', '------------'])
-        self.fields['group'].choices = groups_list
+        self.fields['groups'].choices = groups_list
 
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
+    def clean_groups(self):
+        group_list = self.cleaned_data['groups']
+        groups = []
 
-        if group_id:
-            try:
-                group = Group.objects.get(pk=group_id)
-                return group
-            except Group.DoesNotExist:
-                raise forms.ValidationError(_('Invalid group selected.'))
+        for group_id in group_list:
+            if group_id:
+                try:
+                    group = Group.objects.get(pk=group_id)
+                    groups.append(group_id)
+                except Group.DoesNotExist:
+                    raise forms.ValidationError(_('Invalid group selected.'))
+
+        return Group.objects.filter(pk__in=groups)
 
 
     def clean_quantity(self):
@@ -1022,7 +1028,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             'start_dt',
             'end_dt',
             'reg_form',
-            'group',
+            'groups',
             'allow_anonymous',
             'allow_user',
             'allow_member',
@@ -1037,7 +1043,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'price',
                     'dates',
                     'reg_form',
-                    'group',
+                    'groups',
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
@@ -1583,8 +1589,10 @@ class RegistrantForm(forms.Form):
                     if pricing.allow_member and registrant_profile and registrant_profile.is_member:
                         return pricing
 
-                    if pricing.group and pricing.group.is_member(registrant_user):
-                        return pricing
+                    if pricing.groups.all():
+                        for group in pricing.groups.all():
+                            if group.is_member(registrant_user):
+                                return pricing
 
                 currency_symbol = get_setting("site", "global", "currencysymbol") or '$' 
                 err_msg = "" 
@@ -1598,8 +1606,8 @@ class RegistrantForm(forms.Form):
                         if pricing.allow_member:
                             err_msg = "We do not detect %s as the member." % email
                         else:
-                            if pricing.group:
-                                err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
+                            if pricing.groups.all():
+                                err_msg = "We do not detect %s as a member of any of the following %s." % (email, ', '.join(pricing.groups.values_list('name', flat=True)))
                     if not err_msg:
                         err_msg = 'Not eligible for the price.%s%s %s.' \
                                     % (currency_symbol, pricing.price, pricing.title)

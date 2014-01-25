@@ -1041,7 +1041,7 @@ def get_pricing(user, event, pricing=None):
             continue
 
         # Admin only price
-        if not any([price.allow_user, price.allow_anonymous, price.allow_member, price.group]):
+        if not any([price.allow_user, price.allow_anonymous, price.allow_member, price.groups.all()]):
             if not user.profile.is_superuser:
                 continue
 
@@ -1055,11 +1055,18 @@ def get_pricing(user, event, pricing=None):
             )
             continue
 
+        group_member = False
+        if price.groups.all():
+            for group in price.groups.all():
+                if group.is_member(user):
+                    group_member = True
+                    break
+
         # Group and Member permissions
-        if price.group and price.allow_member:
+        if price.groups.all() and price.allow_member:
             qualifies = False
 
-            if price.group.is_member(user) or user.profile.is_member:
+            if group_member or user.profile.is_member:
                 qualifies = True
                 pricing_list.append(gen_pricing_dict(
                    price,
@@ -1069,7 +1076,7 @@ def get_pricing(user, event, pricing=None):
                 continue
 
         # Group permissions
-        if price.group and not price.group.is_member(user):
+        if price.groups.all() and not group_member:
             qualifies = False
             pricing_list.append(gen_pricing_dict(
                price,
@@ -1345,7 +1352,6 @@ def copy_event(event, user, reuse_rel=False):
                 reg_conf = new_regconf,
                 title = pricing.title,
                 quantity = pricing.quantity,
-                group = pricing.group,
                 price = pricing.price,
                 reg_form = pricing.reg_form,
                 start_dt = pricing.start_dt,
@@ -1354,6 +1360,7 @@ def copy_event(event, user, reuse_rel=False):
                 allow_user = pricing.allow_user,
                 allow_member = pricing.allow_member,
             )
+            new_pricing.groups = pricing.groups.all()
 
     #copy addons
     for addon in event.addon_set.all():

@@ -225,8 +225,8 @@ class RegConfPricing(OrderingBaseModel):
     title = models.CharField(_('Pricing display name'), max_length=500, blank=True)
     description = models.TextField(_("Pricing description"), blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
-    group = models.ForeignKey(Group, blank=True, null=True)
-    
+    groups = models.ManyToManyField(Group, blank=True, null=True)
+
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     payment_required = models.NullBooleanField(help_text='A payment required before registration is accepted.')
     
@@ -329,12 +329,11 @@ class RegConfPricing(OrderingBaseModel):
                 # get a list of groups for this user
                 groups_id_list = user.group_member.values_list('group__id', flat=True)
                 if groups_id_list:
-                    filter_or.update({'group__id__in': groups_id_list})
+                    filter_or.update({'groups__in': groups_id_list})
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
-                        'allow_member': True,
-                        'group__id__gt': 0}
+                        'allow_member': True}
 
         
         filter_and = {'start_dt__lt': now,
