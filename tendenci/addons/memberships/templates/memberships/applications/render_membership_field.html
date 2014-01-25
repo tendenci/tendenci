@@ -77,7 +77,13 @@
                             {% endif %}
                         {% endif %}
 
-                        <div class="field {{ field_obj.field_div_class }}">
+                        {% if field|is_fileinput %}
+                            {% if field.help_text %}
+                            <span class="help-text"><small>{{ field.help_text }}</small></span>
+                            {% endif %}
+                        {% endif %}
+
+                        <div class="field {% if field|is_fileinput %}fileinputbox{% else %}{{ field_obj.field_div_class }}{% endif %}">
                             {% if field.errors %}
                              <div class="error">
                                  {% for error in field.errors %}
@@ -85,9 +91,8 @@
                                  {% endfor %}
                              </div>
                             {% endif %}
-
                             {{ field }}
-                            {% if not field|is_checkboxselectmultiple %}
+                            {% if not field|is_checkboxselectmultiple and not field|is_fileinput %}
                             {% if field.help_text %}
                             <span class="help-text"><small>{{ field.help_text }}</small></span>
                             {% endif %}

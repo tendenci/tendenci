@@ -33,6 +33,10 @@ def is_textinput(field):
     return field.field.widget.__class__.__name__.lower() == "textinput"
 
 @register.filter
+def is_fileinput(field):
+    return "fileinput" in field.field.widget.__class__.__name__.lower()
+
+@register.filter
 def styled_form(form):
     template = get_template('styled_forms/form.html')
     c = Context({'form':form})
