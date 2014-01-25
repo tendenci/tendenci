@@ -1,6 +1,12 @@
 <div class="wrap-search-item">
     <div class="search-item page-search-item">
-        <h2><a href="{{ page.get_absolute_url }}">{% firstof page.title 'Untitled'%}</a>{% if request.user.is_authenticated %}<i class="fa {% if page.is_public %}fa-unlock-alt green{% else %}fa-lock red{% endif %}"></i>{% endif %}
+        <h2><a href="{{ page.get_absolute_url }}">{% firstof page.title 'Untitled'%}</a>
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_superuser %}
+                    {% if page.is_public %}<i class="fa fa-unlock-alt green"></i>{% endif %}
+                {% endif %}
+                {% if not page.is_public %}<i class="fa fa-lock red"></i>{% endif %}
+            {% endif %}
         </h2>
         <div class="item-content">{{ page.content|striptags|truncatewords:20|safe }}</div>
     </div>	

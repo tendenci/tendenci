@@ -21,7 +21,13 @@
         </div>{% endif %}
 
 		{% if page.title %}
-        <h1>{{ page.title }}{% if request.user.is_authenticated %}<i class="fa {% if page.is_public %}fa-unlock-alt green{% else %}fa-lock red{% endif %}"></i>{% endif %}
+        <h1>{{ page.title }}
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_superuser %}
+                    {% if page.is_public %}<i class="fa fa-unlock-alt green"></i>{% endif %}
+                {% endif %}
+                {% if not page.is_public %}<i class="fa fa-lock red"></i>{% endif %}
+            {% endif %}
         </h1>
 		{% endif %}
         
