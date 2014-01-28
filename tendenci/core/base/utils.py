@@ -7,6 +7,9 @@ import codecs
 import cStringIO
 import csv
 import chardet
+from pdfminer.pdfinterp import PDFResourceManager, process_pdf
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
 
 from django.conf import settings
 from django.template.defaultfilters import slugify
@@ -786,3 +789,20 @@ def checklist_update(key):
     if not item.done:
         item.done = True
         item.save()
+
+
+def extract_pdf(fp):
+    """
+    Extract text from PDF file.
+    """
+    rsrcmgr = PDFResourceManager()
+    retstr = cStringIO.StringIO()
+    codec = 'utf-8'
+    laparams = LAParams()
+    device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
+    process_pdf(rsrcmgr, device, fp)
+    device.close()
+    mystr = retstr.getvalue()
+    retstr.close()
+
+    return mystr
