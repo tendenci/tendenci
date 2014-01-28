@@ -3,7 +3,7 @@ import mimetypes
 import uuid
 from PIL import Image
 import re
-from slate import PDF
+#from slate import PDF
 import cStringIO
 from base64 import b64encode
 
@@ -23,6 +23,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.files.managers import FileManager
+from tendenci.core.base.utils import extract_pdf
 from tendenci.core.categories.models import CategoryItem
 from tendenci.core.site_settings.utils import get_setting
 
@@ -293,11 +294,9 @@ class File(TendenciBaseModel):
             if self.type() == 'pdf':
 
                 try:
-                    doc = PDF(self.file.file)
+                    return extract_pdf(self.file.file)
                 except:
                     return unicode()
-
-                return doc.text()
 
         return unicode()
 
