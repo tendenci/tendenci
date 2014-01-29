@@ -912,11 +912,17 @@ def get_notice_token_help_text(notice=None):
 
 
 def create_salesforce_lead(sf, corporate_profile):
+    [rep] = corporate_profile.reps.all()[:1] or [None]
+    if rep:
+        name = '%s %s' % (rep.user.first_name, rep.user.last_name)
+    else:
+        name = corporate_profile.name
+
     if corporate_profile.ud1:
         # Update Salesforce Lead object
         try:
             sf.Lead.update(corporate_profile.ud1, {
-                'LastName':corporate_profile.name,
+                'LastName': name,
                 'Company':corporate_profile.name,
                 'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
                 'City':corporate_profile.city,
@@ -932,7 +938,7 @@ def create_salesforce_lead(sf, corporate_profile):
     else:
         # Create a new Salesforce Lead object
         result = sf.Lead.create({
-            'LastName':corporate_profile.name,
+            'LastName': name,
             'Company':corporate_profile.name,
             'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
             'City':corporate_profile.city,
