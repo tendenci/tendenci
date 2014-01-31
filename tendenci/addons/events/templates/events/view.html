@@ -27,7 +27,7 @@
 
 <div class="t">
     {% event_nav user event %}
-    <div class="event-wrap">
+    <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
 		<div class="info">
 	        <h1>
             {% if event.priority %}
@@ -36,7 +36,7 @@
             {% if event.is_recurring_event %}
                 <div class="event-recurring"></div>
             {% endif %}
-            {{ event.title }}</h1>
+            <span itemprop="name">{{ event.title }}</span></h1>
 
             <div class="event-tabs">
                 <ul class="tabs">
@@ -77,17 +77,17 @@
                     <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
                     {% endif %}
                     <div style="clear:both;"></div>
-                </div>              
+                </div>
                 {% endfor %}
                 {% if speakers_length > 1 %}
                 <a href="{% url event.speakers event.pk %}">{% trans "View all speakers" %}</a>
                 {% endif %}
-	        
+
                 <!-- event description -->
                 <div class="content">
                     {% if event.image %}
                     <div class="photo">
-                        <img src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
+                        <img itemprop="image" src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
                     </div>
                     {% endif %}
                     <div class="event-desc">{{ event.description|safe }}</div>
@@ -108,14 +108,14 @@
                     {% else %}
                         <div class="organizer-desc-short">
                             {{ organizer.description|safe|urlize|linebreaks }}
-                        </div>                    
+                        </div>
                     {% endif %}
                     {% if organizer.description|striptags|wordcount > 50 %}
                     <a class="organizer-desc-toggle" href="#">{% trans "Full Description" %}</a>
                     {% endif %}
                 </div>
                 {% endif %}
-            
+
                 {% if addons %}
                     <hr/>
                     <h2 class="addons-title">{% trans "Addons" %}</h2>
@@ -180,9 +180,15 @@
                 {% for span in event.date_spans %}
 
                     {% if span.same_date %}
-                        <div class="line">{{ span.start_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
+                        <div class="line">
+                            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j, Y" }}</span>
+                        </div>
+                        {% if not forloop.last %} and {% endif %}
                     {% else %}
-                        <div class="line">{{ span.start_dt|date:"D, M. j" }} - {{ span.end_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
+                        <div class="line">
+                            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j" }}</span> -
+                            <span itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"D, M. j, Y" }}</span>
+                        </div>{% if not forloop.last %} and {% endif %}
                     {% endif %}
 
                 {% endfor %}
@@ -197,12 +203,12 @@
             </div>
             {% endif %}
 
-			<div class="place">
+			<div class="place" itemprop="location" itemscope itemtype="http://schema.org/PostalAddress">
                 <h4 class="vital-header">{% trans "Where?" %}</h4>
 				<div><strong>{{ event.place.name }}</strong></div>
-				<div class="line">{{ event.place.address }}</div>
-				<div class="line">{{ event.place.city_state|join:", "}} {{ event.place.zip }}</div>
-                <div class="line">{{ event.place.country }}</div>
+				<div class="line" itemprop="streetAddress">{{ event.place.address }}</div>
+				<div class="line">{{ event.place.city_state|join:", "}} <span itemprop="postalCode">{{ event.place.zip }}</span></div>
+                <div class="line" itemprop="addressCountry">{{ event.place.country }}</div>
                 {% if event.place.description|striptags|wordcount > 50 %}
                     <div class="line event-place-desc-short">
                         {{ event.place.description|striptags|truncatewords:"50" }}

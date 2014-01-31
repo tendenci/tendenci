@@ -1,9 +1,9 @@
 {% load i18n %}
 {% load event_tags %}
-<div class="event-wrap">
+<div class="event-wrap" itemscope itemtype="http://schema.org/Event">
     <div class="time-stamp">
         {{ event.start_dt|date:"D, M j, Y" }}
-        
+
         {% if event.start_dt < now %}
             {% if event.end_dt < now %}
                 <div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
@@ -45,17 +45,18 @@
         {% if event.is_recurring_event %}
             <div class="event-recurring"></div>
         {% endif %}
-        <a href="{% url event event.pk %}">{{ event.title }}</a>
+        <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
         </h3>
         {% if event.place %}
-        <div class="place">{{ event.place }}</div>
+        <div class="place" itemprop="location">{{ event.place }}</div>
 		 {% endif %}
 		 
         <div class="time-period">
-            {{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }}
+            <span itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span> -
+            <span itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y P" }}</span>
         </div> 
 
-        <div class="description">
+        <div class="description" itemprop="description">
             {{ event.description|striptags|safe|truncatewords:40 }}
         </div>
 
