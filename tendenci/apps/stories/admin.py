@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.stories.models import Story, Rotator
 from tendenci.apps.stories.forms import StoryAdminForm
+from tendenci.apps.stories.utils import copy_story
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import update_perms_and_save
 
@@ -12,6 +13,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
     list_display = ('image_preview', 'title', 'tags', 'status', 'position')
     search_fields = ('title', 'content')
     list_editable = ['title', 'tags', 'position']
+    actions = ['clone_story']
     fieldsets = [('Story Information', {
                       'fields': ['title',
                                  'content',
@@ -83,6 +85,11 @@ class StoryAdmin(TendenciBaseModelAdmin):
             return "No image"
     image_preview.allow_tags = True
     image_preview.short_description = 'Image'
+
+    def clone_story(self, request, queryset):
+        for story in queryset:
+            copy_story(story, request.user)
+    clone_story.short_description = "Clone selected stories"
 
 
 class StoryInline(admin.TabularInline):
