@@ -1,41 +1,24 @@
 from django.contrib import admin
-from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from tagging.models import TaggedItem
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.stories.models import Story
+from tendenci.apps.stories.models import Story, Rotator
 from tendenci.apps.stories.forms import StoryAdminForm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import update_perms_and_save
-
-
-class TagListFilter(admin.SimpleListFilter):
-
-    title = 'tags'
-    parameter_name = 'tag'
-
-    def lookups(self, request, model_admin):
-        ct = ContentType.objects.get_for_model(Story)
-        tags = TaggedItem.objects.filter(content_type=ct)
-        return tags.values_list('tag__name', 'tag__name').distinct()
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(tags__icontains=self.value())
 
 
 class StoryAdmin(TendenciBaseModelAdmin):
     list_display = ('image_preview', 'title', 'tags', 'status', 'position')
     search_fields = ('title', 'content')
     list_editable = ['title', 'tags', 'position']
-    list_filter = [TagListFilter]
     fieldsets = [('Story Information', {
                       'fields': ['title',
                                  'content',
                                  'photo_upload',
                                  'full_story_link',
                                  'link_title',
+                                 'rotator',
                                  'tags',
                                  'start_dt',
                                  'end_dt',
@@ -101,4 +84,38 @@ class StoryAdmin(TendenciBaseModelAdmin):
     image_preview.allow_tags = True
     image_preview.short_description = 'Image'
 
+
+class StoryInline(admin.TabularInline):
+    model = Story
+    max_num = 0
+    can_delete = False
+    fields = ('image_preview','title','tags','rotator_position')
+    readonly_fields = ('image_preview','title')
+    ordering = ('rotator_position','title')
+
+    def image_preview(self, obj):
+        if obj.image:
+            args = [obj.image.pk]
+            args.append("100x50")
+            args.append("crop")
+            return '<img src="%s" />' % reverse('file', args=args)
+        else:
+            return "No image"
+    image_preview.allow_tags = True
+    image_preview.short_description = 'Image'
+
+
+class RotatorAdmin(admin.ModelAdmin):
+    inlines = [StoryInline]
+
+    class Media:
+        js = (
+            'js/jquery-1.6.2.min.js',
+            'js/jquery-ui-1.8.17.custom.min.js',
+            'js/admin/rotator-story-inline-ordering.js',
+        )
+        css = {'all': ['css/admin/dynamic-inlines-with-sort.css'], }
+
+
 admin.site.register(Story, StoryAdmin)
+admin.site.register(Rotator, RotatorAdmin)

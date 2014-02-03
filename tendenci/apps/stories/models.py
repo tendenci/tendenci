@@ -48,6 +48,10 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, default='')
 
+    rotator = models.ForeignKey('Rotator', null=True, default=None, blank=True,
+        help_text=_('The rotator where this story belongs.'))
+    rotator_position = models.IntegerField(_('Rotator Position'), default=0, blank=True)
+
     categories = generic.GenericRelation(CategoryItem,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -140,4 +144,11 @@ class Story(OrderingBaseModel, TendenciBaseModel):
 
 class StoryPhoto(File):
     pass
+
+
+class Rotator(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.name
 
