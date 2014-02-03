@@ -12,18 +12,24 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from tendenci.core.site_settings.utils import get_setting
-
-        call_command('expire_jobs')
-        call_command('expire_resumes')
-        call_command('expire_stories')
-        call_command('send_event_reminders')
-        call_command('clean_corporate_memberships')
-        call_command('send_membership_notices')
-        call_command('clean_memberships')
-        call_command('refresh_membership_groups')
-        call_command('send_corp_membership_notices')
-        call_command('clean_old_exports')
-        call_command('delete_soft_deleted_items')
+        
+        commands = ('expire_jobs',
+                    'expire_resumes',
+                    'expire_stories',
+                    'send_event_reminders',
+                    'clean_corporate_memberships',
+                    'send_membership_notices',
+                    'clean_memberships',
+                    'refresh_membership_groups',
+                    'send_corp_membership_notices',
+                    'clean_old_exports',
+                    'delete_soft_deleted_items',
+                    )
+        for c in commands:
+            try:
+                call_command(c)
+            except:
+                pass
 
         # Use Popen for longrunning tasks with heavy queries.
         subprocess.Popen(['python', 'manage.py', 'update_dashboard_stats'])
