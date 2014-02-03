@@ -118,6 +118,10 @@ class EventLogManager(Manager):
         # like Contributions or perhaps Versions in the future. - JMO 2012-05-14
         if not request:
             return None
+
+        # skip if pingdom
+        if 'pingdom.com' in request.META.get('HTTP_USER_AGENT', ''):
+            return None
         
         event_log = self.model()
 
