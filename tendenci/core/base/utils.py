@@ -766,6 +766,9 @@ def directory_cleanup(dir_path, ndays):
     Delete the files that are older than 'ndays' in the directory 'dir_path'
     The 'dir_path' should be a relative path. We cannot use os.walk.
     """
+    if not default_storage.exists(dir_path):
+        return
+    
     foldernames, filenames = default_storage.listdir(dir_path)
     for filename in filenames:
         if not filename:
