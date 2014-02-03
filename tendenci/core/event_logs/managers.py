@@ -97,9 +97,29 @@ class EventLogManager(Manager):
 
         """
         request, user, instance = None, None, None
-        event_log = self.model()
-
+        
         stack = inspect.stack()
+        
+        # If the request is not present in the kwargs, we try to find it
+        # by inspecting the stack. We dive 3 levels if necessary. - JMO 2012-05-14
+        if 'request' in kwargs:
+            request = kwargs['request']
+        else:
+            if 'request' in inspect.getargvalues(stack[1][0]).locals:
+                request = inspect.getargvalues(stack[1][0]).locals['request']
+            elif 'request' in inspect.getargvalues(stack[2][0]).locals:
+                request = inspect.getargvalues(stack[2][0]).locals['request']
+            elif 'request' in inspect.getargvalues(stack[3][0]).locals:
+                request = inspect.getargvalues(stack[3][0]).locals['request']
+
+
+        # If this eventlog is being triggered by something without a request, we
+        # do not want to log it. This is usually some other form of logging
+        # like Contributions or perhaps Versions in the future. - JMO 2012-05-14
+        if not request:
+            return None
+        
+        event_log = self.model()
 
         # Set the following fields to blank
         event_log.guid = ""
@@ -183,25 +203,6 @@ class EventLogManager(Manager):
 
         if event_log.application == "base":
             event_log.application = "homepage"
-
-        # If the request is not present in the kwargs, we try to find it
-        # by inspecting the stack. We dive 3 levels if necessary. - JMO 2012-05-14
-        if 'request' in kwargs:
-            request = kwargs['request']
-        else:
-            if 'request' in inspect.getargvalues(stack[1][0]).locals:
-                request = inspect.getargvalues(stack[1][0]).locals['request']
-            elif 'request' in inspect.getargvalues(stack[2][0]).locals:
-                request = inspect.getargvalues(stack[2][0]).locals['request']
-            elif 'request' in inspect.getargvalues(stack[3][0]).locals:
-                request = inspect.getargvalues(stack[3][0]).locals['request']
-
-
-        # If this eventlog is being triggered by something without a request, we
-        # do not want to log it. This is usually some other form of logging
-        # like Contributions or perhaps Versions in the future. - JMO 2012-05-14
-        if not request:
-            return None
 
         if 'user' in kwargs:
             user = kwargs['user']
