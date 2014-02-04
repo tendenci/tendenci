@@ -155,7 +155,7 @@ setup(
         "pisa",
         "Reportlab==2.5",
         "html5lib",
-        "Pillow>=2.3.0",
+        "Pillow==2.0.0",
         "South==0.7.5",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
