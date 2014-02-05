@@ -917,11 +917,11 @@ def create_salesforce_lead(sf, corporate_profile):
         name = '%s %s' % (rep.user.first_name, rep.user.last_name)
     else:
         name = corporate_profile.name
-    corp_membership = corporate_profile.corp_membership
-    if corp_membership:
-        Company_category_c = corp_membership.corporate_membership_type.name
-    else:
-        Company_category_c = ''
+#     corp_membership = corporate_profile.corp_membership
+#     if corp_membership:
+#         Company_category_c = corp_membership.corporate_membership_type.name
+#     else:
+#         Company_category_c = ''
 
     if corporate_profile.ud1:
         # Update Salesforce Lead object
@@ -929,7 +929,6 @@ def create_salesforce_lead(sf, corporate_profile):
             sf.Lead.update(corporate_profile.ud1, {
                 'LastName': name,
                 'Company':corporate_profile.name,
-                'Company_Category_c': Company_category_c,
                 'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
                 'City':corporate_profile.city,
                 'State':corporate_profile.state,
@@ -946,7 +945,6 @@ def create_salesforce_lead(sf, corporate_profile):
         result = sf.Lead.create({
             'LastName': name,
             'Company':corporate_profile.name,
-            'Company_Category_c': Company_category_c,
             'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
             'City':corporate_profile.city,
             'State':corporate_profile.state,
