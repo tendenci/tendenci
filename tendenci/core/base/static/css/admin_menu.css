@@ -139,8 +139,13 @@ html {
 	display:none;
 }
 
+#admin-bar li .sub.active,
+#user-bar li .sub.active {
+        left:auto;
+        display:block;
+}
+
 #admin-bar li:hover .sub:not(.themecolor),
-#admin-bar li .sub.themecolor.active,
 #user-bar li:hover .sub {
 	left:auto;
 	display:block;

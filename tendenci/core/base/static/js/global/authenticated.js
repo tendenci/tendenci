@@ -28,4 +28,15 @@ $(document).ready(function(){
         });
     }
 
+    $("#admin-bar ul li").has(".sub").not('#themecolor').hover(function(){
+        $(this).children(".sub").addClass('active');
+    }, function() {
+        $(this).children(".sub").removeClass('active');
+    });
+    $("#user-bar li").has(".sub").hover(function(){
+        $(this).children(".sub").addClass('active');
+    }, function() {
+        $(this).children(".sub").removeClass('active');
+    });
+
 });
