@@ -11,7 +11,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.files.storage import default_storage
 
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
+from simplemathcaptcha.fields import MathCaptchaField
 from tinymce.widgets import TinyMCE
 
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -931,7 +932,7 @@ class CreatorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CreatorForm, self).__init__(*args, **kwargs)
-        self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+        self.fields['captcha'] = MathCaptchaField(label=_('Type the code below'))
 
 
 class CorpApproveForm(forms.Form):

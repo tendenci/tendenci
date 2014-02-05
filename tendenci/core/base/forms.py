@@ -6,7 +6,8 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
+from simplemathcaptcha.fields import MathCaptchaField
 
 
 slug_re = compile(r'^[-\w\/]+$')
@@ -52,7 +53,7 @@ class PasswordForm(forms.Form):
 
 
 class CaptchaForm(forms.Form):
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = MathCaptchaField(label=_('Type the code below'))
 
 
 class AddonUploadForm(forms.Form):

@@ -6,7 +6,8 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
+#from simplemathcaptcha.fields import MathCaptchaField
 from tendenci.apps.discounts.models import Discount
 from tendenci.core.site_settings.utils import get_setting
 

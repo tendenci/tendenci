@@ -165,7 +165,7 @@ setup(
         "django-localflavor==1.0",
         "django-pagination>=1.0.7",
         "django-picklefield>=0.1.6",
-        "django-simple-captcha==0.3.6",
+        "django-simple-math-captcha==1.0.2",
         "django-tagging>=0.3.1",
         "django-tinymce==1.5.1.dev100",
         "django-haystack==1.2.7",

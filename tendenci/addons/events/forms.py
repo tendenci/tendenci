@@ -16,7 +16,8 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import filesizeformat
 
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
+from simplemathcaptcha.fields import MathCaptchaField
 from tendenci.addons.events.models import (
     Event, Place, RegistrationConfiguration, Payment,
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
@@ -1293,7 +1294,7 @@ class Reg8nForm(forms.Form):
     username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
     email = EmailVerificationField(label=_("Email"))
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = MathCaptchaField(label=_('Type the code below'))
 
     def __init__(self, event_id=None, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -1376,7 +1377,7 @@ class RegistrationForm(forms.Form):
     Registration form - not include the registrant.
     """
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = MathCaptchaField(label=_('Type the code below'))
 
     def __init__(self, event, *args, **kwargs):
         """

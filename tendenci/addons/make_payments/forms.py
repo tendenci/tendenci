@@ -4,10 +4,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.make_payments.models import MakePayment
 from tendenci.core.base.fields import EmailVerificationField
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
+from simplemathcaptcha.fields import MathCaptchaField
 
 class MakePaymentForm(forms.ModelForm):
-    captcha = CaptchaField(help_text=_("Please fill in the letters in the image"))
+    captcha = MathCaptchaField(help_text=_("Please fill in the letters in the image"))
     # TODO: Make check-paid an admin only option
     payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('cc', 'Make Online Payment'),)), initial='cc',)
     company = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'size':'30'}))

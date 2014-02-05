@@ -13,7 +13,8 @@ from django.template import Context, loader
 from django.utils.http import int_to_base36
 
 from johnny.cache import invalidate
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
+from simplemathcaptcha.fields import MathCaptchaField
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.registration.models import RegistrationProfile
@@ -44,7 +45,7 @@ class RegistrationCustomForm(RegistrationForm):
     state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10'}), required=False)
     country = forms.CharField(max_length=50, required=False)
     zipcode = forms.CharField(max_length=50, required=False)
-    captcha = CaptchaField()
+    captcha = MathCaptchaField()
 
     allow_same_email = None
     similar_email_found = False
