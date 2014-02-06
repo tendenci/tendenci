@@ -7,8 +7,9 @@ from django.core.validators import RegexValidator
 from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
 #from captcha.fields import CaptchaField
-from simplemathcaptcha.fields import MathCaptchaField
-
+#from simplemathcaptcha.fields import MathCaptchaField
+SIMPLE_ANSWER = 22
+SIMPLE_QUESTION = 'What is 9 + 13?'
 
 slug_re = compile(r'^[-\w\/]+$')
 validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
@@ -36,6 +37,22 @@ class SlugField(CharField):
         self.run_validators(value)
         
         return value
+    
+class SimpleMathField(forms.IntegerField):
+    def __init__(self, *args, **kwargs):
+        kwargs['required'] = True
+        kwargs['label'] = SIMPLE_QUESTION
+        super(SimpleMathField, self).__init__((), *args, **kwargs)
+
+    def clean(self, value):
+        try:
+            value = int(value)
+        except:
+            value = 0
+        if value != SIMPLE_ANSWER:
+            raise forms.ValidationError("Incorrect. Please try again.")
+        
+        return value
 
 class PasswordForm(forms.Form):
     password = forms.CharField(label=_(u'Password'),
@@ -53,7 +70,7 @@ class PasswordForm(forms.Form):
 
 
 class CaptchaForm(forms.Form):
-    captcha = MathCaptchaField(label=_('Type the code below'))
+    captcha = SimpleMathField(label=_('Type the code below'))
 
 
 class AddonUploadForm(forms.Form):

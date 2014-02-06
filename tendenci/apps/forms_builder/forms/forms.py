@@ -18,7 +18,8 @@ from tendenci.core.payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 #from captcha.fields import CaptchaField
-from simplemathcaptcha.fields import MathCaptchaField
+#from simplemathcaptcha.fields import MathCaptchaField
+from tendenci.core.base.forms import SimpleMathField
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import get_template_list
 from tendenci.core.base.fields import EmailVerificationField
@@ -145,7 +146,7 @@ class FormForForm(forms.ModelForm):
                 )
         
         if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
-            self.fields['captcha'] = MathCaptchaField(label=_('Type the code below'))
+            self.fields['captcha'] = SimpleMathField(label=_('Type the code below'))
 
 
     def clean_pricing_option(self):

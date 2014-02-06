@@ -6,7 +6,8 @@ from django.utils.safestring import mark_safe
 from django.contrib.admin import widgets
 
 #from captcha.fields import CaptchaField
-from simplemathcaptcha.fields import MathCaptchaField
+#from simplemathcaptcha.fields import MathCaptchaField
+from tendenci.core.base.forms import SimpleMathField
 from tendenci.core.categories.models import Category
 from tendenci.addons.jobs.models import Job
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -55,7 +56,7 @@ class JobForm(TendenciBaseForm):
         )
     )
 
-    captcha = MathCaptchaField()
+    captcha = SimpleMathField()
 
     start_dt = SplitDateTimeField(
         required=False,

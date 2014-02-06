@@ -1646,7 +1646,7 @@ class AppEntryForm(forms.ModelForm):
                 self.fields[field_key].widget.years = range(year - 120, year + 120)
 
         if app.use_captcha and not self.user.is_authenticated():
-            self.fields['field_captcha'] = MathCaptchaField(**{
+            self.fields['field_captcha'] = SimpleMathField(**{
                 'label': '',
                 'error_messages': {'required': 'CAPTCHA is required'}
             })
