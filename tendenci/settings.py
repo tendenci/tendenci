@@ -179,7 +179,7 @@ INSTALLED_APPS = (
     'avatar',
     'tinymce',
     'haystack',
-    'captcha',
+    #'captcha',  # replaced with math captcha
     'south',
     'tastypie',
     'tendenci.libs.model_report',

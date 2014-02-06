@@ -5,7 +5,8 @@ from os.path import splitext
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
+from simplemathcaptcha.fields import MathCaptchaField
 from tendenci.addons.resumes.models import Resume
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -45,7 +46,7 @@ class ResumeForm(TendenciBaseForm):
         required=False
     )
 
-    captcha = CaptchaField()
+    captcha = MathCaptchaField()
 
     contact_email = EmailVerificationField(label=_("Contact email"), required=False)
 
