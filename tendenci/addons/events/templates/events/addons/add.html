@@ -25,8 +25,7 @@
     	<div class="forms">
 			{{ form|styled_form }}
             <h3>Options</h3>
-            {{ formset.management_form }}
-            {{ formset|styled_form_set }}
+            {{ formset|styled_multi_forms }}
 			<input type="submit" value="Add" />
 		</div>
         </form>

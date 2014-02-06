@@ -135,7 +135,7 @@ urlpatterns = patterns(
     url(r'^%s/(?P<id>\d+)/(?P<private_slug>\w+)/$' % urlpath, 'views.details', name='event.private_details'),
 
     # addons
-    url(r'^%s/(?P<event_id>\d+)/addons/$' % urlpath, 'views.list_addons', name='event.list_addons'),
+    url(r'^%s/(?P<event_id>\d+)/addons/list/$' % urlpath, 'views.list_addons', name='event.list_addons'),
     url(r'^%s/(?P<event_id>\d+)/addons/add/$' % urlpath, 'views.add_addon', name='event.add_addon'),
     url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/edit/$' % urlpath, 'views.edit_addon', name='event.edit_addon'),
     url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$' % urlpath, 'views.disable_addon', name='event.disable_addon'),

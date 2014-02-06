@@ -3865,11 +3865,11 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
 
-    OptionFormSet = modelformset_factory(AddonOption, form=AddonOptionForm, extra=3)
+    OptionFormSet = modelformset_factory(AddonOption, form=AddonOptionForm, extra=1)
 
     if request.method == "POST":
         form = AddonForm(request.POST)
-        formset = OptionFormSet(request.POST, queryset=AddonOption.objects.none(), prefix="options")
+        formset = OptionFormSet(request.POST, queryset=AddonOption.objects.none(), prefix="options", auto_id='options_formset')
         if False not in (form.is_valid(), formset.is_valid()):
             addon = form.save(commit=False)
             addon.event = event
@@ -3886,12 +3886,14 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
             return redirect('event', event.pk)
     else:
         form = AddonForm()
-        formset = OptionFormSet(queryset=Addon.objects.none(), prefix="options")
+        formset = OptionFormSet(queryset=Addon.objects.none(), prefix="options", auto_id='options_formset')
+
+    multi_event_forms = [formset]
 
     return render_to_response(template_name, {
         'form': form,
-        'formset': formset,
         'event':event,
+        'formset': multi_event_forms,
     }, context_instance=RequestContext(request))
 
 
@@ -3905,11 +3907,12 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
 
     addon = get_object_or_404(Addon, pk=addon_id)
 
-    OptionFormSet = inlineformset_factory(Addon, AddonOption, form=AddonOptionForm, extra=3)
+    OptionFormSet = modelformset_factory(AddonOption, form=AddonOptionForm, extra=0)
+    options_set = AddonOption.objects.filter(addon=addon)
 
     if request.method == "POST":
         form = AddonForm(request.POST, instance=addon)
-        formset = OptionFormSet(request.POST, instance=addon, prefix="options")
+        formset = OptionFormSet(request.POST, queryset=options_set, prefix="options", auto_id='options_formset')
         if False not in (form.is_valid(), formset.is_valid()):
             addon = form.save()
             options = formset.save()
@@ -3920,10 +3923,12 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
             return redirect('event', event.pk)
     else:
         form = AddonForm(instance=addon)
-        formset = OptionFormSet(instance=addon, prefix="options")
+        formset = OptionFormSet(queryset=options_set, prefix="options", auto_id='options_formset')
+
+    multi_event_forms = [formset]
 
     return render_to_response(template_name, {
-        'formset':formset,
+        'formset':multi_event_forms,
         'form':form,
         'event':event,
     }, context_instance=RequestContext(request))
