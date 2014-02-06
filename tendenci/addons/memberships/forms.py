@@ -1,5 +1,5 @@
 from uuid import uuid4
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
 from os.path import join
 from datetime import datetime
 from hashlib import md5
@@ -1646,7 +1646,7 @@ class AppEntryForm(forms.ModelForm):
                 self.fields[field_key].widget.years = range(year - 120, year + 120)
 
         if app.use_captcha and not self.user.is_authenticated():
-            self.fields['field_captcha'] = CaptchaField(**{
+            self.fields['field_captcha'] = MathCaptchaField(**{
                 'label': '',
                 'error_messages': {'required': 'CAPTCHA is required'}
             })
