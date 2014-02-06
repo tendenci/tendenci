@@ -89,6 +89,9 @@
                     </ul>
                     <ul>
                         <li class="app"><a href="{% url profile.admins %}">{% trans "Administrators" %}</a></li>
+                        {% if SITE_ADMIN_EMAIL %}
+                        <li><a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="Email Administrators"><i class="fa fa-envelope"></i></a></li>
+                        {% endif %}
                     </ul>
                 </div>
                 {% endif %}
