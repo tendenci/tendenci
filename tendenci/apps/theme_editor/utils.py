@@ -5,6 +5,7 @@ import boto
 import urllib
 from datetime import datetime
 from dateutil.parser import parse
+from operator import itemgetter
 
 from django.conf import settings
 from django.core.cache import cache
@@ -190,6 +191,8 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
             # Hide hidden folders
             if not f.startswith('.'):
                 subdir['contents'].append({'name': f, 'path': os.path.join(path[len(root_dir) + 1:], f), 'editable': editable})
+
+        subdir['contents'] = sorted(subdir['contents'], key=itemgetter('name'))
         parent = reduce(dict.get, folders[:-1], files_folders)
 
         # Hide hidden folders
