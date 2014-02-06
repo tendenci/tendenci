@@ -7,6 +7,8 @@ from tendenci.apps.contributions.models import Contribution
 def save_contribution(sender, **kwargs):
     instance = kwargs['instance']
 
+    if not hasattr(instance, 'owner') or not hasattr(instance, 'creator'):
+        return None
     # TODO: Possibly allow anonymous contributions
     # to be added to the system
     if isinstance(instance.owner, AnonymousUser):
