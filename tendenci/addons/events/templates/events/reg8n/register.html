@@ -337,7 +337,7 @@
             {% if reg_form.captcha %}
                 <div class="form-field">
                     <div class="error">{{ reg_form.captcha.errors }}</div>
-                    <div class="required">{% trans "Type the Code Below" %}</div>
+                    <div class="required">{{ reg_form.captcha.label }}</div>
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
