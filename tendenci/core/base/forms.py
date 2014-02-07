@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 #from captcha.fields import CaptchaField
 #from simplemathcaptcha.fields import MathCaptchaField
 SIMPLE_ANSWER = 22
-SIMPLE_QUESTION = 'What is 9 + 13?'
+SIMPLE_QUESTION = 'What is 9 + 13? (security question -just so we know you\'re not a bot)'
 
 slug_re = compile(r'^[-\w\/]+$')
 validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
