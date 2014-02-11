@@ -87,7 +87,6 @@ class DirectorySearchForm(forms.Form):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        print self.cleaned_data
         q = self.cleaned_data.get('q', None)
         cat = self.cleaned_data.get('search_category', None)
 
