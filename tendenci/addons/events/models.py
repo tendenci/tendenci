@@ -39,6 +39,15 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
 
+EMAIL_DEFAULT_ONLY = 'default'
+EMAIL_CUSTOM_ONLY = 'custom'
+EMAIL_BOTH = 'both'
+REGEMAIL_TYPE_CHOICES = (
+    (EMAIL_DEFAULT_ONLY, 'Default Email Only'),
+    (EMAIL_CUSTOM_ONLY, 'Custom Email Only'),
+    (EMAIL_BOTH, 'Default and Custom Email'),
+)
+
 
 class TypeColorSet(models.Model):
     """
@@ -163,6 +172,11 @@ class RegistrationConfiguration(models.Model):
                                      max_length=20, 
                                      null=True, blank=True,
                                      help_text='Comma delimited. Ex: 7,1')
+
+    registration_email_type = models.CharField(_('Registration Email'),
+                                            max_length=20,
+                                            choices=REGEMAIL_TYPE_CHOICES,
+                                            default=EMAIL_DEFAULT_ONLY)
     registration_email_text = models.TextField(_('Registration Email Text'), blank=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)

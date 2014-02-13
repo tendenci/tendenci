@@ -139,10 +139,14 @@
 <div>{{ event.description|relative_to_absolute_urls|safe }}</div>
 {% endif %}
 
-{% if event.registration_configuration.registration_email_text %}
-{{ event.registration_configuration.registration_email_text|relative_to_absolute_urls|safe }}
+{% if event.registration_configuration.registration_email_type and event.registration_configuration.registration_email_type != 'default' %}
+    {% if event.registration_configuration.registration_email_text %}
+    {{ event.registration_configuration.registration_email_text|relative_to_absolute_urls|safe }}
+    {% endif %}
 {% endif %}
 
+
+{% if event.registration_configuration.registration_email_type != 'custom' or not event.registration_configuration.registration_email_text %}
 <h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>
 <ol style="margin-top:0;">
     <li>
@@ -162,7 +166,6 @@
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.ics_single event.pk %}">{% trans "Add this event to your calendar." %}</a></li>
     <li><a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEURL }}</a></li>
 </ol>
-
 {% if for_admin %}
     <div>{% trans "Total registrants for this event: " %} {{ event.registrants.count }}</div>
     <div>{% trans "This email contains registration details. Keep it in a safe place. Do not forward this email to an untrusted person." %}</div>
@@ -176,5 +179,7 @@
     {% endif %}
 
     <div>{% trans "This email contains your registration details. Keep it in a safe place. Do not forward this email to an untrusted person." %}</div>
+{% endif %}
+
 {% endif %}
 </body></html>
