@@ -1603,6 +1603,12 @@ def add_sf_attendance(registrant, event):
             # Make sure we have a complete user detail from registrants
             # which do not have an associated user. This is because the
             # contact ID will not be stored.
+            
+            # strip spaces to avoid duplicates being created
+            registrant.first_name = registrant.first_name.strip(' ')
+            registrant.last_name = registrant.last_name.strip(' ')
+            registrant.email = registrant.email.strip(' ')
+            
             contact_requirements = (registrant.first_name,
                                     registrant.last_name,
                                     registrant.email)
