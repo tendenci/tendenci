@@ -102,7 +102,8 @@ from tendenci.addons.events.forms import (
     ReassignTypeForm,
     EventRegistrantSearchForm,
     MemberRegistrationForm,
-    ApplyRecurringChangesForm)
+    ApplyRecurringChangesForm,
+    EventSearchForm)
 from tendenci.addons.events.utils import (
     email_registrants,
     render_event_email,
@@ -319,36 +320,45 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     if redirect:
         return HttpResponseRedirect(reverse('events'))
 
-    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    event_type = request.GET.get('event_type', None)
-    start_dt = request.GET.get('start_dt', None)
     with_registration = request.GET.get('registration', None)
-    try:
-        start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
-    except:
-        start_dt = datetime.now()
+    # Handle legacy tag links
+    if query and "tag:" in query:
+        return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('event.search'), query.replace('tag:', '')))
 
     filters = get_query_filters(request.user, 'events.view_event')
     events = Event.objects.filter(filters).distinct()
     if request.user.is_authenticated():
         events = events.select_related()
 
-    if query:
-        events = events.filter(Q(title__icontains=query)|
-                               Q(description__icontains=query)|
-                               Q(tags__icontains=query))
+    start_dt = datetime.now()
+    event_type = ''
+    form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
+                           is_superuser=request.user.is_superuser)
+    if form.is_valid():
+        event_type = form.cleaned_data.get('event_type', None)
+        start_dt = form.cleaned_data.get('start_dt', None)
+        cat = form.cleaned_data.get('search_category', None)
+        try:
+            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+        except:
+            start_dt = datetime.now()
+
+        if cat == 'priority':
+            events = events.filter(**{cat : True })
+        elif query and cat:
+            events = events.filter(**{cat : query})
+
+        if event_type:
+            events = events.filter(type__slug=event_type)
+
     if past:
         filter_op = 'lt'
     else:
         filter_op = 'gte'
-    if event_type:
-        date_filter = {'type__slug': event_type,
-                       'end_dt__%s' %filter_op: start_dt}
-        events = events.filter(**date_filter)
-    else:
-        date_filter = {'start_dt__%s' %filter_op: start_dt}
-        events = events.filter(**date_filter)
+
+    date_filter = {'start_dt__%s' %filter_op: start_dt}
+    events = events.filter(**date_filter)
 
     if with_registration:
         events = events.filter(registration_configuration__enabled=True)
@@ -358,13 +368,11 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     else:
         events = events.order_by('start_dt', '-priority')
 
-    types = Type.objects.all().order_by('name')
-
     EventLog.objects.log()
 
     return render_to_response(template_name, {
         'events': events,
-        'types': types,
+        'form': form,
         'now': datetime.now(),
         'past': past,
         'event_type': event_type,

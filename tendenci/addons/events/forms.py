@@ -59,6 +59,76 @@ EMAIL_AVAILABLE_TOKENS = ['event_title',
                           ]
 
 
+SEARCH_CATEGORIES_ADMIN = (
+    ('title__icontains', 'Event Title'),
+    ('id', 'Event ID'),
+    ('description__icontains', 'Event Description'),
+    ('place__name__icontains', 'Event Location - Name'),
+    ('place__address__icontains', 'Event Location - Address'),
+    ('place__city__icontains', 'Event Location - City'),
+    ('place__state__icontains', 'Event Location - State'),
+    ('tags__icontains', 'Tags'),
+
+    ('priority', 'Priority Events'),
+
+    ('creator__id', 'Creator Userid(#)'),
+    ('creator__username', 'Creator Username'),
+    ('owner__id', 'Owner Userid(#)'),
+    ('owner__username', 'Owner Username'),
+)
+
+SEARCH_CATEGORIES = (
+    ('title__icontains', 'Event Title'),
+    ('id', 'Event ID'),
+    ('description__icontains', 'Event Description'),
+    ('place__name__icontains', 'Event Location - Name'),
+    ('place__address__icontains', 'Event Location - Address'),
+    ('place__city__icontains', 'Event Location - City'),
+    ('place__state__icontains', 'Event Location - State'),
+    ('tags__icontains', 'Tags'),
+
+    ('priority', 'Priority Events'),
+)
+
+
+class EventSearchForm(forms.Form):
+    start_dt = forms.CharField(label=_('Start Date/Time'), required=False,
+                               widget=forms.TextInput(attrs={'class': 'datepicker'}))
+    event_type = forms.ChoiceField(required=False, choices=[])
+    registration = forms.BooleanField(required=False)
+    search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    q = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        is_superuser = kwargs.pop('is_superuser', None)
+        super(EventSearchForm, self).__init__(*args, **kwargs)
+
+        if not is_superuser:
+            self.fields['search_category'].choices = SEARCH_CATEGORIES
+
+        type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
+        self.fields['event_type'].choices = [('','All')] + list(type_choices)
+
+        self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        q = self.cleaned_data.get('q', None)
+        cat = self.cleaned_data.get('search_category', None)
+
+        if cat is None or cat == "" :
+            if not (q is None or q == ""):
+                self._errors['search_category'] =  ErrorList(['Select a category'])
+
+        if cat in ('id', 'owner__id', 'creator__id') :
+            try:
+                x = int(q)
+            except ValueError:
+                self._errors['q'] = ErrorList(['IDs must be an integer'])
+
+        return cleaned_data
+
+
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
         choices=(('draft', 'Draft'), ('active', 'Active'), ('inactive', 'Inactive')))

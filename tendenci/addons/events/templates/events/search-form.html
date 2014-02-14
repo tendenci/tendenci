@@ -6,7 +6,7 @@
                 <label for="start_dt">Start Date</label>
             </div>
             <div class="field">
-                <input style="width: 70px;" type="text" class="datepicker" name="start_dt" value="{{ start_dt|date:"Y-m-d" }}" />
+                {{ form.start_dt }}
             </div>
      </div>
 </div>
@@ -17,30 +17,24 @@
                 <label for="event_type">Event Types</label>
             </div>
             <div class="field">
-                <select name="event_type">
-                    <option value="">All</option>
-                    {% for type in types %}
-                    <option value="{{ type.slug }}" {% if event_type == type.slug %}selected="selected"{% endif %}>{{ type.name }}</option>
-                    {% endfor %}
-                </select>
+                {{ form.event_type }}
             </div>
      </div>
 </div>
-
 <div class="form-field clearfix">
     <div class="id_registration">
-            <div class="label">
-                <label for="registration">Registration?</label>
-            </div>
-            <div class="field">
-                <input type="checkbox" {% if with_registration %}checked="yes"{% endif %} name="registration"/>
-            </div>
-     </div>
+        <div class="label">
+            <label for="registration">Registration?</label>
+        </div>
+        <div class="field">
+            {{ form.registration }}
+        </div>
+    </div>
 </div>
 <div class="clear"></div>
 
-{% if SITE_GLOBAL_SEARCHINDEX %}
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-{% endif %}
+<div>{{ form.q.errors }}</div>
+{{ form.search_category }}
+{{ form.q }}
 <input class="btn" type="submit" value="Search" />
 </form>

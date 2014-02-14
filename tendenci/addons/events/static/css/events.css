@@ -81,11 +81,20 @@
 }
 
 .t form.search-form input[type="text"] {
-	width: 60%;
+	width: 50%;
 	margin-bottom: 10px;
 	padding: 5px;	
 }
-
+.t form.search-form input[type="text"].datepicker {
+    width: 70px;
+}
+.t form.search-form select {
+	padding: 5px;
+}
+.t form.search-form ul.errorlist {
+    margin-left: 20px;
+    color: red;
+}
 .t form.search-form input[type="submit"] {
 	padding: 5px;	
 	cursor: pointer;

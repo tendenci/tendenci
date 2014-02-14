@@ -70,6 +70,15 @@
             console.log('this', this);
             $(this).datepicker({ dateFormat: 'yy-mm-dd' });
        });
+        $('#id_search_category').change(function(){
+            var category = $('#id_search_category').val();
+            if (category==="priority" ) {
+                $('#id_q').attr('disabled', 'disabled');
+                $('#id_q').val('');
+            } else {
+                $('#id_q').removeAttr('disabled');
+            }
+        });
 		// Dialog			
 		$('#event_export_dialog').dialog({
 			autoOpen: false,
