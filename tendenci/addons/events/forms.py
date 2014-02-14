@@ -719,7 +719,7 @@ class TypeForm(forms.ModelForm):
         colorsets = TypeColorSet.objects.all()
 
         color_set_choices = [(color_set.pk,
-            '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
+            '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s/" />'
             % color_set.bg_color) for color_set in colorsets]
 
         self.fields['color_set'] = TypeChoiceField(
