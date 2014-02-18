@@ -19,7 +19,7 @@ from tendenci.addons.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
-from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.core.files.utils import get_max_file_upload_size
 
 ALLOWED_LOGO_EXT = (
@@ -125,6 +125,7 @@ class DirectoryForm(TendenciBaseForm):
 
     email = EmailVerificationField(label=_("Email"), required=False)
     email2 = EmailVerificationField(label=_("Email 2"), required=False)
+    country = CountrySelectField(label=_("Country"), required=False)
     
     pricing = forms.ModelChoiceField(queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'),
                     **request_duration_defaults)

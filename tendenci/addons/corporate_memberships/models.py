@@ -41,7 +41,7 @@ from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.core.payments.models import PaymentMethod, Payment
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.models import Profile
-from tendenci.core.base.fields import DictField
+from tendenci.core.base.fields import DictField, CountrySelectField
 
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification, day_validate, fieldify, get_salesforce_access
@@ -1356,6 +1356,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                     ("MultipleChoiceField", _("Multi select (Drop Down)")),
                     ("MultipleChoiceField/django.forms.CheckboxSelectMultiple",
                         _("Multi select (Checkboxes)")),
+                    ("CountrySelectField", _("Countries Drop Down")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
                     ("DateField/django.forms.extras.SelectDateWidget",
@@ -1431,7 +1432,10 @@ class CorpMembershipAppField(OrderingBaseModel):
                 field_class, field_widget = self.field_type, None
             if field_class == 'TextField':
                 field_class = 'CharField'
-            field_class = getattr(forms, field_class)
+            if field_class == 'CountrySelectField':
+                field_class = CountrySelectField
+            else:
+                field_class = getattr(forms, field_class)
             field_args = {"label": self.label,
                           "required": self.required,
                           'help_text': self.help_text}

@@ -7,10 +7,9 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
-from django_countries.countries import COUNTRIES
 
 from tendenci.core.base.fields import SplitDateTimeField
-from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
@@ -117,7 +116,7 @@ class ProfileForm(TendenciBaseForm):
     zipcode = forms.CharField(label=_("Zipcode"), max_length=50, required=False,
                               error_messages={'required': 'Zipcode is a required field.'},
                                widget=forms.TextInput(attrs={'size':'10'}))
-    country = forms.ChoiceField(label=_("Country"), required=False, choices=[])
+    country = CountrySelectField(label=_("Country"), required=False)
     mailing_name = forms.CharField(label=_("Mailing Name"), max_length=120, required=False,
                                    error_messages={'required': 'Mailing name is a required field.'},
                                widget=forms.TextInput(attrs={'size':'30'}))
@@ -245,15 +244,6 @@ class ProfileForm(TendenciBaseForm):
 
         if not self.user_current.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-
-        exclude_list = ['GB', 'US', 'CA']
-        countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
-        initial_choices = ((_('United States'), _('United States')),
-                           (_('Canada'), _('Canada')),
-                           (_('United Kingdom'), _('United Kingdom')),
-                           ('','-----------'))
-        self.fields['country'].choices = initial_choices + tuple(countries)
-        self.fields['country'].initial = 'United States'
 
         # we make first_name, last_name, email, username and password as required field regardless
         # the rest of fields will be decided by the setting - UsersRequiredFields

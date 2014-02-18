@@ -31,7 +31,7 @@ from form_utils.forms import BetterModelForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
+from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField
 from tendenci.core.base.widgets import PriceWidget
 from tendenci.core.emails.models import Email
 from tendenci.core.files.utils import get_max_file_upload_size
@@ -819,7 +819,7 @@ class PlaceForm(forms.ModelForm):
         widget=TinyMCE(attrs={'style': 'width:100%'},
         mce_attrs={'storme_app_label': Place._meta.app_label,
         'storme_model': Place._meta.module_name.lower()}))
-
+    country = CountrySelectField(label=_('Country'), required=False)
     label = 'Location Information'
 
     class Meta:

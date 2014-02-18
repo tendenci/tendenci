@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.utils import simplejson
 from django.core import exceptions
+from django_countries.countries import COUNTRIES
 
 from tendenci.core.base import forms
 from tendenci.core.base.widgets import SplitDateTimeWidget, EmailVerificationWidget
@@ -135,3 +136,17 @@ class EmailVerificationField(fields.MultiValueField):
             email_data = "%s" % (data_list[0])
             return email_data
         return ''
+
+
+class CountrySelectField(fields.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        super(CountrySelectField, self).__init__(*args, **kwargs)
+
+        exclude_list = ['GB', 'US', 'CA']
+        countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
+        initial_choices = ((_('United States'), _('United States')),
+                           (_('Canada'), _('Canada')),
+                           (_('United Kingdom'), _('United Kingdom')),
+                           ('','-----------'))
+        self.choices = initial_choices + tuple(countries)
+        self.initial = 'United States'
