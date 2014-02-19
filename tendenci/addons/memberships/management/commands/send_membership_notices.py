@@ -27,7 +27,7 @@ class Command(BaseCommand):
                                                         NoticeLog,
                                                         NoticeDefaultLogRecord)
         from tendenci.core.base.utils import fieldify
-        from tendenci.core.emails.models import Email
+        from tendenci.apps.notifications import models as notification
         from tendenci.core.site_settings.utils import get_setting
 
         site_display_name = get_setting('site', 'global', 'sitedisplayname')
@@ -44,10 +44,10 @@ class Command(BaseCommand):
                             </font>
                             """
 
-        email = Email()
-        email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
-        email.sender_display = site_display_name
-        email.reply_to = site_contact_email
+        email_context = {
+            'sender':get_setting('site', 'global', 'siteemailnoreplyaddress'),
+            'sender_display':site_display_name,
+            'reply_to':site_contact_email}
 
         now = datetime.now()
         nowstr = time.strftime("%d-%b-%y %I:%M %p", now.timetuple())
@@ -55,8 +55,8 @@ class Command(BaseCommand):
         def email_admins_recap(notices, total_sent):
             """Send admins recap after the notices were processed.
             """
-            email.recipient = get_admin_emails()
-            if email.recipient:
+            recap_recipient = get_admin_emails()
+            if recap_recipient:
                 template_name = "memberships/notices/email_recap.html"
                 try:
                     recap_email_content = render_to_string(
@@ -67,32 +67,37 @@ class Command(BaseCommand):
                               'site_display_name': site_display_name,
                               'site_contact_name': site_contact_name,
                               'site_contact_email': site_contact_email})
-                    email.body = recap_email_content
-                    email.content_type = "html"
-                    email.subject = '%s Membership Notices Distributed' % (
+                    recap_subject = '%s Membership Notices Distributed' % (
                                                     site_display_name)
+                    email_context.update({
+                        'subject':recap_subject,
+                        'content': recap_email_content,
+                        'content_type':"html"})
 
-                    email.send()
+                    notification.send_emails(recap_recipient, 'membership_notice_email',
+                                             email_context)
                 except TemplateDoesNotExist:
                     pass
 
         def email_script_errors(err_msg):
             """Send error message to us if any.
             """
-            email.recipient = get_script_support_emails()
-            if email.recipient:
-                email.body = '%s \n\nTime Submitted: %s\n' % (err_msg, nowstr)
-                email.content_type = "text"
-                email.subject = 'Error Processing Membership Notices on %s' % (
-                                                            site_url)
+            script_recipient = get_script_support_emails()
+            if script_recipient:
+                email_context.update({
+                    'subject':'Error Processing Membership Notices on %s' % (
+                                                            site_url),
+                    'content':'%s \n\nTime Submitted: %s\n' % (err_msg, nowstr),
+                    'content_type':"text"})
 
-                email.send()
+                notification.send_emails(script_recipient, 'membership_notice_email',
+                                         email_context)
 
         def get_script_support_emails():
             admins = getattr(settings, 'ADMINS', None)
             if admins:
                 recipients_list = [admin[1] for admin in admins]
-                return ','.join(recipients_list)
+                return recipients_list
 
             return None
 
@@ -105,9 +110,6 @@ class Command(BaseCommand):
                 admin_emails = (get_setting('site', 'global',
                                             'admincontactemail'
                                             ).strip()).split(',')
-
-            if admin_emails:
-                admin_emails = ','.join(admin_emails)
             return admin_emails
 
         def process_notice(notice):
@@ -167,7 +169,7 @@ class Command(BaseCommand):
             memberships_count = memberships.count()
 
             if memberships_count > 0:
-                email.content_type = notice.content_type
+                email_context.update({'content_type':notice.content_type})
 
                 # password
                 passwd_str = """
@@ -272,23 +274,26 @@ class Command(BaseCommand):
             template = Template(body)
             body = template.render(context)
 
-            email.recipient = user.email
+            email_recipient = user.email
             subject = notice.subject.replace('(name)',
                                         user.get_full_name())
             template = Template(subject)
             subject = template.render(context)
 
-            email.subject = subject
-            email.body = body
+            email_context.update({
+                'subject':subject,
+                'content':body})
             if notice.sender:
-                email.sender = notice.sender
-                email.reply_to = notice.sender
+                email_context.update({
+                    'sender':notice.sender,
+                    'reply_to':notice.sender})
             if notice.sender_display:
-                email.sender_display = notice.sender_display
+                email_context.update({'sender_display':notice.sender_display})
 
-            email.send()
+            notification.send_emails([email_recipient], 'membership_notice_email',
+                                     email_context)
             if verbosity > 1:
-                print 'To ', email.recipient, email.subject
+                print 'To ', email_recipient, subject
 
         def get_footer():
             return """
