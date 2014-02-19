@@ -463,4 +463,34 @@ div.id_payment_method input{
 	border-bottom: 1px dashed #ccc;
 }
 
+/* export page */
+#directory-export .alert {
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 20px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    background-color: #fcf8e3;
+    border: 1px solid #fbeed5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+#directory-export .alert {
+    color: #c09853;
+}
+#directory-export ul li {
+    list-style: none;
+}
+#directory-export .display-hide{
+    display: none;
+}
+#directory-export input[type="submit"] {
+    padding: 4px 12px;
+}
+#directory-export select {
+    width: 220px;
+    border: 1px solid #CCC;
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 4px 6px;
+}
 

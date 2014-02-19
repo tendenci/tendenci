@@ -1,10 +1,22 @@
 # settings - directoriespaymenttypes, directoriesrequirespayment
-from datetime import datetime
+from datetime import datetime, date, time
 from cStringIO import StringIO
 from PIL import Image
+import time as ttime
+import csv
+
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from tendenci.addons.directories.models import DirectoryPricing
+from django.core.files.storage import default_storage
+from django.core.urlresolvers import reverse
+from django.db.models.fields import AutoField
+from django.template.loader import render_to_string
+from django.utils.encoding import smart_str
+
+from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
+from tendenci.core.base.utils import UnicodeWriter
+from tendenci.core.emails.models import Email
 from tendenci.core.payments.models import Payment
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.libs.storage import get_default_storage
@@ -154,3 +166,123 @@ def is_free_listing(user, pricing_id, list_type):
     if pricing:
         return pricing.get_price_for_user(user, list_type=list_type) <= 0
     return False
+
+
+def process_export(export_fields='all_fields', export_status_detail='',
+                   identifier=u'', user_id=0):
+    from tendenci.core.perms.models import TendenciBaseModel
+
+    if export_fields == 'main_fields':
+        field_list = [
+            'headline',
+            'slug',
+            'summary',
+            'body',
+            'source',
+            'first_name',
+            'last_name',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zip_code',
+            'country',
+            'phone',
+            'phone2',
+            'fax',
+            'email',
+            'email2',
+            'website',
+            'list_type',
+            'requested_duration',
+            'activation_dt',
+            'expiration_dt',
+            'tags',
+            'enclosure_url',
+            'enclosure_type',
+            'enclosure_length',
+            'status',
+            'status_detail']
+    else:
+        # base ------------
+        base_field_list = [
+            smart_str(field.name) for field in TendenciBaseModel._meta.fields
+            if not field.__class__ == AutoField]
+
+        field_list = [
+            smart_str(field.name) for field in Directory._meta.fields
+            if not field.__class__ == AutoField]
+        field_list = [
+            name for name in field_list
+            if not name in base_field_list]
+        field_list.remove('guid')
+        # append base fields at the end
+        field_list = field_list + base_field_list
+
+    identifier = identifier or int(ttime.time())
+    file_name_temp = 'export/directories/%s_temp.csv' % identifier
+
+    with default_storage.open(file_name_temp, 'wb') as csvfile:
+        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
+        csv_writer.writerow(field_list)
+
+        directories = Directory.objects.all()
+        if export_status_detail:
+            directories = directories.filter(status_detail__icontains=export_status_detail)
+        for directory in directories:
+            items_list = []
+            for field_name in field_list:
+                item = getattr(directory, field_name)
+                if item is None:
+                    item = ''
+                if item:
+                    if isinstance(item, datetime):
+                        item = item.strftime('%Y-%m-%d %H:%M:%S')
+                    elif isinstance(item, date):
+                        item = item.strftime('%Y-%m-%d')
+                    elif isinstance(item, time):
+                        item = item.strftime('%H:%M:%S')
+                    elif isinstance(item, basestring):
+                        item = item.encode("utf-8")
+                    elif field_name == 'invoice':
+                        # display total vs balance
+                        item = 'Total: %d / Balance: %d' % (item.total, item.balance)
+                item = smart_str(item).decode('utf-8')
+                items_list.append(item)
+            csv_writer.writerow(items_list)
+
+    # rename the file name
+    file_name = 'export/directories/%s.csv' % identifier
+    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+
+    # delete the temp file
+    default_storage.delete(file_name_temp)
+
+    # notify user that export is ready to download
+    [user] = User.objects.filter(pk=user_id)[:1] or [None]
+    if user and user.email:
+        download_url = reverse('directory.export_download', args=[identifier])
+
+        site_url = get_setting('site', 'global', 'siteurl')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        parms = {
+            'download_url': download_url,
+            'user': user,
+            'site_url': site_url,
+            'site_display_name': site_display_name,
+            'export_status_detail': export_status_detail,
+            'export_fields': export_fields}
+
+        subject = render_to_string(
+            'directories/notices/export_ready_subject.html', parms)
+        subject = subject.strip('\n').strip('\r')
+
+        body = render_to_string(
+            'directories/notices/export_ready_body.html', parms)
+
+        email = Email(
+            recipient=user.email,
+            subject=subject,
+            body=body)
+        email.send()
+

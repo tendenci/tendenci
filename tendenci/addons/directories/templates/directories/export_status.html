@@ -1,0 +1,36 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Export Directories - Status" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% directory_nav request.user %}
+    <h1>{% trans "Directories Export - Status" %}</h1>
+
+    <div id="directory-export">
+
+        <div{% if not download_ready %} class="display-hide"{% endif %}>
+            <p>The export file is ready, click the download link below to download.</p>
+            <div>
+                <a href="{% url directory.export_download identifier %}">Download Now</a>  
+            </div>
+        </div>
+
+    </div>
+
+    {% if not download_ready %}
+    <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>
+    <p>In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!</p>
+   {% endif %}
+</div>
+{% endblock %}
+

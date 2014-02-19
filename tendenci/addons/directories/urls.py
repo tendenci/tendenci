@@ -12,7 +12,6 @@ if not urlpath:
 urlpatterns = patterns('tendenci.addons.directories.views',
     url(r'^%s/$' % urlpath, 'search', name="directories"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="directory.search"),
-    url(r'^%s/export/$' % urlpath, 'export', name="directory.export"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="directory.print_view"),
     url(r'^%s/add/$' % urlpath, 'add', name="directory.add"),
     url(r'^%s/query_price/$' % urlpath, 'query_price', name="directory.query_price"),
@@ -30,5 +29,15 @@ urlpatterns = patterns('tendenci.addons.directories.views',
     url(r'^%s/pending/$' % urlpath, 'pending', name="directory.pending"),
     url(r'^%s/approve/(?P<id>\d+)/$' % urlpath, 'approve', name="directory.approve"),
     url(r'^%s/thank-you/$' % urlpath, 'thank_you', name="directory.thank_you"),
+
+    # export directory
+    url(r"^%s/export/$" % urlpath, "directory_export", name="directory.export"),
+    url(r"^%s/export/status/(?P<identifier>\d+)/$" % urlpath,
+        "directory_export_status",
+        name="directory.export_status"),
+    url(r"^%s/export/download/(?P<identifier>\d+)/$" % urlpath,
+        "directory_export_download",
+        name="directory.export_download"),
+
     url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'details', name="directory"),
 )

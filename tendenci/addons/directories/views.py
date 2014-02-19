@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta
 from PIL import Image
+import subprocess, time
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
@@ -14,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.base.decorators import password_required
 from tendenci.core.base.http import Http403
 from tendenci.core.base.views import file_display
 from tendenci.core.categories.models import Category
@@ -24,10 +28,10 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.directories.models import Directory, DirectoryPricing
-from tendenci.addons.directories.forms import DirectoryForm, DirectoryPricingForm, DirectoryRenewForm
+from tendenci.addons.directories.forms import (DirectoryForm, DirectoryPricingForm,
+                                               DirectoryRenewForm, DirectoryExportForm)
 from tendenci.addons.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
@@ -502,64 +506,6 @@ def thank_you(request, template_name="directories/thank-you.html"):
 
 
 @is_enabled('directories')
-@login_required
-def export(request, template_name="directories/export.html"):
-    """Export Directories"""
-
-    if not request.user.is_superuser:
-        raise Http403
-
-    if request.method == 'POST':
-        # initilize initial values
-        file_name = "directories.csv"
-        fields = [
-            'guid',
-            'slug',
-            'timezone',
-            'headline',
-            'summary',
-            'body',
-            'source',
-            'logo',
-            'first_name',
-            'last_name',
-            'address',
-            'address2',
-            'city',
-            'state',
-            'zip_code',
-            'country',
-            'phone',
-            'phone2',
-            'fax',
-            'email',
-            'email2',
-            'website',
-            'list_type',
-            'requested_duration',
-            'pricing',
-            'activation_dt',
-            'expiration_dt',
-            'invoice',
-            'payment_method',
-            'syndicate',
-            'design_notes',
-            'admin_notes',
-            'tags',
-            'enclosure_url',
-            'enclosure_type',
-            'enclosure_length',
-            'entity',
-        ]
-        export_id = run_export_task('directories', 'directory', fields)
-        EventLog.objects.log()
-        return redirect('export.status', export_id)
-        
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
-
-
-@is_enabled('directories')
 def renew(request, id, form_class=DirectoryRenewForm, template_name="directories/renew.html"):
     can_add_active = has_perm(request.user,'directories.add_directory')
     require_approval = get_setting('module', 'directories', 'renewalrequiresapproval')
@@ -629,3 +575,78 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
     
     return render_to_response(template_name, {'directory':directory, 'form':form}, 
         context_instance=RequestContext(request))
+
+
+@is_enabled('directories')
+@login_required
+@password_required
+def directory_export(request, template_name="directories/export.html"):
+    """Export Directories"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    form = DirectoryExportForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        export_fields = form.cleaned_data['export_fields']
+        export_status_detail = form.cleaned_data['export_status_detail']
+        identifier = int(time.time())
+        temp_file_path = 'export/directories/%s_temp.csv' % identifier
+        default_storage.save(temp_file_path, ContentFile(''))
+
+        # start the process
+        subprocess.Popen(["python", "manage.py",
+                          "directory_export_process",
+                          '--export_fields=%s' % export_fields,
+                          '--export_status_detail=%s' % export_status_detail,
+                          '--identifier=%s' % identifier,
+                          '--user=%s' % request.user.id])
+        # log an event
+        EventLog.objects.log()
+        return HttpResponseRedirect(reverse('directory.export_status', args=[identifier]))
+
+    context = {'form': form}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@is_enabled('directories')
+@login_required
+@password_required
+def directory_export_status(request, identifier, template_name="directories/export_status.html"):
+    """Display export status"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    export_path = 'export/directories/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/directories/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@is_enabled('directories')
+@login_required
+@password_required
+def directory_export_download(request, identifier):
+    """Download the directories export."""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    file_name = '%s.csv' % identifier
+    file_path = 'export/directories/%s' % file_name
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=directory_export_%s' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response
+
