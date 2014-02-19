@@ -58,7 +58,9 @@
             {% if layout == "list" %}{{ file.update_dt|date:"D d M Y P" }} 
             {% else %}{{ file.update_dt|date:"m/d/y P" }}<br>
             {% endif %}
+            {% if file.owner %}
             {% trans "by" %} {{ file.owner }}
+            {% endif %}
             </a>
         </div>
     </div>
