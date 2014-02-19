@@ -21,16 +21,16 @@
             </div>
      </div>
 </div>
+{% if form.registration %}
 <div class="form-field clearfix">
     <div class="id_registration">
-        <div class="label">
-            <label for="registration">Registration?</label>
-        </div>
+        <div class="label"><br/></div>
         <div class="field">
-            {{ form.registration }}
+            {{ form.registration }} <label for="id_registration">Events I&#39;m Registered</label>
         </div>
     </div>
 </div>
+{% endif %}
 <div class="clear"></div>
 
 <div>{{ form.q.errors }}</div>

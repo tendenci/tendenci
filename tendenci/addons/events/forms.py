@@ -100,10 +100,12 @@ class EventSearchForm(forms.Form):
     q = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
-        is_superuser = kwargs.pop('is_superuser', None)
+        user = kwargs.pop('user', None)
         super(EventSearchForm, self).__init__(*args, **kwargs)
 
-        if not is_superuser:
+        if user and not user.is_authenticated():
+            del self.fields['registration']
+        if user and not user.is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
 
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')

@@ -321,7 +321,6 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         return HttpResponseRedirect(reverse('events'))
 
     query = request.GET.get('q', None)
-    with_registration = request.GET.get('registration', None)
     # Handle legacy tag links
     if query and "tag:" in query:
         return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('event.search'), query.replace('tag:', '')))
@@ -333,9 +332,11 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
     start_dt = datetime.now()
     event_type = ''
+    with_registration = None
     form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
-                           is_superuser=request.user.is_superuser)
+                           user=request.user)
     if form.is_valid():
+        with_registration = form.cleaned_data.get('registration', None)
         event_type = form.cleaned_data.get('event_type', None)
         start_dt = form.cleaned_data.get('start_dt', None)
         cat = form.cleaned_data.get('search_category', None)
@@ -360,13 +361,15 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     date_filter = {'start_dt__%s' %filter_op: start_dt}
     events = events.filter(**date_filter)
 
-    if with_registration:
-        events = events.filter(registration_configuration__enabled=True)
-
     if past:
         events = events.order_by('-start_dt', '-priority')
     else:
         events = events.order_by('start_dt', '-priority')
+
+    if with_registration:
+        myevents = Event.objects.filter(registration__registrant__email=request.user.email,
+                                        registration__registrant__cancel_dt=None)
+        events = [event for event in events if event in myevents]
 
     EventLog.objects.log()
 
@@ -4017,11 +4020,12 @@ def create_ics(request, template_name="events/ics.html"):
 @login_required
 def myevents(request, template_name='events/myevents.html'):
     """ Logged-in user's registered events"""
+    events = Event.objects.filter(registration__registrant__email=request.user.email,
+                                  registration__registrant__cancel_dt=None).distinct()
     if 'all' not in request.GET:
-        events = Event.objects.filter(registration__registrant__email=request.user.email).exclude(end_dt__lt=datetime.now())
+        events = events.exclude(end_dt__lt=datetime.now())
         show = 'True'
     else:
-        events = Event.objects.filter(registration__registrant__email=request.user.email)
         show = None
 
     events = events.order_by('-start_dt')
