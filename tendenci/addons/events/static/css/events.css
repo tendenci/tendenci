@@ -595,6 +595,7 @@ ul.errorlist {;
 	border-left: none;
 
 	float: left;
+	overflow: hidden;
 }
 .month-view div.today {
 	background-color: #FFD;
@@ -1013,12 +1014,12 @@ table.pricing-list .price-disabled label {
     z-index: 0;
 }
 
-/* Mobile phones */
-@media (max-width: 480px){
+
+@media (max-width: 768px){
 	.month-view .calendar-wrap .month-wrap,
 	.month-view .calendar-wrap .side-bar {
 		padding-right: 0px;
-		width: 100%;
+		width: 98%;
 	}
 
 	.month-view .month-labels .weekday,
