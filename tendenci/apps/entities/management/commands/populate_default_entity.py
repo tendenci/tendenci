@@ -80,11 +80,16 @@ class Command(BaseCommand):
         # loop through all the tables and populate
         # the entity field only if it's null.
         models = get_models()
+        # exclude legacy tables
+        tables_excluded = ['corporate_memberships_corporatemembership',
+                           'corporate_memberships_corporatemembershiparchive']
         table_updated = []
         for model in models:
             if TendenciBaseModel in model.__bases__:
                 if hasattr(model, 'entity'):
                     table_name = model._meta.db_table
+                    if table_name in tables_excluded:
+                        continue
                     for row in model.objects.all():
                         if not row.entity:
                             row.entity = entity
