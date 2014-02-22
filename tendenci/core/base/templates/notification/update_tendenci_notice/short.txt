@@ -1,0 +1,1 @@
+Tendenci Update - {% if error_message %} FAILED {% else %} COMPLETED {% endif %}

@@ -26,6 +26,7 @@ from django.contrib import messages
 # local
 from tendenci import __version__ as version
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
+from tendenci.core.base.decorators import password_required
 from tendenci.core.base.forms import PasswordForm, AddonUploadForm
 from tendenci.core.base.models import UpdateTracker, ChecklistItem
 from tendenci.core.base.managers import SubProcessManager
@@ -424,11 +425,14 @@ def addon_upload_check(request, sid):
 
     return HttpResponse(finished)
 
+
 @superuser_required
+@password_required
 def update_tendenci(request, template_name="base/update.html"):
     if request.method == "POST":
-        process = SubProcessManager.set_process(["python", "manage.py", "update_tendenci"])
-        return redirect('update_tendenci.process')
+        process = SubProcessManager.set_process(["python", "manage.py", "update_tendenci",
+                                                 "--user=%s" % request.user.id])
+        return redirect('update_tendenci.confirmation')
 
     pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     latest_version = pypi.package_releases('tendenci')[0]
@@ -444,20 +448,7 @@ def update_tendenci(request, template_name="base/update.html"):
 
 
 @superuser_required
-def update_tendenci_process(request, template_name="base/update_process.html"):
-    tracker = UpdateTracker.get_or_create_instance()
-    if not tracker.is_updating:
-        messages.add_message(request, messages.SUCCESS, 'Update complete.')
-        return redirect('dashboard')
+@password_required
+def update_tendenci_confirmation(request, template_name="base/update_confirmation.html"):
+    return render_to_response(template_name, context_instance=RequestContext(request))
 
-    return render_to_response(
-        template_name,
-        context_instance=RequestContext(request))
-
-
-def update_tendenci_check(request):
-    if not request.is_ajax():
-        raise Http404
-
-    tracker = UpdateTracker.get_or_create_instance()
-    return HttpResponse(tracker.is_updating)

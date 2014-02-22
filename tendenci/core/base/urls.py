@@ -11,9 +11,8 @@ urlpatterns = patterns('tendenci.core.base.views',
 
     url(r'^checklist/$', 'checklist', name="completion_checklist"),
 
-    # url(r'^update-tendenci/$', 'update_tendenci', name="update_tendenci"),
-    # url(r'^update-tendenci/status/$', 'update_tendenci_process', name="update_tendenci.process"),
-    # url(r'^update-tendenci/check/$', 'update_tendenci_check', name="update_tendenci.check"),
+    url(r'^update-tendenci/$', 'update_tendenci', name="update_tendenci"),
+    url(r'^update-tendenci/confirmation/$', 'update_tendenci_confirmation', name="update_tendenci.confirmation"),
 
     url(r'addon/upload/$', 'addon_upload', name="addon.upload"),
     url(r'addon/upload/preview/(?P<sid>\d+)$', 'addon_upload_preview', name="addon.upload.preview"),
