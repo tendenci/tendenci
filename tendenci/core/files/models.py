@@ -171,7 +171,7 @@ class File(TendenciBaseModel):
         # roll back the transaction to fix the error for postgresql
         #"current transaction is aborted, commands ignored until 
         # end of transaction block"
-        connection._rollback()
+        #connection._rollback()    # comment it out because this line of code leads to IntegrityError for files that inherit File's model. 
 
         # send notification to administrator(s) and module recipient(s)
         recipients = get_notice_recipients('module', 'files', 'filerecipients')
