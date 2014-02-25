@@ -8,6 +8,7 @@ from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.utils import member_choices
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.apps.entities.models import Entity
+from tendenci.core.site_settings.utils import get_setting
 
 
 SEARCH_CATEGORIES = (
@@ -233,8 +234,7 @@ class MessageForm(forms.Form):
     self.fields['to_addr'].initial = 'All %s member%s' % (num_members, pluralize(num_members))
     self.fields['to_addr'].widget.attrs['readonly'] = True
 
-    self.fields['from_addr'].initial = '%s <%s>' % (
-      request.user.profile.get_name(), request.user.email)
+    self.fields['from_addr'].initial = get_setting('site', 'global', 'siteemailnoreplyaddress')
     self.fields['from_addr'].widget.attrs['readonly'] = True
 
 

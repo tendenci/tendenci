@@ -157,6 +157,9 @@ def message(request, group_slug, template_name='user_groups/message.html'):
                 'Successfully sent email to all %s members in this group' % num_members)
 
             EventLog.objects.log(instance=email)
+
+        return redirect('group.detail', group_slug=group_slug)
+
     else:
         print 'form errors', form.errors.items()
 
