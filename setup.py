@@ -147,7 +147,6 @@ setup(
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     dependency_links=[
-        "http://a.pypi.python.org/",
         "http://pypi.crate.io/",
     ],
     install_requires=[
