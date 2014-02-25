@@ -56,8 +56,7 @@
         <p class="tooltipTitle">{% trans 'This is the Footer' %}</p>
             <p>{% blocktrans %}We've populated this area with some info you've already provided. You can change your address in{% endblocktrans %}
             <a href="{% url settings.index 'site' 'global' %}" target="_blank">Site Settings</a>
-            {% blocktrans %}under "Quick Links" in the blue admin bar above. The footer also contains a nav. You can edit this nav the same way you edit the main nav. Just hover over it and click on "Edit Nav". You can edit all your site's navs from the{% endblocktrans %}
-            <a href="{% url navs.search %}" target="_blank">{{ MODULE_NAVS_LABEL }} {% trans 'module.' %}</a></p>
+            {% blocktrans %}under "Quick Links" in the blue admin bar above.{% endblocktrans %}
             <br>
             <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
             <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
@@ -65,7 +64,9 @@
 
       <div id="walkthrough-admin-bar" class="walkthrough-item" style="display:none;">
         <p class="tooltipTitle">{% trans 'The Admin Bar' %}</p>
-            <p>{% blocktrans %}You can access your site's backend from the blue admin bar. Under "Content," you'll find all the editable content modules. Under "People," you can add user and groups and assign permissions. "Reports" will show you how people are accessing your website. Under "Quick Links," you have access to the Site Settings as well as the{% endblocktrans %}
+            <p>{% blocktrans %}You can access your site's backend from the blue admin bar{% endblocktrans %}
+            <strong>{% trans 'above' %}</strong>.
+            {% blocktrans %}Under "Content," you'll find all the editable content modules. Under "People," you can add user and groups and assign permissions. "Reports" will show you how people are accessing your website. Under "Quick Links," you have access to the Site Settings as well as the{% endblocktrans %}
             <a href="{% url theme_editor.editor %}" target="_blank">{% trans 'Theme Editor' %}</a>,
             {% blocktrans %}where you can edit your site's html and css.{% endblocktrans %}</p>
             <br>
@@ -80,6 +81,7 @@
             {% blocktrans %}to answer your questions. Thanks again for choosing Tendenci and enjoy building your new website!{% endblocktrans %}</p>
             <br>
             <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="close-step" style="float:right;">{% trans 'Close' %}</a>
       </div>
 
     </div>
@@ -100,24 +102,31 @@
                        width: '400'
                    }        
                },
-                      {% for k,v in THEME_INFO.Walkthrough.items %}
-                        {% if k != '__name__' %}
-                         {
-                             wrapper: '#' + "{{ k.strip }}",
-                             margin: '10px 0 0 0',
-                             popup:
-                             {
-                                 content: '#walkthrough-' + "{{ k.strip }}",
-                                 type: 'tooltip',
-                                 position: "{{ v.strip }}",
-                                 offsetHorizontal: 0,
-                                 offsetVertical: 0,
-                                 width: '400'
-                             },
-                             accessable: true
-                         },
-                       {% endif %}
-                      {% endfor %}
+               {% for k,v in THEME_INFO.Walkthrough.items %}
+               {% if k != '__name__' %}
+               {
+                   wrapper: '#' + "{{ k.strip }}",
+                   margin: '10px 0 0 0',
+                   popup:
+                   {
+                       content: '#walkthrough-' + "{{ k.strip }}",
+                     {% if k.strip == 'admin-bar' %}
+                       type: 'nohighlight',
+                     {% else %}
+                       type: 'tooltip',
+                     {% endif %}
+                       position: "{{ v.strip }}",
+                       offsetHorizontal: 0,
+                       offsetVertical: 0,
+                       width: '400'
+                   },
+                   {% if k.strip == 'admin-bar' %}
+                   stayFocus: true,
+                   {% endif %}
+                   accessable: true
+               },
+               {% endif %}
+               {% endfor %}
                {
                    wrapper: '',
                    margin: '0',
@@ -152,6 +161,10 @@
             $.pagewalkthrough('next',e);
         });
 
+        $('.close-step').live('click', function(e){
+            $.pagewalkthrough('close');
+            window.location = "{% url completion_checklist %}";
+        });
     });
   </script>
 {% endif %}

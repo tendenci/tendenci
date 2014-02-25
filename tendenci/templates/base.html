@@ -77,6 +77,16 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/theme_color_admin.js"></script>
 {% endif %}
 
+{% if THEME_INFO.SSU.walkthrough %}
+<script type="text/javascript">
+    $('#walkthrough-quicklink').click(function(){
+        var d = new Date();
+        d.setDate(d.getDate() - 2);
+        document.cookie = "_walkthrough-walkthrough=; path=/; expires=" + d.toUTCString() + ";";
+    });
+</script>
+{% endif %}
+
 {% if request.user.is_superuser and request.path == '/' %}
     {% include 'theme_editor/walkthrough.html' %}
 {% endif %}

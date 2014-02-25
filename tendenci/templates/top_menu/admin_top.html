@@ -146,6 +146,9 @@
                         <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url admin:index %}">{% trans "Admin Backend" %}</a></li>
                         <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
+                        {% if THEME_INFO.SSU.walkthrough %}
+                        <li><a id="walkthrough-quicklink" href="/">{% trans "Homepage Walkthrough" %}</a></li>
+                        {% endif %}
                         {% if THEME_INFO.SSU.checklist %}
                         <li><a href="{% url completion_checklist %}">{% trans "Completion Status" %}</a></li>
                         {% endif %}

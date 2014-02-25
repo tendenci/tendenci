@@ -658,7 +658,7 @@
 
         $(opt.steps[_index].popup.content).clone().appendTo('#tooltipInner').show();
 
-        $jpwTooltip.append('<span class="' + opt.steps[_index].popup.position + '">&nbsp;</span>');
+        $jpwTooltip.append('<span class="nohighlight ' + opt.steps[_index].popup.position + '">&nbsp;</span>');
 
         switch (opt.steps[_index].popup.position) {
 

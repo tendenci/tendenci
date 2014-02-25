@@ -200,6 +200,15 @@
     z-index: 1000;
 }
 
+#jpWalkthrough #jpwTooltip .bottom.nohighlight {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+
 #jpWalkthrough #jpwTooltip .left{
     background: url("../images/arrow-right.png") no-repeat scroll 0 0 transparent;
     height: 56px;
@@ -218,6 +227,7 @@
     top: 25px;
     right: 25px;
     z-index: 10000;
+    display: none;
 }
 
 #jpwClose a{
@@ -268,6 +278,10 @@
     text-align: center;
     font-size: 16px;
     line-height: 20px;
+}
+
+#jpWalkthrough #jpwTooltip #tooltipInner p{
+    color: #fff;
 }
 
 #jpWalkthrough #jpwTooltip #tooltipInner a{
