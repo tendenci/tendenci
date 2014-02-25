@@ -24,6 +24,15 @@
     <div class="article-wrap">
 
         <h1>{{ article.headline }}</h1>
+        {% if article.google_profile %}
+        <a href="{{ article.google_profile }}?rel=author">
+            {% if article.first_name or article.last_name %}
+            By {{ article.first_name }} {{ article.last_name }}
+            {% else %}
+            View author's Google+ profile
+            {% endif %}
+        </a>
+        {% endif %}
 
         <div class="content">
             {{ article.body|safe }} 

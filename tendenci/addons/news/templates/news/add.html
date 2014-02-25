@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
@@ -38,6 +39,7 @@
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
 	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 	<script type="text/javascript">
 		var slugit = new Slugify({
@@ -54,6 +56,10 @@
 		  show24Hours: false,
 		  step: 15
 		});
+        $('.id_google_profile .help-text i').tipsy({
+            gravity: 'w', 
+            html: true 
+        });
 	</script>
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

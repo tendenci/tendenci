@@ -29,6 +29,7 @@ class News(TendenciBaseModel):
     source = models.CharField(max_length=300, blank=True)
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
+    google_profile = models.URLField(_('Add a link to your Google+ Profile'), blank=True)
     phone = models.CharField(max_length=50, blank=True)
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)

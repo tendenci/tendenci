@@ -4,6 +4,7 @@ from datetime import datetime
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 from django.template.defaultfilters import filesizeformat
 
 from tendenci.addons.news.models import News
@@ -28,6 +29,15 @@ ALLOWED_LOGO_EXT = (
     '.gif',
     '.png'
 )
+
+INSTRUCTIONS_HTML = '' + \
+    '<p>1. Add a reciprocal link back from your profile to the site(s) you just updated.</p>' + \
+    '<p>2. Edit the Contributor To section.</p>' + \
+    '<p>3. In the dialog that appears, click Add custom link, and then enter the website URL.</p>' + \
+    '<p>4. If you want, click the drop-down list to specify who can see the link.</p>' + \
+    '<p>5. Click Save.</p>'
+GOOGLE_PLUS_HELP_TEXT = 'Add this website as a place you Contribute to in your Profile - ' + \
+    '<i class="fa fa-question-circle" title="'+INSTRUCTIONS_HTML+'"></i>'
 
 
 class NewsForm(TendenciBaseForm):
@@ -61,6 +71,7 @@ class NewsForm(TendenciBaseForm):
         'timezone',
         'first_name',
         'last_name',
+        'google_profile',
         'phone',
         'fax',
         'email',
@@ -91,6 +102,7 @@ class NewsForm(TendenciBaseForm):
                       ('Contact', {
                       'fields': ['first_name',
                                  'last_name',
+                                 'google_profile',
                                  'phone',
                                  'fax',
                                  'email',
@@ -173,6 +185,7 @@ class NewsForm(TendenciBaseForm):
             groups_list = default_groups.values_list('pk', 'name')
 
         self.fields['group'].choices = groups_list
+        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
 
         # only show the remove photo checkbox if there is already a thumbnail
         if self.instance.thumbnail:

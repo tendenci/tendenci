@@ -2,6 +2,7 @@ from datetime import datetime, date
 
 from django import forms
 from django.forms.util import ErrorList
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.articles.models import Article
@@ -44,6 +45,16 @@ SEARCH_CATEGORIES = (
     ('body__icontains', 'Body'),
     ('tags__icontains', 'Tags'),
 )
+
+INSTRUCTIONS_HTML = '' + \
+    '<p>1. Add a reciprocal link back from your profile to the site(s) you just updated.</p>' + \
+    '<p>2. Edit the Contributor To section.</p>' + \
+    '<p>3. In the dialog that appears, click Add custom link, and then enter the website URL.</p>' + \
+    '<p>4. If you want, click the drop-down list to specify who can see the link.</p>' + \
+    '<p>5. Click Save.</p>'
+GOOGLE_PLUS_HELP_TEXT = 'Add this website as a place you Contribute to in your Profile - ' + \
+    '<i class="fa fa-question-circle" title="'+INSTRUCTIONS_HTML+'"></i>'
+
 
 class ArticleSearchForm(forms.Form):
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
@@ -109,6 +120,7 @@ class ArticleForm(TendenciBaseForm):
             'timezone',
             'first_name',
             'last_name',
+            'google_profile',
             'phone',
             'fax',
             'email',
@@ -139,6 +151,7 @@ class ArticleForm(TendenciBaseForm):
                       ('Contact', {
                       'fields': ['first_name',
                                  'last_name',
+                                 'google_profile',
                                  'phone',
                                  'fax',
                                  'email',
@@ -185,6 +198,7 @@ class ArticleForm(TendenciBaseForm):
             groups_list = default_groups.values_list('pk', 'name')
 
         self.fields['group'].choices = groups_list
+        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
 
     def clean_group(self):
         group_id = self.cleaned_data['group']
