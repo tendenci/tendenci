@@ -5,6 +5,7 @@ from south.v2 import DataMigration
 from django.db import models
 
 class Migration(DataMigration):
+    depends_on = (('notifications', '0001_initial'),)
 
     def forwards(self, orm):
         from tendenci.apps.notifications import models as notification
