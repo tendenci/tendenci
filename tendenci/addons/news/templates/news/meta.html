@@ -15,7 +15,7 @@
         {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %} 
         <div class="contact">
             {% if news.first_name or news.last_name %}
-                <div><strong>{% trans "Contact:" %}</strong> {{ news.first_name }} {{ news.last_name }}</div>
+                <div><strong>{% trans "Author:" %}</strong> {{ news.first_name }} {{ news.last_name }}</div>
             {% endif %}	
             {% if news.phone %}
                 <div><strong>{% trans "Phone:" %}</strong> {{ news.phone|phonenumber }}</div>	

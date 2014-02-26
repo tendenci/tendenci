@@ -10,7 +10,7 @@
         {% if article.first_name or article.last_name or article.phone or article.fax or article.email or article.website %} 
         <div class="contact">
             {% if article.first_name or article.last_name %}
-                <div><strong>{% trans "Contact:" %}</strong> {{ article.first_name }} {{ article.last_name }}</div>
+                <div><strong>{% trans "Author:" %}</strong> {{ article.first_name }} {{ article.last_name }}</div>
             {% endif %}	
             {% if article.phone %}
                 <div><strong>{% trans "Phone:" %}</strong> {{ article.phone|phonenumber }}</div>	

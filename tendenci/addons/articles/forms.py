@@ -148,7 +148,7 @@ class ArticleForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Contact', {
+                      ('Author', {
                       'fields': ['first_name',
                                  'last_name',
                                  'google_profile',
