@@ -146,9 +146,6 @@ setup(
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
-    dependency_links=[
-        "http://pypi.crate.io/",
-    ],
     install_requires=[
         "Django==1.4.9",
         "pisa",
