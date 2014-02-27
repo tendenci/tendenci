@@ -37,7 +37,7 @@ class Command(BaseCommand):
             return
 
         from tendenci.addons.corporate_memberships.models import (
-            CorpMembership,
+            CorpMembership, CorpMembershipApp,
             NoticeLog,
             NoticeLogRecord)
         from tendenci.apps.notifications import models as notification
@@ -205,6 +205,54 @@ class Command(BaseCommand):
             representatives = corp_profile.reps.filter(Q(is_dues_rep=True)|(Q(is_member_rep=True)))
             sent = 0
 
+            corp_app = CorpMembershipApp.objects.current_app()
+            authentication_info = render_to_string(
+                'notification/corp_memb_notice_email/auth_info.html',
+                {'corp_membership': membership,
+                 'corp_app': corp_app})
+            individuals_join_url = '%s%s' % (site_url,
+                                             reverse('membership_default.corp_pre_add',
+                                                     args=[membership.id]))
+            if membership.expiration_dt:
+                expire_dt = time.strftime("%d-%b-%y %I:%M %p",
+                                          membership.expiration_dt.timetuple())
+            else:
+                expire_dt = ''
+
+            if membership.payment_method:
+                payment_method = membership.payment_method.human_name
+            else:
+                payment_method = ''
+
+            if membership.renewal:
+                renewed_individuals_list = render_to_string(
+                    'notification/corp_memb_notice_email/renew_list.html',
+                    {'corp_membership': membership})
+                total_individuals_renewed = membership.indivmembershiprenewentry_set.count()
+            else:
+                renewed_individuals_list = ''
+                total_individuals_renewed = ''
+
+            if membership.invoice:
+                invoice_link = '%s%s' % (site_url,
+                                         membership.invoice.get_absolute_url())
+            else:
+                invoice_link = ''
+
+            global_context.update({
+                'name': corp_profile.name,
+                'email': corp_profile.email,
+                'expire_dt': expire_dt,
+                'payment_method': payment_method,
+                'renewed_individuals_list': renewed_individuals_list,
+                'total_individuals_renewed': total_individuals_renewed,
+                'view_link': "%s%s" % (site_url, membership.get_absolute_url()),
+                'renew_link': "%s%s" % (site_url, membership.get_renewal_url()),
+                'invoice_link': invoice_link,
+                'authentication_info': authentication_info,
+                'individuals_join_url': individuals_join_url,
+            })
+
             for recipient in representatives:
                 body = notice.email_content
                 context = membership.get_field_items()
@@ -213,23 +261,6 @@ class Command(BaseCommand):
 
                 context.update({
                     'rep_first_name': recipient.user.first_name,
-                })
-
-                if membership.expiration_dt:
-                    body = body.replace("[expirationdatetime]",
-                                        time.strftime(
-                                          "%d-%b-%y %I:%M %p",
-                                          membership.expiration_dt.timetuple()))
-                else:
-                    body = body.replace("[expirationdatetime]", '')
-
-                context.update({
-                    'corporatemembershiptypeid': str(membership.corporate_membership_type.id),
-                    'corporatemembershiptype': membership.corporate_membership_type.name,
-                    'view_link': "%s%s" % (site_url, membership.get_absolute_url()),
-                    'renew_link': "%s%s" % (site_url, membership.get_renewal_url()),
-                    'renewed_individuals_list': render_to_string(('notification/corp_memb_notice_email/renew_list.html'),
-                                                             {'corp_membership': membership, }),
                 })
 
                 body = fieldify(body)

@@ -179,10 +179,10 @@ class Command(BaseCommand):
                         reset your password.
                         """ % (site_url, reverse('auth_password_reset'))
 
-                global_context = {'sitedisplayname': site_display_name,
-                                  'sitecontactname': site_contact_name,
-                                  'sitecontactemail': site_contact_email,
-                                  'timesubmitted': nowstr,
+                global_context = {'site_display_name': site_display_name,
+                                  'site_contact_name': site_contact_name,
+                                  'site_contact_email': site_contact_email,
+                                  'time_submitted': nowstr,
                                   'password': passwd_str
                                   }
 
@@ -224,47 +224,29 @@ class Command(BaseCommand):
             context['membership'] = membership
             context.update(global_context)
 
-            # memberships page ------------
-            memberships_page = "%s%s" % \
-                (site_url, reverse('profile', args=[membership.user]))
-
-            body = body.replace("[membershiptypeid]",
-                                str(membership.membership_type.id))
-            body = body.replace("[membershiplink]",
-                                '%s' % memberships_page)
-
-            body = body.replace("[renewlink]", memberships_page)
-
-            if membership.expire_dt:
-                body = body.replace("[expirationdatetime]",
-                                    time.strftime(
-                                      "%d-%b-%y %I:%M %p",
-                                      membership.expire_dt.timetuple()))
-            else:
-                body = body.replace("[expirationdatetime]", '')
-
             # corporate member corp_replace_str
             if membership.corporate_membership_id:
-                body = body.replace("<!--[corporatemembernotice]-->",
-                                    corp_replace_str)
-            else:
-                body = body.replace("<!--[corporatemembernotice]-->", "")
+                context['corporate_membership_notice'] = corp_replace_str
 
-            context.update({'membershiptypeid':
-                                str(membership.membership_type.id),
-                            'membershiplink': memberships_page,
-                            'renewlink': memberships_page,
-                            'membernumber': membership.member_number,
-                            'membershiptype': membership.membership_type.name,
-                            })
             if membership.expire_dt:
-                context['expirationdatetime'] = time.strftime(
-                                            "%d-%b-%y %I:%M %p",
-                                            membership.expire_dt.timetuple())
+                context.update({
+                    'expire_dt': time.strftime(
+                    "%d-%b-%y %I:%M %p",
+                    membership.expire_dt.timetuple()),
+                })  
 
-            # corporate member corp_replace_str
-            if membership.corporate_membership_id:
-                context['corporatemembernotice'] = corp_replace_str
+            if membership.payment_method:
+                payment_method_name = membership.payment_method.human_name
+            else:
+                payment_method_name = ''
+
+            context.update({
+                'member_number': membership.member_number,
+                'payment_method': payment_method_name,
+                'referer_url': '%s%s?next=%s' % (site_url, reverse('auth_login'), membership.referer_url),
+                'membership_link': '%s%s' % (site_url, membership.get_absolute_url()),
+                'renew_link': '%s%s' % (site_url, membership.get_absolute_url())
+            })
 
             body = fieldify(body)
 
