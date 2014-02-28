@@ -111,7 +111,8 @@ class Command(BaseCommand):
             for event in events_list:
                 registrants = Registrant.objects.filter(
                                 reminder=True,
-                                registration__event=event
+                                registration__event=event,
+                                cancel_dt=None
                                 )
 
                 reg_conf = event.registration_configuration
