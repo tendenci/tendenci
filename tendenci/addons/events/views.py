@@ -6,6 +6,7 @@ import re
 import calendar
 import itertools
 import subprocess
+import time
 
 from datetime import datetime
 from datetime import date, timedelta
@@ -16,6 +17,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
@@ -30,6 +33,7 @@ from django.forms.models import modelformset_factory, \
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 
+from tendenci.core.base.decorators import password_required
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import is_enabled, superuser_required
@@ -45,7 +49,6 @@ from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.files.models import File
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.exports.utils import run_export_task
 from tendenci.core.imports.forms import ImportForm
 from tendenci.core.imports.models import Import
 from tendenci.core.base.utils import convert_absolute_urls, checklist_update
@@ -103,7 +106,8 @@ from tendenci.addons.events.forms import (
     EventRegistrantSearchForm,
     MemberRegistrationForm,
     ApplyRecurringChangesForm,
-    EventSearchForm)
+    EventSearchForm,
+    EventExportForm)
 from tendenci.addons.events.utils import (
     email_registrants,
     render_event_email,
@@ -3981,21 +3985,6 @@ def enable_addon(request, event_id, addon_id):
     return redirect('event.list_addons', event.id)
 
 
-@is_enabled('events')
-@login_required
-def export(request, template_name="events/export.html"):
-    """Export Events"""
-    if not request.user.is_superuser:
-        raise Http403
-
-    if request.method == 'POST':
-        export_id = run_export_task('events', 'event', [])
-        return redirect('export.status', export_id)
-
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
-
-
 @login_required
 def create_ics(request, template_name="events/ics.html"):
     """Create ICS"""
@@ -4137,3 +4126,83 @@ def import_process(request, import_id,
         'total': import_i.total_created + import_i.total_invalid,
         "import_i": import_i,
     }, context_instance=RequestContext(request))
+
+
+@is_enabled('events')
+@login_required
+@password_required
+def export(request, template_name="events/export.html"):
+    """Export Directories"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    form = EventExportForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        start_dt = form.cleaned_data['start_dt']
+        end_dt = form.cleaned_data['end_dt']
+        by_type = form.cleaned_data['by_type']
+        identifier = int(time.time())
+        temp_file_path = 'export/events/%s_temp.csv' % identifier
+        default_storage.save(temp_file_path, ContentFile(''))
+
+        process_options = ["python", "manage.py", "event_export_process",
+                           "--identifier=%s" % identifier,
+                           "--user=%s" % request.user.id]
+        if by_type:
+            process_options.append("--type=%s" % by_type.pk)
+        if start_dt:
+            process_options.append("--start_dt=%s" % start_dt.strftime('%m/%d/%Y'))
+        if end_dt:
+            process_options.append("--end_dt=%s" % end_dt.strftime('%m/%d/%Y'))
+
+        # start the process
+        subprocess.Popen(process_options)
+        EventLog.objects.log()
+        return HttpResponseRedirect(reverse('event.export_status', args=[identifier]))
+
+    context = {'form': form}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@is_enabled('events')
+@login_required
+@password_required
+def export_status(request, identifier, template_name="events/export_status.html"):
+    """Display export status"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    export_path = 'export/events/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/events/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@is_enabled('events')
+@login_required
+@password_required
+def export_download(request, identifier):
+    """Download the directories export."""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    file_name = '%s.csv' % identifier
+    file_path = 'export/events/%s' % file_name
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=events_export_%s' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response
+

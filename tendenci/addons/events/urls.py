@@ -19,7 +19,6 @@ urlpatterns = patterns(
     url(r'^%s/ics/$' % urlpath, 'views.icalendar', name="event.ics"),
     url(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, 'views.print_view', name="event.print_view"),
     url(r'^%s/add/$' % urlpath, 'views.add', name="event.add"),
-    url(r'^%s/export/$' % urlpath, 'views.export', name="event.export"),
     url(r'^%s/import/add/$' % urlpath, 'views.import_add', name='event.import_add'),
     url(r'^%s/import/preview/(?P<import_id>\d+)/$' % urlpath, 'views.import_preview', name='event.import_preview'),
     url(r'^%s/import/process/(?P<import_id>\d+)/$' % urlpath, 'views.import_process', name='event.import_process'),
@@ -46,6 +45,11 @@ urlpatterns = patterns(
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='event.feed'),
     url(r'^%s/(?P<id>\d+)/$' % urlpath, 'views.details', name="event"),
     url(r'^%s/recurring/(?P<id>\d+)/$' % urlpath, 'views.recurring_details', name="event.recurring"),
+
+    # event export
+    url(r'^%s/export/$' % urlpath, 'views.export', name="event.export"),
+    url(r'^%s/export/status/(?P<identifier>\d+)/$' % urlpath, 'views.export_status', name="event.export_status"),
+    url(r'^%s/export/download/(?P<identifier>\d+)/$' % urlpath, 'views.export_download', name="event.export_download"),
 
     # speakers_list view does not exist
     url(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, 'views.speaker_list', name="event.speakers"),

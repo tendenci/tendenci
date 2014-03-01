@@ -2079,3 +2079,49 @@ class MemberRegistrationForm(forms.Form):
                 raise forms.ValidationError('Member #%s does not exists!' % mem_id.strip())
 
         return self.cleaned_data['member_ids']
+
+
+class EventExportForm(forms.Form):
+    by_date_range = forms.BooleanField(
+                label=_('Export by Date Range'),
+                required=False)
+
+    start_dt = forms.DateField(
+                label=_('From'),
+                required=False)
+
+    end_dt = forms.DateField(
+                label=_('To'),
+                required=False)
+
+    by_type = forms.ModelChoiceField(
+                label="Export by Type",
+                queryset=Type.objects.all().order_by('name'),
+                empty_label="Don't filter by type",
+                required=False)
+
+    def clean_start_dt(self):
+        data = self.cleaned_data
+        by_date_range = data.get('by_date_range')
+        start_dt = data.get('start_dt')
+        if by_date_range:
+            if not start_dt:
+                raise forms.ValidationError('Start date is required if exporting by date range')
+
+        return start_dt
+
+    def clean_end_dt(self):
+        data = self.cleaned_data
+
+        by_date_range = data.get('by_date_range')
+        start_dt = data.get('start_dt')
+        end_dt = data.get('end_dt')
+
+        if by_date_range:
+            if not end_dt:
+                raise forms.ValidationError('End date is required if exporting by date range')
+            if end_dt <= start_dt:
+                raise forms.ValidationError('End date must be greater than start date')
+
+        return end_dt
+
