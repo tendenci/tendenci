@@ -55,7 +55,7 @@ apply_move_left = function(thing){
 apply_move_right = function(thing){
     thing.click(function(){
         var level = parseInt($($($(this).parent()).find('.level input')).val()) + 1;
-        if (level < 3){
+        if (level < 5){
             $($(this).parent()).css('margin-left', (level*20)+'px');
             $($($(this).parent()).find('.level input')).val(level);
         }
