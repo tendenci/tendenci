@@ -234,7 +234,7 @@ class Field(OrderingBaseModel):
         if self.field_function == "GroupSubscription":
             if value:
                 for val in self.choices.split(','):
-                    group = Group.objects.get(name=val.strip())
+                    group, created = Group.objects.get_or_create(name=val.strip())
                     if user:
                         try:
                             group_membership = GroupMembership.objects.get(group=group, member=user)
