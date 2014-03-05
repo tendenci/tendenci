@@ -103,7 +103,9 @@ class SpaceIncludeNode(IncludeNode):
                 if isinstance(context['user'], User):
                     user = context['user']
             try:
-                filters = get_query_filters(user, 'boxes.view_box')
+                # for performance reason, pass AnonymousUser() to reduce the joins of objectpermissions
+                # in the meantime, we do want to show public items on homepage
+                filters = get_query_filters(AnonymousUser(), 'boxes.view_box')
                 box = Box.objects.filter(filters).filter(pk=setting_value)
                 context['box'] = box[0]
                 template = get_template('theme_includes/box.html')
