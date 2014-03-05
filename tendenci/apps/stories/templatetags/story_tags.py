@@ -5,7 +5,7 @@ import random
 from django.template import Library, TemplateSyntaxError, Variable
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
@@ -140,7 +140,7 @@ class ListStoriesNode(ListNode):
 
         filters = get_query_filters(user, self.perms)
         items = self.model.objects.filter(filters)
-        if user.is_authenticated():
+        if isinstance(user, User) and user.is_authenticated():
             if not user.profile.is_superuser:
                 items = items.distinct()
 
