@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.contrib.contenttypes import generic
 from django.core.files.storage import default_storage
+from django.dispatch import receiver
 
 from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -337,3 +338,33 @@ class File(TendenciBaseModel):
 
         binary = build_image(self.file, size, 'FILE_IMAGE_PRE_KEY')
         return b64encode(binary)
+
+
+# These two auto-delete files from filesystem when they are unneeded:
+@receiver(models.signals.pre_save, sender=File)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    """Deletes file from filesystem
+    when corresponding `File` object is changed.
+    """
+    if not instance.pk:
+        return False
+
+    try:
+        old_file = File.objects.get(pk=instance.pk).file
+    except File.DoesNotExist:
+        return False
+
+    new_file = instance.file
+    if not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)
+
+
+@receiver(models.signals.post_delete, sender=File)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """Deletes file from filesystem
+    when corresponding `File` object is deleted.
+    """
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)
