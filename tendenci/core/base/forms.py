@@ -6,8 +6,7 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
-#from captcha.fields import CaptchaField
-#from simplemathcaptcha.fields import MathCaptchaField
+from captcha.fields import CaptchaField
 SIMPLE_ANSWER = 22
 SIMPLE_QUESTION = 'What is 9 + 13? (security question -just so we know you\'re not a bot)'
 
@@ -70,7 +69,7 @@ class PasswordForm(forms.Form):
 
 
 class CaptchaForm(forms.Form):
-    captcha = SimpleMathField(label=_('Type the code below'))
+    captcha = CaptchaField(label=_('Type the code below'))
 
 
 class AddonUploadForm(forms.Form):

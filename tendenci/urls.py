@@ -82,7 +82,7 @@ urlpatterns += patterns('',
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
-    #(r'^captcha/', include('captcha.urls')),
+    (r'^captcha/', include('captcha.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', 'tendenci.core.base.views.robots_txt', name="robots"),

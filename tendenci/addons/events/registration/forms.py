@@ -6,9 +6,8 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 
-#from captcha.fields import CaptchaField
-#from simplemathcaptcha.fields import MathCaptchaField
-from tendenci.core.base.forms import SimpleMathField
+from captcha.fields import CaptchaField
+#from tendenci.core.base.forms import SimpleMathField
 from tendenci.apps.discounts.models import Discount
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.memberships.models import Membership
@@ -22,7 +21,7 @@ class RegistrationForm(forms.Form):
     """
     amount_for_admin = forms.DecimalField(decimal_places=2, required=False)
     discount = forms.CharField(label=_('Discount Code'), required=False)
-    captcha = SimpleMathField(label=_('Type the code below'))
+    captcha = CaptchaField(label=_('Type the code below'))
     payment_method = forms.ModelChoiceField(empty_label=None, required=True,
         queryset=PaymentMethod.objects.none(), widget=forms.RadioSelect, initial=1)
     

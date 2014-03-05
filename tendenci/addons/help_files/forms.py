@@ -3,14 +3,12 @@ from django.forms import widgets
 
 from tendenci.addons.help_files.models import Request, HelpFile, Topic
 from tinymce.widgets import TinyMCE
-#from captcha.fields import CaptchaField
-#from simplemathcaptcha.fields import MathCaptchaField
-from tendenci.core.base.forms import SimpleMathField
+from captcha.fields import CaptchaField
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.apps.user_groups.models import Group
 
 class RequestForm(forms.ModelForm):
-    captcha = SimpleMathField()
+    captcha = CaptchaField()
     class Meta:
         model = Request
 

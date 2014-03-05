@@ -5,9 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.contrib.admin import widgets
 
-#from captcha.fields import CaptchaField
-#from simplemathcaptcha.fields import MathCaptchaField
-from tendenci.core.base.forms import SimpleMathField
+from captcha.fields import CaptchaField
 from tendenci.core.categories.models import Category
 from tendenci.addons.jobs.models import Job
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -56,7 +54,7 @@ class JobForm(TendenciBaseForm):
         )
     )
 
-    captcha = SimpleMathField()
+    captcha = CaptchaField(label=_('Type the code below'))
 
     start_dt = SplitDateTimeField(
         required=False,
