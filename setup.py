@@ -186,7 +186,7 @@ setup(
         "mimeparse>=0.1.3",
         "python-dateutil==1.5",
         "pdfminer==20110515",
-        "stripe==1.7.7",
+        "stripe==1.12.0",
         "pycrypto==2.6",
         "boto==2.13.3",
         "django-timezones==0.2",
