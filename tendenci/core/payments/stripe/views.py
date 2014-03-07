@@ -18,6 +18,7 @@ from tendenci.core.payments.models import Payment
 from forms import StripeCardForm, BillingInfoForm
 import stripe
 from utils import payment_update_stripe
+from tendenci.core.site_settings.utils import get_setting
 
 
 @csrf_exempt
@@ -25,6 +26,9 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
     payment = get_object_or_404(Payment, pk=payment_id) 
     form = StripeCardForm(request.POST or None)
     billing_info_form = BillingInfoForm(request.POST or None, instance=payment)
+    currency = get_setting('site', 'global', 'currency')
+    if not currency:
+        currency = 'usd'
     if request.method == "POST":
         if form.is_valid():
             # get stripe token and make a payment immediately
@@ -37,7 +41,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
             # create the charge on Stripe's servers - this will charge the user's card
             params = {
                        'amount': math.trunc(payment.amount * 100), # amount in cents, again
-                       'currency': "usd", # currently, only 'usd' is supported
+                       'currency': currency,
                        'card': token,
                        'description': payment.description
                       }
