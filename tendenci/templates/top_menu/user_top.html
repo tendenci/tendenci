@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load perm_tags %}
 
+{% spaceless %}
 <div id="user-bar">
     <ul>
        <li><a class="admin-logo" href="/"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
@@ -133,3 +134,4 @@
     </ul>
      
 </div>
+{% endspaceless %}

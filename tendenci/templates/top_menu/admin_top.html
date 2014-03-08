@@ -2,6 +2,7 @@
 {% list_plugins as plugins %}
 {% load i18n %}
 
+{% spaceless %}
 <div id="admin-bar">
     <ul>
        <li class="visible-mobile"><a class="admin-logo" href="{% url dashboard %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a></li>
@@ -14,9 +15,7 @@
                             {% if app.enabled %}
                             <ul>
                                 <li class="app">
-                                     <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
-                                         {{ app|title }}
-                                     </a>
+                                     <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
                                 </li>
                                 {% if app.has_settings and app.url.settings %}
                                 <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
@@ -39,9 +38,7 @@
                         {% if app.enabled %}
                         <ul>
                             <li class="app">
-                                 <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
-                                     {{ app|title }}
-                                 </a>
+                                 <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
                             </li>
                             {% if app.has_settings and app.url.settings %}
                             <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
@@ -67,9 +64,7 @@
                         {% if app.enabled %}
                         <ul>
                             <li class="app">
-                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
-                                     {{ app|title }}
-                                 </a>
+                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
                             </li>
                             {% if app.has_settings and app.url.settings %}
                             <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
@@ -203,10 +198,7 @@
 
         {% if THEME_INFO.SSU.color %}
         <li class="right" id="themecolor">
-            <a href="#">
-                <img class="themecolorLogo" src="{{ STATIC_URL }}images/icons/color-palette-16x16.png">
-                &nbsp;&nbsp;{% trans "Colors" %}
-            </a>
+            <a href="#"><img class="themecolorLogo" src="{{ STATIC_URL }}images/icons/color-palette-16x16.png">&nbsp;&nbsp;{% trans "Colors" %}</a>
             <div class="sub themecolor">
                 <div class="column app-list">
                     {% include 'theme_editor/theme_color_admin.html' %}
@@ -217,3 +209,4 @@
     </ul>
 
 </div>
+{% endspaceless %}
