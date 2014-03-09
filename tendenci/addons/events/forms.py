@@ -1995,10 +1995,19 @@ class AddonForm(BetterModelForm):
             }),
         ]
 
-class AddonOptionForm(forms.ModelForm):
+class AddonOptionForm(BetterModelForm):
+    label = 'Option'
+
     class Meta:
         model = AddonOption
         fields = ('title',)
+        fieldsets = [('', {'fields': ['title']})]
+
+
+class AddonOptionBaseModelFormSet(BaseModelFormSet):
+    def __init__(self, *args, **kwargs):
+        super(AddonOptionBaseModelFormSet, self).__init__(*args, **kwargs)
+        self.forms[0].empty_permitted = False
 
 
 class EventICSForm(forms.Form):

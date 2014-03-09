@@ -96,6 +96,7 @@ from tendenci.addons.events.forms import (
     PendingEventForm,
     AddonForm,
     AddonOptionForm,
+    AddonOptionBaseModelFormSet,
     FormForCustomRegForm,
     RegConfPricingBaseModelFormSet,
     GlobalRegistrantSearchForm,
@@ -3880,7 +3881,11 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
 
-    OptionFormSet = modelformset_factory(AddonOption, form=AddonOptionForm, extra=1)
+    OptionFormSet = modelformset_factory(
+        AddonOption,
+        formset=AddonOptionBaseModelFormSet,
+        form=AddonOptionForm,
+        extra=1)
 
     if request.method == "POST":
         form = AddonForm(request.POST)
@@ -3922,15 +3927,26 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
 
     addon = get_object_or_404(Addon, pk=addon_id)
 
-    OptionFormSet = modelformset_factory(AddonOption, form=AddonOptionForm, extra=0)
     options_set = AddonOption.objects.filter(addon=addon)
+    extra_form = 0
+    if not options_set.exists():
+        extra_form = 1
+    OptionFormSet = modelformset_factory(
+        AddonOption,
+        formset=AddonOptionBaseModelFormSet,
+        form=AddonOptionForm,
+        extra=extra_form,
+        can_delete=True)
 
     if request.method == "POST":
         form = AddonForm(request.POST, instance=addon)
         formset = OptionFormSet(request.POST, queryset=options_set, prefix="options", auto_id='options_formset')
         if False not in (form.is_valid(), formset.is_valid()):
             addon = form.save()
-            options = formset.save()
+            options = formset.save(commit=False)
+            for option in options:
+                option.addon = addon
+                option.save()
 
             EventLog.objects.log(instance=addon)
 
