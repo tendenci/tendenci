@@ -2233,10 +2233,10 @@ def report_active_members(request, template_name='reports/membership_list.html')
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
         compare_dt = datetime.now() - timedelta(days=days)
-        mems = MembershipDefault.objects.filter(status=True, status_detail="active", join_dt__gte=compare_dt).order_by('join_dt')
+        mems = MembershipDefault.objects.filter(status=True, status_detail__iexact="active", join_dt__gte=compare_dt).order_by('join_dt')
     else:
         days = 0
-        mems = MembershipDefault.objects.filter(status=True, status_detail='active')
+        mems = MembershipDefault.objects.filter(status=True, status_detail__iexact='active')
 
     # sort order of all fields for the upcoming response
     is_ascending_username = True
@@ -2360,10 +2360,10 @@ def report_expired_members(request, template_name='reports/membership_list.html'
     if request.GET.get('days'):
         days = int(request.GET.get('days'))
         compare_dt = datetime.now() - timedelta(days=days)
-        mems = MembershipDefault.objects.filter(status_detail="expired", expire_dt__gte=compare_dt).order_by('expire_dt')
+        mems = MembershipDefault.objects.filter(status_detail__iexact="expired", expire_dt__gte=compare_dt).order_by('expire_dt')
     else:
         days = 0
-        mems = MembershipDefault.objects.filter(status_detail="expired")
+        mems = MembershipDefault.objects.filter(status_detail__iexact="expired")
 
     # sort order of all fields for the upcoming response
     is_ascending_username = True
@@ -2522,7 +2522,7 @@ def report_members_stats(request, template_name='reports/membership_stats.html')
 def report_member_roster(request, template_name='reports/membership_roster.html'):
     """ Shows membership roster. Extends base-print for easy printing.
     """
-    members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
+    members = MembershipDefault.objects.filter(status=True, status_detail__iexact="active").order_by('user__last_name')
 
     EventLog.objects.log()
 
@@ -2533,7 +2533,7 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
 def report_member_quick_list(request, template_name='reports/membership_quick_list.html'):
     """ Table view of current members fname, lname and company only.
     """
-    members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
+    members = MembershipDefault.objects.filter(status=True, status_detail__iexact="active").order_by('user__last_name')
 
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
