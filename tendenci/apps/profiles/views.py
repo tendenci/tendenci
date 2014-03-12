@@ -894,8 +894,12 @@ def users_not_in_groups(request, template_name='profiles/users_not_in_groups.htm
 
     users = []
     for user in User.objects.all():
-        if not user.profile.get_groups():
-            users.append(user)
+        try:
+            profile = Profile.objects.get(user=user)
+            if not profile.get_groups():
+                users.append(user)
+        except Profile.DoesNotExist:
+            pass
     
     return render_to_response(template_name, {'users': users}, context_instance=RequestContext(request))
 
