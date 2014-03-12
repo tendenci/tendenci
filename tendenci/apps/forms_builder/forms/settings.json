@@ -49,5 +49,22 @@
         "scope_category": "forms", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "false", 
+        "description": "Use only one email field for forms with email.", 
+        "data_type": "boolean", 
+        "update_dt": "2014-02-20 00:00:00", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "one_email", 
+        "value": "false", 
+        "label": "One Email Field", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "forms", 
+        "store": false, 
+        "updated_by": ""
     }
 ]

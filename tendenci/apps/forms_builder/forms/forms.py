@@ -61,7 +61,12 @@ class FormForForm(forms.ModelForm):
                 field_class, field_widget = field.field_type, None
 
             if field.field_type == 'EmailVerificationField':
-                field_class = EmailVerificationField
+                one_email = get_setting('module', 'forms', 'one_email')
+                if one_email:
+                    field_class = forms.EmailField
+                else:
+                    field_class = EmailVerificationField
+
             elif field.field_type == 'CountryField' or field.field_type == 'StateProvinceField':
                 field_class = getattr(forms, 'ChoiceField')
             else:
