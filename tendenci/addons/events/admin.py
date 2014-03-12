@@ -99,8 +99,9 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         js = (
             '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
-            '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
+            '%sjs/admin/form-field-dynamic-hiding.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 

@@ -23,6 +23,7 @@ from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
+from tendenci.apps.user_groups.models import Group, GroupMembership
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.files.models import File
@@ -30,7 +31,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.payments.models import PaymentMethod as GlobalPaymentMethod
 
 from tendenci.addons.events.settings import (
-    FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, FIELD_TYPE_CHOICES, USER_FIELD_CHOICES)
+    FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, FIELD_TYPE_CHOICES, USER_FIELD_CHOICES, FIELD_FUNCTIONS)
 from tendenci.core.base.utils import localize_date
 from tendenci.core.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -1269,7 +1270,7 @@ class CustomRegForm(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True, on_delete=models.SET_NULL)    
+    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50)
     status = models.CharField(max_length=50, default='active')
 
@@ -1329,6 +1330,8 @@ class CustomRegField(OrderingBaseModel):
         max_length=64, blank=True, null=True)
     field_type = models.CharField(_("Type"), choices=FIELD_TYPE_CHOICES,
         max_length=64)
+    field_function = models.CharField(_("Special Functionality"),
+        choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
@@ -1354,6 +1357,24 @@ class CustomRegField(OrderingBaseModel):
             cloned_field.form = form
             cloned_field.save()
         return cloned_field
+
+    def execute_function(self, entry, value, user=None):
+        if self.field_function == "GroupSubscription":
+            if value:
+                for val in self.choices.split(','):
+                    group = Group.objects.get(name=val.strip())
+                    if user:
+                        try:
+                            group_membership = GroupMembership.objects.get(group=group, member=user)
+                        except GroupMembership.DoesNotExist:
+                            group_membership = GroupMembership(group=group, member=user)
+                            group_membership.creator_id = user.id
+                            group_membership.creator_username = user.username
+                            group_membership.role = 'subscriber'
+                            group_membership.owner_id = user.id
+                            group_membership.owner_username = user.username
+                            group_membership.save()
+
 
 class CustomRegFormEntry(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="entries")
@@ -1433,13 +1454,20 @@ class CustomRegFormEntry(models.Model):
             list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
         return list_on_roster
 
+    def set_group_subscribers(self, user):
+        for entry in self.field_entries.filter(field__field_function="GroupSubscription"):
+            entry.field.execute_function(self, entry.value, user=user)
+
+
 class CustomRegFieldEntry(models.Model):
     entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries")
     field = models.ForeignKey("CustomRegField", related_name="entries")
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
+
 class EventPhoto(File):
     pass
+
 
 class Addon(models.Model):
     event = models.ForeignKey(Event)

@@ -35,6 +35,11 @@ jQuery(function($) {
                     'MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
                     'MultipleChoiceField']
 
+        var current_loc = window.location.pathname;
+        if (current_loc.toLowerCase().indexOf("events/customregform") > 0) {
+            triggers = ["BooleanField"];
+        }
+
     	// toggle the special functionality and group fields
         if (in_list(selected_value, triggers)){
             fieldset.find(".field-field_function select").css('visibility', 'visible');

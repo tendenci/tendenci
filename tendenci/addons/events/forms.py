@@ -160,6 +160,26 @@ class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
         exclude = ["position"]
+        
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        field_function = cleaned_data.get("field_function")
+        field_type = cleaned_data.get("field_type")
+        choices = cleaned_data.get("choices")
+
+        if field_function == "GroupSubscription":
+            if field_type != "BooleanField":
+                raise forms.ValidationError("This field's function requires Checkbox as a field type")
+            if not choices:
+                raise forms.ValidationError("This field's function requires at least 1 group specified.")
+            else:
+                for val in choices.split(','):
+                    try:
+                        Group.objects.get(name=val.strip())
+                    except Group.DoesNotExist:
+                        raise forms.ValidationError("The group \"%s\" does not exist" % (val))
+
+        return cleaned_data
 
 
 class FormForCustomRegForm(forms.ModelForm):

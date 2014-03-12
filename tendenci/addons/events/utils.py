@@ -920,6 +920,7 @@ def create_registrant_from_form(*args, **kwargs):
         user = form.get_user()
         if not user.is_anonymous():
             registrant.user = user
+            entry.set_group_subscribers(user)
         registrant.initialize_fields()
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')

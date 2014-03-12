@@ -33,3 +33,7 @@ USER_FIELD_CHOICES = (
     ('company_name', _('Company Name')),
     ('meal_option', _('Meal Option')),
     ('comments', _('Comments')) )
+
+FIELD_FUNCTIONS = (
+    ("GroupSubscription", _("Subscribe to Group")),
+)
