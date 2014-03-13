@@ -1,10 +1,12 @@
-import os, subprocess
+import os, subprocess, xmlrpclib
 from optparse import make_option
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail.message import EmailMessage
 from django.core.management.base import BaseCommand
 from django.core.management import call_command, CommandError
+from django.template.loader import render_to_string
 
 
 class Command(BaseCommand):
@@ -22,7 +24,22 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        from tendenci.core.site_settings.utils import get_setting
+
+        pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+        latest_version = pypi.package_releases('tendenci')[0]
         error_message = ""
+        email_context = {'site_url':get_setting('site', 'global', 'siteurl'),
+                         'version':latest_version, 'error_message':error_message}
+
+        email_sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
+        email_recipient = ""
+        user_id = options['user']
+        if User.objects.filter(pk=user_id).exists():
+            user = User.objects.get(pk=user_id)
+            if user.email:
+                email_recipient = user.email
+
         try:
             print "Updating tendenci"
             subprocess.check_output("pip install tendenci --upgrade", stderr=subprocess.STDOUT, shell=True)
@@ -34,27 +51,22 @@ class Command(BaseCommand):
             subprocess.check_output("sudo reload %s" % os.path.basename(settings.PROJECT_ROOT),
                                     stderr=subprocess.STDOUT, shell=True)
 
+            print "Clearing cache"
             call_command('clear_cache')
         except subprocess.CalledProcessError as e:
-            error_message = e.output
+            email_context['error_message'] = e.output
         except CommandError as e:
-            error_message = e
+            email_context['error_message'] = e
 
-        from tendenci import __version__ as version
-        from tendenci.apps.notifications import models as notification
-        from tendenci.core.site_settings.utils import get_setting
-
-        email_context = {'site_url':get_setting('site', 'global', 'siteurl'),
-                         'version':version, 'error_message':error_message}
-
-        recipients = (get_setting('site', 'global', 'allnoticerecipients')).split(',')
-        user_id = options['user']
-        if User.objects.filter(pk=user_id).exists():
-            user = User.objects.get(pk=user_id)
-            if user.email:
-                recipients.append(user.email)
-
-        email_recipients = list(set(recipients))
-        notification.send_emails(email_recipients, 'update_tendenci_notice',
-                                 email_context)
+        if email_recipient:
+            subject = render_to_string('notification/tendenci_update_notice_email/short.txt', email_context)
+            subject = subject.strip('\n').strip('\r')
+            body = render_to_string('notification/tendenci_update_notice_email/full.html', email_context)
+            email = EmailMessage()
+            email.subject = subject
+            email.body = body
+            email.from_email = email_sender
+            email.to = [email_recipient]
+            email.content_subtype = 'html'
+            email.send()
 
