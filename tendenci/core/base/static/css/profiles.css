@@ -471,3 +471,16 @@ div.admin-item {
     text-align: left;
 }
 
+/* export profiles
+------------------------------- */
+#profile-export .display-hide{
+    display: none;
+}
+#profile-export input[type="submit"] {
+    padding: 4px 12px;
+}
+#profile-export select {
+    width: 220px;
+    margin-bottom: 10px;
+    padding: 4px 6px;
+}

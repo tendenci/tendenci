@@ -1,0 +1,35 @@
+{% extends "profiles/base.html" %}
+{% load i18n %}
+{% load profile_tags %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Profile Export - Status' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% users_nav request.user None %}
+    <h1>{% trans "Profiles Export - Status" %}</h1>
+
+    <div id="profile-export">
+
+        <div{% if not download_ready %} class="display-hide"{% endif %}>
+            <p>The export file is ready, click the download link below to download.</p>
+            <div>
+                <a href="{% url profile.export_download identifier %}">Download Now</a>  
+            </div>
+        </div>
+
+    </div>
+
+    {% if not download_ready %}
+    <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>
+    <p>In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!</p>
+   {% endif %}
+</div>
+{% endblock %}
+

@@ -648,21 +648,6 @@ class UserMembershipForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(UserMembershipForm, self).__init__(*args, **kwargs)
         self.fields['user'].widget = forms.HiddenInput()
-        
-class ExportForm(forms.Form):
-    passcode = forms.CharField(
-                    label=_("Type Your Password"), 
-                    widget=forms.PasswordInput(render_value=False))
-    
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(ExportForm, self).__init__(*args, **kwargs)
-        
-    def clean_passcode(self):
-        value = self.cleaned_data['passcode']
-        if not self.user.check_password(value):
-            raise forms.ValidationError(_("Invalid password."))
-        return value
 
 
 class ProfileMergeForm(forms.Form):
@@ -686,3 +671,15 @@ class ProfileMergeForm(forms.Form):
 
         if queryset.count() == 2:
             self.fields['user_list'].initial = queryset
+
+
+class ExportForm(forms.Form):
+
+    EXPORT_FIELD_CHOICES = (
+        ('main_fields', 'Export Main Fields (fastest)'),
+        ('all_fields', 'Export All Fields'),
+    )
+
+    export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
+    export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
+

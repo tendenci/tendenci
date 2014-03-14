@@ -1,6 +1,7 @@
 # django
 import math
 import time
+import subprocess
 from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth.decorators import login_required
@@ -13,6 +14,8 @@ from django.db.models import Count, Q, get_app
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.conf import settings
 from django.db import connection
@@ -25,7 +28,6 @@ from johnny.cache import invalidate
 from tendenci.core.base.decorators import ssl_required, password_required
 from tendenci.core.base.utils import get_pagination_page_range
 
-from tendenci.core.exports.utils import run_export_task
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
                                        get_notice_recipients,
@@ -1246,22 +1248,71 @@ def merge_process(request, sid):
 
 
 @login_required
-def export(request, template_name="profiles/export.html"):
-    """Create a csv file for all the users
-    """
-
+@password_required
+def profile_export(request, template_name="profiles/export.html"):
+    """Export Profiles"""
     if not request.user.profile.is_staff:
+        raise Http403
+
+    form = ExportForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        export_fields = form.cleaned_data['export_fields']
+        identifier = int(time.time())
+        temp_file_path = 'export/profiles/%s_temp.csv' % identifier
+        default_storage.save(temp_file_path, ContentFile(''))
+
+        # start the process
+        subprocess.Popen(["python", "manage.py",
+                          "profile_export_process",
+                          '--export_fields=%s' % export_fields,
+                          '--identifier=%s' % identifier,
+                          '--user=%s' % request.user.id])
+        # log an event
+        EventLog.objects.log()
+        return HttpResponseRedirect(reverse('profile.export_status', args=[identifier]))
+
+    context = {'form': form}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@login_required
+@password_required
+def profile_export_status(request, identifier, template_name="profiles/export_status.html"):
+    """Display export status"""
+    if not request.user.profile.is_staff:
+        raise Http403
+
+    export_path = 'export/profiles/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/profiles/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@login_required
+@password_required
+def profile_export_download(request, identifier):
+    """Download the profiles export."""
+    if not request.user.profile.is_staff:
+        raise Http403
+
+    file_name = '%s.csv' % identifier
+    file_path = 'export/profiles/%s' % file_name
+    if not default_storage.exists(file_path):
         raise Http404
 
-    form = ExportForm(request.POST or None, user=request.user)
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=profiles_export_%s' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response
 
-    if request.method == 'POST':
-        if form.is_valid():
-            export_id = run_export_task('profiles', 'profile', [])
-            return redirect('export.status', export_id)
-        
-    return render_to_response(template_name, {
-        'form':form,
-        'user_this':None,
-    }, context_instance=RequestContext(request))
 

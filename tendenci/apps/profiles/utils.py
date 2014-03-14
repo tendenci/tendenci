@@ -1,14 +1,24 @@
 import re
+import time as ttime
+from datetime import datetime, date, time
 from string import digits
 from random import choice
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.db.models.fields import AutoField
+from django.template.loader import render_to_string
+from django.utils.encoding import smart_str
 
+from tendenci.apps.profiles.models import Profile
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.addons.memberships.models import Membership, App
+from tendenci.core.base.utils import UnicodeWriter
+from tendenci.core.emails.models import Email
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.core.site_settings.utils import get_setting
 
@@ -259,3 +269,129 @@ def clean_username(username):
             username = username.replace(char, '')
 
     return username
+
+
+def process_export(export_fields='all_fields', identifier=u'', user_id=0):
+    from tendenci.core.perms.models import TendenciBaseModel
+
+    if export_fields == 'main_fields':
+        user_field_list = [
+            'username',
+            'first_name',
+            'last_name',
+            'email']
+
+        profile_field_list = [
+            'salutation',
+            'initials',
+            'display_name',
+            'company',
+            'department',
+            'position_title',
+            'sex',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'country',
+            'phone',
+            'phone2',
+            'fax',
+            'work_phone',
+            'home_phone',
+            'mobile_phone',
+            'url',
+            'url2',
+            'dob',
+            'status_detail']
+    else:
+        # base ------------
+        base_field_list = [
+            smart_str(field.name) for field in TendenciBaseModel._meta.fields
+            if not field.__class__ == AutoField]
+
+        # user ------------
+        user_field_list = [
+            smart_str(field.name) for field in User._meta.fields
+            if not field.__class__ == AutoField]
+        user_field_list.remove('password')
+
+        # profile ---------
+        profile_field_list = [
+            smart_str(field.name) for field in Profile._meta.fields
+            if not field.__class__ == AutoField]
+        profile_field_list = [
+            name for name in profile_field_list
+            if not name in base_field_list]
+        profile_field_list.remove('guid')
+        profile_field_list.remove('user')
+        # append base fields at the end
+
+    field_list = user_field_list + profile_field_list
+
+    identifier = identifier or int(ttime.time())
+    file_name_temp = 'export/profiles/%s_temp.csv' % identifier
+
+    with default_storage.open(file_name_temp, 'wb') as csvfile:
+        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
+        csv_writer.writerow(field_list)
+
+        profiles = Profile.objects.all()
+        for profile in profiles:
+            p_user = profile.user
+            items_list = []
+            for field_name in field_list:
+                if field_name in profile_field_list:
+                    item = getattr(profile, field_name)
+                elif field_name in user_field_list:
+                    item = getattr(p_user, field_name)
+                else:
+                    item = ''
+                if item:
+                    if isinstance(item, datetime):
+                        item = item.strftime('%Y-%m-%d %H:%M:%S')
+                    elif isinstance(item, date):
+                        item = item.strftime('%Y-%m-%d')
+                    elif isinstance(item, time):
+                        item = item.strftime('%H:%M:%S')
+                    elif isinstance(item, basestring):
+                        item = item.encode("utf-8")
+                item = smart_str(item).decode('utf-8')
+                items_list.append(item)
+            csv_writer.writerow(items_list)
+
+    # rename the file name
+    file_name = 'export/profiles/%s.csv' % identifier
+    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+
+    # delete the temp file
+    default_storage.delete(file_name_temp)
+
+    # notify user that export is ready to download
+    [user] = User.objects.filter(pk=user_id)[:1] or [None]
+    if user and user.email:
+        download_url = reverse('profile.export_download', args=[identifier])
+
+        site_url = get_setting('site', 'global', 'siteurl')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        parms = {
+            'download_url': download_url,
+            'user': user,
+            'site_url': site_url,
+            'site_display_name': site_display_name,
+            'export_fields': export_fields}
+
+        subject = render_to_string(
+            'profiles/notices/export_ready_subject.html', parms)
+        subject = subject.strip('\n').strip('\r')
+
+        body = render_to_string(
+            'profiles/notices/export_ready_body.html', parms)
+
+        email = Email(
+            recipient=user.email,
+            subject=subject,
+            body=body)
+        email.send()
+
