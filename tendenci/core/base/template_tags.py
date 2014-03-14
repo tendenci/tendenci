@@ -98,12 +98,13 @@ class ListNode(Node):
                 user = self.kwargs['user']
                 if user == "anon" or user == "anonymous":
                     user = AnonymousUser()
-        else:
-            # check the context for an already existing user
-            # and see if it is really a user object
-            if 'user' in context:
-                if isinstance(context['user'], User):
-                    user = context['user']
+        # for performance reason, if user is not passed in, use AnonymousUser
+#         else:
+#             # check the context for an already existing user
+#             # and see if it is really a user object
+#             if 'user' in context:
+#                 if isinstance(context['user'], User):
+#                     user = context['user']
 
         if 'limit' in self.kwargs:
             try:
