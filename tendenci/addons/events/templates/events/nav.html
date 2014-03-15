@@ -48,6 +48,7 @@
             <li><a href="{% url event.global.registrant.search %}">{% trans "Registrant List" %}</a></li>
             {% endif %}
             <li><a href="{% url event.month %}">{% trans "Monthly Calendar" %}</a></li>
+            <li><a href="{% url event.week %}">{% trans "Weekly Calendar" %}</a></li>
             <li class="divider"></li>
             {% if request.user.is_authenticated %}
             <li><a href="{% url event.myevents %}">{% trans "My Events" %}</a></li>

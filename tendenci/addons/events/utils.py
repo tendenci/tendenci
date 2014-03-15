@@ -1687,6 +1687,18 @@ def create_member_registration(user, event, form):
                 invoice = registration.save_invoice()
 
 
+def get_week_days(tgtdate, cal):
+    weekdays = list(cal.iterweekdays())
+    tgt_weekday = tgtdate.weekday()
+    tgt_index = weekdays.index(tgt_weekday)
+    b_ctr = tgt_index - 0
+    f_ctr = 6 - tgt_index
+    days = []
+    for ctr in range(-b_ctr, f_ctr+1):
+        days.append(tgtdate + timedelta(days=ctr))
+    return days
+
+
 def process_event_export(start_dt=None, end_dt=None, event_type=None,
                          identifier=u'', user_id=0):
     """

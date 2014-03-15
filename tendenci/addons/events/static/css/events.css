@@ -709,6 +709,12 @@ div.event-recurring {
 	border: 2px solid #FFC;
 }
 
+/*= Weekly View
+----------------------------- */
+.week-view div.day {
+	height: auto;
+}
+
 /*= Messages
  ------------------------- */
 .recipient-set {
@@ -1052,4 +1058,8 @@ table.pricing-list .price-disabled label {
 		margin: 0;
 		width: 100%;
 	}
+
+    .week-view .month-grid .day {
+        height: auto;
+    }
 }

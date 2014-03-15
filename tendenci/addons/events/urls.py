@@ -12,6 +12,7 @@ if not urlpath:
 urlpatterns = patterns(
     'tendenci.addons.events',
     url(r'^%s/$' % urlpath, 'views.month_redirect', name="events"),
+    url(r'^%s/week/$' % urlpath, 'views.week_view', name="event.week"),
     url(r'^%s/month/$' % urlpath, 'views.month_view', name="event.month"),
     url(r'^%s/today/$' % urlpath, 'views.today_redirect', name="event.today"),
     url(r'^%s/search/$' % urlpath, 'views.search', name="event.search"),
@@ -68,6 +69,7 @@ urlpatterns = patterns(
 
     # month-view(s) / day-view
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.day_view', name='event.day'),
+    url(r'^%s/week/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.week_view', name='event.week'),
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/$' % urlpath, 'views.month_view', name='event.month'),
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view', name='event.month'),
 

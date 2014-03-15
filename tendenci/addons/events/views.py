@@ -130,7 +130,8 @@ from tendenci.addons.events.utils import (
     event_import_process,
     check_month,
     create_member_registration,
-    get_recurrence_dates)
+    get_recurrence_dates,
+    get_week_days)
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
@@ -2689,6 +2690,71 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         'types':types,
         'type':type,
         'date': date,
+        },
+        context_instance=RequestContext(request))
+
+
+@is_enabled('events')
+def week_view(request, year=None, month=None, day=None, template_name='events/week-view.html'):
+
+    # default/convert month and year
+    if month and year and day:
+        month, year, day = int(month), int(year), int(day)
+    else:
+        month, year, day = date.today().month, date.today().year, date.today().day
+
+    if year <= 1900 or year >= 9999:
+        raise Http404
+
+    calendar.setfirstweekday(calendar.SUNDAY)
+    Calendar = calendar.Calendar(calendar.SUNDAY)
+    weekdays = calendar.weekheader(10).split()
+
+    tgtdate = date(year, month, day)
+    week_dates = get_week_days(tgtdate, Calendar)
+
+    next_date = week_dates[6] + timedelta(days=1)
+    prev_date = week_dates[0] + timedelta(days=-1)
+
+    # remove any params that aren't set (e.g. type)
+    next_week_params = [i for i in (next_date.year, next_date.month, next_date.day) if i]
+    prev_week_params = [i for i in (prev_date.year, prev_date.month, prev_date.day) if i]
+
+    next_week_url = reverse('event.week', args=next_week_params)
+    prev_week_url = reverse('event.week', args=prev_week_params)
+
+    types = Type.objects.all().order_by('name')
+
+    # Check for empty pages for far-reaching years
+    if abs(year - datetime.now().year) > 6:
+        filters = get_query_filters(request.user, 'events.view_event')
+        is_events = Event.objects.filter(filters).filter(
+            (Q(start_dt__gte=week_dates[0]) & Q(start_dt__lte=week_dates[6])) | (Q(end_dt__gte=week_dates[0]) & Q(end_dt__lte=week_dates[6]))).distinct()
+        if not is_events:
+            # Try to redirect old dates to the earliest event
+            if year < datetime.now().year:
+                latest_event = Event.objects.filter(start_dt__gte=tgtdate).order_by('start_dt')
+                if latest_event.count() > 0:
+                    latest_date = latest_event[0].start_dt
+                    messages.add_message(request, messages.INFO, 'No Events were found for %s. The next event is on %s, shown below.' % (tgtdate.strftime('%x'), latest_date.strftime('%x')))
+                    return HttpResponseRedirect(reverse('event.week', args=[latest_date.year, latest_date.month, latest_date.day]))
+            # Try to redirect far future dates to the latest event
+            else:
+                latest_event = Event.objects.filter(end_dt__lte=tgtdate).order_by('-end_dt')
+                if latest_event.count() > 0:
+                    latest_date = latest_event[0].end_dt
+                    messages.add_message(request, messages.INFO, 'No Events were found for %s. The next event is on %s, shown below.' % (tgtdate.strftime('%x'), latest_date.strftime('%x')))
+                    return HttpResponseRedirect(reverse('event.week', args=[latest_date.year, latest_date.month, latest_date.day]))
+
+    EventLog.objects.log()
+
+    return render_to_response(template_name, {
+        'week':week_dates,
+        'weekdays':weekdays,
+        'next_week_url':next_week_url,
+        'prev_week_url':prev_week_url,
+        'cur_date':tgtdate,
+        'types':types,
         },
         context_instance=RequestContext(request))
 
