@@ -108,6 +108,14 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
                 news.save(photo=photo)
                 assign_files_perms(news, files=[news.thumbnail])
 
+            # update thumbnail status when news status is updated
+            # this will fix the error wherein a thumbnail image
+            # can be viewed only when logged in.
+            thumbnail = news.thumbnail
+            if thumbnail:
+                thumbnail.status_detail = news.status_detail
+                thumbnail.save()
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % news)
 
             return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
