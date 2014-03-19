@@ -1020,6 +1020,9 @@ table.pricing-list .price-disabled label {
     z-index: 0;
 }
 
+.t .fb-like-event {
+	margin: 0px;
+}
 
 @media (max-width: 768px){
 	.month-view .calendar-wrap .month-wrap,

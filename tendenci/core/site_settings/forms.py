@@ -109,13 +109,16 @@ def build_settings_form(user, settings):
         except DjangoUnicodeDecodeError:
             setting_value = ''
 
-        if setting.input_type == 'text':
+        if setting.input_type in ['text', 'textarea']:
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
                 'initial': setting_value,
                 'required': False
             }
+            if setting.input_type == 'textarea':
+                options['widget'] = forms.Textarea(attrs={'rows': 5, 'cols': 30});
+
             if setting.client_editable:
                 fields.update({"%s" % setting.name: forms.CharField(**options)})
             else:

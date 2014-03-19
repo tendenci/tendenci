@@ -16,9 +16,14 @@
 {% block extra_head %}
 {% meta_og_image event "image" %}
 {% meta_og_image event "description" %}
+<meta name="fb:app_id" content="{{ MODULE_SOCIAL_MEDIA_FB_APP_ID }}" />
+<meta name="og:title" content="{{ MODULE_SOCIAL_MEDIA_OG_TITLE }}" />
+<meta name="og:description" content="{{ MODULE_SOCIAL_MEDIA_OG_DESCRIPTION }}" />
+
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/social-media-icons.css">
 {% endblock %}
 
 {% block body %}
@@ -235,7 +240,9 @@
             {% endif %}
             
             {% url event event.pk as the_url %}
-            <p>{% fb_like_button_iframe the_url %}</p>
+            <p class="fb-like-event">{% fb_like_button_iframe the_url %}</p>
+
+            {% include 'social_media/icons.html' %}
 		</div> <!-- end vitals -->
 
 		<div style="clear:both;"></div>
@@ -248,6 +255,7 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/social_media_icons.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 

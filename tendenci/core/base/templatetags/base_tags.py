@@ -24,7 +24,7 @@ register = Library()
 
 
 @register.inclusion_tag("base/fb_like_iframe.html")
-def fb_like_button_iframe(url, show_faces='false', width=400, height=55):
+def fb_like_button_iframe(url, show_faces='false', width=400, height=40):
     from tendenci.core.site_settings.utils import get_setting
     site_url = get_setting('site', 'global', 'siteurl')
     url = '%s%s' % (site_url,url)

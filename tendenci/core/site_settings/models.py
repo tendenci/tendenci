@@ -9,6 +9,7 @@ from tendenci.core.site_settings.crypt import encrypt, decrypt
 
 INPUT_TYPE_CHOICES = (
     ('text','Text'),
+    ('textarea', 'Textarea'),
     ('select','Select'),
     ('file', 'File'),
 )

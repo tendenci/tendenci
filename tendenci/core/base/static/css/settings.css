@@ -29,3 +29,6 @@ form.settings-form input[type="text"] {
 	font-size: 14px;
 }
 
+form.settings-form textarea {
+	display: block;
+}

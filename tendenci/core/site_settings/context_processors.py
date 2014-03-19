@@ -1,5 +1,6 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
+from django.template import Context, Template
 
 from tendenci import __version__ as version
 from tendenci.core.site_settings.models import Setting
@@ -31,6 +32,14 @@ def settings(request):
         if setting.data_type == 'int':
             if value.strip(): value = int(value.strip())
             else: value = 0 # default to 0
+        # Handle context for the social_media addon's
+        # contact_message setting
+        if setting.name == 'contact_message':
+            page_url = request.build_absolute_uri()
+            message_context = {'page_url': page_url}
+            message_context = Context(message_context)
+            message_template = Template(value)
+            value = message_template.render(message_context)
 
         contexts[context_key.upper()] = value
 
