@@ -74,9 +74,19 @@ def search(request, template_name="articles/search.html"):
         articles = articles.select_related()
 
     query = request.GET.get('q', None)
-    # Handle legacy tag links
-    if query and "tag:" in query:
-        return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('articles'), query.replace('tag:', '')))
+    if query:
+        # Handle legacy tag links
+        if "tag:" in query:
+            return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('articles'), query.replace('tag:', '')))
+
+        # Handle legacy category links
+        if "category:" in query or "sub_category:" in query:
+            key, name = query.split(':')
+            category = Category.objects.filter(name__iexact=name)
+            if category.exists():
+                return HttpResponseRedirect("%s?%s=%s" %(reverse('articles'), key, category[0].pk))
+            else:
+                return HttpResponseRedirect(reverse('articles'))
 
     tag = request.GET.get('tag', None)
     form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser)
