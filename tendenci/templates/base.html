@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load perm_tags %}
+{% load announcement_tags %}
 {# admin left for deprecation for custom templates/themes #}
 {% is_admin request.user as admin %}
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US"> 
@@ -15,6 +16,7 @@
     {% block meta_canonical_url %}{% endblock %}
     <link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css" />
     <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
+    <link href="{{ STATIC_URL }}css/announcements.css" rel="stylesheet" type="text/css" />
     {% block extra_head %}{% endblock %}
     <link href="{{ STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />
     {% if request.user.is_authenticated %}
@@ -57,6 +59,7 @@
         {% include "top_menu/user_top.html" %}
     {% endif %}
 {% endif %}
+{% emergency_announcement request.user %}
 {% endblock %}
 
 {% block html_body %}{% endblock %}
