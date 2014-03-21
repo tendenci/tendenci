@@ -78,7 +78,7 @@ function addAddon(prefix, addon, container){
             if(option_name=='addon'){
                 // assign addon selected
                 $(this).val(addon['pk']);
-            }else if(option_name[0] == addon['pk']){
+            }else if(option_name.split('_')[0] == addon['pk']){
                 $(this).val(addon['option']);
             }
         }
