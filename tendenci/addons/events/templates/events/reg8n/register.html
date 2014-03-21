@@ -238,7 +238,7 @@
 							
 							{% if not event.is_table and event.registration_configuration.allow_free_pass %}
 							<div class="free-pass-wrap">
-							<button class="fp_chk_btn">Check Free Pass Eligibility</button>
+							<button type="button" class="fp_chk_btn">Check Free Pass Eligibility</button>
 							*** for corporate members only
 							<div class="free-pass-message"></div>
 							<div class="fp-field">{{ form.use_free_pass }}<label for="id_registrant-{{ forloop_counter|add:'-1'}}-use_free_pass"> {{ form.use_free_pass.label }}</label></div>
@@ -248,7 +248,7 @@
 							{% if form.DELETE %}
 							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
 								<div class="delete-button-wrap">
-									<button class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
+									<button type="button" class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
 								</div>
 								
 								<noscript>
@@ -260,7 +260,7 @@
 							
 						</div>	
 						{% if forloop_counter == 1 and event.is_table %} 
-						<button class="btn" id="populate-fields">Auto fill guest(s) infomation
+						<button type="button" class="btn" id="populate-fields">Auto fill guest(s) infomation
 							<br /><small>Guests' company name, phone, etc are the same as mine</small></button>
 						{% endif %}
 					
@@ -272,7 +272,7 @@
 			
 			 {% if not event.is_table %}
             <div class="add-registrant-box">
-                <button id="add-another-btn" onClick="add_registrants(this, 'registrant'); return false;" title="Add another one before pressing Register & Pay">Add Another Registrant</button>
+                <button type="button" id="add-another-btn" onClick="add_registrants(this, 'registrant'); return false;" title="Add another one before pressing Register & Pay">Add Another Registrant</button>
             </div>
             {% endif %}
             
