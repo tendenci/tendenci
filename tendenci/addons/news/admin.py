@@ -23,6 +23,15 @@ class NewsAdmin(TendenciBaseModelAdmin):
                 'timezone',
                 )
         }),
+        ('Author', {'fields': ('first_name',
+                                 'last_name',
+                                 'google_profile',
+                                 'phone',
+                                 'fax',
+                                 'email',
+                                 ),
+                 'classes': ('contact',),
+        }),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
