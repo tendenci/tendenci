@@ -894,15 +894,17 @@ def users_not_in_groups(request, template_name='profiles/users_not_in_groups.htm
     if not request.user.profile.is_superuser:
         raise Http403
 
-    users = []
-    for user in User.objects.all():
+    # improve the query used to avoid timeouts
+    users = User.objects.filter(group_member__isnull=True)
+
+    # check if a user has profile. create a profile if no profile
+    # exists for the user. This would be the self healing process.
+    for usr in users:
         try:
-            profile = Profile.objects.get(user=user)
-            if not profile.get_groups():
-                users.append(user)
+            profile = usr.profile
         except Profile.DoesNotExist:
-            pass
-    
+            Profile.objects.create_profile(user=usr)
+
     return render_to_response(template_name, {'users': users}, context_instance=RequestContext(request))
 
 @login_required
