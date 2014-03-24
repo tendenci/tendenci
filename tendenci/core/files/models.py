@@ -175,22 +175,23 @@ class File(TendenciBaseModel):
         #connection._rollback()    # comment it out because this line of code leads to IntegrityError for files that inherit File's model. 
 
         # send notification to administrator(s) and module recipient(s)
-        recipients = get_notice_recipients('module', 'files', 'filerecipients')
-        site_display_name = get_setting('site', 'global', 'sitedisplayname')
-        if self.owner:
-            owner = self.owner.get_full_name() or self.owner
-        else:
-            owner = "Unknown"
+        if self.file:
+            recipients = get_notice_recipients('module', 'files', 'filerecipients')
+            site_display_name = get_setting('site', 'global', 'sitedisplayname')
+            if self.owner:
+                owner = self.owner.get_full_name() or self.owner
+            else:
+                owner = "Unknown"
 
-        if recipients and notification:
-            notification.send_emails(recipients, 'file_deleted', {
-                'object': self,
-                'author': owner,
-                'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
-            })
+            if recipients and notification:
+                notification.send_emails(recipients, 'file_deleted', {
+                    'object': self,
+                    'author': owner,
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+                })
 
-        # delete actual file; do not save() self.instance
-        self.file.delete(save=False)
+            # delete actual file; do not save() self.instance
+            self.file.delete(save=False)
 
         # delete database record
         super(File, self).delete(*args, **kwargs)
