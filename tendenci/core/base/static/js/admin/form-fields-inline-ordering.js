@@ -148,6 +148,6 @@ function update_id_fields(row, new_position)
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('id', new_id);
     });
-    
+
     // Are there other element types...? Add here.
 }

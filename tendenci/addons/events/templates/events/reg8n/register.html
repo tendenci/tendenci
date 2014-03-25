@@ -198,11 +198,15 @@
 								{% if field.name == 'override' or field.name == 'override_price' %}
 								<div class="form-field admin-{{ field.name }} override">
 									<div class="error">{{ field.errors }}</div>
-									{% if field.name == 'override' %}
-									<div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{% trans field.label %}</label></div>
-									{% else %}
-									<div>{% trans field.label %} {{ field }}</div>
-									{% endif %}
+                                    {% if field|is_checkbox %}
+                                        <div>{{ field }} {% trans field.label %}</div>
+                                    {% else %}
+    									{% if field.name == 'override' %}
+    									<div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{% trans field.label %}</label></div>
+    									{% else %}
+    									<div>{% trans field.label %} {{ field }}</div>
+    									{% endif %}
+                                    {% endif %}
 									{% if field.help_text %}
 				                    <div class="help-text">{{ field.help_text }}</div>   
 				                    {% endif %}
@@ -223,9 +227,20 @@
                                 </div>
                                 {% else %}
 								<div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
-									<div class="error">{{ field.errors }}</div>
+                                    {% if field|is_checkbox %}
+                                    <div class="checkbox">
+                                        <div class="error">{{ field.errors }}</div>
+                                        <div class="field">{{ field }}</div>
+                                        <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                                        {% if field.help_text %}
+                                        <div class="help-text">{{ field.help_text }}</div>   
+                                        {% endif %}
+                                    </div>
+                                    <div style="clear: both"><!-- IE7 --></div>
+                                    {% else%}
 									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
 									<div class="field">{{ field }}</div>
+                                    {% endif %}
 									{% if field.help_text %}
 				                    <div class="help-text">{{ field.help_text }}</div>   
 				                    {% endif %}
