@@ -8,7 +8,7 @@ $('.email-verification-0').each(function() {
             // Updated stored value
             $(this).data('oldVal', $(this).val());
             var otherval = $(this).parent().children('.email-verification-1').val();
-            if(($(this).val() != otherval) && (otherval !='') && (otherval != 'Email')) {
+            if(($(this).val() != otherval) && (otherval !='') && (otherval != 'Confirm Email')) {
                 $(this).parent().children('.email-verfication-error').show();
             }else {
                 $(this).parent().children('.email-verfication-error').hide();
@@ -36,7 +36,7 @@ $('.email-verification-1').each(function() {
                 $(this).parent().children('.email-verfication-error').hide();
             }
 
-            if ($(this).val() === '' || $(this).val() === 'Email')
+            if ($(this).val() === '' || $(this).val() === 'Confirm Email')
                 $(this).parent().children('.email-verfication-error').hide();
         }
     });

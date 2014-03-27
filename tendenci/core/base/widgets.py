@@ -64,9 +64,11 @@ class EmailVerificationWidget(MultiWidget):
         email0_attrs = attrs.copy()
         email0_attrs['class'] = email_class_0
         email0_attrs['maxlength'] = 75
+        email0_attrs['title'] = 'Email'
         email1_attrs = attrs.copy()
         email1_attrs['class'] = email_class_1
         email1_attrs['maxlength'] = 75
+        email1_attrs['title'] = 'Confirm Email'
 
         widgets = (TextInput(attrs=email0_attrs),
                    TextInput(attrs=email1_attrs))

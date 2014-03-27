@@ -103,7 +103,8 @@ class FormForForm(forms.ModelForm):
             
             self.fields[field_key] = field_class(**field_args)
 
-            self.fields[field_key].widget.attrs['title'] = field.label
+            if not field_class == EmailVerificationField:
+                self.fields[field_key].widget.attrs['title'] = field.label
 
         # include pricing options if any
         if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():
