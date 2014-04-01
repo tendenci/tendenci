@@ -60,6 +60,13 @@
                 </div>
         {% endif %}
 
+        {% if resume.awards %}
+                <div class="section-block">
+                    <div class="label">{% trans "Awards and Certifications" %}</div>
+                    <div class="value">{{ resume.awards|safe|linebreaks }}</div>
+                </div>
+        {% endif %}
+
         {% if resume.skills %}
                 <div class="section-block">
                     <div class="label">{% trans "Skills" %}</div>

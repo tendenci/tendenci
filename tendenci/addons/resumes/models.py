@@ -29,6 +29,7 @@ class Resume(TendenciBaseModel):
     location = models.CharField(max_length=500, blank=True)  # cannot be foreign, needs to be open 'Texas' 'All 50 States' 'US and International'
     skills = models.TextField(blank=True)
     experience = models.TextField(blank=True)
+    awards = models.TextField(_('Awards and Certifications'), blank=True)
     education = models.TextField(blank=True)
     is_agency = models.BooleanField()  # defines if the resume posting is by a third party agency
 
