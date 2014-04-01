@@ -31,7 +31,8 @@ from tendenci.addons.memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from tendenci.addons.memberships.utils import csv_to_dict, NoMembershipTypes
 from tendenci.addons.memberships.utils import normalize_field_names
 from tendenci.addons.memberships.utils import (
-    get_membership_type_choices, get_corporate_membership_choices, get_selected_demographic_fields)
+    get_membership_type_choices, get_corporate_membership_choices, get_selected_demographic_fields,
+    get_ud_file_instance)
 from tendenci.addons.memberships.widgets import (
     CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget)
 from tendenci.addons.memberships.utils import get_notice_token_help_text
@@ -2219,7 +2220,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                     membership_app=app, display=True)
                 if ud_field.field_type == u'FileField':
                     self.fields[field_name] = forms.FileField(label=ud_field.label, required=False)
-                    file_instance = get_ud_file_isntance(demographics, field_name)
+                    file_instance = get_ud_file_instance(demographics, field_name)
 
                     if file_instance:
                         self.fields[field_name].initial = file_instance.file
@@ -2484,14 +2485,14 @@ class MembershipDefaultForm(TendenciBaseForm):
                     # check if cleared:
                     clear = request.POST.get('%s-clear' % field_name, False)
                     if clear:
-                        file_instance = get_ud_file_isntance(demographics, field_name)
+                        file_instance = get_ud_file_instance(demographics, field_name)
 
                         if file_instance:
                             file_instance.delete()
                             setattr(demographics, field_name, '')
 
                     if new_file:
-                        file_instance = get_ud_file_isntance(demographics, field_name)
+                        file_instance = get_ud_file_instance(demographics, field_name)
 
                         if file_instance:
                             file_instance.file = new_file
@@ -2514,31 +2515,6 @@ class MembershipDefaultForm(TendenciBaseForm):
         # ***** end demographics *****
 
         return membership
-
-
-def get_ud_file_isntance(demographics, field_name):
-    data = getattr(demographics, field_name, '')
-    if not data:
-        return None
-
-    try:
-        pk = eval(data).get('pk')
-    except Exception as e:
-        pk = 0
-
-    file_id = 0
-    if pk:
-        try:
-            file_id = int(pk)
-        except Exception as e:
-            file_id = 0
-
-    try:
-        file_instance = MembershipFile.objects.get(pk=file_id)
-    except MembershipFile.DoesNotExist:
-        file_instance = None
-
-    return file_instance
 
 
 class MembershipForm(TendenciBaseForm):

@@ -33,6 +33,7 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipDemographic,
                                                 MembershipApp,
                                                 MembershipAppField,
+                                                MembershipFile,
                                                 VALID_MEMBERSHIP_STATUS_DETAIL)
 from tendenci.core.base.utils import normalize_newline, UnicodeWriter
 from tendenci.apps.profiles.models import Profile
@@ -228,6 +229,31 @@ def get_selected_demographic_field_names(membership_app=None):
         if field_name in demographic_field_names:
             selected_field_names.append(field_name)
     return selected_field_names
+
+
+def get_ud_file_instance(demographics, field_name):
+    data = getattr(demographics, field_name, '')
+    if not data:
+        return None
+
+    try:
+        pk = eval(data).get('pk')
+    except Exception as e:
+        pk = 0
+
+    file_id = 0
+    if pk:
+        try:
+            file_id = int(pk)
+        except Exception as e:
+            file_id = 0
+
+    try:
+        file_instance = MembershipFile.objects.get(pk=file_id)
+    except MembershipFile.DoesNotExist:
+        file_instance = None
+
+    return file_instance
 
 
 def get_membership_rows(
