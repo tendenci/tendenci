@@ -71,7 +71,7 @@
         <h1>{{ app.name }}</h1>
         {{ app.description|safe }}
 
-       <form action="" method="post">{% csrf_token %}
+       <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
            
       {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or captcha_form.errors.values %}
         <div class="form-errors">

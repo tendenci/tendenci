@@ -563,10 +563,16 @@ class MembershipDefault(TendenciBaseModel):
             if field_name.startswith('ud'):
                 field_label = field_dict.get(field_name, field_name)
                 if hasattr(demographic, field_name):  # catches broken db relationships
-                    field_list.append((
-                        field_label,
-                        getattr(demographic, field_name)
-                    ))
+                    data = getattr(demographic, field_name)
+                    try:
+                        is_file = eval(data).get('type') == u'file'
+                    except Exception as e:
+                        is_file = False
+
+                    if is_file: 
+                        field_list.append((field_label, eval(data).get('html')))
+                    else:
+                        field_list.append((field_label, data))
 
         if is_blank(dict(field_list).values()):
             return []  # empty list
@@ -3457,6 +3463,14 @@ class MembershipDemographic(models.Model):
     ud28 = models.TextField(blank=True, default=u'', null=True)
     ud29 = models.TextField(blank=True, default=u'', null=True)
     ud30 = models.TextField(blank=True, default=u'', null=True)
+
+
+class MembershipFile(File):
+    """
+    This model will be used as handlers of File upload assigned
+    to User Defined fields for the under Membership demographics
+    """
+    pass
 
 
 # Moved from management/__init__.py to here because it breaks

@@ -1733,7 +1733,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
     if join_under_corporate:
         params['authentication_method'] = authentication_method
 
-    demographics_form = DemographicsForm(app_fields, request.POST or None)
+    demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None)
 
     if user:
         [membership] = user.membershipdefault_set.filter(
@@ -1801,7 +1801,6 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
             # form is valid
             if all(forms_validate):
-
                 customer = user_form.save()
 
                 if user:

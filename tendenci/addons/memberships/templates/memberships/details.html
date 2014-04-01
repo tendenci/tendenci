@@ -421,7 +421,7 @@
                 {% if value %}
                 <div class="field">
                     <div class="label">{{ label }}</div>
-                    <div class="value">{{ value }}</div>
+                    <div class="value">{{ value|safe }}</div>
                 </div>
                 {% endif %}
             {% endfor %}
