@@ -13,11 +13,11 @@ try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
-    
+
+
 class PageAdmin(admin.ModelAdmin):
     list_display = ('view_on_site', 'edit_link', 'title', 'link', 'syndicate', 
-                    'allow_anonymous_view',
-                    'status_detail')
+                    'allow_anonymous_view','status_detail', 'tags')
     search_fields = ('title','content',)
     fieldsets = (
         (None, {'fields': ('title', 'slug', 'content', 'tags', 'template')}),
@@ -49,10 +49,11 @@ class PageAdmin(admin.ModelAdmin):
         return '<a href="%s" title="%s">%s</a>' % (
             obj.get_absolute_url(),
             obj.title,
-            obj.slug                                         
+            obj.slug
         )
     link.allow_tags = True
-    
+    link.admin_order_field = 'slug'
+
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:pages_page_change', args=[obj.pk])
         return link
@@ -81,7 +82,7 @@ class PageAdmin(admin.ModelAdmin):
             'request': request,
             'instance': object,
         }
-        EventLog.objects.log(**log_defaults)           
+        EventLog.objects.log(**log_defaults)
 
     def log_change(self, request, object, message):
         super(PageAdmin, self).log_change(request, object, message)
@@ -94,7 +95,7 @@ class PageAdmin(admin.ModelAdmin):
             'request': request,
             'instance': object,
         }
-        EventLog.objects.log(**log_defaults)               
+        EventLog.objects.log(**log_defaults)
 
     def log_addition(self, request, object):
         super(PageAdmin, self).log_addition(request, object)
@@ -108,7 +109,7 @@ class PageAdmin(admin.ModelAdmin):
             'instance': object,
         }
         EventLog.objects.log(**log_defaults)
-            
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         instance = update_perms_and_save(request, form, instance)
