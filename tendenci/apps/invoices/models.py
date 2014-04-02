@@ -232,6 +232,9 @@ class Invoice(models.Model):
             _object = self._object
         except:
             pass
+        # exclude the soft deleted object
+        if _object and hasattr(_object, 'status') and (not _object.status):
+            _object = None
         return _object
 
     def get_status(self):
