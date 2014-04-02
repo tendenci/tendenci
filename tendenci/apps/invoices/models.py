@@ -232,7 +232,10 @@ class Invoice(models.Model):
             _object = self._object
         except:
             pass
-        # exclude the soft deleted object
+        # exclude the soft deleted object - when an object is soft deleted,
+        # its slug is appended with "@ + object.pk", which causes error on 
+        # resolving url (on invoice search and detail pages) because "@" 
+        # is not valid in the slug url pattern.
         if _object and hasattr(_object, 'status') and (not _object.status):
             _object = None
         return _object
