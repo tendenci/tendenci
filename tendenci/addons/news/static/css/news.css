@@ -105,6 +105,10 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 	width: 80px;
 }
 
+div.forms div.form-field div.id_google_profile .popover-content {
+    width: 250px;
+}
+
 /* News Print View
  ------------------------- */
 .t-print .news-wrap {

@@ -46,14 +46,8 @@ SEARCH_CATEGORIES = (
     ('tags__icontains', 'Tags'),
 )
 
-INSTRUCTIONS_HTML = '' + \
-    '<p>1. Add a reciprocal link back from your profile to the site(s) you just updated.</p>' + \
-    '<p>2. Edit the Contributor To section.</p>' + \
-    '<p>3. In the dialog that appears, click Add custom link, and then enter the website URL.</p>' + \
-    '<p>4. If you want, click the drop-down list to specify who can see the link.</p>' + \
-    '<p>5. Click Save.</p>'
 GOOGLE_PLUS_HELP_TEXT = 'Add this website as a place you Contribute to in your Profile - ' + \
-    '<i class="fa fa-question-circle" title="'+INSTRUCTIONS_HTML+'"></i>'
+    '<i class="fa fa-question-circle"></i>'
 
 
 class ArticleSearchForm(forms.Form):
