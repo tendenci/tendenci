@@ -24,16 +24,14 @@ class Command(BaseCommand):
                     'send_corp_membership_notices',
                     'clean_old_exports',
                     'delete_soft_deleted_items',
+                    'update_dashboard_stats',
+                    'collect_metrics'
                     )
         for c in commands:
             try:
                 call_command(c)
             except:
                 pass
-
-        # Use Popen for longrunning tasks with heavy queries.
-        subprocess.Popen(['python', 'manage.py', 'update_dashboard_stats'])
-        subprocess.Popen(['python', 'manage.py', 'collect_metrics'])
 
         if all([get_setting('module', 'recurring_payments', 'enabled'),
                 getattr(settings, 'MERCHANT_LOGIN', ''),
