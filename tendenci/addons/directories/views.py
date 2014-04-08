@@ -3,6 +3,7 @@ from PIL import Image
 import subprocess, time
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -119,7 +120,7 @@ def print_view(request, slug, template_name="directories/print-view.html"):
 @login_required
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
     can_add_active = has_perm(request.user,'directories.add_directory')
-    
+
     if not any([request.user.profile.is_superuser,
                can_add_active,
                get_setting('module', 'directories', 'usercanadd'),
@@ -135,7 +136,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
     
     form = form_class(request.POST or None, request.FILES or None, user=request.user)
-    
+
     if not require_payment:
         del form.fields['payment_method']
         del form.fields['list_type']
@@ -160,10 +161,10 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.requested_duration = 30
             if not directory.list_type:
                 directory.list_type = 'regular'
-            
+
             if not directory.slug:
                 directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
-            
+
             if not can_add_active:
                 directory.status = True
                 directory.status_detail = 'pending'
@@ -172,13 +173,13 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
 
-            directory = update_perms_and_save(request, form, directory)               
-                        
+            directory = update_perms_and_save(request, form, directory)
+
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % directory)
-            
+
             # send notification to administrators
             # get admin notice recipients
             recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
@@ -189,14 +190,14 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                         'request': request,
                     }
                     notification.send_emails(recipients,'directory_added', extra_context)
-                    
+
             if directory.payment_method.lower() in ['credit card', 'cc']:
                 if directory.invoice and directory.invoice.balance > 0:
                     return HttpResponseRedirect(reverse('payment.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
-            if can_add_active:  
-                return HttpResponseRedirect(reverse('directory', args=[directory.slug])) 
+            if can_add_active:
+                return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
             else:
-                return HttpResponseRedirect(reverse('directory.thank_you'))             
+                return HttpResponseRedirect(reverse('directory.thank_you'))
 
     return render_to_response(template_name,
                               {'form': form,
@@ -224,20 +225,20 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 
     if not has_perm(request.user,'directories.change_directory', directory):
         raise Http403
-    
+
     form = form_class(request.POST or None, request.FILES or None, 
                       instance=directory, 
                       user=request.user)
-    
+
     del form.fields['payment_method']
     if not request.user.profile.is_superuser:
         del form.fields['pricing']
         del form.fields['list_type']
-    
+
     if request.method == "POST":
         if form.is_valid():
             directory = form.save(commit=False)
-            
+
             if directory.logo:
                 try:
                     directory.logo.file.seek(0)
@@ -246,21 +247,9 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
 
-            # resize the image that has been uploaded
-            if directory.logo:
-                if settings.USE_S3_STORAGE:
-                    resize_s3_image(directory.logo.name)
-                else:
-                    try:
-                        logo = Image.open(directory.logo.path)
-                        logo.thumbnail((200,200),Image.ANTIALIAS)
-                        logo.save(directory.logo.path)
-                    except:
-                        pass
-
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % directory)
-                                                                         
-            return HttpResponseRedirect(reverse('directory', args=[directory.slug]))             
+
+            return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
         else:
             form = form_class(instance=directory, user=request.user)
 
@@ -293,9 +282,9 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
         if form.is_valid():
             directory.meta = form.save() # save meta
             directory.save() # save relationship
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % directory)
-             
+
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
     else:
         form = form_class(instance=directory.meta)
@@ -352,7 +341,7 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
     if has_perm(request.user,'directories.add_directorypricing'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
-            if form.is_valid():           
+            if form.is_valid():
                 directory_pricing = form.save(commit=False)
                 directory_pricing.status = 1
                 directory_pricing.save(request.user)
@@ -381,14 +370,14 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
     
     if request.method == "POST":
         form = form_class(request.POST, instance=directory_pricing, user=request.user)
-        if form.is_valid():           
+        if form.is_valid():
             directory_pricing = form.save(commit=False)
             directory_pricing.save(request.user)
-            
+
             return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
     else:
         form = form_class(instance=directory_pricing, user=request.user)
-       
+
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
 
@@ -397,7 +386,7 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
 @login_required
 def pricing_view(request, id, template_name="directories/pricing-view.html"):
     directory_pricing = get_object_or_404(DirectoryPricing, id=id)
-    
+
     if has_perm(request.user,'directories.view_directorypricing',directory_pricing):        
         EventLog.objects.log(instance=directory_pricing)
 
@@ -413,17 +402,17 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
     directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
 
     if not has_perm(request.user,'directories.delete_directorypricing'): raise Http403
-       
+
     if request.method == "POST":
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory_pricing)
-        
+
         #directory_pricing.delete()
         # soft delete
         directory_pricing.status = False
         directory_pricing.save()
-            
+
         return HttpResponseRedirect(reverse('directory_pricing.search'))
-    
+
     return render_to_response(template_name, {'directory_pricing': directory_pricing}, 
         context_instance=RequestContext(request))
 
@@ -442,7 +431,7 @@ def pricing_search(request, template_name="directories/pricing-search.html"):
 def pending(request, template_name="directories/pending.html"):
     can_view_directories = has_perm(request.user, 'directories.view_directory')
     can_change_directories = has_perm(request.user, 'directories.change_directory')
-    
+
     if not all([can_view_directories, can_change_directories]):
         raise Http403
 
@@ -458,10 +447,10 @@ def pending(request, template_name="directories/pending.html"):
 def approve(request, id, template_name="directories/approve.html"):
     can_view_directories = has_perm(request.user, 'directories.view_directory')
     can_change_directories = has_perm(request.user, 'directories.change_directory')
-    
+
     if not all([can_view_directories, can_change_directories]):
         raise Http403
-    
+
     directory = get_object_or_404(Directory, pk=id)
 
     if request.method == "POST":
@@ -480,7 +469,7 @@ def approve(request, id, template_name="directories/approve.html"):
             directory.owner_username = request.user.username
 
         directory.save()
-        
+
         # send email notification to user
         recipients = [directory.creator.email]
         if recipients:
@@ -510,32 +499,32 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
     can_add_active = has_perm(request.user,'directories.add_directory')
     require_approval = get_setting('module', 'directories', 'renewalrequiresapproval')
     directory = get_object_or_404(Directory, pk=id)
-    
+
     if not has_perm(request.user,'directories.change_directory', directory) or not request.user == directory.creator:
         raise Http403
-    
+
     # pop payment fields if not required
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
     form = form_class(request.POST or None, request.FILES or None, instance=directory, user=request.user)
     if not require_payment:
         del form.fields['payment_method']
         del form.fields['list_type']
-    
+
     if request.method == "POST":
-        if form.is_valid():           
+        if form.is_valid():
             directory = form.save(commit=False)
             pricing = form.cleaned_data['pricing']
-            
+
             if directory.payment_method: 
                 directory.payment_method = directory.payment_method.lower()
             if not directory.requested_duration:
                 directory.requested_duration = 30
             if not directory.list_type:
                 directory.list_type = 'regular'
-            
+
             if not directory.slug:
                 directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
-            
+
             if not can_add_active and require_approval:
                 directory.status = True
                 directory.status_detail = 'pending'
@@ -546,13 +535,13 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
                 # mark renewal as not sent for new exp date
                 directory.renewal_notice_sent = False
             # update all permissions and save the model
-            directory = update_perms_and_save(request, form, directory)             
-                        
+            directory = update_perms_and_save(request, form, directory)
+
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully renewed %s' % directory)
-            
+
             # send notification to administrators
             # get admin notice recipients
             recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
@@ -571,8 +560,8 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
                 return HttpResponseRedirect(reverse('directory', args=[directory.slug])) 
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))  
-        
-    
+
+
     return render_to_response(template_name, {'directory':directory, 'form':form}, 
         context_instance=RequestContext(request))
 
