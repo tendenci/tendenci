@@ -99,8 +99,9 @@ class LocationForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs): 
         super(LocationForm, self).__init__(*args, **kwargs)
 
-        if not self.user.profile.is_superuser:
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+        if self.user:
+            if not self.user.profile.is_superuser:
+                if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         if self.instance.logo:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.logo.pk, basename(self.instance.logo.file.name))

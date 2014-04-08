@@ -14,13 +14,25 @@ class LocationAdmin(TendenciBaseModelAdmin):
             'fields': ('location_name',
 #                       'slug',
                        'description',
+                       'latitude',
+                       'longitude',
+#                       'photo_upload',
+                       'hq',
+            )
+        }),
+        ('Contact', {
+            'fields': ('contact',
+                       'address',
+                       'address2',
                        'city',
+                       'state',
                        'zipcode',
-                       'contact',
-                       'email',
+                       'country',
                        'phone',
+                       'fax',
+                       'email',
                        'website',
-                )
+            )
         }),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
