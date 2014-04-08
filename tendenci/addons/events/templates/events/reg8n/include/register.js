@@ -41,4 +41,10 @@ $(document).ready(function(){
             }
         );
     });
+
+    $('#registration-form').submit(function() {
+        $(this).find('#register-button').off('click').on('click', function() {
+            return false;
+        }).css('opacity', '0.5');
+    });
 });

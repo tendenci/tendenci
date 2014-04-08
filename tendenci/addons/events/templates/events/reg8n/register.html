@@ -90,7 +90,7 @@
     
 
     <div class="form-wrap">
-        <form action="" method="post">{% csrf_token %}
+        <form id="registration-form" action="" method="post">{% csrf_token %}
         <div class="forms">
         
             <div id="reg-form-wrap">
@@ -356,7 +356,7 @@
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
-            <input type="submit" name="submit" id="register-button" class="registration-green-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
+            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
             
             <div class="clear"></div>
         </div>
