@@ -57,7 +57,8 @@
                         <div class="event-recurring"></div>
                         {% endif %}
                         <a href="{{ event.get_absolute_url }}" class="time-stamp">{{ event.start_dt|date:"f a" }}</a>
-                        <a href="{{ event.get_absolute_url }}" class="event-title">{{ event.title|slice:":15" }}&nbsp;...</a>
+                        <a href="{{ event.get_absolute_url }}" class="event-title">{{ event.title }}</a>
+                        <br><a href="{{ event.get_absolute_url }}">{{ event.description|striptags|safe|truncatewords:5 }}</a>
                         <a class='click-mask' href="{{ event.get_absolute_url }}"></a>
                     </div>
                     {% endfor %}
