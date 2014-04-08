@@ -6,6 +6,7 @@ from mimetypes import guess_type
 from django.conf import settings
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
+from django.contrib.admin.util import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
@@ -55,7 +56,7 @@ class FormAdmin(TendenciBaseModelAdmin):
 
     inlines = (PricingAdmin, FieldAdmin,)
     list_display = ("title", "id", "intro", "email_from", "email_copies",
-        "admin_link_export", "admin_link_view")
+        "admin_link_export", 'export_all_link', "admin_link_view")
     list_display_links = ("title",)
 #    list_filter = ("status",)
     search_fields = ("title", "intro", "response", "email_from",
@@ -95,6 +96,23 @@ class FormAdmin(TendenciBaseModelAdmin):
             '%sjs/admin/form-field-dynamic-hiding.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+
+    def export_all_link(self, obj):
+        link = '-----'
+        if obj.has_files():
+            link = '<a href="%s" title="Export all">Export entries (including uploaded files)</a>' % reverse('form_entries_export_full', args=[obj.pk])
+        return link
+    export_all_link.allow_tags = True
+    export_all_link.short_description = ''
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        obj = self.get_object(request, unquote(object_id))
+
+        #check if the form has file fields
+        extra_context = extra_context or {}
+        extra_context['has_files'] = obj.has_files()
+
+        return super(FormAdmin, self).change_view(request, object_id, form_url, extra_context)
 
     def get_urls(self):
         """
