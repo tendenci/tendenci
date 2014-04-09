@@ -186,7 +186,7 @@
 
                     {% if span.same_date %}
                         <div class="line">
-                            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j, Y" }}</span>
+                            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, N j, Y" }}</span>
                         </div>
                         {% if not forloop.last %} and {% endif %}
                     {% else %}
