@@ -49,7 +49,7 @@
                 {% event_list day 'single_day' as events %}
                 {% if events %}
                     {% for event in events %}
-                    <div class="event-item" title="{{ event.type }}: {{ event }}" style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}">
+                    <div class="event-item" title="{{ event.type }}: {{ event }}" style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}" itemscope itemtype="http://schema.org/Event">
                         {% if event.priority %}
                         <div class="event-priority"></div>
                         {% endif %}
@@ -57,8 +57,11 @@
                         <div class="event-recurring"></div>
                         {% endif %}
                         <a href="{{ event.get_absolute_url }}" class="time-stamp">{{ event.start_dt|date:"f a" }}</a>
-                        <a href="{{ event.get_absolute_url }}" class="event-title">{{ event.title }}</a>
-                        <br><a href="{{ event.get_absolute_url }}">{{ event.description|striptags|safe|truncatewords:5 }}</a>
+                        <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
+                            <span itemprop="name">{{ event.title }}</span>
+                        </a>
+                        <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
+                        <br><a href="{{ event.get_absolute_url }}" itemprop="description">{{ event.description|striptags|safe|truncatewords:5 }}</a>
                         <a class='click-mask' href="{{ event.get_absolute_url }}"></a>
                     </div>
                     {% endfor %}

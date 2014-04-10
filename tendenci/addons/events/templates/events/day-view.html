@@ -50,9 +50,10 @@
 
     {% event_list date type 'single_day' as events %}
 	{% for event in events %}
-		<div class="event-wrap">
+		<div class="event-wrap" itemscope itemtype="http://schema.org/Event">
 			<div class="event-sidebar">
                 <div class="time-stamp">{{ event.start_dt|date:"f A" }}</div>
+                <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
             {% if event.start_dt|date:"D, M. j, Y" != event.end_dt|date:"D, M. j, Y" %}
                 <div class="ongoing-event">{% trans 'Multi-day Event' %}</div>
             {% endif %}
@@ -79,8 +80,9 @@
 				<h3>{% if event.priority %}
                         <div class="event-priority"></div>
                     {% endif %}
-                    <a href="{% url event event.pk %}">{{ event.title }}</a></h3>
-				<div class="description">{{ event.description|safe }}</div>
+                    <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
+                </h3>
+				<div class="description" itemprop="description">{{ event.description|safe }}</div>
 
 				{% if event.registration_configuration.enabled %}
 
