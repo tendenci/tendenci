@@ -624,7 +624,7 @@ class UserForm(forms.ModelForm):
         self_fields_keys = self.fields.keys()
 
         is_renewal = 'username' in self.request.GET
-        if self.request.user.is_superuser and is_renewal:
+        if (self.request.user.is_superuser and is_renewal) or (self.instance and self.instance.pk):
             if 'username' in self_fields_keys:
                 self_fields_keys.remove('username')
             if 'password' in self_fields_keys:
@@ -796,9 +796,10 @@ class DemographicsForm(forms.ModelForm):
     class Meta:
         model = MembershipDemographic
 
-    def __init__(self, app_field_objs, *args, **kwargs):
+    def __init__(self, app_field_objs,request=None, membership=None, *args, **kwargs):
         super(DemographicsForm, self).__init__(*args, **kwargs)
         assign_fields(self, app_field_objs)
+        self.request = request
         self.field_names = [name for name in self.fields.keys()]
         self.file_upload_fields = {}
         # change the default widget to TextInput instead of TextArea
@@ -810,18 +811,54 @@ class DemographicsForm(forms.ModelForm):
             if field.widget.__class__.__name__.lower() == 'selectdatewidget':
                 field.widget.years = range(1920, THIS_YEAR + 10)
 
+        if membership:
+            self.app = membership.app
+            self.demographics = membership.demographics
+
+        if self.app:
+            demographic_fields = get_selected_demographic_fields(self.app, forms)
+            for field_name, field in demographic_fields:
+                self.fields[field_name] = field
+                # set initial value
+                if self.demographics:
+                    ud_field = MembershipAppField.objects.get(field_name=field_name,
+                        membership_app=self.app, display=True)
+                    if ud_field.field_type == u'FileField':
+                        self.fields[field_name] = forms.FileField(label=ud_field.label, required=False)
+                        file_instance = get_ud_file_instance(self.demographics, field_name)
+
+                        if file_instance:
+                            self.fields[field_name].initial = file_instance.file
+
+                    else:
+                        self.fields[field_name].initial = getattr(demographics, field_name)
+
     def save(self, commit=True, *args, **kwargs):
         pks ={}
         if self.file_upload_fields:
             for key in self.file_upload_fields.keys():
-                file_instance = self.cleaned_data.get(key)
-                if file_instance:
-                    new_file = MembershipFile(file=file_instance)
-                    new_file.save()
+                new_file = self.cleaned_data.get(key, None)
+                clear = self.request.POST.get('%s-clear' % key, False)
+                if clear and not new_file:
+                    file_instance = get_ud_file_instance(self.demographics, key)
+                    if file_instance:
+                        file_instance.delete()
+                        data = u''
+                        pks.update({ key : data })
+
+                if new_file:
+                     file_instance = get_ud_file_instance(self.demographics, key)
+
+                     if file_instance:
+                        file_instance.file = new_file
+                    else:
+                        file_instance = MembershipFile(file=new_file)
+
+                    file_instance.save()
                     data = {
                         'type' : u'file',
-                        'pk' : unicode(new_file.pk),
-                        'html' : '<a href="%s" target="blank">View here</a>' % new_file.get_absolute_url(),
+                        'pk' : unicode(file_instance.pk),
+                        'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                     }
                     data = unicode(data)
                     pks.update({ key : data })
@@ -940,6 +977,10 @@ class MembershipDefault2Form(forms.ModelForm):
 
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
+
+        if self.instance and self.instance.pk:
+            self.fields['membership_type'].widget.attrs['readonly'] = True
+            del self.fields['discount_code']
 
     def save(self, *args, **kwargs):
         """
@@ -2484,7 +2525,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                     new_file = self.cleaned_data.get(field_name, None)
                     # check if cleared:
                     clear = request.POST.get('%s-clear' % field_name, False)
-                    if clear:
+                    if clear and not new_file:
                         file_instance = get_ud_file_instance(demographics, field_name)
 
                         if file_instance:

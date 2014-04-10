@@ -119,6 +119,8 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     """
     membership = get_object_or_404(MembershipDefault, pk=id)
 
+    member_can_edit_records = get_setting('module', 'memberships', 'member_edit')
+
     super_user_or_owner = (
         request.user.profile.is_superuser,
         request.user == membership.user)
@@ -149,7 +151,8 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     return render_to_response(
         template_name, {
-            'membership': membership
+            'membership': membership,
+            'member_can_edit_records' : member_can_edit_records
         }, context_instance=RequestContext(request))
 
 
@@ -1963,6 +1966,138 @@ def membership_default_add(request, slug='', template='memberships/applications/
         'demographics_form': demographics_form,
         'membership_form': membership_form,
         'captcha_form': captcha_form
+    }
+    return render_to_response(template, context, RequestContext(request))
+
+
+@login_required
+def membership_default_edit(request, id, template='memberships/applications/add.html', **kwargs):
+    """
+    Default membership application form for editing the membership entries.
+    """
+    member_can_edit_records = get_setting('module', 'memberships', 'member_edit')
+
+    if not member_can_edit_records:
+        raise Http404
+
+    membership = get_object_or_404(MembershipDefault, pk=id)
+    is_owner = request.user == membership.user
+    user = request.user
+
+    if not has_perm(request.user, 'memberships.change_membership', membership) and not is_owner:
+        raise Http403
+
+    app = membership.app
+
+    if not has_perm(request.user, 'memberships.view_app', app) and not is_owner:
+        raise Http403
+
+    if not app:
+        raise Http404
+
+    # get the fields for the app
+    app_fields = app.fields.filter(display=True)
+
+    if not request.user.profile.is_superuser:
+        app_fields = app_fields.filter(admin_only=False)
+
+    app_fields = app_fields.order_by('position')
+
+    app_fields = app_fields.exclude(field_name='corporate_membership_id')
+
+    user_form = UserForm(
+        app_fields,
+        request.POST or None,
+        request=request,
+        instance=user)
+
+    profile_form = ProfileForm(
+        app_fields,
+        request.POST or None,
+        instance=user.profile
+    )
+
+    params = {
+        'request_user': request.user,
+        'customer': user or request.user,
+        'membership_app': app,
+    }
+
+    demographics_form = DemographicsForm(
+        app_fields,
+        request,
+        membership,
+        request.POST or None,
+        request.FILES or None
+    )
+
+    membership_form = MembershipDefault2Form(app_fields,
+        request.POST or None, instance=membership,
+        multiple_membership=False, **params)
+
+    if request.method == 'POST':
+        membership_types = request.POST.getlist('membership_type')
+        post_values = request.POST.copy()
+        memberships = []
+        for membership_type in membership_types:
+            post_values['membership_type'] = membership_type
+            membership_form2 = MembershipDefault2Form(
+                app_fields, post_values, instance=membership, **params)
+
+            # tuple with boolean items
+            forms_validate = (
+                user_form.is_valid(),
+                profile_form.is_valid(),
+                demographics_form.is_valid(),
+                membership_form2.is_valid()
+            )
+
+            if all(forms_validate):
+                customer = user_form.save()
+
+                if user:
+                    customer.pk = user.pk
+                    customer.username = user.username
+                    customer.password = customer.password or user.password
+
+                if not hasattr(customer, 'profile'):
+                    Profile.objects.create_profile(customer)
+
+                profile_form.instance = customer.profile
+                profile_form.save(request_user=customer)
+
+                # save demographics
+                demographics = demographics_form.save(commit=False)
+                if hasattr(customer, 'demographics'):
+                    demographics.pk = customer.demographics.pk
+
+                demographics.user = customer
+                demographics.save()
+
+                membership = membership_form2.save(
+                    request=request,
+                    user=customer,
+                )
+
+                membership.save()
+
+                # log an event
+                EventLog.objects.log(instance=membership)
+
+        # redirect: membership edit page
+        if all(forms_validate):
+            messages.success(request, 'Successfully updated Membership Information.')
+            return redirect(reverse('membership.details', kwargs={'id': membership.id}))
+
+    context = {
+        'app': app,
+        'app_fields': app_fields,
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'demographics_form': demographics_form,
+        'membership_form': membership_form,
+        'is_edit': True,
+        'membership' : membership
     }
     return render_to_response(template, context, RequestContext(request))
 

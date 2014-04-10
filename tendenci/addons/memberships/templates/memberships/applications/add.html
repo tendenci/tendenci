@@ -71,9 +71,14 @@
         <h1>{{ app.name }}</h1>
         {{ app.description|safe }}
 
+        {% if is_edit %}
+        <p>Update your membership information.</p>
+        <span> Go back to your <a href="{% url membership.details membership.pk %}">Membership Info</a></span>
+        {% endif %}
+
        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-           
-      {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or captcha_form.errors.values %}
+
+      {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or captcha_form.errors.values and not is_edit %}
         <div class="form-errors">
             
             There were some problems in the form. Please review. Thanks!
@@ -132,7 +137,8 @@
                       {% endfor %}
                 {% endif %}
             {% endfor %}
-            
+
+            {% if not is_edit %}
             {% for field in captcha_form %}
                 {% if field.errors %}
                       {% for error in field.errors %}
@@ -140,6 +146,7 @@
                       {% endfor %}
                 {% endif %}
             {% endfor %}
+            {% endif %}
     
         </div>
       {% endif %}
@@ -157,7 +164,9 @@
         </div>
         {% endif %}
 
+        {% if not is_edit %}
         {{ captcha_form.as_p }}
+        {% endif %}
 
         <input class="btn" type="submit" name="submit" value="Submit" />
 

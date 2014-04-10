@@ -105,6 +105,11 @@ urlpatterns = patterns(
         "membership_default_add",
         name="membership_default.add"),
 
+    # membership default edit
+    url(r"^%s/applications/(?P<id>\d+)/edit/$" % urlpath,
+        "membership_default_edit",
+        name="membership_default.edit"),
+
     url(r"^%s/applications/$" % urlpath, "membership_applications", name="membership-applications"),
     url(r"^%s/referer-url/$" % urlpath, "referer_url", name="membership-referer-url"),
 

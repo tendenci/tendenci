@@ -53,15 +53,18 @@
             {% endif %}
         </ul>
         {% if nav_object %}
-            {% if can_view_memb or can_edit_memb %}
+            {% if can_view_memb or can_edit_memb or user == membership.user %}
             <ul>
                 <li class="heading">{% trans "This Member" %}</li>
                 <li class="divider"></li>
-                {% if can_view_memb or allow_view %}
+                {% if can_view_memb or allow_view or user == membership.user  %}
                     <li><a href="{{ nav_object.user.get_absolute_url }}">{% trans "View Profile" %}</a></li>
                 {% endif %}
                 {% if can_edit_memb %}
                     <li><a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">{% trans "Edit Membership" %}</a></li>
+                {% endif %}
+                {% if member_can_edit_records and user == membership.user %}
+                    <li><a href="{% url membership_default.edit membership.pk %}">{% trans "Edit Your Membership" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}

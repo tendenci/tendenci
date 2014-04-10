@@ -36,6 +36,9 @@
                 <a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">
                     {% trans "Edit Membership" %}</a>
                 {% endif %}
+                {% if member_can_edit_records and user == membership.user %}
+                <a href="{% url membership_default.edit membership.pk %}">{% trans "Edit Your Membership" %}</a>
+                {% endif %}
             </div>
             <div style="clear:both;"></div>
 

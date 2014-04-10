@@ -117,5 +117,23 @@
         "scope_category": "memberships", 
         "store": true, 
         "updated_by": ""
+    },
+
+    {
+        "default_value": "false", 
+        "description": "If true, members will be able to edit their membership records.", 
+        "data_type": "boolean", 
+        "update_dt": "2013-09-25 9:38:23", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "member_edit", 
+        "value": "false", 
+        "label": "Edit Membership Records", 
+        "input_value": "true, false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
     }
 ]
