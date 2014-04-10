@@ -160,7 +160,7 @@
         {% for membership in memberships %}
         		<tr>
         			<td>
-                        {% if request.user.profile.is_superuser %}
+                        {% if request.user.profile.is_superuser or request.user == membership.user %}
         				 <a href="{% url membership.details membership.pk %}">{{ membership.membership_type }}
         				</a>
                         {% else %}
