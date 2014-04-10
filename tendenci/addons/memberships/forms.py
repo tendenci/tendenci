@@ -987,7 +987,7 @@ class MembershipDefault2Form(forms.ModelForm):
         self.field_names = [name for name in self.fields.keys()]
 
         if self.instance and self.instance.pk:
-            self.fields['membership_type'].widget.attrs['readonly'] = True
+            self.fields['membership_type'].widget.attrs['disabled'] = 'disabled'
             del self.fields['discount_code']
 
     def save(self, *args, **kwargs):
