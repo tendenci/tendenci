@@ -796,10 +796,11 @@ class DemographicsForm(forms.ModelForm):
     class Meta:
         model = MembershipDemographic
 
-    def __init__(self, app_field_objs,request=None, membership=None, *args, **kwargs):
+    def __init__(self, app_field_objs, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        self.membership = kwargs.pop('membership', None)
         super(DemographicsForm, self).__init__(*args, **kwargs)
         assign_fields(self, app_field_objs)
-        self.request = request
         self.field_names = [name for name in self.fields.keys()]
         self.file_upload_fields = {}
         # change the default widget to TextInput instead of TextArea
@@ -811,9 +812,11 @@ class DemographicsForm(forms.ModelForm):
             if field.widget.__class__.__name__.lower() == 'selectdatewidget':
                 field.widget.years = range(1920, THIS_YEAR + 10)
 
-        if membership:
-            self.app = membership.app
-            self.demographics = membership.demographics
+        self.app = None
+        self.demographics = None
+        if self.membership:
+            self.app = self.membership.app
+            self.demographics = self.membership.demographics
 
         if self.app:
             demographic_fields = get_selected_demographic_fields(self.app, forms)
@@ -838,7 +841,12 @@ class DemographicsForm(forms.ModelForm):
         if self.file_upload_fields:
             for key in self.file_upload_fields.keys():
                 new_file = self.cleaned_data.get(key, None)
-                clear = self.request.POST.get('%s-clear' % key, False)
+
+                if self.request:
+                    clear = self.request.POST.get('%s-clear' % key, False)
+                else:
+                    clear = None
+
                 if clear and not new_file:
                     file_instance = get_ud_file_instance(self.demographics, key)
                     if file_instance:

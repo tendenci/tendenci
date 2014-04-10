@@ -2025,10 +2025,10 @@ def membership_default_edit(request, id, template='memberships/applications/add.
 
     demographics_form = DemographicsForm(
         app_fields,
-        request,
-        membership,
         request.POST or None,
-        request.FILES or None
+        request.FILES or None,
+        request=request,
+        membership=membership
     )
 
     membership_form = MembershipDefault2Form(app_fields,
