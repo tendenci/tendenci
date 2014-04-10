@@ -2031,61 +2031,59 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         membership=membership
     )
 
-    membership_form = MembershipDefault2Form(app_fields,
+    membership_form2 = MembershipDefault2Form(app_fields,
         request.POST or None, instance=membership,
         multiple_membership=False, **params)
 
     if request.method == 'POST':
-        membership_types = request.POST.getlist('membership_type')
         post_values = request.POST.copy()
-        memberships = []
-        for membership_type in membership_types:
-            post_values['membership_type'] = membership_type
-            membership_form2 = MembershipDefault2Form(
-                app_fields, post_values, instance=membership, **params)
+        post_values['membership_type'] = membership.membership_type.pk
 
-            # tuple with boolean items
-            forms_validate = (
-                user_form.is_valid(),
-                profile_form.is_valid(),
-                demographics_form.is_valid(),
-                membership_form2.is_valid()
+        membership_form2 = MembershipDefault2Form(app_fields,
+        post_values, instance=membership,
+        multiple_membership=False, **params)
+
+        # tuple with boolean items
+        forms_validate = (
+            user_form.is_valid(),
+            profile_form.is_valid(),
+            demographics_form.is_valid(),
+            membership_form2.is_valid()
+        )
+
+        if all(forms_validate):
+            customer = user_form.save()
+
+            if user:
+                customer.pk = user.pk
+                customer.username = user.username
+                customer.password = customer.password or user.password
+
+            if not hasattr(customer, 'profile'):
+                Profile.objects.create_profile(customer)
+
+            profile_form.instance = customer.profile
+            profile_form.save(request_user=customer)
+
+            # save demographics
+            demographics = demographics_form.save(commit=False)
+            if hasattr(customer, 'demographics'):
+                demographics.pk = customer.demographics.pk
+
+            demographics.user = customer
+            demographics.save()
+
+            membership = membership_form2.save(
+                request=request,
+                user=customer,
             )
 
-            if all(forms_validate):
-                customer = user_form.save()
+            membership.save()
 
-                if user:
-                    customer.pk = user.pk
-                    customer.username = user.username
-                    customer.password = customer.password or user.password
+            # log an event
+            EventLog.objects.log(instance=membership)
 
-                if not hasattr(customer, 'profile'):
-                    Profile.objects.create_profile(customer)
-
-                profile_form.instance = customer.profile
-                profile_form.save(request_user=customer)
-
-                # save demographics
-                demographics = demographics_form.save(commit=False)
-                if hasattr(customer, 'demographics'):
-                    demographics.pk = customer.demographics.pk
-
-                demographics.user = customer
-                demographics.save()
-
-                membership = membership_form2.save(
-                    request=request,
-                    user=customer,
-                )
-
-                membership.save()
-
-                # log an event
-                EventLog.objects.log(instance=membership)
-
-        # redirect: membership edit page
-        if all(forms_validate):
+            # redirect: membership edit page
             messages.success(request, 'Successfully updated Membership Information.')
             return redirect(reverse('membership.details', kwargs={'id': membership.id}))
 
@@ -2095,7 +2093,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         'user_form': user_form,
         'profile_form': profile_form,
         'demographics_form': demographics_form,
-        'membership_form': membership_form,
+        'membership_form': membership_form2,
         'is_edit': True,
         'membership' : membership
     }

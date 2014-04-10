@@ -855,9 +855,9 @@ class DemographicsForm(forms.ModelForm):
                         pks.update({ key : data })
 
                 if new_file:
-                     file_instance = get_ud_file_instance(self.demographics, key)
+                    file_instance = get_ud_file_instance(self.demographics, key)
 
-                     if file_instance:
+                    if file_instance:
                         file_instance.file = new_file
                     else:
                         file_instance = MembershipFile(file=new_file)
