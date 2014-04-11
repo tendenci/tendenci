@@ -3,6 +3,7 @@ from csv import writer
 from datetime import datetime
 from mimetypes import guess_type
 
+
 from django.conf import settings
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
@@ -23,6 +24,7 @@ from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField,
 
 import os
 import mimetypes
+
 
 class PricingAdminForm(PricingForm):
     class Meta:
@@ -68,6 +70,10 @@ class FormAdmin(TendenciBaseModelAdmin):
         payment_fields = ("custom_payment", "payment_methods")
     else:
         payment_fields = ("custom_payment", 'recurring_payment', "payment_methods")
+
+    position_fields = ("intro_position", "fields_position", "pricing_position")
+    section_name_fields = ("intro_name", "fields_name", "pricing_name")
+
     fieldsets = (
         (None, {"fields": ("title", "slug", "intro", "response", "completion_url", "template")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
@@ -81,6 +87,10 @@ class FormAdmin(TendenciBaseModelAdmin):
             'status_detail',
         )}),
         (_("Payment"), {"fields": payment_fields}),
+        (_("Section Positions"), {"fields": position_fields,
+                                  "description": "Please select the order in which you would like the Intro paragraph, the fields (name, date, address, etc) and the pricing options to appear on your finished form. Example: If you want the paragraph at the top, position the 'Intro' to the first position."}),
+        (_("Section Names"), {"fields": section_name_fields,
+                              "description": "Label the section names to meet the needs of your form. Examples for the pricing section would be: Pricing, Costs, Ticket Prices, Additional Costs, Service Fees and text of that nature."}),
     )
 
     form = FormAdminForm
@@ -94,6 +104,7 @@ class FormAdmin(TendenciBaseModelAdmin):
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
             '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
             '%sjs/admin/form-field-dynamic-hiding.js' % settings.STATIC_URL,
+            '%sjs/admin/form-position.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
@@ -105,12 +116,22 @@ class FormAdmin(TendenciBaseModelAdmin):
     export_all_link.allow_tags = True
     export_all_link.short_description = ''
 
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         obj = self.get_object(request, unquote(object_id))
 
         #check if the form has file fields
         extra_context = extra_context or {}
         extra_context['has_files'] = obj.has_files()
+
+        for inline_class in self.inlines:
+            if inline_class.model == Field:
+                if obj.fields_name:
+                    inline_class.verbose_name = obj.fields_name
+                    inline_class.verbose_name_plural = obj.fields_name
+            elif inline_class.model == Pricing:
+                inline_class.verbose_name = obj.pricing_name
+                inline_class.verbose_name_plural = obj.pricing_name
 
         return super(FormAdmin, self).change_view(request, object_id, form_url, extra_context)
 
@@ -210,6 +231,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         response = HttpResponse(f.read(), mimetype=mime_type)
         response['Content-Disposition'] = 'filename=%s' % base_name
         return response
+
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
