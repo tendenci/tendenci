@@ -9,6 +9,7 @@ from django.contrib.contenttypes import generic
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
 from timezones.fields import TimeZoneField
+from timezones.utils import localtime_for_timezone
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
@@ -124,6 +125,26 @@ class News(TendenciBaseModel):
         return all([self.allow_anonymous_view,
                 self.status,
                 self.status_detail in ['active']])
+
+    @property
+    def release_dt_with_tz(self):
+        return datetime(
+                year = self.release_dt.year,
+                month = self.release_dt.month,
+                day = self.release_dt.day,
+                hour = self.release_dt.hour,
+                minute = self.release_dt.minute,
+                tzinfo = self.timezone )
+
+    @property 
+    def release_dt_default_tz(self):
+        return localtime_for_timezone(self.release_dt_with_tz, None)
+
+    @property
+    def is_released(self):
+        now = localtime_for_timezone(datetime.now(), None)
+        return self.release_dt_default_tz <= now
+
 
 class NewsImage(File):
     pass

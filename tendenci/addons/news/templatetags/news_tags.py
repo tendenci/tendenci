@@ -33,6 +33,9 @@ class ListNewsNode(ListNode):
     model = News
     perms = 'news.view_news'
 
+    def custom_model_filter(self, items, user):
+        return self.model.objects.released_news()
+
 
 @register.tag
 def list_news(parser, token):
