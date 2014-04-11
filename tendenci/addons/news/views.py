@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
@@ -39,6 +39,14 @@ def detail(request, slug=None, template_name="news/view.html"):
     if not has_perm(request.user, 'news.view_news', news):
         raise Http403
 
+    #check for release date if it's in the future or not
+    if not news.is_released:
+        if not request.user.is_authenticated():
+            raise Http404
+
+        if not has_perm(request.user, 'news.view_news', news):
+            raise Http403
+
     EventLog.objects.log(instance=news)
 
     return render_to_response(template_name, {'news': news},
@@ -48,6 +56,7 @@ def detail(request, slug=None, template_name="news/view.html"):
 @is_enabled('news')
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
+    released_news_ids = News.objects.released_news_ids()
 
     if get_setting('site', 'global', 'searchindex') and query:
         news = News.objects.search(query, user=request.user)
@@ -56,9 +65,9 @@ def search(request, template_name="news/search.html"):
         news = News.objects.filter(filters).distinct()
 
     if not has_perm(request.user, 'news.view_news'):
-        news = news.filter(release_dt__lte=datetime.now())
+        news = news.filter(id__in=released_news_ids)
 
-    news = news.order_by('-release_dt')
+    news = sorted(news, key=lambda news_item: news_item.release_dt_default_tz, reverse=True)
 
     EventLog.objects.log()
 

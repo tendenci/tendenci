@@ -14,9 +14,11 @@ class NewsManager(TendenciBaseManager):
 
         return super(NewsManager, self).search(query, *args, **kwargs)
 
-    def released_news(self):
+    def released_news_ids(self):
         # use default timezone on settings
         now = localtime_for_timezone(datetime.now(), None)
         qset = self.get_query_set()
-        ids = [x.id for x in qset if x.release_dt_default_tz <= now ]
-        return qset.filter(id__in=ids)
+        return [x.id for x in qset if x.release_dt_default_tz <= now ]
+
+    def released_news(self):
+        return self.get_query_set().filter(id__in=self.released_news_ids())

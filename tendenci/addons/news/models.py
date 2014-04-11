@@ -136,7 +136,7 @@ class News(TendenciBaseModel):
                 minute = self.release_dt.minute,
                 tzinfo = self.timezone )
 
-    @property 
+    @property
     def release_dt_default_tz(self):
         return localtime_for_timezone(self.release_dt_with_tz, None)
 
