@@ -20,5 +20,5 @@ class NewsManager(TendenciBaseManager):
         qset = self.get_query_set()
         return [x.id for x in qset if x.release_dt_default_tz <= now ]
 
-    def released_news(self):
-        return self.get_query_set().filter(id__in=self.released_news_ids())
+    def released_news(self, qs):
+        return qs.filter(id__in=self.released_news_ids())
