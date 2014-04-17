@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.template import Node, Library, TemplateSyntaxError, Variable
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
@@ -33,8 +34,8 @@ class ListNewsNode(ListNode):
     model = News
     perms = 'news.view_news'
 
-    def custom_model_filter(self, items, user):
-        return self.model.objects.released_news(items)
+    def custom_model_filter(self, qset, user):
+        return qset.filter(release_dt__lte=datetime.now())
 
 
 @register.tag
