@@ -6,9 +6,10 @@ from django.contrib.contenttypes import generic
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.industries.managers import IndustryManager
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 
-class Industry(TendenciBaseModel):
+class Industry(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=40)
     industry_name = models.CharField(_('Name'), max_length=200)
     industry_code = models.CharField(_('Industry Code'), max_length=200)
@@ -24,6 +25,7 @@ class Industry(TendenciBaseModel):
         permissions = (("view_industry", "Can view industry"),)
         verbose_name = "Industry"
         verbose_name_plural = "Industries"
+        ordering = ('position','-update_dt')
 
     def __unicode__(self):
         return self.industry_name
