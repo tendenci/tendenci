@@ -12,29 +12,29 @@ class SWFUploadMiddleware(object):
     def process_request(self, request):
         swf_cookie_name = settings.SWFUPLOAD_COOKIE_NAME
         if request.method == 'POST':
-            if request.POST.has_key("photoset_id"):
-                photoset_id = int(request.POST["photoset_id"])
-                if (request.path == reverse('photos_batch_add', args=[photoset_id])) and \
-                        request.POST.has_key(swf_cookie_name):
-                    
+            if request.POST.has_key(swf_cookie_name):
+                swfupload = False
+                request_path = request.path
+                
+                if request.POST.has_key("photoset_id"):
+                    photoset_id = int(request.POST["photoset_id"])
+                    if (request_path == reverse('photos_batch_add', args=[photoset_id])):
+                        swfupload = True
+                elif request_path == reverse('theme_editor.upload'):
+                    swfupload = True
+                elif request_path == reverse('file.swfupload'):
+                    swfupload = True
+                            
+                if swfupload:
                     request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
-            elif request.path == reverse('theme_editor.upload') and \
-                    request.POST.has_key(swf_cookie_name):
-                request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
-            if request.POST.has_key('csrftoken'):           
-                request.COOKIES["csrftoken"] = request.POST['csrftoken']
+                    if request.is_secure() and not request.META['HTTP_REFERER']:
+                        # assign referer if missing because csrf using strict Referer checking for HTTPS
+                        # but flash uploader does not send http referer in some browsers.
+                        request.META['HTTP_REFERER'] = request_path
+                        
+                    if request.POST.has_key('csrftoken'):           
+                        request.COOKIES["csrftoken"] = request.POST['csrftoken']
 
-
-class MediaUploadMiddleware(object):
-    def process_request(self, request):
-        swf_cookie_name = settings.SWFUPLOAD_COOKIE_NAME
-        
-        if (request.method == 'POST') and (request.path == reverse('file.swfupload')) and \
-                request.POST.has_key(swf_cookie_name):
-            request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
-            
-        if request.POST.has_key('csrftoken'):           
-            request.COOKIES["csrftoken"] = request.POST['csrftoken']
             
     def process_response(self, request, response):
         # set cookie for swfupload

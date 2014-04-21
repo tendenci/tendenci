@@ -74,7 +74,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'tendenci.libs.swfupload.middleware.SWFUploadMiddleware',
-    'tendenci.libs.swfupload.middleware.MediaUploadMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
