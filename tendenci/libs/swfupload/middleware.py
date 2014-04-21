@@ -27,10 +27,10 @@ class SWFUploadMiddleware(object):
                             
                 if swfupload:
                     request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
-                    if request.is_secure() and not request.META['HTTP_REFERER']:
+                    if request.is_secure() and not request.META.get('HTTP_REFERER'):
                         # assign referer if missing because csrf using strict Referer checking for HTTPS
                         # but flash uploader does not send http referer in some browsers.
-                        request.META['HTTP_REFERER'] = request_path
+                        request.META['HTTP_REFERER'] = 'https://%s%s' % (request.get_host(), request_path)
                         
                     if request.POST.has_key('csrftoken'):           
                         request.COOKIES["csrftoken"] = request.POST['csrftoken']
