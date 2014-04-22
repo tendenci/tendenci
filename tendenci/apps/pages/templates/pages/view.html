@@ -15,6 +15,7 @@
 {% block body %}
 <div class="t">
     <div class="page-wrap">
+
         {% if page.header_image %}<div class="page-header">
             <img src="{{ page.get_header_image_url }}" />
         </div>{% endif %}
@@ -29,6 +30,14 @@
             {% endif %}
         </h1>
 		{% endif %}
+
+        {% if page.google_profile %}
+        {% if page.has_google_author %}
+        <a href="{{ page.google_profile }}?rel=author">View author's Google+ profile</a>
+        {% elif page.has_google_publisher %}
+        <a href="{{ page.google_profile }}" rel="publisher">View publisher's Google+ page</a>
+        {% endif %}
+        {% endif %}
         
         <div class="content">{{ page.content|safe }}</div>
         {% include "pages/meta.html" %}

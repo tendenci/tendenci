@@ -46,8 +46,11 @@ SEARCH_CATEGORIES = (
     ('tags__icontains', 'Tags'),
 )
 
-GOOGLE_PLUS_HELP_TEXT = 'Add this website as a place you Contribute to in your Profile - ' + \
-    '<i class="fa fa-question-circle"></i>'
+CONTRIBUTOR_CHOICES = (
+    (Article.CONTRIBUTOR_AUTHOR, mark_safe('Author <i class="gauthor-info fa fa-lg fa-question-circle"></i>')),
+    (Article.CONTRIBUTOR_PUBLISHER, mark_safe('Publisher <i class="gpub-info fa fa-lg fa-question-circle"></i>'))
+)
+GOOGLE_PLUS_HELP_TEXT = 'Additional Options for Authorship <i class="gauthor-help fa fa-lg fa-question-circle"></i><br>Additional Options for Publisher <i class="gpub-help fa fa-lg fa-question-circle"></i>'
 
 
 class ArticleSearchForm(forms.Form):
@@ -96,6 +99,10 @@ class ArticleForm(TendenciBaseForm):
     release_dt = SplitDateTimeField(label=_('Release Date/Time'),
         initial=datetime.now())
 
+    contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
+                                         initial=Article.CONTRIBUTOR_AUTHOR,
+                                         widget=forms.RadioSelect())
+
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending'),))
     email = EmailVerificationField(label=_("Email"), required=False)
@@ -112,6 +119,7 @@ class ArticleForm(TendenciBaseForm):
             'website',
             'release_dt',
             'timezone',
+            'contributor_type',
             'first_name',
             'last_name',
             'google_profile',
@@ -142,10 +150,14 @@ class ArticleForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
+                      ('Contributor', {
+                       'fields': ['contributor_type',
+                                  'google_profile'],
+                       'classes': ['boxy-grey'],
+                      }),
                       ('Author', {
                       'fields': ['first_name',
                                  'last_name',
-                                 'google_profile',
                                  'phone',
                                  'fax',
                                  'email',

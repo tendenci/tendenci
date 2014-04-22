@@ -34,13 +34,11 @@
 
         <h1>{{ news.headline }}</h1>
         {% if news.google_profile %}
-        <a href="{{ news.google_profile }}?rel=author">
-            {% if news.first_name or news.last_name %}
-            By {{ news.first_name }} {{ news.last_name }}
-            {% else %}
-            View author's Google+ profile
-            {% endif %}
-        </a>
+        {% if news.has_google_author %}
+        <a href="{{ news.google_profile }}?rel=author">View author's Google+ profile</a>
+        {% elif news.has_google_publisher %}
+        <a href="{{ news.google_profile }}" rel="publisher">View publisher's Google+ page</a>
+        {% endif %}
         {% endif %}
 
         <div class="content">

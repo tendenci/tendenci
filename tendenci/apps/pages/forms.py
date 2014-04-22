@@ -22,6 +22,11 @@ ALLOWED_IMG_EXT = (
     '.gif',
     '.png' 
 )
+CONTRIBUTOR_CHOICES = (
+    (Page.CONTRIBUTOR_AUTHOR, mark_safe('Author <i class="gauthor-info fa fa-lg fa-question-circle"></i>')),
+    (Page.CONTRIBUTOR_PUBLISHER, mark_safe('Publisher <i class="gpub-info fa fa-lg fa-question-circle"></i>'))
+)
+GOOGLE_PLUS_HELP_TEXT = 'Additional Options for Authorship <i class="gauthor-help fa fa-lg fa-question-circle"></i><br>Additional Options for Publisher <i class="gpub-help fa fa-lg fa-question-circle"></i>'
 
 class PageAdminForm(TendenciBaseForm):
     content = forms.CharField(required=False,
@@ -105,6 +110,9 @@ class PageForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Page._meta.app_label, 
         'storme_model':Page._meta.module_name.lower()}))
 
+    contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
+                                         initial=Page.CONTRIBUTOR_AUTHOR,
+                                         widget=forms.RadioSelect())
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending')))
 
@@ -120,6 +128,8 @@ class PageForm(TendenciBaseForm):
         'content',
         'tags',
         'template',
+        'contributor_type',
+        'google_profile',
         'allow_anonymous_view',
         'syndicate',
         'user_perms',
@@ -137,6 +147,11 @@ class PageForm(TendenciBaseForm):
                                  'template',
                                  ],
                       'legend': ''
+                      }),
+                      ('Contributor', {
+                       'fields': ['contributor_type',
+                                  'google_profile'],
+                       'classes': ['boxy-grey'],
                       }),
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
@@ -202,11 +217,12 @@ class PageForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
-        
+
         template_choices = [('default.html','Default')]
         template_choices += get_template_list()
         self.fields['template'].choices = template_choices
-        
+        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
+
         if not self.user.profile.is_superuser:
             if 'syndicate' in self.fields: self.fields.pop('syndicate')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

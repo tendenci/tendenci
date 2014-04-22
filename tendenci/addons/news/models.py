@@ -21,6 +21,11 @@ from tendenci.core.files.models import File
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 class News(TendenciBaseModel):
+    CONTRIBUTOR_AUTHOR = 1
+    CONTRIBUTOR_PUBLISHER = 2
+    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, 'Author'),
+                           (CONTRIBUTOR_PUBLISHER, 'Publisher'))
+
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
     timezone = TimeZoneField(_('Time Zone'))
@@ -30,7 +35,9 @@ class News(TendenciBaseModel):
     source = models.CharField(max_length=300, blank=True)
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
-    google_profile = models.URLField(_('Add a link to your Google+ Profile'), blank=True)
+    contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
+                                           default=CONTRIBUTOR_AUTHOR)
+    google_profile = models.URLField(_('Google+ URL'), blank=True)
     phone = models.CharField(max_length=50, blank=True)
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
@@ -144,6 +151,14 @@ class News(TendenciBaseModel):
     def is_released(self):
         now = localtime_for_timezone(datetime.now(), None)
         return self.release_dt_default_tz <= now
+
+    @property
+    def has_google_author(self):
+        return self.contributor_type == self.CONTRIBUTOR_AUTHOR
+
+    @property
+    def has_google_publisher(self):
+        return self.contributor_type == self.CONTRIBUTOR_PUBLISHER
 
 
 class NewsImage(File):
