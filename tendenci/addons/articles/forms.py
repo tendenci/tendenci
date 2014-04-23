@@ -11,6 +11,7 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.base.fields import EmailVerificationField
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
 
@@ -205,6 +206,7 @@ class ArticleForm(TendenciBaseForm):
 
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
+        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
 
     def clean_group(self):
         group_id = self.cleaned_data['group']

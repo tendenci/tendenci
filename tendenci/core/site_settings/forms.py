@@ -6,6 +6,7 @@ from django.core.files import File
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
+from timezones import zones
 
 from tendenci.core.base.utils import checklist_update
 from tendenci.core.site_settings.utils import (get_form_list,
@@ -137,6 +138,9 @@ def build_settings_form(user, settings):
                 required = True
                 if not setting_value:
                     setting_value = initial
+            elif setting.input_value == '<timezone_list>':
+                choices = zones.PRETTY_TIMEZONE_CHOICES
+                required = True
             else:
                 # Allow literal_eval in settings in order to pass a list from the setting
                 # This is useful if you want different values and labels for the select options

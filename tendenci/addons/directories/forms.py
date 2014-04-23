@@ -21,6 +21,7 @@ from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATIO
     STATUS_CHOICES)
 from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.core.site_settings.utils import get_setting
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -268,6 +269,8 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         if self.fields.has_key('pricing'):
             self.fields['pricing'].choices = get_duration_choices(self.user)
+
+        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
 
         # expiration_dt = activation_dt + requested_duration
         fields_to_pop = ['expiration_dt']

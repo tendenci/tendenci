@@ -14,6 +14,7 @@ from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.base.fields import EmailVerificationField
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (
@@ -192,6 +193,7 @@ class NewsForm(TendenciBaseForm):
 
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
+        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
 
         # only show the remove photo checkbox if there is already a thumbnail
         if self.instance.thumbnail:

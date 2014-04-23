@@ -2,6 +2,7 @@
 {% load perm_tags %}
 {% load event_tags %}
 {% load tagging_tags %}
+{% load base_filters %}
 {% load base_tags %}
 {% load category_tags %}
 {% load humanize %}
@@ -198,7 +199,9 @@
 
                 {% endfor %}
 
-                <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }} {{ event.timezone }}</div>
+                <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+                <div class="line">{{ event.timezone.zone|timezone_label }}</div>
+
             </div>
 
             {% if event.registration_configuration.enabled %}
