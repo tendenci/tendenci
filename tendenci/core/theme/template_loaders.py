@@ -31,6 +31,19 @@ class Loader(BaseLoader):
     """
     is_usable = True
 
+
+    def __init__(self, *args, **kwargs):
+        """
+        Hold the theme_root in self.theme_root instead of calling get_theme_root()
+        in get_template_sources(). This significantly reduces the number of queries 
+        for get_setting('module', 'theme_editor', 'theme').
+        (reduced # of queries from 3316 to 233 when testing on my local for an
+        article view. - @jennyq)
+        """
+        self.theme_root = get_theme_root()
+        super(Loader, self).__init__(*args, **kwargs)
+        
+
     def get_template_sources(self, template_name, template_dirs=None):
         """Return the absolute paths to "template_name", when appended to the
         selected theme directory in THEMES_DIR.
@@ -40,8 +53,8 @@ class Loader(BaseLoader):
         theme_templates = []
         current_request = get_current_request()
         if current_request and current_request.mobile:
-            theme_templates.append(os.path.join(get_theme_root(), 'mobile'))
-        theme_templates.append(os.path.join(get_theme_root(), 'templates'))
+            theme_templates.append(os.path.join(self.theme_root, 'mobile'))
+        theme_templates.append(os.path.join(self.theme_root, 'templates'))
 
         for template_path in theme_templates:
             try:
