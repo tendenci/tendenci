@@ -14,7 +14,8 @@ def theme(request):
     if 'toggle_template' in request.GET:
         contexts['TOGGLE_TEMPLATE'] = True
 
-    theme = request.session.get('theme', get_setting('module', 'theme_editor', 'theme'))
+    contexts['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
+    theme = request.session.get('theme', contexts['ACTIVE_THEME'])
     contexts['THEME'] = theme
 
     if settings.USE_S3_STORAGE:
@@ -24,7 +25,7 @@ def theme(request):
         contexts['THEME_URL'] = '/themes/' + theme + '/'
 
     contexts['LOCAL_THEME_URL'] = '/themes/' + theme + '/'
-    contexts['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
+    
 
     contexts['THEME_INFO'] = get_theme_info(theme)
 
