@@ -306,7 +306,7 @@ class MembershipSet(models.Model):
     def memberships(self):
         return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')
 
-    def save_invoice(self, memberships):
+    def save_invoice(self, memberships, app=None):
         invoice = Invoice()
         invoice.title = "Membership Invoice"
         invoice.estimate = True
@@ -322,9 +322,15 @@ class MembershipSet(models.Model):
         for membership in memberships:
             price += membership.get_price()
 
-        invoice.subtotal = price
-        invoice.total = price
-        invoice.balance = price
+        tax = 0
+        if app and app.include_tax:
+            invoice.tax_rate = app.tax_rate
+            tax = app.tax_rate * price
+            invoice.tax = tax
+
+        invoice.subtotal = price + tax
+        invoice.total = price + tax
+        invoice.balance = price + tax
 
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
@@ -2416,6 +2422,9 @@ class MembershipApp(TendenciBaseModel):
                             default=False)
     membership_types = models.ManyToManyField(MembershipType,
                                               verbose_name="Membership Types")
+    include_tax = models.BooleanField(default=False)
+    tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
+                                   help_text='Example: 0.0825 for 8.25%.')
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
     discount_eligible = models.BooleanField(default=False)

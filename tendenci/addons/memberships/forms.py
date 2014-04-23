@@ -442,6 +442,8 @@ class MembershipAppForm(TendenciBaseForm):
             'confirmation_text',
             'notes',
             'membership_types',
+            'include_tax',
+            'tax_rate',
             'payment_methods',
             'use_for_corp',
             'use_captcha',

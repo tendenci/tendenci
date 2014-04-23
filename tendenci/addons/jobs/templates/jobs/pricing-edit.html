@@ -84,7 +84,23 @@
 				<div class="help">{{ form.show_member_pricing.help_text }}</div>
 				<div class="clear-left"></div>
 			</div>
-			
+
+			<div class="pricing-item">
+				<div class="errs">{{ form.include_tax.errors }}</div>
+				<div class="label">{{ form.include_tax.label_tag }}</div>
+				<div class="field">{{ form.include_tax }}</div>
+				<div class="help">{{ form.include_tax.help_text }}</div>
+				<div class="clear-left"></div>
+			</div>
+
+			<div class="pricing-item">
+				<div class="errs">{{ form.tax_rate.errors }}</div>
+				<div class="label">{{ form.tax_rate.label_tag }}</div>
+				<div class="field">{{ form.tax_rate }}</div>
+				<div class="help">{{ form.tax_rate.help_text }}</div>
+				<div class="clear-left"></div>
+			</div>
+
 			<div class="pricing-item">
 				<div class="errs">{{ form.status.errors }}</div>
 				<div class="label">{{ form.status.label_tag }}</div>

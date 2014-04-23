@@ -305,6 +305,8 @@ class JobPricingForm(forms.ModelForm):
             'premium_price',
             'regular_price_member',
             'premium_price_member',
+            'include_tax',
+            'tax_rate',
             'show_member_pricing',
             'status',
         )

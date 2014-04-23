@@ -62,8 +62,8 @@ class TypeColorSet(models.Model):
     def __unicode__(self):
         return '%s #%s' % (self.pk, self.bg_color)
 
-class Type(models.Model):
 
+class Type(models.Model):
     """
     Types is a way of grouping events
     An event can only be one type
@@ -96,6 +96,7 @@ class Type(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Type, self).save(*args, **kwargs)
+
 
 class Place(models.Model):
     """
@@ -130,6 +131,7 @@ class Place(models.Model):
     def city_state(self):
         return [s for s in (self.city, self.state) if s]
 
+
 class RegistrationConfiguration(models.Model):
     """
     Event registration
@@ -143,7 +145,7 @@ class RegistrationConfiguration(models.Model):
 
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
-    
+
     require_guests_info = models.BooleanField(_('Require Guests Info'), help_text="If checked, " + \
                         "the required fields in registration form are also required for guests.  ",
                         default=False)
@@ -164,7 +166,7 @@ class RegistrationConfiguration(models.Model):
                                  choices=((True, 'Use one form for all pricings'),
                                           (False, 'Use separate form for each pricing')),
                                  default=True)
-    
+
     # base email for reminder email
     email = models.ForeignKey(Email, null=True)
     send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
@@ -194,7 +196,7 @@ class RegistrationConfiguration(models.Model):
         has_api = any([settings.MERCHANT_LOGIN, settings.PAYPAL_MERCHANT_LOGIN])
 
         return all([has_method, has_account, has_api])
-    
+
     def get_available_pricings(self, user, is_strict=False, spots_available=-1):
         """
         Get the available pricings for this user. 
@@ -236,15 +238,18 @@ class RegConfPricing(OrderingBaseModel):
     Registration configuration pricing
     """
     reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
-    
+
     title = models.CharField(_('Pricing display name'), max_length=500, blank=True)
     description = models.TextField(_("Pricing description"), blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     groups = models.ManyToManyField(Group, blank=True, null=True)
 
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
+    include_tax = models.BooleanField(default=False)
+    tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
+                                   help_text='Example: 0.0825 for 8.25%.')
     payment_required = models.NullBooleanField(help_text='A payment required before registration is accepted.')
-    
+
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfpricings',
@@ -256,9 +261,9 @@ class RegConfPricing(OrderingBaseModel):
     allow_anonymous = models.BooleanField(_("Public can use this pricing"))
     allow_user = models.BooleanField(_("Signed in user can use this pricing"))
     allow_member = models.BooleanField(_("All members can use this pricing"))
-    
+
     status = models.BooleanField(default=True)
-    
+
     def delete(self, *args, **kwargs):
         """
         Note that the delete() method for an object is not necessarily
@@ -280,7 +285,7 @@ class RegConfPricing(OrderingBaseModel):
             if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
                 return False
         return True
-    
+
     @property
     def registration_has_started(self):
         if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
@@ -292,7 +297,7 @@ class RegConfPricing(OrderingBaseModel):
         if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
-        
+
     @property
     def registration_has_recently_ended(self):
         if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
@@ -302,7 +307,7 @@ class RegConfPricing(OrderingBaseModel):
                 return False
             return True
         return False
-    
+
     @property
     def is_open(self):
         status = [
@@ -310,7 +315,7 @@ class RegConfPricing(OrderingBaseModel):
             self.within_time,
         ]
         return all(status)
-    
+
     @property
     def within_time(self):
         if localize_date(self.start_dt, from_tz=self.timezone) \
@@ -318,7 +323,7 @@ class RegConfPricing(OrderingBaseModel):
             <= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
-    
+
     @property
     def timezone(self):
         return self.reg_conf.event.timezone.zone
@@ -328,7 +333,7 @@ class RegConfPricing(OrderingBaseModel):
         if user.profile.is_superuser: return None, None
         now = datetime.now()
         filter_and, filter_or = None, None
-        
+
         if is_strict:
             if user.is_anonymous():
                 filter_or = {'allow_anonymous': True}
@@ -350,28 +355,28 @@ class RegConfPricing(OrderingBaseModel):
                         'allow_user': True,
                         'allow_member': True}
 
-        
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,
                       }
-        
+
         if spots_available <> -1:
             if not user.profile.is_superuser:
                 filter_and['quantity__lte'] = spots_available
-                
+
         return filter_and, filter_or
-    
-    def target_display(self):        
+
+    def target_display(self):
         target_str = ''
-            
+
         if self.quantity > 1:
             if not target_str:
                 target_str = 'for '
             else:
                 target_str += ' - '
             target_str += 'a team of %d' % self.quantity
-            
+
         return target_str
+
 
 class Registration(models.Model):
 
@@ -379,18 +384,18 @@ class Registration(models.Model):
     note = models.TextField(blank=True)
     event = models.ForeignKey('Event')
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
-    
+
     # This field will not be used if dynamic pricings are enabled for registration
     # The pricings should then be found in the Registrant instances
     reg_conf_price = models.ForeignKey(RegConfPricing, null=True)
-    
+
     reminder = models.BooleanField(default=False)
-    
+
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
     payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
-    
+
     is_table = models.BooleanField(_('Is table registration'), default=False)
     # used for table
     quantity = models.IntegerField(_('Number of registrants for a table'), default=1)
@@ -420,7 +425,6 @@ class Registration(models.Model):
     @property
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()
-    
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -435,30 +439,29 @@ class Registration(models.Model):
             self.event.start_dt.strftime('%Y-%m-%d'),
             inv.object_id,
         )
-        
+
         return description
-        
-        
+
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
         Make the accounting entries for the event sale
         """
         from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
         from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
-        
+
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
             make_acct_entries_initial(user, ae, amount)
         else:
             # payment has now been received
             make_acct_entries_closing(user, ae, amount)
-            
+
             # #CREDIT event SALES
             acct_number = self.get_acct_number()
             acct = Acct.objects.get(account_number=acct_number)
             AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
-    
-    # to lookup for the number, go to /accountings/account_numbers/        
+
+    # to lookup for the number, go to /accountings/account_numbers/
     def get_acct_number(self, discount=False):
         if discount:
             return 462000
@@ -513,7 +516,6 @@ class Registration(models.Model):
             #notify the admins too
             email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
-
     def status(self):
         """
         Returns registration status.
@@ -536,7 +538,6 @@ class Registration(models.Model):
                 return 'registered-with-balance'
         else:
             return 'registered'
-        
 
     @property
     def registrant(self):
@@ -544,11 +545,11 @@ class Registration(models.Model):
         Gets primary registrant.
         Get first registrant w/ email address
         Order by insertion (primary key)
-        """        
+        """
         [registrant] = self.registrant_set.filter(is_primary=True)[:1] or [None]
         if not registrant:
             [registrant] = self.registrant_set.all().order_by("pk")[:1] or [None]
-        
+
         return registrant
 
     def save(self, *args, **kwargs):
@@ -573,7 +574,7 @@ class Registration(models.Model):
     def save_invoice(self, *args, **kwargs):
         status_detail = kwargs.get('status_detail', 'tendered')
         admin_notes = kwargs.get('admin_notes', None)
-        
+
         object_type = ContentType.objects.get(app_label=self._meta.app_label, 
             model=self._meta.module_name)
 
@@ -588,7 +589,7 @@ class Registration(models.Model):
             invoice = Invoice()
             invoice.object_type = object_type
             invoice.object_id = self.pk
-        
+
         # primary registrant is responsible for billing    
         primary_registrant = self.registrant
         invoice.bill_to_first_name = primary_registrant.first_name
@@ -608,13 +609,19 @@ class Registration(models.Model):
         invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
         invoice.estimate = ('estimate' == status_detail)
         invoice.status_detail = status_detail
-        invoice.subtotal = self.amount_paid
-        invoice.total = self.amount_paid
-        invoice.balance = invoice.total
         invoice.tender_date = datetime.now()
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
         invoice.admin_notes = admin_notes
+
+        tax = 0
+        if self.reg_conf_price and self.reg_conf_price.include_tax:
+            tax = self.reg_conf_price.tax_rate * self.amount_paid
+            invoice.tax = tax
+
+        invoice.subtotal = self.amount_paid + tax
+        invoice.total = self.amount_paid + tax
+        invoice.balance = invoice.total
         invoice.save()
 
         self.invoice = invoice
@@ -629,6 +636,7 @@ class Registration(models.Model):
             return self.override_table
 
         return self.registrant_set.filter(override=True).exists()
+
 
 class Registrant(models.Model):
     """
@@ -705,21 +713,21 @@ class Registrant(models.Model):
             return self.custom_reg_form_entry.get_lastname_firstname()
         else:
             return '%s, %s' % (self.last_name, self.first_name)
-        
+
     def register_pricing(self):
         # The pricing is a field recently added. The previous registrations
         # store the pricing in registration. 
         return self.pricing or self.registration.reg_conf_price
-        
+
     @property
     def lastname_firstname(self):
         fn = self.first_name or None
         ln = self.last_name or None
-        
+
         if fn and ln:
             return ', '.join([ln, fn])
         return fn or ln
-        
+
     def get_name(self):
         if self.custom_reg_form_entry:
             return self.custom_reg_form_entry.get_name()
@@ -739,7 +747,7 @@ class Registrant(models.Model):
             registration__event=event,
             cancel_dt=None,
         )
-        
+
     @property
     def additional_registrants(self):
         # additional registrants on the same invoice
@@ -831,12 +839,14 @@ class Registrant(models.Model):
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
+
 class Payment(models.Model):
     """
     Event registration payment
     Extends the registration model
     """
     registration = models.OneToOneField('Registration')
+
 
 class PaymentMethod(models.Model):
     """
@@ -850,6 +860,7 @@ class PaymentMethod(models.Model):
     def __unicode__(self):
         return self.label
 
+
 class Sponsor(models.Model):
     """
     Event sponsor
@@ -857,6 +868,7 @@ class Sponsor(models.Model):
     Sponsor can contribute to multiple events
     """
     event = models.ManyToManyField('Event')
+
 
 class Discount(models.Model):
     """
@@ -887,6 +899,7 @@ class Organizer(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Speaker(models.Model):
     """
@@ -1114,7 +1127,7 @@ class Event(TendenciBaseModel):
                 registrants = registrants.filter(registration__invoice__balance__lte=0)
 
         return registrants
-    
+
     def can_view_registrants(self, user):
         if self.display_event_registrants:
             if self.display_registrants_to == 'public':
@@ -1125,7 +1138,7 @@ class Event(TendenciBaseModel):
                 return True
             if not user.profile.is_member and not user.is_anonymous() and self.display_registrants_to == 'user':
                 return True
-            
+
         return False
 
     def speakers(self, **kwargs):
@@ -1141,7 +1154,7 @@ class Event(TendenciBaseModel):
     def number_of_days(self):
         delta = self.end_dt - self.start_dt
         return delta.days
-    
+
     @property
     def photo(self):
         if self.image:
@@ -1265,7 +1278,7 @@ class Event(TendenciBaseModel):
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     notes = models.TextField(_("Notes"), max_length=2000, blank=True)
-    
+
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True, on_delete=models.SET_NULL)
@@ -1293,10 +1306,10 @@ class CustomRegForm(models.Model):
     class Meta:
         verbose_name = _("Custom Registration Form")
         verbose_name_plural = _("Custom Registration Forms")
-        
+
     def __unicode__(self):
         return self.name
-    
+
     @property
     def is_template(self):
         """
@@ -1308,7 +1321,7 @@ class CustomRegForm(models.Model):
         if self.regconfs.exists() or self.regconfpricings.exists():
             return False
         return True
-    
+
     def clone(self):
         """
         Clone this custom registration form and associate it with the event if provided.
@@ -1320,8 +1333,9 @@ class CustomRegForm(models.Model):
         fields = self.fields.all()
         for field in fields:
             field.clone(form=cloned_obj)
-            
+
         return cloned_obj
+
 
 class CustomRegField(OrderingBaseModel):
     form = models.ForeignKey("CustomRegForm", related_name="fields")
@@ -1339,12 +1353,12 @@ class CustomRegField(OrderingBaseModel):
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text="Default value of the field")
     display_on_roster = models.BooleanField(_("Show on Roster"), default=False)
-    
+
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         ordering = ('position',)
-        
+
     def clone(self, form=None):
         """
         Clone this custom registration field, and associate it with the form if provided.
@@ -1352,7 +1366,7 @@ class CustomRegField(OrderingBaseModel):
         params = dict([(field.name, getattr(self, field.name)) \
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_field = self.__class__.objects.create(**params)
-        
+
         if form:
             cloned_field.form = form
             cloned_field.save()
@@ -1379,12 +1393,12 @@ class CustomRegField(OrderingBaseModel):
 class CustomRegFormEntry(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
-    
+
     def __unicode__(self):
         name = self.get_name()
         if name:
             return name
-        
+
         # top 2 fields
         values = []
         top_fields = CustomRegField.objects.filter(form=self.form,
@@ -1395,7 +1409,7 @@ class CustomRegFormEntry(models.Model):
             if field_entries:
                 values.append(field_entries[0].value)
         return (' '.join(values)).strip()
-    
+
     def get_value_of_mapped_field(self, map_to_field):
         mapped_field = CustomRegField.objects.filter(form=self.form,
                                 map_to_field=map_to_field)
@@ -1406,7 +1420,6 @@ class CustomRegFormEntry(models.Model):
                 return (field_entries[0].value).strip()
         return ''
 
-    
     def get_name(self):
         first_name = self.get_value_of_mapped_field('first_name')
         last_name = self.get_value_of_mapped_field('last_name')
@@ -1420,17 +1433,16 @@ class CustomRegFormEntry(models.Model):
                          self.get_value_of_mapped_field('first_name'))
         return name.strip()
 
-    
     def get_email(self):
         return self.get_value_of_mapped_field('email')
-    
+
     def get_field_entry_list(self):
         field_entries = self.field_entries.order_by('field')
         entry_list = []
         for field_entry in field_entries:
             entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
         return entry_list
-    
+
     def get_non_mapped_field_entry_list(self):
         field_entries = self.field_entries
         mapped_fields = [item[0] for item in USER_FIELD_CHOICES]
@@ -1439,8 +1451,7 @@ class CustomRegFormEntry(models.Model):
         for field_entry in field_entries:
             entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
         return entry_list
-            
-    
+
     def roster_field_entry_list(self):
         list_on_roster = []
         field_entries = self.field_entries.exclude(field__map_to_field__in=[
@@ -1473,15 +1484,14 @@ class Addon(models.Model):
     event = models.ForeignKey(Event)
     title = models.CharField(max_length=50)
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
-    
     # permission fields
     group = models.ForeignKey(Group, blank=True, null=True)
     allow_anonymous = models.BooleanField(_("Public can use"))
     allow_user = models.BooleanField(_("Signed in user can use"))
     allow_member = models.BooleanField(_("All members can use"))
-    
+
     status = models.BooleanField(default=True)
-    
+
     def delete(self, *args, **kwargs):
         """
         Note that the delete() method for an object is not necessarily
@@ -1490,7 +1500,7 @@ class Addon(models.Model):
         #print "%s, %s" % (self, "status set to false" )
         self.status = False
         self.save(*args, **kwargs)
-    
+
     def __unicode__(self):
         return self.title
 
@@ -1501,18 +1511,20 @@ class Addon(models.Model):
             if datetime.now() > self.event.end_dt:
                 return False
         return True
-    
+
     def field_name(self):
         return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
-    
+
+
 class AddonOption(models.Model):
     addon = models.ForeignKey(Addon, related_name="options")
     title = models.CharField(max_length=100)
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
-    
+
     def __unicode__(self):
         return self.title
+
 
 class RegAddon(models.Model):
     """Event registration addon.
@@ -1522,16 +1534,17 @@ class RegAddon(models.Model):
     """
     registration = models.ForeignKey('Registration')
     addon = models.ForeignKey('Addon')
-    
+
     # price at the moment of registration
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, default=0)
-    
+
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    
+
     def __unicode__(self):
         return "%s: %s" % (self.registration.pk, self.addon.title)
-    
+
+
 class RegAddonOption(models.Model):
     """Selected event registration addon option.
     """
@@ -1539,10 +1552,10 @@ class RegAddonOption(models.Model):
     option = models.ForeignKey(AddonOption)
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # selected_option = models.CharField(max_length=50)
-    
+
     class Meta:
         unique_together = (('regaddon', 'option'),)
-        
+
     def __unicode__(self):
         return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
-    
+

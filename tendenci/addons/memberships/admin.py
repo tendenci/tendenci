@@ -552,6 +552,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
         (None, {'fields': ('name', 'slug', 'description',
                            'confirmation_text', 'notes', 'allow_multiple_membership',
                            'membership_types', 'payment_methods',
+                           'include_tax', 'tax_rate',
                            'use_for_corp', 'use_captcha', 'discount_eligible')},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
