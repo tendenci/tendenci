@@ -1,6 +1,6 @@
 $(document).ready(function() {
     // for the forms module
-    function hide_show_rate1(element) {
+    function toogle_tax_rate_field(element) {
         if (element.is(':checked')) {
             element.parent().parent().next().show();
         } else {
@@ -10,9 +10,9 @@ $(document).ready(function() {
 
     function hook_taxable_fields_js() {
         $(".field-taxable > div > input").each(function() {
-            hide_show_rate1($(this));
+            toogle_tax_rate_field($(this));
             $(this).click(function() {
-                hide_show_rate1($(this));
+                toogle_tax_rate_field($(this));
             });
         });
     }
