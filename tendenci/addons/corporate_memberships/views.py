@@ -290,7 +290,7 @@ def corpmembership_add(request, slug='',
                                         join_dt=corp_membership.join_dt)
 
             # add invoice
-            inv = corp_memb_inv_add(request.user, corp_membership)
+            inv = corp_memb_inv_add(request.user, corp_membership, app=app)
             # update corp_memb with inv
             corp_membership.invoice = inv
             corp_membership.save(log=False)

@@ -6,6 +6,7 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.core.payments.models import Payment
 from tendenci.core.site_settings.utils import get_setting
 
+
 def get_payment_method_choices(user):
     if user.profile.is_superuser:
         return (('paid - check', 'User paid by check'),
@@ -16,11 +17,12 @@ def get_payment_method_choices(user):
         if job_payment_types:
             job_payment_types_list = job_payment_types.split(',')
             job_payment_types_list = [item.strip() for item in job_payment_types_list]
-            
+
             return [(item, item) for item in job_payment_types_list]
         else:
             return ()
-        
+
+
 def get_job_unique_slug(slug):
     # check if this slug already exists
     jobs = Job.objects.filter(slug__istartswith=slug)
@@ -31,9 +33,10 @@ def get_job_unique_slug(slug):
         while str(num) in t_list:
             num += 1
         slug = '%s-%s' % (slug, str(num))
-        
+
     return slug
-  
+
+
 def job_set_inv_payment(user, job, pricing):
     if get_setting('module', 'jobs', 'jobsrequirespayment'):
         if not job.invoice:
@@ -78,17 +81,26 @@ def job_set_inv_payment(user, job, pricing):
             inv.ship_date = datetime.now()
             inv.message = 'Thank You.'
             inv.status = True
-            
+
             inv.total = get_job_price(user, job, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
             inv.estimate = True
             inv.status_detail = 'estimate'
-            
+
+            tax = 0
+            if pricing.include_tax:
+                tax = inv.total * pricing.tax_rate
+                total = tax + inv.total
+                inv.tax = tax
+                inv.total = total
+                inv.subtotal = total
+                inv.balance = total
+
             if user and not user.is_anonymous():
                 inv.set_creator(user)
                 inv.set_owner(user)
-            
+
             inv.save(user)
 
             # tender the invoice
@@ -97,22 +109,22 @@ def job_set_inv_payment(user, job, pricing):
             # update job
             job.invoice = inv
             job.save()
-            
+
             if user.profile.is_superuser:
                 if job.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
                     boo_inv = inv.tender(user) 
-                    
+
                     # payment
                     payment = Payment()
                     boo = payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                     payment.mark_as_paid()
                     payment.method = job.payment_method
                     payment.save(user)
-                    
+
                     # this will make accounting entry
                     inv.make_payment(user, payment.amount)
-                    
-            
+
+
 def get_job_price(user, job, pricing):
     return pricing.get_price_for_user(
                       user=user,

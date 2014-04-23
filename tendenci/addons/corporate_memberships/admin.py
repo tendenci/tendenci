@@ -101,6 +101,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                            'description',
                            'confirmation_text', 'notes',
                            'corp_memb_type', 'payment_methods',
+                           'include_tax', 'tax_rate',
                            'memb_app'
                            )},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
