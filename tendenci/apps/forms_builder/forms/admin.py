@@ -40,6 +40,7 @@ class PricingAdmin(admin.StackedInline):
     model = Pricing
     form = PricingAdminForm
     extra = 0
+    template = 'admin/forms/edit_inline/stacked.html'
 
 
 class FieldAdminForm(FormForField):

@@ -576,6 +576,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/membapp_tabular_inline_ordering.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/tax_fields.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
                        '%scss/memberships-admin.css' % settings.STATIC_URL], }
