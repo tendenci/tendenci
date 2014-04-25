@@ -128,6 +128,8 @@ class CorpMembershipAppForm(TendenciBaseForm):
                   'authentication_method',
                   'memb_app',
                   'payment_methods',
+                  'include_tax',
+                  'tax_rate',
                   'description',
                   'confirmation_text',
                   'notes',

@@ -14,6 +14,7 @@ from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.base.fields import EmailVerificationField
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (
@@ -30,8 +31,11 @@ ALLOWED_LOGO_EXT = (
     '.png'
 )
 
-GOOGLE_PLUS_HELP_TEXT = 'Add this website as a place you Contribute to in your Profile - ' + \
-    '<i class="fa fa-question-circle"></i>'
+CONTRIBUTOR_CHOICES = (
+    (News.CONTRIBUTOR_AUTHOR, mark_safe('Author <i class="gauthor-info fa fa-lg fa-question-circle"></i>')),
+    (News.CONTRIBUTOR_PUBLISHER, mark_safe('Publisher <i class="gpub-info fa fa-lg fa-question-circle"></i>'))
+)
+GOOGLE_PLUS_HELP_TEXT = 'Additional Options for Authorship <i class="gauthor-help fa fa-lg fa-question-circle"></i><br>Additional Options for Publisher <i class="gpub-help fa fa-lg fa-question-circle"></i>'
 
 
 class NewsForm(TendenciBaseForm):
@@ -43,6 +47,10 @@ class NewsForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending')))
     email = EmailVerificationField(label=_("Email"), required=False)
+
+    contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
+                                         initial=News.CONTRIBUTOR_AUTHOR,
+                                         widget=forms.RadioSelect())
 
     photo_upload = forms.FileField(label=_('Thumbnail Image'), required=False, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. It will not display on the news page.'))
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
@@ -63,6 +71,7 @@ class NewsForm(TendenciBaseForm):
         'website',
         'release_dt',
         'timezone',
+        'contributor_type',
         'first_name',
         'last_name',
         'google_profile',
@@ -93,10 +102,14 @@ class NewsForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
+                      ('Contributor', {
+                       'fields': ['contributor_type',
+                                  'google_profile'],
+                       'classes': ['boxy-grey'],
+                      }),
                       ('Author', {
                       'fields': ['first_name',
                                  'last_name',
-                                 'google_profile',
                                  'phone',
                                  'fax',
                                  'email',
@@ -180,6 +193,7 @@ class NewsForm(TendenciBaseForm):
 
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
+        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
 
         # only show the remove photo checkbox if there is already a thumbnail
         if self.instance.thumbnail:

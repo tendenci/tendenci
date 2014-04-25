@@ -184,7 +184,7 @@ def update_authorized_domains(corp_profile, domain_names):
             auth_domain.save()
 
 
-def corp_memb_inv_add(user, corp_memb, **kwargs):
+def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
     """
     Add an invoice for this corporate membership
     """
@@ -244,6 +244,16 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
             inv.total = renewal_total
         inv.subtotal = inv.total
         inv.balance = inv.total
+
+        tax = 0
+        if app and app.include_tax:
+            tax = inv.total * app.tax_rate
+            inv.tax = tax
+            total = inv.total + tax
+            inv.subtotal =total
+            inv.total = total
+            inv.balance = total
+
         inv.estimate = True
         inv.status_detail = 'estimate'
         inv.save(user)

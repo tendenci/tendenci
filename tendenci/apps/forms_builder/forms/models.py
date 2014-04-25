@@ -73,6 +73,20 @@ class Form(TendenciBaseModel):
     A user-built form.
     """
 
+    FIRST = 1
+    MIDDLE = 2
+    LAST = 3
+
+    FIELD_POSITION_CHOICES = (
+        (FIRST, _("First")),
+        (MIDDLE, _("Middle")),
+        (LAST, _("Last")),
+    )
+
+    INTRO_DEFAULT_NAME = "Intro"
+    FIELDS_DEFAULT_NAME = "Fields"
+    PRICING_DEFAULT_NAME = "Pricings"
+
     title = models.CharField(_("Title"), max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000, blank=True)
@@ -106,6 +120,19 @@ class Form(TendenciBaseModel):
 
     perms = generic.GenericRelation(ObjectPermission,
         object_id_field="object_id", content_type_field="content_type")
+
+    # positions for displaying the fields
+    intro_position = models.IntegerField(_("Intro Position"), choices=FIELD_POSITION_CHOICES, default=FIRST)
+    fields_position = models.IntegerField(_("Fields Position"), choices=FIELD_POSITION_CHOICES, default=MIDDLE)
+    pricing_position = models.IntegerField(_("Pricing Position"), choices=FIELD_POSITION_CHOICES, default=LAST)
+
+    # variable name of form main sections
+    intro_name = models.CharField(_("Intro Name"), max_length=50,
+                                  default=INTRO_DEFAULT_NAME, blank=True)
+    fields_name = models.CharField(_("Fields Name"), max_length=50,
+                                   default=FIELDS_DEFAULT_NAME, blank=True)
+    pricing_name = models.CharField(_("Pricing Name"), max_length=50,
+                                    default=PRICING_DEFAULT_NAME)
 
     objects = FormManager()
 

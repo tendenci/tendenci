@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
@@ -38,6 +38,14 @@ def detail(request, slug=None, template_name="news/view.html"):
     # check permission
     if not has_perm(request.user, 'news.view_news', news):
         raise Http403
+
+    #check for release date if it's in the future or not
+    if not news.is_released:
+        if not request.user.is_authenticated():
+            raise Http404
+
+        if not request.user.profile.is_superuser:
+            raise Http403
 
     EventLog.objects.log(instance=news)
 

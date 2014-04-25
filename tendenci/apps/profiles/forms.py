@@ -125,7 +125,11 @@ class ProfileForm(TendenciBaseForm):
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
                                 label=_(u'Username'),
-                                help_text = _("Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."))
+                                help_text = _("Required. Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
+                                error_messages={
+                                    'invalid': 'Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).'
+                                })
+
     password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput(attrs=attrs_dict))
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
         help_text = _("Enter the same password as above, for verification."))

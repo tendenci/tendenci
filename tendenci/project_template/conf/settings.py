@@ -97,16 +97,13 @@ if env('SENTRY_DSN', None):
 
 if env('INTERNAL_IPS', None):
     INTERNAL_IPS = [env('INTERNAL_IPS', '127.0.0.1')]
-
-if env('DEBUG_TOOLBAR', None):
-    def always_show_toolbar(request):
-        return True
-
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    
+DEBUG_TOOLBAR = env('DEBUG_TOOLBAR', False)
+if DEBUG_TOOLBAR:
     INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {
-        "INTERCEPT_REDIRECTS": False,
-        "SHOW_TOOLBAR_CALLBACK": always_show_toolbar,
+        "INTERCEPT_REDIRECTS": True,
     }
 
 

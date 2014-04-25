@@ -1,5 +1,6 @@
 import re
 import os
+import pytz
 from PIL import Image
 from dateutil.parser import parse
 from datetime import datetime
@@ -452,3 +453,13 @@ def phonenumber(value):
             return ' '.join((number, ext))
         else:
             return number
+
+
+@register.filter
+def timezone_label(value):
+    try:
+        now = datetime.now(pytz.timezone(value))
+        tzinfo = now.strftime("%z")
+        return "(GMT%s) %s" %(tzinfo, value)
+    except:
+        return ""

@@ -54,104 +54,117 @@ class FormForForm(forms.ModelForm):
         self.form_fields = form.fields.visible().order_by('position')
         super(FormForForm, self).__init__(*args, **kwargs)
 
-        for field in self.form_fields:
-            field_key = "field_%s" % field.id
-            if "/" in field.field_type:
-                field_class, field_widget = field.field_type.split("/")
-            else:
-                field_class, field_widget = field.field_type, None
-
-            if field.field_type == 'EmailVerificationField':
-                one_email = get_setting('module', 'forms', 'one_email')
-                if one_email:
-                    field_class = forms.EmailField
+        def add_fields(form, form_fields):
+            for field in form_fields:
+                field_key = "field_%s" % field.id
+                if "/" in field.field_type:
+                    field_class, field_widget = field.field_type.split("/")
                 else:
-                    field_class = EmailVerificationField
+                    field_class, field_widget = field.field_type, None
 
-            elif field.field_type == 'CountryField' or field.field_type == 'StateProvinceField':
-                field_class = getattr(forms, 'ChoiceField')
-            else:
-                field_class = getattr(forms, field_class)
-            field_args = {"label": mark_safe(field.label), "required": field.required}
-            arg_names = field_class.__init__.im_func.func_code.co_varnames
-            if "max_length" in arg_names:
-                field_args["max_length"] = FIELD_MAX_LENGTH
-            if "choices" in arg_names:
-                field_args["choices"] = field.get_choices()
-                #field_args["choices"] = zip(choices, choices)
-            if "initial" in arg_names:
-                default = field.default.lower()
-                if field_class == "BooleanField":
-                    if default == "checked" or default == "true" or \
-                        default == "on" or default == "1":
-                            default = True
+                if field.field_type == 'EmailVerificationField':
+                    one_email = get_setting('module', 'forms', 'one_email')
+                    if one_email:
+                        field_class = forms.EmailField
                     else:
-                        default = False
-                field_args["initial"] = field.default
+                        field_class = EmailVerificationField
 
-            if field_widget is not None:
-                module, widget = field_widget.rsplit(".", 1)
-                field_args["widget"] = getattr(import_module(module), widget)
-
-            if field.field_function == 'EmailFirstName':
-                field_args["max_length"] = FIELD_FNAME_LENGTH
-            elif field.field_function == 'EmailLastName':
-                field_args["max_length"] = FIELD_LNAME_LENGTH
-            elif field.field_function == 'EmailFullName':
-                field_args["max_length"] = FIELD_NAME_LENGTH
-            elif field.field_function == 'EmailPhoneNumber':
-                field_args["max_length"] = FIELD_PHONE_LENGTH
-            
-            self.fields[field_key] = field_class(**field_args)
-
-            if not field_class == EmailVerificationField:
-                self.fields[field_key].widget.attrs['title'] = field.label
-
-            if self.fields[field_key].widget.__class__.__name__.lower() == 'selectdatewidget':
-                self.fields[field_key].widget.years = range(1920, THIS_YEAR + 10)
-
-        # include pricing options if any
-        if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():
-
-            currency_symbol = get_setting('site', 'global', 'currencysymbol')
-
-            pricing_options = []
-            for pricing in self.form.pricing_set.all():
-
-                if pricing.price == None:
-                    pricing_options.append(
-                        (pricing.pk, mark_safe(
-                            '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' % 
-                            (pricing.pk, self.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label, pricing.description)))
-                    )
+                elif field.field_type == 'CountryField' or field.field_type == 'StateProvinceField':
+                    field_class = getattr(forms, 'ChoiceField')
                 else:
-                    if self.form.recurring_payment:
+                    field_class = getattr(forms, field_class)
+                field_args = {"label": mark_safe(field.label), "required": field.required}
+                arg_names = field_class.__init__.im_func.func_code.co_varnames
+                if "max_length" in arg_names:
+                    field_args["max_length"] = FIELD_MAX_LENGTH
+                if "choices" in arg_names:
+                    field_args["choices"] = field.get_choices()
+                    #field_args["choices"] = zip(choices, choices)
+                if "initial" in arg_names:
+                    default = field.default.lower()
+                    if field_class == "BooleanField":
+                        if default == "checked" or default == "true" or \
+                            default == "on" or default == "1":
+                                default = True
+                        else:
+                            default = False
+                    field_args["initial"] = field.default
+
+                if field_widget is not None:
+                    module, widget = field_widget.rsplit(".", 1)
+                    field_args["widget"] = getattr(import_module(module), widget)
+
+                if field.field_function == 'EmailFirstName':
+                    field_args["max_length"] = FIELD_FNAME_LENGTH
+                elif field.field_function == 'EmailLastName':
+                    field_args["max_length"] = FIELD_LNAME_LENGTH
+                elif field.field_function == 'EmailFullName':
+                    field_args["max_length"] = FIELD_NAME_LENGTH
+                elif field.field_function == 'EmailPhoneNumber':
+                    field_args["max_length"] = FIELD_PHONE_LENGTH
+                
+                form.fields[field_key] = field_class(**field_args)
+
+                if not field_class == EmailVerificationField:
+                    form.fields[field_key].widget.attrs['title'] = field.label
+                    form.fields[field_key].widget.attrs['class'] = 'formforform-field'
+                else:
+                    form.fields[field_key].widget.widgets[0].attrs['class'] += ' formforform-field'
+                    form.fields[field_key].widget.widgets[1].attrs['class'] += ' formforform-field'
+
+                if form.fields[field_key].widget.__class__.__name__.lower() == 'selectdatewidget':
+                    form.fields[field_key].widget.years = range(1920, THIS_YEAR + 10)
+
+        def add_pricing_fields(form, formforform):
+            # include pricing options if any
+            if (formforform.custom_payment or formforform.recurring_payment) and formforform.pricing_set.all():
+
+                currency_symbol = get_setting('site', 'global', 'currencysymbol')
+
+                pricing_options = []
+                for pricing in formforform.pricing_set.all():
+
+                    if pricing.price == None:
                         pricing_options.append(
-                            (pricing.pk, mark_safe('<strong>%s%s per %s %s - %s</strong><br>%s' %
-                                                    (currency_symbol, pricing.price,
-                                                     pricing.billing_frequency, pricing.billing_period,
-                                                     pricing.label, pricing.description)))
+                            (pricing.pk, mark_safe(
+                                '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' % 
+                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label, pricing.description)))
                         )
                     else:
-                        pricing_options.append(
-                            (pricing.pk, mark_safe('<strong>%s%s %s</strong><br>%s' %
-                                                   (currency_symbol, pricing.price,
-                                                    pricing.label, pricing.description)))
-                        )
+                        if formforform.recurring_payment:
+                            pricing_options.append(
+                                (pricing.pk, mark_safe('<strong>%s%s per %s %s - %s</strong><br>%s' %
+                                                        (currency_symbol, pricing.price,
+                                                         pricing.billing_frequency, pricing.billing_period,
+                                                         pricing.label, pricing.description)))
+                            )
+                        else:
+                            pricing_options.append(
+                                (pricing.pk, mark_safe('<strong>%s%s %s</strong><br>%s' %
+                                                       (currency_symbol, pricing.price,
+                                                        pricing.label, pricing.description)))
+                            )
 
-            self.fields['pricing_option'] = forms.ChoiceField(
-                label=_('Pricing'),
-                choices = pricing_options,
-                widget=forms.RadioSelect
-            )
-
-            self.fields['payment_option'] = forms.ModelChoiceField(
-                    label=_('Payment Method'),
-                    empty_label=None,
-                    queryset=self.form.payment_methods.all(),
-                    widget=forms.RadioSelect,
-                    initial=1,
+                form.fields['pricing_option'] = forms.ChoiceField(
+                    label=_('Pricing'),
+                    choices = pricing_options,
+                    widget=forms.RadioSelect(attrs={'class': 'pricing-field'})
                 )
+
+                form.fields['payment_option'] = forms.ModelChoiceField(
+                        label=_('Payment Method'),
+                        empty_label=None,
+                        queryset=formforform.payment_methods.all(),
+                        widget=forms.RadioSelect(attrs={'class': 'payment-field'}),
+                        initial=1,
+                    )
+
+        if self.form.pricing_position < self.form.fields_position:
+            add_pricing_fields(self, self.form)
+            add_fields(self, self.form_fields)
+        else:
+            add_fields(self, self.form_fields)
+            add_pricing_fields(self, self.form)
         
         if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
@@ -254,6 +267,12 @@ class FormAdminForm(TendenciBaseForm):
                   'custom_payment',
                   'recurring_payment',
                   'payment_methods',
+                  'intro_position',
+                  'fields_position',
+                  'pricing_position',
+                  'intro_name',
+                  'fields_name',
+                  'pricing_name',
                  )
 
     def __init__(self, *args, **kwargs): 
@@ -261,9 +280,15 @@ class FormAdminForm(TendenciBaseForm):
         if self.instance.pk:
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['response'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            if self.instance.intro_name:
+                self.fields['intro'].label = self.instance.intro_name
         else:
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['response'].widget.mce_attrs['app_instance_id'] = 0
+
+        position_fields = ['intro_position', 'fields_position', 'pricing_position']
+        for field in position_fields:
+            self.fields[field].widget.attrs['class'] = 'position_field'
 
 
     def clean_slug(self):

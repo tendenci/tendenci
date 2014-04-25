@@ -9,6 +9,7 @@ from django.contrib.contenttypes import generic
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
 from timezones.fields import TimeZoneField
+from timezones.utils import localtime_for_timezone
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
@@ -20,6 +21,11 @@ from tendenci.core.files.models import File
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 class News(TendenciBaseModel):
+    CONTRIBUTOR_AUTHOR = 1
+    CONTRIBUTOR_PUBLISHER = 2
+    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, 'Author'),
+                           (CONTRIBUTOR_PUBLISHER, 'Publisher'))
+
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
     timezone = TimeZoneField(_('Time Zone'))
@@ -29,7 +35,9 @@ class News(TendenciBaseModel):
     source = models.CharField(max_length=300, blank=True)
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
-    google_profile = models.URLField(_('Add a link to your Google+ Profile'), blank=True)
+    contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
+                                           default=CONTRIBUTOR_AUTHOR)
+    google_profile = models.URLField(_('Google+ URL'), blank=True)
     phone = models.CharField(max_length=50, blank=True)
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
@@ -124,6 +132,34 @@ class News(TendenciBaseModel):
         return all([self.allow_anonymous_view,
                 self.status,
                 self.status_detail in ['active']])
+
+    @property
+    def release_dt_with_tz(self):
+        return datetime(
+                year = self.release_dt.year,
+                month = self.release_dt.month,
+                day = self.release_dt.day,
+                hour = self.release_dt.hour,
+                minute = self.release_dt.minute,
+                tzinfo = self.timezone )
+
+    @property
+    def release_dt_default_tz(self):
+        return localtime_for_timezone(self.release_dt_with_tz, None)
+
+    @property
+    def is_released(self):
+        now = localtime_for_timezone(datetime.now(), None)
+        return self.release_dt_default_tz <= now
+
+    @property
+    def has_google_author(self):
+        return self.contributor_type == self.CONTRIBUTOR_AUTHOR
+
+    @property
+    def has_google_publisher(self):
+        return self.contributor_type == self.CONTRIBUTOR_PUBLISHER
+
 
 class NewsImage(File):
     pass

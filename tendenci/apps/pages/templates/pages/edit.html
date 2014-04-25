@@ -13,6 +13,7 @@
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
 <link href="{{ STATIC_URL }}css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
 <style type="text/css">
     div.forms input[type="button"].previewButton {
 		margin-top: 15px;
@@ -68,7 +69,11 @@
 	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="{{ STATIC_URL }}js/tag-it.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/popover.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}/js/gplus-helptexts.js"></script>
     <script type="text/javascript">
+        gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
+
 		$(document).ready(function(){
 			// delete confirmation
 			$('.add-category').click(function(){

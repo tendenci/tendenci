@@ -26,14 +26,15 @@ def get_theme_root(theme=None):
     return theme_root
 
 
+# this function is doing nothing and needs to be removed
 def get_theme_template(template_name, theme=None):
     """Returns a relative path for the theme template.
     This is used primarily as an input for loader's get_template
     """
-    if theme is None:  # default theme
-        theme = get_theme()
-    theme_template = template_name
-    return theme_template
+#     if theme is None:  # default theme
+#         theme = get_theme()
+#     theme_template = template_name
+    return template_name
 
 
 def theme_options():

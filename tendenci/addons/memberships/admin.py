@@ -552,6 +552,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
         (None, {'fields': ('name', 'slug', 'description',
                            'confirmation_text', 'notes', 'allow_multiple_membership',
                            'membership_types', 'payment_methods',
+                           'include_tax', 'tax_rate',
                            'use_for_corp', 'use_captcha', 'discount_eligible')},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
@@ -575,6 +576,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/membapp_tabular_inline_ordering.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/tax_fields.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
                        '%scss/memberships-admin.css' % settings.STATIC_URL], }

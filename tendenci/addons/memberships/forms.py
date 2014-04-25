@@ -442,6 +442,8 @@ class MembershipAppForm(TendenciBaseForm):
             'confirmation_text',
             'notes',
             'membership_types',
+            'include_tax',
+            'tax_rate',
             'payment_methods',
             'use_for_corp',
             'use_captcha',
@@ -651,7 +653,15 @@ class UserForm(forms.ModelForm):
             self.fields['confirm_password'].widget.attrs.update({'size': 28})
 
         if 'username' in self_fields_keys:
-            self.fields['username'].help_text = 'Letters, numbers and @/./+/-/_ characters'
+            self.fields['username'] = forms.RegexField(regex=r'^[\w.@+-]+$',
+                                required=False,
+                                max_length=30,
+                                widget=forms.TextInput,
+                                label=_(u'Username'),
+                                help_text = _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
+                                error_messages = {
+                                    'invalid' : "Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."
+                                })
 
         self.field_names = [name for name in self.fields.keys()]
 
@@ -834,7 +844,7 @@ class DemographicsForm(forms.ModelForm):
                             self.fields[field_name].initial = file_instance.file
 
                     else:
-                        self.fields[field_name].initial = getattr(demographics, field_name)
+                        self.fields[field_name].initial = getattr(self.demographics, field_name)
 
     def save(self, commit=True, *args, **kwargs):
         pks ={}
@@ -2275,7 +2285,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                         self.fields[field_name].initial = file_instance.file
 
                 else:
-                    self.fields[field_name].initial = getattr(self.demographics, field_name)
+                    self.fields[field_name].initial = getattr(demographics, field_name)
         # end demographic
 
     def clean(self):

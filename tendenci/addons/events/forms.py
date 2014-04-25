@@ -703,6 +703,7 @@ class EventForm(TendenciBaseForm):
             groups_list = default_groups.values_list('pk', 'name')
 
         self.fields['group'].choices = groups_list
+        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
@@ -1119,6 +1120,8 @@ class Reg8nConfPricingForm(BetterModelForm):
             'quantity',
             'payment_required',
             'price',
+            'include_tax',
+            'tax_rate',
             'start_dt',
             'end_dt',
             'reg_form',
@@ -1135,6 +1138,8 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'quantity',
                     'payment_required',
                     'price',
+                    'include_tax',
+                    'tax_rate',
                     'dates',
                     'reg_form',
                     'groups',
