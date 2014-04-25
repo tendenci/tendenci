@@ -49,7 +49,9 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
-			$('.custom-price').closest('label').attr('for', '');
+            $('.custom-price').click(function() {
+                $(this).prev('input [type="radio"]').prop('checked', true);
+            });
 
             {% with form.intro_position as intro_pos and form.fields_position as fields_pos and form.pricing_position as pricing_pos %}
                 var introDiv = $("<div>{{ form.intro|safe|urlize }}</div>");
