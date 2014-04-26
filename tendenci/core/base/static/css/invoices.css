@@ -1,3 +1,5 @@
+#container { width: 8.5in; }
+
 .invoice-view-display{
 	width: 95%;
 	max-width: 650px;
@@ -137,6 +139,11 @@ div.invoice-meta-logo {
     margin: 20px 0 20px 0;
     width: 300px;
     float: right;
+}
+
+div.invoice-meta-logo.print-view {
+    width: 295px;
+    float: left;
 }
 
 div.invoice-meta-logo img {

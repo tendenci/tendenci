@@ -50,6 +50,11 @@
 		</tr>
 	</table>
 </div>
+{% if MODULE_INVOICES_INVOICELOGO %}
+<div class="invoice-meta-logo print-view">
+    <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" />
+</div>
+{% endif %}
 {% endwith %}
 
 <div class="invoice-table">
