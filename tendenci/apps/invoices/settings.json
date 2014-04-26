@@ -49,5 +49,21 @@
         "scope_category": "invoices", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "",
+        "description": "Logo to be displayed for the invoice module.",
+        "data_type": "string",
+        "update_dt": "2014-04-19 17:19:11",
+        "input_type": "file",
+        "client_editable": true,
+        "name": "invoicelogo",
+        "value": "",
+        "label": "Invoice logo",
+        "input_value": "",
+        "scope": "module",
+        "scope_category": "invoices",
+        "store": true,
+        "updated_by": ""
     }
 ]

@@ -104,10 +104,14 @@ td.td-right {
 	text-align: right;
 }
 
+div.invoice-meta-wrapper {
+    width: 90%;
+ }
+
 div.invoice-meta {
-	margin: 20px 0 20px 0;
+	margin: 20px 20px 20px 0;
 	width: 500px;
-	clear: both;
+	float: left;
 }
 
 div.invoice-meta table {
@@ -127,6 +131,20 @@ div.invoice-meta table tr.invoice-meta-amount {
 
 div.invoice-meta table tr.invoice-meta-amount td {
 	padding: 5px;
+}
+
+div.invoice-meta-logo {
+    margin: 20px 0 20px 0;
+    width: 300px;
+    float: right;
+}
+
+div.invoice-meta-logo img {
+    width: 100%;
+}
+
+div.invoice-meta-clear {
+    clear: both;
 }
 
 div.invoice-table {

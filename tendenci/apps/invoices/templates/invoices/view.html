@@ -77,7 +77,8 @@
 {% endif %}
 
 {% with invoice.get_object as object %}
-<div class="invoice-meta">
+<div class="invoice-meta-wrapper">
+    <div class="invoice-meta">
 	<table border="0" cellspacing="0" cellpadding="0">
 	  <tr>
 	    <td>Invoice #</td>
@@ -123,6 +124,14 @@
 	  </tr>
 	</table>
 	</div>
+    {% if MODULE_INVOICES_INVOICELOGO %}
+    <div class="invoice-meta-logo">
+        <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" />
+    </div>
+    {% endif %}
+
+    <div class="invoice-meta-clear"></div>
+</div>
 {% endwith %}
 
 <div class="invoice-table">
