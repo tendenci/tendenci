@@ -325,7 +325,7 @@ class ProfileAdminForm(TendenciBaseForm):
                                 error_messages={'required': 'Last Name is a required field.'})
     email = EmailVerificationField(label=_("Email"),
                                 error_messages={'required': 'Email is a required field.'})
-    email2 = EmailVerificationField(label=_("Email 2"), required=False)
+    email2 = EmailVerificationField(label=_("Secondary Email"), required=False)
 
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=30,
