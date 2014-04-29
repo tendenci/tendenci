@@ -802,7 +802,6 @@ class Migration(SchemaMigration):
             'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 5, 16, 0, 0)'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['user_groups.Group']", 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'include_tax': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'payment_required': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '21', 'decimal_places': '2'}),
@@ -811,7 +810,6 @@ class Migration(SchemaMigration):
             'reg_form': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'regconfpricings'", 'null': 'True', 'to': "orm['events.CustomRegForm']"}),
             'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 4, 16, 0, 0)'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'tax_rate': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '5', 'decimal_places': '4', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'blank': 'True'})
         },
         'events.registrant': {

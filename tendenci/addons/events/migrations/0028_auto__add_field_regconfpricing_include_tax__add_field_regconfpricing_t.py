@@ -146,10 +146,8 @@ class Migration(SchemaMigration):
             'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.Event']"}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'include_tax': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '21', 'decimal_places': '2'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'tax_rate': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '5', 'decimal_places': '4', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         'events.addonoption': {

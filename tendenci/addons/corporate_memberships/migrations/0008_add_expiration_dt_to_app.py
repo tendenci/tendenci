@@ -7,14 +7,13 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        from tendenci.addons.corporate_memberships.models import CorpMembershipApp, CorpMembershipAppField
-        corp_apps = CorpMembershipApp.objects.all()
+        corp_apps = orm.CorpMembershipApp.objects.all()
         field_to_add = 'expiration_dt'
         for corp_app in corp_apps:
-            if not CorpMembershipAppField.objects.filter(
+            if not orm.CorpMembershipAppField.objects.filter(
                                         field_name=field_to_add
                                         ).exists():
-                CorpMembershipAppField.objects.create(
+                orm.CorpMembershipAppField.objects.create(
                         corp_app=corp_app,
                         field_name=field_to_add,
                         label='Expiration Date',
