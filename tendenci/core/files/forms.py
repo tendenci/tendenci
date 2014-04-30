@@ -11,7 +11,7 @@ from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.perms.utils import get_query_filters, update_perms_and_save
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
 
@@ -261,6 +261,7 @@ class FilewithCategoryForm(TendenciBaseForm):
             self.fields['category'].initial = category
             self.fields['sub_category'].initial = sub_category
 
+
     def clean_file(self):
         data = self.cleaned_data.get('file')
         max_upload_size = get_max_file_upload_size(file_module=True)
@@ -291,7 +292,7 @@ class FilewithCategoryForm(TendenciBaseForm):
         ## update the category of the file
         category_removed = False
         category = data.get('category')
-        print category
+
         if category != '0':
             Category.objects.update(file, category, 'category')
         else:  # remove
@@ -322,7 +323,6 @@ class MultiFileForm(BetterForm):
     sub_category = CategoryField(required=False, **sub_category_defaults)
 
     allow_anonymous_view = forms.BooleanField(label=_("Public can View"), initial=True, required=False)
-
     group_perms = GroupPermissionField()
     user_perms = UserPermissionField()
     member_perms = MemberPermissionField()
@@ -345,7 +345,12 @@ class MultiFileForm(BetterForm):
         )
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.request = kwargs.pop('request', None)
+        if self.request:
+            self.user = self.request.user
+        else:
+            self.user = None
+
         super(MultiFileForm, self).__init__(*args, **kwargs)
 
         default_groups = Group.objects.filter(status=True, status_detail="active")
@@ -468,6 +473,45 @@ class MultiFileForm(BetterForm):
         except Group.DoesNotExist:
             raise forms.ValidationError(_('Invalid group selected.'))
 
-
     def save(self, *args, **kwargs):
-        pass
+        data = self.cleaned_data
+
+        files = data.get('files')
+        tags = data.get('tags')
+        group = data.get('group')
+        category_from_form = data.get('category')
+        sub_category_from_form = data.get('sub_category')
+        is_public = data.get('allow_anonymous_view', False)
+
+        for new_file in files:
+            file = File(file=new_file, tags=tags, group=group, allow_anonymous_view=is_public)
+            file.save()
+
+            # update all permissions and save the model
+            file = update_perms_and_save(self.request, self, file)
+
+            #setup categories
+            category = Category.objects.get_for_object(file, 'category')
+            sub_category = Category.objects.get_for_object(file, 'sub_category')
+
+            ## update the category of the file
+            category_removed = False
+            category = category_from_form
+
+            if category != '0':
+                Category.objects.update(file, category, 'category')
+            else:  # remove
+                category_removed = True
+                Category.objects.remove(file, 'category')
+                Category.objects.remove(file, 'sub_category')
+
+            if not category_removed:
+                # update the sub category of the file
+                sub_category = sub_category_from_form
+                if sub_category != '0':
+                    Category.objects.update(file, sub_category, 'sub_category')
+                else:  # remove
+                    Category.objects.remove(file, 'sub_category')
+
+            #Save relationships
+            file.save()

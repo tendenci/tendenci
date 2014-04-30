@@ -414,6 +414,9 @@ def add(request, form_class=FileForm, category_form_class=CategoryForm, template
             file.owner_username = request.user.username
             file.save()
 
+            # update all permissions and save the model
+            file = update_perms_and_save(request, form, file)
+
             #setup categories
             category = Category.objects.get_for_object(file, 'category')
             sub_category = Category.objects.get_for_object(file, 'sub_category')
