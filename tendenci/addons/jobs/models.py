@@ -219,6 +219,8 @@ class JobPricing(models.Model):
 
     class Meta:
         permissions = (("view_jobpricing", "Can view job pricing"),)
+        verbose_name = "Job Pricing"
+        verbose_name_plural = "Job Pricings"
 
     def __unicode__(self):
         price = "%s/%s" % (self.regular_price, self.premium_price)

@@ -13,6 +13,7 @@
 	{% endif %}
 	
 	<tr class="header-row">
+	<td>{% trans "Title" %}</td>
 	<td>{% trans "Duration" %}</td>
 	{% if show_member_price %}
 		{% if show_premium_price %}
@@ -31,6 +32,7 @@
 	</tr>
 	{% for jp in job_pricings %}
 		<tr class="{% cycle 'row1' 'row2' %}">
+			<td>{{ jp.get_title }}</td>
 			<td>{% blocktrans count jp.duration as jp_duration %}{{ jp_duration  }} day{% plural %}{{ jp_duration  }} days{% endblocktrans %}</td>
 			{% if show_premium_price %}
 				<td>{{ jp.regular_price|format_currency }}</td>

@@ -18,7 +18,7 @@ from tendenci.apps.user_groups.models import Group
 
 request_duration_defaults = {
     'label': _('Requested Duration'),
-    'help_text': mark_safe('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/jobs/pricing/add/'),
+    'help_text': mark_safe('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/admin/jobs/jobpricing/add/'),
 }
 
 DURATION_CHOICES = (
