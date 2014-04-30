@@ -341,6 +341,15 @@ class File(TendenciBaseModel):
         return b64encode(binary)
 
 
+class MultipleFile(models.Model):
+    """
+    Dummy model to enable us of having an admin options in the
+    Files section to add multiple files
+    """
+    class Meta:
+        managed = False
+
+
 # These two auto-delete files from filesystem when they are unneeded:
 @receiver(models.signals.pre_save, sender=File)
 def auto_delete_file_on_change(sender, instance, **kwargs):

@@ -9,10 +9,11 @@ from tendenci.core.categories.models import CategoryItem, Category
 from tendenci.core.files.fields import MultiFileField
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.core.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
-
+from form_utils.forms import BetterForm
 
 class FileForm(TendenciBaseForm):
 
@@ -184,38 +185,6 @@ class FileSearchForm(forms.Form):
         self.fields['sub_category'].choices = tuple(sub_categories)
 
 
-class MultiFileForm(FileForm):
-    file = MultiFileField()
-
-    def clean_file(self):
-        files = self.cleaned_data.get('file')
-        for data in files:
-            max_upload_size = get_max_file_upload_size(file_module=True)
-            if data.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
-
-        return files
-
-    def save(self, *args, **kwargs):
-        data = self.cleaned_data
-        group = data.get('group', None)
-        tags = data.get('tags')
-        allow_anonymous_view = data.get('allow_anonymous_view')
-        user_perms = data.get('user_perms')
-        member_perms = data.get('member_perms')
-        group_perms = data.get('group_perms')
-        files = data.get('file')
-
-        for file in files:
-            new_file = File(
-                file=file,
-                group=group,
-                tags=tags,
-            )
-
-            new_file.save()
-
-
 class FilewithCategoryForm(TendenciBaseForm):
 
     group = forms.ChoiceField(required=True, choices=[])
@@ -342,3 +311,163 @@ class FilewithCategoryForm(TendenciBaseForm):
         file.save()
 
         return file
+
+
+class MultiFileForm(BetterForm):
+    files = MultiFileField(min_num=1)
+    group = forms.ChoiceField(required=True, choices=[])
+    tags = forms.CharField(required=False)
+
+    category = CategoryField(required=False, **category_defaults)
+    sub_category = CategoryField(required=False, **sub_category_defaults)
+
+    allow_anonymous_view = forms.BooleanField(label=_("Public can View"), initial=True, required=False)
+
+    group_perms = GroupPermissionField()
+    user_perms = UserPermissionField()
+    member_perms = MemberPermissionField()
+
+    class Meta:
+        fieldsets = (
+            ('File Information', {
+                'fields': ('files',
+                           'tags',
+                           'group',
+                           )
+            }),
+            ('Category', {'fields': ('category', 'sub_category')}),
+            ('Permissions', {'fields': ('allow_anonymous_view',)}),
+            ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+                'user_perms',
+                'member_perms',
+                'group_perms',
+            )}),
+        )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(MultiFileForm, self).__init__(*args, **kwargs)
+
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
+        # needs to update the choices on every pull
+        # in case groups get added
+        if 'group_perms' in self.fields:
+            self.fields['group_perms'].choices = group_choices()
+
+        if 'instance' in kwargs:
+            instance = kwargs['instance']
+            if 'group_perms' in self.fields:
+                self.fields['group_perms'].initial = groups_with_perms(instance)
+            if 'user_perms' in self.fields:
+                self.fields['user_perms'].initial = user_perm_bits(instance)
+            if 'member_perms' in self.fields:
+                self.fields['member_perms'].initial = member_perm_bits(instance)
+
+        if args:
+            post_data = args[0]
+        else:
+            post_data = None
+
+        filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+        groups = default_groups.filter(filters).distinct()
+        groups_list = list(groups.values_list('pk', 'name'))
+
+        users_groups = self.user.profile.get_groups()
+        for g in users_groups:
+            if [g.id, g.name] not in groups_list:
+                groups_list.append([g.id, g.name])
+
+        self.fields['group'].choices = groups_list
+
+        content_type = ContentType.objects.get(app_label='files', model='file')
+        categories = CategoryItem.objects.filter(content_type=content_type,
+                                                 parent__exact=None)
+        categories = list(set([cat.category.name for cat in categories]))
+        categories = [[cat, cat] for cat in categories]
+        categories.insert(0, [0, '------------'])
+        if post_data:
+            new_category = post_data.get('category','0')
+            if new_category != '0':
+                categories.append([new_category,new_category])
+        self.fields['category'].choices = tuple(categories)
+
+        # set up the sub category choices
+        sub_categories = CategoryItem.objects.filter(content_type=content_type,
+                                                     category__exact=None)
+        sub_categories = list(set([cat.parent.name for cat in sub_categories]))
+        sub_categories = [[cat, cat] for cat in sub_categories]
+        sub_categories.insert(0, [0, '------------'])
+        if post_data:
+            new_sub_category = post_data.get('sub_category','0')
+            if new_sub_category != '0':
+                sub_categories.append([new_sub_category,new_sub_category])
+        self.fields['sub_category'].choices = tuple(sub_categories)
+
+    def clean_files(self):
+        files = self.cleaned_data.get('files')
+        max_upload_size = get_max_file_upload_size(file_module=True)
+        for data in files:
+            if data.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+
+        return files
+
+    def clean_user_perms(self):
+        user_perm_bits = []
+        value = self.cleaned_data['user_perms']
+        if value:
+            if 'allow_user_view' in value:
+                user_perm_bits.append(True)
+            else:
+                user_perm_bits.append(False)
+
+            if 'allow_user_edit' in value:
+                user_perm_bits.append(True)
+            else:
+                user_perm_bits.append(False)
+            value = tuple(user_perm_bits)
+        else:
+            value = (False, False,)
+        return value
+
+    def clean_member_perms(self):
+        member_perm_bits = []
+        value = self.cleaned_data['member_perms']
+        if value:
+            if 'allow_member_view' in value:
+                member_perm_bits.append(True)
+            else:
+                member_perm_bits.append(False)
+
+            if 'allow_member_edit' in value:
+                member_perm_bits.append(True)
+            else:
+                member_perm_bits.append(False)
+            value = tuple(member_perm_bits)
+        else:
+            value = (False, False,)
+        return value
+
+    def clean_group_perms(self):
+        value = self.cleaned_data['group_perms']
+        groups_and_perms = []
+        if value:
+            for item in value:
+                perm, group_pk = item.split('_')
+                groups_and_perms.append((group_pk, perm,))
+            value = tuple(groups_and_perms)
+        return value
+
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            group = Group.objects.get(pk=group_id)
+            return group
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
+
+
+    def save(self, *args, **kwargs):
+        pass

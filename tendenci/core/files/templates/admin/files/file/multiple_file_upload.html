@@ -1,0 +1,81 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static admin_modify %}
+{% load url from future %}
+{% load admin_urls %}
+
+{% block extrahead %}{{ block.super }}
+{% url 'admin:jsi18n' as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/categories.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/collapse.js"></script>
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
+
+{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo; {% trans 'Multiple File Upload' %}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block title %}{% trans 'Upload Multiple Files' %}{{ block.super }}{% endblock %}
+
+{% block content %}<div id="content-main">
+
+<form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div>
+
+        <h1>{% trans 'Upload Multiple Files' %}</h1>
+
+        {% for fieldset in adminform.fieldsets %}
+          <fieldset class="module aligned {{ fieldset.classes }}">
+                {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+                {% if fieldset.description %}
+                    <div class="description">{{ fieldset.description|safe }}</div>
+                {% endif %}
+                {% for field in fieldset %}
+                <div class="form-row field-{{ field.name }} {% if field.errors %}errors{% endif %}">
+                    {{ field.errors }}
+                    <div>
+                        {% if field.is_checkbox %}
+                            {{ field }}{{ field.label_tag }}
+                        {% else %}
+                            <label for="field.auto_id" class="{% if field.field.required %}required{% endif %}">{{ field.label_tag }}</label>
+                            {% if field.is_readonly %}
+                                <p>{{ field.contents }}</p>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                        {% endif %}
+                        {% if field.help_text %}
+                            <p class="help">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </fieldset>
+        {% endfor %}
+
+        <div class="submit-row">
+            <p class="deletelink-box">{# just to make it float to the left #}
+              <input type="submit" value="{% trans 'Upload' %}" class="default" />
+            </p>
+        </div>
+
+    </div>
+</form></div>
+
+{% endblock %}

@@ -1,9 +1,12 @@
 from django.conf import settings
+from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect, render
+from django.http import HttpResponse
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.core.files.models import File
+from tendenci.core.files.models import File, MultipleFile
 from tendenci.core.files.forms import FileForm, MultiFileForm, FilewithCategoryForm
 
 
@@ -58,3 +61,37 @@ class FileAdmin(TendenciBaseModelAdmin):
     file_path.short_description = "File Path"
 
 admin.site.register(File, FileAdmin)
+
+
+class MultipleFileAdmin(admin.ModelAdmin):
+
+    def get_urls(self):
+        """
+        Add the export view to urls.
+        """
+        urls = super(MultipleFileAdmin, self).get_urls()
+        extra_urls = patterns("",
+            url("^add",
+                self.admin_site.admin_view(self.add_multiple_file_view),
+                name="multiplefile_add"),
+        )
+        return extra_urls + urls
+
+    def add_multiple_file_view(self, request):
+        form = MultiFileForm(user=request.user)
+
+        if request.method == 'POST':
+            form = MultiFileForm(request.POST, request.FILES, user=request.user)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse('admin:files_file_changelist'))
+        return render(request,
+            'admin/files/file/multiple_file_upload.html',{
+            'adminform': form
+        });
+
+    def changelist_view(self, request, extra_context=None):
+        return redirect(reverse('admin:multiplefile_add'))
+
+
+admin.site.register(MultipleFile, MultipleFileAdmin)
