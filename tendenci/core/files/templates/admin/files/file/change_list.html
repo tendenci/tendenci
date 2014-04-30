@@ -9,6 +9,15 @@
   {% if cl.formset %}
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
   {% endif %}
+
+  <style type="text/css">
+    .actions.category-form {
+      display: none; }
+
+    .add-category, .add-sub-category {
+      font-weight: 800;
+      font-size: 16px; }
+  </style>
   {% if cl.formset or action_form %}
     {% url 'admin:jsi18n' as jsi18nurl %}
     <script type="text/javascript" src="{{ jsi18nurl|default:'../../jsi18n/' }}"></script>
@@ -31,6 +40,18 @@
         $("tr input.action-select").actions();
     });
 })(django.jQuery);
+</script>
+
+<script type="text/javascript">
+  jQuery(document).ready(function($) {
+    $("select[name='action']").change(function () {
+      if ($(this).val() == 'add_to_category_and_subcategory') {
+          $('.actions.category-form').show();
+      } else {
+          $('.actions.category-form').hide();
+      }
+    });
+  });
 </script>
 {% endif %}{% endif %}
 {% endblock %}
@@ -90,6 +111,13 @@
 
       {% block result_list %}
           {% if action_form and actions_on_top and cl.full_result_count %}{% admin_actions %}{% endif %}
+          <div class="actions category-form">
+            {% for field in filecategory_form %}
+                <label for="{{ field.auto_id }}">{{ field.label_tag }}:</label>
+                {{ field }}
+                <span class="help_text">{{ field.help_text }}</span>
+            {% endfor %}
+          </div>
           {% result_list cl %}
           {% if action_form and actions_on_bottom and cl.full_result_count %}{% admin_actions %}{% endif %}
       {% endblock %}

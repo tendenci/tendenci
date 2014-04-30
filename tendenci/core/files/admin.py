@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.conf.urls.defaults import patterns, url
-from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
+from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render
-from django.http import HttpResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.core.files.models import File, MultipleFile
-from tendenci.core.files.forms import FileForm, MultiFileForm, FilewithCategoryForm
+from tendenci.core.files.forms import FileForm, MultiFileForm, FilewithCategoryForm, FileCategoryForm
 
 
 class FileAdmin(TendenciBaseModelAdmin):
@@ -33,12 +34,21 @@ class FileAdmin(TendenciBaseModelAdmin):
     )
     form = FilewithCategoryForm
     ordering = ['-update_dt']
+    actions = ['add_to_category_and_subcategory']
 
     class Media:
         js = (
             '%sjs/jquery-1.7.2.min.js' % settings.STATIC_URL,
             '%sjs/categories.js' % settings.STATIC_URL,
         )
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        content_type = get_object_or_404(ContentType, app_label='files', model='file')
+        filecategory_form = FileCategoryForm(content_type)
+        extra_context.update({'filecategory_form' : filecategory_form})
+
+        return super(FileAdmin, self).changelist_view(request, extra_context)
 
     def file_preview(self, obj):
         if obj.type() == "image":
@@ -59,6 +69,22 @@ class FileAdmin(TendenciBaseModelAdmin):
     def file_path(self, obj):
         return obj.file
     file_path.short_description = "File Path"
+
+    def add_to_category_and_subcategory(self, request, queryset):
+        count = queryset.count()
+        content_type = get_object_or_404(ContentType, app_label='files', model='file')
+        filecategory_form = FileCategoryForm(content_type, request.POST)
+
+        if filecategory_form.is_valid():
+            for file in queryset:
+                filecategory_form.update_file_cat_and_sub_cat(file)
+
+        if count > 1:
+            messages.success(request, "Successfully updated Category/Sub Category of %s files." % count)
+        elif count == 1:
+            messages.success(request, "Successfully updated Category/Sub Category of a file.")
+
+    add_to_category_and_subcategory.short_description = 'Add to category'
 
 admin.site.register(File, FileAdmin)
 
@@ -83,7 +109,12 @@ class MultipleFileAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = MultiFileForm(request.POST, request.FILES, request=request)
             if form.is_valid():
-                form.save()
+                counter = form.save()
+                if counter == 1:
+                    messages.success(request, _('Successfully uploaded a file.'))
+                elif counter > 1:
+                    string = 'Successfully uploaded %s files.' % counter
+                    messages.success(request, _(string) )
                 return redirect(reverse('admin:files_file_changelist'))
         return render(request,
             'admin/files/file/multiple_file_upload.html',{

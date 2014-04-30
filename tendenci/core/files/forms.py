@@ -1,19 +1,24 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
-from tendenci.core.categories.forms import CategoryField, category_defaults, sub_category_defaults
+from tendenci.core.categories.forms import (CategoryForm, CategoryField, category_defaults,
+    sub_category_defaults)
+
 from tendenci.core.categories.models import CategoryItem, Category
 from tendenci.core.files.fields import MultiFileField
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.perms.utils import get_query_filters, update_perms_and_save
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import update_perms_and_save, get_query_filters
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
+
 
 class FileForm(TendenciBaseForm):
 
@@ -323,6 +328,7 @@ class MultiFileForm(BetterForm):
     sub_category = CategoryField(required=False, **sub_category_defaults)
 
     allow_anonymous_view = forms.BooleanField(label=_("Public can View"), initial=True, required=False)
+
     group_perms = GroupPermissionField()
     user_perms = UserPermissionField()
     member_perms = MemberPermissionField()
@@ -352,36 +358,24 @@ class MultiFileForm(BetterForm):
             self.user = None
 
         super(MultiFileForm, self).__init__(*args, **kwargs)
-
         default_groups = Group.objects.filter(status=True, status_detail="active")
-
-        # needs to update the choices on every pull
-        # in case groups get added
-        if 'group_perms' in self.fields:
-            self.fields['group_perms'].choices = group_choices()
-
-        if 'instance' in kwargs:
-            instance = kwargs['instance']
-            if 'group_perms' in self.fields:
-                self.fields['group_perms'].initial = groups_with_perms(instance)
-            if 'user_perms' in self.fields:
-                self.fields['user_perms'].initial = user_perm_bits(instance)
-            if 'member_perms' in self.fields:
-                self.fields['member_perms'].initial = member_perm_bits(instance)
 
         if args:
             post_data = args[0]
         else:
             post_data = None
 
-        filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-        groups = default_groups.filter(filters).distinct()
-        groups_list = list(groups.values_list('pk', 'name'))
+        if self.user and not self.user.profile.is_superuser:
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            groups = default_groups.filter(filters).distinct()
+            groups_list = list(groups.values_list('pk', 'name'))
 
-        users_groups = self.user.profile.get_groups()
-        for g in users_groups:
-            if [g.id, g.name] not in groups_list:
-                groups_list.append([g.id, g.name])
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+        else:
+            groups_list = default_groups.values_list('pk', 'name')
 
         self.fields['group'].choices = groups_list
 
@@ -475,6 +469,7 @@ class MultiFileForm(BetterForm):
 
     def save(self, *args, **kwargs):
         data = self.cleaned_data
+        counter = 0
 
         files = data.get('files')
         tags = data.get('tags')
@@ -515,3 +510,57 @@ class MultiFileForm(BetterForm):
 
             #Save relationships
             file.save()
+            counter += 1
+
+        return counter
+
+
+class FileCategoryForm(CategoryForm):
+    """
+    Form dedicated on adding category to files
+    """
+
+    category = CategoryField(required=False, **category_defaults)
+    sub_category = CategoryField(required=False, **sub_category_defaults)
+
+    def __init__(self, content_type, *args, **kwargs):
+        super(FileCategoryForm, self).__init__(content_type, *args, **kwargs)
+
+        self.fields['category'].help_text = mark_safe('<a href="#" class="add-category">+</a>')
+        self.fields['sub_category'].help_text = mark_safe('<a href="#" class="add-sub-category">+</a>')
+
+        del self.fields['app_label']
+        del self.fields['model']
+        del self.fields['pk']
+
+    def update_file_cat_and_sub_cat(self, file):
+        data = self.cleaned_data
+
+        category_from_form = data.get('category')
+        sub_category_from_form = data.get('sub_category')
+
+        #setup categories
+        category = Category.objects.get_for_object(file, 'category')
+        sub_category = Category.objects.get_for_object(file, 'sub_category')
+
+        ## update the category of the file
+        category_removed = False
+        category = category_from_form
+
+        if category != '0':
+            Category.objects.update(file, category, 'category')
+        else:  # remove
+            category_removed = True
+            Category.objects.remove(file, 'category')
+            Category.objects.remove(file, 'sub_category')
+
+        if not category_removed:
+            # update the sub category of the file
+            sub_category = sub_category_from_form
+            if sub_category != '0':
+                Category.objects.update(file, sub_category, 'sub_category')
+            else:  # remove
+                Category.objects.remove(file, 'sub_category')
+
+        #Save relationships
+        file.save()
