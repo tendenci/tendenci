@@ -592,6 +592,7 @@ class Registration(models.Model):
 
         # primary registrant is responsible for billing    
         primary_registrant = self.registrant
+        invoice.bill_to =  primary_registrant.first_name + ' ' + primary_registrant.last_name
         invoice.bill_to_first_name = primary_registrant.first_name
         invoice.bill_to_last_name = primary_registrant.last_name
         invoice.bill_to_company = primary_registrant.company_name
@@ -602,6 +603,18 @@ class Registration(models.Model):
         invoice.bill_to_state = primary_registrant.state
         invoice.bill_to_zip_code = primary_registrant.zip
         invoice.bill_to_country =  primary_registrant.country
+        invoice.ship_to = primary_registrant.first_name + ' ' + primary_registrant.last_name
+        invoice.ship_to_first_name = primary_registrant.first_name
+        invoice.ship_to_last_name = primary_registrant.last_name
+        invoice.ship_to_company = primary_registrant.company_name
+        invoice.ship_to_address = primary_registrant.address
+        invoice.ship_to_city = primary_registrant.city
+        invoice.ship_to_state = primary_registrant.state
+        invoice.ship_to_zip_code =  primary_registrant.zip
+        invoice.ship_to_country = primary_registrant.country
+        invoice.ship_to_phone =  primary_registrant.phone
+        invoice.ship_to_email = primary_registrant.email
+        
         invoice.creator_id = self.creator_id
         invoice.owner_id = self.owner_id
 
