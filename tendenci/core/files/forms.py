@@ -5,7 +5,8 @@ from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
 from tendenci.core.categories.forms import CategoryField
-from tendenci.core.categories.models import CategoryItem
+from tendenci.core.categories.models import CategoryItem, Category
+from tendenci.core.files.fields import MultiFileField
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -74,7 +75,7 @@ class FileForm(TendenciBaseForm):
         self.fields['group'].choices = groups_list
 
     def clean_file(self):
-        data = self.cleaned_data['file']
+        data = self.cleaned_data.get('file')
         max_upload_size = get_max_file_upload_size(file_module=True)
         if data.size > max_upload_size:
             raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
@@ -181,3 +182,89 @@ class FileSearchForm(forms.Form):
         sub_categories = [[cat, cat] for cat in sub_categories]
         sub_categories.insert(0, ['', '------------'])
         self.fields['sub_category'].choices = tuple(sub_categories)
+
+
+class MultiFileForm(FileForm):
+    file = MultiFileField()
+
+    def clean_file(self):
+        files = self.cleaned_data.get('file')
+        for data in files:
+            max_upload_size = get_max_file_upload_size(file_module=True)
+            if data.size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+
+        return files
+
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+        group = data.get('group', None)
+        tags = data.get('tags')
+        allow_anonymous_view = data.get('allow_anonymous_view')
+        user_perms = data.get('user_perms')
+        member_perms = data.get('member_perms')
+        group_perms = data.get('group_perms')
+        files = data.get('file')
+
+        for file in files:
+            new_file = File(
+                file=file,
+                group=group,
+                tags=tags,
+            )
+
+            new_file.save()
+
+
+class FilewithCategoryForm(FileForm):
+    category = CategoryField(label=_('Category'), choices=[], required=False)
+    sub_category = CategoryField(label=_('Sub Category'), choices=[], required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(FilewithCategoryForm, self).__init__(*args, **kwargs)
+
+        content_type = ContentType.objects.get(app_label='files', model='file')
+        categories = CategoryItem.objects.filter(content_type=content_type,
+                                                 parent__exact=None)
+        categories = list(set([cat.category.name for cat in categories]))
+        categories = [[cat, cat] for cat in categories]
+        categories.insert(0, ['', '------------'])
+        self.fields['category'].choices = tuple(categories)
+
+        # set up the sub category choices
+        sub_categories = CategoryItem.objects.filter(content_type=content_type,
+                                                     category__exact=None)
+        sub_categories = list(set([cat.parent.name for cat in sub_categories]))
+        sub_categories = [[cat, cat] for cat in sub_categories]
+        sub_categories.insert(0, ['', '------------'])
+        self.fields['sub_category'].choices = tuple(sub_categories)
+
+    def save(self, commit=True, *args, **kwargs):
+        new_file = super(FilewithCategoryForm, self).save(commit=True, *args, **kwargs)
+
+        #setup categories
+        category = Category.objects.get_for_object(new_file, 'category')
+        sub_category = Category.objects.get_for_object(new_file, 'sub_category')
+
+        ## update the category of the file
+        category_removed = False
+        category = self.cleaned_data.get('category')
+        if category != '0':
+            Category.objects.update(new_file, category, 'category')
+        else:  # remove
+            category_removed = True
+            Category.objects.remove(new_file, 'category')
+            Category.objects.remove(new_file, 'sub_category')
+
+        if not category_removed:
+            # update the sub category of the article
+            sub_category = self.cleaned_data.get('sub_category')
+            if sub_category != '0':
+                Category.objects.update(new_file, sub_category, 'sub_category')
+            else:  # remove
+                Category.objects.remove(new_file, 'sub_category')
+
+        #Save relationships
+        new_file.save()
+
+        return new_file

@@ -13,36 +13,36 @@ class CategoryField(forms.ChoiceField):
         return value
 
 category_defaults = {
-    'label':_('Category'), 
+    'label':_('Category'),
     'choices': [],
     'help_text': mark_safe('<a href="#" class="add-category">Add Category</a>'),
 }
 
 sub_category_defaults = {
-    'label':_('Sub Category'), 
+    'label':_('Sub Category'),
     'choices': [],
-    'help_text': mark_safe('<a href="#" class="add-sub-category">Add Sub Category</a>'),                    
+    'help_text': mark_safe('<a href="#" class="add-sub-category">Add Sub Category</a>'),
 }
 
 class CategoryForm(forms.Form):
     category = CategoryField(**category_defaults)
     sub_category = CategoryField(**sub_category_defaults)
-    
+
     # instance fields needed to generate content types
     app_label = forms.CharField(widget=forms.HiddenInput())
     model = forms.CharField(widget=forms.HiddenInput())
     pk = forms.CharField(widget=forms.HiddenInput())
-    
+
     def __init__(self, content_type, *args, **kwargs):
         super(CategoryForm, self).__init__(*args, **kwargs)
-        
+
         if args:
             post_data = args[0]
         else:
             post_data = None
-            
+
         prefix = kwargs.get('prefix', None)
-        
+
         # set up the category choices
         categories = CategoryItem.objects.filter(content_type=content_type,
                                                  parent__exact=None)
@@ -74,7 +74,7 @@ class CategoryForm(forms.Form):
             if new_sub_category != '0':
                 sub_categories.append([new_sub_category,new_sub_category])
         self.fields['sub_category'].choices = tuple(sub_categories)  
-              
+
 
 class CategoryForm2(CategoryForm):
     """

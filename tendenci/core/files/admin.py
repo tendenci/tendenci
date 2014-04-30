@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.core.files.models import File
-from tendenci.core.files.forms import FileForm
+from tendenci.core.files.forms import FileForm, MultiFileForm, FilewithCategoryForm
 
 
 class FileAdmin(TendenciBaseModelAdmin):
@@ -19,6 +19,7 @@ class FileAdmin(TendenciBaseModelAdmin):
                        'group',
                        )
         }),
+        #('Category', {'fields': ('category', 'sub_category')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
