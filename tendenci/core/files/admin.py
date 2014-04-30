@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 
@@ -19,7 +20,7 @@ class FileAdmin(TendenciBaseModelAdmin):
                        'group',
                        )
         }),
-        #('Category', {'fields': ('category', 'sub_category')}),
+        ('Category', {'fields': ('category', 'sub_category')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -27,8 +28,14 @@ class FileAdmin(TendenciBaseModelAdmin):
             'group_perms',
         )}),
     )
-    form = FileForm
+    form = FilewithCategoryForm
     ordering = ['-update_dt']
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.7.2.min.js' % settings.STATIC_URL,
+            '%sjs/categories.js' % settings.STATIC_URL,
+        )
 
     def file_preview(self, obj):
         if obj.type() == "image":

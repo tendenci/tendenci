@@ -73,7 +73,7 @@ class CategoryForm(forms.Form):
                 new_sub_category = post_data.get('sub_category','0')
             if new_sub_category != '0':
                 sub_categories.append([new_sub_category,new_sub_category])
-        self.fields['sub_category'].choices = tuple(sub_categories)  
+        self.fields['sub_category'].choices = tuple(sub_categories)
 
 
 class CategoryForm2(CategoryForm):

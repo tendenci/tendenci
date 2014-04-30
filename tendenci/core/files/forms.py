@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
-from tendenci.core.categories.forms import CategoryField
+from tendenci.core.categories.forms import CategoryField, category_defaults, sub_category_defaults
 from tendenci.core.categories.models import CategoryItem, Category
 from tendenci.core.files.fields import MultiFileField
 from tendenci.core.files.models import File
@@ -216,19 +216,62 @@ class MultiFileForm(FileForm):
             new_file.save()
 
 
-class FilewithCategoryForm(FileForm):
-    category = CategoryField(label=_('Category'), choices=[], required=False)
-    sub_category = CategoryField(label=_('Sub Category'), choices=[], required=False)
+class FilewithCategoryForm(TendenciBaseForm):
+
+    group = forms.ChoiceField(required=True, choices=[])
+
+    category = CategoryField(required=False, **category_defaults)
+    sub_category = CategoryField(required=False, **sub_category_defaults)
+
+    class Meta:
+        model = File
+
+        fields = (
+            'file',
+            'name',
+            'group',
+            'tags',
+            'category',
+            'sub_category',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )
 
     def __init__(self, *args, **kwargs):
         super(FilewithCategoryForm, self).__init__(*args, **kwargs)
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
+        if args:
+            post_data = args[0]
+        else:
+            post_data = None
+
+        if self.user and not self.user.profile.is_superuser:
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            groups = default_groups.filter(filters).distinct()
+            groups_list = list(groups.values_list('pk', 'name'))
+
+            users_groups = self.user.profile.get_groups()
+            for g in users_groups:
+                if [g.id, g.name] not in groups_list:
+                    groups_list.append([g.id, g.name])
+        else:
+            groups_list = default_groups.values_list('pk', 'name')
+
+        self.fields['group'].choices = groups_list
 
         content_type = ContentType.objects.get(app_label='files', model='file')
         categories = CategoryItem.objects.filter(content_type=content_type,
                                                  parent__exact=None)
         categories = list(set([cat.category.name for cat in categories]))
         categories = [[cat, cat] for cat in categories]
-        categories.insert(0, ['', '------------'])
+        categories.insert(0, [0, '------------'])
+        if post_data:
+            new_category = post_data.get('category','0')
+            if new_category != '0':
+                categories.append([new_category,new_category])
         self.fields['category'].choices = tuple(categories)
 
         # set up the sub category choices
@@ -236,35 +279,66 @@ class FilewithCategoryForm(FileForm):
                                                      category__exact=None)
         sub_categories = list(set([cat.parent.name for cat in sub_categories]))
         sub_categories = [[cat, cat] for cat in sub_categories]
-        sub_categories.insert(0, ['', '------------'])
+        sub_categories.insert(0, [0, '------------'])
+        if post_data:
+            new_sub_category = post_data.get('sub_category','0')
+            if new_sub_category != '0':
+                sub_categories.append([new_sub_category,new_sub_category])
         self.fields['sub_category'].choices = tuple(sub_categories)
 
-    def save(self, commit=True, *args, **kwargs):
-        new_file = super(FilewithCategoryForm, self).save(commit=True, *args, **kwargs)
+        if self.instance and self.instance.pk:
+            category = Category.objects.get_for_object(self.instance, 'category')
+            sub_category = Category.objects.get_for_object(self.instance, 'sub_category')
+            self.fields['category'].initial = category
+            self.fields['sub_category'].initial = sub_category
+
+    def clean_file(self):
+        data = self.cleaned_data.get('file')
+        max_upload_size = get_max_file_upload_size(file_module=True)
+        if data.size > max_upload_size:
+            raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+
+        return data
+
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            group = Group.objects.get(pk=group_id)
+            return group
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
+
+    def save(self, *args, **kwargs):
+        data = self.cleaned_data
+        file = super(FilewithCategoryForm, self).save(*args, **kwargs)
+
+        file.save()
 
         #setup categories
-        category = Category.objects.get_for_object(new_file, 'category')
-        sub_category = Category.objects.get_for_object(new_file, 'sub_category')
+        category = Category.objects.get_for_object(file, 'category')
+        sub_category = Category.objects.get_for_object(file, 'sub_category')
 
         ## update the category of the file
         category_removed = False
-        category = self.cleaned_data.get('category')
+        category = data.get('category')
+        print category
         if category != '0':
-            Category.objects.update(new_file, category, 'category')
+            Category.objects.update(file, category, 'category')
         else:  # remove
             category_removed = True
-            Category.objects.remove(new_file, 'category')
-            Category.objects.remove(new_file, 'sub_category')
+            Category.objects.remove(file, 'category')
+            Category.objects.remove(file, 'sub_category')
 
         if not category_removed:
             # update the sub category of the article
-            sub_category = self.cleaned_data.get('sub_category')
+            sub_category = data.get('sub_category')
             if sub_category != '0':
-                Category.objects.update(new_file, sub_category, 'sub_category')
+                Category.objects.update(file, sub_category, 'sub_category')
             else:  # remove
-                Category.objects.remove(new_file, 'sub_category')
+                Category.objects.remove(file, 'sub_category')
 
         #Save relationships
-        new_file.save()
+        file.save()
 
-        return new_file
+        return file
