@@ -29,6 +29,9 @@
                         {% if registrant.email %}
                             ({{ registrant.email }})
                         {% endif %}
+                        {% if registrant.pricing.title %}
+                        <div>{% trans "Registration Type" %}: {{ registrant.pricing.title }}</div>
+                        {% endif %}
                         {% if registrant.custom_reg_form_entry %}
                         {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
                         {% for field in roster_field_list %}
@@ -64,6 +67,9 @@
                         {% if registrant.email %}
                             ({{ registrant.email }})
                         {% endif %}
+                        {% if registrant.pricing.title %}
+                        <div>{% trans "Registration Type" %}: {{ registrant.pricing.title }}</div>
+                        {% endif %}
                         {% if registrant.custom_reg_form_entry %}
                         {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
                         {% for field in roster_field_list %}
@@ -97,6 +103,9 @@
                             {% endif %}
                             {% if registrant.email %}
                                 ({{ registrant.email }})
+                            {% endif %}
+                            {% if registrant.pricing.title %}
+                            <div>{% trans "Registration Type" %}: {{ registrant.pricing.title }}</div>
                             {% endif %}
                             {% if registrant.custom_reg_form_entry %}
                             {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
