@@ -90,3 +90,35 @@ class ItemForm(forms.ModelForm):
 #             newpage.save()
 #         
 #         return self.cleaned_data['page']
+
+
+class ItemAdminForm(forms.ModelForm):
+    
+    class Meta:
+        model = NavItem
+        fields = (
+            'level',
+            'label',
+            'title',
+            'css',
+            'position',
+            'page',
+            'url',
+            'new_window',
+            )
+    
+    def __init__(self, *args, **kwargs):
+        super(ItemAdminForm, self).__init__(*args, **kwargs)
+        self.fields['page'].required = False
+        self.fields['level'].widget = forms.HiddenInput()
+
+    def clean_url(self):
+        ''' Fix URLs that don't start with / or http '''
+
+        if self.cleaned_data['url']:
+            if not self.cleaned_data['url'][:4].lower() == "http" and not self.cleaned_data['url'][:1] == "/":
+                # Append a beginning forward slash if none and not http
+                self.cleaned_data['url'] = "/%s" % self.cleaned_data['url']
+
+        return self.cleaned_data['url']
+

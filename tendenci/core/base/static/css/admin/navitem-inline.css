@@ -1,0 +1,19 @@
+.vTextField {
+	width: auto;
+}
+
+.levelBtn {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
+.levelLeft {
+	background-image: url('/static/images/arrow-left.jpg');
+}
+
+.levelRight {
+	margin-left: 10px;
+	background-image: url('/static/images/arrow-right.jpg');
+}
