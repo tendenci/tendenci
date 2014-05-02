@@ -562,9 +562,10 @@ ul.errorlist {;
 }
 .month-view div.weekday,
 .month-view div.weekday-mobile {
-	width: 14.28%;
+	width: 13.8470282554%;
 	float: left;
 	text-align: center;
+	border-bottom: 1px solid silver;
 }
 
 .month-view div.weekday-mobile {
@@ -582,12 +583,10 @@ ul.errorlist {;
 }
 
 .month-view div.month-grid {
-	border: 1px solid silver;
-	border-right: none;
-	border-bottom: none;
+	border-left: 1px solid silver;
 }
 .month-view div.day {
-	width: 14.13%;
+	width: 13.7%;
 	height: 116px;
 	border: 1px solid silver;
 
