@@ -4068,6 +4068,22 @@ def enable_addon(request, event_id, addon_id):
 
 
 @login_required
+def delete_addon(request, event_id, addon_id):
+    """delete an addon for an event"""
+    event = get_object_or_404(Event, pk=event_id)
+
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http404
+
+    addon = get_object_or_404(Addon, pk=addon_id)
+    EventLog.objects.log(instance=addon)
+    addon.delete(from_db=True) # this just renders it inactive to not cause deletion of already existing regaddons
+    messages.add_message(request, messages.SUCCESS, "Successfully deleted the %s" % addon.title)
+
+    return redirect('event.list_addons', event.id)
+
+
+@login_required
 def create_ics(request, template_name="events/ics.html"):
     """Create ICS"""
 

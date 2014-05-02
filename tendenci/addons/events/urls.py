@@ -146,6 +146,7 @@ urlpatterns = patterns(
     url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/edit/$' % urlpath, 'views.edit_addon', name='event.edit_addon'),
     url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$' % urlpath, 'views.disable_addon', name='event.disable_addon'),
     url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$' % urlpath, 'views.enable_addon', name='event.enable_addon'),
+    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/delete/$' % urlpath, 'views.delete_addon', name='event.delete_addon'),
 
     # pending events
     url(r'^%s/minimal_add/$' % urlpath, 'views.minimal_add', name='event.minimal_add'),

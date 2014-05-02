@@ -254,7 +254,7 @@ class RegConfPricing(OrderingBaseModel):
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfpricings',
                                  help_text="You'll have the chance to edit the selected form")
-    
+
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
     end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
     
@@ -272,7 +272,7 @@ class RegConfPricing(OrderingBaseModel):
         #print "%s, %s" % (self, "status set to false" )
         self.status = False
         self.save(*args, **kwargs)
-    
+
     def __unicode__(self):
         if self.title:
             return '%s' % self.title
@@ -291,7 +291,7 @@ class RegConfPricing(OrderingBaseModel):
         if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
             return True
         return False
-        
+
     @property
     def registration_has_ended(self):
         if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
@@ -327,7 +327,7 @@ class RegConfPricing(OrderingBaseModel):
     @property
     def timezone(self):
         return self.reg_conf.event.timezone.zone
-    
+
     @staticmethod
     def get_access_filter(user, is_strict=False, spots_available=-1):
         if user.profile.is_superuser: return None, None
@@ -614,7 +614,7 @@ class Registration(models.Model):
         invoice.ship_to_country = primary_registrant.country
         invoice.ship_to_phone =  primary_registrant.phone
         invoice.ship_to_email = primary_registrant.email
-        
+
         invoice.creator_id = self.creator_id
         invoice.owner_id = self.owner_id
 
@@ -892,6 +892,7 @@ class Discount(models.Model):
     event = models.ForeignKey('Event')
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=50)
+
 
 class Organizer(models.Model):
     """
@@ -1505,14 +1506,18 @@ class Addon(models.Model):
 
     status = models.BooleanField(default=True)
 
-    def delete(self, *args, **kwargs):
+    def delete(self, from_db=False, *args, **kwargs):
         """
         Note that the delete() method for an object is not necessarily
         called when deleting objects in bulk using a QuerySet.
         """
-        #print "%s, %s" % (self, "status set to false" )
-        self.status = False
-        self.save(*args, **kwargs)
+        if not from_db:
+            # set status to False (AKA Disable only)
+            self.status = False
+            self.save(*args, **kwargs)
+        else:
+            # actual delete of an Addon
+            super(Addon, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
