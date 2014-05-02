@@ -1,8 +1,11 @@
 import logging
 
-from django.test import TestCase
+from django.test import Client, TestCase
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
-from tendenci.addons.events.models import RegConfPricing
+from tendenci.addons.events.models import RegConfPricing, Event, Addon
+from tendenci.addons.events.views import delete_addon
 
 
 handler = logging.StreamHandler()
@@ -20,7 +23,7 @@ class EventTest(TestCase):
     def setUp(self):
         self.pricing = RegConfPricing()
 
-    def tearDown(self):    
+    def tearDown(self):
         self.pricing = None
 
     def test_pricing_description(self):
@@ -43,3 +46,61 @@ class EventTest(TestCase):
         self.assertTrue(self.pricing.description == sample_description)
         logger.info('Complete.')
 
+
+class AdddonDeleteTest(TestCase):
+
+    def create_test_superuser(self):
+        self.client = Client()
+        self.username = 'tester'
+        self.email = 'test@test.com'
+        self.password = 'test'
+        User.objects.create_superuser(self.username, self.email, self.password)
+        self.client.login(username=self.username, password=self.password)
+
+    def setUp(self):
+        self.event = Event()
+        self.addon = Addon()
+
+    def tearDown(self):
+        self.event = None
+        self.addon = None
+        self.client = None
+        self.username = None
+        self.email = None
+        self.password = None
+
+    def create_instances(self):
+        self.event.title = 'Test Event'
+        self.event.save()
+        self.addon.title = 'Test Addon'
+        self.addon.event = self.event
+        self.addon.save()
+
+    def test_delete_addon_method(self):
+        self.create_instances()
+        addon_pk = self.addon.pk
+
+        logger.info('Testing new delete method of Addon model.')
+        self.addon.delete(from_db=True)
+        with self.assertRaises(Addon.DoesNotExist):
+            Addon.objects.get(pk=addon_pk)
+        with self.assertRaises(Addon.DoesNotExist):
+            Addon.objects.get(title='Test Addon')
+        logger.info('Complete.')
+
+    def test_delete_addon_view(self):
+        self.create_instances()
+        self.create_test_superuser()
+        addon_pk = self.addon.pk
+        delete_addon_link = reverse(
+            'event.delete_addon',
+            kwargs={'event_id': self.event.id, 'addon_id': addon_pk})
+
+        response = self.client.get(delete_addon_link)
+        logger.info('Testing new delete addon view.')
+        self.assertEqual(response.status_code, 302)
+        with self.assertRaises(Addon.DoesNotExist):
+            Addon.objects.get(pk=addon_pk)
+        with self.assertRaises(Addon.DoesNotExist):
+            Addon.objects.get(title='Test Addon')
+        logger.info('Complete.')
