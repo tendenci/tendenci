@@ -565,7 +565,16 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
     notice_recipients = get_setting('site', 'global', 'allnoticerecipients').split(',')
-    email_list = [admin.strip() for admin in admins] + [recipient.strip() for recipient in notice_recipients]
+    email_list = [admin.strip() for admin in admins]
+
+    # additional check just in case admin emails in event settings
+    #are also in all notice recipients set on global site settings
+    # to avoid email duplications
+    for recipient in notice_recipients:
+        clean_recipient = recipient.strip()
+        if clean_recipient and (not clean_recipient in email_list):
+            email_list.append(clean_recipient)
+
     notification.send_emails(
         email_list,
         'event_registration_confirmation',
