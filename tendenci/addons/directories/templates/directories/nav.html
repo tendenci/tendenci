@@ -77,7 +77,7 @@
     {% if can_edit_directory %}
     <li><a href="{% url directory_pricing.search %}">{% trans "Pricing" %}</a></li>
     {% else %}
-    {% if MODULE_NEWS_ENABLED %}
+    {% if MODULE_NEWS_ENABLED and MODULE_DIRECTORIES_SHOW_NEWS_TAB %}
     <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
     {% endif %}
     {% endif %}

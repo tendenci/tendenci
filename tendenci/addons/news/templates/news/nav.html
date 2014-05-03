@@ -69,7 +69,7 @@
         {% endif %}
         </div>
     </li>
-    {% if MODULE_ARTICLES_ENABLED %}
+    {% if MODULE_ARTICLES_ENABLED and MODULE_NEWS_SHOW_ARTICLE_TAB %}
     <li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
     {% endif %}
 </ul>
