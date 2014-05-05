@@ -766,9 +766,9 @@ class UserForm(forms.ModelForm):
             user.first_name = user_attrs['first_name']
             user.last_name = user_attrs['last_name']
 
-        user.save()
         if created:
-            send_welcome_email(user)
+            user.is_active = False
+        user.save()
 
         return user
 

@@ -794,6 +794,13 @@ class MembershipDefault(TendenciBaseModel):
         # show member number on profile
         self.user.profile.refresh_member_number()
 
+        # Activate user
+        if not self.user.is_active:
+            from tendenci.apps.notifications.utils import send_welcome_email
+            self.user.is_active = True
+            self.user.save()
+            send_welcome_email(self.user)
+
         return self
 
     def renew(self, request_user):

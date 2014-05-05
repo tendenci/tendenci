@@ -26,7 +26,6 @@ from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.recurring_payments.models import RecurringPayment
 from tendenci.core.exports.utils import run_export_task
@@ -416,11 +415,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                         anonymous_creator = User(username=emailfield[:30], email=emailfield, 
                                                  first_name=firstnamefield, last_name=lastnamefield)
                         anonymous_creator.set_password(password)
+                        anonymous_creator.is_active = False
                         anonymous_creator.save()
                         anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
                                                     creator=anonymous_creator, phone=phonefield)
                         anonymous_profile.save()
-                        send_welcome_email(anonymous_creator)
                     entry.creator = anonymous_creator
             else:
                 entry.creator = request.user
