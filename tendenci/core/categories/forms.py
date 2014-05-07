@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-from tendenci.core.categories.models import CategoryItem
+from tendenci.core.categories.models import Category, CategoryItem
 
 class CategoryField(forms.ChoiceField):
     """
@@ -43,11 +43,15 @@ class CategoryForm(forms.Form):
 
         prefix = kwargs.get('prefix', None)
 
-        # set up the category choices
-        categories = CategoryItem.objects.filter(content_type=content_type,
-                                                 parent__exact=None)
-        categories = list(set([cat.category.name for cat in categories]))
-        categories.sort()
+        # set up the category (no parent) choices
+        distinct_cat_ids = CategoryItem.objects.filter(content_type_id=content_type.id
+                                                       ).filter(parent__id__isnull=True
+                                                    ).values_list('category_id', flat=True
+                                                                  ).distinct()
+        categories = Category.objects.filter(id__in=distinct_cat_ids
+                                             ).values_list('name', flat=True
+                                                           ).order_by('name')
+
         categories = [[cat, cat] for cat in categories]
         categories.insert(0,[0,'------------'])
         if post_data:
@@ -60,10 +64,14 @@ class CategoryForm(forms.Form):
         self.fields['category'].choices = tuple(categories)
 
         # set up the sub category choices
-        sub_categories = CategoryItem.objects.filter(content_type=content_type,
-                                                     category__exact=None)
-        sub_categories = list(set([cat.parent.name for cat in sub_categories]))
-        sub_categories.sort()
+        distinct_cat_ids = CategoryItem.objects.filter(content_type_id=content_type.id
+                                                       ).filter(category__id__isnull=True
+                                                    ).values_list('parent_id', flat=True
+                                                                  ).distinct()
+        sub_categories = Category.objects.filter(id__in=distinct_cat_ids
+                                             ).values_list('name', flat=True
+                                                           ).order_by('name')
+
         sub_categories = [[cat, cat] for cat in sub_categories]
         sub_categories.insert(0,[0,'------------'])
         if post_data:
