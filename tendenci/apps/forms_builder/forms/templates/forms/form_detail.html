@@ -52,6 +52,9 @@
             $('.custom-price').click(function() {
                 $(this).prev('input[type="radio"]').prop('checked', true);
             });
+            $('.pricing-field').focus(function() {
+                $(this).next('.custom-price').focus();
+            });
 
             {% with form.intro_position as intro_pos and form.fields_position as fields_pos and form.pricing_position as pricing_pos %}
                 var introDiv = $("<div>{{ form.intro|safe|urlize }}</div>");
