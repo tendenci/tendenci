@@ -52,6 +52,9 @@ class Loader(BaseLoader):
         """
         theme_templates = []
         current_request = get_current_request()
+        if not settings.DEBUG:
+            # this is needed when the theme is changed
+            self.theme_root = get_theme_root()
         if current_request and current_request.mobile:
             theme_templates.append(os.path.join(self.theme_root, 'mobile'))
         theme_templates.append(os.path.join(self.theme_root, 'templates'))
