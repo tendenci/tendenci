@@ -149,8 +149,7 @@ class News(TendenciBaseModel):
 
     @property
     def is_released(self):
-        now = localtime_for_timezone(datetime.now(), None)
-        return self.release_dt_default_tz <= now
+        return self.release_dt <= datetime.now()
 
     @property
     def has_google_author(self):
