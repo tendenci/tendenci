@@ -156,7 +156,7 @@ class Command(BaseCommand):
             registration = "disabled"
             invoice_totals = ''
             invoice_percentage = ''
-            if event.registration_configuration.enabled:
+            if event.registration_configuration and event.registration_configuration.enabled:
                 count = event.registrants().count()
                 limit = event.registration_configuration.limit
                 if limit == 0:
@@ -173,7 +173,7 @@ class Command(BaseCommand):
                 if reg_count != 0:
                     invoice_percentage = (reg_paid_count / reg_count)
                     invoice_percentage = '{0:.2%}'.format(invoice_percentage)
-                
+
             events_list.append([event.start_dt.strftime('%a, %b %d, %Y'),
                                 event.title,
                                 event.get_absolute_url(),
@@ -181,7 +181,6 @@ class Command(BaseCommand):
                                 invoice_totals,
                                 invoice_percentage])
         return events_list
-                                    
 
     def get_forms(self, items, days):
         from tendenci.apps.forms_builder.forms.models import Form
@@ -201,7 +200,6 @@ class Command(BaseCommand):
                                form.submissions,
                                reverse('form_entries', args=[form.pk])])
         return forms_list
-
 
     def get_pages_traffic(self, items, days):
         from tendenci.apps.pages.models import Page
@@ -224,12 +222,15 @@ class Command(BaseCommand):
 
         pages_list = [['','',total_count]]
         for page in rows:
-            page_obj = Page.objects.get(id=page[0])
-            pages_list.append([page_obj.title,
+            try:
+                page_obj = Page.objects.get(id=page[0])
+                pages_list.append([page_obj.title,
                                page_obj.get_absolute_url(),
                                page[1]])
-        return pages_list
+            except Page.DoesNotExist:
+                pass
 
+        return pages_list
 
     def get_events_traffic(self, items, days):
         from tendenci.addons.events.models import Event
@@ -252,19 +253,21 @@ class Command(BaseCommand):
 
         events_list = [['','',total_count]]
         for event in rows:
-            event_obj = Event.objects.get(id=event[0])
-            events_list.append([event_obj.title,
+            try:
+                event_obj = Event.objects.get(id=event[0])
+                events_list.append([event_obj.title,
                                 event_obj.get_absolute_url(),
                                 event[1]])
-        return events_list
+            except Event.DoesNotExist:
+                pass
 
+        return events_list
 
     def get_new_corp_memberships(self, items, days):
         from tendenci.addons.corporate_memberships.models import CorpMembership
 
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
-        corp_memberships = CorpMembership.objects.filter(join_dt__gte=dt,
-                                                         status_detail="active")
+        corp_memberships = CorpMembership.objects.filter(join_dt__gte=dt, status_detail="active")
         corp_memberships = corp_memberships.order_by("-join_dt")[:items]
         corp_mem_list = []
         for corp_mem in corp_memberships:
@@ -272,20 +275,17 @@ class Command(BaseCommand):
                                   corp_mem.get_absolute_url()])
         return corp_mem_list
 
-
     def get_renew_corp_memberships(self, items, days):
         from tendenci.addons.corporate_memberships.models import CorpMembership
 
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
-        corp_memberships = CorpMembership.objects.filter(renew_dt__gte=dt,
-                                                         status_detail="active")
+        corp_memberships = CorpMembership.objects.filter(renew_dt__gte=dt, status_detail="active")
         corp_memberships = corp_memberships.order_by("-renew_dt")[:items]
         corp_mem_list = []
         for corp_mem in corp_memberships:
             corp_mem_list.append([corp_mem.corp_profile.name,
                                   corp_mem.get_absolute_url()])
         return corp_mem_list
-
 
     def get_expired_corp_memberships(self, items, days):
         from tendenci.addons.corporate_memberships.models import CorpMembership
@@ -296,8 +296,7 @@ class Command(BaseCommand):
         expired_qs = Q(status_detail__iexact='expired')
 
         corp_memberships = CorpMembership.objects.filter(active_qs|expired_qs)
-        corp_memberships = corp_memberships.filter(expiration_dt__gte=dt,
-                                                   expiration_dt__lte=now)
+        corp_memberships = corp_memberships.filter(expiration_dt__gte=dt, expiration_dt__lte=now)
         corp_memberships = corp_memberships.order_by("-expiration_dt")[:items]
         corp_mem_list = []
         for corp_mem in corp_memberships:
@@ -321,18 +320,16 @@ class Command(BaseCommand):
                                   corp_mem.get_absolute_url()])
         return corp_mem_list
 
-
     def get_top_corp_members(self, items):
         from tendenci.addons.corporate_memberships.models import CorpMembership
-        from tendenci.addons.memberships.models import MembershipDefault
 
-        total = MembershipDefault.QS_ACTIVE().exclude(corp_profile_id=0).count()
         corp_memberships = CorpMembership.objects.filter(status_detail='active').extra(select={
             'members': "SELECT COUNT(*) " + \
                            "FROM memberships_membershipdefault " + \
                            "WHERE memberships_membershipdefault.corp_profile_id = " + \
                                "corporate_memberships_corpmembership.corp_profile_id AND " +\
                                "memberships_membershipdefault.status_detail = 'active'"})
+        total = corp_memberships.count()
         corp_memberships = corp_memberships.order_by("-members")[:items]
         corp_mem_list = [['','',total]]
         for corp_mem in corp_memberships:
@@ -340,7 +337,6 @@ class Command(BaseCommand):
                                   corp_mem.get_absolute_url(),
                                   corp_mem.members])
         return corp_mem_list
-
 
     def get_membership_count(self, days):
         from tendenci.addons.memberships.models import MembershipDefault
@@ -361,8 +357,7 @@ class Command(BaseCommand):
         # Latest pending memberships
         pending = pending_memberships.filter(create_dt__gte=dt).count()
         # Latest expired memberships
-        expired = memberships.filter(expire_dt__gte=dt,
-                                     expire_dt__lte=now).count()
+        expired = memberships.filter(expire_dt__gte=dt, expire_dt__lte=now).count()
         # Memberships that are expiring soon
         dt = now + timedelta(days=days)
         now = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -370,7 +365,6 @@ class Command(BaseCommand):
                                       expire_dt__lte=dt).count()
 
         return [[active, expiring, new, pending, expired]]
-
 
     def get_new_memberships(self, items, days):
         from tendenci.addons.memberships.models import MembershipDefault
@@ -386,13 +380,11 @@ class Command(BaseCommand):
                              mem.get_absolute_url()])
         return mem_list
 
-
     def get_renew_memberships(self, items, days):
         from tendenci.addons.memberships.models import MembershipDefault
 
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
-        memberships = MembershipDefault.objects.filter(renew_dt__gte=dt,
-                                                       status_detail="active")
+        memberships = MembershipDefault.objects.filter(renew_dt__gte=dt, status_detail="active")
         count = memberships.count()
         mem_list = [count]
         memberships = memberships.order_by("-renew_dt")[:items]
@@ -400,7 +392,6 @@ class Command(BaseCommand):
             mem_list.append([mem.user.get_full_name(),
                              mem.get_absolute_url()])
         return mem_list
-
 
     def get_expired_memberships(self, items, days):
         from tendenci.addons.memberships.models import MembershipDefault
@@ -411,8 +402,7 @@ class Command(BaseCommand):
         expired_qs = Q(status_detail__iexact='expired')
 
         memberships = MembershipDefault.objects.filter(active_qs|expired_qs)
-        memberships = memberships.filter(expire_dt__gte=dt,
-                                         expire_dt__lte=now)
+        memberships = memberships.filter(expire_dt__gte=dt, expire_dt__lte=now)
         count = memberships.count()
         mem_list = [count]
         memberships = memberships.order_by("-expire_dt")[:items]
@@ -420,7 +410,6 @@ class Command(BaseCommand):
             mem_list.append([mem.user.get_full_name(),
                              mem.get_absolute_url()])
         return mem_list
-
 
     def get_expiring_memberships(self, items, days):
         from tendenci.addons.memberships.models import MembershipDefault
