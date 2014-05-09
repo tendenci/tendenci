@@ -20,14 +20,11 @@
     
     <div class="form-wrap">
         <h1>{{ form.title }}</h1>
-        {% with form.intro_position as intro_pos and form.fields_position as fields_pos and form.pricing_position as pricing_pos %}
-        {% if intro_pos < fields_pos and intro_pos < pricing_pos %}
-        {% if form.intro %}
-        <h2>{{ form.intro_name }}</h2>
-        <div>{{ form.intro|safe|urlize }}</div>
-        {% endif %}
-        {% endif %}
-        {% endwith %}
+
+        <div id="form-intro">
+            <h2>{{ form.intro_name }}</h2>
+            <div>{{ form.intro|safe|urlize }}</div>
+        </div>
 
     	<div class="form-builder-wrap">
         	<form method="post" enctype="multipart/form-data">{% csrf_token %}
@@ -57,25 +54,23 @@
             });
 
             {% with form.intro_position as intro_pos and form.fields_position as fields_pos and form.pricing_position as pricing_pos %}
-                var introDiv = $("<div>{{ form.intro|safe|urlize }}</div>");
+                var introDiv = $("div#form-intro");
                 {% if intro_pos > pricing_pos and intro_pos > fields_pos%}
                     {% if pricing_pos > fields_pos %}
-                        introDiv.insertAfter($('.payment-field:last').parents('.form-field'));
+                        introDiv.detach().insertAfter($('.payment-field:last').parents('.form-field'));
                     {% else %}
-                        introDiv.insertAfter($('.t .forms .formforform-field:last').parents('.form-field'));
+                        introDiv.detach().insertAfter($('.t .forms .formforform-field:last').parents('.form-field'));
                     {% endif %}
                 {% elif intro_pos > pricing_pos and intro_pos < fields_pos %}
-                    introDiv.insertAfter($('.payment-field:last').parents('.form-field'));
+                    introDiv.detach().insertAfter($('.payment-field:last').parents('.form-field'));
                 {% elif intro_pos > fields_pos and intro_pos < pricing_pos %}
-                    introDiv.insertAfter($('.t .forms .formforform-field:last').parents('.form-field'));
+                    introDiv.detach().insertAfter($('.t .forms .formforform-field:last').parents('.form-field'));
                 {% endif %}
             {% endwith %}
 
-            var introName = $("<h2>{{ form.intro_name }}</h2>");
             var fieldsName = $("<h2>{{ form.fields_name }}</h2>");
             var pricingName = $("<h2>{{ form.pricing_name }}</h2>");
 
-            introName.insertBefore(introDiv);
             var fieldsOption = $('.formforform-field:first');
             fieldsName.insertBefore(fieldsOption.parents('.form-field'));
             var pricingOption = $('label[for="id_pricing_option_0"]:first');
