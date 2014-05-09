@@ -1505,7 +1505,10 @@ class ImportMembDefault(object):
         else:
             profile.status_detail = profile.status_detail.lower()
 
-        profile.save()
+        if profile.status_detail == 'active' and not profile.status:
+            profile.status = True
+
+        profile.save() 
 
         # membership_demographic
         if self.mimport.num_processed == 0:
