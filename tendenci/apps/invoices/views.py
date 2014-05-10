@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 from datetime import datetime, time, timedelta
+import time as ttime
+import subprocess
 
 from django.template import RequestContext
 from django.db.models import Sum, Q
@@ -8,10 +10,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.conf import settings
 
+from tendenci.core.base.decorators import password_required
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.perms.decorators import is_enabled, superuser_required
@@ -19,7 +24,6 @@ from tendenci.core.perms.utils import has_perm, update_perms_and_save
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.core.payments.forms import MarkAsPaidForm
-from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 
@@ -448,48 +452,6 @@ def detail(request, id, template_name="invoices/detail.html"):
         context_instance=RequestContext(request))
 
 
-@is_enabled('invoices')
-@login_required
-def export(request, template_name="invoices/export.html"):
-    """Export Invoices"""
-
-    if not request.user.is_superuser:
-        raise Http403
-
-    if request.method == 'POST':
-        end_dt = request.POST.get('end_dt', None)
-        start_dt = request.POST.get('start_dt', None)
-
-        # First, convert our strings into datetime objects
-        # in case we need to do a timedelta
-        try:
-            end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
-        except:
-            end_dt = datetime.now()
-
-        try:
-            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
-        except:
-            start_dt = end_dt - timedelta(days=30)
-
-        # convert our datetime objects back to strings
-        # so we can pass them on to the task
-        end_dt = end_dt.strftime("%Y-%m-%d")
-        start_dt = start_dt.strftime("%Y-%m-%d")
-
-        export_id = run_invoice_export_task('invoices', 'invoice', start_dt, end_dt)
-        EventLog.objects.log()
-        return redirect('export.status', export_id)
-    else:
-        end_dt = datetime.now()
-        start_dt = end_dt - timedelta(days=30)
-
-    return render_to_response(template_name, {
-        'start_dt': start_dt,
-        'end_dt': end_dt,
-    }, context_instance=RequestContext(request))
-
-
 @staff_member_required
 def report_top_spenders(request, template_name="reports/top_spenders.html"):
     """Show dollars per user report"""
@@ -508,3 +470,97 @@ def report_top_spenders(request, template_name="reports/top_spenders.html"):
     return render_to_response(template_name, {
         'entry_list': entry_list,
     }, context_instance=RequestContext(request))
+
+
+@is_enabled('invoices')
+@login_required
+@password_required
+def export(request, template_name="invoices/export.html"):
+    """Export Invoices"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        end_dt = request.POST.get('end_dt', None)
+        start_dt = request.POST.get('start_dt', None)
+
+        # First, convert our strings into datetime objects
+        # in case we need to do a timedelta
+        try:
+            end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
+        except:
+            end_dt = datetime.now()
+        try:
+            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+        except:
+            start_dt = end_dt - timedelta(days=30)
+
+        # convert our datetime objects back to strings
+        # so we can pass them on to the task
+        end_dt = end_dt.strftime("%Y-%m-%d")
+        start_dt = start_dt.strftime("%Y-%m-%d")
+
+        identifier = int(ttime.time())
+        temp_file_path = 'export/invoices/%s_temp.csv' % identifier
+        default_storage.save(temp_file_path, ContentFile(''))
+
+        # start the process
+        subprocess.Popen(["python", "manage.py",
+                          "invoice_export_process",
+                          '--start_dt=%s' % start_dt,
+                          '--end_dt=%s' % end_dt,
+                          '--identifier=%s' % identifier,
+                          '--user=%s' % request.user.id])
+
+        # log an event
+        EventLog.objects.log()
+        return redirect('invoice.export_status', identifier)
+    else:
+        end_dt = datetime.now()
+        start_dt = end_dt - timedelta(days=30)
+
+    context = {'start_dt': start_dt, 'end_dt': end_dt}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@is_enabled('invoices')
+@login_required
+@password_required
+def export_status(request, identifier, template_name="invoices/export_status.html"):
+    """Display export status"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    export_path = 'export/invoices/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/invoices/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@is_enabled('invoices')
+@login_required
+@password_required
+def export_download(request, identifier):
+    """Download the directories export."""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    file_name = '%s.csv' % identifier
+    file_path = 'export/invoices/%s' % file_name
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=invoice_export_%s' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response
+

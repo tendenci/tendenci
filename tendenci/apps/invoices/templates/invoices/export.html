@@ -7,24 +7,27 @@
 {% block extra_head %}
 {{ block.super }}
 <link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
+<style>
+    .ui-datepicker {z-index: 999 !important;}
+</style>
 {% endblock %}
 
 {% block body %}
 
 <div class="t">
-    {% invoice_nav request.user %}
+    {% invoice_nav %}
      <div class="invoices-wrap">
         <h1>{% trans "Invoices Export" %}</h1>
         <div class="content">
-            <p>Pick your start and end dates (the default is the last 30 days) for your invoices export. Click download and your export will be begin processing. Please be patient for large date ranges.</p>
+            <p>Pick your start and end dates (the default is the last 30 days) for your invoices export. An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.</p>
             <form action="." method="POST" >{% csrf_token %}
                 <div class="form-field clearfix">
-                    <div class="id_start_dt" style="float: left; margin-right: 10px;">
+                    <div class="id_start_dt" style="float: left; margin-right: 20px;">
                             <div class="label">
                                 <label for="start_dt">Start Date</label>
                             </div>
                             <div class="field">
-                                <input style="width: 70px;" type="text" class="datepicker" name="start_dt" value="{{ start_dt|date:"Y-m-d" }}" />
+                                <input style="width: 100px;" type="text" class="datepicker" name="start_dt" value="{{ start_dt|date:"Y-m-d" }}" />
                             </div>
                      </div>
                      <div class="id_end_dt">
@@ -32,12 +35,12 @@
                                 <label for="end_dt">End Date</label>
                             </div>
                             <div class="field">
-                                <input style="width: 70px;" type="text" class="datepicker" name="end_dt" value="{{ end_dt|date:"Y-m-d" }}" />
+                                <input style="width: 100px;" type="text" class="datepicker" name="end_dt" value="{{ end_dt|date:"Y-m-d" }}" />
                             </div>
                      </div>
                 </div>
                 <br />
-                <input type="submit" value="{% trans 'Download' %}" />
+                <input type="submit" value="{% trans 'Export' %}" />
             </form>
         </div>
     </div>
