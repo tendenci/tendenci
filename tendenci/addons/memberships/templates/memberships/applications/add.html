@@ -7,13 +7,13 @@
 {% block title %}{% endblock %}
 {% block meta_description %}{% endblock %}
 {% block meta_keywords %}{% endblock %}
-{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href=" ">{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" >
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css" >
 <style>
     .inline-block{
         display: inline-block;
@@ -178,8 +178,7 @@
 
 {% block extra_body %}
     {{ block.super }}
-      <script type="text/javascript" 
-      src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+      <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
       <script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
       <script type="text/javascript">
             $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
@@ -199,7 +198,7 @@
                     {
                         'code':code,
                         'prices':prices,
-                        'model':model,
+                        'model':model
                     },
                     function(data, textStatus, jqXHR){
                         json = $.parseJSON(data);
