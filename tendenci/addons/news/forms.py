@@ -17,12 +17,7 @@ from tendenci.core.perms.utils import get_query_filters
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
-ALLOWED_LOGO_EXT = (
-    '.jpg',
-    '.jpeg',
-    '.gif',
-    '.png'
-)
+from timezones.utils import localtime_for_timezone
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -43,7 +38,7 @@ class NewsForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style': 'width:100%;'},
         mce_attrs={'storme_app_label': News._meta.app_label,
         'storme_model': News._meta.module_name.lower()}))
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'), initial=datetime.now())
+    release_dt = SplitDateTimeField(label=_('Release Date/Time'))
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending')))
     email = EmailVerificationField(label=_("Email"), required=False)
@@ -193,7 +188,10 @@ class NewsForm(TendenciBaseForm):
 
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
-        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
+
+        tz = get_setting('site', 'global', 'defaulttimezone')
+        self.fields['timezone'].initial = tz
+        self.fields['release_dt'].initial = localtime_for_timezone(datetime.now(), tz)
 
         # only show the remove photo checkbox if there is already a thumbnail
         if self.instance.thumbnail:
