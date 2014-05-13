@@ -5,7 +5,7 @@
 
 <div class="meta">
     <div class="meta-left">
-        <div class="submitted"><strong>{% trans "Released:" %}</strong> {{ news.release_dt_localtimezone|date:"long" }}
+        <div class="submitted"><strong>{% trans "Released:" %}</strong> {{ news.release_dt|date:"long" }}
         </div>
         
         {% if news.source %}

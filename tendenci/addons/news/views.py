@@ -56,7 +56,6 @@ def detail(request, slug=None, template_name="news/view.html"):
 @is_enabled('news')
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
-    released_news_ids = News.objects.released_news_ids()
 
     if get_setting('site', 'global', 'searchindex') and query:
         news = News.objects.search(query, user=request.user)
@@ -65,9 +64,9 @@ def search(request, template_name="news/search.html"):
         news = News.objects.filter(filters).distinct()
 
     if not has_perm(request.user, 'news.view_news'):
-        news = news.filter(id__in=released_news_ids)
+        news = news.filter(release_dt__lte=datetime.now())
 
-    news = sorted(news, key=lambda news_item: news_item.release_dt_localtimezone, reverse=True)
+    news = news.order_by('-release_dt')
 
     EventLog.objects.log()
 
