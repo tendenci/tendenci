@@ -64,7 +64,7 @@ def search(request, template_name="news/search.html"):
         news = News.objects.filter(filters).distinct()
 
     if not has_perm(request.user, 'news.view_news'):
-        news = news.filter(release_dt__lte=datetime.now())
+        news = news.filter(release_dt_local__lte=datetime.now())
 
     news = news.order_by('-release_dt')
 

@@ -5,11 +5,13 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.conf import settings
 
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
 from timezones.fields import TimeZoneField
 from timezones.utils import localtime_for_timezone
+from timezones.utils import adjust_datetime_to_timezone
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
@@ -44,6 +46,8 @@ class News(TendenciBaseModel):
     website = models.CharField(max_length=300, blank=True)
     thumbnail = models.ForeignKey('NewsImage', default=None, null=True, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
+    # used for better performance when retrieving a list of released news
+    release_dt_local = models.DateTimeField(null=True, blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
@@ -91,6 +95,8 @@ class News(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
+        self.assign_release_dt_local()
+
         photo_upload = kwargs.pop('photo', None)
         super(News, self).save(*args, **kwargs)
 
@@ -134,22 +140,8 @@ class News(TendenciBaseModel):
                 self.status_detail in ['active']])
 
     @property
-    def release_dt_with_tz(self):
-        return datetime(
-                year = self.release_dt.year,
-                month = self.release_dt.month,
-                day = self.release_dt.day,
-                hour = self.release_dt.hour,
-                minute = self.release_dt.minute,
-                tzinfo = self.timezone )
-
-    @property
-    def release_dt_default_tz(self):
-        return localtime_for_timezone(self.release_dt_with_tz, None)
-
-    @property
     def is_released(self):
-        return self.release_dt <= datetime.now()
+        return self.release_dt_local <= datetime.now()
 
     @property
     def has_google_author(self):
@@ -158,6 +150,28 @@ class News(TendenciBaseModel):
     @property
     def has_google_publisher(self):
         return self.contributor_type == self.CONTRIBUTOR_PUBLISHER
+    
+    def assign_release_dt_local(self):
+        """
+        convert release_dt to the corresponding local time
+        
+        example:
+        
+        if
+            release_dt: 2014-05-09 03:30:00
+            timezone: US/Pacific
+            settings.TIME_ZONE: US/Central
+        then
+            the corresponding release_dt_local will be: 2014-05-09 05:30:00
+        """
+        now = datetime.now()
+        now_with_tz = adjust_datetime_to_timezone(now, settings.TIME_ZONE)
+        if self.timezone and self.timezone.zone != settings.TIME_ZONE:
+            time_diff = adjust_datetime_to_timezone(now, self.timezone) - now_with_tz
+            self.release_dt_local = self.release_dt + time_diff
+        else:
+            self.release_dt_local = self.release_dt
+                
 
 
 class NewsImage(File):
