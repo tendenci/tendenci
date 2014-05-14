@@ -5,6 +5,8 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from timezones.utils import adjust_datetime_to_timezone
+from django.conf import settings
 
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
@@ -41,6 +43,8 @@ class Article(TendenciBaseModel):
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
+    # used for better performance when retrieving a list of released articles
+    release_dt_local = models.DateTimeField(null=True, blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     featured = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
@@ -93,7 +97,29 @@ class Article(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
+        self.assign_release_dt_local()
         super(Article, self).save(*args, **kwargs)
+        
+    def assign_release_dt_local(self):
+        """
+        convert release_dt to the corresponding local time
+        
+        example:
+        
+        if
+            release_dt: 2014-05-09 03:30:00
+            timezone: US/Pacific
+            settings.TIME_ZONE: US/Central
+        then
+            the corresponding release_dt_local will be: 2014-05-09 05:30:00
+        """
+        now = datetime.now()
+        now_with_tz = adjust_datetime_to_timezone(now, settings.TIME_ZONE)
+        if self.timezone and self.timezone.zone != settings.TIME_ZONE:
+            time_diff = adjust_datetime_to_timezone(now, self.timezone) - now_with_tz
+            self.release_dt_local = self.release_dt + time_diff
+        else:
+            self.release_dt_local = self.release_dt
 
     def age(self):
         return datetime.now() - self.create_dt

@@ -4,7 +4,7 @@ from django import forms
 from django.forms.util import ErrorList
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-
+from django.conf import settings
 from tendenci.addons.articles.models import Article
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -206,7 +206,7 @@ class ArticleForm(TendenciBaseForm):
 
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
-        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
+        self.fields['timezone'].initial = settings.TIME_ZONE
 
     def clean_group(self):
         group_id = self.cleaned_data['group']
