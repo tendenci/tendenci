@@ -35,7 +35,7 @@ class ListNewsNode(ListNode):
     perms = 'news.view_news'
 
     def custom_model_filter(self, qset, user):
-        return qset.filter(release_dt__lte=datetime.now())
+        return qset.filter(release_dt_local__lte=datetime.now())
 
 
 @register.tag
