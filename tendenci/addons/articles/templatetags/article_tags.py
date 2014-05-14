@@ -40,7 +40,7 @@ class ListArticlesNode(ListNode):
         Filters out articles that aren't yet released.
         """
         now = datetime.now().replace(second=0, microsecond=0)
-        items = items.filter(release_dt__lte=now)
+        items = items.filter(release_dt_local__lte=now)
         return items
 
 
