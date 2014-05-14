@@ -47,7 +47,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
     if (article.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
-    if article.release_dt_local >= datetime.now():
+    if article.release_dt >= datetime.now():
         if not any([
             has_perm(request.user, 'articles.view_article'),
             request.user == article.owner,
@@ -109,9 +109,9 @@ def search(request, template_name="articles/search.html"):
 
     if not has_perm(request.user, 'articles.view_article'):
         if request.user.is_anonymous():
-            articles = articles.filter(release_dt_local__lte=datetime.now())
+            articles = articles.filter(release_dt__lte=datetime.now())
         else:
-            articles = articles.filter(Q(release_dt_local__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))
+            articles = articles.filter(Q(release_dt__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))
 
     # Query list of category and subcategory for dropdown filters
     category = request.GET.get('category')
