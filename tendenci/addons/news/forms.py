@@ -6,6 +6,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import filesizeformat
+from django.conf import settings
 
 from tendenci.addons.news.models import News
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -193,7 +194,7 @@ class NewsForm(TendenciBaseForm):
 
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
-        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
+        self.fields['timezone'].initial = settings.TIME_ZONE
 
         # only show the remove photo checkbox if there is already a thumbnail
         if self.instance.thumbnail:

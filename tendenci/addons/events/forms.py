@@ -15,6 +15,7 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import filesizeformat
+from django.conf import settings
 
 from captcha.fields import CaptchaField
 from tendenci.addons.events.models import (
@@ -703,7 +704,7 @@ class EventForm(TendenciBaseForm):
             groups_list = default_groups.values_list('pk', 'name')
 
         self.fields['group'].choices = groups_list
-        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
+        self.fields['timezone'].initial = settings.TIME_ZONE
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']

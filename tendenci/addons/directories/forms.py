@@ -4,6 +4,7 @@ from os.path import splitext, basename
 
 from django import forms
 from django.forms.util import ErrorList
+from django.conf import settings
 from tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
@@ -270,7 +271,7 @@ class DirectoryForm(TendenciBaseForm):
         if self.fields.has_key('pricing'):
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
-        self.fields['timezone'].initial = get_setting('site', 'global', 'defaulttimezone')
+        self.fields['timezone'].initial = settings.TIME_ZONE
 
         # expiration_dt = activation_dt + requested_duration
         fields_to_pop = ['expiration_dt']
