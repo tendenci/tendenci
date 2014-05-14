@@ -13,7 +13,7 @@ class Migration(DataMigration):
         now = datetime.datetime.now()
         now_with_tz = adjust_datetime_to_timezone(now, settings.TIME_ZONE) 
         for news in all_news:
-            if news.timezone and news.timezone.zone != settings.TIME_ZONE:
+            if news.timezone and news.release_dt and news.timezone.zone != settings.TIME_ZONE:
                 time_diff = adjust_datetime_to_timezone(now, news.timezone) - now_with_tz
                 news.release_dt_local = news.release_dt + time_diff
             else:
