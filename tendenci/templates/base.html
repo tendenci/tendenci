@@ -65,7 +65,6 @@
 {% block html_body %}{% endblock %}
 
 {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
-</body>
 
 {% block jquery_script %}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
@@ -101,4 +100,5 @@
 {% endif %}
 
 {{ NEW_RELIC_FOOTER|safe }}
+</body>
 </html>
