@@ -43,6 +43,8 @@ def settings(request):
 
         contexts[context_key.upper()] = value
 
+    cache.set(key, settings, 120)
+
     contexts['TENDENCI_VERSION'] = version
 
     return contexts

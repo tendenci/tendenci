@@ -141,11 +141,6 @@ def source_colors(data):
         item['color'] = EventLogBaseColor.get_color(item['source'])
 
 
-def application_colors(data):
-    for item in data:
-        item['color'] = EventLogBaseColor.get_color(item['application'])
-
-
 def event_colors(data):
     for item in data:
         item['color'] = get_color(str(item['event_id']))
@@ -169,18 +164,17 @@ def event_summary_report(request):
 
     chart_data = queryset\
                 .extra(select={'day': 'DATE(create_dt)'})\
-                .values('day', 'application')\
+                .values('day', 'application', 'app_color')\
                 .annotate(count=Count('pk'))\
                 .order_by('day', '-count')
-    chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, application_colors)
+    chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, None)
 
     summary_data = queryset\
-                .values('application')\
+                .values('application', 'app_color')\
                 .annotate(count=Count('pk'))\
                 .order_by('-count')
-    application_colors(summary_data)
 
-    m = 1+len(summary_data)/3
+    m = 1+queryset.count()/3
     mm = 2*m
     summary_data = summary_data[:m], summary_data[m:mm], summary_data[mm:]
 

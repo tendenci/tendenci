@@ -23,7 +23,7 @@
 		{% for item in items %}
             {% if item.application %}
 			<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}" title="{{ item.application }} ({{ item.count|intcomma }})">
-				<div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
+				<div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.app_color }}"> </div>
 			</a>
             {% endif %}
 		{% endfor %}
@@ -37,7 +37,7 @@
 {% for item in summary_data.0 %}
     {% if item.application %}
 	<li>
-	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+	<span style="background-color: #{{ item.app_color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
     {% if item.application %}
 	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
@@ -51,7 +51,7 @@
 {% for item in summary_data.1 %}
     {% if item.application %}
 	<li>
-	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+	<span style="background-color: #{{ item.app_color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
 	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
 	</li>
@@ -63,7 +63,7 @@
 {% for item in summary_data.2 %}
     {% if item.application %}
 	<li>
-	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+	<span style="background-color: #{{ item.app_color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
 	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
 	</li>

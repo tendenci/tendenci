@@ -1,6 +1,7 @@
 from django.conf import settings
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.utils import get_theme_info
+from django.core.cache import cache
 
 
 def theme(request):
@@ -14,7 +15,14 @@ def theme(request):
     if 'toggle_template' in request.GET:
         contexts['TOGGLE_TEMPLATE'] = True
 
-    contexts['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
+    # get the  active theme from cache
+    active_theme = cache.get('active_theme', None)
+    if not active_theme:
+        active_theme = get_setting('module', 'theme_editor', 'theme')
+        cache.set('active_theme', active_theme, 120)
+
+    contexts['ACTIVE_THEME'] = active_theme
+
     theme = request.session.get('theme', contexts['ACTIVE_THEME'])
     contexts['THEME'] = theme
 
@@ -25,8 +33,12 @@ def theme(request):
         contexts['THEME_URL'] = '/themes/' + theme + '/'
 
     contexts['LOCAL_THEME_URL'] = '/themes/' + theme + '/'
-    
 
-    contexts['THEME_INFO'] = get_theme_info(theme)
+    theme_info = cache.get('theme_info', None)
+    if not theme_info:
+        theme_info = get_theme_info(theme)
+        cache.set('theme_info', theme_info, 120)
+
+    contexts['THEME_INFO'] = theme_info
 
     return contexts
