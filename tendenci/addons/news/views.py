@@ -58,9 +58,7 @@ def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:
-        news_ids = News.objects.search(query, user=request.user).values_list('pk', flat=True)
-        news_ids = list(news_ids)
-        news = News.objects.filter(id__in=news_ids)
+        news = News.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'news.view_news')
         news = News.objects.filter(filters).distinct()

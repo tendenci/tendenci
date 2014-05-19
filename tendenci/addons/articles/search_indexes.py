@@ -13,6 +13,7 @@ class ArticleIndex(TendenciBaseSearchIndex):
     headline = indexes.CharField(model_attr='headline')
     body = indexes.CharField(model_attr='body')
     release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
+    release_dt_local = indexes.DateTimeField(model_attr='release_dt_local', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
 
     # categories
