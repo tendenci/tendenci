@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}codemirror2/lib/codemirror.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}swfupload/swfupload.visual.css">
 {% endblock %}
-        
+
 {% block body %}
 <h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
@@ -96,10 +96,10 @@
                     {% endif %}
                 {% endfor %}
                 </ul>
-                
+
                 {% comment %}
-                
-                
+
+
                                {%  if pwd %}
                                <div class="pwd" title="{{ pwd }}">
                                {% if pwd|length > 20  %}
@@ -115,7 +115,7 @@
                                    </p>
                                {% endif %}
                                {% if dirs %}
-                               <ul class="dir_list">   
+                               <ul class="dir_list">
                                     {% for dir in dirs %}
                                         <li class="dir_item"><a href="{% url theme_editor.editor %}?file={{ dir }}/&theme_edit={{ current_theme }}">{{ dir|basename|safe }}</a></li>
                                     {% endfor %}
@@ -142,23 +142,23 @@
                                {% endif %}
                                {% if not files and not dirs and not non_editable_files %}
                                <p>{% trans "This folder is empty" %}</p>
-                               {% endif %}  
-                
+                               {% endif %}
+
                 {% endcomment %}
                 </div>
                                <div class="well well-small">
                                <h4>Customize more templates:</h4>
                                Copy down one of Tendenci's built-in app templates and customize it.
                                <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
-                               
+
                                </div>
-                               
+
                                <div class="well well-small">
                                	<h4>Create a new template:</h4>
                                		Click the button below to add a new template.
                                		<button class="btn btn-mini new-template-btn">New Template</button>
                                </div>
-                               
+
            </div>
                    </td>
     </tr>
@@ -198,13 +198,13 @@ var editor;
 $(document).ready(function(){
   editor = CodeMirror.fromTextArea('id_content', {
     height: "500px",
-    parserfile: {% ifequal file_dict.type "Stylesheet"%}"parsecss.js"{%else%}"parsexml.js"{%endifequal%},
-    stylesheet: {% ifequal file_dict.type "Stylesheet"%}"{{ STATIC_URL }}codemirror/css/csscolors.css"{%else%}"{{ STATIC_URL }}codemirror/css/xmlcolors.css"{%endifequal%},
+    parserfile: {% if ext in stylesheets %}"parsecss.js"{% elif ext == "js" %}["tokenizejavascript.js","parsejavascript.js"]{% else %}"parsexml.js"{% endif %},
+  stylesheet: {% if ext in stylesheets %}"{{ STATIC_URL }}codemirror/css/customcsscolors.css"{% elif ext == "js" %} "{{ STATIC_URL }}codemirror/css/jscolors.css" {% else %}"{{ STATIC_URL }}codemirror/css/xmlcolors.css"{% endif %},
     path: "{{ STATIC_URL }}codemirror/js/",
     continuousScanning: 500,
     lineNumbers: true,
     textWrapping: false
-  });	
+  }); 
 })
 
 function open_archive(id)
