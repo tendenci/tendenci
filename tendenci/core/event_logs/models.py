@@ -1,6 +1,5 @@
 import uuid
 from django.db import models
-from django.db.transaction import commit_on_success
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
@@ -35,10 +34,6 @@ class EventLog(models.Model):
     query_string = models.TextField(null=True)
     robot = models.ForeignKey(Robot, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
-
-    # colors
-    app_color = models.CharField(blank=True, max_length=10, null=True)
-
     uuid = models.CharField(max_length=40)
     application = models.CharField(max_length=50, db_index=True)
     action = models.CharField(max_length=50, db_index=True)
@@ -49,14 +44,9 @@ class EventLog(models.Model):
     class Meta:
         permissions = (("view_eventlog", "Can view eventlog"),)
 
-    @commit_on_success
     def save(self, *args, **kwargs):
         if not self.uuid:
             self.uuid = str(uuid.uuid1())
-
-        # add the app_color attribute on save
-        self.app_color = EventLogBaseColor.get_color(self.application)
-
         super(EventLog, self).save(*args, **kwargs)
 
     def color(self):
