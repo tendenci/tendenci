@@ -37,7 +37,7 @@ class EventLog(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
 
     # colors
-    app_color = models.CharField(blank=True, max_length=10)
+    app_color = models.CharField(blank=True, max_length=10, null=True)
 
     uuid = models.CharField(max_length=40)
     application = models.CharField(max_length=50, db_index=True)
