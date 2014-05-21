@@ -275,8 +275,13 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     # check permission
     if not has_perm(request.user,'forms.change_form',entry.form):
         raise Http403
+    
 
-    return render_to_response(template_name, {'entry':entry},
+    form_template = entry.form.template
+    if not form_template or not template_exists(form_template):
+        form_template = "forms/base.html"
+
+    return render_to_response(template_name, {'entry':entry, 'form_template': form_template},
         context_instance=RequestContext(request))
 
 
