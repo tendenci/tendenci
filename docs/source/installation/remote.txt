@@ -78,8 +78,8 @@ From here, create the database and a new postgres user with the following comman
 ::
 
     sudo -u postgres psql postgres -c "CREATE USER tendenci WITH PASSWORD 'yourgreatpassword'";
-    sudo -u postgres psql postgres -c "CREATE DATABASE tendenci WITH OWNER tendenci;"
-    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE tendenci TO tendenci;"
+    sudo -u postgres psql postgres -c "CREATE DATABASE tendenci WITH OWNER tendenci";
+    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE tendenci TO tendenci";
 
 This will create a database named ``tendenci`` with the user named ``tendenci``. Next update the ``.env`` file in the site folder (``/var/www/sitename``). First, list files with ``ls -a`` then open the file for editing with ``nano /var/www/sitename/.env`` which will allow editing of the contents. Replace the following line:
 ::
