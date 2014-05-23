@@ -26,6 +26,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.core.site_settings.utils import get_setting
 
+        pass_update_tendenci = False
+        pass_update_tendenci_site = False
+        pass_restart_server = False
+        is_uwsgi = False
+        errors_list = []
+
         pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
         latest_version = pypi.package_releases('tendenci')[0]
         error_message = ""
@@ -43,18 +49,46 @@ class Command(BaseCommand):
         try:
             print "Updating tendenci"
             subprocess.check_output("pip install tendenci --upgrade", stderr=subprocess.STDOUT, shell=True)
+            pass_update_tendenci = True
 
-            print "Updating tendenci site"
-            subprocess.check_output("python deploy.py", stderr=subprocess.STDOUT, shell=True)
+        except subprocess.CalledProcessError as e:
+            errors_list.append(e.output)
 
-            print "Restarting Server"
-            subprocess.check_output("sudo reload %s" % os.path.basename(settings.PROJECT_ROOT),
+        # run python deploy.py iff update_tendenci is successful
+        if pass_update_tendenci:
+            try:
+                print "Updating tendenci site"
+                subprocess.check_output("python deploy.py", stderr=subprocess.STDOUT, shell=True)
+                pass_update_tendenci_site = True
+
+            except subprocess.CalledProcessError as e:
+                errors_list.append(e.output)
+
+        # run reload if update is done
+        if pass_update_tendenci_site:
+            try:
+                print "Restarting Server"
+                subprocess.check_output("sudo reload %s" % os.path.basename(settings.PROJECT_ROOT),
                                     stderr=subprocess.STDOUT, shell=True)
 
+            except subprocess.CalledProcessError as e:
+                errors_list.append(e.output)
+                if "reload: Unknown job:" in e.output:
+                    is_uwsgi = True
+
+        # run usgi command iff it was proven that the site is using uwsgi instead
+        if is_uwsgi:
+            try:
+                print "Restarting Server"
+                subprocess.check_output("sudo touch /etc/uwsgi/vassals/%s.ini" % os.path.basename(settings.PROJECT_ROOT),
+                                    stderr=subprocess.STDOUT, shell=True)
+
+            except subprocess.CalledProcessError as e:
+                errors_list.append(e.output)
+
+        try:
             print "Clearing cache"
             call_command('clear_cache')
-        except subprocess.CalledProcessError as e:
-            email_context['error_message'] = e.output
         except CommandError as e:
             email_context['error_message'] = e
 
