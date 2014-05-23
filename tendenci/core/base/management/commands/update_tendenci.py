@@ -90,7 +90,9 @@ class Command(BaseCommand):
             print "Clearing cache"
             call_command('clear_cache')
         except CommandError as e:
-            email_context['error_message'] = e
+            errors_list.append(e.output)
+
+        email_context['errors_list'] = errors_list
 
         if email_recipient:
             subject = render_to_string('notification/update_tendenci_notice/short.txt', email_context)
