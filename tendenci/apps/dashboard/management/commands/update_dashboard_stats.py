@@ -321,15 +321,17 @@ class Command(BaseCommand):
         return corp_mem_list
 
     def get_top_corp_members(self, items):
+        from tendenci.addons.memberships.models import MembershipDefault
         from tendenci.addons.corporate_memberships.models import CorpMembership
 
+        total = MembershipDefault.QS_ACTIVE().exclude(corp_profile_id=0).count()
         corp_memberships = CorpMembership.objects.filter(status_detail='active').extra(select={
             'members': "SELECT COUNT(*) " + \
                            "FROM memberships_membershipdefault " + \
                            "WHERE memberships_membershipdefault.corp_profile_id = " + \
                                "corporate_memberships_corpmembership.corp_profile_id AND " +\
                                "memberships_membershipdefault.status_detail = 'active'"})
-        total = corp_memberships.count()
+
         corp_memberships = corp_memberships.order_by("-members")[:items]
         corp_mem_list = [['','',total]]
         for corp_mem in corp_memberships:
