@@ -117,8 +117,8 @@ class ObjectPermBackend(object):
         if not obj:
             return False
 
-        # they are non-admin, should not view any content with status=0 - GJQ
-        if hasattr(obj, "status") and obj.status == 0:
+        # they are non-admin, should not view any content with status=False - GJQ
+        if hasattr(obj, "status") and not obj.status:
             return False
 
         # object anonymous and use bits
@@ -135,12 +135,9 @@ class ObjectPermBackend(object):
                     return True
 
         if perm_type == 'change':
-            has_attr_aoe = hasattr(obj, "allow_anonymous_edit")
             has_attr_aue = hasattr(obj, "allow_user_edit")
             has_attr_ame = hasattr(obj, "allow_member_edit")
-            if all([has_attr_aoe, has_attr_aue, has_attr_ame]):
-                if obj.allow_anonymous_edit:
-                    return True
+            if all([has_attr_aue, has_attr_ame]):
                 if user.is_authenticated() and obj.allow_user_edit:
                     return True
                 if user.profile.is_member and obj.allow_member_edit:
@@ -149,6 +146,15 @@ class ObjectPermBackend(object):
         # no anonymous user currently
         if not user.is_authenticated():
             return False
+        
+        # check creator and owner
+        if hasattr(obj, 'creator'):
+            if obj.creator_id == user.id:
+                return True
+        if hasattr(obj, 'owner'):
+            if obj.owner_id == user.id:
+                return True
+            
 
         if not isinstance(obj, Model):
             return False

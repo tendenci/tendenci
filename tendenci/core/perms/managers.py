@@ -358,8 +358,8 @@ class TendenciBaseManager(models.Manager):
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
         
-        creator_q = SQ(creator_username=user.username)
-        owner_q = SQ(owner_username=user.username)
+        creator_q = SQ(creator_id=user.id)
+        owner_q = SQ(owner_id=user.id)
         
         if groups:
             sqs = sqs.filter(
@@ -393,14 +393,17 @@ class TendenciBaseManager(models.Manager):
         status_q = SQ(status=status, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
+        
+        creator_q = SQ(creator_id=user.id)
+        owner_q = SQ(owner_id=user.id)
 
         if groups:
             sqs = sqs.filter(
-                (status_q & (anon_q | user_q)) |
+                (status_q & (anon_q | user_q | creator_q | owner_q)) |
                 (user_perm_q | group_perm_q))
         else:
             sqs = sqs.filter(
-                (status_q & (anon_q | user_q)) |
+                (status_q & (anon_q | user_q | creator_q | owner_q)) |
                 (user_perm_q)
             )
 
