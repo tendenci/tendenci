@@ -73,10 +73,6 @@ def update_perms_and_save(request, form, instance, **kwargs):
     if 'group_perms' in form.cleaned_data:
         ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
 
-    # assign creator permissions
-    if request.user.is_authenticated():
-        ObjectPermission.objects.assign(instance.creator, instance)
-
     # save again for indexing purposes
     # TODO: find a better solution, saving twice kinda sux
     instance.save(**kwargs)
