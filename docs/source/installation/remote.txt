@@ -77,7 +77,7 @@ Type Control+D to exit the posgreSQL prompt.
 From here, create the database and a new postgres user with the following commands:
 ::
 
-    sudo -u postgres psql postgres -c "CREATE USER tendenci WITH PASSWORD 'yourgreatpassword'";
+    sudo -u postgres psql postgres -c "CREATE USER tendenci WITH PASSWORD 'yourgreatpassword';"
     sudo -u postgres psql postgres -c "CREATE DATABASE tendenci WITH OWNER tendenci;"
     sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE tendenci TO tendenci;"
 
