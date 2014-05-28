@@ -9,7 +9,9 @@ class RecurringPaymentIndex(CustomSearchIndex):
     user = indexes.CharField(model_attr='user', faceted=True)
     user_object = indexes.CharField(model_attr='user', faceted=True)
     description = indexes.CharField(model_attr='description')
-    payment_amount = indexes.FloatField(model_attr='payment_amount')   
+    payment_amount = indexes.FloatField(model_attr='payment_amount')
+    
+    order = indexes.DateTimeField() 
 
     def get_updated_field(self):
         return 'update_dt'
@@ -21,6 +23,9 @@ class RecurringPaymentIndex(CustomSearchIndex):
         return "%s" % (
             obj.user.get_full_name,
         )
+        
+    def prepare_order(self, obj):
+        return obj.create_dt
         
     def index_queryset(self):
         return RecurringPayment.objects.all().order_by('user')

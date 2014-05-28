@@ -32,6 +32,10 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
     
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
+    
+    # add order field for sorting. the subclasses can override
+    # the prepare_order method to sort by a different field
+    order = indexes.DateTimeField()
 
     def prepare_allow_anonymous_view(self, obj):
         if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
@@ -62,6 +66,9 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
         if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
             return int(obj.status)
         return obj.status
+    
+    def prepare_order(self, obj):
+        return obj.create_dt
 
     def get_updated_field(self):
         return 'update_dt'
