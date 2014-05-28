@@ -59,14 +59,16 @@ def search(request, template_name="news/search.html"):
 
     if get_setting('site', 'global', 'searchindex') and query:
         news = News.objects.search(query, user=request.user)
+        # use order (existing for all modules) for sorting cause the current
+        # haystack + whoosh cannot sort by release_dt correctly
+        news = news.order_by('-order')
     else:
         filters = get_query_filters(request.user, 'news.view_news')
         news = News.objects.filter(filters).distinct()
+        news = news.order_by('-release_dt')
 
     if not has_perm(request.user, 'news.view_news'):
-        news = news.filter(release_dt_local__lte=datetime.now())
-
-    news = news.order_by('-release_dt')
+        news = news.filter(release_dt_local__lte=datetime.now())  
 
     EventLog.objects.log()
 
