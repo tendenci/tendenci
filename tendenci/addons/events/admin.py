@@ -1,11 +1,14 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.conf.urls.defaults import patterns, url
+from django.shortcuts import redirect, render
 from django.utils.encoding import iri_to_uri
 
-from tendenci.addons.events.models import CustomRegForm, CustomRegField, Type
-from tendenci.addons.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm
+from tendenci.addons.events.models import CustomRegForm, CustomRegField, Type, StandardRegForm
+from tendenci.addons.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.site_settings.utils import delete_settings_cache
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -183,3 +186,39 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         EventLog.objects.log(**log_defaults)
 
 admin.site.register(CustomRegForm, CustomRegFormAdmin)
+
+
+class StandardRegFormAdmin(admin.ModelAdmin):
+
+    def get_urls(self):
+        """
+        Add the export view to urls.
+        """
+        urls = super(StandardRegFormAdmin, self).get_urls()
+        extra_urls = patterns("",
+            url("^edit",
+                self.admin_site.admin_view(self.edit_regform_view),
+                name="standardregform_edit"),
+        )
+        return extra_urls + urls
+
+    def edit_regform_view(self, request):
+        form = StandardRegAdminForm(request.POST or None)
+        if request.method == 'POST' and form.is_valid():
+            form.apply_changes()
+            delete_settings_cache('module', 'events')
+            messages.success(request, "Successfully updated Standard Registration Form")
+            return redirect(reverse('admin:standardregform_edit'))
+
+        return render(request,
+            'admin/events/standardregform/standard_reg_form_edit.html',
+            {'adminform': form});
+
+    def changelist_view(self, request, extra_context=None):
+        return redirect(reverse('admin:standardregform_edit'))
+
+    def has_add_permission(self, request):
+        return False
+
+
+admin.site.register(StandardRegForm, StandardRegFormAdmin)

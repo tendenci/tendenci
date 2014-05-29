@@ -2329,9 +2329,11 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         formset = RegistrantFormSet(request.POST or None, **params)
     else:
         # use modelformset_factory for regular registration form
-        RegistrantFormSet = modelformset_factory(Registrant, extra=0,
-                                    fields=('first_name', 'last_name', 'company_name',
-                                             'phone', 'email', 'comments'))
+        RegistrantFormSet = modelformset_factory(
+            Registrant, extra=0,
+            fields=('first_name', 'last_name', 'mail_name', 'email', 'position_title',
+                    'company_name', 'phone', 'address', 'city', 'state', 'zip',
+                    'country', 'meal_option', 'comments'))
         formset = RegistrantFormSet(request.POST or None,
                                     queryset=Registrant.objects.filter(registration=reg8n,
                                                                        cancel_dt__isnull=True).order_by('id'))

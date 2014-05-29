@@ -934,29 +934,23 @@ def create_registrant_from_form(*args, **kwargs):
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')
+        registrant.mail_name = form.cleaned_data.get('mail_name', '')
         registrant.email = form.cleaned_data.get('email', '')
-        registrant.phone = form.cleaned_data.get('phone', '')
+        registrant.position_title = form.cleaned_data.get('position_title', '')
         registrant.company_name = form.cleaned_data.get('company_name', '')
+        registrant.phone = form.cleaned_data.get('phone', '')
+        registrant.address = form.cleaned_data.get('address', '')
+        registrant.city = form.cleaned_data.get('city', '')
+        registrant.state = form.cleaned_data.get('state', '')
+        registrant.zip = form.cleaned_data.get('zip_code', '')
+        registrant.country = form.cleaned_data.get('country', '')
+        registrant.meal_option = form.cleaned_data.get('meal_option', '')
         registrant.comments = form.cleaned_data.get('comments', '')
 
         if registrant.email:
             users = User.objects.filter(email=registrant.email)
             if users:
                 registrant.user = users[0]
-                try:
-                    user_profile = registrant.user.get_profile()
-                except:
-                    user_profile = None
-                if user_profile:
-                    registrant.mail_name = user_profile.display_name
-                    registrant.address = user_profile.address
-                    registrant.city = user_profile.city
-                    registrant.state = user_profile.state
-                    registrant.zip = user_profile.zipcode
-                    registrant.country = user_profile.country
-                    if not registrant.company_name:
-                        registrant.company_name = user_profile.company
-                    registrant.position_title = user_profile.position_title
 
     registrant.save()
     add_sf_attendance(registrant, event)
@@ -1642,6 +1636,16 @@ def add_sf_attendance(registrant, event):
                 profile.user.email = profile.user.email or registrant.email
                 profile.user.save()
 
+                # update profile details
+                profile.position_title = profile.position_title or registrant.position_title
+                profile.phone = profile.phone or registrant.phone
+                profile.address = profile.address or registrant.address
+                profile.city = profile.city or registrant.city
+                profile.state = profile.state or registrant.state
+                profile.country = profile.country or registrant.country
+                profile.zipcode = profile.zipcode or registrant.zip
+                profile.save()
+
                 contact_id = create_salesforce_contact(profile)
                     
             elif all(contact_requirements):
@@ -1654,7 +1658,14 @@ def add_sf_attendance(registrant, event):
                     contact = sf.Contact.create({
                         'FirstName':registrant.first_name,
                         'LastName':registrant.last_name,
-                        'Email':registrant.email})
+                        'Email':registrant.email,
+                        'Title':registrant.position_title,
+                        'Phone':registrant.phone,
+                        'MailingStreet':registrant.address,
+                        'MailingCity':registrant.city,
+                        'MailingState':registrant.state,
+                        'MailingCountry':registrant.country,
+                        'MailingPostalCode':registrant.zip})
                     contact_id = contact['id']
 
             if contact_id:

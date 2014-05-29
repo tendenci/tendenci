@@ -1,5 +1,6 @@
 import re
 import imghdr
+from ast import literal_eval
 from os.path import splitext, basename
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -35,6 +36,7 @@ from tendenci.core.base.widgets import PriceWidget
 from tendenci.core.emails.models import Email
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.utils import get_setting, get_global_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
@@ -1554,14 +1556,10 @@ class RegistrantForm(forms.Form):
     """
     Registrant form.
     """
-    first_name = forms.CharField(max_length=50)
-    last_name = forms.CharField(max_length=50)
-    company_name = forms.CharField(max_length=100, required=False)
-    #username = forms.CharField(max_length=50, required=False)
-    phone = forms.CharField(max_length=20, required=False)
-    email = EmailVerificationField(label=_("Email"))
-    comments = forms.CharField(
-        max_length=300, widget=forms.Textarea, required=False)
+    FIELD_NAMES = ['first_name', 'last_name', 'email', 'mail_name',
+                   'position_title', 'company_name', 'phone', 'address',
+                   'city', 'state', 'zip_code', 'country', 'meal_option',
+                   'comments']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', AnonymousUser)
@@ -1576,6 +1574,33 @@ class RegistrantForm(forms.Form):
         super(RegistrantForm, self).__init__(*args, **kwargs)
 
         reg_conf=self.event.registration_configuration
+
+        # add changes in the stardard registration form
+        for field_name in self.FIELD_NAMES:
+            if get_setting('module', 'events', 'regform_%s_visible' % field_name):
+                field_required = get_setting('module', 'events', 'regform_%s_required' % field_name)
+                field_args = {"required": field_required}
+                field_type = get_setting('module', 'events', 'regform_%s_type' % field_name)
+                if "/" in field_type:
+                    field_class, field_widget = field_type.split("/")
+                else:
+                    field_class, field_widget = field_type, None
+                if field_type == 'EmailVerificationField':
+                    field_class = EmailVerificationField
+                    field_args['label'] = field_name.title()
+                else:
+                    field_class = getattr(forms, field_class)
+                arg_names = field_class.__init__.im_func.func_code.co_varnames
+                if "max_length" in arg_names:
+                    field_args["max_length"] = 100
+                if "choices" in arg_names:
+                    choices = get_setting('module', 'events', 'regform_%s_choices' % field_name)
+                    choices = choices.split(",")
+                    field_args["choices"] = zip(choices, choices)
+                if field_widget is not None:
+                    module, widget = field_widget.rsplit(".", 1)
+                    field_args["widget"] = getattr(import_module(module), widget)
+                self.fields[field_name] = field_class(**field_args)
 
         # add reminder field if event opted to sending reminders to attendees
         if reg_conf.send_reminder:
@@ -2158,4 +2183,55 @@ class EventExportForm(forms.Form):
                 raise forms.ValidationError('End date must be greater than start date')
 
         return end_dt
+
+
+class StandardRegAdminForm(forms.Form):
+
+    READONLY_FIELDS =  ['first_name_required', 'first_name_visible',
+                        'last_name_required', 'last_name_visible',
+                        'email_required', 'email_visible']
+
+    def __init__(self, *args, **kwargs):
+        super(StandardRegAdminForm, self).__init__(*args, **kwargs)
+        scope = 'module'
+        scope_category = 'events'
+
+        regform_settings = Setting.objects.filter(scope=scope, scope_category=scope_category,
+                                                  name__startswith="regform_")
+        for setting in regform_settings:
+            name = setting.name
+            field_name = name.split("regform_")[1]
+            initial = get_setting('module', 'events', name)
+            field_args = {'required':False, 'initial':initial}
+            if setting.input_type == 'text':
+                self.fields[field_name] = forms.CharField(**field_args)
+            elif setting.input_type == 'select':
+                if setting.data_type == 'boolean':
+                    self.fields[field_name] = forms.BooleanField(**field_args)
+                    if field_name in self.READONLY_FIELDS:
+                        self.fields[field_name].widget.attrs['disabled'] = True
+                else:
+                    try:
+                        choices = tuple([(k, v)for k, v in literal_eval(setting.input_value)])
+                    except:
+                        choices = tuple([(s.strip(), s.strip())for s in setting.input_value.split(',')])
+                    field_args['choices'] = choices
+                    self.fields[field_name] = forms.ChoiceField(**field_args)            
+
+    def apply_changes(self):
+        cleaned_data = self.cleaned_data
+        scope = 'module'
+        scope_category = 'events'
+
+        for field_name, value in cleaned_data.items():
+            if not field_name in self.READONLY_FIELDS:
+                try:
+                    setting = Setting.objects.get(scope=scope, scope_category=scope_category,
+                                                  name='regform_%s' % field_name)
+                except Setting.DoesNotExist:
+                    setting = None
+
+                if setting:
+                    setting.set_value(value)
+                    setting.save()
 

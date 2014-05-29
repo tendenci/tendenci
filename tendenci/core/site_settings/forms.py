@@ -105,6 +105,10 @@ def build_settings_form(user, settings):
     fields = OrderedDict()
     for setting in settings:
 
+        # Do not display standard regform settings
+        if setting.scope_category == 'events' and setting.name.startswith('regform_'):
+            continue
+
         try:
             setting_value = force_unicode(setting.get_value())
         except DjangoUnicodeDecodeError:

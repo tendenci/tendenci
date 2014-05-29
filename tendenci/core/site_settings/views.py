@@ -64,6 +64,8 @@ def index(request, template_name="site_settings/settings.html"):
     if not has_perm(request.user,'site_settings.change_setting'):
         raise Http403
     settings = Setting.objects.values().exclude(scope='template').order_by('scope_category')
+    # Do not display standard regform settings
+    settings = settings.exclude(scope_category='events', name__startswith='regform_')
     EventLog.objects.log()
     return render_to_response(template_name, {'settings':settings}, context_instance=RequestContext(request))
 

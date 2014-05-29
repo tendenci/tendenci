@@ -671,22 +671,22 @@ class Registrant(models.Model):
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    mail_name = models.CharField(max_length=100)
-    address = models.CharField(max_length=200)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    zip = models.CharField(max_length=50)
-    country = models.CharField(max_length=100)
+    mail_name = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zip = models.CharField(max_length=50, blank=True)
+    country = models.CharField(max_length=100, blank=True)
 
-    phone = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=100)
     groups = models.CharField(max_length=100)
 
-    position_title = models.CharField(max_length=100)
-    company_name = models.CharField(max_length=100)
+    position_title = models.CharField(max_length=100, blank=True)
+    company_name = models.CharField(max_length=100, blank=True)
 
-    meal_option = models.CharField(max_length=200, default='')
-    comments = models.TextField(default='')
+    meal_option = models.CharField(max_length=200, default='', blank=True)
+    comments = models.TextField(default='', blank=True)
 
     is_primary = models.BooleanField(_('Is primary registrant'), default=False)
     override = models.BooleanField(_('Admin Price Override?'), default=False)
@@ -1287,6 +1287,17 @@ class Event(TendenciBaseModel):
         # print 'slug', slug
 
         return all((self.enable_private_slug, self.private_slug, self.private_slug == slug))
+
+
+class StandardRegForm(models.Model):
+    """
+    Dummy model to enable us of having an admin options in the
+    Events section to edit the Standard Registration Form
+    """
+    class Meta:
+        managed = False
+        verbose_name = _("Standard Registration Form")
+        verbose_name_plural = _("Standard Registration Form")
 
 
 class CustomRegForm(models.Model):

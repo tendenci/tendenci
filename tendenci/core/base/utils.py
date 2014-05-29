@@ -749,11 +749,19 @@ def create_salesforce_contact(profile):
             sf = get_salesforce_access()
             # Make sure that user last name is not blank
             # since that is a required field for Salesforce Contact.
-            if sf and profile.user.last_name:
+            user = profile.user
+            if sf and user.last_name:
                 contact = sf.Contact.create({
-                    'FirstName':profile.user.first_name,
-                    'LastName':profile.user.last_name,
-                    'Email':profile.user.email})
+                    'FirstName':user.first_name,
+                    'LastName':user.last_name,
+                    'Email':user.email,
+                    'Title':profile.position_title,
+                    'Phone':profile.phone,
+                    'MailingStreet':profile.address,
+                    'MailingCity':profile.city,
+                    'MailingState':profile.state,
+                    'MailingCountry':profile.country,
+                    'MailingPostalCode':profile.zipcode})
                 
                 profile.sf_contact_id = contact['id']
                 profile.save()

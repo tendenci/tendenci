@@ -1,0 +1,168 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static admin_modify %}
+{% load url from future %}
+{% load admin_urls %}
+
+{% block extrahead %}{{ block.super }}
+{% url 'admin:jsi18n' as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/actions.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/categories.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/collapse.js"></script>
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
+
+{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo; {% trans 'Standard Registration Form' %}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block title %}{% trans 'Standard Registration Form' %}{{ block.super }}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+  <div>
+    <h1>{% trans 'Standard Registration Form' %}</h1>
+
+    <div class="inline-group">
+      <div class="tabular inline-related last-related">
+        <fieldset class="module">
+          <h2>{% trans 'Fields' %}</h2>
+          <table>
+            <thead><tr>
+              <th>{% trans 'Label' %}</th>
+              <th>{% trans 'Type' %}</th>
+              <th>{% trans 'Choices' %}</th>
+              <th>{% trans 'Required' %}</th>
+              <th>{% trans 'Visible' %}</th>
+            </tr></thead>
+            <tbody>
+              <tr class="form-row row1">
+                <td>{% trans 'First Name' %}</td>
+                <td>{{ adminform.first_name_type }}</td>
+                <td>{{ adminform.first_name_choices }}</td>
+                <td>{{ adminform.first_name_required }}</td>
+                <td>{{ adminform.first_name_visible }}</td>
+              </tr>
+              <tr class="form-row row2">
+                <td>{% trans 'Last Name' %}</td>
+                <td>{{ adminform.last_name_type }}</td>
+                <td>{{ adminform.last_name_choices }}</td>
+                <td>{{ adminform.last_name_required }}</td>
+                <td>{{ adminform.last_name_visible }}</td>
+              </tr>
+              <tr class="form-row row1">
+                <td>{% trans 'Mail Name' %}</td>
+                <td>{{ adminform.mail_name_type }}</td>
+                <td>{{ adminform.mail_name_choices }}</td>
+                <td>{{ adminform.mail_name_required }}</td>
+                <td>{{ adminform.mail_name_visible }}</td>
+              </tr>
+              <tr class="form-row row2">
+                <td>{% trans 'Email' %}</td>
+                <td>{{ adminform.email_type }}</td>
+                <td>{{ adminform.email_choices }}</td>
+                <td>{{ adminform.email_required }}</td>
+                <td>{{ adminform.email_visible }}</td>
+              </tr>
+              <tr class="form-row row1">
+                <td>{% trans 'Position Title' %}</td>
+                <td>{{ adminform.position_title_type }}</td>
+                <td>{{ adminform.position_title_choices }}</td>
+                <td>{{ adminform.position_title_required }}</td>
+                <td>{{ adminform.position_title_visible }}</td>
+              </tr>
+              <tr class="form-row row2">
+                <td>{% trans 'Company Name' %}</td>
+                <td>{{ adminform.company_name_type }}</td>
+                <td>{{ adminform.company_name_choices }}</td>
+                <td>{{ adminform.company_name_required }}</td>
+                <td>{{ adminform.company_name_visible }}</td>
+              </tr>
+              <tr class="form-row row1">
+                <td>{% trans 'Phone' %}</td>
+                <td>{{ adminform.phone_type }}</td>
+                <td>{{ adminform.phone_choices }}</td>
+                <td>{{ adminform.phone_required }}</td>
+                <td>{{ adminform.phone_visible }}</td>
+              </tr>
+              <tr class="form-row row2">
+                <td>{% trans 'Address' %}</td>
+                <td>{{ adminform.address_type }}</td>
+                <td>{{ adminform.address_choices }}</td>
+                <td>{{ adminform.address_required }}</td>
+                <td>{{ adminform.address_visible }}</td>
+              </tr>
+              <tr class="form-row row1">
+                <td>{% trans 'City' %}</td>
+                <td>{{ adminform.city_type }}</td>
+                <td>{{ adminform.city_choices }}</td>
+                <td>{{ adminform.city_required }}</td>
+                <td>{{ adminform.city_visible }}</td>
+              </tr>
+              <tr class="form-row row2">
+                <td>{% trans 'State' %}</td>
+                <td>{{ adminform.state_type }}</td>
+                <td>{{ adminform.state_choices }}</td>
+                <td>{{ adminform.state_required }}</td>
+                <td>{{ adminform.state_visible }}</td>
+              </tr>
+              <tr class="form-row row1">
+                <td>{% trans 'Zip Code' %}</td>
+                <td>{{ adminform.zip_code_type }}</td>
+                <td>{{ adminform.zip_code_choices }}</td>
+                <td>{{ adminform.zip_code_required }}</td>
+                <td>{{ adminform.zip_code_visible }}</td>
+              </tr>
+              <tr class="form-row row2">
+                <td>{% trans 'Country' %}</td>
+                <td>{{ adminform.country_type }}</td>
+                <td>{{ adminform.country_choices }}</td>
+                <td>{{ adminform.country_required }}</td>
+                <td>{{ adminform.country_visible }}</td>
+              </tr>
+              <tr class="form-row row1">
+                <td>{% trans 'Meal Option' %}</td>
+                <td>{{ adminform.meal_option_type }}</td>
+                <td>{{ adminform.meal_option_choices }}</td>
+                <td>{{ adminform.meal_option_required }}</td>
+                <td>{{ adminform.meal_option_visible }}</td>
+              </tr>
+              <tr class="form-row row2">
+                <td>{% trans 'Comments' %}</td>
+                <td>{{ adminform.comments_type }}</td>
+                <td>{{ adminform.comments_choices }}</td>
+                <td>{{ adminform.comments_required }}</td>
+                <td>{{ adminform.comments_visible }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <p class="deletelink-box">{# just to make it float to the left #}
+        <input type="submit" value="{% trans 'Update' %}" class="default" />
+      </p>
+    </div>
+
+  </div>
+</form>
+</div>
+{% endblock %}
