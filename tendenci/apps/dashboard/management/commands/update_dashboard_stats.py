@@ -330,9 +330,9 @@ class Command(BaseCommand):
                            "FROM memberships_membershipdefault " + \
                            "WHERE memberships_membershipdefault.corp_profile_id = " + \
                                "corporate_memberships_corpmembership.corp_profile_id AND " +\
-                               "memberships_membershipdefault.status_detail = 'active'"})
+                               "memberships_membershipdefault.status_detail = 'active'"}) \
+                                .order_by('-members')[:items].iterator()
 
-        corp_memberships = corp_memberships.order_by("-members")[:items]
         corp_mem_list = [['','',total]]
         for corp_mem in corp_memberships:
             corp_mem_list.append([corp_mem.corp_profile.name,
