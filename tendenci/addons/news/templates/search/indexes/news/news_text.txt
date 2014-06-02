@@ -22,3 +22,7 @@ sub_category:{{ sub_category }}
 {% for tag in tags %}
 tag:{{ tag }}
 {% endfor %}
+
+{% if object.source %}
+source:{{ object.source }}
+{% endif %}

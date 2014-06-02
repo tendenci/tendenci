@@ -11,6 +11,7 @@ from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 
 class NewsIndex(TendenciBaseSearchIndex):
     headline = indexes.CharField(model_attr='headline')
+    source = indexes.CharField(model_attr='source')
     body = indexes.CharField(model_attr='body')
     release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
     release_dt_local = indexes.DateTimeField(model_attr='release_dt_local', null=True)

@@ -9,7 +9,7 @@
         </div>
         
         {% if news.source %}
-            <div class="submitted"><strong>{% trans "Source:" %}</strong> {{ news.source|urlize }}</div>
+            <div class="submitted"><strong>{% trans "Source:" %}</strong> <a href="{% url news %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></div>
         {% endif %}
         
         {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %} 
