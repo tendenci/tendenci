@@ -28,6 +28,10 @@ span.css-value {
   color: #8484EB;
 }
 
+span.css-selector {
+  color: #ECECEC;
+}
+
 span.css-identifier {
   color: orange;
 }
