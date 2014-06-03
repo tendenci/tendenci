@@ -117,7 +117,26 @@ There were some problems in the form. Please review. Thanks!
 	                    {% endif %}
 	                </div>
 	                <div style="clear: both"><!-- IE7 --></div>
-	            {% else %}
+	            
+                {% elif field|is_fileinput %}
+                    <div class="label{% if field.field.required %} required{% endif %}">
+                        {{ field.label_tag }}
+                    </div>
+                    {% if field.errors %}
+                    <div class="error">
+                        {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="field">
+                        <input id="{{ field.auto_id }}" type="file" name="{{ field.html_name }}" class="{{ field.field.widget.attrs.class }}" />
+                    </div>
+                    {% if field.help_text %}
+                    <div class="help-text">{{ field.help_text|safe }}</div>
+                    {% endif %}
+
+                {% else %}
                     {% if field|is_header or field|is_description %}
                         {% if field|is_header %}
                             <div class="section-header">{{ field.label }}</div>
