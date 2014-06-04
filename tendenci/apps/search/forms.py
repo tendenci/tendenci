@@ -178,9 +178,11 @@ class SearchForm(forms.Form):
             # for solr,
             # order_by can only called once so we have to do it here
             if order_by == 'newest':
-                sqs = sqs.order_by('-create_dt')
+                # changed order_by from create_dt to order because the order field
+                # is a common field in search indexes and used by other modules(news)
+                sqs = sqs.order_by('-order')
             else:
-                sqs = sqs.order_by('create_dt')
+                sqs = sqs.order_by('order')
             
         if self.load_all:
             sqs = sqs.load_all()
