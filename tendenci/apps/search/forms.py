@@ -86,6 +86,8 @@ class SearchForm(forms.Form):
     
     def search(self, order_by='newest'):
         self.clean()
+        if not order_by:
+            order_by = 'newest'
 
         sqs = SearchQuerySet()
         user = self.user
