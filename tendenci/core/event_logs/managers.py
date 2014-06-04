@@ -19,13 +19,11 @@ default_keyword_args = (
     'user',
     'instance',
     'category',
-    'event_id',
     'event_name',
     'event_type',
     'event_data',
     'description',
     'entity',
-    'source',
 )
 
 
@@ -52,9 +50,6 @@ class EventLogManager(Manager):
             if f_data['request_method'] != 'all':
                 qs.append(Q(request_method=f_data['request_method']))
 
-        if f_data['event_id']:
-            qs.append(Q(event_id=f_data['event_id']))
-
         if f_data['user_id']:
             qs.append(Q(user=f_data['user_id']))
 
@@ -63,12 +58,6 @@ class EventLogManager(Manager):
 
         if f_data['user_ip_address']:
             qs.append(Q(user_ip_address=f_data['user_ip_address']))
-
-        if f_data['session_id']:
-            qs.append(Q(session_id=f_data['session_id']))
-
-        if f_data['source']:
-            qs.append(Q(source=f_data['source']))
 
         if f_data['application']:
             qs.append(Q(application=f_data['application']))
