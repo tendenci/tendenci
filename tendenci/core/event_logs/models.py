@@ -35,9 +35,6 @@ class EventLog(models.Model):
     robot = models.ForeignKey(Robot, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     
-    # colors
-    app_color = models.CharField(blank=True, max_length=10, null=True)
-    
     uuid = models.CharField(max_length=40)
     application = models.CharField(max_length=50, db_index=True)
     action = models.CharField(max_length=50, db_index=True)
