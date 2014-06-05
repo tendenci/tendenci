@@ -74,7 +74,7 @@
         {% endif %}
         </div>
     </li>
-    {% if can_edit_directory %}
+    {% if can_edit_directory and not MODULE_DIRECTORIES_HIDEPRICINGTAB %}
     <li><a href="{% url directory_pricing.search %}">{% trans "Pricing" %}</a></li>
     {% else %}
     {% if MODULE_NEWS_ENABLED and MODULE_DIRECTORIES_SHOW_NEWS_TAB %}

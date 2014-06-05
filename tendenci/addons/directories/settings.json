@@ -202,5 +202,22 @@
         "scope_category": "directories", 
         "store": false, 
         "updated_by": ""
+    }, 
+    {
+        "default_value": "false", 
+        "description": "If true, pricing tab will be hidden on directories navigation", 
+        "data_type": "boolean", 
+        "update_dt": "2012-04-13 12:45:12", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "hidepricingtab", 
+        "value": "false", 
+        "label": "Hide Pricing Tab", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "directories", 
+        "store": false, 
+        "updated_by": ""
     }
 ]
