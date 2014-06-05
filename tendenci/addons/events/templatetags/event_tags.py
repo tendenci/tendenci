@@ -136,7 +136,10 @@ class EventListNode(Node):
         self.context_var = context_var
 
     def render(self, context):
-        
+
+        request = context.get('request', None)
+        query = request.GET.get('q', None)
+        cat = request.GET.get('search_category', None)
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
 
@@ -171,6 +174,12 @@ class EventListNode(Node):
                 events = events.order_by(self.ordering)
             else:
                 events = events.order_by('-priority', 'start_dt')
+
+
+        if cat == 'priority':
+            events = events.filter(**{cat : True })
+        elif query and cat:
+            events = events.filter(**{cat : query})
 
         context[self.context_var] = events
         return ''

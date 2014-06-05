@@ -1,239 +1,241 @@
 .t h2 {
-	margin: 0 auto 10px 0;
+    margin: 0 auto 10px 0;
 }
 
 .t ul.events-nav {
-	margin: 0; padding: 0;
-	list-style-type: none;
-	margin-bottom: 20px;
+    margin: 0; padding: 0;
+    list-style-type: none;
+    margin-bottom: 20px;
 }
 .t ul.events-nav li {
-	display: inline;
+    display: inline;
 }
 
 .t .events-wrap {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .t .event-wrap {
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
+    padding: 10px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
 .t .events-wrap .event-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
+    border: 1px solid #CCC;
+    padding: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    background-color: white;
 }
 
 .t .events-wrap .event-wrap h2 {
-	width: 85%;
+    width: 85%;
 }
 .t .events-wrap .event-wrap .content {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 .t .event-wrap .options {
-	text-align: right;
-	position: absolute;
-	top: -30px; right: 0;
-	padding: 5px;
-	white-space: nowrap;
+    text-align: right;
+    position: absolute;
+    top: -30px; right: 0;
+    padding: 5px;
+    white-space: nowrap;
 }
 .t .event-search-wrap .options {
-	text-align: right;
-	position: absolute;
-	top: 0; right: 0;
-	padding: 5px;
-	white-space: nowrap;
+    text-align: right;
+    position: absolute;
+    top: 0; right: 0;
+    padding: 5px;
+    white-space: nowrap;
 }
 
 .t .search-form .form-field { float: left; }
 .t .search-form #event_types_container{ margin: 0 20px;height: 58px; }
 
 .t .quick-options {
-	float: right;
-	margin-right: 5px;
+    float: right;
+    margin-right: 5px;
 }
 .t .quick-options ul {
-	margin: 0; padding: 0;
-	list-style-type: none;
+    margin: 0; padding: 0;
+    list-style-type: none;
 }
 
 .t .dropdown-options {
-	float: right;
-	display: none;
+    float: right;
+    display: none;
 }
 .t .dropdown-options span {
-	font-size: .7em;
+    font-size: .7em;
 }
 .t .dropdown-options ul {
-	display: none;
+    display: none;
 }
 
 .t h1 {
-	margin: 0;
+    margin: 0;
 }
 .t .back-to-search {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
-.t form.search-form input[type="text"] {
-	width: 50%;
-	margin-bottom: 10px;
-	padding: 5px;	
+.t form.search-form input[type="text"],
+form.search-form input[type="text"] {
+    width: 50%;
+    margin-bottom: 10px;
+    padding: 5px;
 }
 .t form.search-form input[type="text"].datepicker {
     width: 70px;
 }
-.t form.search-form select {
-	padding: 5px;
+.t form.search-form select,
+form.search-form select {
+    padding: 5px;
 }
 .t form.search-form ul.errorlist {
     margin-left: 20px;
     color: red;
 }
 .t form.search-form input[type="submit"] {
-	padding: 5px;	
-	cursor: pointer;
+    padding: 5px;
+    cursor: pointer;
 }
 
 .attend-wrap .spots-taken {
-	float: left;
-	margin-top: 15px;
+    float: left;
+    margin-top: 15px;
 }
 
 /*= Details View
  ------------------------- */
  
  .t div.event-desc {
-	margin-bottom: 10px;
-	border-bottom: 1px solid #CCC;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #CCC;
 }
 
 .spots-status{
-	color: #871B1B; 
+    color: #871B1B; 
 }
  /* speaker and organizer */
 .t .speaker-wrap {
-	margin: 15px 0 15px 0;
-	text-align: left;
-	padding: 10px 10px 10px 10px;
-	background-color: #EBEBEB;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+    margin: 15px 0 15px 0;
+    text-align: left;
+    padding: 10px 10px 10px 10px;
+    background-color: #EBEBEB;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
 .t .speaker-photo {
-	float: left;
-	margin: 0 10px 10px 0;
+    float: left;
+    margin: 0 10px 10px 0;
 }
 
 .t .organizer-wrap {
-	text-align: left;
+    text-align: left;
 }
 
 .t .speaker,
 .t .organizer {
-	margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 .t div.speaker-wrap div.speaker-desc-long {
-	display: none;
+    display: none;
 }
 
 .t div.speaker-wrap a.speaker-desc-toggle {
-	margin: 10px 0 0 0;
-	display: block;
+    margin: 10px 0 0 0;
+    display: block;
 }
 
 .t div.organizer-wrap div.organizer-desc-long {
-	display: none;
+    display: none;
 }
 
 .t div.organizer-wrap a.organizer-desc-toggle {
-	margin: 10px 0 0 0;
-	display: block;
+    margin: 10px 0 0 0;
+    display: block;
 }
 
 .t div.place div.event-place-desc-long {
-	display: none;
+    display: none;
 }
 
 .t div.place a.event-place-desc-toggle {
-	margin: 10px 0 0 0;
-	display: block;
+    margin: 10px 0 0 0;
+    display: block;
 }
 
 
 /* registered and closed btn */
 .t .event-wrap .vitals .registered a {
-	background-color: orange;
-	border: 1px solid orange;
+    background-color: orange;
+    border: 1px solid orange;
 }
 .t .event-wrap .vitals .registered a:active,
 .t .event-wrap .vitals .registered a:hover {
-	background-color: orange;
-	border: 1px solid orange;
+    background-color: orange;
+    border: 1px solid orange;
 }
 .t .event-wrap .vitals .closed a {
-	background-color: darkred;
-	border: 1px solid darkred;
+    background-color: darkred;
+    border: 1px solid darkred;
 }
 .t .event-wrap .vitals .closed a:active,
 .t .event-wrap .vitals .closed a:hover {
-	background-color: darkred;
-	border: 1px solid darkred;
+    background-color: darkred;
+    border: 1px solid darkred;
 }
 
 /* form */
 div.forms div.form-field div.id_release_dt .field input {
-	width: 30%;
+    width: 30%;
 }
 
 div.forms div.form-field div.id_first_name .field input {
-	width: 30%;
+    width: 30%;
 }
 
 div.forms div.form-field div.id_last_name .field input {
-	width: 30%;
+    width: 30%;
 }
 
 div.forms div.form-field div.id_phone .field input {
-	width: 18%;
+    width: 18%;
 }
 
 div.forms div.form-field div.id_fax .field input {
-	width: 18%;
+    width: 18%;
 }
 
 /* start_dt */
 div.forms div.form-field 
 div.id_start_dt .field input {
-	margin: 0 5px 0 0;
-	width: 18%;
+    margin: 0 5px 0 0;
+    width: 18%;
 }
 div.forms div.form-field 
 div.id_start_dt .field input#id_start_dt_1 {
-	width: 80px;
+    width: 80px;
 }
 /* end_dt */
 div.forms div.form-field 
 div.id_end_dt .field input {
-	margin: 0 5px 0 0;
-	width: 18%;
+    margin: 0 5px 0 0;
+    width: 18%;
 }
 div.forms div.form-field 
 div.id_end_dt .field input#id_end_dt_1 {
-	width: 80px;
+    width: 80px;
 }
 
 div.forms div.form-field .field input.datepicker,
 div.forms div.form-field .field input.timepicker {
-	margin: 0 5px 0 0;
+    margin: 0 5px 0 0;
     width: 90px;
 }
 
@@ -246,7 +248,7 @@ div.forms div.form-field .id_repeat_type .label {
 }
 div.forms div.form-field .id_frequency select,
 div.forms div.form-field .id_repeat_type select {
-	margin: 0 5px 0 0;
+    margin: 0 5px 0 0;
     width: 90px;
 }
 
@@ -255,15 +257,15 @@ div.forms div.form-field .field input.reg8n_price {
 }
 
 div.forms div.form-field .field input[name*='early_price'] {
-	width: 100px;	
+    width: 100px;
 }
 
 div.forms div.form-field .field input[name*='regular_price'] {
-	width: 100px;	
+    width: 100px;
 }
 
 div.forms div.form-field .field input[name*='late_price'] {
-	width: 100px;	
+    width: 100px;
 }
 
 div.forms fieldset.attendees {
@@ -274,7 +276,7 @@ div.forms fieldset.attendees {
 }
 
 input#id_regconf-limit {
-	width: 100px;	
+    width: 100px;
 }
 
 input.short_text_input{
@@ -289,43 +291,43 @@ div.id_regconf-reminder_days label{
 }
 
 .become-a-member {
-	display: block;
-	padding-top: 10px;
-	margin-top: 10px;
-	border-top: 1px solid silver;
+    display: block;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid silver;
 }
 
 
 /*= Print View
  ------------------------- */
 .t-print .event-wrap {
-	width: 8in;
-	padding: .25in;
-	margin: 20px 0;
-	border: 1px solid silver;
+    width: 8in;
+    padding: .25in;
+    margin: 20px 0;
+    border: 1px solid silver;
 }
 .t-print .hide-this {
-	width: 8.5in;
-	margin: 20px 0;
-	position: relative;
+    width: 8.5in;
+    margin: 20px 0;
+    position: relative;
 }
 .t-print .guide {
-	position: absolute;
-	top: 0; right: 0;
+    position: absolute;
+    top: 0; right: 0;
 }
 .t-print object {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 @media print {
-	.hide-this {
-		display: none;
-	}
-	.t-print .event-wrap {
-		width: 100%;
-		border: none;
-		padding: 0; margin: 0;
-	}
+    .hide-this {
+        display: none;
+    }
+    .t-print .event-wrap {
+        width: 100%;
+        border: none;
+        padding: 0; margin: 0;
+    }
 }
 
 
@@ -333,43 +335,43 @@ div.id_regconf-reminder_days label{
  ------------------------- */
 
 .errors {
-	border: 2px solid #FF8B78;
-	background-color: #FFEBE8;
-	padding: 10px;
-	margin-bottom: 20px;
-	margin-left: 110px;
-	width: 75%;
+    border: 2px solid #FF8B78;
+    background-color: #FFEBE8;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-left: 110px;
+    width: 75%;
 }
 .clear {
-	clear: both;
+    clear: both;
 }
 .wrap {
-	white-space: pre-wrap;
+    white-space: pre-wrap;
 }
 .item-text {
-	font-size: 1.4em;
-	border-bottom: 1px solid silver;
-	margin: 35px 0 10px 0;
-	font-weight: bold;
+    font-size: 1.4em;
+    border-bottom: 1px solid silver;
+    margin: 35px 0 10px 0;
+    font-weight: bold;
 }
 
 /* label:field item */
 .item {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 .item .errs {
-	color: red;
-	margin-left: 110px;
+    color: red;
+    margin-left: 110px;
 }
 .item .label {
-	float: left;
-	font-size: 1.4em;
-	text-align: right;
-	width: 100px;
-	white-space: nowrap;
+    float: left;
+    font-size: 1.4em;
+    text-align: right;
+    width: 100px;
+    white-space: nowrap;
 }
 .item .label-wrap {
-	white-space: normal;
+    white-space: normal;
 }
 
 div.type-wrap{
@@ -387,167 +389,167 @@ div.type-wrap .type-item .associated-events li{
 
 .item .field,
 .item .help {
-	margin-left: 110px;
+    margin-left: 110px;
 }
 .item .field input,
 .item .field textarea,
 .item .field select {
-	width: 100%;
+    width: 100%;
 }
 .item .field .mceLayout {
-	/* WYSIWYG; .1 keeps border intact */
-	width: 100.1% !important; 
+    /* WYSIWYG; .1 keeps border intact */
+    width: 100.1% !important; 
 }
 .item .field-short input,
 .item .field-short select {
-	width: 20%;
+    width: 20%;
 }
 
 /* date-time item */
 .item-dt {
-	margin: 0 0 20px 110px;
+    margin: 0 0 20px 110px;
 }
 .item-dt .errs {
-	color: red;
+    color: red;
 }
 .item-dt .label {
-	font-size: 1.4em;
-	margin-bottom: 5px;
+    font-size: 1.4em;
+    margin-bottom: 5px;
 }
 .item-dt .field input {
-	float: left;
-	width: 15%;
-	margin-right: 5px;
+    float: left;
+    width: 15%;
+    margin-right: 5px;
 }
 
 /* field:label item */
 .item-checkbox {
-	margin: 0 0 5px 110px;
+    margin: 0 0 5px 110px;
 }
 .item-checkbox .label {
-	font-size: 1.4em;
-	margin-bottom: 5px;
+    font-size: 1.4em;
+    margin-bottom: 5px;
 }
 .item-checkbox .field input {
-	float: left;
-	margin-right: 10px;
+    float: left;
+    margin-right: 10px;
 }
 
 /* horizontal rule item */
 .item-hr {
-	height: 1px;
-	background-color: silver;
-	margin: 10px 0 10px 110px;
-	width: 85%;
+    height: 1px;
+    background-color: silver;
+    margin: 10px 0 10px 110px;
+    width: 85%;
 }
 /* horizontal rule long item */
 .item-hr-long {
-	height: 1px;
-	background-color: silver;
-	margin: 20px 0 20px 0;
-	width: 100%;
+    height: 1px;
+    background-color: silver;
+    margin: 20px 0 20px 0;
+    width: 100%;
 }
 /* horizontal rule (transparent) item */
 .item-hr-clear {
-	height: 10px;
-	width: 100%;
+    height: 10px;
+    width: 100%;
 }
 
 ul.errorlist {;
-	margin-left: 0;
+    margin-left: 0;
 }
 
 /* details page */
 .t .event-wrap {
-	background-color: #F7F7F7;
-	padding: 0;
+    background-color: #F7F7F7;
+    padding: 0;
 }
 .event-wrap .info {
-	padding: 10px;
-	background-color: white;
-	width: 64%;
-	float: left;
+    padding: 10px;
+    background-color: white;
+    width: 64%;
+    float: left;
 }
 
 .event-wrap .info .meta {
-	border-top: none;
+    border-top: none;
 }
 
 .event-wrap .vitals {
-	float: right;
-	margin: 60px 15px 0 0;
-	width: 30.5%;
-	text-align: center;
+    float: right;
+    margin: 60px 15px 0 0;
+    width: 30.5%;
+    text-align: center;
 }
 
 .event-wrap .vitals h4.vital-header {
-	padding-bottom: 10px;
-	color: #000;
+    padding-bottom: 10px;
+    color: #000;
 }
 
 .event-wrap .vitals .external-link {
-	margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .event-wrap .vitals .external-link h4 a {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .event-wrap .vitals .external-link h4 a:hover {
-	text-decoration: underline;
-	color: #000;
+    text-decoration: underline;
+    color: #000;
 }
 
-.event-wrap .vitals .register-wrap {			
+.event-wrap .vitals .register-wrap {
 }
 .event-wrap .vitals .register-btn a {
-	color: white;
-	margin: 0 auto;
-	font-size: 1.6em;
-	background-color: #006018;
-	padding: 10px 0;
-	border: 1px solid #005F18;
-	width: 200px;
-	display: block;
-	text-decoration: none;
+    color: white;
+    margin: 0 auto;
+    font-size: 1.6em;
+    background-color: #006018;
+    padding: 10px 0;
+    border: 1px solid #005F18;
+    width: 200px;
+    display: block;
+    text-decoration: none;
 }
 .event-wrap .vitals .register-btn a:active, 
 .event-wrap .vitals .register-btn a:hover {
-	background-color: #007F20;
+    background-color: #007F20;
 }
 
 .event-wrap .vitals .pricing {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .event-wrap .vitals .place {
-	margin-bottom: 15px;
-	color: #555;
+    margin-bottom: 15px;
+    color: #555;
 }
 
 .event-wrap .vitals .place .line {
-	margin: 5px 0 0 0;
-	line-height: 1em;
+    margin: 5px 0 0 0;
+    line-height: 1em;
 }
 .event-wrap .vitals .time-period .line {
-	margin: 0;
-	line-height: 1em;
+    margin: 0;
+    line-height: 1em;
 }
 
 .event-wrap .vitals .time-period {
-	margin-bottom: 15px;
-	color: #555;
+    margin-bottom: 15px;
+    color: #555;
 }
 
 .event-wrap .vitals .map {
-	background-color: #EBEBEB;
-	padding: 5px;
+    background-color: #EBEBEB;
+    padding: 5px;
 }
 
 .event-wrap .hr {
-	background-color: silver;
-	height: 1px;
-	margin: 15px;
+    background-color: silver;
+    height: 1px;
+    margin: 15px;
 }
 
 .event-wrap .meta {
@@ -558,70 +560,70 @@ ul.errorlist {;
 /*= Monthly View
 ----------------------------- */
 .month-view h1 {
-	text-align: center;
+    text-align: center;
 }
 .month-view div.weekday,
 .month-view div.weekday-mobile {
-	width: 13.8470282554%;
-	float: left;
-	text-align: center;
-	border-bottom: 1px solid silver;
+    width: 13.8470282554%;
+    float: left;
+    text-align: center;
+    border-bottom: 1px solid silver;
 }
 
 .month-view div.weekday-mobile {
-	display: none;
+    display: none;
 }
 
 .month-view .calendar-wrap {
-	background-color: #F7F7F7;
+    background-color: #F7F7F7;
 }
 .month-view .month-wrap {
-	float: left;
-	background-color: white;
-	padding-right: 10px;
-	width: 76%;
+    float: left;
+    background-color: white;
+    padding-right: 10px;
+    width: 76%;
 }
 
 .month-view div.month-grid {
-	border-left: 1px solid silver;
+    border-left: 1px solid silver;
 }
 .month-view div.day {
-	width: 13.7%;
-	height: 116px;
-	border: 1px solid silver;
+    width: 13.7%;
+    height: 116px;
+    border: 1px solid silver;
 
-	border-top: none;
-	border-left: none;
+    border-top: none;
+    border-left: none;
 
-	float: left;
-	overflow: hidden;
+    float: left;
+    overflow: hidden;
 }
 .month-view div.today {
-	background-color: #FFD;
+    background-color: #FFD;
 }
 
 .month-view div.day div.date-numeral {
-	text-align: right;
-	background-color: #EEE;
-	position: relative;
+    text-align: right;
+    background-color: #EEE;
+    position: relative;
 }
 .month-view div.day div.date-numeral a {
-	display: block;
-	text-decoration: none;
-	padding-right: 5px;
+    display: block;
+    text-decoration: none;
+    padding-right: 5px;
 }
 .month-view div.day div.event-item {
-	font-size: 11px;
-	line-height: 1.1em;
-	/* border-bottom: 1px dashed silver; */
-	padding: 5px 5px;
+    font-size: 11px;
+    line-height: 1.1em;
+    /* border-bottom: 1px dashed silver; */
+    padding: 5px 5px;
 }
 .month-view div.day div.event-item span.event-title a {
-	text-decoration: none;
+    text-decoration: none;
 }
 .month-view div.day div.more-events {
-	background-color: #FFC;
-	padding: 5px;
+    background-color: #FFC;
+    padding: 5px;
 }
 div.event-priority {
     display: inline-block;
@@ -638,38 +640,38 @@ div.event-recurring {
 
 
 .month-names {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 .month-names .month-name {
-	font-size: 1.4em;
-	float: left;
-	margin-right: 0;
+    font-size: 1.4em;
+    float: left;
+    margin-right: 0;
 }
 .month-names .month-name a {
-	text-decoration: none;
-	display: block;
-	padding: 10px;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
 }
 .month-names .month-name a:active,
 .month-names .month-name a:hover {
-	background-color: #DDD;
+    background-color: #DDD;
 }
 .month-names .previous a {
-	background-color: #EEE;
+    background-color: #EEE;
 }
 .month-names .current a {
-	background-color: #EEE;
+    background-color: #EEE;
 
-	text-align: center;
+    text-align: center;
 }
 .month-names .next a {
-	background-color: #EEE;
+    background-color: #EEE;
 }
 
 .event-item {
-	word-wrap: break-word;
-	position: relative;
-	background-color: #777;
+    word-wrap: break-word;
+    position: relative;
+    background-color: #777;
 }
 
 .event-item a {
@@ -677,41 +679,41 @@ div.event-recurring {
 }
 
 .event-item .click-mask {
-	position: absolute;
-	top:0; right:0; bottom:0; left:0;
+    position: absolute;
+    top:0; right:0; bottom:0; left:0;
 }
 
 .month-view .side-bar {
-	float: right;
-	padding-right: 10px;
-	width: 18%;
+    float: right;
+    padding-right: 10px;
+    width: 18%;
 }
 
 .side-bar .header {
-	text-align: center;
-	font-size: 1.4em;
-	padding: 20px 0 10px;
-	margin-bottom: 10px;
-	border-bottom: 1px solid #DDD;
+    text-align: center;
+    font-size: 1.4em;
+    padding: 20px 0 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #DDD;
 }
 .side-bar .types {
-	margin: 0 10px;
-	float: left;
+    margin: 0 10px;
+    float: left;
 }
 .side-bar .types .type a {
-	text-decoration: none;
-	padding: 2px 5px;
-	background-color: #FFC;
-	display: block;
-	margin: 5px 0;
-	width: 130px;
-	border: 2px solid #FFC;
+    text-decoration: none;
+    padding: 2px 5px;
+    background-color: #FFC;
+    display: block;
+    margin: 5px 0;
+    width: 130px;
+    border: 2px solid #FFC;
 }
 
 /*= Weekly View
 ----------------------------- */
 .week-view div.day {
-	height: auto;
+    height: auto;
 }
 
 /*= Messages
@@ -778,31 +780,31 @@ tr.non-paid-middle {
 
 
 .registration-green {
-	background-color: green;	
-	color: white;
-	padding: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+    background-color: green;
+    color: white;
+    padding: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
 .registration-red {
-	background-color: darkred;	
-	color: white;
-	padding: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+    background-color: darkred;
+    color: white;
+    padding: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
 .registration-orange {
-	background-color: orange;	
-	color: white;
-	padding: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	font-weight: bold;
+    background-color: orange;
+    color: white;
+    padding: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font-weight: bold;
 }
 
 
@@ -811,24 +813,24 @@ tr.non-paid-middle {
     border: 1px solid;
     padding: 10px;
     margin-bottom: 10px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .registration-status .registered {
-	background-color: #006018;
-	border-color: #005F18;
+    background-color: #006018;
+    border-color: #005F18;
 }
 
 .registration-status .almost-registered {
-	background-color: orange;
-	border-color: orange;
+    background-color: orange;
+    border-color: orange;
 }
 
 .registration-status .not-registered {
-	background-color: darkred;
-	border-color: darkred;
+    background-color: darkred;
+    border-color: darkred;
 }
 
 /* pricing list */
@@ -840,68 +842,68 @@ tr.non-paid-middle {
 }
 
 div.pricing-list-wrap {
-	margin: 15px 0 15px 0;
-	text-align: left;
-	padding: 10px 10px 10px 10px;
-	background-color: #EBEBEB;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	text-align: center;	
+    margin: 15px 0 15px 0;
+    text-align: left;
+    padding: 10px 10px 10px 10px;
+    background-color: #EBEBEB;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;    
 }
 
 input.registration-green-button {
-	background-color: green;	
-	color: white;
-	padding: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	border: 0;
-	cursor: pointer;
-	width: 75%;
+    background-color: green;
+    color: white;
+    padding: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 0;
+    cursor: pointer;
+    width: 75%;
 }
 
 div.pricing-list-wrap ul{
-	margin-left: 3px;
+    margin-left: 3px;
 }
 
 div.pricing-list-wrap li{
-		list-style: none;
-		text-align: left;
-		padding: 3px 0;
-		margin-left: 3px;
-	}
+        list-style: none;
+        text-align: left;
+        padding: 3px 0;
+        margin-left: 3px;
+    }
 
 table.pricing-list {
-	list-style-type: none;
-	padding: 0;
-	text-align: left;
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
 }
 
 table.pricing-list label {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 table.pricing-list td {
-	padding: 5px;
+    padding: 5px;
 }
 
 table.pricing-list .price-disabled {
-	color: #999;
+    color: #999;
 }
 
 table.pricing-list .price-disabled label {
-	cursor: default;
+    cursor: default;
 }
 
 #is-registrant {
-	font-size: .9em;
-	margin-top: 3px;
+    font-size: .9em;
+    margin-top: 3px;
 }
 #is-registrant a {
-	color: #666;
-	text-decoration: underline;
+    color: #666;
+    text-decoration: underline;
 }
 
 .addons-title{
@@ -934,16 +936,16 @@ table.pricing-list .price-disabled label {
 }
 
 .colors ul {
-	list-style-type: none;
-	padding-left: 0; /* remove default */
-	margin: 0 auto; /* remove default */
+    list-style-type: none;
+    padding-left: 0; /* remove default */
+    margin: 0 auto; /* remove default */
 }
 .colors li {
-	float: left;
+    float: left;
 }
 
 .message-item{
-	margin-bottom: 2em;
+    margin-bottom: 2em;
 }
 
 .t .imports .download-csv {
@@ -990,29 +992,29 @@ table.pricing-list .price-disabled label {
 }
 
 .t .files-wrap {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .t .files-wrap .file-wrap {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
+    border: 1px solid #CCC;
+    padding: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    background-color: white;
 }
 
 .t .files-wrap .file-wrap h2 {
-	width: 85%;
-	margin-bottom: 6px;
+    width: 85%;
+    margin-bottom: 6px;
 }
 
 .t .file-wrap .icon {
-	float: left;
-	margin-right: 10px;
+    float: left;
+    margin-right: 10px;
 }
 
 .t .file-wrap h2 a.broken {
-	text-decoration: line-through;
+    text-decoration: line-through;
 }
 
 .t .event-tabs .dropdown {
@@ -1020,46 +1022,46 @@ table.pricing-list .price-disabled label {
 }
 
 .t .fb-like-event {
-	margin: 0px;
+    margin: 0px;
 }
 
 @media (max-width: 768px){
-	.month-view .calendar-wrap .month-wrap,
-	.month-view .calendar-wrap .side-bar {
-		padding-right: 0px;
-		width: 98%;
-	}
+    .month-view .calendar-wrap .month-wrap,
+    .month-view .calendar-wrap .side-bar {
+        padding-right: 0px;
+        width: 98%;
+    }
 
-	.month-view .month-labels .weekday,
-	.month-view .event-title {
-		display: none;
-	}
+    .month-view .month-labels .weekday,
+    .month-view .event-title {
+        display: none;
+    }
 
-	.month-view .month-labels .weekday-mobile {
-		display: block;
-	}
+    .month-view .month-labels .weekday-mobile {
+        display: block;
+    }
 
-	.month-view .month-grid .day {
-		width: 13.9%;
-		height: 88px;
-	}
+    .month-view .month-grid .day {
+        width: 13.9%;
+        height: 88px;
+    }
 
-	.month-view .side-bar .types {
-		width: 100%;
-		margin: 0;
-	}
+    .month-view .side-bar .types {
+        width: 100%;
+        margin: 0;
+    }
 
-	.month-view .side-bar .types .type a {
-		width: 100%;
-		padding: 5px;
-		box-sizing: border-box;
-	}
+    .month-view .side-bar .types .type a {
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+    }
 
-	.event-wrap .info,
-	.event-wrap .vitals {
-		margin: 0;
-		width: 100%;
-	}
+    .event-wrap .info,
+    .event-wrap .vitals {
+        margin: 0;
+        width: 100%;
+    }
 
     .week-view .month-grid .day {
         height: auto;

@@ -132,6 +132,35 @@ class EventSearchForm(forms.Form):
         return cleaned_data
 
 
+class EventSimpleSearchForm(forms.Form):
+    search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    q = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(EventSimpleSearchForm, self).__init__(*args, **kwargs)
+
+        if user and not user.is_superuser:
+            self.fields['search_category'].choices = SEARCH_CATEGORIES
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        q = self.cleaned_data.get('q', None)
+        cat = self.cleaned_data.get('search_category', None)
+
+        if cat is None or cat == "" :
+            if not (q is None or q == ""):
+                self._errors['search_category'] =  ErrorList(['Select a category'])
+
+        if cat in ('id', 'owner__id', 'creator__id') :
+            try:
+                x = int(q)
+            except ValueError:
+                self._errors['q'] = ErrorList(['IDs must be an integer'])
+
+        return cleaned_data
+
+
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
         choices=(('draft', 'Draft'), ('active', 'Active'), ('inactive', 'Inactive')))
