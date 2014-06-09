@@ -12,7 +12,7 @@
 
 
 <ul id="module-tabs" class="tabs">
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
