@@ -616,8 +616,14 @@ def photos_batch_add(request, photoset_id=0):
         if not photoset_id:
             HttpResponseRedirect(reverse('photoset_latest'))
         photo_set = get_object_or_404(PhotoSet, id=photoset_id)
-        # current limit for photo set images is hard coded to 50
-        image_slot_left = 150 - photo_set.image_set.count()
+
+        photo_limit = get_setting('module', 'photos', 'photolimit')
+        try:
+            photo_limit = int(photo_limit)
+        except ValueError:
+            # default limit for photo set images 150
+            photo_limit = 150
+        image_slot_left = photo_limit - photo_set.image_set.count()
 
         # show the upload UI
         return render_to_response('photos/batch-add.html', {
