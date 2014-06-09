@@ -57,6 +57,16 @@
 
             <!-- Event Details -->
             <div class="details-wrap">
+                <!-- event description -->
+                <div class="content">
+                    {% if event.image %}
+                    <div class="photo">
+                        <img itemprop="image" src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
+                    </div>
+                    {% endif %}
+                    <div class="event-desc">{{ event.description|safe }}</div>
+                </div>
+
                 {% for speaker in speakers %}
                 <div class="speaker-wrap">
                     {% if speaker.get_photo %}
@@ -88,16 +98,6 @@
                 {% if speakers_length > 1 %}
                 <a href="{% url event.speakers event.pk %}">{% trans "View all speakers" %}</a>
                 {% endif %}
-
-                <!-- event description -->
-                <div class="content">
-                    {% if event.image %}
-                    <div class="photo">
-                        <img itemprop="image" src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
-                    </div>
-                    {% endif %}
-                    <div class="event-desc">{{ event.description|safe }}</div>
-                </div>
 
                 {% if organizer.name %}
                 <div class="organizer-wrap">

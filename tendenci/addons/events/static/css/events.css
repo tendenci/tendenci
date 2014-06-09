@@ -135,7 +135,10 @@ form.search-form select {
 }
 
 .t .organizer-wrap {
-    text-align: left;
+	text-align: left;
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px solid #CCC;
 }
 
 .t .speaker,
