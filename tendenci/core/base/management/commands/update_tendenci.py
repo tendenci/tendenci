@@ -30,6 +30,8 @@ class Command(BaseCommand):
         pass_update_tendenci_site = False
         pass_restart_server = False
         is_uwsgi = False
+        gunicorn_error_msg = None
+        uwsgi_error_msg = None
         errors_list = []
 
         pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
@@ -72,7 +74,7 @@ class Command(BaseCommand):
                                     stderr=subprocess.STDOUT, shell=True)
 
             except subprocess.CalledProcessError as e:
-                errors_list.append(e.output)
+                gunicorn_error_msg = e.output
                 if "reload: Unknown job:" in e.output:
                     is_uwsgi = True
 
@@ -84,7 +86,11 @@ class Command(BaseCommand):
                                     stderr=subprocess.STDOUT, shell=True)
 
             except subprocess.CalledProcessError as e:
-                errors_list.append(e.output)
+                uwsgi_error_msg = e.output
+
+        if gunicorn_error_msg and uwsgi_error_msg:
+            errors_list.append(uwsgi_error_msg)
+            errors_list.append(gunicorn_error_msg)
 
         try:
             print "Clearing cache"
