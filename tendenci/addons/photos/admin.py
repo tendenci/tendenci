@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.photos.models import PhotoSet, Image, Pool
-from tendenci.addons.photos.forms import PhotoSet, PhotoAdminForm
+from tendenci.addons.photos.forms import PhotoSet, PhotoAdminForm, PhotoSetAddForm
 
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import get_notice_recipients, update_perms_and_save
@@ -12,19 +12,24 @@ class PhotoAdmin(admin.ModelAdmin):
     list_display = ('update_dt', 'create_dt', 'tags',)
 
     fieldsets = (
-        (None, {'fields': ('tags',)}),
-        ('Administrative', 
-            {'fields': 
-                (
-                    'allow_anonymous_view',
-                    'user_perms',
-                    'member_perms',
-                    'group_perms',
-                    'status_detail',
-                )
-            }),
+        ('Photo Set Information', {
+                      'fields': ('name',
+                                 'description',
+                                 'group',
+                                 'tags',
+                                 ),
+                      }),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            )}),
+        ('Photo Set Status', {'fields': (
+            'status_detail',
+        )}),
     )
-    form = PhotoAdminForm
+    form = PhotoSetAddForm
 
     def log_deletion(self, request, object, object_repr):
         super(PhotoAdmin, self).log_deletion(request, object, object_repr)
