@@ -26,6 +26,8 @@ IMPORT_FOLDER_NAME = 'imports'
 @password_required
 def user_upload_add(request, form_class=UserImportForm,
                     template_name="imports/users.html"):
+    return HttpResponseRedirect(reverse('profiles.user_import'))
+
     if not request.user.profile.is_superuser:
         raise Http403
 

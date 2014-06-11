@@ -817,3 +817,12 @@ def extract_pdf(fp):
     retstr.close()
 
     return mystr
+
+
+def normalize_field_names(fieldnames):
+    for i in range(0, len(fieldnames)):
+        # clean up the fieldnames
+        # ex: change First Name to first_name
+        fieldnames[i] = fieldnames[i].lower().replace(' ', '_')
+
+    return fieldnames
