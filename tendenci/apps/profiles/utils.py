@@ -10,7 +10,6 @@ import csv
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -21,7 +20,6 @@ from django.core import exceptions
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.user_groups.models import GroupMembership, Group
-from tendenci.addons.memberships.models import Membership, App
 from tendenci.core.base.utils import UnicodeWriter, normalize_newline
 from tendenci.core.emails.models import Email
 from tendenci.core.perms.utils import get_query_filters
@@ -30,8 +28,6 @@ from tendenci.core.site_settings.utils import get_setting
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
     from django.core.mail.message import EmailMessage
-    from django.template.loader import render_to_string
-    from django.conf import settings
     from django.template import RequestContext
     
     subject = 'User Account Modification Notice for %s' % get_setting('site', 'global', 'sitedisplayname')

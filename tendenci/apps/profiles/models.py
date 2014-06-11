@@ -1,24 +1,18 @@
 import os
 import uuid
 
-from timezones.fields import TimeZoneField
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
-from django.contrib.contenttypes import generic
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
 
 from tendenci.core.base.utils import create_salesforce_contact
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 from tendenci.apps.entities.models import Entity
 from tendenci.core.base.models import BaseImport, BaseImportData
 from tendenci.core.base.utils import UnicodeWriter
-from tendenci.libs.abstracts.models import Person, Identity, Address
+from tendenci.libs.abstracts.models import Person
 #from tendenci.apps.user_groups.models import Group
 
 

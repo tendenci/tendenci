@@ -15,8 +15,7 @@ from tendenci.core.base.utils import normalize_field_names
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
-from tendenci.addons.memberships.models import App, Membership
-from tendenci.addons.memberships.models import MembershipType
+from tendenci.addons.memberships.models import Membership
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile, UserImport
 from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user

@@ -3,7 +3,6 @@ import os
 import math
 import time
 import subprocess
-from sets import Set
 from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth.decorators import login_required
@@ -19,15 +18,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib import messages
-from django.conf import settings
 from django.db import connection
-from django.db.models import ForeignKey, OneToOneField
 from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
 from django.utils import simplejson
 
-from djcelery.models import TaskMeta
 from johnny.cache import invalidate
 
 from tendenci.core.base.decorators import ssl_required, password_required
@@ -55,7 +51,6 @@ from tendenci.apps.profiles.models import Profile, UserImport, UserImportData
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
 UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm)
-from tendenci.apps.profiles.tasks import ExportProfilesTask
 from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.addons.events.models import Registrant
 from tendenci.addons.memberships.models import MembershipType
