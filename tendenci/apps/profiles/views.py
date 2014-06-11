@@ -1325,7 +1325,7 @@ def profile_export_download(request, identifier):
 
 
 @login_required
-#@password_required
+@password_required
 def user_import_upload(request,
             template_name='profiles/import/upload.html'):
     """
