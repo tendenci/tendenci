@@ -1,6 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
 
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.core.base.fields import DictField
 
 
 class UpdateTracker(models.Model):
@@ -42,3 +45,60 @@ class ChecklistItem(OrderingBaseModel):
 
     def __unicode__(self):
         return self.label
+
+
+class BaseImport(models.Model):
+    OVERRIDE_CHOICES = (
+        (0, 'Blank Fields'),
+        (1, 'All Fields (override)'),
+    )
+
+    STATUS_CHOICES = (
+        ('not_started', 'Not Started'),
+        ('preprocessing', 'Pre_processing'),
+        ('preprocess_done', 'Pre_process Done'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+    )
+
+    # store the header line to assist in generating recap
+    header_line = models.CharField(_('Header Line'), max_length=3000, default='')
+
+    # overwrite already existing fields if match
+    override = models.IntegerField(choices=OVERRIDE_CHOICES, default=0)
+    # uniqueness key
+    key = models.CharField(_('Key'), max_length=50)
+
+    total_rows = models.IntegerField(default=0)
+    num_processed = models.IntegerField(default=0)
+    summary = models.CharField(_('Summary'), max_length=500,
+                           null=True, default='')
+    status = models.CharField(choices=STATUS_CHOICES,
+                              max_length=50,
+                              default='not_started')
+    complete_dt = models.DateTimeField(null=True)
+
+    creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        abstract = True
+
+    def get_file(self):
+        return self.upload_file
+
+    def __unicode__(self):
+        return self.get_file().file.name
+
+
+class BaseImportData(models.Model):
+    # dictionary object representing a row in csv
+    row_data = DictField(_('Row Data'))
+    # the original row number in the uploaded csv file
+    row_num = models.IntegerField(_('Row #'))
+    # action_taken can be 'insert', 'update' or 'mixed'
+    action_taken = models.CharField(_('Action Taken'), max_length=20, null=True)
+    error = models.CharField(_('Error'), max_length=500, default='')
+    
+    class Meta:
+        abstract = True

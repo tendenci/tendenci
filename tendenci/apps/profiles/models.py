@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from timezones.fields import TimeZoneField
@@ -7,14 +8,18 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.contrib.contenttypes import generic
+from django.core.files.storage import default_storage
+from django.utils.encoding import smart_str
 
 from tendenci.core.base.utils import create_salesforce_contact
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 from tendenci.apps.entities.models import Entity
-
+from tendenci.core.base.models import BaseImport, BaseImportData
+from tendenci.core.base.utils import UnicodeWriter
 from tendenci.libs.abstracts.models import Person, Identity, Address
+#from tendenci.apps.user_groups.models import Group
 
 
 # class Profile(Identity, Address):
@@ -373,3 +378,58 @@ class Profile(Person):
         for role in roles:
             if role in self.roles():
                 return role
+
+
+class UserImport(BaseImport):
+    INTERACTIVE_CHOICES = (
+        (True, 'Interactive'),
+        (False, 'Not Interactive (no login)'),
+    )
+
+    UPLOAD_DIR = "imports/profiles/%s" % uuid.uuid1().get_hex()[:8]
+
+    upload_file = models.FileField(_("Upload File"), max_length=260,
+                                   upload_to=UPLOAD_DIR,
+                                   null=True)
+    recap_file = models.FileField(_("Recap File"), max_length=260,
+                                   upload_to=UPLOAD_DIR, null=True)
+
+    interactive = models.BooleanField(choices=INTERACTIVE_CHOICES, default=False)
+    group_id = models.IntegerField(default=0)
+    
+    clear_group_membership = models.BooleanField(default=False)
+    
+    def generate_recap(self):
+        if not self.recap_file and self.header_line:
+            file_name = 'user_import_%d_recap.csv' % self.id
+            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+                                   file_name)
+            f = default_storage.open(file_path, 'wb')
+            recap_writer = UnicodeWriter(f, encoding='utf-8')
+            header_row = self.header_line.split(',')
+            if 'status' in header_row:
+                header_row.remove('status')
+            if 'status_detail' in header_row:
+                header_row.remove('status_detail')
+            header_row.extend(['action', 'error'])
+            recap_writer.writerow(header_row)
+            data_list = UserImportData.objects.filter(
+                uimport=self).order_by('row_num')
+            for idata in data_list:
+                data_dict = idata.row_data
+                row = [data_dict[k] for k in header_row if k in data_dict]
+                row.extend([idata.action_taken, idata.error])
+                row = [smart_str(s).decode('utf-8') for s in row]
+                recap_writer.writerow(row)
+
+            f.close()
+            self.recap_file.name = file_path
+            self.save()
+    
+
+class UserImportData(BaseImportData):
+    uimport = models.ForeignKey(UserImport, related_name="user_import_data")  
+    
+    
+    
+    

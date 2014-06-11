@@ -11,13 +11,14 @@ from django.conf import settings
 
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
+from tendenci.core.base.utils import normalize_field_names
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.addons.memberships.models import App, Membership
 from tendenci.addons.memberships.models import MembershipType
 from tendenci.core.event_logs.models import EventLog
-from tendenci.apps.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile, UserImport
 from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
 
 attrs_dict = {'class': 'required' }
@@ -689,4 +690,67 @@ class ExportForm(forms.Form):
 
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
     export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
+ 
+   
+class UserUploadForm(forms.ModelForm):
+    KEY_CHOICES = (('email', 'Email'),
+               ('first_name,last_name,email', 'First Name and Last Name and Email'),
+               ('first_name,last_name,phone', 'First Name and Last Name and Phone'),
+               ('first_name,last_name,company', 'First Name and Last Name and Company'),
+               ('username', 'Username'),)
+    GROUP_CHOICES = [(0, 'Select One')] + [(group.id, group.name) for group in \
+                     Group.objects.filter(status=True, status_detail='active'
+                                          ).exclude(type='membership')]
+    interactive = forms.BooleanField(widget=forms.RadioSelect(
+                                    choices=((True, 'Interactive'),
+                                            (False,'Not Interactive (no login)'),)), 
+                                  initial=True,)
+    key = forms.ChoiceField(label="Key",
+                            choices=KEY_CHOICES)
+    group_id = forms.ChoiceField(label="Add Users to Group",
+                            choices=GROUP_CHOICES, required=False)
+    clear_group_membership = forms.BooleanField(initial=False, required=False)
+
+    class Meta:
+        model = UserImport
+        fields = (
+                'key',
+                'override',
+                'interactive',
+                'group_id',
+                'clear_group_membership',
+                'upload_file',
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(UserUploadForm, self).__init__(*args, **kwargs)
+        self.fields['key'].initial = 'email'
+
+    def clean_upload_file(self):
+        key = self.cleaned_data['key']
+        upload_file = self.cleaned_data['upload_file']
+        if not key:
+            raise forms.ValidationError('Please specify the key to identify duplicates')
+
+        file_content = upload_file.read()
+        upload_file.seek(0)
+        header_line_index = file_content.find('\n')
+        header_list = ((file_content[:header_line_index]
+                            ).strip('\r')).split(',')
+        header_list = normalize_field_names(header_list)
+        key_list = []
+        for key in key.split(','):
+            key_list.append(key)
+        missing_columns = []
+        for item in key_list:
+            if not item in header_list:
+                missing_columns.append(item)
+        if missing_columns:
+            raise forms.ValidationError(
+                        """
+                        'Field(s) %s used to identify the duplicates
+                        should be included in the .csv file.'
+                        """ % (', '.join(missing_columns)))
+
+        return upload_file
 

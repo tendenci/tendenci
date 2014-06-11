@@ -1,7 +1,9 @@
 # django
+import os
 import math
 import time
 import subprocess
+from sets import Set
 from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth.decorators import login_required
@@ -19,8 +21,11 @@ from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.conf import settings
 from django.db import connection
+from django.db.models import ForeignKey, OneToOneField
+from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
+from django.utils import simplejson
 
 from djcelery.models import TaskMeta
 from johnny.cache import invalidate
@@ -36,21 +41,22 @@ from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.exports.utils import render_csv
 
 # for avatar
 from avatar.models import Avatar, avatar_file_path
 from avatar.forms import PrimaryAvatarForm
 
 # for group memberships
-from tendenci.apps.user_groups.models import GroupMembership
+from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.apps.user_groups.forms import GroupMembershipEditForm
 
-from tendenci.apps.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile, UserImport, UserImportData
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
-UserMembershipForm, ProfileMergeForm, ProfileSearchForm)
+UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm)
 from tendenci.apps.profiles.tasks import ExportProfilesTask
-from tendenci.apps.profiles.utils import get_member_reminders
+from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.addons.events.models import Registrant
 from tendenci.addons.memberships.models import MembershipType
 from tendenci.apps.invoices.models import Invoice
@@ -1317,4 +1323,280 @@ def profile_export_download(request, identifier):
     response.content = default_storage.open(file_path).read()
     return response
 
+
+@login_required
+#@password_required
+def user_import_upload(request,
+            template_name='profiles/import/upload.html'):
+    """
+    Import users to the User and Profile
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    form = UserUploadForm(request.POST or None,
+                            request.FILES or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            user_import = form.save(commit=False)
+            user_import.creator = request.user
+            user_import.save()
+
+            # redirect to preview page.
+            return redirect(reverse('profiles.user_import_preview',
+                                     args=[user_import.id]))
+
+    return render_to_response(template_name, {
+        'form': form,
+        }, context_instance=RequestContext(request))
+
+
+@login_required
+def user_import_preview(request, uimport_id,
+                template_name='profiles/import/preview.html'):
+    """
+    Preview the import
+    """
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    invalidate('profiles_userimport')
+    uimport = get_object_or_404(UserImport, pk=uimport_id)
+    if uimport.group_id:
+        uimport.group = Group.objects.get(id=uimport.group_id)
+
+    if uimport.status == 'preprocess_done':
+
+        try:
+            curr_page = int(request.GET.get('page', 1))
+        except:
+            curr_page = 1
+
+        num_items_per_page = 10
+
+        total_rows = UserImportData.objects.filter(uimport=uimport).count()
+
+        # if total_rows not updated, update it
+        if uimport.total_rows != total_rows:
+            uimport.total_rows = total_rows
+            uimport.save()
+        num_pages = int(math.ceil(total_rows * 1.0 / num_items_per_page))
+        if curr_page <= 0 or curr_page > num_pages:
+            curr_page = 1
+
+        # calculate the page range to display if the total # of pages > 35
+        # display links in 3 groups - first 10, middle 10 and last 10
+        # the middle group will contain the current page.
+        start_num = 35
+        max_num_in_group = 10
+        if num_pages > start_num:
+            # first group
+            page_range = range(1, max_num_in_group + 1)
+            # middle group
+            i = curr_page - int(max_num_in_group / 2)
+            if i <= max_num_in_group:
+                i = max_num_in_group
+            else:
+                page_range.extend(['...'])
+            j = i + max_num_in_group
+            if j > num_pages - max_num_in_group:
+                j = num_pages - max_num_in_group
+            page_range.extend(range(i, j + 1))
+            if j < num_pages - max_num_in_group:
+                page_range.extend(['...'])
+            # last group
+            page_range.extend(range(num_pages - max_num_in_group,
+                                    num_pages + 1))
+        else:
+            page_range = range(1, num_pages + 1)
+
+        # slice the data_list
+        start_index = (curr_page - 1) * num_items_per_page + 2
+        end_index = curr_page * num_items_per_page + 2
+        if end_index - 2 > total_rows:
+            end_index = total_rows + 2
+        data_list = UserImportData.objects.filter(
+                                uimport=uimport,
+                                row_num__gte=start_index,
+                                row_num__lt=end_index).order_by(
+                                    'row_num')
+
+        users_list = []
+        #print data_list
+        imd = ImportUsers(request.user, uimport, dry_run=True)
+        # to be efficient, we only process users on the current page
+        fieldnames = None
+        for idata in data_list:
+            user_display = imd.process_user(idata)
+
+            user_display['row_num'] = idata.row_num
+            users_list.append(user_display)
+            if not fieldnames:
+                fieldnames = idata.row_data.keys()
+
+        return render_to_response(template_name, {
+            'uimport': uimport,
+            'users_list': users_list,
+            'curr_page': curr_page,
+            'total_rows': total_rows,
+            'prev': curr_page - 1,
+            'next': curr_page + 1,
+            'num_pages': num_pages,
+            'page_range': page_range,
+            'fieldnames': fieldnames,
+            }, context_instance=RequestContext(request))
+    else:
+        if uimport.status in ('processing', 'completed'):
+                return redirect(reverse('profiles.user_import_status',
+                                     args=[uimport.id]))
+        else:
+            if uimport.status == 'not_started':
+                subprocess.Popen(["python", "manage.py",
+                              "users_import_preprocess",
+                              str(uimport.pk)])
+
+            return render_to_response(template_name, {
+                'uimport': uimport,
+                }, context_instance=RequestContext(request))
+
+
+@login_required
+def user_import_process(request, uimport_id):
+    """
+    Process the import
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+    invalidate('profiles_userimport')
+    uimport = get_object_or_404(UserImport,
+                                    pk=uimport_id)
+
+    if uimport.status == 'preprocess_done':
+        uimport.status = 'processing'
+        uimport.num_processed = 0
+        uimport.save()
+        # start the process
+        subprocess.Popen(["python", "manage.py",
+                          "import_users",
+                          str(uimport.pk),
+                          str(request.user.pk)])
+
+        # log an event
+        EventLog.objects.log()
+
+    # redirect to status page
+    return redirect(reverse('profiles.user_import_status',
+                                     args=[uimport.id]))
+
+
+@login_required
+def user_import_status(request, uimport_id,
+                    template_name='profiles/import/status.html'):
+    """
+    Display import status
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+    invalidate('profiles_userimport')
+    uimport = get_object_or_404(UserImport,
+                                    pk=uimport_id)
+    if uimport.group_id:
+        uimport.group = Group.objects.get(id=uimport.group_id)
+    if uimport.status not in ('processing', 'completed'):
+        return redirect(reverse('profiles.user_import'))
+
+    return render_to_response(template_name, {
+        'uimport': uimport,
+        }, context_instance=RequestContext(request))
+
+
+@login_required
+def user_import_download_recap(request, uimport_id):
+    """
+    Download import recap.
+    """
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+    invalidate('profiles_userimport')
+    uimport = get_object_or_404(UserImport,
+                                    pk=uimport_id)
+    uimport.generate_recap()
+    filename = os.path.split(uimport.recap_file.name)[1]
+
+    recap_path = uimport.recap_file.name
+    if default_storage.exists(recap_path):
+        response = HttpResponse(default_storage.open(recap_path).read(),
+                                mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    else:
+        raise Http404
+
+
+@csrf_exempt
+@login_required
+def user_import_get_status(request, uimport_id):
+    """
+    Get the import status and return as json
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+    invalidate('profiles_userimport')
+    uimport = get_object_or_404(UserImport,
+                                    pk=uimport_id)
+
+    status_data = {'status': uimport.status,
+                   'total_rows': str(uimport.total_rows),
+                   'num_processed': str(uimport.num_processed)}
+
+    if uimport.status == 'completed':
+        summary_list = uimport.summary.split(',')
+        status_data['num_insert'] = summary_list[0].split(':')[1]
+        status_data['num_update'] = summary_list[1].split(':')[1]
+        status_data['num_invalid'] = summary_list[2].split(':')[1]
+
+    return HttpResponse(simplejson.dumps(status_data))
+
+
+@csrf_exempt
+@login_required
+def user_import_check_preprocess_status(request, uimport_id):
+    """
+    Get the import encoding status
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+    invalidate('profiles_userimport')
+    uimport = get_object_or_404(UserImport,
+                                    pk=uimport_id)
+
+    return HttpResponse(uimport.status)
+
+
+@login_required
+def download_user_template(request):
+    """
+    Download import template users
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    filename = "users_import_template.csv"
+
+    title_list = ['salutation', 'first_name', 'last_name',
+                         'initials', 'display_name', 'email',
+                          'email2', 'address', 'address2',
+                          'city', 'state', 'zipcode', 'country',
+                         'company', 'position_title', 'department',
+                         'phone', 'phone2', 'home_phone',
+                         'work_phone', 'mobile_phone',
+                         'fax', 'url', 'dob', 'spouse',
+                         'direct_mail', 'notes', 'admin_notes',
+                         'username', 'member_number']
+    data_row_list = []
+
+    return render_csv(filename, title_list,
+                        data_row_list)
 

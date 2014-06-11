@@ -32,7 +32,7 @@
             {% endif %}
             {% if user.profile.is_superuser %}
             <li class="divider"></li>
-            <li><a href="{% url import.user_upload_add %}">{% trans "Import" %}</a></li>
+            <li><a href="{% url profiles.user_import %}">{% trans "Import" %}</a></li>
 
             {% endif %}
         </ul>
