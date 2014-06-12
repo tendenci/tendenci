@@ -1644,6 +1644,8 @@ def add_sf_attendance(registrant, event):
                 profile.state = profile.state or registrant.state
                 profile.country = profile.country or registrant.country
                 profile.zipcode = profile.zipcode or registrant.zip
+                profile.company = profile.company or registrant.company_name
+                profile.position_title = profile.position_title or registrant.position_title
                 profile.save()
 
                 contact_id = create_salesforce_contact(profile)
@@ -1665,7 +1667,10 @@ def add_sf_attendance(registrant, event):
                         'MailingCity':registrant.city,
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
-                        'MailingPostalCode':registrant.zip})
+                        'MailingPostalCode':registrant.zip,
+                        'Company_Name__c': registrant.company_name,
+                        'Title': registrant.position_title
+                        })
                     contact_id = contact['id']
 
             if contact_id:
