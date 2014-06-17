@@ -43,7 +43,6 @@ class Command(BaseCommand):
                 # mimport.save()
                 # raise  Exception(traceback.format_exc())
                 print e
-                print traceback.format_exc()
 
             mimport.num_processed += 1
             # save the status
