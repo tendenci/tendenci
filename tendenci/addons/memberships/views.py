@@ -47,9 +47,7 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
                                                           CorpMembershipApp,
-                                                          IndivEmailVerification,
-                                                          CorporateMembership,
-                                                          IndivMembEmailVeri8n)
+                                                          IndivEmailVerification)
 from reports import ReportNewMems
 from tendenci.core.files.models import File
 from tendenci.core.exports.utils import render_csv, run_export_task
@@ -70,9 +68,6 @@ from tendenci.addons.memberships.forms import (
 from tendenci.addons.memberships.utils import (is_import_valid, prepare_chart_data,
     get_days, get_over_time_stats, get_status_filter,
     get_membership_stats, NoMembershipTypes, ImportMembDefault)
-from tendenci.addons.memberships.importer.forms import ImportMapForm, UploadForm
-from tendenci.addons.memberships.importer.utils import parse_mems_from_csv
-from tendenci.addons.memberships.importer.tasks import ImportMembershipsTask
 from tendenci.core.base.forms import CaptchaForm
 
 

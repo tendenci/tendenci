@@ -299,6 +299,8 @@ class CorpMembershipImportProcessor(object):
         if not corp_memb.owner:
             corp_memb.owner = self.request_user
             corp_memb.owner_username = self.request_user.username
+        print '!!!!!!!!!'
+        print 'corp_memb=', corp_memb
         corp_memb.save()
 
         # bind members to their corporations by company names

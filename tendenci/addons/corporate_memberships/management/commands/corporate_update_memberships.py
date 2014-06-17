@@ -8,14 +8,14 @@ class Command(BaseCommand):
     """
     def handle(self, **options):
         from django.core.exceptions import ObjectDoesNotExist
-        from tendenci.addons.corporate_memberships.models import CorporateMembership
-        from tendenci.addons.memberships.models import Membership
+        from tendenci.addons.corporate_memberships.models import CorpMembership
+        from tendenci.addons.memberships.models import MembershipDefault
         verbosity = int(options['verbosity'])
 
-        corporates = CorporateMembership.objects.all()
+        corporates = CorpMembership.objects.filter(status=True, status_detail='active')
 
         for corporate in corporates:
-            memberships = Membership.objects.filter(
+            memberships = MembershipDefault.objects.filter(
                 corporate_membership_id=corporate.pk
             )
 
