@@ -19,7 +19,7 @@ from django.core.files.storage import FileSystemStorage
 
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.addons.corporate_memberships.models import (
-    CorporateMembership, CorpMembership, CorpMembershipAuthDomain)
+    CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm

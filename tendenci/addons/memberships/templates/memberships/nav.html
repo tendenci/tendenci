@@ -49,7 +49,8 @@
             <li><a href="{% url admin:memberships_membershiptype_changelist %}">{% trans "Types" %}</a></li>
             <li><a href="{% url admin:memberships_notice_changelist %}">{% trans "Notices" %}</a></li>
             <li class="divider"></li>
-            <li><a href="{% url membership_import %}">{% trans "Import" %}</a></li>
+            <li><a href="{% url memberships.default_import %}">{% trans "Import" %}</a></li>
+            <li><a href="{% url memberships.default_export %}">{% trans "Export" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -71,5 +72,5 @@
         {% endif %}
         </div>
     </li>
-    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}<li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
+    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}<li><a href="{% url corpmembership.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
 </ul>
