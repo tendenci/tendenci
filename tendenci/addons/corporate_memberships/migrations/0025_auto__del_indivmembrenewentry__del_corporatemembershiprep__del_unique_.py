@@ -8,8 +8,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing unique constraint on 'CorporateMembershipRep', fields ['corporate_membership', 'user']
-        db.delete_unique('corporate_memberships_corporatemembershiprep', ['corporate_membership_id', 'user_id'])
+        try:
+            # Removing unique constraint on 'CorporateMembershipRep', fields ['corporate_membership', 'user']
+            db.delete_unique('corporate_memberships_corporatemembershiprep', ['corporate_membership_id', 'user_id'])
+        except:
+            pass
 
         # Deleting model 'IndivMembRenewEntry'
         db.delete_table('corporate_memberships_indivmembrenewentry')
