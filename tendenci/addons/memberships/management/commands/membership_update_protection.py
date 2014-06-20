@@ -8,29 +8,29 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **kwargs):
         from tendenci.core.site_settings.utils import get_setting
-        from tendenci.addons.memberships.models import Membership
+        from tendenci.addons.memberships.models import MembershipDefault
         from tendenci.apps.user_groups.models import GroupMembership
         protection = get_setting('module', 'memberships', 'memberprotection')
 
         if protection == 'public':
-            Membership.objects.update(
+            MembershipDefault.objects.update(
                 allow_anonymous_view=True,
                 allow_user_view=False,
                 allow_member_view=False
             )
         elif protection == 'all-members':
-            Membership.objects.update(
+            MembershipDefault.objects.update(
                 allow_anonymous_view=False,
                 allow_user_view=False,
                 allow_member_view=True
             )
         elif protection == 'member-type':
-            Membership.objects.update(
+            MembershipDefault.objects.update(
                 allow_anonymous_view=False,
                 allow_user_view=False,
                 allow_member_view=False
             )
-            for membership in Membership.objects.all():
+            for membership in MembershipDefault.objects.all():
 
                 # add or remove from group -----
                 if membership.is_active():  # should be in group; make sure they're in
@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 print membership
 
         else:  # private
-            Membership.objects.update(
+            MembershipDefault.objects.update(
                 allow_anonymous_view=False,
                 allow_user_view=False,
                 allow_member_view=False

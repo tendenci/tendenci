@@ -26,9 +26,7 @@ from django.template.loader import render_to_string
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
-from tendenci.addons.memberships.models import (App,
-                                                AppField,
-                                                MembershipType,
+from tendenci.addons.memberships.models import (MembershipType,
                                                 MembershipDefault,
                                                 MembershipDemographic,
                                                 MembershipApp,
@@ -77,26 +75,26 @@ def get_default_membership_corp_fields():
     return corp_field_list
 
 
-def edit_app_update_corp_fields(app):
-    """
-    Update the membership application's corporate membership fields (corporate_membership_id)
-    when editing a membership application.
-    """
-    if app:
-        try:
-            app_field = AppField.objects.get(app=app, field_type='corporate_membership_id')
-            if not app.use_for_corp:
-                if not hasattr(app, 'corp_app'):
-                    app_field.delete()
-                else:
-                    app.use_for_corp = 1
-                    app.save()
-        except AppField.DoesNotExist:
-            if app.use_for_corp:
-                field_list = get_default_membership_corp_fields()
-                for field in field_list:
-                    field.update({'app': app})
-                    AppField.objects.create(**field)
+# def edit_app_update_corp_fields(app):
+#     """
+#     Update the membership application's corporate membership fields (corporate_membership_id)
+#     when editing a membership application.
+#     """
+#     if app:
+#         try:
+#             app_field = AppField.objects.get(app=app, field_type='corporate_membership_id')
+#             if not app.use_for_corp:
+#                 if not hasattr(app, 'corp_app'):
+#                     app_field.delete()
+#                 else:
+#                     app.use_for_corp = 1
+#                     app.save()
+#         except AppField.DoesNotExist:
+#             if app.use_for_corp:
+#                 field_list = get_default_membership_corp_fields()
+#                 for field in field_list:
+#                     field.update({'app': app})
+#                     AppField.objects.create(**field)
 
 
 def get_corporate_membership_choices():
@@ -892,47 +890,47 @@ def get_membership_stats():
     return (sorted(summary, key=lambda x: x['type'].name), total_dict)
 
 
-def make_csv(**kwargs):
-    """
-    Make a CSV file
-    """
-    from django.template.defaultfilters import slugify
-    from tendenci.core.imports.utils import render_excel
-
-    slug = kwargs.get('slug')
-
-    if not slug:
-        raise Http404
-
-    try:
-        app = App.objects.get(slug=slug)
-    except App.DoesNotExist, App.MultipleObjectsReturned:
-        raise Http404
-
-    file_name = "%s.csv" % slugify(app.name)
-
-    exclude_params = (
-        'horizontal-rule',
-        'header',
-    )
-
-    fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
-    labels = [field.label for field in fields]
-
-    extra_labels = [
-        'username',
-        'Member Number',
-        'Join Date',
-        'Renew Date',
-        'Expiration Date',
-        'Status',
-        'Status Detail',
-        'Invoice Number',
-        'Invoice Amount',
-        'Invoice Balance'
-    ]
-    labels.extend(extra_labels)
-    return render_excel(file_name, labels, [], '.csv')
+# def make_csv(**kwargs):
+#     """
+#     Make a CSV file
+#     """
+#     from django.template.defaultfilters import slugify
+#     from tendenci.core.imports.utils import render_excel
+# 
+#     slug = kwargs.get('slug')
+# 
+#     if not slug:
+#         raise Http404
+# 
+#     try:
+#         app = App.objects.get(slug=slug)
+#     except App.DoesNotExist, App.MultipleObjectsReturned:
+#         raise Http404
+# 
+#     file_name = "%s.csv" % slugify(app.name)
+# 
+#     exclude_params = (
+#         'horizontal-rule',
+#         'header',
+#     )
+# 
+#     fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
+#     labels = [field.label for field in fields]
+# 
+#     extra_labels = [
+#         'username',
+#         'Member Number',
+#         'Join Date',
+#         'Renew Date',
+#         'Expiration Date',
+#         'Status',
+#         'Status Detail',
+#         'Invoice Number',
+#         'Invoice Amount',
+#         'Invoice Balance'
+#     ]
+#     labels.extend(extra_labels)
+#     return render_excel(file_name, labels, [], '.csv')
 
 
 class NoMembershipTypes(Exception):

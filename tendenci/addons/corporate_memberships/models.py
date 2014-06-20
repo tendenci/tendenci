@@ -26,10 +26,9 @@ from tinymce import models as tinymce_models
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.invoices.models import Invoice
-from tendenci.addons.memberships.models import (MembershipType, App,
+from tendenci.addons.memberships.models import (MembershipType,
                                                 MembershipApp,
-                                                MembershipDefault,
-                                                Membership)
+                                                MembershipDefault)
 from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
                                                         LABEL_MAX_LENGTH)
 from tendenci.addons.corporate_memberships.managers import (

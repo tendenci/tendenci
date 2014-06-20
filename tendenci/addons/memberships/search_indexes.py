@@ -2,7 +2,7 @@ from haystack import indexes, site
 
 from django.utils.html import strip_tags, strip_entities
 
-from tendenci.addons.memberships.models import App, AppEntry, MembershipDefault
+from tendenci.addons.memberships.models import MembershipDefault
 from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 
 
@@ -31,25 +31,6 @@ class MembershipDefaultIndex(TendenciBaseSearchIndex):
         return email
 
 
-class MemberAppIndex(TendenciBaseSearchIndex):
-    name = indexes.CharField(model_attr='name')
-    description = indexes.CharField(model_attr='description')
-
-    def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
-
-
-class MemberAppEntryIndex(TendenciBaseSearchIndex):
-    entry_time = indexes.DateTimeField(model_attr='entry_time')
-
-    def get_updated_field(self):
-        return 'entry_time'
-
-
-site.register(App, MemberAppIndex)
 
 # Removed from index after search view was updated to perform
 # all searches on the database.

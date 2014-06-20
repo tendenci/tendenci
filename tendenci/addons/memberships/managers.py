@@ -10,51 +10,6 @@ from tendenci.core.perms.managers import TendenciBaseManager
 from tendenci.core.site_settings.utils import get_setting
 
 
-class MemberAppEntryManager(TendenciBaseManager):
-    """
-    Model Manager
-    """
-    # TODO: lots of clean up
-
-    # Public functions
-    def search(self, query=None, *args, **kwargs):
-        """
-        Search the Django Haystack search index
-        Returns a SearchQuerySet object
-        """
-        sqs = kwargs.get('sqs', SearchQuerySet())
-        sqs = sqs.models(self.model)
-
-        # user information
-        user = kwargs.get('user') or AnonymousUser()
-        user = self._impersonation(user)
-        self.user = user
-
-        # if the status_detail is something like "published"
-        # then you can specify the kwargs to override
-        status_detail = kwargs.get('status_detail', 'active')
-
-        if query:
-            sqs = sqs.auto_query(sqs.query.clean(query))
-
-
-        if user.profile.is_superuser or has_perm(user, 'memberships.approve_membership'):
-            sqs = sqs.all()
-        else:
-            if user.is_anonymous():
-                sqs = anon3_sqs(sqs, status_detail=status_detail)
-
-            elif user.profile.is_member:
-                sqs = self._member_sqs(sqs, user=user,
-                status_detail=status_detail)
-            else:
-                sqs = user3_sqs(sqs, user=user,
-                status_detail=status_detail)
-                # pass
-
-        return sqs
-
-
 def user3_sqs(sqs, **kwargs):
     """
     people between admin and anon permission

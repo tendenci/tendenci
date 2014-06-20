@@ -2,7 +2,7 @@ from django.conf import settings
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import PeopleRegistry, lazy_reverse
-from tendenci.addons.memberships.models import Membership, AppEntry
+from tendenci.addons.memberships.models import MembershipDefault
 
 
 class MembershipRegistry(PeopleRegistry):
@@ -70,4 +70,4 @@ class MembershipRegistry(PeopleRegistry):
         'search': lazy_reverse('membership.search'),
     }
 
-site.register(Membership, MembershipRegistry)
+site.register(MembershipDefault, MembershipRegistry)

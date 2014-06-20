@@ -5,13 +5,13 @@ from selenium.common.exceptions import NoSuchElementException
 class MembershipTest(TestCase):
 
     def test_create_membership_entry(self):
-        from tendenci.addons.memberships.models import App
-        apps = App.objects.all()
+        from tendenci.addons.memberships.models import MembershipDefault
+        apps = MembershipDefault.objects.filter(status=True, status_detail='active')[:1]
 
         if not apps:
             return None
 
-        self.browser.get('http://127.0.0.1:8000/memberships/%s/' % apps[0].slug)
+        self.browser.get('http://127.0.0.1:8000/memberships/%d/' % apps[0].id)
         form_fields = self.browser.find_elements_by_css_selector('.form-builder-wrap .form-field')
 
         for form_field in form_fields:
