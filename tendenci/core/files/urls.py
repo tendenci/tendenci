@@ -38,4 +38,6 @@ urlpatterns = patterns('tendenci.core.files.views',
     url(r'^%s/swfupload/$' % urlpath, 'swfupload', name="file.swfupload"),
 
     url(r'^%s/reports/most-viewed/$' % urlpath, 'report_most_viewed', name="file.report_most_viewed"),
+
+    url(r'^%s/get_categories/$' % urlpath, 'get_categories', name="file.get_categories"),
 )

@@ -1,21 +1,21 @@
 
 <form class="search-form" action="{% url files %}" method="get">
-	<div class="fieldWrapper">
+    <div class="fieldWrapper">
         <label for="id_q">Search</label>
         {{ form.q }}
     </div>
-	<div class="fieldWrapper">
+    <div class="fieldWrapper">
         <label for="id_category">Category</label>
-        {{ form.category }}
+        {{ form.file_cat }}
     </div>
     <div class="fieldWrapper">
         <label for="id_subcategory">Sub Category</label>
-        {{ form.sub_category }}
+        {{ form.file_sub_cat }}
     </div>
     <div class="fieldWrapper">
         <label for="id_group">Group</label>
         {{ form.group }}
     </div>
-	<input class="btn" type="submit" value="Search Files" />
+    <input class="btn" type="submit" value="Search Files" />
 </form>
 

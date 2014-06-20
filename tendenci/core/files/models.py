@@ -14,6 +14,7 @@ from django.core.cache import cache
 from django.contrib.contenttypes import generic
 from django.core.files.storage import default_storage
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 
 from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -52,6 +53,11 @@ class File(TendenciBaseModel):
         Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
     categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
+
+    file_cat = models.ForeignKey('FilesCategory', verbose_name=_("Files Category"),
+                                 related_name="file_cat", null=True, on_delete=models.SET_NULL)
+    file_sub_cat = models.ForeignKey('FilesCategory', verbose_name=_("Files Sub Category"),
+                                     related_name="file_subcat", null=True, on_delete=models.SET_NULL)
 
     perms = generic.GenericRelation(
         ObjectPermission,
@@ -378,3 +384,15 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
     if instance.file:
         if os.path.isfile(instance.file.path):
             os.remove(instance.file.path)
+
+
+class FilesCategory(models.Model):
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey('self', null=True)
+
+    class Meta:
+        verbose_name_plural = "File Categories"
+        ordering = ('name',)
+
+    def __unicode__(self):
+        return self.name

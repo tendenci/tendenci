@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.core.files.models import File, MultipleFile
+from tendenci.core.files.models import File, MultipleFile, FilesCategory
 from tendenci.core.files.forms import FileForm, MultiFileForm, FilewithCategoryForm, FileCategoryForm
 
 
@@ -24,7 +24,7 @@ class FileAdmin(TendenciBaseModelAdmin):
                        'group',
                        )
         }),
-        ('Category', {'fields': ('category', 'sub_category')}),
+        ('Category', {'fields': ('file_cat', 'file_sub_cat')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -44,8 +44,7 @@ class FileAdmin(TendenciBaseModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
-        content_type = get_object_or_404(ContentType, app_label='files', model='file')
-        filecategory_form = FileCategoryForm(content_type)
+        filecategory_form = FileCategoryForm()
         extra_context.update({'filecategory_form' : filecategory_form})
 
         return super(FileAdmin, self).changelist_view(request, extra_context)
@@ -72,8 +71,7 @@ class FileAdmin(TendenciBaseModelAdmin):
 
     def add_to_category_and_subcategory(self, request, queryset):
         count = queryset.count()
-        content_type = get_object_or_404(ContentType, app_label='files', model='file')
-        filecategory_form = FileCategoryForm(content_type, request.POST)
+        filecategory_form = FileCategoryForm(request.POST)
 
         if filecategory_form.is_valid():
             for file in queryset:
@@ -124,5 +122,25 @@ class MultipleFileAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:multiplefile_add'))
 
-
 admin.site.register(MultipleFile, MultipleFileAdmin)
+
+
+
+class CategoryAdminInline(admin.TabularInline):
+    fieldsets = ((None, {'fields': ('name',)}),)
+    model = FilesCategory
+    extra = 0
+    verbose_name = "File Sub-Category"
+    verbose_name_plural = "File Sub-Categories"
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    fieldsets = ((None, {'fields': ('name',)}),)
+    inlines = (CategoryAdminInline,)
+
+    def queryset(self, request):
+        qs = super(CategoryAdmin, self).queryset(request)
+        return qs.filter(parent__isnull=True)
+
+admin.site.register(FilesCategory, CategoryAdmin)
