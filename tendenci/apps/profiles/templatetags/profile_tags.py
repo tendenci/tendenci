@@ -77,7 +77,7 @@ def has_avatar(user, size=88):
 
         {% has_avatar model.user [size] %}
 
-    Be sure to attach .user to an object that  contains a user relationship. 
+    Be sure to attach .user to an object that  contains a user relationship.
     Example::
 
     {% for officer in officers %}
@@ -101,5 +101,11 @@ def has_avatar(user, size=88):
         url = avatar_url(user, size)
     if url == AVATAR_DEFAULT_URL:
         return ""
-    return """<img src="%s" alt="%s" width="%s" height="%s" />""" % (url, alt,
-        size, size)
+
+    title = "%s profile" % alt
+    if len(alt) > 123:
+        alt = alt[:123]
+    if len(title) > 123:
+        title = title[:123]
+    return """<img src="%s" alt="%s" title="%s" width="%s" height="%s" />""" % (url, alt, title,
+          size, size)

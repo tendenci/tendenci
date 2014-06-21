@@ -21,60 +21,60 @@
 
 {% with invoice.get_object as object %}
 <div class="invoice-meta">
-	<table border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td>{% trans "Invoice #" %}</td>
-			<td class="td-right">{{ invoice.id }}</td>
-		</tr>
-		{% if object %}
-			<tr>
-				<td>{% trans "Invoice For" %}</td>
-				<td class="td-right">{{ object }}</td>
-			</tr>
-		{% endif %}
-		<tr>
-			<td>{% trans "Invoice Date" %}</td>
-			<td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
-		</tr>
-		<tr>
-			<td>{% trans "Invoice Status" %}</td>
-			{% if invoice.is_tendered %}
-				<td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}Tendered {{ tenddate }}{% endblocktrans %}</td>
-			{% else %}
-				<td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
-			{% endif %}
-		</tr>
-		<tr class="invoice-meta-amount">
-			<td>{% trans "Invoice Amount" %}</td>
-			<td class="td-right">{{ invoice.total|format_currency }}</td>
-		</tr>
-	</table>
+    <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>{% trans "Invoice #" %}</td>
+            <td class="td-right">{{ invoice.id }}</td>
+        </tr>
+        {% if object %}
+            <tr>
+                <td>{% trans "Invoice For" %}</td>
+                <td class="td-right">{{ object }}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td>{% trans "Invoice Date" %}</td>
+            <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
+        </tr>
+        <tr>
+            <td>{% trans "Invoice Status" %}</td>
+            {% if invoice.is_tendered %}
+                <td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}Tendered {{ tenddate }}{% endblocktrans %}</td>
+            {% else %}
+                <td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
+            {% endif %}
+        </tr>
+        <tr class="invoice-meta-amount">
+            <td>{% trans "Invoice Amount" %}</td>
+            <td class="td-right">{{ invoice.total|format_currency }}</td>
+        </tr>
+    </table>
 </div>
 {% if MODULE_INVOICES_INVOICELOGO %}
 <div class="invoice-meta-logo print-view">
-    <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" />
+    <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" alt="invoice logo" title="invoice logo" />
 </div>
 {% endif %}
 {% endwith %}
 
 <div class="invoice-table">
-	<table border="0" cellspacing="0" cellpadding="0">
-		<tr class="invoice-table-header">
-			<td>Description</td>
-			<td class="td-right">Line Amount</td>
-		</tr>
-		{% invoice_object_display request invoice %}
-	</table>
+    <table border="0" cellspacing="0" cellpadding="0">
+        <tr class="invoice-table-header">
+            <td>Description</td>
+            <td class="td-right">Line Amount</td>
+        </tr>
+        {% invoice_object_display request invoice %}
+    </table>
 </div>
 
 <div class="invoice-total-wrap">
-	<div class="invoice-total">
-		{% invoice_total_display request invoice %}
-	</div>
+    <div class="invoice-total">
+        {% invoice_total_display request invoice %}
+    </div>
 </div>
 <div style="clear: both"></div>
 <div class="payment-table">
-	{% payment_history_display request invoice %}
+    {% payment_history_display request invoice %}
 </div>
 </div>
 {% endblock %}

@@ -7,17 +7,17 @@
         <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
         {% if location.logo %}
         <div class="logo">
-            <img src="{% image_url location.logo size=200x200 crop=true quality=84 %}" title="{% firstof location.location_name 'Untitled' %}"/>
+            <img src="{% image_url location.logo size=200x200 crop=true quality=84 %}" title="{% firstof location.location_name 'Untitled' %}" alt="{% firstof location.location_name 'Untitled' %}" />
         </div>
         {% endif %}
         <div class="image">
             {% if origin %}
                 <a title="Google Directions" href="http://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
-                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:B|{{ location.latitude }},{{ location.longitude }}&markers=color:green|label:A|{{ origin.lat }},{{ origin.lng }}&sensor=false">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:B|{{ location.latitude }},{{ location.longitude }}&markers=color:green|label:A|{{ origin.lat }},{{ origin.lng }}&sensor=false" alt="Google Maps view" title="Google Maps view">
                 <br />Directions</a>
             {% else %}
                 <a title="Google Directions" href="http://maps.google.com/maps?q={{ location.get_address }}">
-                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false" alt="Google Maps view" title="Google Maps view">
                 <br />Directions</a>
             {% endif %}
         </div>

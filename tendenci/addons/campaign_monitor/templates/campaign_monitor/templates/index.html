@@ -15,24 +15,24 @@
 {% block body %}
 <div class="t">
     {% template_nav request.user %}
-    
+
     <h1>{% trans "Campaign Monitor Templates" %}</h1>
     {% autopaginate templates 5 %}
-	
-	<div class="templates-wrap">
+
+    <div class="templates-wrap">
     {% for template in templates %}
         <div class="template-wrap">
             <div class="options options-search">
                 <div class="quick-options">
-					{% template_options request.user template %}
+                    {% template_options request.user template %}
                 </div>
-			</div>
+            </div>
             <h2><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></h2>
             {% if template.cm_screenshot_url %}
                 <div class="screenshot">
                     <p><b>{% trans "Screenshot:" %}</b></p>
                     <a href="{{ template.cm_preview_url }}">
-                        <img src="{{ template.cm_screenshot_url }}">
+                        <img src="{{ template.cm_screenshot_url }}" alt="{{ template.name|truncatechars:123 }}" title="{{ template.name|truncatechars:123 }}">
                     </a>
                 </div>
             {% else %}
@@ -40,11 +40,11 @@
             {% endif %}
             <p><a href="{{ template.cm_preview_url }}">{% trans "Preview" %}</a></p>
         </div>
-	{% empty %}
-		<div>{% trans "0 Templates Found" %}</div>
+    {% empty %}
+        <div>{% trans "0 Templates Found" %}</div>
     {% endfor %}
-	</div>
-    
+    </div>
+
     {% paginate %}
 </div>
 {% endblock %}

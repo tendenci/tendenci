@@ -52,7 +52,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
 
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
-        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+        link = '<a href="%s" title="%s"><img src="%s" alt="external_16x16" title="external icon"/></a>' % (
             obj.get_absolute_url(),
             obj,
             link_icon,
