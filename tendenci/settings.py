@@ -37,7 +37,6 @@ LANGUAGE_CODE = 'en'
 LANGUAGES = (
     ('en', u'English'),
     ('es', u'Espanol'),
-    ('fr', u'Fran\xe7ais'),
 )
 
 LOCALE_PATHS = (
