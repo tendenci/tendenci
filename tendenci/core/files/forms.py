@@ -401,12 +401,6 @@ class MultiFileForm(BetterForm):
 
         self.fields['group'].choices = groups_list
 
-        if post_data:
-            new_category = post_data.get('category','0')
-            if new_category != '0':
-                categories.append([new_category,new_category])
-        self.fields['category'].choices = tuple(categories)
-
         # set up the sub category choices
         if post_data:
             file_cat = post_data.get('file_cat', '0')
