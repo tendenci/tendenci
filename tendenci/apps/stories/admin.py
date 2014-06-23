@@ -80,7 +80,10 @@ class StoryAdmin(TendenciBaseModelAdmin):
             args = [obj.image.pk]
             args.append("100x50")
             args.append("crop")
-            return '<img src="%s" />' % reverse('file', args=args)
+            alt = "%s" % obj.image
+            if len(alt) > 123:
+                alt = alt[:123]
+            return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
             return "No image"
     image_preview.allow_tags = True
@@ -105,7 +108,10 @@ class StoryInline(admin.TabularInline):
             args = [obj.image.pk]
             args.append("100x50")
             args.append("crop")
-            return '<img src="%s" />' % reverse('file', args=args)
+            alt = "%s" % obj.image
+            if len(alt) > 123:
+                alt = alt[:123]
+            return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
             return "No image"
     image_preview.allow_tags = True

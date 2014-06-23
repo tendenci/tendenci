@@ -28,18 +28,18 @@
 {% block body %}
 {% tags_for_object photo as tags %}
 
-	<div id="photo-instance">
+    <div id="photo-instance">
         <div class="photo-title-wrap">
             <h2>{% firstof photo.title "Untitled" %}</h2>
         </div>
         <div class="photo-nav">
             {% if set_id > 0 %}
-			<div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
+            <div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
             {% endif %}
         </div>
         <div class="photo-traverse">
             <ul>
-				{% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
+                {% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
                 {% if photo_set_count %}<li>({{ photo_position }} {% trans "of" %} {{ photo_set_count }})</li>{% endif %}
                 {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">{% trans "Next" %} &raquo;</a></li>
                 {% else %}
@@ -52,22 +52,22 @@
             <div class="photo">
                 </a>
                 <br>
-                <div about="{% photo_image_url photo size=640x640 constrain=True %}" 
+                <div about="{% photo_image_url photo size=640x640 constrain=True %}"
                     xmlns:dct="http://purl.org/dc/terms/"
                     xmlns:cc="http://creativecommons.org/ns#">
 
                     {% if photo_next_url %}
                     <a id="image-photo-next" href="{{ photo_next_url }}">
-                        <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title }}" /></a>
+                        <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}" /></a>
                     {% else %}
-                    <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title }}" />
+                    <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}" />
                     {% endif %}
 
                     <br />
                     <div id="photo-rights">
                     <span property="dct:title">{{ photo.title }}</span>
                     {% if photo.photographer %}
-                    	taken by {{ photo.photographer }}
+                        taken by {{ photo.photographer }}
                     {% else %}
                     uploaded by <a href="{{ photo.creator.get_absolute_url }}"
                         property="cc:attributionName" 
@@ -89,51 +89,51 @@
             {{ photo.caption|safe|urlize }}
         </div>
         {% if photo.exif_data %}
-        
+
         {% with photo.exif_data.DateTimeOriginal|exif_to_date|date:'F j, Y' as taken_dt %}
         {% if taken_dt %}
         <div>
-        	<stong>{% trans "Taken on:" %} </stong> {{ taken_dt }}
+            <stong>{% trans "Taken on:" %} </stong> {{ taken_dt }}
         </div>
         {% endif %}
         {% endwith %}
-        
+
         {% if photo.exif_data.Make or photo.exif_data.Model %}
         <div>
-        	{% trans "Camera:" %} 
-        	{% if photo.exif_data.Model %}
-        		{{ photo.exif_data.Model }}
-        	{% else %}
-        	    {{ photo.exif_data.Make }}
-        	{% endif %}		
+            {% trans "Camera:" %} 
+            {% if photo.exif_data.Model %}
+                {{ photo.exif_data.Model }}
+            {% else %}
+                {{ photo.exif_data.Make }}
+            {% endif %}
         </div>
-        {% endif %}	
-        
+        {% endif %}
+
         {% if photo.exif_data.location %}
         <div>
-        	{% trans "Location:" %}
-        	{{ photo.exif_data.location }}
+            {% trans "Location:" %}
+            {{ photo.exif_data.location }}
         </div>
-        {% endif %}	
-        	
+        {% endif %}
+
         {% endif %}
         <div class="hr"></div>
         <div class="photo-options">
-			{% photo_options request.user photo %}
+            {% photo_options request.user photo %}
         </div>
         {% if tags %}
         <div class="photo-tags">
             <strong>{% trans "Tags:" %}</strong> {% for tag in tags %}<a href="{% url photos_search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}{% endfor %}
         </div>
         {% endif %}
-	</div><!-- END .photo-instance -->
+    </div><!-- END .photo-instance -->
 
 <!-- delete photo form -->
 <form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk set_id %}">{% csrf_token %}
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="delete_id" value="{{ photo.pk }}" />
 </form>
-    
+
 {% endblock %}
 
 
@@ -145,9 +145,9 @@
 
 // photo: delete confirmation
 $('.photo-options .photo-delete').click(function(){
-	var delete_photo = confirm('Permenantly delete photo?');	// confirm
-	if(delete_photo) $('form[name="photo-delete"]').submit();	// delete: if OK
-	return false;	// cancel
+    var delete_photo = confirm('Permenantly delete photo?');    // confirm
+    if(delete_photo) $('form[name="photo-delete"]').submit();    // delete: if OK
+    return false;    // cancel
 });
 
 // keyboard shorcut (left, right)
@@ -159,9 +159,9 @@ $(document).keyup(function(event){
 
 // // keyboard shorcut (left, right)
 // $(document).keyup(function(event){
-// 	if(event.target.tagName == 'INPUT') return false; // avoid input fields
-// 	if(event.keyCode == 37) $("#photo-prev").click(); // left arrow
-// 	else if(event.keyCode == 39) $("#photo-next").click(); // right arrow
+//     if(event.target.tagName == 'INPUT') return false; // avoid input fields
+//     if(event.keyCode == 37) $("#photo-prev").click(); // left arrow
+//     else if(event.keyCode == 39) $("#photo-next").click(); // right arrow
 // });
 
 // function supports_history_api() {
@@ -169,17 +169,17 @@ $(document).keyup(function(event){
 // }
 
 // function setupHistoryClicks() {
-// 	addClicker(document.getElementById("image-photo-next"));
-// 	addClicker(document.getElementById("photo-next"));
-// 	addClicker(document.getElementById("photo-prev"));
+//     addClicker(document.getElementById("image-photo-next"));
+//     addClicker(document.getElementById("photo-next"));
+//     addClicker(document.getElementById("photo-prev"));
 // }
 
 // function addClicker(link) {
-// 	$(link).click(function(e){
-// 	    swapPhoto(link.href);
-// 	    history.pushState(null, null, link.href);
-// 	    e.preventDefault();
-// 	});
+//     $(link).click(function(e){
+//         swapPhoto(link.href);
+//         history.pushState(null, null, link.href);
+//         e.preventDefault();
+//     });
 // }
 
 // function swapPhoto(href) {

@@ -190,7 +190,8 @@ def build_settings_form(user, settings):
 
                 if tfile:
                     if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
-                        file_display = '<img src="/files/%s/">' % tfile.pk
+                        tfile_alt = tfile.file.name.lower()[:-4]
+                        file_display = '<img src="/files/%s/" alt="%s" title="%s">' % (tfile.pk, tfile_alt, tfile_alt)
                     else:
                         file_display = tfile.file.name
             except TendenciFile.DoesNotExist:

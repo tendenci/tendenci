@@ -73,7 +73,7 @@ class GlobalFeed(Feed):
 
     def item_link(self, item):
         return self.get_attr_item('link', item)
-    
+
     def item_author_name(self, item):
         return self.get_attr_item('author_name', item)
 

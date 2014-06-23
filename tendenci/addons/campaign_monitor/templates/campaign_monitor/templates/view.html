@@ -1,4 +1,3 @@
-
 {% extends "campaign_monitor/base.html" %}
 {% load base_tags %}
 {% load perm_tags %}
@@ -28,7 +27,7 @@
             <div>
                 {% if template.cm_screenshot_url %}
                     <p><b>{% trans "Screenshot:" %}</b></p><a href="{{ template.cm_preview_url }}">
-                        <img src="{{ template.cm_screenshot_url }}">
+                        <img src="{{ template.cm_screenshot_url }}" alt="{{ template.name|truncatechars:123 }}" title="{{ template.name|truncatechars:123 }}">
                     </a>
                 {% else %}
                     <p><b>{% trans "Screenshot:" %}</b>{% trans " Not Available" %}</p>

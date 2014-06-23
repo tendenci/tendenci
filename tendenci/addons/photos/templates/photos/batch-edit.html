@@ -8,18 +8,18 @@
 {% block title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
 {% block extra_head %}
     {{ block.super }}
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
 {% endblock %}
 
 {% block body %}
-	<div class="t" style="width: 100%;">
+    <div class="t" style="width: 100%;">
 
         <div class="photos-nav">
             {% photo_set_nav request.user photo_set %}
         </div>
 
         <div id="progress_bar"></div>
-		<h1>{% trans "Bulk edit photos" %}</h1>
+        <h1>{% trans "Bulk edit photos" %}</h1>
 
         <form method="POST" action="" class="batch-edit-form">{% csrf_token %}
             <div class="minimize-wrap-link">
@@ -65,22 +65,22 @@
                     </div>
                 </div>
             </div>
-    
+
                 {{ photo_formset.management_form }}
             <div class="sortable-photos clearfix">
                 {% for photo_form in photo_formset.forms %}
 
                 <div class="edit-wrap">
-    
+
                     {{ photo_form.id }}
-    
+
                     {% for error in photo_form.errors %}
                         <li><strong>{{ error|escape }}</strong></li>
                     {% endfor %}
-    
+
                     <div class="photo-wrap">
-                        <img class="full" src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" />
-                        <img class="square" src="{% photo_image_url photo_form.instance size=102x78 crop=True %}" />
+                        <img class="full" src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" alt="{{ photo_form.instance.title|truncatechars:123 }}" title="{{ photo_form.instance.title|truncatechars:123 }}"/>
+                        <img class="square" src="{% photo_image_url photo_form.instance size=102x78 crop=True %}" alt="{{ photo_form.instance.title|truncatechars:123 }}" title="{{ photo_form.instance.title|truncatechars:123 }}"/>
                     </div>
                     <div class="set-wrap">
                         {{ photo_form.photoset }}
@@ -102,7 +102,7 @@
                         <div class="label">{{ photo_form.position.label_tag }}</div>
                         <div class="field">{{ photo_form.position }}</div>
                     </div>
-    
+
                     <div style="position:relative;">
                         <div class="tags-wrap">
                             <div class="label">{{ photo_form.tags.label_tag }}</div>
@@ -113,7 +113,7 @@
                             <div class="label">{{ photo_form.license.label_tag }}</div>
                             <div class="field">{{ photo_form.license }}</div>
                         </div>
-                        
+
                         <div class="group-wrap">
                             <div class="label">{{ photo_form.group.label_tag }}</div>
                             <div class="field">{{ photo_form.group }}</div>
@@ -136,7 +136,7 @@
             </div>
         </form>
 
-	</div>
+    </div>
 
 {% endblock %}
 
@@ -149,12 +149,12 @@
         $('.title-wrap input').val($(this).val())
     });
     $(".photo-bulk-editor .caption").keyup(function(event){
-	    $('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
+        $('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
     });
     $(".photo-bulk-editor .tags").keyup(function(event){
-	    $('.tags-wrap input').val($(this).val())
+        $('.tags-wrap input').val($(this).val())
     }); 
-    
+
     $(".photo-bulk-editor .photographer").keyup(function(event){
         $('.photographer-wrap input').val($(this).val())
     }); 
@@ -208,7 +208,7 @@
         });
     });
 
-    function save_changes(path) { 
+    function save_changes(path) {
         $("#progress_bar").progressbar({
             max : $("#id_form-TOTAL_FORMS").val(),
         });

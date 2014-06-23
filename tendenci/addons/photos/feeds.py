@@ -15,13 +15,19 @@ class LatestAlbums(SubFeed):
     def items(self):
         items = PhotoSet.objects.filter(**PUBLIC_FILTER).order_by('-update_dt')[:20]
         return items
-    
+
     def item_title(self, item):
         return item.name
 
     def item_description(self, item):
         if item.get_cover_photo():
-            return '<a href="%s"><img src="%s" /></a><br />%s' % (item.get_absolute_url(), item.get_cover_photo().get_medium_640_url(), item.description)
+            alt = item.name
+            if alt:
+                if len(alt) > 123:
+                    alt = alt[:123]
+            else:
+                alt = ""
+            return '<a href="%s"><img src="%s" alt="%s" title="%s" /></a><br />%s' % (item.get_absolute_url(), item.get_cover_photo().get_medium_640_url(), alt, alt, item.description)
         return item.description
 
     def item_pubdate(self, item):
@@ -30,26 +36,28 @@ class LatestAlbums(SubFeed):
     def item_link(self, item):
         return item.get_absolute_url()
 
+
 class LatestAlbumPhotos(Feed):
     pass
 #     def get_object(self, request, set_id):
 #         return PhotoSet.objects.get(id=set_id)
-# 
+#
 #     def title(self, album):
 #         site_name = get_setting('site','global','sitedisplayname')
 #         return '%s - Latest Album Photos "%s" ' % (site_name, album.name)
-# 
+#
 #     def description(self, album):
 #         site_name = get_setting('site','global','sitedisplayname')
 #         return 'Latest Album [%s] Photos from %s' % (album.name, site_name)
-# 
+#
 #     link =  "/photos/"
-# 
+#
 #     def items(self, album):
 #         return album.image_set.all()
-#     
+#
 #     def item_title(self, item):
 #         return item.title
+
 
 class PhotoSetSitemap(TendenciSitemap):
     """ Sitemap information for photo sets """
@@ -67,7 +75,7 @@ class PhotoSetSitemap(TendenciSitemap):
 class ImageSitemap(TendenciSitemap):
     changefreq = "monthly"
     priority = 0.3
-    
+
     def items(self):
         items = Image.objects.filter(**PUBLIC_FILTER).order_by('-update_dt')
         return items

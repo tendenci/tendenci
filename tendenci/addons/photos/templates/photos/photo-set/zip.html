@@ -18,22 +18,22 @@
 <div class="t">
 
     <div class="photos-nav">
-		{% photo_set_nav request.user photo_set %}
-	</div>
+        {% photo_set_nav request.user photo_set %}
+    </div>
 
     <h1>{{ photo_set.name }}</h1>
-    
+
     {% if task_id %}
         <div id="zip-wait">
-            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{{ STATIC_URL }}images/ajax-loader.gif"></p>
+            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="loading" title="loading" ></p>
         </div>
     {% endif %}
-    
+
     <div id="zip-done">
         <p>{% trans "Zip file ready for download" %}.</p>
         {% trans "Download" %} <a id='download-link' href="{{ file_path }}">{% trans "here" %}.</a></p>
     </div>
-    
+
 </div>
 
 {% endblock %}

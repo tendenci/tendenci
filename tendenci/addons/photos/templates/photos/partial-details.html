@@ -10,11 +10,11 @@
         <h2>{% firstof photo.title "Untitled" %}</h2>
     </div>
     <div class="photo-nav">
-		<div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
+        <div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
     </div>
     <div class="photo-traverse">
         <ul>
-			{% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
+            {% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
             {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">{% trans "Next" %} &raquo;</a></li>{% endif %}
         </ul>
     </div>
@@ -23,17 +23,17 @@
         <div class="photo">
             </a>
             <br>
-            <div about="{{ photo.get_medium_640_url }}" 
+            <div about="{{ photo.get_medium_640_url }}"
                 xmlns:dct="http://purl.org/dc/terms/"
                 xmlns:cc="http://creativecommons.org/ns#">
                 <a id="image-photo-next" href="{{ photo_next_url }}">
-                    <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" />
+                    <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}" />
                 </a>
                 <br />
                 <span property="dct:title">{{ photo.title }}</span>
-                by 
+                by
                 {% if photo.photographer %}
-                	{{ photo.photographer }}
+                    {{ photo.photographer }}
                 {% else %}
                 <a href="{{ photo.creator.get_absolute_url }}"
                     property="cc:attributionName" 
@@ -43,7 +43,7 @@
                     {{ photo.default_license.name }}.
                 {% else %}
                     {% blocktrans with photo.get_license.deed as phodeed and photo.get_license.name as phoname %}Licensed under
-                    <a rel="license" href="{{ phodeed }}"> 
+                    <a rel="license" href="{{ phodeed }}">
                         {{ phoname }}</a>.{% endblocktrans %}
                 {% endif %}
             </div>
@@ -54,7 +54,7 @@
     </div>
     <div class="hr"></div>
     <div class="photo-options">
-		{% photo_options request.user photo %}
+        {% photo_options request.user photo %}
     </div>
     {% if tags %}
     <div class="photo-tags">

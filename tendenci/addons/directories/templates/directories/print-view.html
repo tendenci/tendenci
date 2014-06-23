@@ -16,63 +16,65 @@
 {% block body %}
 <div class="t-print">
 
-	<div class='hide-this'>
-		<h1>{% trans "Print View" %}</h1>
+    <div class='hide-this'>
+        <h1>{% trans "Print View" %}</h1>
 
-		<div class="guide">
-			<div><a href="{{ directory.get_absolute_url }}">&laquo; {% trans "Back to regular directory view" %}</a></div>
-			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
-		</div>
-	</div>
+        <div class="guide">
+            <div><a href="{{ directory.get_absolute_url }}">&laquo; {% trans "Back to regular directory view" %}</a></div>
+            <div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
+        </div>
+    </div>
 
     <div class="directory-wrap">
         <h2>{{ directory.headline }}</h2>
-		{% if directory.logo %} 
-			<img src="{{ directory.get_logo_url }}" />
-		{% endif %}
+        {% if directory.logo %} 
+            <img src="{{ directory.get_logo_url }}" alt="{{ directory.headline|truncatechars:123 }}" title="{{ directory.headline|truncatechars:123 }}" />
+        {% endif %}
         <div class="content">{{ directory.body|safe }}</div>
-		{% if directory.first_name and directory.last_name %}		
-		<div class="contact">
-			<p><strong>{% trans "Contact:" %}</strong></p>
-			<div>{{ directory.first_name }} {{ directory.last_name }}</div>
-			{% if directory.address %}
-				<div>{{ directory.address }}</div>
-			{% endif %}
-			{% if directory.address2 %}
-				<div>{{ directory.address2 }}</div>
-			{% endif %}
-			{% if directory.city or directory.state or directory.zip_code %}
-				<div>
-					{% if directory.city %}{{ directory.city }}{% endif %}
-					{% if directory.state %},{{ directory.state }}{% endif %}
-					{% if directory.zip_code %}{{ directory.zip_code }}{% endif %}
-				</div>
-			{% endif %}
-			{% if directory.country %}
-				<div>{{ directory.country }}</div>
-			{% endif %}
-			{% if directory.phone %}
-				<div>{{ directory.phone|phonenumber }}</div>
-			{% endif %}
-			{% if directory.phone2 %}
-				<div>{{ directory.phone2|phonenumber }}</div>
-			{% endif %}
-			{% if directory.fax %}
-				<div>{{ directory.fax }} fax.</div>
-			{% endif %}				
-			{% if directory.email %}
-				<div>{{ directory.email|obfuscate_email }}</div>
-			{% endif %}	
-			{% if directory.email2 %}
-				<div>{{ directory.email2|obfuscate_email }}</div>
-			{% endif %}	
-			{% if directory.website %}
-				<div>{{ directory.website }}</div>
-			{% endif %}							
-		</div>      
-		{% endif%}   
+        {% if directory.first_name and directory.last_name %}
+        <div class="contact">
+            <p><strong>{% trans "Contact:" %}</strong></p>
+            <div>{{ directory.first_name }} {{ directory.last_name }}</div>
+            {% if directory.address %}
+                <div>{{ directory.address }}</div>
+            {% endif %}
+            {% if directory.address2 %}
+                <div>{{ directory.address2 }}</div>
+            {% endif %}
+            {% if directory.city or directory.state or directory.zip_code %}
+                <div>
+                    {% if directory.city %}{{ directory.city }}{% endif %}
+                    {% if directory.state %},{{ directory.state }}{% endif %}
+                    {% if directory.zip_code %}{{ directory.zip_code }}{% endif %}
+                </div>
+            {% endif %}
+            {% if directory.country %}
+                <div>{{ directory.country }}</div>
+            {% endif %}
+            {% if directory.phone %}
+                <div>{{ directory.phone|phonenumber }}</div>
+            {% endif %}
+            {% if directory.phone2 %}
+                <div>{{ directory.phone2|phonenumber }}</div>
+            {% endif %}
+            {% if directory.fax %}
+                <div>{{ directory.fax }} fax.</div>
+            {% endif %}
+            {% if directory.email %}
+                <div>{{ directory.email|obfuscate_email }}</div>
+            {% endif %}
+            {% if directory.email2 %}
+                <div>{{ directory.email2|obfuscate_email }}</div>
+            {% endif %}
+            {% if directory.website %}
+                <div>{{ directory.website }}</div>
+            {% endif %}
+        </div>
+        {% endif%}
         <div class="meta">
-            <div class="submitted">Submitted on {{ directory.create_dt|date:"long" }} by {{ directory.creator }}</div>
+            <div class="submitted">
+                Submitted on {{ directory.create_dt|date:"long" }} by {{ directory.creator }}
+            </div>
         </div>
     </div>
 

@@ -24,8 +24,8 @@
 
         <div class="content">
 
-            {% if directory.logo %} 
-                <div class="directory-image"><img src="{{ directory.get_logo_url }}" alt="{{ directory.headline }}"/></div>
+            {% if directory.logo %}
+                <div class="directory-image"><img src="{{ directory.get_logo_url }}" alt="{{ directory.headline|truncatechars:123 }}" title="{{ directory.headline|truncatechars:123 }}" /></div>
             {% endif %}
             <p>{{ directory.body|safe }}</p>
 
@@ -61,13 +61,13 @@
                 {% endif %}
                 {% if directory.fax %}
                     <div>{{ directory.fax }} fax.</div>
-                {% endif %}             
+                {% endif %}
                 {% if directory.email %}
                     <div>{{ directory.email|obfuscate_email }}</div>
-                {% endif %} 
+                {% endif %}
                 {% if directory.email2 %}
                     <div>{{ directory.email2|obfuscate_email }}</div>
-                {% endif %} 
+                {% endif %}
                 {% if directory.website %}
                     <div>{{ directory.website|urlize }}</div>
                 {% endif %}

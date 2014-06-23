@@ -16,7 +16,7 @@
         <h1>{% trans "Delete a Story" %}</h1>
         {% if story.image %}
         <div class="photo">
-            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{{ story.title }}" />
+            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{{ story.title }}" title="{{ story.title|truncatechars:123 }}" alt="{{ story.title|truncatechars:123 }}" />
         </div>
         {% endif %}
         <div class="content">
@@ -24,7 +24,7 @@
         {{ story.content|safe }}
         </div>
         <div class="delete-prompt"> 
-        	{% trans "Are you sure you want to permanently delete this story?" %}
+            {% trans "Are you sure you want to permanently delete this story?" %}
         </div>
         <div class="delete-form">
             <form action="{% url story.delete story.id %}" method="post">{% csrf_token %}

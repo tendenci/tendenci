@@ -18,14 +18,14 @@
 
 <div class="imports">
     <h1>{% trans "Preview Your Import" %}</h1>
-    
+
     <p>{% trans "You're almost done! To complete your import click 'Import Now.'" %}</p>
 
     <div class="csv-icon">
-        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{{ import_i.file.name }}" />
+        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{{ import_i.file.name|truncatechars:123 }}" title="{{ import_i.file.name|truncatechars:123 }}" />
         <p>{{ import_i.file.name }}<br /></p>
     </div>
-    
+
     <div class="summary">
     <ul>
         <li>{{ total }} {% trans "Total Events" %}</li>
@@ -35,8 +35,8 @@
     </div>
 
     <div style="clear: both; "></div>
-    
-	<div class="results">
+
+    <div class="results">
     {% for event in event_list %}
         <div class="result">
             <div class="header">
@@ -56,14 +56,14 @@
                 Description: {{ event.description }}<br/>
             </div>
         </div>
-	{% endfor %}
-	</div>
-    
-	<div align="right">
+    {% endfor %}
+    </div>
+
+    <div align="right">
     <form class="import" method="post" action="{% url event.import_process import_i.pk %}">{% csrf_token %}
-	<input type="submit" class="submit-btn" name="submit" value="Import Now" >
-	</form>
-	</div>
+    <input type="submit" class="submit-btn" name="submit" value="Import Now" >
+    </form>
+    </div>
 
 </div>
 </div>

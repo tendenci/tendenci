@@ -13,9 +13,9 @@
     <label for="file_{{ file.pk }}">
         <div class="icon">
             {% if file.type == 'image' %}
-                <img src="{% image_url file size=150x150 crop=True quality=88 %}" />
+                <img src="{% image_url file size=150x150 crop=True quality=88 %}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}"/>
             {% else %}
-                <img src="{{ file.icon }}" />
+                <img src="{{ file.icon }}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" />
             {% endif %}
             <h3>{{ file.get_name|truncatechars:20 }}</h3>
         </div>

@@ -34,8 +34,8 @@
 <div class="t">
     {% event_nav user event %}
     <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
-		<div class="info">
-	        <h1>
+        <div class="info">
+            <h1>
             {% if event.priority %}
                 <div class="event-priority"></div>
             {% endif %}
@@ -61,7 +61,7 @@
                 <div class="content">
                     {% if event.image %}
                     <div class="photo">
-                        <img itemprop="image" src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
+                        <img itemprop="image" src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title|truncatechars:123 }}" alt="{{ event.title|truncatechars:123 }}" />
                     </div>
                     {% endif %}
                     <div class="event-desc">{{ event.description|safe }}</div>
@@ -71,7 +71,7 @@
                 <div class="speaker-wrap">
                     {% if speaker.get_photo %}
                     <div class="speaker-photo">
-                        <img alt="Speaker: {{ speaker.name }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
+                        <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
                     </div>
                     {% endif %}
                     <div class="speaker">
@@ -87,7 +87,7 @@
                     {% else %}
                     <div class="speaker-desc-short">
                         {{ speaker.description|safe|urlize|linebreaks }}
-                    </div>                    
+                    </div>
                     {% endif %}
                     {% if speaker.description|striptags|wordcount > 50 %}
                     <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
@@ -172,14 +172,14 @@
                 {% endif %}
             </div>
             {% include 'events/meta.html' %}
-		</div> <!-- end info -->
+        </div> <!-- end info -->
 
-		<div class="vitals">
-		{% if event.external_url %}
-		<div class="external-link">
-		<h4><a href="{{ event.external_url }}" target="_blank">View this event's webpage &raquo;</a></h4>
-		</div>
-		{% endif %}
+        <div class="vitals">
+        {% if event.external_url %}
+        <div class="external-link">
+        <h4><a href="{{ event.external_url }}" target="_blank">View this event's webpage &raquo;</a></h4>
+        </div>
+        {% endif %}
             <div class="time-period">
                 <h4 class="vital-header">{% trans "When?" %}</h4>
 
@@ -211,11 +211,11 @@
             </div>
             {% endif %}
 
-			<div class="place" itemprop="location" itemscope itemtype="http://schema.org/PostalAddress">
+            <div class="place" itemprop="location" itemscope itemtype="http://schema.org/PostalAddress">
                 <h4 class="vital-header">{% trans "Where?" %}</h4>
-				<div><strong>{{ event.place.name }}</strong></div>
-				<div class="line" itemprop="streetAddress">{{ event.place.address }}</div>
-				<div class="line">{{ event.place.city_state|join:", "}} <span itemprop="postalCode">{{ event.place.zip }}</span></div>
+                <div><strong>{{ event.place.name }}</strong></div>
+                <div class="line" itemprop="streetAddress">{{ event.place.address }}</div>
+                <div class="line">{{ event.place.city_state|join:", "}} <span itemprop="postalCode">{{ event.place.zip }}</span></div>
                 <div class="line" itemprop="addressCountry">{{ event.place.country }}</div>
                 {% if event.place.description|striptags|wordcount > 50 %}
                     <div class="line event-place-desc-short">
@@ -227,14 +227,14 @@
                 {% else %}
                         <div class="line event-place-desc-short">
                             {{ event.place.description|safe|urlize|linebreaks }}
-                        </div>        
+                        </div>
                 {% endif %}
                 {% if event.place.description|striptags|wordcount > 50 %}
                     <a class="line event-place-desc-toggle" href="#">{% trans "Full Description" %}</a> 
                 {% endif %}
-			</div>
+            </div>
 
-			<div class="hr"></div>
+            <div class="hr"></div>
 
             {% if event.place.address and event.place.city_state %}
             <div class="map">
@@ -246,9 +246,9 @@
             <p class="fb-like-event">{% fb_like_button_iframe the_url %}</p>
 
             {% include 'social_media/icons.html' %}
-		</div> <!-- end vitals -->
+        </div> <!-- end vitals -->
 
-		<div style="clear:both;"></div>
+        <div style="clear:both;"></div>
     </div>
 
 </div>
@@ -260,7 +260,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/social_media_icons.js"></script>
     <script type="text/javascript">
-		$(document).ready(function(){
+        $(document).ready(function(){
 
             $('td.price-disabled').tipsy({
                 gravity: 'e', 
@@ -318,23 +318,23 @@
                 return false;
             });
 
-			// Dialog			
-			$('#event_export_dialog').dialog({
-				autoOpen: false,
-				width: 600,
-				buttons: { 
-					"Close": function() { 
-						$(this).dialog("close"); 
-					} 
-				}
-			});
-			// Dialog Link
-			$('#event_export_link').click(function(){
-				$('#event_export_dialog').show();
-		        $('#event_export_dialog').dialog('open'); 
-		 
-				return false;
-			});
-		});
+            // Dialog
+            $('#event_export_dialog').dialog({
+                autoOpen: false,
+                width: 600,
+                buttons: { 
+                    "Close": function() {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            // Dialog Link
+            $('#event_export_link').click(function(){
+                $('#event_export_dialog').show();
+                $('#event_export_dialog').dialog('open');
+
+                return false;
+            });
+        });
     </script>
 {% endblock %}

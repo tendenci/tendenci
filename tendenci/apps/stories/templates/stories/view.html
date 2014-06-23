@@ -18,7 +18,7 @@
     <div class="story-wrap">
         {% if story.image %}
         <div class="photo">
-            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{{ story.title }}" />
+            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{{ story.title|truncatechars:123 }}" alt="{{ story.title|truncatechars:123 }}" />
         </div>
         {% endif %}
         <div class="content">

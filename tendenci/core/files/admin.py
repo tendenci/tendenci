@@ -55,11 +55,11 @@ class FileAdmin(TendenciBaseModelAdmin):
                 args = [obj.pk]
                 args.append("100x50")
                 args.append("crop")
-                return '<img alt="%s" src="%s" />' % (obj, reverse('file', args=args))
+                return '<img alt="%s" title="%s" src="%s" />' % (obj, obj, reverse('file', args=args))
             else:
                 return ""
         elif obj.icon():
-            return '<img alt="%s" src="%s" />' % (obj.type(), obj.icon())
+            return '<img alt="%s" title="%s" src="%s" />' % (obj.type(), obj.type(), obj.icon())
         else:
             return obj.type()
     file_preview.allow_tags = True

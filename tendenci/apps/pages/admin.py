@@ -6,7 +6,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.apps.pages.models import Page 
+from tendenci.apps.pages.models import Page
 from tendenci.apps.pages.forms import PageAdminForm
 
 try:
@@ -62,10 +62,12 @@ class PageAdmin(admin.ModelAdmin):
 
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
-        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+        link = '<a href="%s" title="%s"><img src="%s" alt="%s" title="%s" /></a>' % (
             reverse('page', args=[obj.slug]),
             obj.title,
             link_icon,
+            obj.title,
+            obj.title
         )
         return link
     view_on_site.allow_tags = True
@@ -75,7 +77,7 @@ class PageAdmin(admin.ModelAdmin):
         super(PageAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {
             'event_id' : 583000,
-            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
+            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name,
                                                     object.pk, request.user),
             'description': '%s deleted' % object._meta.object_name,
             'user': request.user,
@@ -88,7 +90,7 @@ class PageAdmin(admin.ModelAdmin):
         super(PageAdmin, self).log_change(request, object, message)
         log_defaults = {
             'event_id' : 582000,
-            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
+            'event_data': '%s (%d) edited by %s' % (object._meta.object_name,
                                                     object.pk, request.user),
             'description': '%s edited' % object._meta.object_name,
             'user': request.user,

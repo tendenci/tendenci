@@ -5,7 +5,7 @@ jQuery(function($) {
     var table = $("table#formset")
     var pos_field = table.find('td.field-' + position_field);
     pos_field.children('input[type="text"]').hide();
-    var label = $('<span><img src="/static/images/icons/drag_icon_16x16.png" /></span>');
+    var label = $('<span><img src="/static/images/icons/drag_icon_16x16.png" alt="drag icon" title="drag icon" /></span>');
     pos_field.append(label);
 
     table.find('td.field-' + description_field).each(function() {
@@ -40,7 +40,7 @@ function update_positions(table, update_ids)
             // Update position field
             $(this).find('td.field-' + position_field + ' input[type="text"]').val(position + 1);
             position++;
-            
+
             // Update row coloring
             $(this).removeClass('row1 row2');
             if (even)
@@ -55,5 +55,5 @@ function update_positions(table, update_ids)
             }
         }
     });
-    
+
 }

@@ -13,9 +13,9 @@
             href="{{ photo_set.get_absolute_url }}">
 
             {% if photo_set.get_cover_photo %}
-                <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" />
+                <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
             {% else %}
-                <img src="{{ photo_set.get_default_cover_photo }}" />
+                <img src="{{ photo_set.get_default_cover_photo }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
             {% endif %}
 
             <div class="photo-count">{{ photo_set.image_set.count|intcomma }} </div>
