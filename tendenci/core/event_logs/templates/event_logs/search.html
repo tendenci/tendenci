@@ -21,7 +21,7 @@
 
     <h1>{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %} {% trans "Search" %}</h1>
 
-    % event_log_search search_form %}
+    {% event_log_search search_form %}
     {% autopaginate event_logs 10 %}
     <p>
     {% blocktrans with paginator.count as pag_count %} Found <strong>{{ pag_count }}</strong> results</p> {% endblocktrans %}
@@ -44,7 +44,7 @@
                         {% endif %}
                         </td>
                         <td class="el-sh-source">
-                            % if event_log.source %}
+                            {% if event_log.source %}
                                 <a href="{% url event_log.search %}?source={{ event_log.source|urlencode }}{{ date_range_query }}#advanced">{{ event_log.source }}</a>
                             {% else %}
                                 &nbsp;
@@ -56,24 +56,24 @@
                         </td>
                     </tr>
                     <tr>
-                        % if event_log.user %}
+                        {% if event_log.user %}
                             <td class="el-sh-user">
-                                % trans "User: " %}<a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
+                                {% trans "User: " %}<a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
                                 <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}#advanced">
                                     <img border="0" src="{{ STATIC_URL }}images/icons/crosscheck12x12.gif" alt="crosscheck 12x12" title="crosscheck 12x12" />
                                 </a>
                             </td>
                         {% else %}
                             <td class="el-sh-user">
-                                % trans "User: " %}{{ event_log.username }}
+                                {% trans "User: " %}{{ event_log.username }}
                                 <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}#advanced">
                                     <img border="0" src="{{ STATIC_URL }}images/icons/crosscheck12x12.gif" alt="crosscheck 12x12" title="crosscheck 12x12" />
                                 </a>
                             </td>
-                           % endif %}
+                        {% endif %}
                         <td>{{ event_log.description }}</td>
                         <td colspan="2">
-                              % if event_log.user %}
+                            {% if event_log.user %}
                                 {% trans "User ID: " %}<a href="{% url event_log.search %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
                             {% else %}
                                 {% trans "User ID: " %}<a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}{{ date_range_query }}#advanced">0</a>
@@ -90,15 +90,15 @@
                 {% endif %}
                 {% if event_log.entity %}
                     <div class="el-meta-entity">
-                        % trans "Entity: " %}{{ event_log.entity.pk }}
+                        {% trans "Entity: " %}{{ event_log.entity.pk }}
                     </div>
                 {% endif %}
                 <div class="el-meta-ips">
                     <table border="0" cellpadding="0" cellspacing="0">
                         <tr>
-                            % if event_log.user %}
+                            {% if event_log.user %}
                                 <td colspan="2">
-                                    % trans "Creator: " %}<a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
+                                    {% trans "Creator: " %}<a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
                                     <a href="{% url event_log.search %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
                                 </td>
                             {% else %}
@@ -108,10 +108,10 @@
                                 </td>
                             {% endif %}
                             <td>
-                                % if event_log.entity %}
-                                    % trans "Entity: " %}<a href="{% url entity event_log.entity.pk %}">{{ event_log.entity.pk }}</a>
+                                {% if event_log.entity %}
+                                    {% trans "Entity: " %}<a href="{% url entity event_log.entity.pk %}">{{ event_log.entity.pk }}</a>
                                 {% else %}
-                                    % trans "Entity: N/A" %}
+                                    {% trans "Entity: N/A" %}
                                 {% endif %}
                             </td>
                         </tr>
@@ -120,10 +120,10 @@
                                <img height="12" width="12" alt="Cookie" src="{{ STATIC_URL }}images/icons/cookie12x12.gif" title="Cookie">
                             {% if event_log.session_id %}
                               <a href="{% url event_log.search %}?session_id={{ event_log.session_id }}{{ date_range_query }}#advanced">
-                                { event_log.session_id }}
+                                {{ event_log.session_id }}
                             </a>
                             {% else %}
-                                % if event_log.username == 'anonymous' %}
+                                {% if event_log.username == 'anonymous' %}
                                     <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}{{ date_range_query }}#advanced">
                                     {{ event_log.username }}
                                     </a>
@@ -134,7 +134,7 @@
                           </td>
                           <td>{% trans "User IP: " %}
                               <a href="{% url event_log.search %}?user_ip_address={{ event_log.user_ip_address|urlencode }}{{ date_range_query }}#advanced">
-                                { event_log.user_ip_address }}
+                                {{ event_log.user_ip_address }}
                             </a>
                           </td>
                           <td>{% trans "Server IP: " %}{{ event_log.server_ip_address }}
@@ -144,16 +144,16 @@
                 </div>
             </div>
             <div class="el-event-data">
-                % if event_log.headline %}
+                {% if event_log.headline %}
                     <p>{% trans "Headline: " %}{{ event_log.headline }}</p>
                 {% endif %}
-                { event_log.event_data }}
+                {{ event_log.event_data }}
                 {% if event_log.content_type %}
                     <a href="{{ SITE_GLOBAL_SITEURL }}{{ event_log.url }}">(view)</a>
                 {% endif %}
             </div>
         </div>
-    % empty %}
+    {% empty %}
         <div class="event-log-search-wrap">
           <div>{% trans "0 Results Found" %}</div>
         </div>
