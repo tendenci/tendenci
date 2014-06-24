@@ -103,7 +103,7 @@
                                 </td>
                             {% else %}
                                 <td colspan="2">
-                                    % trans "Creator: " %}{{ event_log.username }}
+                                    {% trans "Creator: " %}{{ event_log.username }}
                                     <a href="{% url event_log.search %}?user_name={{ event_log.username }}{{ date_range_query }}">0</a>
                                 </td>
                             {% endif %}
