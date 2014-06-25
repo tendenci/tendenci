@@ -15,7 +15,7 @@ from tendenci.core.base.utils import normalize_field_names
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
-from tendenci.addons.memberships.models import Membership
+from tendenci.addons.memberships.models import MembershipDefault
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile, UserImport
 from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
@@ -602,19 +602,18 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
         return password1
 
 class UserMembershipForm(TendenciBaseForm):
-    subscribe_dt = SplitDateTimeField(label=_('Subscribe Date/Time'),
+    join_dt = SplitDateTimeField(label=_('Subscribe Date/Time'),
         initial=datetime.datetime.now())
     expire_dt = SplitDateTimeField(label=_('Expire Date/Time'), required=False)
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
         
     class Meta:
-        model = Membership
+        model = MembershipDefault
         fields = (
-            'user',
             'member_number',
             'membership_type',
-            'subscribe_dt',
+            'join_dt',
             'expire_dt',
             'allow_anonymous_view',
             'user_perms',
@@ -627,10 +626,9 @@ class UserMembershipForm(TendenciBaseForm):
         fieldsets = [
             ('Membership Information', {
                 'fields': [
-                    'user',
                     'member_number',
                     'membership_type',
-                    'subscribe_dt',
+                    'join_dt',
                     'expire_dt',
                 ],
                 'legend': ''
@@ -646,7 +644,6 @@ class UserMembershipForm(TendenciBaseForm):
             }),
             ('Administrator Only', {
                 'fields': [
-                    'syndicate',
                     'status',
                     'status_detail'], 
                 'classes': ['admin-only'],
@@ -654,7 +651,6 @@ class UserMembershipForm(TendenciBaseForm):
             
     def __init__(self, *args, **kwargs):
         super(UserMembershipForm, self).__init__(*args, **kwargs)
-        self.fields['user'].widget = forms.HiddenInput()
 
 
 class ProfileMergeForm(forms.Form):

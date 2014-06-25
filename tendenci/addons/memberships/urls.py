@@ -12,16 +12,6 @@ urlpatterns = patterns(
     url(r"^%s/$" % urlpath, "membership_index", name="membership.index"),
     url(r"^%s/search/$" % urlpath, "membership_search", name="membership.search"),
     url(r"^%s/(?P<id>\d+)/$" % urlpath, "membership_details", name="membership.details"),
-#     url(r"^%s/(?P<id>\d+)/delete/$" % urlpath, "membership_delete", name="membership.delete"),
-#     url(r"^%s/(?P<id>\d+)/edit/$" % urlpath, "membership_edit", name="membership.edit"),
-#     url(r"^%s/entries-export/$" % urlpath, "membership_export"),
-
-#     # import
-#     url(r"^%s/import/$" % urlpath, "membership_import_upload", name="membership_import"),
-#     url(r"^%s/import/upload-file$" % urlpath, "membership_import_upload", name="membership_import_upload_file"),
-#     url(r"^%s/import/preview/(?P<id>\d+)/$" % urlpath, "membership_import_preview", name="membership_import_preview"),
-#     url(r"^%s/import/confirm/(?P<id>\d+)/$" % urlpath, "membership_import_confirm", name="membership_import_confirm"),
-#     url(r"^%s/import/status/(?P<task_id>[-\w]+)/$" % urlpath, "membership_import_status", name='membership_import_status'),
 
     # import to membership default
     url(r"^%s/import_default/$" % urlpath, "membership_default_import_upload",
@@ -131,12 +121,6 @@ urlpatterns = patterns(
     url(r'^%s/reports/active_members_ytd/$' % urlpath, 'report_active_members_ytd', name='reports-active-members-ytd'),
     url(r'^%s/reports/members_ytd_type/$' % urlpath, 'report_members_ytd_type', name='reports-members-ytd-type'),
 
-#     # entries
-#     url(r"^%s/entries/$" % urlpath, "application_entries", name="membership.application_entries"),
-#     url(r"^%s/entries/(?P<id>\d+)/$" % urlpath, "application_entries", name="membership.application_entries"),
-#     url(r"^%s/entries/print/(?P<id>\d+)/$" % urlpath, "application_entries_print", name="membership.application_entries_print"),
-#     url(r"^%s/entries/edit/(?P<id>\d+)/$" % urlpath, "entry_edit", name="membership.entry_edit"),
-#     url(r"^%s/entries/delete/(?P<id>\d+)/$" % urlpath, "entry_delete", name="membership.entry_delete"),
      url(r"^%s/entries/search/$" % urlpath, "application_entries_search", name="membership.application_entries_search"),
 
     # notice
@@ -145,13 +129,7 @@ urlpatterns = patterns(
 
 
 #     # application
-#     url(r"^%s/confirmation/(?P<hash>[\w]+)/$" % urlpath, "application_confirmation", name="membership.application_confirmation"),
      url(r"^%s/default-confirmation/(?P<hash>[\w]+)/$" % urlpath, "application_confirmation_default", name="membership.application_confirmation_default"),
-#     url(r"^%s/(?P<slug>[\w\-]+)/template/$" % urlpath, "download_template", name="membership.download_template"),
      url(r"^%s/default-application/(?P<cmb_id>\d+)?/?$" % urlpath, "application_detail_default", name="membership.application_detail_default"),
-#     url(r"^%s/(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)?/?$" % urlpath, "application_details", name="membership.application_details"),
-#     url(r"^%s/(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)/(?P<imv_id>\d+)/(?P<imv_guid>[\d\w-]+)/$" % urlpath, "application_details", name="membership.application_details_via_corp_domain"),
-#     url(r"^%s/(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)/(?P<secret_hash>[\d\w]+)$" % urlpath, "application_details", name="membership.application_details_via_corp_secret_code"),
-#     url(r"^%s/(?P<slug>[\w\-]+)/corp-pre/(?P<cmb_id>\d+)?/?$" % urlpath, "application_details_corp_pre", name="membership.application_details_corp_pre"),
 
 )

@@ -1,14 +1,12 @@
 from geraldo import Report, ReportBand, ObjectValue, SystemField,\
     BAND_WIDTH, Label, landscape
 from reportlab.lib.units import cm
-from reportlab.lib.enums import TA_RIGHT, TA_CENTER
 from reportlab.lib.pagesizes import A5
-from datetime import datetime, timedelta
 
 class ReportBandNewMems(ReportBand):
     def __init__(self, *args, **kwargs):
         days_ago = kwargs.pop('days_ago')
-        super(ReportBandNewsMems, self).__init__(*args, **kwargs)
+        super(ReportBandNewMems, self).__init__(*args, **kwargs)
 
 class ReportNewMems(Report):
     title = "New Memberships"

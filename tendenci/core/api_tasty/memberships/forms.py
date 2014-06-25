@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from tendenci.addons.memberships.models import Membership
+from tendenci.addons.memberships.models import MembershipDefault
 from tendenci.core.api_tasty.forms import TendenciForm
 
 class MembershipForm(TendenciForm):
@@ -9,7 +9,7 @@ class MembershipForm(TendenciForm):
     password = forms.CharField(required=False)
     
     class Meta:
-        model = Membership
+        model = MembershipDefault
         exclude = ('user', 'guid')
     
     def __init__(self, *args, **kwargs):

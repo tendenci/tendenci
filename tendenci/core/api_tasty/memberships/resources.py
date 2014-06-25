@@ -5,7 +5,7 @@ from tendenci.core.api_tasty.validation import TendenciValidation
 from tendenci.core.api_tasty.users.resources import UserResource
 from tendenci.core.api_tasty.payments.resources import PaymentMethodResource
 from tendenci.core.api_tasty.memberships.forms import MembershipForm
-from tendenci.addons.memberships.models import Membership, MembershipType, App
+from tendenci.addons.memberships.models import MembershipDefault, MembershipType, MembershipApp
 
 
 class MembershipTypeResource(TendenciResource):
@@ -18,7 +18,7 @@ class MembershipTypeResource(TendenciResource):
 
 class AppResource(TendenciResource):
     class Meta(TendenciResource.Meta):
-        queryset = App.objects.all()
+        queryset = MembershipApp.objects.all()
         resource_name = 'app'
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
@@ -45,7 +45,7 @@ class MembershipResource(TendenciResource):
     payment_method = fields.ForeignKey(PaymentMethodResource, 'payment_method', null=True)
 
     class Meta(TendenciResource.Meta):
-        queryset = Membership.objects.all()
+        queryset = MembershipDefault.objects.all()
         resource_name = 'membership'
         validation = TendenciValidation(form_class=MembershipForm)
         list_allowed_methods = ['get', 'post']
@@ -88,7 +88,7 @@ class MembershipResource(TendenciResource):
         else:
             user = User.objects.get(username=data['username'])
 
-        mem = Membership()
+        mem = MembershipDefault()
         mem.user = user
         for key in data:
             setattr(mem, key, data[key])

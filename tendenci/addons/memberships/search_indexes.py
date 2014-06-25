@@ -1,6 +1,4 @@
-from haystack import indexes, site
-
-from django.utils.html import strip_tags, strip_entities
+from haystack import indexes
 
 from tendenci.addons.memberships.models import MembershipDefault
 from tendenci.core.perms.indexes import TendenciBaseSearchIndex

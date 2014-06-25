@@ -1,5 +1,4 @@
 import os
-import re
 import hashlib
 import uuid
 import time
@@ -11,12 +10,9 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models.query_utils import Q
 from django.template import Context, Template
-from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.contrib.contenttypes import generic
 from django import forms
 from django.utils.importlib import import_module
 from django.core.files.storage import default_storage
@@ -29,13 +25,12 @@ from django.db.models.fields import AutoField
 from tendenci.core.base.utils import day_validate, is_blank
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.utils import get_notice_recipients, has_perm
-from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.base.fields import DictField, CountrySelectField
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.emails.models import Email
-from tendenci.addons.memberships.managers import MembershipManager, MembershipTypeManager, \
+from tendenci.addons.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
 from tendenci.core.base.utils import fieldify
 from tinymce import models as tinymce_models

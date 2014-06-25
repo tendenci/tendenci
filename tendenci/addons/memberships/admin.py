@@ -1,17 +1,11 @@
-import uuid
-from datetime import datetime
 from django.db.models import Q
 from django.contrib import admin
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.contrib.contenttypes.models import ContentType
 from django.conf.urls.defaults import patterns, url
 from django.template.defaultfilters import slugify
-from django.http import HttpResponse
-from django.utils.html import escape
 from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -23,19 +17,14 @@ from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import tcurrency
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.addons.memberships.models import (
     MembershipDefault, MembershipType, Notice,
     MembershipAppField, MembershipApp)
 from tendenci.addons.memberships.forms import (
     MembershipDefaultForm, NoticeForm,
     MembershipAppForm, MembershipAppFieldAdminForm)
-from tendenci.addons.memberships.utils import (
-    get_default_membership_fields,
-    edit_app_update_corp_fields,
-    get_selected_demographic_field_names)
+from tendenci.addons.memberships.utils import get_selected_demographic_field_names
 from tendenci.addons.memberships.middleware import ExceededMaxTypes
-from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
 

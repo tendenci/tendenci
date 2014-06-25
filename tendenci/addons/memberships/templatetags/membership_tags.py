@@ -22,25 +22,6 @@ def membership_nav(context, user, membership=None):
 def membership_search(context):
     return context
 
-@register.inclusion_tag("memberships/entries/options.html", takes_context=True)
-def entry_options(context, user, entry):
-    context.update({
-        "opt_object": entry,
-        "user": user
-    })
-    return context
-
-@register.inclusion_tag("memberships/entries/nav.html", takes_context=True)
-def entry_nav(context, user, entry=None):
-    context.update({
-        "nav_object" : entry,
-        "user": user
-    })
-    return context
-
-@register.inclusion_tag("memberships/entries/search-form.html", takes_context=True)
-def entry_search(context):
-    return context
 
 @register.inclusion_tag('memberships/renew-button.html', takes_context=True)
 def renew_button(context):

@@ -966,6 +966,12 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
 
 @login_required
 def user_membership_add(request, username, form_class=UserMembershipForm, template_name="profiles/add_membership.html"):
+    redirect_url = reverse('membership_default.add')
+    redirect_url = '%s?username=%s' % (redirect_url, username)
+    # this view is redundant and not handling membership add well.
+    # redirect to membership add
+    return redirect(redirect_url)
+    
     user = get_object_or_404(User, username=username)
     
     try:
@@ -975,17 +981,16 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
         
     if not request.user.profile.is_superuser:
         raise Http403
-        
+    
+    form = form_class(request.POST or None)  
     if request.method == 'POST':
-        form = form_class(request.POST)
         if form.is_valid():
             membership = form.save(commit=False)
+            membership.user = user
             membership = update_perms_and_save(request, form, membership)
             messages.add_message(request, messages.SUCCESS, 'Successfully updated memberships for %s' % user.get_full_name())
             membership.populate_or_clear_member_id()
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
-    else:
-        form = form_class(initial={'user':user})
 
     return render_to_response(template_name, {
                             'form': form,

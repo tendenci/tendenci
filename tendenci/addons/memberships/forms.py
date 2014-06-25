@@ -1,23 +1,15 @@
-from uuid import uuid4
 #from captcha.fields import CaptchaField
-from os.path import join
 from datetime import datetime
-from hashlib import md5
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
 
-from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser
-from django.forms.fields import CharField, ChoiceField, BooleanField
-from django.template.defaultfilters import slugify
-from django.forms.widgets import HiddenInput
+from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
+from tendenci.core.base.fields import EmailVerificationField
 from tendenci.addons.corporate_memberships.models import (
     CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
@@ -27,8 +19,7 @@ from tendenci.addons.memberships.models import (
     MembershipDefault, MembershipDemographic, MembershipAppField, MembershipType,
     Notice, MembershipImport, MembershipApp, MembershipFile)
 from tendenci.addons.memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
-from tendenci.addons.memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from tendenci.addons.memberships.utils import csv_to_dict, NoMembershipTypes
+from tendenci.addons.memberships.settings import UPLOAD_ROOT
 from tendenci.addons.memberships.utils import normalize_field_names
 from tendenci.addons.memberships.utils import (
     get_membership_type_choices, get_corporate_membership_choices, get_selected_demographic_fields,
@@ -133,71 +124,6 @@ def get_suggestions(entry):
     user_set[0] = 'Create new user'
 
     return user_set.items()
-
-
-# class MemberApproveForm(forms.Form):
-# 
-#     users = forms.ChoiceField(
-#         label='Connect this membership with',
-#         choices=[],
-#         widget=forms.RadioSelect,
-#         )
-# 
-#     def get_suggestions(self, entry):
-#         """
-#             Generate list of suggestions [people]
-#             Use the authenticated user that filled out the application
-#             Use the fn, ln, em mentioned within the application
-#         """
-#         user_set = {}
-# 
-#         if entry.user:
-#             auth_fn = entry.user.first_name
-#             auth_ln = entry.user.last_name
-#             auth_un = entry.user.username
-#             auth_em = entry.user.email
-#             user_set[entry.user.pk] = '%s %s %s %s' % (auth_fn, auth_ln, auth_un, auth_em)
-# 
-#         if entry.first_name and entry.last_name:
-#             mentioned_fn = entry.first_name
-#             mentioned_ln = entry.last_name
-#             mentioned_em = entry.email
-#         else:
-#             mentioned_fn, mentioned_ln, mentioned_em = None, None, None
-# 
-#         sqs = SearchQuerySet()
-# 
-#         if mentioned_em:
-#             email_q = Q(content=mentioned_em)
-#             sqs = sqs.filter(email_q)
-#             sqs_users = [sq.object.user for sq in sqs]
-#         else:
-#             sqs_users = []
-# 
-#         for u in sqs_users:
-#             user_set[u.pk] = '%s %s %s %s' % (u.first_name, u.last_name, u.username, u.email)
-#             self.fields['users'].initial = u.pk
-# 
-#         user_set[0] = 'Create new user'
-# 
-#         return user_set.items()
-# 
-#     def __init__(self, entry, *args, **kwargs):
-#         super(MemberApproveForm, self).__init__(*args, **kwargs)
-#         suggested_users = []
-#         self.entry = entry
-# 
-#         suggested_users = entry.suggested_users(email=entry.email)
-#         suggested_users.append((0, 'Create new user'))
-#         self.fields['users'].choices = suggested_users
-#         self.fields['users'].initial = 0
-# 
-#         if self.entry.is_renewal:
-#             self.fields['users'] = CharField(
-#                 label='',
-#                 initial=entry.user.pk,
-#                 widget=HiddenInput
-#             )
 
 
 class MembershipTypeForm(TendenciBaseForm):
@@ -1195,127 +1121,6 @@ class AppCorpPreForm(forms.Form):
             self.corporate_membership_id = corp_membership.id
         return email
 
-# 
-# class CSVForm(forms.Form):
-#     """
-#     Map CSV import to Membership Application.
-#     Create Membership Entry on save() method.
-#     """
-#     def __init__(self, *args, **kwargs):
-#         """
-#         Dynamically create fields using the membership
-#         application chosen.  The choices provided to these
-#         dynamic fields are the csv import columns.
-#         """
-#         step_numeral, step_name = kwargs.pop('step', (None, None))
-#         app = kwargs.pop('app', '')
-#         file_path = kwargs.pop('file_path', '')
-# 
-#         super(CSVForm, self).__init__(*args, **kwargs)
-# 
-#         if step_numeral == 1:
-#             """
-#             Basic Form: Application & File Uploader
-#             """
-# 
-#             self.fields['app'] = forms.ModelChoiceField(
-#                 label='Application', queryset=App.objects.all())
-# 
-#             self.fields['csv'] = forms.FileField(label="CSV File")
-# 
-#         if step_numeral == 2:
-#             """
-#             Basic Form + Mapping Fields
-#             """
-# 
-#             # file to make field-mapping form
-#             csv = csv_to_dict(file_path)
-# 
-#             # choices list
-#             choices = csv[0].keys()
-# 
-#             # make tuples; sort tuples (case-insensitive)
-#             choice_tuples = [(c, c) for c in csv[0].keys()]
-# 
-#             choice_tuples.insert(0, ('', ''))  # insert blank option
-#             choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
-# 
-#             app_fields = AppField.objects.filter(app=app)
-# 
-#             native_fields = [
-#                 'User Name',
-#                 'Membership Type',
-#                 'Corp. Membership Name',
-#                 'Member Number',
-#                 'Payment Method',
-#                 'Join Date',
-#                 'Renew Date',
-#                 'Expire Date',
-#                 'Owner',
-#                 'Creator',
-#                 'Status',
-#                 'Status Detail',
-#             ]
-# 
-#             for native_field in native_fields:
-#                 self.fields[slugify(native_field)] = ChoiceField(**{
-#                     'label': native_field,
-#                     'choices': choice_tuples,
-#                     'required': False,
-#                 })
-# 
-#                 # compare required field with choices
-#                 # if they match; set initial
-#                 if native_field in choices:
-#                     self.fields[slugify(native_field)].initial = native_field
-# 
-#             self.fields['user-name'].required = True
-#             self.fields['membership-type'].required = True
-# 
-#             for app_field in app_fields:
-#                 for csv_row in csv:
-# 
-#                     if slugify(app_field.label) == 'membership-type':
-#                         continue  # skip membership type
-# 
-#                     self.fields[app_field.label] = ChoiceField(**{
-#                         'label': app_field.label,
-#                         'choices': choice_tuples,
-#                         'required': False,
-#                     })
-# 
-#                     # compare label with choices
-#                     # if label matches choice; set initial
-#                     if app_field.label in choices:
-#                         self.fields[app_field.label].initial = app_field.label
-# 
-#     def save(self, *args, **kwargs):
-#         """
-#         Loop through the dynamic fields and create an
-#         entry and membership record. Map application,
-#         entry, and membership record.
-# 
-#         Checking app.pk, user.pk and entry_time to
-#         recognize duplicates.
-#         """
-#         step_numeral, step_name = kwargs.pop('step', (None, None))
-# 
-#         if step_numeral == 1:
-#             """
-#             Basic Form: Application & File Uploader
-#             """
-#             return self.cleaned_data
-# 
-#         if step_numeral == 2:
-#             """
-#             Basic Form + Mapping Fields
-#             """
-#             pass  # mapping of fields
-#             return self.cleaned_data
-# 
-#         if step_numeral == 3:
-#             pass  # end-user is previewing
-
 
 class ReportForm(forms.Form):
     STATUS_CHOICES = (
@@ -1921,64 +1726,3 @@ class MembershipDefaultForm(TendenciBaseForm):
 
         return membership
 
-
-# class MembershipForm(TendenciBaseForm):
-#     STATUS_CHOICES = (
-#         ('active', 'Active'),
-#         ('inactive', 'In Active'),
-#     )
-# 
-#     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
-#     subscribe_dt = SplitDateTimeField(label=_('Subscribe Date'))
-#     expire_dt = SplitDateTimeField(label=_('Expiration Date'), required=False)
-#     ma = forms.ModelChoiceField(label=_('Application'), queryset=App.objects.all())
-# 
-#     class Meta:
-#         model = Membership
-# 
-#         fields = (
-#             'member_number',
-#             'membership_type',
-#             'user',
-#             'renewal',
-#             'subscribe_dt',
-#             'expire_dt',
-#             'payment_method',
-#             'ma',
-#             'send_notice',
-#             'user_perms',
-#             'member_perms',
-#             'group_perms',
-#             'status_detail',
-#         )
-# 
-#         fieldsets = [
-#             ('Membership Details', {
-#                 'fields': [
-#                     'membership_type',
-#                     'user',
-#                     'member_number',
-#                     'subscribe_dt',
-#                     'expire_dt',
-#                     'renewal',
-#                     'payment_method',
-#                     'ma',
-#                     'send_notice',
-#                 ],
-#                 'legend': ''
-#             }),
-#             ('Permissions', {
-#                 'fields': [
-#                     'allow_anonymous_view',
-#                     'user_perms',
-#                     'member_perms',
-#                     'group_perms',
-#                 ],
-#                 'classes': ['permissions'],
-#             }),
-#             ('Administrator Only', {
-#                 'fields': [
-#                     'syndicate',
-#                     'status_detail'],
-#                 'classes': ['admin-only'],
-#             })]

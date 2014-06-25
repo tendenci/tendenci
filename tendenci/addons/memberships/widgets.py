@@ -10,7 +10,6 @@ from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 from django.forms.widgets import CheckboxSelectMultiple, CheckboxInput
-from django.forms.util import flatatt
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import NOTICE_TYPES, MembershipDefault
