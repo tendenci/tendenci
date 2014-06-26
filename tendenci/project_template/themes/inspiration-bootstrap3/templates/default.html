@@ -1,0 +1,150 @@
+{% load theme_tags %}
+{% theme_extends "base.html" %}
+
+
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+=========================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load story_tags %}
+{% load news_tags %}
+
+
+<!-- Meta Tags (for optimal SEO)
+=========================================================== -->    
+{% block title %}{{ SITE_GLOBAL_SITENAME }} {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+
+
+<!-- Starts Tendenci Head Tag
+=========================================================== --> 
+{% block extra_head %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+
+    <title>Theme Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS
+=========================================================== --> 
+    <link href="{{ THEME_URL }}media/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme
+=========================================================== --> 
+    <link href="{{ THEME_URL }}media/css/bootstrap-theme.min.css" rel="stylesheet">
+
+
+
+    <!-- navigation dropdowns
+=========================================================== --> 
+    <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
+    <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
+
+    <!-- Custom styles for this template
+=========================================================== --> 
+  <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and
+    media queries
+=========================================================== --> 
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+{% endblock extra_head %}
+
+
+    <!-- Start of the Body
+=========================================================== --> 
+{% block body_ids %}sub{% endblock body_ids %}
+{% block body_classes %}sub{% endblock body_classes %}
+{% block html_body %}
+    <a class="sr-only" href="#content">Skip to main content</a>
+
+
+
+      <!-- Header Starts
+=========================================================== --> 
+      <header>
+      {% theme_include "header.html" %}<!-- Pulls in Header Include -->
+      </header>
+      <!-- Header Ends -->
+
+   
+
+      <!-- Container Starts
+=========================================================== --> 
+<div id="content" class="container theme-showcase" role="main">
+  
+  
+<!-- Body 
+=========================================================== -->
+  <div class="col-lg-9 col-sm-8">
+        {% theme_include "base/messages.html" %}
+        {% block body %}{% endblock %}
+</div>
+
+
+<div class="col-lg-3 col-sm-4">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">Latest News</h3>
+    </div>
+    <div class="panel-body">
+  {% list_news as news_list limit=3 %}
+  {% for news_item in news_list %}
+  <h4><a href="{{ news_item.get_absolute_url }}">{{ news_item.headline }}</a></h4>
+      <p>{{ news_item.summary|striptags|safe|truncatewords:"30" }}</p><br>
+  {% endfor %}
+  <p><a href="/news/">View More News &raquo;</a></p>
+    </div>
+  </div>
+</div>
+
+
+ <div class="clear"></div>
+       
+    
+    <!-- Footer starts
+      =========================================================== -->
+    <footer>
+      {% theme_include 'footer.html' %}
+    </footer>
+    <!-- Footer Ends -->
+
+</div>
+          
+{% endblock %} <!-- Ends the Body -->
+
+{% block extra_body %}
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="{{ THEME_URL }}media/js/bootstrap.min.js"></script>
+
+
+
+ <!-- Theme Specific Javascript files
+ ================================================== -->
+    <!-- Respond JS for IE8 -->
+    <script src="{{ THEME_URL }}media/js/respond.min.js"></script>
+    <!-- HTML5 Support for IE -->
+    <script src="{{ THEME_URL }}media/js/html5shiv.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
+    <script src="{{ THEME_URL }}media/js/responsiveCarousel.js"></script> 
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $('.mainnav nav').meanmenu();
+      $('.crsl-items').carousel({ speed: 1000, autoRotate: 6000 });
+    });
+    </script>
+
+{% endblock extra_body %}

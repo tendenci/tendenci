@@ -1,0 +1,19 @@
+/* MAIN NAVIGATION */
+.mainnav {position:relative; z-index:100; float:right}
+/* #nav-ul-1 { font-family: 'MiloOT', arial, sans-serif; } */
+#nav-ul-1 { padding: 10px; font-size: 18px }
+#nav-ul-1 ul li a:hover { text-decoration: bold; }
+#nav-ul-1 ul ul a:hover { text-decoration: bold; }
+nav .block .content { margin: 0; padding: 0; }
+nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
+nav ul, nav li { margin: 0; }
+nav h2 { display: none; font-size: 18px }
+nav ul { list-style: none; padding: 0; margin: 0; }
+nav ul li { float: left;  position: relative; }
+nav ul li a { float: left; text-decoration:  none; color: #ffffff; padding: 9px 20px 15px; }
+nav ul ul { display: none; position: absolute; top: 18px; left: 0; width: 160px; z-index: 999; }
+nav ul ul a { width: 167px; background: #aaabac; border-top: 1px  solid  #aaabac; font-size: 16px; padding: 9px 20px 9px; /* Remember to subtract the padding width from line 8  from the  width you set on the ul */  }
+nav ul ul a:hover { background: #aaabac; text-decoration: bold; }
+nav ul ul ul { position: absolute; top: 0; left: 160px; }
+nav ul ul ul, nav ul ul ul ul, nav ul li:hover ul ul { display: none; }
+nav ul li:hover ul, nav ul ul li:hover ul { display: block; }
