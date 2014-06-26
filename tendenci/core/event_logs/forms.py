@@ -5,9 +5,12 @@ from django import forms
 from tendenci.core.base.fields import SplitDateTimeField
 from form_utils.forms import BetterForm
 
+from .utils import get_app_list_choices
+
 INITIAL_START_DT = datetime.now() - timedelta(weeks=4)
 INITIAL_END_DT = datetime.now()
 REQUEST_CHOICES = [('all', 'ALL',), ('post', 'POST',), ('get', 'GET',)]
+APP_CHOICES = get_app_list_choices()
 
 
 class EventsFilterForm(forms.Form):
@@ -56,8 +59,9 @@ class EventLogSearchForm(BetterForm):
     user_id = forms.IntegerField(required=False)
     user_name = forms.CharField(required=False)
 
-    application = forms.CharField(
+    application = forms.ChoiceField(
         required=False,
+        choices=APP_CHOICES,
         help_text="These are the different modules like Pages or Articles.")
 
     action = forms.CharField(
