@@ -7,6 +7,7 @@ from form_utils.forms import BetterForm
 
 INITIAL_START_DT = datetime.now() - timedelta(weeks=4)
 INITIAL_END_DT = datetime.now()
+REQUEST_CHOICES = [('all', 'ALL',), ('post', 'POST',), ('get', 'GET',)]
 
 
 class EventsFilterForm(forms.Form):
@@ -41,30 +42,39 @@ class EventLogSearchForm(BetterForm):
     )
     request_method = forms.ChoiceField(
         required=False,
-        choices=(('all', 'ALL',), ('post', 'POST',), ('get', 'GET',))
-    )
-    event_id = forms.IntegerField(required=False)
-    source = forms.CharField(required=False)
-    object_id = forms.CharField(required=False)
+        choices=REQUEST_CHOICES,
+        help_text='GET = whether a page/item was viewed. POST = an item was edited or added'
+      )
+
+    object_id = forms.CharField(
+        required=False,
+        help_text="This is the ID Tendenci uses for all objects. "
+        "This is the number you sometimes see in URLs. For example, "
+        "for the event at http://tendenci.com/events/173/, the object ID is 173.")
+
     user_ip_address = forms.CharField(required=False)
     user_id = forms.IntegerField(required=False)
     user_name = forms.CharField(required=False)
-    session_id = forms.CharField(required=False)
-    application = forms.CharField(required=False)
-    action = forms.CharField(required=False)
+
+    application = forms.CharField(
+        required=False,
+        help_text="These are the different modules like Pages or Articles.")
+
+    action = forms.CharField(
+      required=False,
+      help_text="These are the actions within the python commands at view.py. "
+      "Some examples of actions are search and edit, for example."
+      )
 
     class Meta:
         fields = (
             'start_dt',
             'end_dt',
             'request_method',
-            'event_id',
-            'source',
             'object_id'
             'user_ip_address',
             'user_id',
             'user_name',
-            'session_id',
             'application',
             'action',
             )
@@ -74,7 +84,6 @@ class EventLogSearchForm(BetterForm):
               'fields': ['start_dt',
                          'end_dt',
                          'request_method',
-                         'event_id'
                          ],
               'legend': ''
               }),
@@ -83,8 +92,6 @@ class EventLogSearchForm(BetterForm):
               'fields': ['user_id',
                          'user_name',
                          'user_ip_address',
-                         'session_id',
-                         'source',
                          'object_id',
                          'application',
                          'action'

@@ -12,6 +12,11 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+<style>
+    .field, .new-help-text { display: inline; }
+    .new-help-text { cursor: pointer; }
+</style>
 {% endblock %}
 
 {% block body %}
@@ -168,6 +173,7 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
 
     <script type="text/javascript">
         $(".datepicker").live('focus', function() {
@@ -196,5 +202,16 @@
         if (window.location.hash == '#advanced') {
             adv_opt_legend.trigger('click');
         }
+
+        $('.form-field > div >.help-text').each(function() {
+            var title_text = $(this).text();
+            $(this).hide();
+            $(this).parent().append('<div class="new-help-text" title="' + title_text +'">' +
+                '<i style="font-size:16px" class="fa fa-question-circle"></i></div>');
+        });
+        $('.new-help-text').tipsy({
+            gravity: 's',
+            live: true
+        });
     </script>
 {% endblock %}
