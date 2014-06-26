@@ -8,7 +8,7 @@
     {% has_perm request.user invoices.view_invoice nav_object as can_view_invoice %}
 {% endif %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -66,3 +66,4 @@
     </li>
     {% endif %}
 </ul>
+{% endif %}

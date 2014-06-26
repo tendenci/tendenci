@@ -14,6 +14,7 @@
     {% has_perm user user.change_user as can_edit_profile %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -86,4 +87,5 @@
     <li><a href="{% url groups %}">{% firstof MODULE_GROUPS_LABEL trans "Groups" %}</a></li>
     {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED and MODULE_USERS_SHOWCORPMEMTAB %}<li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
 </ul>
+{% endif %}
 

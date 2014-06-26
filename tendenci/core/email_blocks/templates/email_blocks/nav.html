@@ -10,6 +10,7 @@
     {% has_perm user email_blocks.changeemail_block nav_object as can_edit %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <div id="showh">
     <ul id="primary">
 
@@ -52,3 +53,4 @@
     {% endif %}
     </ul>
 </div>
+{% endif %}

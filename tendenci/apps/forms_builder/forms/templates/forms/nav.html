@@ -6,16 +6,16 @@
 {% has_perm user forms.add_form as can_add_form %}
 
 {% if nav_object %}
-	{% has_perm user forms.view_form nav_object as can_view_form %}
-	{% has_perm user forms.change_form nav_object as can_edit_form %}
-	{% has_perm user forms.delete_form nav_object as can_delete_form %}
+    {% has_perm user forms.view_form nav_object as can_view_form %}
+    {% has_perm user forms.change_form nav_object as can_edit_form %}
+    {% has_perm user forms.delete_form nav_object as can_delete_form %}
 {% else %}
-	{% has_perm user forms.view_form as can_view_form %}
-	{% has_perm user forms.change_form as can_edit_form %}
-	{% has_perm user forms.delete_form as can_delete_form %}
+    {% has_perm user forms.view_form as can_view_form %}
+    {% has_perm user forms.change_form as can_edit_form %}
+    {% has_perm user forms.delete_form as can_delete_form %}
 {% endif %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -79,3 +79,4 @@
     <li><a href="{% url pages %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}

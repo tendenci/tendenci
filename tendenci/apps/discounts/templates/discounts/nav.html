@@ -13,6 +13,7 @@
     {% has_perm user discounts.change_discount as can_edit_discount %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -67,3 +68,4 @@
     <li><a href="{% url events %}">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}

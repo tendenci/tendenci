@@ -8,6 +8,7 @@
 {% has_perm user campaign_monitor.change_template as can_change %}
 {% has_perm user campaign_monitor.delete_template as can_delete %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -69,4 +70,5 @@
         </ul>
     </li>
 </ul>
+{% endif %}
 

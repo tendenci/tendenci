@@ -15,7 +15,7 @@
     {% has_perm user help_files.delete_helpfile as can_delete_helpfile %}
 {% endif %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -81,3 +81,4 @@
     <li><a href="{% url news %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}

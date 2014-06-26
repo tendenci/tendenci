@@ -5,6 +5,7 @@
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user files.add_file as can_add_file %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -39,3 +40,4 @@
     <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}

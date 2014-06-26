@@ -7,7 +7,7 @@
 {% has_perm user profiles.change_profile as can_edit_user %}
 {% has_perm user profiles.add_profile as can_add_user %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -40,3 +40,4 @@
     </li>
     <li><a href="{% url groups %}">{% trans "Groups" %}</a></li>
 </ul>
+{% endif %}

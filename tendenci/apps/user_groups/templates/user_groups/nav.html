@@ -17,6 +17,7 @@
     {% has_perm user user_groups.change_group as can_edit_group %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -83,3 +84,4 @@
         </div>
     </li>
 </ul>
+{% endif %}

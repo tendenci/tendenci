@@ -6,14 +6,15 @@
 {% has_perm user news.add_news as can_add_news %}
 
 {% if nav_object %}
-	{% has_perm user news.view_news nav_object as can_view_news %}
-	{% has_perm user news.change_news nav_object as can_edit_news %}
-	{% has_perm user news.delete_news nav_object as can_delete_news %}
+    {% has_perm user news.view_news nav_object as can_view_news %}
+    {% has_perm user news.change_news nav_object as can_edit_news %}
+    {% has_perm user news.delete_news nav_object as can_delete_news %}
 {% else %}
-	{% has_perm user news.view_news as can_view_news %}
-	{% has_perm user news.change_news as can_edit_news %}
+    {% has_perm user news.view_news as can_view_news %}
+    {% has_perm user news.change_news as can_edit_news %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -73,3 +74,4 @@
     <li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}

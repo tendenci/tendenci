@@ -18,6 +18,7 @@
     {% has_perm user events.delete_event as can_delete_event %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -143,6 +144,7 @@
     {% endif %}
     {% endif %}
 </ul>
+{% endif %}
 
 <div id="event_export_dialog" title="Export Events" style="display:none;">
 <p>{% blocktrans %}You can export all the upcoming events 

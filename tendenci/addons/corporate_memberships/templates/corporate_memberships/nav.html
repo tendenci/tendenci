@@ -17,7 +17,7 @@
     {% has_perm user corporate_memberships.change_corpmembership as can_edit_corpmemb %}
 {% endif %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -99,3 +99,4 @@
         </div>
     </li>
 </ul>
+{% endif %}

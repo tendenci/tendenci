@@ -14,7 +14,7 @@
     {% has_perm user photos.change_photoset as can_edit_photoset %}
 {% endif %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -69,3 +69,4 @@
         </div>
     </li>
 </ul>
+{% endif %}

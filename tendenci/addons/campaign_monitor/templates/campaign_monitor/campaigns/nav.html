@@ -5,8 +5,9 @@
 {% has_perm user campaign_monitor.add_campaign as can_add_campaign %}
 {% has_perm user campaign_monitor.add_template as can_add_template %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
@@ -64,3 +65,4 @@
         </ul>
     </li>
 </ul>
+{% endif %}

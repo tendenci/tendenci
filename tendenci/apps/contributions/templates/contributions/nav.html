@@ -2,7 +2,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -27,3 +27,4 @@
     <li><a href="{% url profile.search %}">{% firstof MODULE_USERS_LABEL 'Users' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}

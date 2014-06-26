@@ -1,5 +1,5 @@
 [
-	{
+    {
         "default_value": "", 
         "description": "Enter the email address(es), separated by commas, that will receive ALL admin notices from the site.", 
         "data_type": "string", 
@@ -762,6 +762,23 @@
         "scope": "site", 
         "scope_category": "global", 
         "store": true, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If True, ALL tabs will be hidden on all module navigation.",
+        "data_type": "boolean",
+        "update_dt": "2013-06-24 18:59:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "hidealltabs",
+        "value": "false",
+        "label": "Hide all tabs",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
         "updated_by": ""
     }
 ]

@@ -15,6 +15,7 @@
     {% has_perm user stories.delete_story as can_delete_story %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -76,3 +77,4 @@
     <li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
     {% endif %}
 </ul>
+{% endif %}

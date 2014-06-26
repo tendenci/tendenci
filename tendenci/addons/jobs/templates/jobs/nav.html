@@ -16,6 +16,7 @@
 {% endif %}
 
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -81,3 +82,4 @@
     <li><a href="{% url resumes %}">{% firstof MODULE_RESUME_LABEL trans 'Resumes' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}
