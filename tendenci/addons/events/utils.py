@@ -1668,8 +1668,6 @@ def add_sf_attendance(registrant, event):
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
                         'MailingPostalCode':registrant.zip,
-                        'Company_Name__c': registrant.company_name,
-                        'Title': registrant.position_title
                         })
                     contact_id = contact['id']
 

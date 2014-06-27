@@ -762,8 +762,6 @@ def create_salesforce_contact(profile):
                     'MailingState':profile.state,
                     'MailingCountry':profile.country,
                     'MailingPostalCode':profile.zipcode,
-                    'Company_Name__c': profile.company,
-                    'Title': profile.position_title
                     })
                 
                 profile.sf_contact_id = contact['id']
