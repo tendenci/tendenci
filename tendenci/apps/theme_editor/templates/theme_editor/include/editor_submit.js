@@ -6,7 +6,7 @@ $("#editorForm").submit(function() {
         type: 'post',
         dataType: 'json',
         data: data,
-        url: '',
+        url: '{% url theme_editor.editor %}',
         success: function(response) {
             $('#save_message').text(response.message);
             $('#save_message').addClass('success');
