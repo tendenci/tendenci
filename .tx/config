@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[tendenci.tendenci]
+file_filter = tendenci/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+

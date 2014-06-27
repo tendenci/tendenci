@@ -19,6 +19,9 @@ _notes/
 # except for .gitignore
 !.gitignore
 
+# ignore .tx/config
+!.tx/
+
 # Ignore docs build files
 docs/build/
 docs/local/
