@@ -108,7 +108,9 @@ class StoryForm(TendenciBaseForm):
 
             max_upload_size = get_max_file_upload_size()
             if photo_upload.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
+                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'upload_size': filesizeformat(photo_upload.size)})
 
         return photo_upload
 
@@ -234,7 +236,9 @@ class StoryAdminForm(TendenciBaseForm):
 
             max_upload_size = get_max_file_upload_size()
             if photo_upload.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(photo_upload.size)))
+                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(upload_size)s') % {
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'upload_size': filesizeformat(photo_upload.size)})
 
         return photo_upload
 

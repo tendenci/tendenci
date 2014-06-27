@@ -202,7 +202,9 @@ class PageForm(TendenciBaseForm):
 
             max_upload_size = get_max_file_upload_size()
             if header_image.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(header_image.size)))
+                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(header_image)s') % {
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'header_image': filesizeformat(header_image.size)})
 
         return header_image
 

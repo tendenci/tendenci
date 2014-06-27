@@ -114,7 +114,9 @@ class FileForm(TendenciBaseForm):
         data = self.cleaned_data.get('file')
         max_upload_size = get_max_file_upload_size(file_module=True)
         if data.size > max_upload_size:
-            raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+            raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'data_size': filesizeformat(data.size)})
 
         return data
 
@@ -287,7 +289,9 @@ class FilewithCategoryForm(TendenciBaseForm):
         data = self.cleaned_data.get('file')
         max_upload_size = get_max_file_upload_size(file_module=True)
         if data.size > max_upload_size:
-            raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+            raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'data_size': filesizeformat(data.size)})
 
         return data
 
@@ -413,7 +417,9 @@ class MultiFileForm(BetterForm):
         max_upload_size = get_max_file_upload_size(file_module=True)
         for data in files:
             if data.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %s. Current filesize %s') % (filesizeformat(max_upload_size), filesizeformat(data.size)))
+                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'data_size': filesizeformat(data.size)})
 
         return files
 

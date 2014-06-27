@@ -987,7 +987,10 @@ class RecurringEvent(models.Model):
         elif self.repeat_type == self.RECUR_YEARLY:
             repeat_type = 'year(s)'
         ends_on = self.ends_on.strftime("%b %d %Y")
-        return _("Repeats every %s %s until %s" %(self.frequency, repeat_type, ends_on))
+        return _("Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s" % {
+                            'frequency': self.frequency,
+                            'repeat_type': repeat_type,
+                            'ends_on': ends_on})
 
 
 class Event(TendenciBaseModel):
