@@ -44,7 +44,7 @@ def file_directory(instance, filename):
 class File(TendenciBaseModel):
     file = models.FileField("", max_length=260, upload_to=file_directory)
     guid = models.CharField(max_length=40)
-    name = models.CharField(max_length=200, blank=True)
+    name = models.CharField(max_length=250, blank=True)
     description = models.TextField(blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
