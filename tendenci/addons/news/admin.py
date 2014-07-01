@@ -23,6 +23,7 @@ class NewsAdmin(TendenciBaseModelAdmin):
                 'timezone',
                 )
         }),
+        ('Contributor', {'fields': ('contributor_type',)}),
         ('Author', {'fields': ('first_name',
                                  'last_name',
                                  'google_profile',
