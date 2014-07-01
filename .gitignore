@@ -19,8 +19,11 @@ _notes/
 # except for .gitignore
 !.gitignore
 
-# ignore .tx/config
+# except for .tx/config
 !.tx/
+
+# except for .travis.yml
+!.travis.yml
 
 # Ignore docs build files
 docs/build/
