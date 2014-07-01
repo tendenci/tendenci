@@ -1,0 +1,23 @@
+{% load base_filters %}
+<div id="registrant_summary_{{ forloop.counter0 }}">
+    <p><b>#{{ forloop.counter }}</b></p>
+    <ul>
+        {% for field in registrant %}
+            {% if field.name == "email" %}
+                <li>Email:  {{ field.value.0 }}</li>
+            {% elif field.name in flat_ignore_fields %}
+
+            {% elif field.name == "pricing" %}
+                {% if not registrant.cleaned_data.override %}
+                    <li>Price:  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}</li>
+                {% endif %}
+            {% elif field.name == "override_price" %}
+                {% if registrant.cleaned_data.override %}
+                    <li>Price:  {{ currency_symbol }}{{ field.value }}</li>
+                {% endif %}
+            {% else %}
+                <li>{{ field.label }}:  {{ field.value|field_to_string }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

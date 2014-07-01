@@ -1,3 +1,16 @@
+function generatePreviewElements(){
+    var prev_conf = $('#preview-confirmation');
+    prev_conf.empty();
+    prev_conf.append("<p>Registering the following people:</p>");
+    var children = $('#registrant-forms').children('.registrant-form').each(function(index, value){
+        var dvalue = $(value);
+        var first_name = dvalue.find('#id_registrant-'+(index)+'-first_name').val();
+        var last_name = dvalue.find('#id_registrant-'+(index)+'-last_name').val();
+        prev_conf.append("<p>"+first_name+" "+last_name+"</p>");
+    });
+
+};
+
 $(document).ready(function(){
     $('#discount_check').click(function(){
         code = $('#id_discount_code').val();
@@ -9,14 +22,14 @@ $(document).ready(function(){
          prices = $('#summary-total-price span#total-amount').html();
         {% else %}
         $('#summary-price span.item-price').each(function(){
-        	if (prices == ''){
-        		prices = $(this).html();
-        	}else{
-        		prices = prices + ';' +  $(this).html();
-        	}
+            if (prices == ''){
+                prices = $(this).html();
+            }else{
+                prices = prices + ';' +  $(this).html();
+            }
         });
         {% endif %}
-        
+
         $.post(
             '{% url discount.discounted_prices %}',
             {

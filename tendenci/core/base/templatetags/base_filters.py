@@ -463,3 +463,17 @@ def timezone_label(value):
         return "(GMT%s) %s" %(tzinfo, value)
     except:
         return ""
+
+@register.filter
+def field_to_string(value):
+    if isinstance(value, str) or isinstance(value, unicode):
+        return value
+    if isinstance(value, list):
+        if len(value) == 0:
+            return ""
+        if len(value) == 1:
+            return str(value[0])
+        if len(value) == 2:
+            return "%s and %s" % (value[0], value[1])
+        return ", ".join(value)
+    return str(value)

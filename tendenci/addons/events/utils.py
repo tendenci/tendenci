@@ -1,6 +1,7 @@
 # NOTE: When updating the registration scheme be sure to check with the
 # anonymous registration impementation of events in the registration module.
 import ast
+import calendar
 import csv
 import re
 import os.path
@@ -819,12 +820,12 @@ def add_registration(*args, **kwargs):
                 if request.user.is_superuser:
                     override = form.cleaned_data.get('override', False)
                     override_price = form.cleaned_data.get('override_price', Decimal(0))
-    
+
                 price = form.cleaned_data['pricing']
-    
+
                 # this amount has taken account into admin override and discount code
                 amount = amount_list[i]
-    
+
                 if discount_code and discount_amount:
                     discount_amount = discount_list[i]
         else:
@@ -860,13 +861,13 @@ def add_registration(*args, **kwargs):
             total_amount += registrant.amount
 
             count += 1
-            
+
             if free_pass_stat:
                 free_pass_stat.registrant = registrant
                 if registrant.user:
                     free_pass_stat.user = registrant.user
                 free_pass_stat.save()
-                    
+
 
     # create each regaddon
     for form in addon_formset.forms:
@@ -1120,7 +1121,7 @@ def get_pricing(user, event, pricing=None):
     sorted_pricing_list = []
     if pricing_list:
         sorted_pricing_list = sorted(
-            pricing_list, 
+            pricing_list,
             key=lambda k:( k['position'], k['amount'])
         )
 
@@ -1613,12 +1614,12 @@ def add_sf_attendance(registrant, event):
             # Make sure we have a complete user detail from registrants
             # which do not have an associated user. This is because the
             # contact ID will not be stored.
-            
+
             # strip spaces to avoid duplicates being created
             registrant.first_name = registrant.first_name.strip(' ')
             registrant.last_name = registrant.last_name.strip(' ')
             registrant.email = registrant.email.strip(' ')
-            
+
             contact_requirements = (registrant.first_name,
                                     registrant.last_name,
                                     registrant.email)
@@ -1646,10 +1647,11 @@ def add_sf_attendance(registrant, event):
                 profile.zipcode = profile.zipcode or registrant.zip
                 profile.company = profile.company or registrant.company_name
                 profile.position_title = profile.position_title or registrant.position_title
+
                 profile.save()
 
                 contact_id = create_salesforce_contact(profile)
-                    
+
             elif all(contact_requirements):
                 # Query for a duplicate entry in salesforce
                 result = sf.query("SELECT Id FROM Contact WHERE FirstName='%s' AND LastName='%s' AND Email='%s'"
@@ -1668,7 +1670,15 @@ def add_sf_attendance(registrant, event):
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
                         'MailingPostalCode':registrant.zip,
+<<<<<<< HEAD
+                        ## Temporary removal of Company_Name__c due to Ticket #1044
+                        ## @jqian will find a way to include this later.
+                        #'Company_Name__c': registrant.company_name,
+                        'Title': registrant.position_title
+=======
+>>>>>>> master
                         })
+
                     contact_id = contact['id']
 
             if contact_id:
@@ -1829,7 +1839,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 value = event_d[field]
             value = unicode(value).replace(os.linesep, ' ').rstrip()
             data_row.append(value)
-            
+
         if event.place:
             # place setup
             place_d = full_model_to_dict(event.place)
@@ -1837,7 +1847,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 value = place_d[field]
                 value = unicode(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
-        
+
         if event.registration_configuration:
             # config setup
             conf_d = full_model_to_dict(event.registration_configuration)
@@ -1849,7 +1859,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     value = conf_d[field]
                 value = unicode(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
-        
+
         if event.speaker_set.all():
             # speaker setup
             for speaker in event.speaker_set.all():
@@ -1858,13 +1868,13 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     value = speaker_d[field]
                     value = unicode(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
-        
+
         # fill out the rest of the speaker columns
         if event.speaker_set.all().count() < max_speakers:
             for i in range(0, max_speakers - event.speaker_set.all().count()):
                 for field in speaker_fields:
                     data_row.append('')
-                    
+
         if event.organizer_set.all():
             # organizer setup
             for organizer in event.organizer_set.all():
@@ -1873,13 +1883,13 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     value = organizer_d[field]
                     value = unicode(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
-        
+
         # fill out the rest of the organizer columns
         if event.organizer_set.all().count() < max_organizers:
             for i in range(0, max_organizers - event.organizer_set.all().count()):
                 for field in organizer_fields:
                     data_row.append('')
-        
+
         reg_conf = event.registration_configuration
         if reg_conf and reg_conf.regconfpricing_set.all():
             # pricing setup
@@ -1892,15 +1902,15 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                         value = pricing_d[field]
                     value = unicode(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
-        
+
         # fill out the rest of the pricing columns
         if reg_conf and reg_conf.regconfpricing_set.all().count() < max_pricings:
             for i in range(0, max_pricings - reg_conf.regconfpricing_set.all().count()):
                 for field in pricing_fields:
                     data_row.append('')
-        
+
         data_row_list.append(data_row)
-    
+
     fields = event_fields + ["place %s" % f for f in place_fields]
     fields = fields + ["config %s" % f for f in configuration_fields]
     for i in range(0, max_speakers):

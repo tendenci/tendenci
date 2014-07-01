@@ -42,7 +42,7 @@ function deleteRegistrant(ele, prefix) {
 function updateIndex(e, prefix, idx){
     var id_regex = new RegExp('(registrant-\\d+)');
     var replacement = prefix + '-' + idx
-    if ($(e).attr("for")) 
+    if ($(e).attr("for"))
         {$(e).attr("for", $(e).attr("for").replace(id_regex, replacement));}
     if (e.id) {e.id = e.id.replace(id_regex, replacement);}
     if (e.name){ e.name = e.name.replace(id_regex, replacement);}
@@ -65,7 +65,7 @@ function updateFormHeader(this_form, prefix, idx){
         if (ic) {
             $(ic).html(idx);}
     };
-    
+
 };
 
 function addRegistrant(ele, prefix, price) {
@@ -133,6 +133,8 @@ function addRegistrant(ele, prefix, price) {
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     updateFormHeader(row, prefix, formCount);
     updateSummaryEntry(prefix, formCount, price);
+
+    $(row)[0].scrollIntoView();
 
     return false;
 }
@@ -226,7 +228,7 @@ function toggle_admin_override(checkbox, price_box){
     if ($(checkbox).is(':checked')){
             //$(target).slideDown('fast');
             $(price_box).show();
-            
+
         }else{
             //$(target).slideUp('fast');
             $(price_box).hide();
@@ -240,7 +242,7 @@ function get_idx(regexp, str){
     if (match !== null){
         return parseInt(match[1]);
     }
-    
+
     return null
 }
 
@@ -249,7 +251,7 @@ var name_regexp = /registrant-(\d+)/;
 {% if not event.is_table and request.user.is_superuser %}
 function override_update_summary_entry(prefix, registrant_form){
     // update the summary entry whenever the override checkbox is clicked
-    // or the override input field is changed. 
+    // or the override input field is changed.
     var input_box, idx, price, name_attr;
     var override = true;
 
@@ -323,7 +325,7 @@ $(document).ready(function(){
     // show delete-button-wrap
     $(".delete-button-wrap").show();
     // delete confirmation
-    $('button.delete-button').live('click', function(e){
+    $('button.delete-button').on('click', function(e){
          var delete_confirm = confirm('Are you sure you want to delete this registrant?');   // confirm
          if(delete_confirm) {
             deleteRegistrant(this, 'registrant');
@@ -334,7 +336,7 @@ $(document).ready(function(){
         $(this).parent().children('div:last').toggle();
         if ($(this).children('span.showhide').text() == "+ ") {
             $(this).children('span.showhide').text('- ');
-        } else 
+        } else
         {$(this).children('span.showhide').text('+ '); }
     });
 
@@ -343,7 +345,7 @@ $(document).ready(function(){
 
     {% if not event.is_table %}
     $('.registrant-pricing').click(function(){
-        // check if the price has been overrided 
+        // check if the price has been overrided
          var $this = $(this);
          var registrant_form = $this.closest('.registrant-form');
          var override_node = $(registrant_form).find('.admin-override'),
@@ -441,7 +443,7 @@ $(document).ready(function(){
         }
 
     });
-    
+
     $(override_price_tbl_input).change(function(){
         if ($(override_tbl_checkboxes).is(':checked')){
             var override_price = parseFloat($(this).val());

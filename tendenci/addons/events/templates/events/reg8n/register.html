@@ -31,10 +31,10 @@
         {% if pricing.description %}{{ pricing.description|safe }}{% endif %}
         {% endif %}
         <div class="event-time">
-            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
-         {% include "events/include/spots_status.html" %}    
+         {% include "events/include/spots_status.html" %}
 
     </div>
 
@@ -91,7 +91,7 @@
 
     <div class="form-wrap">
         <form id="registration-form" action="" method="post">{% csrf_token %}
-        <div class="forms">
+        <div class="forms" id="fillup-div">
 
             <div id="reg-form-wrap">
                 <div class="float-anchor"><!-- ie7 fix --></div>
@@ -287,7 +287,7 @@
 
              {% if not event.is_table %}
             <div class="add-registrant-box">
-                <button type="button" id="add-another-btn" onClick="add_registrants(this, 'registrant'); return false;" title="Add another one before pressing Register & Pay">Add Another Registrant</button>
+                <button type="button" class="add-another-registrant" onClick="add_registrants(this, 'registrant'); return false;" title="Add another one before pressing Register & Pay">Add Another Registrant</button>
             </div>
             {% endif %}
 
@@ -356,10 +356,25 @@
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
-            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
+            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="Register" />
 
             <div class="clear"></div>
         </div>
+        {% if do_confirmation %}
+        <div class="forms" id="confirm-div">
+            <div>
+                <p>Please review the following:</p>
+                {% for registrant in flat_registrants %}
+                    {% include "events/reg8n/registrant_summary_preview.html" %}
+                {% endfor %}
+            </div>
+            <input type="hidden" name="confirmed" />
+            <input type="submit" name="addmore" id="add-another-btn" value="Add Another Registrant" />
+            <div class="clear"></div>
+            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="Register" />
+            <div class="clear"></div>
+        </div>
+        {% endif %}
         </form>
         <div style="display:none">
             {% include 'events/registration/base_forms.html' %}
@@ -375,10 +390,20 @@
     {% include 'events/reg8n/include/register-registrant.js' %}
     {% include 'events/addons/register-addon.js' %}
     {% include 'events/reg8n/include/register.js' %}
+    {% if do_confirmation %}
+    $(document).ready(function(){
+        $('#fillup-div').addClass('event-registration-hidden');
+    });
+    {% endif %}
+    {% if add_more_registrants %}
+    $(document).ready(function(){
+        $('.add-another-registrant').trigger('click');
+    });
+    {% endif %}
 </script>
 
 {% if not event.is_table and event.registration_configuration.allow_free_pass %}
-<script type="text/javascript"> 
+<script type="text/javascript">
     {% include 'events/reg8n/include/free_passes.js' %}
 </script>
 {% endif %}

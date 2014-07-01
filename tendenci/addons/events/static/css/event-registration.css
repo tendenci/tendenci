@@ -3,12 +3,12 @@
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    text-align: left;   
+    text-align: left;
     margin: 1em 0;
     width: 61%;
 }
 .event-title {
-    font-size: 1.3em;   
+    font-size: 1.3em;
     margin-bottom: 10px;
 }
 .event-time {
@@ -45,7 +45,7 @@
     -moz-border-radius: 4px;
     border-radius: 4px;
     width: 200px;
-    
+
 }
 #reg-form-box input[type="text"]{
     width: 150px;
@@ -69,7 +69,7 @@
     border-top: 1px solid #ccc;
     margin-bottom: 1em;
 }
-#total-label,#total-amount{ 
+#total-label,#total-amount{
     font-weight: bold;
 }
 #summary-price, #summary-total-price{
@@ -154,8 +154,12 @@ div.delete-button-wrap{
 .showhide {font-size: 18px;}
 
 .addon-wrap{
-	background-color: #f5f5f5;
-	padding:10px; 
-	margin: 2em 0;
-	width: 68%; 
+    background-color: #f5f5f5;
+    padding:10px;
+    margin: 2em 0;
+    width: 68%;
+}
+
+.event-registration-hidden {
+    display: none !important;
 }

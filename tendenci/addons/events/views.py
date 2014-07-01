@@ -580,7 +580,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         {'event': event, 'multi_event_forms': multi_event_forms, 'label': "overview"},
         context_instance=RequestContext(request))
 
@@ -630,7 +630,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
 
                     if (place._original_name != place.name) and place_in_past_events:
                         place.pk = None
-                        
+
                 place.save()
                 for cur_event in recurring_events:
                     cur_event.place = place
@@ -649,7 +649,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         {'event': event, 'multi_event_forms': multi_event_forms, 'label': "location"},
         context_instance=RequestContext(request))
 
@@ -711,7 +711,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
 
                     if (organizer._original_name != organizer.name) and organizer_in_past_events:
                         organizer.pk = None
-                        
+
                 organizer.save()
                 for cur_event in recurring_events:
                     # Remove previous organizer from event
@@ -733,7 +733,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         {'event': event, 'multi_event_forms': multi_event_forms, 'label': "organizer"},
         context_instance=RequestContext(request))
 
@@ -800,7 +800,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                         if speaker.event.filter(
                                                 start_dt__lt=event.start_dt,
                                                 recurring_event=event.recurring_event
-                                                  ).exists():                                                  
+                                                  ).exists():
 #                             # Remove the events from previous speaker
 #                             for recur_event in recurring_events:
 #                                 speaker.event.remove(recur_event)
@@ -874,7 +874,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         {'event': event, 'multi_event_forms': multi_event_forms, 'label': "speakers"},
         context_instance=RequestContext(request))
 
@@ -950,7 +950,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         {'event': event, 'multi_event_forms': multi_event_forms, 'label': "regconf"},
         context_instance=RequestContext(request))
 
@@ -1016,7 +1016,7 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
     multi_event_forms = [form_regconfpricing]
 
     # response
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         {'event': event, 'multi_event_forms': multi_event_forms, 'label': "pricing"},
         context_instance=RequestContext(request))
 
@@ -1459,24 +1459,24 @@ def delete_recurring(request, id, template_name="events/delete_recurring.html"):
                 event.image.delete()
             event.delete()
 
-            # The one-to-one relationship is on events which 
+            # The one-to-one relationship is on events which
             # doesn't delete the registration_configuration record.
             # The delete must occur on registration_configuration
-            # for both to be deleted. An honest accident on 
-            # one-to-one fields. 
+            # for both to be deleted. An honest accident on
+            # one-to-one fields.
             try:
                 reg_conf.delete()
             except:
                 # roll back the transaction to fix the error for postgresql
-                #"current transaction is aborted, commands ignored until 
+                #"current transaction is aborted, commands ignored until
                 # end of transaction block"
                 connection._rollback()
         recurring_manager.delete()
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted the recurring event for "%s"' % event)
 
         return HttpResponseRedirect(reverse('event.search'))
-    
-    return render_to_response(template_name, {'event': event, 'events': event_list}, 
+
+    return render_to_response(template_name, {'event': event, 'events': event_list},
             context_instance=RequestContext(request))
 
 
@@ -1593,6 +1593,8 @@ def register(request, event_id=0,
     anony_setting = get_setting('module', 'events', 'anonymousregistration')
     event.anony_setting = anony_setting
     is_strict = anony_setting == 'strict'
+
+    flat_registrants = []
 
     if is_strict:
         # strict requires logged in
@@ -1787,11 +1789,18 @@ def register(request, event_id=0,
     # remove captcha for logged in user
     if request.user.is_authenticated():
         del reg_form.fields['captcha']
+    elif request.method == 'POST' and 'commit' in request.POST and \
+        'confirmed' in request.POST: #remove the captcha for confirmation
+        del reg_form.fields['captcha']
 
     # total registrant forms
     if post_data:
         total_regt_forms = post_data['registrant-TOTAL_FORMS']
     within_available_spots = True
+
+    do_confirmation = False
+    add_more_registrants = False
+    flat_ignore_fields = ["DELETE", "override"]
 
     if request.method == 'POST':
         if 'commit' in request.POST:
@@ -1804,78 +1813,101 @@ def register(request, event_id=0,
                     registrant.is_valid(),
                     addon_formset.is_valid()]):
 
-                args = [request, event, reg_form, registrant, addon_formset,
+                if 'confirmed' in request.POST:
+                    args = [request, event, reg_form, registrant, addon_formset, \
                         pricing, pricing and pricing.price or 0]
 
-                kwargs = {'admin_notes': '',
-                          'custom_reg_form': custom_reg_form}
-                # add registration
-                reg8n, reg8n_created = add_registration(*args, **kwargs)
+                    kwargs = {'admin_notes': '',
+                              'custom_reg_form': custom_reg_form}
+                    # add registration
+                    reg8n, reg8n_created = add_registration(*args, **kwargs)
 
-                site_label = get_setting('site', 'global', 'sitedisplayname')
-                site_url = get_setting('site', 'global', 'siteurl')
-                self_reg8n = get_setting('module', 'users', 'selfregistration')
+                    site_label = get_setting('site', 'global', 'sitedisplayname')
+                    site_url = get_setting('site', 'global', 'siteurl')
+                    self_reg8n = get_setting('module', 'users', 'selfregistration')
 
-                is_credit_card_payment = reg8n.payment_method and \
-                (reg8n.payment_method.machine_name).lower() == 'credit-card' \
-                and reg8n.invoice.balance > 0
+                    is_credit_card_payment = reg8n.payment_method and \
+                    (reg8n.payment_method.machine_name).lower() == 'credit-card' \
+                    and reg8n.invoice.balance > 0
 
-                if reg8n_created:
-                    registrants = reg8n.registrant_set.all().order_by('id')
-                    for registrant in registrants:
-                        #registrant.assign_mapped_fields()
-                        if registrant.custom_reg_form_entry:
-                            registrant.name = registrant.custom_reg_form_entry.__unicode__()
-                        else:
-                            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+                    if reg8n_created:
+                        registrants = reg8n.registrant_set.all().order_by('id')
+                        for registrant in registrants:
+                            #registrant.assign_mapped_fields()
+                            if registrant.custom_reg_form_entry:
+                                registrant.name = registrant.custom_reg_form_entry.__unicode__()
 
-                    if is_credit_card_payment:
-                        # online payment
-                        # get invoice; redirect to online pay
-                        # email the admins as well
-                        email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+                            else:
+                                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
-                        return HttpResponseRedirect(reverse(
-                            'payment.pay_online',
-                            args=[reg8n.invoice.id, reg8n.invoice.guid]
-                        ))
-                    else:
-                        # offline payment:
-                        # send email; add message; redirect to confirmation
-                        primary_registrant = reg8n.registrant
+                        if is_credit_card_payment:
+                            # online payment
+                            # get invoice; redirect to online pay
+                            # email the admins as well
 
-                        if primary_registrant and  primary_registrant.email:
-                            notification.send_emails(
-                                [primary_registrant.email],
-                                'event_registration_confirmation',
-                                {
-                                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
-                                    'SITE_GLOBAL_SITEURL': site_url,
-                                    'self_reg8n': self_reg8n,
-                                    'reg8n': reg8n,
-                                    'registrants': registrants,
-                                    'event': event,
-                                    'total_amount': reg8n.invoice.total,
-                                    'is_paid': reg8n.invoice.balance == 0
-                                 },
-                                True, # save notice in db
-                            )
-                            #email the admins as well
-                            # fix the price
                             email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
 
-                    # log an event
-                    EventLog.objects.log(instance=event)
+                            return HttpResponseRedirect(reverse(
+                                'payment.pay_online',
+                                args=[reg8n.invoice.id, reg8n.invoice.guid]
 
+
+                            ))
+                        else:
+                            # offline payment:
+                            # send email; add message; redirect to confirmation
+                            primary_registrant = reg8n.registrant
+
+                            if primary_registrant and  primary_registrant.email:
+                                notification.send_emails(
+                                    [primary_registrant.email],
+                                    'event_registration_confirmation',
+
+                                    {
+                                        'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                                        'SITE_GLOBAL_SITEURL': site_url,
+                                        'self_reg8n': self_reg8n,
+
+                                        'reg8n': reg8n,
+                                        'registrants': registrants,
+
+                                        'event': event,
+                                        'total_amount': reg8n.invoice.total,
+                                        'is_paid': reg8n.invoice.balance == 0
+
+                                     },
+                                    True, # save notice in db
+
+                                )
+                                #email the admins as well
+
+
+                                # fix the price
+                                email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
+
+
+                        # log an event
+                        EventLog.objects.log(instance=event)
+
+
+                    else:
+                        messages.add_message(request, messages.INFO,
+                                     'You were already registered on %s' % date_filter(reg8n.create_dt)
+
+                        )
+
+                    return HttpResponseRedirect(reverse(
+                                                    'event.registration_confirmation',
+                                                    args=(event_id, reg8n.registrant.hash)
+
+                                                    ))
                 else:
-                    messages.add_message(request, messages.INFO,
-                                 'You were already registered on %s' % date_filter(reg8n.create_dt)
-                    )
+                    do_confirmation = True
+                    for i, form in enumerate(registrant.forms):
+                        flat_registrants.append(form)
 
-                return HttpResponseRedirect(reverse(
-                                                'event.registration_confirmation',
-                                                args=(event_id, reg8n.registrant.hash)
-                                                ))
+        elif 'addmore' in request.POST:
+            add_more_registrants = True
 
     # if not free event, store price in the list for each registrant
     price_list = []
@@ -1931,7 +1963,12 @@ def register(request, event_id=0,
         'addon_formset': addon_formset,
         'total_regt_forms': total_regt_forms,
         'has_registrant_form_errors': has_registrant_form_errors,
-        'within_available_spots': within_available_spots
+        'within_available_spots': within_available_spots,
+        'flat_registrants': flat_registrants,
+        'do_confirmation': do_confirmation,
+        'add_more_registrants' : add_more_registrants,
+        'flat_ignore_fields' : flat_ignore_fields,
+        'currency_symbol' : get_setting("site", "global", "currencysymbol") or '$'
     }, context_instance=RequestContext(request))
 
 
@@ -1940,7 +1977,7 @@ def register(request, event_id=0,
 def check_free_pass_eligibility(request, form_class=FreePassCheckForm):
     """
     Check if there is any free pass available for the corp. individual
-    with the email or member_number provided. 
+    with the email or member_number provided.
     """
     form = form_class(request.POST or None)
     ret_dict = {'is_corp_member': False}
@@ -1953,7 +1990,7 @@ def check_free_pass_eligibility(request, form_class=FreePassCheckForm):
         corp_membership = get_user_corp_membership(
                                 member_number=member_number,
                                 email=email)
-        
+
         if corp_membership:
             ret_dict['is_corp_member'] = True
             ret_dict['pass_total'] = corp_membership.free_pass_total
@@ -1963,8 +2000,8 @@ def check_free_pass_eligibility(request, form_class=FreePassCheckForm):
             ret_dict['corp_id'] = corp_membership.id
 
     return HttpResponse(json.dumps(ret_dict))
-                                       
-    
+
+
 
 @is_enabled('events')
 def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):
@@ -3873,9 +3910,9 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
                 'Your event submission has been received. It is now subject to approval.')
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             admin_emails = get_setting('module', 'events', 'admin_emails').replace(" ", "").split(",")
-            
+
             recipients = recipients + admin_emails
-            
+
             if recipients and notification:
                 notification.send_emails(recipients, 'event_added', {
                     'event':event,
