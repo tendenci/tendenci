@@ -1670,13 +1670,10 @@ def add_sf_attendance(registrant, event):
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
                         'MailingPostalCode':registrant.zip,
-<<<<<<< HEAD
                         ## Temporary removal of Company_Name__c due to Ticket #1044
                         ## @jqian will find a way to include this later.
                         #'Company_Name__c': registrant.company_name,
                         'Title': registrant.position_title
-=======
->>>>>>> master
                         })
 
                     contact_id = contact['id']
