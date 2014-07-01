@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="t">    
+<div class="t">
     {% event_nav user event %}
     <div>
         <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
@@ -22,16 +22,16 @@
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
-         {% include "events/include/spots_status.html" %}	
+         {% include "events/include/spots_status.html" %}
     </div>
-    
+
     <div class="pricing-info-wrap">
-		<h2>Pricing Information</h2>
-	
+        <h2>Pricing Information</h2>
+
     {% if individual_pricings %}
-		{% if table_pricings %}
-		<div style="font-weight: bold; font-size: 1.2em;">For Individuals:</div>
-		{% endif %}
+        {% if table_pricings %}
+        <div style="font-weight: bold; font-size: 1.2em;">For Individuals:</div>
+        {% endif %}
         <div class="pricing-list">
             {% for pricing in individual_pricings %}
             <div class="pricing-item clearfix {% cycle '' 'alt' %}">
@@ -41,21 +41,20 @@
                     <p><strong>{% trans "Available Before" %}:</strong>
                        {{ pricing.end_dt|date:'M j g:i A' }}</p>
                     <p>{{ pricing.description|safe }}</p>
-                    <p><strong>{% trans "Price" %}:</strong>
-                       {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</p>
+                    <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
                 </div>
                 <form action="{% url event.register_individual event.id pricing.id %}" method="get">
-                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />
                 </form>
             </div>
             {% endfor %}
         </div>
-	{% endif %}
+    {% endif %}
 
-	{% if table_pricings %}
-		{% if individual_pricings %}
-		<div style="font-weight: bold; font-size: 1.2em;">For Table/Team:</div>
-		{% endif %}
+    {% if table_pricings %}
+        {% if individual_pricings %}
+        <div style="font-weight: bold; font-size: 1.2em;">For Table/Team:</div>
+        {% endif %}
         <div class="pricing-list">
             {% for pricing in table_pricings %}
             <div class="pricing-item clearfix {% cycle '' 'alt' %}">
@@ -65,17 +64,16 @@
                     <p><strong>{% trans "Available Before" %}:</strong>
                        {{ pricing.end_dt|date:'M j g:i A' }}</p>
                     <p>{{ pricing.description|safe }}</p>
-                    <p><strong>{% trans "Price" %}:</strong>
-                       {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</p>
+                    <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
                 </div>
                 <form action="{% url event.register_table event.id pricing.id %}" method="get">
-                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />
                 </form>
             </div>
             {% endfor %}
         </div>
-	{% endif %}
+    {% endif %}
 
-	</div>    
+    </div>
 </div>
 {% endblock %}

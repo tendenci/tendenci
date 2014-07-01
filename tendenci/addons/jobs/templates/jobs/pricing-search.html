@@ -19,7 +19,7 @@
     <h1>{% trans "Job Pricing List" %}</h1>  
 
     {% autopaginate job_pricings 10 %}
-	
+
 	<div class="jobs-wrap">
     {% for jp in job_pricings %}
     	{% has_perm user jobs.view_jobpricing jp as can_view %}
@@ -28,7 +28,7 @@
 
 			<div class="options options-search">
                 <div class="quick-options">
-					{% job_pricing_options request.user jp %} 	       
+					{% job_pricing_options request.user jp %}
                 </div>
 			</div>
 
@@ -75,5 +75,5 @@
 			});
 		});
     </script>
-    
+
 {% endblock %}

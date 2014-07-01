@@ -3,16 +3,16 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.core.base.fields import PriceField
 from tendenci.addons.recurring_payments.models import RecurringPayment
-from tendenci.addons.memberships.fields import PriceInput
 from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectInput, BillingDateSelectWidget
 from tendenci.addons.recurring_payments.fields import BillingCycleField
 
 class RecurringPaymentForm(forms.ModelForm):
     #status_detail = forms.ChoiceField(choices=(('inactive','Inactive'),('active','Active')),
     #                                  initial='active')
-    payment_amount = forms.DecimalField(decimal_places=2, widget=PriceInput())
-    trial_amount = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False)
+    payment_amount = PriceField(decimal_places=2)
+    trial_amount = PriceField(decimal_places=2, required=False)
     
     billing_dt_select = BillingCycleField(label='When to bill',
                                           widget=BillingDateSelectWidget,

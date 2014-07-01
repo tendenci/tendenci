@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.make_payments.models import MakePayment
-from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.base.fields import EmailVerificationField, PriceField
 from captcha.fields import CaptchaField
 
 COUNTRIES = (
@@ -252,6 +252,7 @@ COUNTRIES = (
 class MakePaymentForm(forms.ModelForm):
     captcha = CaptchaField(label=_('Type the code below'))
     # TODO: Make check-paid an admin only option
+    payment_amount = PriceField(max_digits=10, decimal_places=2)
     payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('cc', 'Make Online Payment'),)), initial='cc',)
     company = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'size':'30'}))
     address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'size':'35'}))

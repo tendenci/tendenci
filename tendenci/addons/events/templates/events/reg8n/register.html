@@ -15,13 +15,13 @@
 
 <style type="text/css">
     input.registrant-pricing {
-		float: left;
-	}
+        float: left;
+    }
 </style>
 {% endblock %}
 
 {% block body %}
-<div class="t">    
+<div class="t">
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
     <div>
@@ -34,10 +34,10 @@
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
-         {% include "events/include/spots_status.html" %}	
-        
+         {% include "events/include/spots_status.html" %}    
+
     </div>
-    
+
     {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  or event.is_table %}
     <div class="event-info well" style="background-color:#FFFFEB;">
     {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  %}
@@ -50,21 +50,21 @@
         {% blocktrans %}The first one is the primary registrant and responsible for the billing if applicable.  {% endblocktrans %}
     </div>
     {% endif %}
-     </div>   
+     </div>
     {% endif %}
      <noscript>
-    	<div id="noscript" class="alert alert-error">
-    		JavaScript must be enabled in order for you to use this page. Please enable
-    		javascript and <a href="{{ request.path }}">try again</a>.
-    	</div>
+        <div id="noscript" class="alert alert-error">
+            JavaScript must be enabled in order for you to use this page. Please enable
+            javascript and <a href="{{ request.path }}">try again</a>.
+        </div>
     </noscript>
-        
+
     {% if reg_form.errors.values or has_registrant_form_errors or not within_available_spots %}
         <div class="errors-box">
             <ul>
-            	{% if not within_available_spots %}
-            	<li>Only {{ event.spots_available }} spot{{ event.spots_available|pluralize }} available. No more {{ event.spots_available }} registrant{{ event.spots_available|pluralize }} please!</li>
-            	{% endif %}
+                {% if not within_available_spots %}
+                <li>Only {{ event.spots_available }} spot{{ event.spots_available|pluralize }} available. No more {{ event.spots_available }} registrant{{ event.spots_available|pluralize }} please!</li>
+                {% endif %}
                 {{ reg_form.non_field_errors }}
                 {% for field in reg_form %}
                     {% if field.errors %}
@@ -73,7 +73,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
-                
+
                 {% for form in registrant.forms %}
                     {{ form.non_field_errors }}
                     {% for field in form %}
@@ -87,257 +87,257 @@
             </ul>
         </div>
     {% endif %}
-    
+
 
     <div class="form-wrap">
         <form id="registration-form" action="" method="post">{% csrf_token %}
         <div class="forms">
-        
+
             <div id="reg-form-wrap">
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
-                
-				<div id="reg-form-box">	
-					<div style="background:#3E83C9;color:#fff; padding: 3px; font-weight: bold; font-size:1.2em; text-align: center;">
-						<div >Summary</div>
-					</div>
-					
-					<div style="padding: 1em;">
-	                    <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
-	    				<div class="summary-total">
-	    					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
-	    					<span class="summary-total-amount" id="summary-total-amount" data-price="{{ total_price}}">{{ total_price|floatformat:2 }}</span>
-	    				</div>
-	
-	                    <div class="summary-payment">
-	                        <noscript>
-	                        <div>
-	                            <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
-	                        </div>
-	                        </noscript>
-	                                    
-	                    </div>
-	
-	    				{# price list #}
-	    				<table id="summary-price">
-	    					{% if event.is_table %}
-	    					<tr class="summary-registrant" id="summary-registrant-0">
-		    					<td width="50%" class="item-label">{% trans "Table of " %}{{ pricing.quantity }}</td>
-		    					<td width="50%" align="right">
-			    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-			    					{% with price_list|first as price_entry %}
-			    					<span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
-			    					{% endwith %}
-		    					</td>
-	    					</tr>
-	    					{% else %}
-	    					{% for price_entry in price_list %}
-	    					<tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}" {% if price_entry.deleted %} class="deleted-item"{% endif %}>
-		    					<td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
-		    					<td width="50%" align="right">
-			    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-			    					<span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
-		    					</td>
-	    					</tr>
-	    					{% endfor %}
-	    					{% endif %}
-	                        {% for form in addon_formset.forms %}
-	                        <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
-	                            <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
-	                            <td width="50%" align="right">
-	                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-	                                <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
-	                            </td>
-	                        </tr>
-	                        {% endfor %}
-	    				</table>
-						<table id="summary-total-price">
-							<tr>
-								<td><div id="total-label">{% trans "Total" %}</div></td>
-								<td align="right">
-									<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-									<span id="total-amount">{{ total_price|floatformat:2 }}</span>
-								</td>
-							</tr>
-	                        <tr class="discount-summary">
-	                            <td><div id="discount-label">{% trans "Discount" %}</div></td>
-	                            <td align="right">
-									<span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-									<span id="discount-amount">0</span>
-								</td>
-	                        </tr>
-	                        <tr class="line-on-top discount-summary">
-								<td><div id="final-label">{% trans "Total" %}</div></td>
-								<td align="right">
-									<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-									<span id="final-amount">{{ total_price|floatformat:2 }}</span>
-								</td>
-							</tr>
-						</table>
-					
-					</div>	
-					
-    		   </div>
-    		   </div>  {# float-widow#}
-    		</div>
-    		
-    		<div id="registrant-forms">
-	    		{{ registrant.management_form }}
-				{% for form in registrant.forms %}
-					{% with forloop.counter as forloop_counter %}
-					<div id="registrant_{{ forloop.counter }}" class="registrant-form">
-						<div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
-							<span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">{{ forloop_counter }}</span>:
-						</div>
-					
-						<div class="{% cycle 'odd-registrant' 'even-registrant'%}">
-							
-							
-							{% for field in form %}
-							{% if field.label != 'Delete' and field.name != 'use_free_pass' %}
-								{% if field.name == 'override' or field.name == 'override_price' %}
-								<div class="form-field admin-{{ field.name }} override">
-									<div class="error">{{ field.errors }}</div>
+
+                <div id="reg-form-box">
+                    <div style="background:#3E83C9;color:#fff; padding: 3px; font-weight: bold; font-size:1.2em; text-align: center;">
+                        <div >Summary</div>
+                    </div>
+
+                    <div style="padding: 1em;">
+                        <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
+                        <div class="summary-total">
+                            {{ SITE_GLOBAL_CURRENCYSYMBOL }}
+                            <span class="summary-total-amount" id="summary-total-amount" data-price="{{ total_price}}">{{ total_price|floatformat:2 }}</span>
+                        </div>
+
+                        <div class="summary-payment">
+                            <noscript>
+                            <div>
+                                <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+                            </div>
+                            </noscript>
+
+                        </div>
+
+                        {# price list #}
+                        <table id="summary-price">
+                            {% if event.is_table %}
+                            <tr class="summary-registrant" id="summary-registrant-0">
+                                <td width="50%" class="item-label">{% trans "Table of " %}{{ pricing.quantity }}</td>
+                                <td width="50%" align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    {% with price_list|first as price_entry %}
+                                    <span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            {% for price_entry in price_list %}
+                            <tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}" {% if price_entry.deleted %} class="deleted-item"{% endif %}>
+                                <td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                                <td width="50%" align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            {% for form in addon_formset.forms %}
+                            <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
+                                <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                                <td width="50%" align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <table id="summary-total-price">
+                            <tr>
+                                <td><div id="total-label">{% trans "Total" %}</div></td>
+                                <td align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span id="total-amount">{{ total_price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                            <tr class="discount-summary">
+                                <td><div id="discount-label">{% trans "Discount" %}</div></td>
+                                <td align="right">
+                                    <span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span id="discount-amount">0</span>
+                                </td>
+                            </tr>
+                            <tr class="line-on-top discount-summary">
+                                <td><div id="final-label">{% trans "Total" %}</div></td>
+                                <td align="right">
+                                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                    <span id="final-amount">{{ total_price|floatformat:2 }}</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+               </div>
+               </div>  {# float-widow#}
+            </div>
+
+            <div id="registrant-forms">
+                {{ registrant.management_form }}
+                {% for form in registrant.forms %}
+                    {% with forloop.counter as forloop_counter %}
+                    <div id="registrant_{{ forloop.counter }}" class="registrant-form">
+                        <div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
+                            <span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">{{ forloop_counter }}</span>:
+                        </div>
+
+                        <div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+
+
+                            {% for field in form %}
+                            {% if field.label != 'Delete' and field.name != 'use_free_pass' %}
+                                {% if field.name == 'override' or field.name == 'override_price' %}
+                                <div class="form-field admin-{{ field.name }} override">
+                                    <div class="error">{{ field.errors }}</div>
                                     {% if field|is_checkbox %}
                                         <div>{{ field }} {% trans field.label %}</div>
                                     {% else %}
-    									{% if field.name == 'override' %}
-    									<div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{% trans field.label %}</label></div>
-    									{% else %}
-    									<div>{% trans field.label %} {{ field }}</div>
-    									{% endif %}
+                                        {% if field.name == 'override' %}
+                                        <div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{% trans field.label %}</label></div>
+                                        {% else %}
+                                        <div>{% trans field.label %} {{ field }}</div>
+                                        {% endif %}
                                     {% endif %}
-									{% if field.help_text %}
-				                    <div class="help-text">{{ field.help_text }}</div>   
-				                    {% endif %}
-								</div>
-								{% else %}
-								{% if field.name == 'memberid' %}
-								<div class=" form-field memberid">
-									<div class="error">{{ field.errors }}</div>
-									<div>{% trans field.label %}: {{ field }}</div>
-									<div class="help-text">{{ field.help_text }}</div>   
-								</div>
-								{% else %}
-								{% if field.name == 'reminder' %}
+                                    {% if field.help_text %}
+                                    <div class="help-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                {% if field.name == 'memberid' %}
+                                <div class=" form-field memberid">
+                                    <div class="error">{{ field.errors }}</div>
+                                    <div>{% trans field.label %}: {{ field }}</div>
+                                    <div class="help-text">{{ field.help_text }}</div>
+                                </div>
+                                {% else %}
+                                {% if field.name == 'reminder' %}
                                 <div class=" form-field reminder">
                                     <div class="error">{{ field.errors }}</div>
                                     <div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-reminder">{% trans field.label %}</label></div>
-                                    <div class="help-text">{{ field.help_text }}</div>   
+                                    <div class="help-text">{{ field.help_text }}</div>
                                 </div>
                                 {% else %}
-								<div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
+                                <div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
                                     {% if field|is_checkbox %}
                                     <div class="checkbox">
                                         <div class="error">{{ field.errors }}</div>
                                         <div class="field">{{ field }}</div>
                                         <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                                         {% if field.help_text %}
-                                        <div class="help-text">{{ field.help_text }}</div>   
+                                        <div class="help-text">{{ field.help_text }}</div>
                                         {% endif %}
                                     </div>
                                     <div style="clear: both"><!-- IE7 --></div>
                                     {% else%}
-									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
-									<div class="field">{{ field }}</div>
+                                    <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                                    <div class="field">{{ field }}</div>
                                     {% endif %}
-									{% if field.help_text %}
-				                    <div class="help-text">{{ field.help_text }}</div>   
-				                    {% endif %}
-								</div>
-								{% endif %}
-								{% endif %}
-								{% endif %}
-							{% endif %}
-							{% endfor %}
-							
-							{% if not event.is_table and event.registration_configuration.allow_free_pass %}
-							<div class="free-pass-wrap">
-							<button type="button" class="fp_chk_btn">Check Free Pass Eligibility</button>
-							*** for corporate members only
-							<div class="free-pass-message"></div>
-							<div class="fp-field">{{ form.use_free_pass }}<label for="id_registrant-{{ forloop_counter|add:'-1'}}-use_free_pass"> {{ form.use_free_pass.label }}</label></div>
-							</div>
-						    {% endif %}
-							
-							{% if form.DELETE %}
-							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
-								<div class="delete-button-wrap">
-									<button type="button" class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
-								</div>
-								
-								<noscript>
-									<div>{{ form.DELETE }} {% trans "Delete" %}</div>
-								</noscript>
-							
-							</div>
-							{% endif %}	
-							
-						</div>	
-						{% if forloop_counter == 1 and event.is_table %} 
-						<button type="button" class="btn" id="populate-fields">Auto fill guest(s) infomation
-							<br /><small>Guests' company name, phone, etc are the same as mine</small></button>
-						{% endif %}
-					
-					</div>
-				{% endwith %}	
-				{% endfor %}
-			</div>
-            
-			
-			 {% if not event.is_table %}
+                                    {% if field.help_text %}
+                                    <div class="help-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if not event.is_table and event.registration_configuration.allow_free_pass %}
+                            <div class="free-pass-wrap">
+                            <button type="button" class="fp_chk_btn">Check Free Pass Eligibility</button>
+                            *** for corporate members only
+                            <div class="free-pass-message"></div>
+                            <div class="fp-field">{{ form.use_free_pass }}<label for="id_registrant-{{ forloop_counter|add:'-1'}}-use_free_pass"> {{ form.use_free_pass.label }}</label></div>
+                            </div>
+                            {% endif %}
+
+                            {% if form.DELETE %}
+                            <div class="form-field delete{% if forloop.first %} hidden{% endif %}">
+                                <div class="delete-button-wrap">
+                                    <button type="button" class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
+                                </div>
+
+                                <noscript>
+                                    <div>{{ form.DELETE }} {% trans "Delete" %}</div>
+                                </noscript>
+
+                            </div>
+                            {% endif %}
+
+                        </div>
+                        {% if forloop_counter == 1 and event.is_table %}
+                        <button type="button" class="btn" id="populate-fields">Auto fill guest(s) infomation
+                            <br /><small>Guests' company name, phone, etc are the same as mine</small></button>
+                        {% endif %}
+
+                    </div>
+                {% endwith %}
+                {% endfor %}
+            </div>
+
+
+             {% if not event.is_table %}
             <div class="add-registrant-box">
                 <button type="button" id="add-another-btn" onClick="add_registrants(this, 'registrant'); return false;" title="Add another one before pressing Register & Pay">Add Another Registrant</button>
             </div>
             {% endif %}
-            
-            
+
+
             {% if addons %}
             <div class="addon-wrap">
              <div class="addon-forms">
                     {% include 'events/addons/formset.html' %}
              </div>
-	         {% else %}
-	             {{ addon_formset.management_form }}
-	         {% endif %}
-            
+             {% else %}
+                 {{ addon_formset.management_form }}
+             {% endif %}
+
             {% if addons %}
                 <div class="add-addons-box">
                 {% include 'events/addons/addon-add-box.html' %}
                 </div>
            </div>
             {% endif %}
-            
+
             {% if event.is_table %}
             <div id="admin-override-table-wrap">
-				<div id="admin-override-table" class="override">
-					<div class="error">{{ reg_form.override_table.errors }}</div>
-					<div>{{ reg_form.override_table }} <label for="id_{{ reg_form.override_table.name }}">{% trans reg_form.override_table.label %}</label></div>
-					{% if reg_form.override_table.help_text %}
-	                <div class="help-text">{{ reg_form.override_table.help_text }}</div>   
-	                {% endif %}
-				</div>
-				<div id="admin-override-price-table" class="override">
-					<div class="error">{{ reg_form.override_price_table.errors }}</div>
-					<div>{% trans reg_form.override_price_table.label %} {{ reg_form.override_price_table }}</div>
-					{% if reg_form.override_price_table.help_text %}
-	                <div class="help-text">{{ reg_form.override_price_table.help_text }}</div>   
-	                {% endif %}
-				</div>
-			</div>
-			
-			{% endif %}
-            
+                <div id="admin-override-table" class="override">
+                    <div class="error">{{ reg_form.override_table.errors }}</div>
+                    <div>{{ reg_form.override_table }} <label for="id_{{ reg_form.override_table.name }}">{% trans reg_form.override_table.label %}</label></div>
+                    {% if reg_form.override_table.help_text %}
+                    <div class="help-text">{{ reg_form.override_table.help_text }}</div>
+                    {% endif %}
+                </div>
+                <div id="admin-override-price-table" class="override">
+                    <div class="error">{{ reg_form.override_price_table.errors }}</div>
+                    <div>{% trans reg_form.override_price_table.label %} {{ reg_form.override_price_table }}</div>
+                    {% if reg_form.override_price_table.help_text %}
+                    <div class="help-text">{{ reg_form.override_price_table.help_text }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% endif %}
+
             {% if reg_form.discount_code %}
                 <div class="form-field discount-field-wrap">
                     <div id="discount-message" class="error">{{ reg_form.discount_code.errors }}</div>
-					<div class="required">{% trans "Discount Code" %}</div>
-					<div class="field">{{ reg_form.discount_code }}</div>
+                    <div class="required">{% trans "Discount Code" %}</div>
+                    <div class="field">{{ reg_form.discount_code }}</div>
                     <button type="button" id="discount_check">Check Discount</button>
                 </div>
             {% endif %}
-           
-            
+
+
             <div class="clear"></div>
             {% if event.free_event %}
                 {{ reg_form.payment_method }}
@@ -348,7 +348,7 @@
                     <div class="field">{{ reg_form.payment_method }}</div>
                 </div>
             {% endif %}
-            
+
             {% if reg_form.captcha %}
                 <div class="form-field">
                     <div class="error">{{ reg_form.captcha.errors }}</div>
@@ -357,7 +357,7 @@
                 </div>
             {% endif %}
             <input type="submit" name="commit" id="register-button" class="registration-green-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
-            
+
             <div class="clear"></div>
         </div>
         </form>
@@ -369,9 +369,9 @@
 {% endblock %}
 
 {% block extra_body %}
-<script src="{{ LOCAL_STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 <script type="text/javascript">
+    {% include 'events/include/events-registration-summary.js' %}
     {% include 'events/reg8n/include/register-registrant.js' %}
     {% include 'events/addons/register-addon.js' %}
     {% include 'events/reg8n/include/register.js' %}
@@ -379,7 +379,7 @@
 
 {% if not event.is_table and event.registration_configuration.allow_free_pass %}
 <script type="text/javascript"> 
-    {% include 'events/reg8n/include/free_passes.js' %}		
+    {% include 'events/reg8n/include/free_passes.js' %}
 </script>
 {% endif %}
 {{ block.super }}

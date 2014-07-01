@@ -33,7 +33,7 @@ from tendenci.addons.memberships.models import (MembershipType,
                                                 MembershipAppField,
                                                 MembershipFile,
                                                 VALID_MEMBERSHIP_STATUS_DETAIL)
-from tendenci.core.base.utils import normalize_newline, UnicodeWriter
+from tendenci.core.base.utils import normalize_newline, UnicodeWriter, tcurrency
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.core.emails.models import Email
@@ -124,8 +124,8 @@ def get_membership_type_choices(request_user, customer, membership_app, corp_mem
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
-    price_fmt = u'%s - %s%0.2f'
-    admin_fee_fmt = u' (+%s%s admin fee)'
+    price_fmt = u'%s - %s'
+    admin_fee_fmt = u' (+%s admin fee)'
     renew_fmt = u' Renewal'
 
     for mt in membership_types:
@@ -138,23 +138,19 @@ def get_membership_type_choices(request_user, customer, membership_app, corp_mem
         if renew_mode:
             price_display = (price_fmt + renew_fmt) % (
                 mt.name,
-                currency_symbol,
-                mt.renewal_price
+                tcurrency(mt.renewal_price)
             )
         else:
             if mt.admin_fee:
                 price_display = (price_fmt + admin_fee_fmt) % (
                     mt.name,
-                    currency_symbol,
-                    mt.price,
-                    currency_symbol,
-                    mt.admin_fee
+                    tcurrency(mt.price),
+                    tcurrency(mt.admin_fee)
                 )
             else:
                 price_display = (price_fmt) % (
                     mt.name,
-                    currency_symbol,
-                    mt.price
+                    tcurrency(mt.price)
                 )
 
         price_display = mark_safe(price_display)

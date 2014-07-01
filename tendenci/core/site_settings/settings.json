@@ -780,5 +780,22 @@
         "scope_category": "global",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false", 
+        "description": "This setting determines whether to allow the use of commas as separators for dollar amounts/prices fields.", 
+        "data_type": "boolean", 
+        "update_dt": "2012-02-16 09:42:02", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "allowdecimalcommas", 
+        "value": "false", 
+        "label": "Allow Commas in Price Fields", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

@@ -20,7 +20,7 @@ from tendenci.addons.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
-from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
+from tendenci.core.base.fields import EmailVerificationField, CountrySelectField, PriceField
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.site_settings.utils import get_setting
 
@@ -128,7 +128,7 @@ class DirectoryForm(TendenciBaseForm):
     email = EmailVerificationField(label=_("Email"), required=False)
     email2 = EmailVerificationField(label=_("Email 2"), required=False)
     country = CountrySelectField(label=_("Country"), required=False)
-    
+
     pricing = forms.ModelChoiceField(queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'),
                     **request_duration_defaults)
 
@@ -333,6 +333,10 @@ class DirectoryForm(TendenciBaseForm):
 
 class DirectoryPricingForm(forms.ModelForm):
     status = forms.ChoiceField(initial=1, choices=STATUS_CHOICES, required=False)
+    regular_price = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
+    premium_price = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
+    regular_price_member = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
+    premium_price_member = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
 
     class Meta:
         model = DirectoryPricing
@@ -351,6 +355,7 @@ class DirectoryPricingForm(forms.ModelForm):
             self.fields['duration'] = forms.ChoiceField(initial=14, choices=ADMIN_DURATION_CHOICES)
         else:
             self.fields['duration'] = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)
+
 
 class DirectoryRenewForm(TendenciBaseForm):
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),

@@ -1,3 +1,4 @@
+import re
 from time import strptime, strftime
 from south.modelsinspector import add_introspection_rules
 
@@ -10,7 +11,8 @@ from django.core import exceptions
 from django_countries.countries import COUNTRIES
 
 from tendenci.core.base import forms
-from tendenci.core.base.widgets import SplitDateTimeWidget, EmailVerificationWidget
+from tendenci.core.base.widgets import SplitDateTimeWidget, EmailVerificationWidget, PriceWidget
+from tendenci.core.site_settings.utils import get_setting
 
 
 # introspection rules for south migration for the slugfield
@@ -150,3 +152,21 @@ class CountrySelectField(fields.ChoiceField):
                            ('','-----------'))
         self.choices = initial_choices + tuple(countries)
         self.initial = 'United States'
+
+
+class PriceField(fields.DecimalField):
+
+    def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, *args, **kwargs):
+        super(PriceField, self).__init__(max_value, min_value, max_digits, decimal_places, *args, **kwargs)
+        self.widget = PriceWidget()
+
+    def clean(self, value):
+        comma_setting = get_setting('site', 'global', 'allowdecimalcommas')
+        if comma_setting and ',' in value:
+            comma_validator = re.compile(r'^[0-9]{1,3}(,[0-9]{3})*(\.[0-9]+)?$')
+            if comma_validator.match(value):
+                value = re.sub(',', '', value)
+            else:
+                raise ValidationError(self.error_messages['invalid'])
+
+        return super(PriceField, self).clean(value)

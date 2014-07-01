@@ -133,6 +133,7 @@ def tcurrency(mymoney):
             -30000.232 -> $(30,000.23)
     """
     currency_symbol = get_setting("site", "global", "currencysymbol")
+    allow_commas = get_setting("site", "global", "allowdecimalcommas")
 
     if not currency_symbol:
         currency_symbol = "$"
@@ -142,10 +143,13 @@ def tcurrency(mymoney):
             fmt = '%s%s'
         else:
             fmt = '%s(%s)'
-        return fmt % (currency_symbol, intcomma(mymoney))
+        if allow_commas:
+            mymoney = intcomma(mymoney)
+        return fmt % (currency_symbol, mymoney)
     else:
         return mymoney
-    
+
+
 def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_time='%I:%M %p'):
     """
         takes datetime objects, start_dt, end_dt and format (for date and time) 

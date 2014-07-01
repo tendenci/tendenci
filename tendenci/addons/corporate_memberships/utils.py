@@ -16,7 +16,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.memberships.models import MembershipDefault
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.payments.models import Payment
-from tendenci.core.base.utils import normalize_newline
+from tendenci.core.base.utils import normalize_newline, tcurrency
 
 
 def get_user_corp_membership(member_number='', email=''):
@@ -54,8 +54,7 @@ def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
 
     for cmt in corporate_membership_types:
         if not renew:
-            price_display = '%s - %s%0.2f' % (cmt.name, currency_symbol,
-                                              cmt.price)
+            price_display = '%s - %s' % (cmt.name, tcurrency(cmt.price))
         else:
             indiv_renewal_price = cmt.membership_type.renewal_price
             if not indiv_renewal_price:

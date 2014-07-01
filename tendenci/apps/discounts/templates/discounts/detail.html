@@ -21,7 +21,7 @@
     
     <div class="discounts-wrap">
         <a href="{{ discount.get_absolute_url }}"><h1>{{ discount.discount_code }}</h1></a>
-		<div class="content">
+        <div class="content">
             <table>
                 <tr>
                     <td class="label"><b>{% trans "Discount Code" %}:</b></td>
@@ -29,7 +29,7 @@
                 </tr>
                 <tr>
                     <td class="label"><b>{% trans "Discount Value" %}:</b></td>
-                    <td>{{ discount.value }}</td>
+                    <td>{{ discount.value|format_currency }}</td>
                 </tr>
                 <tr>
                     <td class="label"><b>{% trans "Number of uses" %}:</b></td>

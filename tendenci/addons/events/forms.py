@@ -31,8 +31,8 @@ from form_utils.forms import BetterModelForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField
-from tendenci.core.base.widgets import PriceWidget
+from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
+from tendenci.core.base.utils import tcurrency
 from tendenci.core.emails.models import Email
 from tendenci.core.files.utils import get_max_file_upload_size
 from tendenci.core.perms.utils import get_query_filters
@@ -524,10 +524,9 @@ def _get_price_labels(pricing):
     end_dt = '<br/>&nbsp;(ends ' + unicode(pricing.end_dt.date()) + ')'
     description = '<br/>&nbsp;' + unicode(pricing.description)
 
-    return mark_safe('&nbsp;<strong><span data-price="%s">%s%s %s%s</span>%s</strong>%s' % (
+    return mark_safe('&nbsp;<strong><span data-price="%s">%s %s%s</span>%s</strong>%s' % (
                                       pricing.price,
-                                      currency_symbol,
-                                      pricing.price,
+                                      tcurrency(pricing.price),
                                       pricing.title,
                                       target_display,
                                       end_dt,
@@ -1076,6 +1075,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
+    price = PriceField(label=_('Price'), max_digits=21, decimal_places=2)
     dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.MultipleChoiceField(required=False, choices=[])
     payment_required = forms.ChoiceField(required=False,
@@ -1091,7 +1091,6 @@ class Reg8nConfPricingForm(BetterModelForm):
                         + timedelta(days=29))}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
-        self.fields['price'].widget = PriceWidget()
 
         # skip the field if there is no custom registration forms
         if not reg_form_queryset:

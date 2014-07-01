@@ -19,8 +19,8 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
-from tendenci.core.base.utils import get_template_list
-from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.base.utils import get_template_list, tcurrency
+from tendenci.core.base.fields import EmailVerificationField, PriceField
 
 from tendenci.addons.recurring_payments.fields import BillingCycleField
 from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
@@ -133,15 +133,15 @@ class FormForForm(forms.ModelForm):
                     else:
                         if formforform.recurring_payment:
                             pricing_options.append(
-                                (pricing.pk, mark_safe('<strong>%s%s per %s %s - %s</strong><br>%s' %
-                                                        (currency_symbol, pricing.price,
+                                (pricing.pk, mark_safe('<strong>%s per %s %s - %s</strong><br>%s' %
+                                                        (tcurrency(pricing.price),
                                                          pricing.billing_frequency, pricing.billing_period,
                                                          pricing.label, pricing.description)))
                             )
                         else:
                             pricing_options.append(
-                                (pricing.pk, mark_safe('<strong>%s%s %s</strong><br>%s' %
-                                                       (currency_symbol, pricing.price,
+                                (pricing.pk, mark_safe('<strong>%s %s</strong><br>%s' %
+                                                       (tcurrency(pricing.price),
                                                         pricing.label, pricing.description)))
                             )
 
@@ -473,6 +473,8 @@ class PricingForm(forms.ModelForm):
                                           help_text='It is used to determine the payment due date for each billing cycle')
     billing_cycle = BillingCycleField(label='How often to bill',
                                       widget=BillingCycleWidget)
+    price = PriceField(max_digits=10, decimal_places=2, required=False,
+                       help_text='Leaving this field blank allows visitors to set their own price')
 
     class Meta:
         model = Pricing

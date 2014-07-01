@@ -17,7 +17,6 @@ from tinymce.widgets import TinyMCE
 
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.addons.industries.models import Industry
-from tendenci.addons.memberships.fields import PriceInput
 from tendenci.addons.memberships.fields import NoticeTimeTypeField
 from tendenci.addons.corporate_memberships.widgets import NoticeTimeTypeWidget
 from tendenci.addons.corporate_memberships.models import (
@@ -38,7 +37,7 @@ from tendenci.addons.corporate_memberships.utils import (
     get_notice_token_help_text,
     csv_to_dict)
 from tendenci.addons.corporate_memberships.settings import UPLOAD_ROOT
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField, PriceField
 from tendenci.core.payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -50,10 +49,8 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                                   required=False,
                                widget=forms.Textarea(
                                     attrs={'rows': '3'}))
-    price = forms.DecimalField(decimal_places=2, widget=PriceInput(),
-                               help_text="Set 0 for free membership.")
-    renewal_price = forms.DecimalField(decimal_places=2,
-                                       widget=PriceInput(),
+    price = PriceField(decimal_places=2, help_text="Set 0 for free membership.")
+    renewal_price = PriceField(decimal_places=2,
                                        required=False,
                                help_text="Set 0 for free membership.")
     status_detail = forms.ChoiceField(

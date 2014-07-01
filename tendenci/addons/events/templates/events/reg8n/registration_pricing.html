@@ -12,7 +12,7 @@
         {% if spots_taken >= limit and limit > 0 %}
             <div class="registration-orange">
                 {% trans "Event is full" %}
-            </div>          
+            </div>
         {% else %}
             {% if reg_ended %}
                 <div class="registration-red">
@@ -27,21 +27,21 @@
             {% endif %}
             {% if pricing %}
                 <div class="pricing-list-wrap">
-                	<form action="{% url event.register event.pk %}" method="get">
+                    <form action="{% url event.register event.pk %}" method="get">
 
-                	{% if pricing|length == 1 and pricing.0.amount == 0 %}
+                    {% if pricing|length == 1 and pricing.0.amount == 0 %}
                         <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register for Free' %}" />
-                	{% else %}
+                    {% else %}
                     <ul>
                         {% for price in pricing %}
                         <li>
-                            {{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %} - &nbsp;<strong>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ price.price }}</strong><br>
+                            {{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %} - &nbsp;<strong>{{ price.price|format_currency }}</strong><br>
                             ({% trans "ends" %} {{ price.end_dt|date:"m/d/Y" }})
                         </li>
                         {% endfor %}
                     </ul>
-                	<input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
-                	{% endif %}
+                    <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                    {% endif %}
 
                     {% if event.registration_configuration.has_member_price %}
                     {% if not request.user.profile.is_member %}
@@ -49,10 +49,10 @@
                     {% endif %}
                     {% endif %}
 
-                	</form>
-                	
-                {% include "events/include/spots_status.html" %}	
-                 
+                    </form>
+
+                {% include "events/include/spots_status.html" %}
+
                 {% if is_registrant %}
                 <div id="is-registrant"><a href="{% url event.registrant.search event.pk %}?q={{ user.email }}">You have already registered</a></div>
                 {% endif %}

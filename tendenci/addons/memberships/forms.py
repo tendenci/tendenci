@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.base.fields import EmailVerificationField, PriceField
 from tendenci.addons.corporate_memberships.models import (
     CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
@@ -18,7 +18,7 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.addons.memberships.models import (
     MembershipDefault, MembershipDemographic, MembershipAppField, MembershipType,
     Notice, MembershipImport, MembershipApp, MembershipFile)
-from tendenci.addons.memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
+from tendenci.addons.memberships.fields import TypeExpMethodField, NoticeTimeTypeField
 from tendenci.addons.memberships.settings import UPLOAD_ROOT
 from tendenci.addons.memberships.utils import normalize_field_names
 from tendenci.addons.memberships.utils import (
@@ -130,13 +130,11 @@ class MembershipTypeForm(TendenciBaseForm):
     type_exp_method = TypeExpMethodField(label='Period Type')
     description = forms.CharField(label=_('Notes'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows': '3'}))
-    price = forms.DecimalField(decimal_places=2, widget=PriceInput(),
-                               help_text="Set 0 for free membership.")
-    renewal_price = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False,
-                               help_text="Set 0 for free membership.")
-    admin_fee = forms.DecimalField(decimal_places=2, required=False,
-                                   widget=PriceInput(),
-                                   help_text="Admin fee for the first time processing")
+    price = PriceField(decimal_places=2, help_text="Set 0 for free membership.")
+    renewal_price = PriceField(decimal_places=2, required=False,
+                                 help_text="Set 0 for free membership.")
+    admin_fee = PriceField(decimal_places=2, required=False,
+                           help_text="Admin fee for the first time processing")
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'))
     )

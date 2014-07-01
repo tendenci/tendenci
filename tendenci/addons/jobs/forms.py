@@ -10,7 +10,7 @@ from tendenci.core.categories.models import Category
 from tendenci.addons.jobs.models import Job
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField
+from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
 from tendenci.addons.jobs.models import JobPricing
 from tendenci.addons.jobs.utils import get_payment_method_choices, pricing_choices
 from tendenci.apps.user_groups.models import Group
@@ -295,6 +295,10 @@ class JobAdminForm(JobForm):
 class JobPricingForm(forms.ModelForm):
     duration = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)
     status = forms.ChoiceField(initial=1, choices=STATUS_CHOICES, required=False)
+    regular_price = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
+    premium_price = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
+    regular_price_member = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
+    premium_price_member = PriceField(max_digits=15, decimal_places=2, initial=0, required=False)
 
     class Meta:
         model = JobPricing

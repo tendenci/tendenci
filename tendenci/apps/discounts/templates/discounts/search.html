@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load discount_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 {% load search_tags %}
 {% load i18n %}
@@ -15,31 +16,31 @@
 
 {% block body %}
 <div class="t">
-	{% discount_nav request.user %}
-    <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %}  {% trans "Search" %}</h1>  
+    {% discount_nav request.user %}
+    <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %}  {% trans "Search" %}</h1>
 
-	{% discount_search %}
+    {% discount_search %}
     {% autopaginate discounts 50 %}
-	
-	<div class="discounts-wrap">
+
+    <div class="discounts-wrap">
         <table id="discounts">
             <tr>
                 <th>Code</th><th>Value</th><th>Uses</th><th>Cap</th><th>Status</th><th>Edit</th>
             </tr>
-    {% for discount in discounts %}	
-		<tr>
+    {% for discount in discounts %}
+        <tr>
             <td class="left"><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></td>
-            <td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ discount.value }}</td>
+            <td>{{ discount.value|format_currency }}</td>
             <td>{{ discount.num_of_uses }}</td>
             <td>{{ discount.cap }}</td>
             <td>{% discount_expiration discount %}</td>
             <td>{% discount_options request.user discount %}</td>
         </tr>
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
         </table>
-	</div>
+    </div>
 
     {% paginate %}
 </div>

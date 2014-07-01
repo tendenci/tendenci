@@ -1,4 +1,5 @@
 {% load discount_tags %}
+{% load base_filters %}
 {% load i18n %}
 
 <div class="wrap-search-item">
@@ -6,7 +7,7 @@
         <h2><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></h2>
         <div class="item-content">
             <div class="search-text">
-                <p>Value: {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ discount.value }}</p>
+                <p>Value: {{ discount.value|format_currency }}</p>
                 <p>Uses: {{ discount.num_of_uses }}</p>
                 <p>Cap: {{ discount.cap }}</p>
                 <p>Status: {% discount_expiration discount %}</p>

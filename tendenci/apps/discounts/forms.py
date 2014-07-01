@@ -8,12 +8,16 @@ from django.contrib.contenttypes.models import ContentType
 
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField, PriceField
 from tendenci.apps.discounts.utils import assign_discount
 
 END_DT_INITIAL = datetime.now() + timedelta(weeks=4)
 
 class DiscountForm(TendenciBaseForm):
+
+    value = PriceField(label=_('Discount Value'), max_digits=10, decimal_places=2,
+                       help_text=_('Enter discount value as a positive number.'))
+
     class Meta:
         model = Discount
         fields = (
