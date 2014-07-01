@@ -7,7 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap3/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
     <style>#membership-export ul li {list-style: none;}</style>
 {% endblock %}
@@ -24,9 +24,9 @@
     <div class="alert">
         <strong>Note</strong>: An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.
     </div>
-   
+
     <div id="membership-export">
-        
+
         <form method="post" action="">
         {% csrf_token %}
         {% for field in form %}
@@ -37,7 +37,7 @@
         <div><input class="btn" type='submit' value='Export Memberships'></div>
 
         </form>
-    
+
     </div>
 </div>
 {% endblock %}
