@@ -16,5 +16,5 @@ if [ $? -eq 0 ] && [ $TRAVIS_BRANCH == master ]; then
     echo "password = $TENDENCI_TRANSIFEX_PASSWORD" >> ~/.transifexrc
     echo "token =" >> ~/.transifexrc
     echo "username = tendenci" >> ~/.transifexrc
-    tx push --source --translations --no-interactive --skip
+    tx push --source --no-interactive --skip
 fi
