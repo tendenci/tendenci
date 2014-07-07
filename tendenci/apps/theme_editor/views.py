@@ -47,7 +47,10 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         theme_root = os.path.join(settings.ORIGINAL_THEMES_DIR, selected_theme)
 
     # get the default file and clean up any input
-    default_file = request.GET.get("file", DEFAULT_FILE)
+    if request.method != "POST":
+        default_file = request.GET.get("file", DEFAULT_FILE)
+    else:
+        default_file = request.POST.get("rf_path", DEFAULT_FILE)
 
     if default_file:
         default_file = default_file.replace('\\', '/')
