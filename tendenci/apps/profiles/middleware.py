@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.conf import settings
+
 
 class ProfileMiddleware(object):
     """
@@ -14,3 +16,40 @@ class ProfileMiddleware(object):
                 profile = request.user.get_profile()
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=request.user)
+
+        
+class ProfileLanguageMiddleware(object):
+    """This middleware should come before django's LocaleMiddleware
+    """
+    if settings.USE_I18N:
+        def get_user_language(self, request):
+            lang =  getattr(request.user.profile, 'language')
+            return lang
+    
+        def process_request(self, request):
+            """check user language and assign it to session or cookie accordingly
+            """
+            user_language = self.get_user_language(request)
+            if user_language:
+                if hasattr(request, 'session'):
+                    lang_code_in_session = request.session.get('django_language', None)
+                    if not lang_code_in_session or lang_code_in_session != user_language:
+                        request.session['django_language'] = user_language
+                else:
+                    lang_code_in_cookie = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
+                    if lang_code_in_cookie and lang_code_in_cookie != user_language:
+                        request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = user_language
+                        
+        def process_response(self, request, response):
+            """assign user_language to cookie LANGUAGE_COOKIE_NAME
+            """
+            user_language = self.get_user_language(request)
+            lang_code_in_cookie = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
+            if user_language and (not lang_code_in_cookie or user_language != lang_code_in_cookie):
+                response.set_cookie(settings.LANGUAGE_COOKIE_NAME, user_language)
+            return response
+            
+            
+            
+                
+                
