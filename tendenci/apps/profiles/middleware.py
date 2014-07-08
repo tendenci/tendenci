@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.conf import settings
+from tendenci.core.site_settings.utils import get_setting
 
 
 class ProfileMiddleware(object):
@@ -23,7 +24,13 @@ class ProfileLanguageMiddleware(object):
     """
     if settings.USE_I18N:
         def get_user_language(self, request):
-            lang =  getattr(request.user.profile, 'language')
+            try:
+                lang =  getattr(request.user.profile, 'language')
+            except:
+                lang = None
+
+            if not lang:
+                lang = get_setting('site', 'global', 'localizationlanguage')
             return lang
     
         def process_request(self, request):
