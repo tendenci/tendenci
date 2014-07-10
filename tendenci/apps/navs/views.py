@@ -28,132 +28,137 @@ from tendenci.apps.navs.utils import cache_nav
 @is_enabled('navs')
 @login_required
 def search(request, template_name="navs/search.html"):
-    query = request.GET.get('q', None)
+    return redirect(reverse('admin:navs_nav_changelist'))
+    # query = request.GET.get('q', None)
 
-    filters = get_query_filters(request.user, 'navs.view_nav')
-    navs = Nav.objects.filter(filters).distinct()
-    if query:
-        navs = navs.filter(Q(title__icontains=query)|Q(description__icontains=query))
+    # filters = get_query_filters(request.user, 'navs.view_nav')
+    # navs = Nav.objects.filter(filters).distinct()
+    # if query:
+    #     navs = navs.filter(Q(title__icontains=query)|Q(description__icontains=query))
 
-    EventLog.objects.log()
+    # EventLog.objects.log()
 
-    return render_to_response(
-        template_name,
-        {'navs':navs},
-        context_instance=RequestContext(request)
-    )
+    # return render_to_response(
+    #     template_name,
+    #     {'navs':navs},
+    #     context_instance=RequestContext(request)
+    # )
 
 
 @is_enabled('navs')
 @login_required
 def detail(request, id, template_name="navs/detail.html"):
-    nav = get_object_or_404(Nav, id=id)
+    return redirect(reverse('admin:navs_nav_change', args=[id]))
+    # nav = get_object_or_404(Nav, id=id)
     
-    if not has_view_perm(request.user, 'navs.view_nav', nav):
-        raise Http403
+    # if not has_view_perm(request.user, 'navs.view_nav', nav):
+    #     raise Http403
 
-    EventLog.objects.log(instance=nav)
+    # EventLog.objects.log(instance=nav)
 
-    return render_to_response(
-        template_name,
-        {'current_nav':nav},
-        context_instance=RequestContext(request),
-    )
+    # return render_to_response(
+    #     template_name,
+    #     {'current_nav':nav},
+    #     context_instance=RequestContext(request),
+    # )
 
 
 @is_enabled('navs')
 @login_required
 def add(request, form_class=NavForm, template_name="navs/add.html"):
-    if not has_perm(request.user, 'navs.add_nav'):
-        raise Http403
+    return redirect(reverse('admin:navs_nav_add'))
+    # if not has_perm(request.user, 'navs.add_nav'):
+    #     raise Http403
 
-    if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
-        if form.is_valid():
-            nav = form.save(commit=False)
-            nav = update_perms_and_save(request, form, nav)
+    # if request.method == "POST":
+    #     form = form_class(request.POST, user=request.user)
+    #     if form.is_valid():
+    #         nav = form.save(commit=False)
+    #         nav = update_perms_and_save(request, form, nav)
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % nav)
-            return redirect('navs.edit_items', id=nav.id)
-    else:
-        form = form_class(user=request.user)
+    #         messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % nav)
+    #         return redirect('navs.edit_items', id=nav.id)
+    # else:
+    #     form = form_class(user=request.user)
 
-    return render_to_response(
-        template_name,
-        {'form':form},
-        context_instance=RequestContext(request),
-    )
+    # return render_to_response(
+    #     template_name,
+    #     {'form':form},
+    #     context_instance=RequestContext(request),
+    # )
 
 
 @is_enabled('navs')
 @login_required
 def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
-    nav = get_object_or_404(Nav, id=id)
-    if not has_perm(request.user, 'navs.change_nav', nav):
-        raise Http403
+    return redirect(reverse('admin:navs_nav_change', args=[id]))
+    # nav = get_object_or_404(Nav, id=id)
+    # if not has_perm(request.user, 'navs.change_nav', nav):
+    #     raise Http403
     
-    if request.method == "POST":
-        form = form_class(request.POST, instance=nav, user=request.user)
-        if form.is_valid():
-            nav = form.save(commit=False)
-            nav = update_perms_and_save(request, form, nav)
-            cache_nav(nav)
+    # if request.method == "POST":
+    #     form = form_class(request.POST, instance=nav, user=request.user)
+    #     if form.is_valid():
+    #         nav = form.save(commit=False)
+    #         nav = update_perms_and_save(request, form, nav)
+    #         cache_nav(nav)
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
-            return redirect('navs.edit_items', id=nav.id)
-    else:
-        form = form_class(user=request.user, instance=nav)
+    #         messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
+    #         return redirect('navs.edit_items', id=nav.id)
+    # else:
+    #     form = form_class(user=request.user, instance=nav)
 
-    return render_to_response(
-        template_name,
-        {'form':form, 'current_nav':nav},
-        context_instance=RequestContext(request),
-    )
+    # return render_to_response(
+    #     template_name,
+    #     {'form':form, 'current_nav':nav},
+    #     context_instance=RequestContext(request),
+    # )
 
 
 @is_enabled('navs')
 @login_required
 def edit_items(request, id, template_name="navs/nav_items.html"):
-    nav = get_object_or_404(Nav, id=id)
-    if not has_perm(request.user, 'navs.change_nav', nav):
-        raise Http403
+    return redirect(reverse('admin:navs_nav_change', args=[id]))
+    # nav = get_object_or_404(Nav, id=id)
+    # if not has_perm(request.user, 'navs.change_nav', nav):
+    #     raise Http403
 
-    ItemFormSet = modelformset_factory(NavItem,
-                        form=ItemForm,
-                        extra=0,
-                        can_delete=True)
-    page_select = PageSelectForm()
+    # ItemFormSet = modelformset_factory(NavItem,
+    #                     form=ItemForm,
+    #                     extra=0,
+    #                     can_delete=True)
+    # page_select = PageSelectForm()
 
-    if request.method == "POST":
-        formset = ItemFormSet(request.POST)
-        if formset.is_valid():
-            #delete old nav items
-            nav.navitem_set.all().delete()
-            items = formset.save(commit=False)
-            # update or create nav items
-            for item in items:
-                item.nav = nav
-                item.save()
-            cache_nav(nav)
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
-            if nav.pk == 1:  # the main nav has id 1 in the npo defaults fixture
-                checklist_update('update-nav')
+    # if request.method == "POST":
+    #     formset = ItemFormSet(request.POST)
+    #     if formset.is_valid():
+    #         #delete old nav items
+    #         nav.navitem_set.all().delete()
+    #         items = formset.save(commit=False)
+    #         # update or create nav items
+    #         for item in items:
+    #             item.nav = nav
+    #             item.save()
+    #         cache_nav(nav)
+    #         messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
+    #         if nav.pk == 1:  # the main nav has id 1 in the npo defaults fixture
+    #             checklist_update('update-nav')
 
-            EventLog.objects.log(instance=nav)
+    #         EventLog.objects.log(instance=nav)
 
-            redirect_to = request.REQUEST.get('next', '')
-            if redirect_to:
-                return HttpResponseRedirect(redirect_to)
-            else:
-                return redirect('navs.detail', id=nav.id)
-    else:
-        formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('position'))
+    #         redirect_to = request.REQUEST.get('next', '')
+    #         if redirect_to:
+    #             return HttpResponseRedirect(redirect_to)
+    #         else:
+    #             return redirect('navs.detail', id=nav.id)
+    # else:
+    #     formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('position'))
 
-    return render_to_response(
-        template_name,
-        {'page_select':page_select, 'formset':formset, 'current_nav':nav},
-        context_instance=RequestContext(request),
-    )
+    # return render_to_response(
+    #     template_name,
+    #     {'page_select':page_select, 'formset':formset, 'current_nav':nav},
+    #     context_instance=RequestContext(request),
+    # )
 
 
 @is_enabled('navs')
@@ -167,7 +172,7 @@ def delete(request, id, template_name="navs/delete.html"):
 
             nav.delete()
             return HttpResponseRedirect(reverse('navs.search'))
-    
+
         return render_to_response(template_name, {'current_nav': nav},
             context_instance=RequestContext(request))
     else:

@@ -37,7 +37,8 @@ class NavAdmin(TendenciBaseModelAdmin):
             '%sjs/admin/navitem-inline.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
-                       '%scss/admin/navitem-inline.css' % settings.STATIC_URL], }
+                       '%scss/admin/navitem-inline.css' % settings.STATIC_URL,
+                       '%scss/admin/navchangelist.css' % settings.STATIC_URL], }
 
 
 admin.site.register(Nav, NavAdmin)
