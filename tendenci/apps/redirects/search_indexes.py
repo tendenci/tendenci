@@ -16,12 +16,12 @@ class RedirectIndex(indexes.RealTimeSearchIndex):
 
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
-    
+
     order = indexes.DateTimeField()
 
     def get_updated_field(self):
         return 'update_dt'
-    
+
     def prepare_order(self, obj):
         return obj.create_dt
 

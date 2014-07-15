@@ -3,7 +3,7 @@
 /* upload */
 div.import-field{
     margin: 1em 0;
-    
+
 }
 div.fields-block{
     margin-top: 2em;
@@ -19,7 +19,7 @@ div.fields-block{
 #upload-form-wrap input[type=file]{
     font-size: 1.2em;
 }
-        
+
 /* preview */
 ul#import-preview-total li{
     list-style: inline;
@@ -95,8 +95,8 @@ div#summary{
 .clear-left{
     clear: left;
 }
-.ui-progressbar .ui-progressbar-value { 
-    background-image: url(../images/pbar-ani.gif); 
+.ui-progressbar .ui-progressbar-value {
+    background-image: url(../images/pbar-ani.gif);
 }
 #summary div{
     margin: 5px 0;

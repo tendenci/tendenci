@@ -15,7 +15,7 @@
 
 {% block body %}
 
-<div class="t"> 
+<div class="t">
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
 
@@ -127,7 +127,7 @@
             {% endif %}
 
         </table>
-            
+
         {% endif %}
         <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
 
@@ -140,7 +140,7 @@
                 {% else %}
                     {% trans "Guest #" %}{{ forloop.counter0 }}
                 {% endif %}
-                
+
                 {% if not registration.is_table and registrant.pricing %}
                 (registered as {{ registrant.pricing.title }})
                 {% endif %}
@@ -171,7 +171,7 @@
             <td class="td-right" width="20%">
                 {% if not registration.is_table %}
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-                    {% if registrant.override %}<span class="override-symbol">*</span>{% endif %} 
+                    {% if registrant.override %}<span class="override-symbol">*</span>{% endif %}
                     {% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
                     {{ registrant.amount|format_currency }}
                     {% if registrant.use_free_pass %}
@@ -190,7 +190,7 @@
              </td>
         </tr>
         {% endif %}
-        
+
          {% if registration.invoice.discount_amount > 0 %}
         <tr>
              <td class="td-right" colspan="2">
@@ -205,7 +205,7 @@
             <a href="{% url event event.pk %}">{% trans "Register More People" %}</a>
         </div>
 
-        <div style="font-weight: bold;">{% trans "Addons" %} ... ({{ addons.count }})</div>       
+        <div style="font-weight: bold;">{% trans "Addons" %} ... ({{ addons.count }})</div>
         <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
             {% for addon in addons %}
             <tr>

@@ -14,9 +14,9 @@
 
 {% block body %}
 <div class="t">
-	{% campaign_nav request.user %}
-    
-        <h1>{% trans "Delete a Campaign" %}</h1> 
+    {% campaign_nav request.user %}
+
+        <h1>{% trans "Delete a Campaign" %}</h1>
         <h2><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></h2>
         <div class="content">
             {% if campaign.status == 'S' %}
@@ -27,10 +27,10 @@
             {% endif %}
             {% if campaign.status == 'D' %}
                 <p>{% trans "This campaign is a draft. Deleting it will remove it from your account and prevent it from sending." %}</p>
-            {% endif %}  
+            {% endif %}
         </div>
-        <div class="delete-prompt"> 
-        	{% trans "Are you sure you want to permanently delete this campaign?" %}
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to permanently delete this campaign?" %}
         </div>
     <div class="delete-form">
         <form name="campaign-delete" method="POST" action="{% url campaign_monitor.campaign_delete campaign.campaign_id %}">{% csrf_token %}

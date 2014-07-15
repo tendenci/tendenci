@@ -7,7 +7,7 @@
 <p>{% trans "The following invoice has been edited:" %}</p>
 
 <div>{% trans "ID:" %} {{ object.id }}</div>
-<div>{% trans "Type:" %} 
+<div>{% trans "Type:" %}
     {% if object.estimate  %}
         {% if 'cancel' in object.status_detail %}
             {% trans "CANCELLED" %}

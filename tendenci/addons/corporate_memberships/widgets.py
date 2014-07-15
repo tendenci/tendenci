@@ -15,30 +15,30 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
             items = self.pos_d.values()
             items.sort()
             self.widgets = [item[1] for item in items]
-            
+
         super(NoticeTimeTypeWidget, self).__init__(self.widgets, attrs)
 
     def render(self, name, value, attrs=None):
         if not isinstance(value, list):
             value = self.decompress(value)
-            
+
         final_attrs = self.build_attrs(attrs)
         id_ = final_attrs.get('id', None)
-        
+
         # num_days
         num_days_widget = self.pos_d['num_days'][1]
         num_days_widget.attrs = {'size':'8'}
-        rendered_num_days = self.render_widget(num_days_widget, name, value, final_attrs, 
+        rendered_num_days = self.render_widget(num_days_widget, name, value, final_attrs,
                                              self.pos_d['num_days'][0], id_)
-        
+
         # notice_time
         notice_time_widget = self.pos_d['notice_time'][1]
         notice_time_widget.choices = (('after','After'),
                                       ('before','Before'),
                                       ('attimeof','At Time Of'))
-        rendered_notice_time = self.render_widget(notice_time_widget, 
+        rendered_notice_time = self.render_widget(notice_time_widget,
                                                   name, value, final_attrs, self.pos_d['notice_time'][0], id_)
-        
+
         # notice_type
         notice_type_widget = self.pos_d['notice_type'][1]
         notice_type_widget.choices = NOTICE_TYPES
@@ -46,7 +46,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
             notice_type_widget,name,value,final_attrs,
             self.pos_d['notice_type'][0],id
         )
-        
+
         output_html = """
                         <div id="notice-time-type">
                             %s day(s) %s %s
@@ -55,7 +55,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
                              rendered_notice_time,
                              rendered_notice_type
                              )
-                      
+
         return mark_safe(output_html)
 
     def render_widget(self, widget, name, value, attrs, index=0, id=None):

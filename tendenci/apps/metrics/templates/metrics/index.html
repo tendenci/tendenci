@@ -22,7 +22,7 @@
         var chart = new google.visualization.LineChart(document.getElementById('traffic-chart'));
         chart.draw(data, {lineWidth: 3,pointSize: 5, width: 300, height: 150, legend: 'none', colors: ['#6d8'], vAxes: [{format:'#,###'}]});
       }
-      
+
       function drawUsersChart() {
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Date');
@@ -35,7 +35,7 @@
         var chart = new google.visualization.LineChart(document.getElementById('users-chart'));
         chart.draw(data, {lineWidth: 3,pointSize: 5, width: 300, height: 150, legend: 'none', colors: ['#58d'], vAxes: [{format:'#,###'}]});
       }
-    
+
       function drawMembersChart() {
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Date');
@@ -100,7 +100,7 @@
 <div id="members-wrap">
     <p>Members over the last 7 days</p>
     <div id="members-chart"></div>
-    
+
 </div>
 
 <div id="traffic-wrap">

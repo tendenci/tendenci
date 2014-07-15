@@ -6,7 +6,7 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
 from django.db.models import Q
 from django.template.defaultfilters import filesizeformat
-from django.utils.translation import ugettext_lazy as _ 
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.core.files.utils import get_max_file_upload_size
@@ -92,11 +92,11 @@ class LocationForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status_detail'], 
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
-                    })]   
-           
-    def __init__(self, *args, **kwargs): 
+                    })]
+
+    def __init__(self, *args, **kwargs):
         super(LocationForm, self).__init__(*args, **kwargs)
 
         if self.user:

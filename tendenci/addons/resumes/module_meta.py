@@ -11,7 +11,7 @@ class ResumeMeta():
     def get_title(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         site_name = get_setting('site','global','sitedisplayname')
 
         ### Build string -----------------------
@@ -37,7 +37,7 @@ class ResumeMeta():
     def get_description(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         site_name = get_setting('site','global','sitedisplayname')
 
         ### Build string -----------------------
@@ -59,15 +59,15 @@ class ResumeMeta():
         value = '%s - employment opportunity %s' % (value, site_name)
 
         return value
-    
+
     def get_keywords(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         dynamic_keywords = generate_meta_keywords(object.description)
         site_name = get_setting('site','global','sitedisplayname')
         site_name = site_name.strip()
-        
+
         #T4 used title, experience, skills, education and description
 
         list = [
@@ -106,5 +106,5 @@ class ResumeMeta():
             if object.meta and object.meta.canonical_url: return object.meta.canonical_url
             else: return self.get_canonical_url()
         return ''
-    
-    
+
+

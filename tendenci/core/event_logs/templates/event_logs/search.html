@@ -10,8 +10,8 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 <style>
     .field, .new-help-text { display: inline; }
@@ -40,7 +40,7 @@
                         <td class="el-sh-elid">
                         {% if event_log.event_id > 0 %}
                             <a href="{% url event_log.search %}?event_id={{ event_log.event_id }}{{ date_range_query }}">
-                                <img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" alt="{{ event_log.event_id }}" title="{{ event_log.event_id }}" />&nbsp; 
+                                <img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" alt="{{ event_log.event_id }}" title="{{ event_log.event_id }}" />&nbsp;
                                 {{ event_log.event_id }}
                               </a>
                               <a href="{% url event_log.search %}?event_id={{ event_log.event_id }}{{ date_range_query }}">()</a>
@@ -171,20 +171,14 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
 
     <script type="text/javascript">
-        $(".datepicker").live('focus', function() {
-            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
-        });
-
-        $(".timepicker").live('focus', function() {
-            $(this).timePicker({
-              show24Hours: false,
-              step: 15
-            });
+        $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step': 15});
         });
 
         var adv_opt_legend = $('fieldset legend');

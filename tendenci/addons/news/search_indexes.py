@@ -17,7 +17,7 @@ class NewsIndex(TendenciBaseSearchIndex):
     release_dt_local = indexes.DateTimeField(model_attr='release_dt_local', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
     tags = indexes.CharField(model_attr='tags')
-    
+
     # categories
     category = indexes.CharField()
     sub_category = indexes.CharField()
@@ -25,13 +25,13 @@ class NewsIndex(TendenciBaseSearchIndex):
     # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
-    
+
     def prepare_body(self, obj):
         body = obj.body
         body = strip_tags(body)
         body = strip_entities(body)
         return body
-    
+
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')
         if category:

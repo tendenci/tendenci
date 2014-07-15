@@ -12,9 +12,9 @@
 {% endblock %}
 
 {% block body %}
-    
-    <h2>{% trans "Notifications" %}</h2>    
-    
+
+    <h2>{% trans "Notifications" %}</h2>
+
     <div class="notice_settings">
         {% url acct_email as email_url %}
         {% if user.email %}
@@ -29,7 +29,7 @@
                 {% blocktrans %}You do not have a verified email address to which notices can be sent. You can add one by going to <a href="{{ email_url }}">Account</a>.{% endblocktrans %}
             </p>
         {% endif %}
-        
+
         <form method="POST" action="">{% csrf_token %} {# doubt this easy to do in uni-form #}
             <table class="notice_settings">
                 <tr>

@@ -15,7 +15,7 @@ class SWFUploadMiddleware(object):
             if request.POST.has_key(swf_cookie_name):
                 swfupload = False
                 request_path = request.path
-                
+
                 if request.POST.has_key("photoset_id"):
                     photoset_id = int(request.POST["photoset_id"])
                     if (request_path == reverse('photos_batch_add', args=[photoset_id])):
@@ -24,18 +24,18 @@ class SWFUploadMiddleware(object):
                     swfupload = True
                 elif request_path == reverse('file.swfupload'):
                     swfupload = True
-                            
+
                 if swfupload:
                     request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
                     if request.is_secure() and not request.META.get('HTTP_REFERER'):
                         # assign referer if missing because csrf using strict Referer checking for HTTPS
                         # but flash uploader does not send http referer in some browsers.
                         request.META['HTTP_REFERER'] = 'https://%s%s' % (request.get_host(), request_path)
-                        
-                    if request.POST.has_key('csrftoken'):           
+
+                    if request.POST.has_key('csrftoken'):
                         request.COOKIES["csrftoken"] = request.POST['csrftoken']
 
-            
+
     def process_response(self, request, response):
         # set cookie for swfupload
         if request.COOKIES.has_key(settings.SESSION_COOKIE_NAME):
@@ -45,7 +45,7 @@ class SWFUploadMiddleware(object):
 
 
 class SSLRedirectMiddleware(object):
-    
+
     def process_view(self, request, view_func, view_args, view_kwargs):
         if 'SSL' in view_kwargs:
             secure = view_kwargs['SSL']

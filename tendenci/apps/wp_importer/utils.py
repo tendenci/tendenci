@@ -28,7 +28,7 @@ def replace_short_code(body):
     body = re.sub("^<!\\[CDATA\\[", "", body)
     body = re.sub("\\]\\]>$", "", body)
 
-    body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
+    body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body
 
@@ -74,11 +74,11 @@ def get_posts(item, uri_parser, user):
 
         tags_raw = item.findAll('category', domain="post_tag")
         tags_list = []
-    
+
         if tags_raw:
             for tag in tags_raw:
                 if len(','.join(tags_list)) + len(tag.string) <= 255:
-                    tags_list.append(tag.string[:50])   
+                    tags_list.append(tag.string[:50])
 
         article = {
             'headline': title,
@@ -112,7 +112,7 @@ def get_posts(item, uri_parser, user):
         a.save()
         r = Redirect(**redirect)
         r.save()
-    
+
 def get_pages(item, uri_parser, user):
     """
     Find each item marked "page" in items.
@@ -127,7 +127,7 @@ def get_pages(item, uri_parser, user):
         if page.slug == slug[:100]:
             alreadyThere = True
             break
-   
+
     if not alreadyThere:
         title = unicode(item.find('title').contents[0])
         post_id = item.find('wp:post_id').string
@@ -138,10 +138,10 @@ def get_pages(item, uri_parser, user):
             fgroup = AssociatedFile.objects.filter(post_id=post_id)
             for f in fgroup:
                 body = correct_media_file_path(body, f.file)
-                
+
         except:
             pass
-        
+
         page = {
             'title': title,
             'guid': str(uuid.uuid1()),
@@ -150,7 +150,7 @@ def get_pages(item, uri_parser, user):
             #'timezone': 'US/Central',
             'syndicate': True,
             #'featured': False,
-            #'create_dt': datetime.now(), 
+            #'create_dt': datetime.now(),
             'creator': user,
             'creator_username': user.username,
             'allow_anonymous_view': True,
@@ -203,7 +203,7 @@ def get_media(item, uri_parser, user):
 
     temporary = AssociatedFile(post_id=post_id, file=new_media)
     temporary.save()
-    
+
 
 def correct_media_file_path(body, file):
     """
@@ -221,4 +221,4 @@ def correct_media_file_path(body, file):
             body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(4) + match.group(5) + match.group(7)) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
 
     return body
-    
+

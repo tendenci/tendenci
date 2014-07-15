@@ -7,38 +7,38 @@
     <div class="meta-left">
         <div class="submitted"><strong>{% trans "Released:" %}</strong> {{ news.release_dt|date:"long" }}
         </div>
-        
+
         {% if news.source %}
             <div class="submitted"><strong>{% trans "Source:" %}</strong> <a href="{% url news %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></div>
         {% endif %}
-        
-        {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %} 
+
+        {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %}
         <div class="contact">
             {% if news.first_name or news.last_name %}
                 <div><strong>{% trans "Author:" %}</strong> {{ news.first_name }} {{ news.last_name }}</div>
-            {% endif %}	
+            {% endif %}
             {% if news.phone %}
-                <div><strong>{% trans "Phone:" %}</strong> {{ news.phone|phonenumber }}</div>	
-            {% endif %}	
+                <div><strong>{% trans "Phone:" %}</strong> {{ news.phone|phonenumber }}</div>
+            {% endif %}
             {% if news.fax %}
-                <div><strong>{% trans "Fax:" %}</strong> {{ news.fax }}</div>	
-            {% endif %}	
+                <div><strong>{% trans "Fax:" %}</strong> {{ news.fax }}</div>
+            {% endif %}
             {% if news.email %}
             <div><strong>{% trans "Email:" %}</strong>{{ news.email|obfuscate_email }}</div>
             {% endif %}
-            {% if news.website %}	
-            <div><strong>{% trans "Website:" %}</strong>{{ news.website|urlize }}</div>	
+            {% if news.website %}
+            <div><strong>{% trans "Website:" %}</strong>{{ news.website|urlize }}</div>
             {% endif %}
-        </div> 
+        </div>
         {% endif %}
-        
+
         {% with news.category_set as news_cat %}
         {% if news_cat %}
         <div class="categories">
             <strong>{% trans "Category:" %} </strong><a href="{% url news %}?q=category:{{ news_cat.category }}">{{ news_cat.category }}</a>
         {% if news_cat.sub_category %}
             | <strong>{% trans "Sub Category:" %} </strong><a href="{% url news %}?q=sub_category:{{ news_cat.sub_category }}">{{ news_cat.sub_category }}</a>
-        {% endif %}	
+        {% endif %}
         </div>
         {% endif %}
         {% endwith %}
@@ -73,14 +73,14 @@
             <ul>
             <li>
                 <a class="delete" href="{% url news.delete news.pk %}">{% trans "Delete" %}</a>
-            </li>				
+            </li>
                 <li><a href="{% url news.edit.meta news.pk %}">{% trans "Edit Meta" %}</a></li>
                 <li><a href="{% url category.update news.opt_app_label news.opt_module_name news.pk %}">{% trans "Edit Categories" %}</a></li>
-                
+
             </ul>
         </div>
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

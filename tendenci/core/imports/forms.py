@@ -18,7 +18,7 @@ class UserImportForm(forms.Form):
     override = forms.CharField(widget=forms.RadioSelect(choices=((False,'Blank Fields'),
                                                           (True,'All Fields (override)'),)), initial=False, )
     key = forms.ChoiceField(initial="email", choices=KEY_CHOICES)
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, 
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True,
                                                                  status_detail='active').order_by('name'),
                                                                  empty_label='Select One', required=False)
     clear_group_membership = forms.BooleanField(initial=0, required=False)
@@ -37,7 +37,7 @@ class UserImportForm(forms.Form):
             for key in key_list:
                 if key not in fields:
                     missing_keys.append(key)
-            
+
             if missing_keys:
                 missing_keys = ','.join(missing_keys)
                 raise forms.ValidationError(_("The uploaded file lacks the required field(s) as the identity for duplicates: %s." % missing_keys))

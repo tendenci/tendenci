@@ -43,7 +43,7 @@
             <td>{{ month.total_active }}</td>
         {% endfor %}
         <td></td>
-    </tr>        
+    </tr>
 </table>
 </div>
 
@@ -82,7 +82,7 @@
 <a href="{% url reports-active-members-ytd %}?exclude_total=on">Exclude Total Active from Chart</a>
 {% else %}
 <a href="{% url reports-active-members-ytd %}">Include Total Active to Chart</a>
-{% endif %} 
+{% endif %}
  </div>
- 
+
 {% endblock content %}

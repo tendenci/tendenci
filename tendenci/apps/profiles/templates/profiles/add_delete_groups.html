@@ -47,12 +47,12 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/admin/django-admin.multiselect.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             jQuery.each($("select[multiple]"), function () {
-             SelectFilter2.init(this.id, "Groups", 0, "/media/");  
+             SelectFilter2.init(this.id, "Groups", 0, "/media/");
             });
             $("#add_groups_submit").click(function(){
                 SelectBox.filter('id_groups_to', '');

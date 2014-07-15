@@ -7,5 +7,5 @@ def listed_in_email_block(email_this):
         email_domain = email_this.split('@')[1]
         ebs = EmailBlock.objects.filter(Q(email=email_this) | Q(email_domain=email_domain))
         if ebs:
-            return True    
+            return True
     return False

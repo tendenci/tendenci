@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
@@ -17,17 +17,17 @@
 {% block body %}
 <div class="t">
     {% event_nav request.user %}
-    
+
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Minimal Add" %}</h1>
     <p>Adding events are subject to the approval of the Administrators.</p>
-    
+
     <div class="event-wrap">
-    	<form action="{% url event.minimal_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">
-    		{{ form|styled_form }}
+        <form action="{% url event.minimal_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
             {{ form_place|styled_form }}
-			<input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
-		</div>
+            <input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
+        </div>
         </form>
     </div>
 
@@ -38,18 +38,18 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
     <script type="text/javascript">
-		var slugit = new Slugify({
-			input_element : 'input#id_title',
-			slug_element : 'input#id_slug',
-			submit_element : 'input[type="submit"]',
-			help: false,
-			limit : 150
-		});
+        var slugit = new Slugify({
+            input_element : 'input#id_title',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
 
         function find_field(name) {
             //finds a field given a label
@@ -64,7 +64,7 @@
             field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
             return field;
         };
-        
+
         //script for hiding and showing the 'On weekend' field
         //when nesessary.
         $(document).ready(function() {
@@ -73,13 +73,13 @@
             start_dt_val = start_dt.val();
             end_dt = $(find_field("End Date/Time").find('input')[0]);
             end_dt_val = end_dt.val();
-            
+
             if(start_dt_val != end_dt_val){
                 weekend.show();
             } else {
                 weekend.hide();
             }
-            
+
             start_dt.change(function() {
                 val = end_dt.val()
                 if ($(this).val() == val) {
@@ -88,7 +88,7 @@
                     weekend.show();
                 }
             });
-            
+
             end_dt.change(function() {
                 val = start_dt.val()
                 if ($(this).val() == val) {

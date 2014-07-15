@@ -19,17 +19,17 @@ class ArticleTest(TestCase):
         self.user.set_password('google')
         self.user.is_active = True
         self.user.save()
-        
-    
+
+
     def tearDown(self):
         self.client = None
         self.article = None
         self.user = None
-        
+
     def test_save(self):
         self.article.headline = 'Unit Testing'
         self.article.summary = 'Unit Testing'
-        
+
         # required fields
         self.article.creator = self.user
         self.article.creator_username = self.user.username
@@ -37,11 +37,11 @@ class ArticleTest(TestCase):
         self.article.owner_username = self.user.username
         self.article.status = True
         self.article.status_detail = 'active'
-        self.article.enclosure_length = 0   
+        self.article.enclosure_length = 0
         self.article.timezone = 'America/Chicago'
-        
+
         self.article.save()
-        
+
         self.assertEquals(type(self.article.id), long)
-        
+
 

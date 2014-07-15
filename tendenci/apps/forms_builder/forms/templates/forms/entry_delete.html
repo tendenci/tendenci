@@ -12,25 +12,25 @@
 {% block body %}
 
 <div class="t">
- 	{% forms_nav request.user %}
+    {% forms_nav request.user %}
     <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} {% trans "Entry Delete" %}</h1>
-    
+
     <div class="form-builder-wrap">
-	    <div class="delete-prompt"> 
-	    	{% trans "Are you sure you want to delete this entry?" %}
-	    </div>
-	    <h3>
-    		{{ entry.entry_time }}
-			{% for field in entry.fields.all|slice:":3" %}
-				&nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
-			{% endfor %} 
-	    </h3>
-		
-		<div class="delete-form">
-		    <form action="{% url form_entry_delete entry.pk %}" method="post">{% csrf_token %}
-		        <input type="submit" value="Delete Entry" />
-		    </form>
-	    </div>
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to delete this entry?" %}
+        </div>
+        <h3>
+            {{ entry.entry_time }}
+            {% for field in entry.fields.all|slice:":3" %}
+                &nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
+            {% endfor %}
+        </h3>
+
+        <div class="delete-form">
+            <form action="{% url form_entry_delete entry.pk %}" method="post">{% csrf_token %}
+                <input type="submit" value="Delete Entry" />
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

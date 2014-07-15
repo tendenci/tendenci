@@ -31,16 +31,16 @@ def index(request, template_name="dashboard/index.html"):
         has_paid = False
         activate_url = get_setting('site', 'developer', 'siteactivatepaymenturl')
         site_create_dt = get_setting('site', 'developer', 'sitecreatedt')
-        
+
         if site_create_dt:
             site_create_dt = parser.parse(site_create_dt)
         else:
             # find the site create date in user's table
             u = User.objects.get(pk=1)
             site_create_dt = u.date_joined
-            
+
         expiration_dt = site_create_dt + timedelta(days=30)
-            
+
         now = datetime.now()
         if now >= expiration_dt:
             expired = True
@@ -83,16 +83,16 @@ def new(request, template_name="dashboard/new.html"):
         has_paid = False
         activate_url = get_setting('site', 'developer', 'siteactivatepaymenturl')
         site_create_dt = get_setting('site', 'developer', 'sitecreatedt')
-        
+
         if site_create_dt:
             site_create_dt = parser.parse(site_create_dt)
         else:
             # find the site create date in user's table
             u = User.objects.get(pk=1)
             site_create_dt = u.date_joined
-            
+
         expiration_dt = site_create_dt + timedelta(days=30)
-            
+
         now = datetime.now()
         if now >= expiration_dt:
             expired = True

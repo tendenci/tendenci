@@ -26,7 +26,7 @@ def template_nav(context, user, template=None):
         "cm_url": settings.CAMPAIGNMONITOR_URL,
     })
     return context
-    
+
 @register.inclusion_tag("campaign_monitor/campaigns/options.html", takes_context=True)
 def campaign_options(context, user, campaign):
     context.update({
@@ -45,4 +45,4 @@ def campaign_nav(context, user, campaign=None):
         "cm_url": settings.CAMPAIGNMONITOR_URL,
     })
     return context
-    
+

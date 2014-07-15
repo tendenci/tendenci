@@ -7,7 +7,7 @@ if not urlpath:
 
 urlpatterns = patterns("tendenci.apps.forms_builder.forms.views",
     url(r"^%s/$" % urlpath, "search", name="forms"),
-    url(r"^%s/entries/export/(?P<id>\d+)/full$" % urlpath, "entries_export", 
+    url(r"^%s/entries/export/(?P<id>\d+)/full$" % urlpath, "entries_export",
             {'include_files': True,}, name="form_entries_export_full"),
     url(r'^%s/entries/export/(?P<task_id>[-\w]+)/status/$' % urlpath, 'entries_export_status', name="form_entries_export_status"),
     url(r'^%s/entries/export/(?P<task_id>[-\w]+)/check/$' % urlpath, 'entries_export_check', name="form_entries_export_check"),

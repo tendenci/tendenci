@@ -107,11 +107,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     # non-deletable files
     non_deletable_files = ['homepage.html', 'default.html', 'footer.html', 'header.html', 'sidebar.html', 'nav.html', 'styles.less', 'styles.css']
-    
+
     # get the number of themes in the themes directory on the site
     theme_choices = [ i for i in theme_choice_list()]
     theme_count = len(theme_choices)
-    
+
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
 
@@ -207,7 +207,7 @@ def create_new_template(request, form_class=AddTemplateForm):
             ret_dict['template_name'] = template_full_name
         else:
             ret_dict['err'] = 'Template "%s" already exists' % template_full_name
-        
+
 
     return HttpResponse(json.dumps(ret_dict))
 
@@ -423,7 +423,7 @@ def theme_color(request):
             color_setting.set_value(request.POST.get('colors'))
             color_setting.save()
             checklist_update('customize-color')
-            
+
             message = 'Successfully updated theme colors.'
             response = json.dumps({'message': message})
             return HttpResponse(response, mimetype="application/json")

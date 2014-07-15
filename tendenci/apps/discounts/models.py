@@ -13,7 +13,7 @@ from tendenci.apps.discounts.managers import DiscountManager
 class Discount(TendenciBaseModel):
     class Meta:
         permissions = (("view_discount","Can view discount"),)
-        
+
     discount_code = models.CharField(max_length=100, unique=True, help_text=_('Discount codes must be unique.'))
     start_dt = models.DateTimeField(_('Start Date/Time'))
     end_dt = models.DateTimeField(_('Start Date/Time'))
@@ -27,10 +27,10 @@ class Discount(TendenciBaseModel):
                                           content_type_field="content_type")
 
     objects = DiscountManager()
-    
+
     def num_of_uses(self):
         return self.discountuse_set.count()
-    
+
     def available(self):
         """
         Determines if this discount has is still usable based on its
@@ -41,7 +41,7 @@ class Discount(TendenciBaseModel):
         if datetime.now() > self.end_dt and not self.never_expires:
             return False
         return True
-        
+
     def available_for(self, count):
         """
         Determines if count number of uses is still available.
@@ -51,14 +51,14 @@ class Discount(TendenciBaseModel):
         if datetime.now() > self.end_dt and not self.never_expires:
             return False
         return True
-    
+
     def __unicode__(self):
         return self.discount_code
-        
+
     @models.permalink
     def get_absolute_url(self):
         return('discount.detail', [self.pk])
-    
+
     @staticmethod
     def has_valid_discount(**kwargs):
         now = datetime.now()
@@ -69,11 +69,11 @@ class Discount(TendenciBaseModel):
                             end_dt__gte=now)
                             ).filter(apps__model=model).exists()
         return discount_exists
-    
+
 class DiscountUse(models.Model):
     invoice = models.ForeignKey(Invoice)
     discount = models.ForeignKey(Discount)
     create_dt = models.DateTimeField(auto_now_add=True)
-    
+
     def __unicode__(self):
         return "%s:%s" % (self.invoice, self.discount)

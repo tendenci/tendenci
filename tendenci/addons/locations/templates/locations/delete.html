@@ -10,13 +10,13 @@
 {% endblock %}
 
 {% block body %}
-<div class="t">   
+<div class="t">
     <div class="location-wrap">
-        <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} {% trans "Delete Page" %}</h1> 
+        <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} {% trans "Delete Page" %}</h1>
         <h2>{{ location.location_name }} - <a href="{{ location.get_absolute_url }}">{{ location.get_absolute_url }}</a></h2>
         <div class="content">{{ location.description|safe|truncatewords_html:"60" }}</div>
-        <div class="delete-prompt"> 
-        	{% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_LOCATIONS_LABEL 'location' %}?
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_LOCATIONS_LABEL 'location' %}?
         </div>
         <div class="delete-form">
             <form name="location-delete" method="POST" action="{% url location.delete location.pk %}">{% csrf_token %}

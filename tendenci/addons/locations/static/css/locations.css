@@ -1,34 +1,34 @@
 .t {
-	width: 90%;
+    width: 90%;
 }
 .t h2 {
-	margin: 0 auto 10px 0;
+    margin: 0 auto 10px 0;
 }
 
 .t ul.locations-nav {
-	margin: 0; padding: 0;
-	list-style-type: none;
-	margin-bottom: 20px;
+    margin: 0; padding: 0;
+    list-style-type: none;
+    margin-bottom: 20px;
 }
 .t ul.locations-nav li {
-	display: inline;
+    display: inline;
 }
 
 .t .locations-wrap {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .t .location-wrap {
-	padding: 0 10px 10px 10px;
-	margin-bottom: 20px;
-	position: relative;
+    padding: 0 10px 10px 10px;
+    margin-bottom: 20px;
+    position: relative;
 }
 .t .location-wrap h1 {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 .t .location-wrap div.image a {
-	/*border: 1px solid silver;*/
-	box-shadow: 0 0 5px #AAA;
+    /*border: 1px solid silver;*/
+    box-shadow: 0 0 5px #AAA;
 }
 
 .location-search-item .image {
@@ -45,78 +45,78 @@
 }
 
 .t .locations-wrap .location-wrap h2 {
-	width: 85%;
+    width: 85%;
 }
 .t .locations-wrap .location-wrap .content {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 .t .options {
-	text-align: right;
-	/*margin-bottom: 10px;*/
-	width: 100%;
+    text-align: right;
+    /*margin-bottom: 10px;*/
+    width: 100%;
 
 }
 .t .quick-options {
-	/*float: right;*/
-	margin-right: 5px;
+    /*float: right;*/
+    margin-right: 5px;
 }
 .t .quick-options ul {
-	margin: 0; padding: 0;
-	list-style-type: none;
+    margin: 0; padding: 0;
+    list-style-type: none;
 }
 
 .t .dropdown-options {
-	float: right;
-	display: none; /* todo: port-over dropdown js */
+    float: right;
+    display: none; /* todo: port-over dropdown js */
 }
 .t .dropdown-options span {
-	font-size: .7em;
+    font-size: .7em;
 }
 .t .dropdown-options ul {
-	display: none;
+    display: none;
 }
 
 .t h1 {
-	margin: 0;
+    margin: 0;
 }
 .t .back-to-search {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .t form.search-form input[type="text"] {
-	width: 60%;
-	margin-bottom: 10px;
-	padding: 5px;	
+    width: 60%;
+    margin-bottom: 10px;
+    padding: 5px;
 }
 
 .t form.search-form input[type="submit"] {
-	padding: 5px;	
-	cursor: pointer;
+    padding: 5px;
+    cursor: pointer;
 }
 
 /* Location View
  ------------------------- */
 .t .location-wrap .meta, .t .location-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
+    border: 1px solid silver;
+    padding: 10px;
+    background-color: #F7F7F7;
+    margin-top: 10px;
 }
 .t .location-wrap .meta .tags {
-	margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 div.forms fieldset.contact {
-	background-color: #EFEFEF;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	padding: 10px;
-	margin-bottom: 10px;
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 div.forms fieldset.contact legend {
-	padding: 5px;
+    padding: 5px;
 }
 
 div.image a {

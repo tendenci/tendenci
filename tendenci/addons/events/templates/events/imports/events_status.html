@@ -20,7 +20,7 @@
     <b>
     {% blocktrans with request.user.username as requser %}
         You ({{ requser }}) are importing the following file at (time)
-    {% endblocktrans %}({% now "D d M Y P" %})</b>: <br> 
+    {% endblocktrans %}({% now "D d M Y P" %})</b>: <br>
     <font color="red">
     {{ file_name }}
     </font>

@@ -40,13 +40,13 @@ class Setting(models.Model):
     is_secure = models.BooleanField(default=False)
 
     def get_absolute_url(self):
-        return ("setting.permalink", 
+        return ("setting.permalink",
                 [self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
     get_absolute_url = models.permalink(get_absolute_url)
 
     def __unicode__(self):
         return "(%s) %s" %(self.name, self.label)
-        
+
     def set_value(self, value):
         self.value = encrypt(value)
         self.is_secure = True
@@ -68,10 +68,10 @@ class Setting(models.Model):
             delete_setting_cache(self.scope, self.scope_category, self.name)
 
         return self.value
-        
+
     def save(self, *args, **kwargs):
         """The save method is overwritten because settings are referenced
-        in several different ways. This is the cental command if we 
+        in several different ways. This is the cental command if we
         want to incorporate a process applicable for all those ways.
         Using signals is also feasable however there is a process order
         that must be followed (e.g. caching new value if not equal to old value)
@@ -82,7 +82,7 @@ class Setting(models.Model):
             orig = Setting.objects.get(pk = self.pk)
         except Setting.DoesNotExist:
             orig = None
-        
+
         #call touch settings if this is the setting theme
         if self.name == 'theme':
             from tendenci.core.theme.utils import theme_options
@@ -91,13 +91,13 @@ class Setting(models.Model):
             call_command('touch_settings')
         else:
             super(Setting, self).save(*args, **kwargs)
-        
+
         #update the cache when value has changed
         if orig and self.value != orig.value:
             from tendenci.core.site_settings.utils import (delete_setting_cache,
                 cache_setting, delete_all_settings_cache)
             from tendenci.core.site_settings.cache import SETTING_PRE_KEY
-            
+
             # delete the cache for all the settings to reset the context
             delete_all_settings_cache()
             # delete and set cache for single key and save the value in the database

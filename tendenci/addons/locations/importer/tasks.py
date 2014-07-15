@@ -45,7 +45,7 @@ class ImportLocationsTask(Task):
                 obj_dict['allow_member_edit'] = False
 
                 new_location = Location.objects.create(**obj_dict)
- 
+
                 # append to imported list
                 imported.append(new_location)
 

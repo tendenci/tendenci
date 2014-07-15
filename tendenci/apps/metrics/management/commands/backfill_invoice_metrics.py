@@ -42,7 +42,7 @@ class Command(BaseCommand):
         """
         from tendenci.apps.invoices.models import Invoice
         today = metric_date.replace(hour=0, minute=0, second=0, microsecond=0)
-        
+
         # if the script runs today, we collect the data from yesterday
         yesterday = today - timedelta(days=1)
 

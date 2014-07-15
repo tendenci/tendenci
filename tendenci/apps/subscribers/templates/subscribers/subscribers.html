@@ -17,31 +17,31 @@
 
  <h1>{{ form.title }} {% trans "Subscribers" %}</h1>
  {% autopaginate subscribers 10 %}
-	
-	<div class="forms-builder-wrap">
+
+    <div class="forms-builder-wrap">
     {% for sub in subscribers %}
-		<div class="form-builder-wrap">
+        <div class="form-builder-wrap">
             <div class="quick-options">
-			{% forms_entry_options request.user sub.subscriber %}
-		    </div>
-			<h3><a href="{{ sub.subscriber.get_absolute_url }}">
-				{{ sub.subscriber.entry_time }}
-				{% for field in sub.subscriber.fields.all|slice:":3" %}
-					{% if field.field.field_type == 'FileField' %}
-						&nbsp;&ndash;&nbsp;{{ field.value|basename }}
-					{% else %}
-						&nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
-					{% endif %}
-				{% endfor %}
-				</a> 
-			</h3>
+            {% forms_entry_options request.user sub.subscriber %}
+            </div>
+            <h3><a href="{{ sub.subscriber.get_absolute_url }}">
+                {{ sub.subscriber.entry_time }}
+                {% for field in sub.subscriber.fields.all|slice:":3" %}
+                    {% if field.field.field_type == 'FileField' %}
+                        &nbsp;&ndash;&nbsp;{{ field.value|basename }}
+                    {% else %}
+                        &nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
+                    {% endif %}
+                {% endfor %}
+                </a>
+            </h3>
             <!-- delete form -->
             <form name="entry-delete" method="POST" action="{% url form_entry_delete sub.subscriber.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
-		</div>
-	{% empty %}
-		<div>{% trans "0 Subscribers Found" %}</div>
+        </div>
+    {% empty %}
+        <div>{% trans "0 Subscribers Found" %}</div>
     {% endfor %}
     </div>
 {% paginate %}

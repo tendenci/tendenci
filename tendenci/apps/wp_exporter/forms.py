@@ -9,7 +9,7 @@ class ExportForm(forms.Form):
             'events',
             'jobs',
             'news',
-            'pages', 
+            'pages',
             'resumes',
         )
         fieldsets = [('Data To Include', {
@@ -18,12 +18,12 @@ class ExportForm(forms.Form):
                                  'events',
                                  'jobs',
                                  'news',
-                                 'pages', 
+                                 'pages',
                                  'resumes',
                                  ],
                       'legend': ''
                       }),]
-                    
+
     articles = forms.BooleanField(label=_("Articles"), required=False)
     case_studies = forms.BooleanField(label=_("Case Studies"), required=False)
     events = forms.BooleanField(label=_("Events"), required=False)
@@ -31,7 +31,7 @@ class ExportForm(forms.Form):
     news = forms.BooleanField(label=_("News"), required=False)
     pages = forms.BooleanField(label=_("Pages"), required=False)
     resumes = forms.BooleanField(label=_("Resumes"), required=False)
-    
+
     def __init__(self, *args, **kwargs):
         super(ExportForm, self).__init__(*args, **kwargs)
         try:

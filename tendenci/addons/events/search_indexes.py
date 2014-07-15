@@ -65,7 +65,7 @@ class EventIndex(TendenciBaseSearchIndex):
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.status == 1 \
             and obj.status_detail == 'active'
-            
+
     def prepare_order(self, obj):
         return obj.start_dt
 
@@ -106,7 +106,7 @@ class RegistrantIndex(CustomSearchIndex):
             if not obj.last_name:
                 obj.last_name = obj.custom_reg_form_entry.__unicode__()
         return obj.last_name
-    
+
     def prepare_order(self, obj):
         return obj.create_dt
 

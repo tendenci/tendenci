@@ -56,7 +56,7 @@ function updateSummaryTotal(){
     var total_amount = 0.00;
     var discount_amount = parseFloat(removeCommas($('#discount-amount').html()));
     var item_price_node;
-    
+
     for(i=0;i<items.length;i++){
         item_price_node = $(items[i]).find('.item-price');
         if (!$(item_price_node).hasClass('free-pass-price')){

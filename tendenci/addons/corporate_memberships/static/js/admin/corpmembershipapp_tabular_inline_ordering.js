@@ -1,9 +1,9 @@
 jQuery(function($) {
-    $("div.inline-group").sortable({ 
+    $("div.inline-group").sortable({
         axis: 'y',
-        placeholder: 'ui-state-highlight', 
-        forcePlaceholderSize: 'true', 
-        items: '.row1, .row2', 
+        placeholder: 'ui-state-highlight',
+        forcePlaceholderSize: 'true',
+        items: '.row1, .row2',
         update: update
     });
     //$("div.inline-group").disableSelection();
@@ -18,11 +18,11 @@ jQuery(document).ready(function($){
     var order_index = $('div.inline-related').find('td.field-position').index();
     $('div.inline-related').find('td.field-position').hide();
     $('div.inline-related').find('th:nth-child(' + order_index +')').hide();
-    
+
     //$('div.inline-related tr').css('cursor','move');
-    
+
     $('.add-row a').click(update);
-    
+
     $('#corpmembershipapp_form').submit(function() {
         update();
     });

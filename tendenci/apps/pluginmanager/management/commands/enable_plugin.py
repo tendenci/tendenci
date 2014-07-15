@@ -7,7 +7,7 @@ class Command(BaseCommand):
         Add a plugin and activate it.
         """
         from tendenci.apps.pluginmanager.models import PluginApp
-        
+
         # strip out the 'plugins.' if it is in there
         plugin_name = plugin_name.replace("plugins.","")
 

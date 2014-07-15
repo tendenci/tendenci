@@ -68,7 +68,7 @@ def send_all():
         logging.debug("releasing lock...")
         lock.release()
         logging.debug("released.")
-    
+
     logging.info("")
     logging.info("%s batches, %s sent" % (batches, sent,))
     logging.info("done in %.2f seconds" % (time.time() - start_time))

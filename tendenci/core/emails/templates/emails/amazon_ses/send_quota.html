@@ -16,20 +16,20 @@
 <h1>{% trans "Amazon SES - Sending Limits" %}</h1>
 <div style="margin: 1em 0;">
 {% if send_quota %}
-	<table width="100%">
-		<tr>
-			<th width="33%">{% trans "Sent Last 24 Hours" %}</th>
-			<th width="33%">{% trans "Max 24 Hour Send" %}</th>
-			<th width="34%">{% trans "Max Send Rate" %}</th>
-		</tr>
-		<tr>
-			<td>{{ send_quota.sentLast24Hours }}</td>
-			<td>{{ send_quota.max24HourSend  }}</td>
-			<td>{{ send_quota.maxSendRate  }}/sec</td>
-		</tr>
-	</table>
+    <table width="100%">
+        <tr>
+            <th width="33%">{% trans "Sent Last 24 Hours" %}</th>
+            <th width="33%">{% trans "Max 24 Hour Send" %}</th>
+            <th width="34%">{% trans "Max Send Rate" %}</th>
+        </tr>
+        <tr>
+            <td>{{ send_quota.sentLast24Hours }}</td>
+            <td>{{ send_quota.max24HourSend  }}</td>
+            <td>{{ send_quota.maxSendRate  }}/sec</td>
+        </tr>
+    </table>
 {% else %}
-	{% trans "No data available." %}
+    {% trans "No data available." %}
 {% endif %}
 </div>
 <p class="notices">

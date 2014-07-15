@@ -9,15 +9,15 @@
 {% else %}
     <table>
     <tr>
-	    <th>{% trans "URL" %}</th>
+        <th>{% trans "URL" %}</th>
         <th>&nbsp;</th>
         <th>{% trans "Count" %}</th>
     </tr>
     {% for entry in entry_list %}
     <tr class="{% cycle 'odd' '' %}">
-	    <td>{{ entry.url }}</td>
+        <td>{{ entry.url }}</td>
         <th>&nbsp;</th>
-	    <td>{{ entry.count }}</td>
+        <td>{{ entry.count }}</td>
     </tr>
     {% endfor %}
     </table>

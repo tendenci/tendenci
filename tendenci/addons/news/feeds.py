@@ -15,7 +15,7 @@ class LatestEntriesFeed(SubFeed):
     def items(self):
         items = News.objects.filter(**PUBLIC_FILTER).filter(syndicate=True, release_dt__lte=datetime.now()).order_by('-release_dt')[:20]
         return items
-    
+
     def item_title(self, item):
         return item.headline
 
@@ -32,7 +32,7 @@ class NewsSitemap(TendenciSitemap):
     """ Sitemap information for news """
     changefreq = "monthly"
     priority = 0.5
-    
+
     def items(self):
         items = News.objects.filter(**PUBLIC_FILTER).filter(release_dt__lte=datetime.now()).order_by('-release_dt')
         return items

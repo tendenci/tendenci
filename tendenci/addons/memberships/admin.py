@@ -50,15 +50,15 @@ class MembershipStatusDetailFilter(SimpleListFilter):
 
 
 # class MembershipAdmin(admin.ModelAdmin):
-# 
+#
 #     def member_name(self):
 #         return '<strong><a href="%s">%s</a></strong>' % (self.get_absolute_url(), self)
 #     member_name.allow_tags = True
 #     member_name.short_description = 'Member Name'
-# 
+#
 #     list_display = (member_name, 'membership_type', 'subscribe_dt', 'expire_dt', 'payment_method')
 #     list_filter = ('membership_type', 'subscribe_dt', 'expire_dt', 'payment_method')
-# 
+#
 #     def __init__(self, *args, **kwargs):
 #         super(MembershipAdmin, self).__init__(*args, **kwargs)
 #         self.list_display_links = (None, )
@@ -561,8 +561,8 @@ class MembershipAppAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
-            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/membapp_tabular_inline_ordering.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
             '%sjs/tax_fields.js' % settings.STATIC_URL,
@@ -607,7 +607,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
         return super(MembershipTypeAdmin, self).add_view(request)
 
     class Media:
-        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
+        js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
               "%sjs/membtype.js" % settings.STATIC_URL,)
 
     def save_model(self, request, object, form, change):
@@ -694,7 +694,7 @@ class NoticeAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            "%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
@@ -782,20 +782,20 @@ class NoticeAdmin(admin.ModelAdmin):
 
 
 # class AppAdmin(admin.ModelAdmin):
-# 
+#
 #     def application_form_link(self):
 #         return '<a href="%s">%s</a>' % (self.get_absolute_url(), self.slug)
 #     application_form_link.allow_tags = True
-# 
+#
 #     list_display = ('name', application_form_link)
-# 
+#
 #     fieldsets = (
 #         (None, {'fields': ('name', 'slug', 'description', 'confirmation_text', 'notes',
 #                            'membership_types', 'payment_methods', 'use_for_corp', 'use_captcha')},),
 #         ('Administrative', {'fields': ('allow_anonymous_view', 'user_perms', 'member_perms', 'group_perms',
 #                                        'status_detail')}),
 #     )
-# 
+#
 #     class Media:
 #         js = (
 #             '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
@@ -804,25 +804,25 @@ class NoticeAdmin(admin.ModelAdmin):
 #             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
 #         )
 #         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
-# 
+#
 #     def export_as_json(model_admin, request, queryset):
 #         from django.core import serializers
-# 
+#
 #         response = HttpResponse(mimetype="text/javascript")
 #         serializers.serialize('json', queryset, stream=response, indent=4)
-# 
+#
 #         return response
-# 
+#
 #     inlines = (AppFieldAdmin,)
 #     prepopulated_fields = {'slug': ('name',)}
 #     form = AppForm
 #     add_form_template = "memberships/admin/add_form.html"
 #     actions = [export_as_json]
-# 
+#
 #     def add_view(self, request, form_url='', extra_context=None):
 #         self.inline_instances = []  # clear inline instances
 #         return super(AppAdmin, self).add_view(request, form_url, extra_context)
-# 
+#
 #     def change_view(self, request, object_id, form_url='', extra_context=None):
 #         self.inlines = [AppFieldAdmin]
 #         self.inline_instances = []
@@ -836,11 +836,11 @@ class NoticeAdmin(admin.ModelAdmin):
 #              'excluded_lines': [2, 3],
 #          })
 #         extra_context.update(extra_context)
-# 
+#
 #         return super(AppAdmin, self).change_view(request, object_id,
 #                                                  form_url=form_url,
 #                                                  extra_context=extra_context)
-# 
+#
 #     def response_change(self, request, obj, *args, **kwargs):
 #         if '_popup' in request.POST:
 #             return HttpResponse("""
@@ -850,49 +850,49 @@ class NoticeAdmin(admin.ModelAdmin):
 #             """ % (escape(obj._get_pk_val()), escape(obj)))
 #         else:
 #             return super(AppAdmin, self).response_change(request, obj, *args, **kwargs)
-# 
+#
 #     def get_fieldsets(self, request, instance=None):
-# 
+#
 #         field_list = [
-# 
+#
 #                     (None, {
 #                         'fields': ('name', 'slug', 'use_for_corp', 'description', 'confirmation_text', 'notes',
 #                                    'membership_types', 'payment_methods', 'use_captcha'),
 #                     }),
-# 
+#
 #                     ('Administrative', {
 #                         'fields': ('allow_anonymous_view', 'user_perms', 'member_perms', 'group_perms', 'status_detail'),
 #                     }),
-# 
+#
 #                     ('Form Fields', {
 #                         'fields': [],
 #                         'description': 'You will have the chance to add or manage the form fields after saving.'
 #                     }),
 #         ]
-# 
+#
 #         if instance:  # editing
 #             field_list.pop()  # removes default message (last item)
-# 
+#
 #         return field_list
-# 
+#
 #     def save_model(self, request, object, form, change):
 #         app = form.save(commit=False)
 #         add = not change
-# 
+#
 #         # update all permissions and save the model
 #         app = update_perms_and_save(request, form, app)
-# 
+#
 #         if add:
 #             # default application fields
 #             for default_field in get_default_membership_fields(use_for_corp=app.use_for_corp):
 #                 default_field.update({'app': app})
 #                 AppField.objects.create(**default_field)
-# 
+#
 #         if change:
 #             edit_app_update_corp_fields(app)
-# 
+#
 #         form.save_m2m()
-# 
+#
 #         reserved_names = (
 #             'membership_type',
 #             'payment_method',
@@ -901,9 +901,9 @@ class NoticeAdmin(admin.ModelAdmin):
 #             'email',
 #             'corporate_membership'
 #         )
-# 
+#
 #         for field in app.fields.visible():
-# 
+#
 #             if 'membership-type' in field.field_type:
 #                 field.content_type = ContentType.objects.get_for_model(MembershipType)
 #                 choices = [item.name for item in app.membership_types.all()]
@@ -920,17 +920,17 @@ class NoticeAdmin(admin.ModelAdmin):
 #                 field.content_type = ContentType.objects.get_for_model(User)
 #             elif 'corporate_membership_id' in field.field_type:
 #                 field.content_type = ContentType.objects.get_for_model(Membership)
-# 
+#
 #             if not field.field_name in reserved_names:
 #                 field.field_name = slugify(field.label).replace('-', '_')
-# 
+#
 #                 # check field_name after slugify
 #                 if field.field_name in reserved_names:
 #                     hex_tail = uuid.uuid1().get_hex()[:3]
 #                     field.field_name = '%s_%s' % (field.field_name, hex_tail)
-# 
+#
 #             field.save()
-# 
+#
 #         return app
 
 
@@ -969,8 +969,8 @@ class MembershipAppField2Admin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
-            'js/jquery-ui-1.8.17.custom.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
 

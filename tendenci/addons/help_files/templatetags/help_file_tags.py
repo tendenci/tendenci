@@ -38,10 +38,10 @@ def list_helpfiles(parser, token):
 
         {% list_help_files as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``help_files_sidebar`` or 
+    Be sure the [varname] has a specific name like ``help_files_sidebar`` or
     ``help_files_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``

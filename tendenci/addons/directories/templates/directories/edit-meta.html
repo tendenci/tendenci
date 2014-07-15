@@ -18,12 +18,12 @@
     {{ directory.headline }}</h1>
 
     <div class="directory-wrap">
-    	<form action="{% url directory.edit.meta directory.pk %}" method="post">{% csrf_token %}
-    	<div class="forms">
+        <form action="{% url directory.edit.meta directory.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
-		</div>
+            <input type="submit" value="Save Changes" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
         </form>
     </div>
 </div>

@@ -7,36 +7,36 @@
 
 <div class="t-iconrow">
 
-	{% if can_edit %}
+    {% if can_edit %}
         {% if opt_object.is_pending %}
             <span class="status-pending">{{ opt_object.status_detail|capfirst }}</span>
-	    {% else %}
+        {% else %}
             <span>{{ opt_object.status_detail|capfirst }}</span>
         {% endif %}
-	{% endif %}
+    {% endif %}
 
-	<a class="option-link print" href="{% url resume.print_view opt_object.slug %}">{% trans "Print" %}</a>
-	{% if can_edit %}
-		<a class="option-link edit" href="{% url resume.edit opt_object.pk %}">{% trans "Edit" %}</a>
-	{% endif %}
+    <a class="option-link print" href="{% url resume.print_view opt_object.slug %}">{% trans "Print" %}</a>
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url resume.edit opt_object.pk %}">{% trans "Edit" %}</a>
+    {% endif %}
 
  {% if can_edit %}
-	  <div class="more-options-wrap">
-	    <a href="javascript:;" class="more-options-trigger">{% trans "More options" %} <small>&#9660;</small></a>
-	    <div class="more-options-target">
-	        <ul>
-				<li class="divider">
-				  <a href="{% url resume.edit.meta opt_object.pk %}">{% trans "Edit Meta" %}</a>
-				</li>
-				
-				<li>
-				{% if can_delete %}
-					<li>
-						<a class="option-link delete" href="{% url resume.delete opt_object.pk %}">{% trans "Delete" %}</a>
-					</li>				
-				{% endif %}
-			 </ul>
-	        </div>
-	  </div>
+      <div class="more-options-wrap">
+        <a href="javascript:;" class="more-options-trigger">{% trans "More options" %} <small>&#9660;</small></a>
+        <div class="more-options-target">
+            <ul>
+                <li class="divider">
+                  <a href="{% url resume.edit.meta opt_object.pk %}">{% trans "Edit Meta" %}</a>
+                </li>
+
+                <li>
+                {% if can_delete %}
+                    <li>
+                        <a class="option-link delete" href="{% url resume.delete opt_object.pk %}">{% trans "Delete" %}</a>
+                    </li>
+                {% endif %}
+             </ul>
+            </div>
+      </div>
   {% endif %}
 </div>

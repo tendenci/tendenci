@@ -13,41 +13,41 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form.css" /> 
-<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-generic.css" /> 
+<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-generic.css" />
 {% endblock %}
 
 {% block body %}
-	  {# /*  NEEDED FOR PAGINATION  */ #}
-	  {% reset page as page_obj %}
-	  <h1>{% trans 'Search' %}</h1>
-	  <form name="search" method="get" action=".">
-		<table class="search-table" border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>{{ form.q }}</td>
-				<td><input class="search-table-submit" type="submit" value="Search"></td>
-			</tr>
-		</table>
-   
-		<div class="search-adv"><a href="#adv_search">{% trans "Advanced Search" %}</a></div>
-		<div class="search-adv-models">
-			<p class="search-adv-header">{% trans "Search in:" %}</p>
-			<p class="search-adv-header">
-			{% trans "If no items are selected then all content is searched." %}
-			</p>
-			{{ form.models }}
+      {# /*  NEEDED FOR PAGINATION  */ #}
+      {% reset page as page_obj %}
+      <h1>{% trans 'Search' %}</h1>
+      <form name="search" method="get" action=".">
+        <table class="search-table" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>{{ form.q }}</td>
+                <td><input class="search-table-submit" type="submit" value="Search"></td>
+            </tr>
+        </table>
+
+        <div class="search-adv"><a href="#adv_search">{% trans "Advanced Search" %}</a></div>
+        <div class="search-adv-models">
+            <p class="search-adv-header">{% trans "Search in:" %}</p>
+            <p class="search-adv-header">
+            {% trans "If no items are selected then all content is searched." %}
+            </p>
+            {{ form.models }}
             <p class="search-adv-header">{% trans "Sort by:" %}</p>
             {{ form.sort_by }}
-		</div>
-	 </form>
-    
+        </div>
+     </form>
+
     {# /* UPPER PAGINATION */ #}
     {% paginate %}
-    
+
     {# /*  SEARCH RESULTS  */ #}
     <div class="search-results">
         {% if page.object_list %}
-            {% for result in page.object_list %}     
+            {% for result in page.object_list %}
                 <div class="wrap-search-result clearfix">
                     {% search_result result %}
                 </div>
@@ -56,33 +56,33 @@
             <p>{% trans "No results found." %}</p>
         {% endif %}
     </div>
-    
+
     {# /*  LOWER PAGINATION  */ #}
     {% paginate %}
-    
+
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript">		
-		function toggle_adv_models() {
-			$('div.search-adv-models').toggle();
-		}
+    <script type="text/javascript">
+        function toggle_adv_models() {
+            $('div.search-adv-models').toggle();
+        }
 
-		if (document.location.hash == "#adv_search") {
-			$('div.search-adv-models').css('display','block');
-		}
-		
-		$('div.search-adv a').click(function() {
-			toggle_adv_models();
-		});
-	</script>
+        if (document.location.hash == "#adv_search") {
+            $('div.search-adv-models').css('display','block');
+        }
+
+        $('div.search-adv a').click(function() {
+            toggle_adv_models();
+        });
+    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
 {% endblock %}

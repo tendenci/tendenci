@@ -9,10 +9,10 @@ class GetCategoryForObjectNode(Node):
         self.context = context
     def render(self, context):
         if not self.context: self.context = 'category'
-        if not self.object: 
+        if not self.object:
             context[self.context] = ''
-            return ''  
-        object = self.object.resolve(context)  
+            return ''
+        object = self.object.resolve(context)
         category = Category.objects.get_for_object(object, 'category')
         if category: context[self.context] = category
         else: context[self.context] = ''
@@ -24,13 +24,13 @@ def get_category_for_object(parser, token):
         {% get_category_for_object object %}
     """
     bits  = token.split_contents()
-    
+
     try: object = bits[1]
     except: object = None
 
     try: context = bits[3]
-    except: context = None 
-        
+    except: context = None
+
     return GetCategoryForObjectNode(object, context)
 
 class GetSubCategoryForObjectNode(Node):
@@ -39,10 +39,10 @@ class GetSubCategoryForObjectNode(Node):
         self.context = context
     def render(self, context):
         if not self.context: self.context = 'sub_category'
-        if not self.object: 
+        if not self.object:
             context[self.context] = ''
-            return '' 
-        object = self.object.resolve(context)  
+            return ''
+        object = self.object.resolve(context)
         category = Category.objects.get_for_object(object, 'sub_category')
         if category: context[self.context] = category
         else: context[self.context] = ''
@@ -54,11 +54,11 @@ def get_sub_category_for_object(parser, token):
         {% get_sub_category_for_object object as sub_category %}
     """
     bits  = token.split_contents()
-    
+
     try: object = bits[1]
     except: object = None
-    
+
     try: context = bits[3]
-    except: context = None 
-    
+    except: context = None
+
     return GetSubCategoryForObjectNode(object, context)

@@ -13,13 +13,13 @@
 <form method="post" action="." id="registration_form">{% csrf_token %}
 {% if form.errors.values %}
 <div class="errors">
-	{% for field in form %}
-		{% if field.errors %}
-		{% for error in field.errors %}
-		<p>{{ field.label }} - {{ error }}</p>
-		{% endfor %}
-		{% endif %}
-	{% endfor %}
+    {% for field in form %}
+        {% if field.errors %}
+        {% for error in field.errors %}
+        <p>{{ field.label }} - {{ error }}</p>
+        {% endfor %}
+        {% endif %}
+    {% endfor %}
 </div>
 {% endif %}
 
@@ -58,9 +58,9 @@
      </tr>
 </table>
 </form>
- 
+
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 {% endblock %}

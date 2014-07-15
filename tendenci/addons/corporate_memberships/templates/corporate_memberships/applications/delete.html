@@ -9,7 +9,7 @@
 
 {% block body %}
 <div class="t">
-{% corpmemb_nav request.user corp_memb %} 
+{% corpmemb_nav request.user corp_memb %}
 
 <h2>{% trans "Are you sure you want to delete this corporate membership?" %}</h2>
 <br />
@@ -19,11 +19,11 @@
         {% if corp_memb.corp_profile.address or corp_memb.corp_profile.address2 %}
             {{ corp_memb.corp_profile.address }} {{ corp_memb.corp_profile.address2 }} <br />
         {% endif %}
-        
-        {{ corp_memb.corp_profile.city }} {{ corp_memb.corp_profile.state }} 
+
+        {{ corp_memb.corp_profile.city }} {{ corp_memb.corp_profile.state }}
         {{ corp_memb.corp_profile.zip }} {{ corp_memb.corp_profile.country }}
-        
-        
+
+
 </div>
  <br />
 <div><span class="label"><b>{% trans "Join Date:" %}</b></span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>

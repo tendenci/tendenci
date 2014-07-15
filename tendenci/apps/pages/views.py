@@ -215,7 +215,7 @@ def edit(request, id, form_class=PageForm,
         #setup categories
         category = Category.objects.get_for_object(page, 'category')
         sub_category = Category.objects.get_for_object(page, 'sub_category')
-    
+
         initial_category_form_data = {
             'app_label': 'pages',
             'model': 'page',
@@ -299,8 +299,8 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
 
            edit_button = False
            if request.POST['preview_for'] == 'edit':
-               edit_button = True 
-           
+               edit_button = True
+
            f = form.cleaned_data['header_image']
            if f:
                header = HeaderImage()
@@ -314,7 +314,7 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
                f.file.seek(0)
                header.file.save(filename, f, save=False)
                page.header_image = header
-           
+
            return render_to_response(template, {'page': page,
                                                 'form': form,
                                                 'metaform': metaform,

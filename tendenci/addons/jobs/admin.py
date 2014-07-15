@@ -76,12 +76,12 @@ admin.site.register(Job, JobAdmin)
 
 class JobPricingAdmin(admin.ModelAdmin):
     list_display = [
-        'duration', 
-        'title', 
-        'regular_price', 
-        'premium_price', 
-        'regular_price_member', 
-        'premium_price_member', 
+        'duration',
+        'title',
+        'regular_price',
+        'premium_price',
+        'regular_price_member',
+        'premium_price_member',
         'include_tax',
         'tax_rate',
         'show_member_pricing',

@@ -18,7 +18,7 @@ class SettingResource(TendenciResource):
     """
     name = fields.CharField(readonly=True, attribute='name')
     description = fields.CharField(readonly=True, attribute='description')
-    
+
     class Meta(TendenciResource.Meta):
         queryset = Setting.objects.all()
         resource_name = 'setting'
@@ -26,4 +26,4 @@ class SettingResource(TendenciResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get', 'put']
         fields = ['name', 'description', 'value', 'data_type', 'input_value']
-    
+

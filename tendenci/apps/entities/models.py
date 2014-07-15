@@ -35,7 +35,7 @@ class Entity(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False, null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True, on_delete=models.SET_NULL)    
+    owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')

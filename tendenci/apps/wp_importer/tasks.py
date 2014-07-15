@@ -36,7 +36,7 @@ class WPImportTask(Task):
                 get_posts(item, uri_parser, user)
             elif post_type == 'page' and post_status == 'publish':
                 get_pages(item, uri_parser, user)
-        
+
         if user.email:
             context_instance = {
                 'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),

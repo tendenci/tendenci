@@ -831,7 +831,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
             raise Http404
 
         app = corp_app.memb_app
-        
+
         if not has_perm(request.user, 'memberships.view_app', app):
             raise Http403
 
@@ -882,7 +882,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
     else:  # regular membership
 
         app = get_object_or_404(MembershipApp, slug=slug)
-        
+
         if not has_perm(request.user, 'memberships.view_app', app):
             raise Http403
 
@@ -1018,7 +1018,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
 
-    if (not app.discount_eligible or 
+    if (not app.discount_eligible or
         not Discount.has_valid_discount(model=MembershipSet._meta.module_name)):
         del membership_form.fields['discount_code']
 
@@ -1923,7 +1923,7 @@ def report_members_by_company(request, template_name='reports/members_by_company
     """ Total current members by company.
     """
     company_list = Profile.objects.exclude(
-                                Q(member_number='') | 
+                                Q(member_number='') |
                                 Q(company='')).values_list(
                                 'company',
                                 flat=True

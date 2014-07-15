@@ -17,13 +17,13 @@
 <h1>{% trans "Amazon SES - Verified Emails" %}</h1>
 <div style="margin: 1em 0; font-weight:bold;">{% trans "Below is the list of verified email addressed:" %}</div>
 {% if verified_emails %}
-	<ol>
-	{% for email in verified_emails %}
-		<li>{{ email }}</li>
-	{% endfor %}
-	</ol>
+    <ol>
+    {% for email in verified_emails %}
+        <li>{{ email }}</li>
+    {% endfor %}
+    </ol>
 {% else %}
-	{% trans "No email address verified." %}
+    {% trans "No email address verified." %}
 {% endif %}
 
 <br />

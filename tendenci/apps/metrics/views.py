@@ -27,5 +27,5 @@ def index(request, template_name="metrics/index.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, locals(), 
+    return render_to_response(template_name, locals(),
         context_instance=RequestContext(request))

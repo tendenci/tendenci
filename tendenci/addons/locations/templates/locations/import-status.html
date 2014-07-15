@@ -14,18 +14,18 @@
 
 <div id="import-wrap" class="finished">
     {% if task.status == "FAILED" or task.status == "REVOKED" %}
-	<h1>{% trans "Location Import Failed!" %}</h1>
-	<p class="timestamp">{% trans "Step 4/4" %} &middot; {{ now }}</p>
+    <h1>{% trans "Location Import Failed!" %}</h1>
+    <p class="timestamp">{% trans "Step 4/4" %} &middot; {{ now }}</p>
 
-	<p class="msg">Please try again. If the problem continues to persist please contact us <a href="">here</a>.</p>
+    <p class="msg">Please try again. If the problem continues to persist please contact us <a href="">here</a>.</p>
     {% else %}
     <h1>{% trans "Processing Location Import!" %}</h1>
-	<p class="timestamp">{% trans "Step 4/4" %} &middot; {{ now }}</p>
+    <p class="timestamp">{% trans "Step 4/4" %} &middot; {{ now }}</p>
 
-	<p class="msg">We're not done yet! Come back and check on us again later. Thanks!</p>
+    <p class="msg">We're not done yet! Come back and check on us again later. Thanks!</p>
     {% endif %}
 
-	<p class="link"><a href="{% url locations %}">{% trans "Back to location search page." %}</a></p>
+    <p class="link"><a href="{% url locations %}">{% trans "Back to location search page." %}</a></p>
 
 </div>
 {% endblock %}

@@ -66,7 +66,7 @@ class NoAddAnotherModelAdmin(admin.ModelAdmin):
 
         # For any other type of field, just call its formfield() method.
         return db_field.formfield(**kwargs)
-    
+
 
 class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
     def edit_payment_info_link(self):
@@ -87,84 +87,84 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         else:
             return '<a href="%s">Add payment info</a>' % (link)
     edit_payment_info_link.allow_tags = True
-    
+
     def view_on_site(self):
         link = reverse('recurring_payment.view_account', args=[self.id])
         return '<a href="%s">View on site</a>' % (link)
     view_on_site.allow_tags = True
-    
+
     def how_much_to_pay(self):
         if self.billing_frequency == 1:
             return '%s/%s' % (tcurrency(self.payment_amount), self.billing_period)
         else:
             return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
-    
-    list_display = ['user', edit_payment_info_link, view_on_site, 
+
+    list_display = ['user', edit_payment_info_link, view_on_site,
                     'description', 'billing_start_dt',
-                     how_much_to_pay,  
+                     how_much_to_pay,
                      'status_detail']
     list_filter = ['status_detail']
-    
+
     fieldsets = (
         (None, {'fields': ('user', 'url', 'description',)}),
         ("Billing Settings", {'fields': ('payment_amount', ('taxable', 'tax_rate',),
                            'billing_start_dt', 'billing_cycle', 'billing_dt_select', )}),
-        ("Trial Period", {'fields': ('has_trial_period',  'trial_amount', 
+        ("Trial Period", {'fields': ('has_trial_period',  'trial_amount',
                            'trial_period_start_dt',  'trial_period_end_dt',  ),
                           'description': '*** Note that if the trial period overlaps with ' + \
                           'the initial billing cycle start date, the trial period will end' + \
                           ' on the initial billing cycle start date.'}),
         ('Other Options', {'fields': ('status', 'status_detail',)}),
     )
-    
+
     form = RecurringPaymentForm
-    
-    
+
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
-        
+
         # billing_cycle
         billing_cycle = form.cleaned_data['billing_cycle']
         billing_cycle_list = billing_cycle.split(",")
         instance.billing_frequency = billing_cycle_list[0]
         instance.billing_period = billing_cycle_list[1]
-        
+
         # billing_date
         billing_dt_select = form.cleaned_data['billing_dt_select']
         billing_dt_select_list = billing_dt_select.split(",")
         instance.num_days = billing_dt_select_list[0]
         instance.due_sore = billing_dt_select_list[1]
-         
+
         if not change:
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
             instance.owner_username = request.user.username
-            
+
         # save the object
         instance.save()
-            
-        
+
+
         return instance
-    
+
     def log_change(self, request, object, message):
         super(RecurringPaymentAdmin, self).log_change(request, object, message)
         log_defaults = {
             'event_id' : 1120200,
-            'event_data': '%s for %s(%d) edited by %s' % (object._meta.object_name, 
+            'event_data': '%s for %s(%d) edited by %s' % (object._meta.object_name,
                                                     object.user, object.pk, request.user),
             'description': '%s edited' % object._meta.object_name,
             'user': request.user,
             'request': request,
             'instance': object,
         }
-        EventLog.objects.log(**log_defaults)               
+        EventLog.objects.log(**log_defaults)
 
     def log_addition(self, request, object):
         super(RecurringPaymentAdmin, self).log_addition(request, object)
         log_defaults = {
             'event_id' : 1120100,
-            'event_data': '%s for %s(%d) added by %s' % (object._meta.object_name, 
+            'event_data': '%s for %s(%d) added by %s' % (object._meta.object_name,
                                                    object.user, object.pk, request.user),
             'description': '%s added' % object._meta.object_name,
             'user': request.user,
@@ -172,18 +172,18 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             'instance': object,
         }
         EventLog.objects.log(**log_defaults)
-        
+
     def log_deletion(self, request, object, message):
         super(RecurringPaymentAdmin, self).log_deletion(request, object, message)
         log_defaults = {
             'event_id' : 1120300,
-            'event_data': '%s for %s(%d) deleted by %s' % (object._meta.object_name, 
+            'event_data': '%s for %s(%d) deleted by %s' % (object._meta.object_name,
                                                     object.user, object.pk, request.user),
             'description': '%s deleted' % object._meta.object_name,
             'user': request.user,
             'request': request,
             'instance': object,
         }
-        EventLog.objects.log(**log_defaults) 
-    
+        EventLog.objects.log(**log_defaults)
+
 admin.site.register(RecurringPayment, RecurringPaymentAdmin)

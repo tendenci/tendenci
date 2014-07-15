@@ -18,19 +18,19 @@
     {% if request.user.is_authenticated %}
         {% forms_nav request.user form %}
     {% endif %}
-    
+
     <div class="form-wrap">
         <h1>{% trans "Billing Information" %}</h1>
-    
-    	<div class="form-builder-wrap">
-        	<form method="post" enctype="multipart/form-data">{% csrf_token %}
+
+        <div class="form-builder-wrap">
+            <form method="post" enctype="multipart/form-data">{% csrf_token %}
             <div style="display:none">
                 <input type="hidden" name="entry_path" value="{{ request.path }}">
             </div>
-        	<div class="forms">
+            <div class="forms">
                 {{ payment_form|styled_form }}
-            	<input type="submit" value="Submit" />
-    		</div>
+                <input type="submit" value="Submit" />
+            </div>
             </form>
         </div>
     </div>

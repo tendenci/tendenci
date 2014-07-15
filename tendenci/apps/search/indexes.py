@@ -8,13 +8,13 @@ class CustomSearchIndex(indexes.SearchIndex):
     """
     A custom SearchIndex subclass that saves the objects to the UnindexedItem table
     (if not already added) for later processing and deletes objects immediately.
-    
-    This requires a script to run the management command "process_unindexed" in the 
-    background to update index. 
+
+    This requires a script to run the management command "process_unindexed" in the
+    background to update index.
     """
     def _setup_save(self, model):
         signals.post_save.connect(save_unindexed_item, sender=model, weak=False)
-        
+
     def _teardown_save(self, model):
         signals.post_save.disconnect(save_unindexed_item, sender=model)
 

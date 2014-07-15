@@ -83,7 +83,7 @@ def registration_pricing_and_button(context, event, user):
 
     pricing = registration.get_available_pricings(user, is_strict=False)
     pricing = pricing.order_by('position', '-price')
-    
+
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
     earliest_time = registration_earliest_time(event, pricing=pricing)
@@ -93,7 +93,7 @@ def registration_pricing_and_button(context, event, user):
         spots_taken, spots_available = event.get_spots_status()
     else:
         spots_taken, spots_available = (-1, -1)
-    
+
     is_registrant = False
     # check if user has already registered
     if hasattr(user, 'registrant_set'):
@@ -263,7 +263,7 @@ def is_registered_user(parser, token):
 
 class ListEventsNode(ListNode):
     model = Event
-    
+
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
         self.kwargs = kwargs

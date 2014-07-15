@@ -11,7 +11,7 @@ class MembershipRegistry(PeopleRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Membership management application.'
     icon = '%simages/icons/memberships-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'membership':{
             'base':('470000','333366'),

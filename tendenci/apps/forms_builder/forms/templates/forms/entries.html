@@ -16,38 +16,38 @@
  {% forms_nav request.user form %}
     <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} Entries</h1>
     <h2>{{ form.title }}</h2>
- 	<p><a href="{% url admin:forms_form_export form.pk %}">{% trans "Export All Entries" %}</a></p>
+    <p><a href="{% url admin:forms_form_export form.pk %}">{% trans "Export All Entries" %}</a></p>
     {% if form.has_files %}
     <p><a href="{% url form_entries_export_full form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a></p>
     {% endif %}
     {% autopaginate entries 10 %}
-	
-	<div class="forms-builder-wrap">
+
+    <div class="forms-builder-wrap">
     {% for entry in entries %}
-		<div class="form-builder-wrap">
+        <div class="form-builder-wrap">
             <div class="quick-options">
-			{% forms_entry_options request.user entry %}
-		    </div>
-			<h3><a href="{{ entry.get_absolute_url }}">
-				{{ entry.entry_time }}
-				{% for field in entry.fields.all|slice:":3" %}
-					{% if field.field.field_type == 'FileField' %}
-						&nbsp;&ndash;&nbsp;{{ field.value|basename }}
-					{% else %}
-						&nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
-					{% endif %}
-				{% endfor %}
-				</a> 
-			</h3>
+            {% forms_entry_options request.user entry %}
+            </div>
+            <h3><a href="{{ entry.get_absolute_url }}">
+                {{ entry.entry_time }}
+                {% for field in entry.fields.all|slice:":3" %}
+                    {% if field.field.field_type == 'FileField' %}
+                        &nbsp;&ndash;&nbsp;{{ field.value|basename }}
+                    {% else %}
+                        &nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
+                    {% endif %}
+                {% endfor %}
+                </a>
+            </h3>
             <!-- delete form -->
             <form name="entry-delete" method="POST" action="{% url form_entry_delete entry.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
-		</div>
-	{% empty %}
-		<div>{% trans "0 Entries Found" %}</div>
+        </div>
+    {% empty %}
+        <div>{% trans "0 Entries Found" %}</div>
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
@@ -56,13 +56,13 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_form = confirm('Permanently delete entry?');	// confirm
-				if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_form = confirm('Permanently delete entry?');    // confirm
+                if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
     </script>
 {% endblock %}

@@ -9,7 +9,7 @@ from tendenci.apps.search.indexes import CustomSearchIndex
 
 class TendenciBaseSearchIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    
+
     # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
@@ -29,10 +29,10 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
     # permission fields
     users_can_view = indexes.MultiValueField(null=True)
     groups_can_view = indexes.MultiValueField(null=True)
-    
+
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
-    
+
     # add order field for sorting. the subclasses can override
     # the prepare_order method to sort by a different field
     order = indexes.DateTimeField()
@@ -66,7 +66,7 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
         if settings.HAYSTACK_SEARCH_ENGINE.lower() == "whoosh":
             return int(obj.status)
         return obj.status
-    
+
     def prepare_order(self, obj):
         return obj.create_dt
 

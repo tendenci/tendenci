@@ -16,14 +16,14 @@
 {% block body %}
 <div class="t-print">
 
-	<div class='hide-this'>
-		<h1>{% trans "Print View" %}</h1>
+    <div class='hide-this'>
+        <h1>{% trans "Print View" %}</h1>
 
-		<div class="guide">
-			<div><a href="{% url story story.pk %}">&laquo; {% trans "Back to regular story view" %}</a></div>
-			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
-		</div>
-	</div>
+        <div class="guide">
+            <div><a href="{% url story story.pk %}">&laquo; {% trans "Back to regular story view" %}</a></div>
+            <div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
+        </div>
+    </div>
 
     <div class="story-wrap">
         <h2>{{ story.title }}</h2>

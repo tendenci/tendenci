@@ -25,11 +25,11 @@ class Command(BaseCommand):
         request_user = User.objects.get(pk=args[1])
         data_list = UserImportData.objects.filter(uimport=uimport).order_by('pk')
         imu = ImportUsers(request_user, uimport, dry_run=False)
-        
+
         # clear group if needed
         if uimport.group_id and uimport.clear_group_membership:
             GroupMembership.objects.filter(group_id=uimport.group_id).delete()
-        
+
 
         for idata in data_list:
             try:

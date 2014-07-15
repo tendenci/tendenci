@@ -1,7 +1,7 @@
 {% extends form_template %}
 
 {% block extra_head %}
-	<title>{{ form.title }}</title>
+<title>{{ form.title }}</title>
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 {{ block.super }}
 {% endblock %}
@@ -9,6 +9,6 @@
 {% block body %}
 <div class="t">
     <h2>{{ form.title }}</h2>
-    {{ form.response|safe|urlize }}	
+    {{ form.response|safe|urlize }}
 </div>
 {% endblock %}

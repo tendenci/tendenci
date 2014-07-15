@@ -38,7 +38,7 @@ class RegistrationTestCase(TestCase):
     Base class for the test cases; this sets up two users -- one
     expired, one not -- which are used to exercise various parts of
     the application.
-    
+
     """
     def setUp(self):
         self.sample_user = RegistrationProfile.objects.create_inactive_user(username='alice',
@@ -55,26 +55,26 @@ class RegistrationModelTests(RegistrationTestCase):
     """
     Tests for the model-oriented functionality of django-registration,
     including ``RegistrationProfile`` and its custom manager.
-    
+
     """
     def test_new_user_is_inactive(self):
         """
         Test that a newly-created user is inactive.
-        
+
         """
         self.failIf(self.sample_user.is_active)
 
     def test_registration_profile_created(self):
         """
         Test that a ``RegistrationProfile`` is created for a new user.
-        
+
         """
         self.assertEqual(RegistrationProfile.objects.count(), 2)
 
     def test_activation_email(self):
         """
         Test that user signup sends an activation email.
-        
+
         """
         self.assertEqual(len(mail.outbox), 2)
 
@@ -83,25 +83,25 @@ class RegistrationModelTests(RegistrationTestCase):
         Test that user activation actually activates the user and
         properly resets the activation key, and fails for an
         already-active or expired user, or an invalid key.
-        
+
         """
         # Activating a valid user returns the user.
         self.failUnlessEqual(RegistrationProfile.objects.activate_user(RegistrationProfile.objects.get(user=self.sample_user).activation_key).pk,
                              self.sample_user.pk)
-        
+
         # The activated user must now be active.
         self.failUnless(User.objects.get(pk=self.sample_user.pk).is_active)
-        
+
         # The activation key must now be reset to the "already activated" constant.
         self.failUnlessEqual(RegistrationProfile.objects.get(user=self.sample_user).activation_key,
                              RegistrationProfile.ACTIVATED)
-        
+
         # Activating an expired user returns False.
         self.failIf(RegistrationProfile.objects.activate_user(RegistrationProfile.objects.get(user=self.expired_user).activation_key))
-        
+
         # Activating from a key that isn't a SHA1 hash returns False.
         self.failIf(RegistrationProfile.objects.activate_user('foo'))
-        
+
         # Activating from a key that doesn't exist returns False.
         self.failIf(RegistrationProfile.objects.activate_user(sha.new('foo').hexdigest()))
 
@@ -110,7 +110,7 @@ class RegistrationModelTests(RegistrationTestCase):
         Test that ``RegistrationProfile.activation_key_expired()``
         returns ``True`` for expired users and for active users, and
         ``False`` otherwise.
-        
+
         """
         # Unexpired user returns False.
         self.failIf(RegistrationProfile.objects.get(user=self.sample_user).activation_key_expired())
@@ -127,7 +127,7 @@ class RegistrationModelTests(RegistrationTestCase):
         Test that
         ``RegistrationProfile.objects.delete_expired_users()`` deletes
         only inactive users whose activation window has expired.
-        
+
         """
         RegistrationProfile.objects.delete_expired_users()
         self.assertEqual(RegistrationProfile.objects.count(), 1)
@@ -136,7 +136,7 @@ class RegistrationModelTests(RegistrationTestCase):
         """
         Test that ``manage.py cleanupregistration`` functions
         correctly.
-        
+
         """
         management.call_command('cleanupregistration')
         self.assertEqual(RegistrationProfile.objects.count(), 1)
@@ -146,13 +146,13 @@ class RegistrationFormTests(RegistrationTestCase):
     """
     Tests for the forms and custom validation logic included in
     django-registration.
-    
+
     """
     def test_registration_form(self):
         """
         Test that ``RegistrationForm`` enforces username constraints
         and matching passwords.
-        
+
         """
         invalid_data_dicts = [
             # Non-alphanumeric username.
@@ -202,7 +202,7 @@ class RegistrationFormTests(RegistrationTestCase):
         """
         Test that ``RegistrationFormTermsOfService`` requires
         agreement to the terms of service.
-        
+
         """
         form = forms.RegistrationFormTermsOfService(data={ 'username': 'foo',
                                                            'email': 'foo@example.com',
@@ -210,7 +210,7 @@ class RegistrationFormTests(RegistrationTestCase):
                                                            'password2': 'foo' })
         self.failIf(form.is_valid())
         self.assertEqual(form.errors['tos'], [u"You must agree to the terms to register"])
-        
+
         form = forms.RegistrationFormTermsOfService(data={ 'username': 'foo',
                                                            'email': 'foo@example.com',
                                                            'password1': 'foo',
@@ -222,7 +222,7 @@ class RegistrationFormTests(RegistrationTestCase):
         """
         Test that ``RegistrationFormUniqueEmail`` validates uniqueness
         of email addresses.
-        
+
         """
         form = forms.RegistrationFormUniqueEmail(data={ 'username': 'foo',
                                                         'email': 'alice@example.com',
@@ -241,7 +241,7 @@ class RegistrationFormTests(RegistrationTestCase):
         """
         Test that ``RegistrationFormNoFreeEmail`` disallows
         registration with free email addresses.
-        
+
         """
         base_data = { 'username': 'foo',
                       'password1': 'foo',
@@ -263,13 +263,13 @@ class RegistrationFormTests(RegistrationTestCase):
 class RegistrationViewTests(RegistrationTestCase):
     """
     Tests for the views included in django-registration.
-    
+
     """
     def test_registration_view(self):
         """
         Test that the registration view rejects invalid submissions,
         and creates a new user and redirects after a valid submission.
-        
+
         """
         # Invalid data fails.
         response = self.client.post(reverse('registration_register'),
@@ -289,12 +289,12 @@ class RegistrationViewTests(RegistrationTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://testserver%s' % reverse('registration_complete'))
         self.assertEqual(RegistrationProfile.objects.count(), 3)
-    
+
     def test_activation_view(self):
         """
         Test that the activation view activates the user from a valid
         key and fails if the key is invalid or has expired.
-       
+
         """
         # Valid user puts the user account into the context.
         response = self.client.get(reverse('registration_activate',

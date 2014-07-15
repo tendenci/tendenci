@@ -14,23 +14,23 @@ class JobIndex(TendenciBaseSearchIndex):
     description = indexes.CharField(model_attr='description')
     post_dt = indexes.DateTimeField(model_attr='post_dt', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
-    
+
     # categories
     category = indexes.CharField()
     sub_category = indexes.CharField()
-    
+
     # RSS fields
     can_syndicate = indexes.BooleanField()
-    
+
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
-    
+
     #overriden fields
     creator = indexes.CharField(model_attr='creator', null=True)
     creator_username = indexes.CharField(model_attr='creator_username', null=True)
     owner = indexes.CharField(model_attr='owner', null=True)
     owner_username = indexes.CharField(model_attr='owner_username', null=True)
-    
+
     def prepare_description(self, obj):
         description = obj.description
         description = strip_tags(description)

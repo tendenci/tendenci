@@ -13,7 +13,7 @@
             <div class="search-text">
                 <h2><a href="{% if can_edit %}{% url story story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title 'Untitled'%}</a></h2>
                 {{ story.content|striptags|truncatewords:20|safe }}
-                
+
                 {% if can_edit %}
                     {% if story.full_story_link %}
                     <br /><strong>{% trans "Links to: " %}</strong><a href="{{ story.full_story_link }}">{{ story.full_story_link }}</a>

@@ -9,17 +9,17 @@ from tendenci.core.site_settings.models import Setting
 
 class Command(BaseCommand):
     """
-    Update site settings in the database. It reads the settings.json 
+    Update site settings in the database. It reads the settings.json
     under each installed app or apps specified in the arguments,
     and add or update the settings accordingly.
-    
+
     Usage:
-        manage.py update_settings <appname appname ...> 
-        
-    Example:   
+        manage.py update_settings <appname appname ...>
+
+    Example:
         manage.py update_settings articles plugins.donations
-        
-    If no appname specified, it updates for ALL installed apps. 
+
+    If no appname specified, it updates for ALL installed apps.
 
     Json required fields (for lookups):
         `scope`
@@ -139,7 +139,7 @@ class Command(BaseCommand):
                     setting['name'],
                     setting['scope_category']
                 )
-                
+
 
     def handle(self, *args, **options):
         try:
@@ -179,6 +179,6 @@ class Command(BaseCommand):
                         print "Error updating setting for %s/settings.json" % appname
                         print e
                         continue
-      
+
                 if settings:
                     self.update_settings(settings, verbosity=verbosity)

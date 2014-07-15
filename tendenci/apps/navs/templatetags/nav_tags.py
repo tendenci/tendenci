@@ -26,16 +26,16 @@ def nav_nav(context, user, nav=None):
 @register.inclusion_tag("navs/search-form.html", takes_context=True)
 def nav_search(context):
     return context
-    
+
 @register.inclusion_tag("navs/navigation.html", takes_context=True)
 def navigation(context, nav_id):
     """
     Renders the nav and its nav items.
-    This will call nav_item that will call itself recursively nesting 
+    This will call nav_item that will call itself recursively nesting
     the subnavs
     """
     user = AnonymousUser()
-    
+
     if 'user' in context:
         if isinstance(context['user'], User):
             user = context['user']
@@ -65,7 +65,7 @@ def navigation(context, nav_id):
 def load_nav(context, nav_id, show_title=False):
     """
     Renders the nav and its nav items.
-    This will call nav_item that will call itself recursively nesting 
+    This will call nav_item that will call itself recursively nesting
     the subnavs
     """
     # No perms check because load_nav is only called by the other tags
@@ -92,7 +92,7 @@ def nav_item(context, item):
 
 @register.inclusion_tag("navs/cached_nav.html", takes_context=True)
 def nav(context, nav_id, show_title=False):
-    
+
     """
     Renders the nav from cache
     if not will use the navigation tag for rendering the nav
@@ -145,10 +145,10 @@ def list_navs(parser, token):
 
         {% list_case_studies as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``case_studies_sidebar`` or 
+    Be sure the [varname] has a specific name like ``case_studies_sidebar`` or
     ``case_studies_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``

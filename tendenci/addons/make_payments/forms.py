@@ -262,7 +262,7 @@ class MakePaymentForm(forms.ModelForm):
     email = EmailVerificationField(label=_("Email"), help_text='A valid e-mail address, please.')
     email_receipt = forms.BooleanField(initial=True)
     country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES, required=False)
-    
+
     class Meta:
         model = MakePayment
         fields = ('payment_amount',
@@ -283,7 +283,7 @@ class MakePaymentForm(forms.ModelForm):
                   'comments',
                   'captcha',
                   )
-        
+
     def __init__(self, user, *args, **kwargs):
         super(MakePaymentForm, self).__init__(*args, **kwargs)
         # populate the user fields
@@ -306,4 +306,4 @@ class MakePaymentForm(forms.ModelForm):
                     self.fields['phone'].initial = profile.phone
             except:
                 pass
-        
+

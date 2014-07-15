@@ -12,7 +12,7 @@
     {% for colorvar in colorvars %}
         {% with colorvar|split:":" as coloritems %}
         {% if coloritems.0 %}
-        <ul style="clear:both;">    
+        <ul style="clear:both;">
             <li class="app">{{ coloritems.1.strip }}:</li>
             <li><input class="palette_admin" type="text" label="{{ coloritems.1.strip }}" target="{{ coloritems.0.strip }}"></li>
         </ul>

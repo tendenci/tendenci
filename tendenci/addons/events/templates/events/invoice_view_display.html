@@ -4,14 +4,14 @@
 <!--<a href="">{% trans 'View Registration' %}</a>-->
 
 {% with obj.registrant_set.all as registrants %}
-	{% if registrants %}
-		{% for reg in registrants %}
-			<tr>
-			    <td>
-					{% if reg.user %}
-						<a href="{% url profile reg.user.username %}">
-					{% endif %}
-					{% if reg.get_name %}
+    {% if registrants %}
+        {% for reg in registrants %}
+            <tr>
+                <td>
+                    {% if reg.user %}
+                        <a href="{% url profile reg.user.username %}">
+                    {% endif %}
+                    {% if reg.get_name %}
                         {{ reg.get_name }}
                     {% else %}
                         {% trans "Guest #" %}{{ forloop.counter0 }}
@@ -19,9 +19,9 @@
                     {% if reg.email %}
                         ({{ reg.email }})
                     {% endif %}
-					{% if reg.user %}
-						</a>
-					{% endif %}
+                    {% if reg.user %}
+                        </a>
+                    {% endif %}
                     {% if reg.custom_reg_form_entry %}
                     {% with reg.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
                         {% for field in roster_field_list %}
@@ -31,26 +31,26 @@
                         {% endfor %}
                     {% endwith %}
                     {% endif %}
-				</td>
-				<td class="td-right">
-				    {{ reg.amount|format_currency }}
-				</td>
-			</td>
-		{% endfor %}
-	{% endif %}
+                </td>
+                <td class="td-right">
+                    {{ reg.amount|format_currency }}
+                </td>
+            </td>
+        {% endfor %}
+    {% endif %}
 {% endwith %}
 {% with obj.regaddon_set.all as regaddons %}
     {% if regaddons %}
         {% for regaddon in regaddons %}
-    		<tr>
-    			<td>
+            <tr>
+                <td>
                 {{ regaddon.addon.title }}
                 ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
                 </td>
                 <td class="td-right">
-					<span>{{ regaddon.amount|format_currency }}</span>
-    			</td>
-    		</tr>
+                    <span>{{ regaddon.amount|format_currency }}</span>
+                </td>
+            </tr>
         {% endfor %}
     {% endif %}
 {% endwith %}

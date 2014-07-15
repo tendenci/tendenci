@@ -11,4 +11,4 @@ class PhotoManager(TendenciBaseManager):
     Model Manager
     """
     pass
-    
+

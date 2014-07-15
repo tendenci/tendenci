@@ -33,8 +33,8 @@ class CategoryManager(Manager):
 
     def remove(self, object, type):
         ct = ContentType.objects.get_for_model(object)
-        object_id = object.pk     
- 
+        object_id = object.pk
+
         cat_item_filters = {
             'content_type': ct,
             'object_id': object_id
@@ -43,7 +43,7 @@ class CategoryManager(Manager):
         if type == 'category':
             cat_item_filters.update({'parent__exact':None})
         else:
-            cat_item_filters.update({'category__exact':None})  
+            cat_item_filters.update({'category__exact':None})
 
         try:
             cat_item = CategoryItem._default_manager.get(**cat_item_filters)
@@ -78,7 +78,7 @@ class CategoryManager(Manager):
         # find all subcategories associated with that object
         # return category from list of cat_items returned
 
-        if category: 
+        if category:
             filters['category'] = category
 
             cat_items = CategoryItem.objects.filter(**filters)
@@ -106,7 +106,7 @@ class CategoryManager(Manager):
 
         cat_item_filters = {
             'content_type': ct,
-            'object_id': object_id 
+            'object_id': object_id
         }
 
         categories = CategoryItem._default_manager.filter(**cat_item_filters)
@@ -137,7 +137,7 @@ class CategoryItem(models.Model):
     category = models.ForeignKey(Category, related_name='%(class)s_category',null=True,blank=True)
     parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True,blank=True)
     object = generic.GenericForeignKey('content_type', 'object_id')
-    
+
     def __unicode__(self):
         if self.category:
             return self.category.name

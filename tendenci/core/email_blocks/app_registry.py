@@ -9,7 +9,7 @@ class EmailBlockRegistry(LogRegistry):
             'add':('135100', 'CC3300'), # add
             'edit':('135300', 'CC3300'), # edit
             'delete':('135300', 'CC3300'), # delete
-            'search':('135400', 'CC3300'), # search 
+            'search':('135400', 'CC3300'), # search
             'view':('135550', 'CC3300'), # view
         },
     }

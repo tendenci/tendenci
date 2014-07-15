@@ -21,7 +21,7 @@ from tendenci.addons.corporate_memberships.forms import (
     CorpMembershipAppFieldAdminForm)
 
 from tendenci.addons.corporate_memberships.utils import get_corpapp_default_fields_list
-    
+
 from tendenci.core.base.utils import tcurrency
 
 from tendenci.core.event_logs.models import EventLog
@@ -49,8 +49,8 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
-            '%sjs/jquery-ui-1.8.17.custom.min.js' % settings.STATIC_URL,
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
 
@@ -112,15 +112,15 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
-            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/corpmembershipapp_tabular_inline_ordering.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
             '%sjs/tax_fields.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
                        '%scss/corpmemberships-admin.css' % settings.STATIC_URL], }
-  
+
 
 
 class StatusDetailFilter(SimpleListFilter):
@@ -217,7 +217,7 @@ class NoticeAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            "%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
+            "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
@@ -315,8 +315,8 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
-            'js/jquery-ui-1.8.17.custom.min.js',
+            "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
 

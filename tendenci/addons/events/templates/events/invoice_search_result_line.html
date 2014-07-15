@@ -3,25 +3,25 @@
 {% load i18n %}
 
 <table width="100%">
-    {% invoices_search_line_header request invoice '#ff6600' %}  
-      
-    {# display event registration #} 
+    {% invoices_search_line_header request invoice '#ff6600' %}
+
+    {# display event registration #}
     <tr>
-    	<td>{% trans "RegID" %}</td>
-    	<td colspan="2">{% trans "Title" %}</td>
-    	<td>{% trans "Date" %}</td>
-    	<td>{% trans "Price" %}</td>
-    	<td>{% trans "Balance" %}</td>
+        <td>{% trans "RegID" %}</td>
+        <td colspan="2">{% trans "Title" %}</td>
+        <td>{% trans "Date" %}</td>
+        <td>{% trans "Price" %}</td>
+        <td>{% trans "Balance" %}</td>
     </tr>
     {% if obj %}
       <tr>
         {% if obj.event.pk %}
-     	<td><a href="{% url event.registration_confirmation obj.event.pk obj.pk %}">{{obj.pk}}</a></td>
-     	<td colspan="2"><a href="{% url event obj.event.pk %}">{{obj.event.title|truncatewords:5}}</a></td>
-     	{% endif %}
-     	<td>{{obj.event.start_dt|date:'long'}}</td>
-     	<td>{{obj.amount_paid|format_currency}}</td>
-     	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
-     </tr> 
+         <td><a href="{% url event.registration_confirmation obj.event.pk obj.pk %}">{{obj.pk}}</a></td>
+         <td colspan="2"><a href="{% url event obj.event.pk %}">{{obj.event.title|truncatewords:5}}</a></td>
+         {% endif %}
+         <td>{{obj.event.start_dt|date:'long'}}</td>
+         <td>{{obj.amount_paid|format_currency}}</td>
+         <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+     </tr>
      {% endif %}
   </table>

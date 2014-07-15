@@ -11,7 +11,7 @@ function update_form_fields(form, original_form, form_number, total, remove) {
         original_form_number = original_form.find('input[name="form-number"]').val()
         search = '-' + (original_form_number) + '-';
     }
-   
+
     var replacement = '-' + (form_number + 1) + '-';
     var rep_form_number = form_number + 1;
 
@@ -28,10 +28,10 @@ function update_form_fields(form, original_form, form_number, total, remove) {
     }
     // update the class attributes
     form.find('div[class]').each(function() {
-        var _class= $(this).attr('class').replace(search, replacement);   
+        var _class= $(this).attr('class').replace(search, replacement);
         $(this).attr('class', _class);
     });
-           
+
     // update the name attribute in each for input
     form.find(':input').each(function() {
         var name = $(this).attr('name').replace(search, replacement);
@@ -52,17 +52,17 @@ function update_form_fields(form, original_form, form_number, total, remove) {
             id = 'id_' + newFor;
         $(this).attr('for', id);
     });
-    
-  
+
+
     // remove mceEditor and display the textarea - because it doesn't work on clone
     if (!remove) {
-	    form.find('.mceEditor').each(function() {
-	    	var $this = $(this);
-	    	$this.parent('.field').find('textarea').show();
-	    	$this.remove();
-	    });
+        form.find('.mceEditor').each(function() {
+            var $this = $(this);
+            $this.parent('.field').find('textarea').show();
+            $this.remove();
+        });
     }
-    
+
     // update the form field values with
     // the original forms
     if (original_form) {
@@ -86,21 +86,21 @@ function clone_form(selector, type) {
     var form_functions_clone = form_functions.clone(true);
     var total = parseInt($('#' + type + '-TOTAL_FORMS').val());
     var form_number = current_element.find('input[name="form-number"]').val();
-	// check if we have mceEditor
-	var textarea_id;
-	var myEditor = $(new_element).find('.mceEditor');
-	if (myEditor){
-		var mytextarea = myEditor.parent('.field').find('textarea');
-		if (mytextarea){
-			textarea_id = mytextarea.attr('id');
-		}
-	}
+    // check if we have mceEditor
+    var textarea_id;
+    var myEditor = $(new_element).find('.mceEditor');
+    if (myEditor){
+        var mytextarea = myEditor.parent('.field').find('textarea');
+        if (mytextarea){
+            textarea_id = mytextarea.attr('id');
+        }
+    }
 
     new_element.find('input.datepicker').removeClass('hasDatepicker')
-	
+
     new_element = update_form_fields(
-        new_element, 
-        current_element, 
+        new_element,
+        current_element,
         form_number,
         total,
         false
@@ -109,29 +109,29 @@ function clone_form(selector, type) {
     // update the total
     total++;
     $('#' + type + '-TOTAL_FORMS').val(total);
-    
+
     // add the element to the dom
     new_element.hide();
     current_element.after(new_element);
     new_element.fadeIn(200);
-    
+
     // Add mce Editor
     if (myEditor){
-    	if (textarea_id){
-    	var search = '-' + (form_number) + '-';
-    	var replacement = '-' + (parseInt(form_number) + 1) + '-';
-    	var new_textarea_id = textarea_id.replace(search, replacement);
-    	
-    	// it's weird, the new id has to add id_ in front of the original one
-    	// id_speaker-1-description
-    	if (new_textarea_id.substr(0, 3) !='id_'){
-    		new_textarea_id = 'id_' + new_textarea_id;
-    	}
-    	tinyMCE.execCommand('mceAddControl', false, new_textarea_id);
-    	tinyMCE.triggerSave();
+        if (textarea_id){
+        var search = '-' + (form_number) + '-';
+        var replacement = '-' + (parseInt(form_number) + 1) + '-';
+        var new_textarea_id = textarea_id.replace(search, replacement);
+
+        // it's weird, the new id has to add id_ in front of the original one
+        // id_speaker-1-description
+        if (new_textarea_id.substr(0, 3) !='id_'){
+            new_textarea_id = 'id_' + new_textarea_id;
+        }
+        tinyMCE.execCommand('mceAddControl', false, new_textarea_id);
+        tinyMCE.triggerSave();
       }
     }
-    
+
 
     // make sure all forms can delete
     new_element.before(form_functions_clone);
@@ -149,7 +149,7 @@ function clone_form(selector, type) {
         prev_add_link.hide();
 
         var prev_delete_link = form_functions_clone.find('div.formset-delete');
-        prev_delete_link.css({ 
+        prev_delete_link.css({
             display: 'inline',
             marginLeft: '0px'
         });
@@ -175,7 +175,7 @@ function delete_form(current_form, selector, type) {
     var is_edit_page = (href.indexOf('/edit') > -1);
 
     var form_functions = prev_form_functions;
-    // if its the last form this should execute on 
+    // if its the last form this should execute on
     // the current form and not the previous
     if (form_functions.length == 0) {
         if (forms_after.length == 1) {
@@ -195,7 +195,7 @@ function delete_form(current_form, selector, type) {
     // update the labels and inputs of the remaining forms
     if (!is_edit_page) {
         if (forms_after.length >= 1) {
-            forms_after.each(function() { 
+            forms_after.each(function() {
                 var form = $(this);
                 var form_number = form.find('input[name="form-number"]').val();
                 update_form_fields(form, null, form_number, total, true);
@@ -209,7 +209,7 @@ function delete_form(current_form, selector, type) {
         delete_link.hide();
     }
 
-    if ((forms_prev.length >= 1) && (forms_after.length == 0)) { 
+    if ((forms_prev.length >= 1) && (forms_after.length == 0)) {
         var add_link = form_functions.find('div.formset-add');
         add_link.css({ display: 'inline' });
 
@@ -217,7 +217,7 @@ function delete_form(current_form, selector, type) {
         delete_link.css({ display: 'inline', marginLeft: '15px' });
     }
 
-    if ((forms_prev.length == 0) && (forms_after.length == 1)) { 
+    if ((forms_prev.length == 0) && (forms_after.length == 1)) {
         var add_link = form_functions.find('div.formset-add');
         add_link.css({ display: 'inline' });
 
@@ -226,7 +226,7 @@ function delete_form(current_form, selector, type) {
     }
 
     // add the add link back
-    if ((forms_prev.length == 1) && (forms_after.length == 0)) { 
+    if ((forms_prev.length == 1) && (forms_after.length == 0)) {
         var add_link = form_functions.find('div.formset-add');
         add_link.css({ display: 'inline' });
 
@@ -256,11 +256,11 @@ function delete_form(current_form, selector, type) {
     } else {
         // delete the functions
         current_form.next().remove();
-                
+
         // delete the form
         current_form.slideUp(400, function() {
             $(this).remove();
-        });   
+        });
     }
 }
 
@@ -276,18 +276,8 @@ function get_formset_and_prefix(o) {
 }
 
 function initialize_pickers(){
-    $(".datepicker").off('live');
-    $(".datepicker").live('focus', function() {  
-        console.log($(this));
-        $(this).datepicker({ dateFormat: 'yy-mm-dd' });
-    });
-    $(".timepicker").off('live');
-    $(".timepicker").live('focus', function() {
-        $(this).timePicker({
-          show24Hours: false,
-          step: 15
-        });
-    });
+    $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+    $(".timepicker").timepicker({'step': 15});
 }
 
 $(document).ready(function(){
@@ -304,7 +294,7 @@ $(document).ready(function(){
     if (href.indexOf('/edit') > -1) {
         var fsa = form_set_funcs.find('div.formset-add');
         var fsd = form_set_funcs.find('div.formset-delete');
-        
+
         // hide all the add links except for the last one
         fsa.each(function(i) {
             var e = $(this);
@@ -320,14 +310,14 @@ $(document).ready(function(){
                 });
             }
         });
-        
+
         //hide the delete link if there is only one
         fsd.each(function(i) {
             var e = $(this);
             var prev_class = e.parent().prev().prev().attr('class');
             var next_class = e.parent().next().attr('class');
 
-            if ((!next_class || next_class.indexOf('formset') == -1) && 
+            if ((!next_class || next_class.indexOf('formset') == -1) &&
                (!prev_class || prev_class.indexOf('formset') == -1)) {
                 e.hide();
             } else {
@@ -339,7 +329,7 @@ $(document).ready(function(){
         });
     }
 
-    $('div.formset-add a').click(function(e) { 
+    $('div.formset-add a').click(function(e) {
         var params = get_formset_and_prefix($(this));
         clone_form('div.' + params.form_set + ':visible:last', params.prefix);
         initialize_pickers();
@@ -347,7 +337,7 @@ $(document).ready(function(){
         //return false;
     });
 
-    $('div.formset-delete a').click(function(e) { 
+    $('div.formset-delete a').click(function(e) {
         var params = get_formset_and_prefix($(this));
         var selector = 'div.' + params.form_set;
         var current_form = $(this).closest('div.formset-functions').prev();

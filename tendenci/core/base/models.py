@@ -8,7 +8,7 @@ from tendenci.core.base.fields import DictField
 
 class UpdateTracker(models.Model):
     is_updating = models.BooleanField(default=False)
-    
+
     @classmethod
     def get_or_create_instance(cls):
         try:
@@ -17,19 +17,19 @@ class UpdateTracker(models.Model):
             instance = UpdateTracker(is_updating=False)
             instance.save()
         return instance
-        
+
     @classmethod
     def start(cls):
         tracker = UpdateTracker.get_or_create_instance()
         tracker.is_updating = True
         tracker.save()
-    
+
     @classmethod
     def end(cls):
         tracker = UpdateTracker.get_or_create_instance()
         tracker.is_updating = False
         tracker.save()
-        
+
     def save(self, *args, **kwargs):
         self.__class__.objects.exclude(id=self.id).delete()
         super(UpdateTracker, self).save(*args, **kwargs)
@@ -80,7 +80,7 @@ class BaseImport(models.Model):
 
     creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         abstract = True
 
@@ -99,6 +99,6 @@ class BaseImportData(models.Model):
     # action_taken can be 'insert', 'update' or 'mixed'
     action_taken = models.CharField(_('Action Taken'), max_length=20, null=True)
     error = models.CharField(_('Error'), max_length=500, default='')
-    
+
     class Meta:
         abstract = True

@@ -192,7 +192,7 @@ class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
         exclude = ["position"]
-        
+
     def clean(self):
         cleaned_data = self.cleaned_data
         field_function = cleaned_data.get("field_function")
@@ -456,7 +456,7 @@ class FormForCustomRegForm(forms.ModelForm):
         if override and override_price <0:
             raise forms.ValidationError('Override price must be a positive number.')
         return override_price
-    
+
     def clean_use_free_pass(self):
         from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
         use_free_pass = self.cleaned_data['use_free_pass']
@@ -1325,10 +1325,10 @@ class Reg8nEditForm(BetterModelForm):
         #.short_text_input
         self.fields['reminder_days'].initial = '7,1'
         self.fields['reminder_days'].widget.attrs.update({'class': 'short_text_input'})
-        
+
         if not get_setting('module', 'corporate_memberships', 'usefreepass'):
             del self.fields['allow_free_pass']
- 
+
         if not get_setting('module', 'discounts', 'enabled'):
             del self.fields['discount_eligible']
 
@@ -1582,7 +1582,7 @@ class RegistrationForm(forms.Form):
 class FreePassCheckForm(forms.Form):
     email = forms.EmailField(label=_("Email"))
     member_number = forms.CharField(max_length=50, required=False)
-    
+
 
 class RegistrantForm(forms.Form):
     """
@@ -1753,8 +1753,8 @@ class RegistrantForm(forms.Form):
                             if group.is_member(registrant_user):
                                 return pricing
 
-                currency_symbol = get_setting("site", "global", "currencysymbol") or '$' 
-                err_msg = "" 
+                currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+                err_msg = ""
                 if not email:
                     err_msg = 'An email address is required for this price %s%s %s.' \
                                 % (currency_symbol, pricing.price, pricing.title)
@@ -1786,7 +1786,7 @@ class RegistrantForm(forms.Form):
         if pricing.allow_member:
             if not (pricing.allow_anonymous and pricing.allow_user):
                 price_requires_member = True
-        
+
         if price_requires_member:
             if not memberid:
                 raise forms.ValidationError("We don't detect you as a member. " + \
@@ -2248,7 +2248,7 @@ class StandardRegAdminForm(forms.Form):
                     except:
                         choices = tuple([(s.strip(), s.strip())for s in setting.input_value.split(',')])
                     field_args['choices'] = choices
-                    self.fields[field_name] = forms.ChoiceField(**field_args)            
+                    self.fields[field_name] = forms.ChoiceField(**field_args)
 
     def apply_changes(self):
         cleaned_data = self.cleaned_data

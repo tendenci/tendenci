@@ -24,14 +24,14 @@
 
         {# show member icon if not allowanonymousview/allowsiteuserview #}
         {% if not event.allow_anonymous_view and event.allow_user_view   %}
-            &nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/static/images/icons/member.gif" height="13" width="15" 
+            &nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/static/images/icons/member.gif" height="13" width="15"
             border="0" alt="Member View Only" title="Member View Only">
         {% endif %}
         </td></tr>
 
         {% if not simplified  %}
             <tr><td align="left"><font face="Arial" size="2" color="#000000">
-            <b>{% trans "Updated:" %}</b> {{ event.update_dt|date:"l d-M-Y h:i A" }} </font> 
+            <b>{% trans "Updated:" %}</b> {{ event.update_dt|date:"l d-M-Y h:i A" }} </font>
             </td></tr>
         {% endif %}
 
@@ -45,7 +45,7 @@
         {#  posted by #}
         {% if not simplified  %}
             <font face="Arial" size="2" color="#000000">
-            <br><b>{% blocktrans with event.owner.first_name as eventfirst and event.owner.last_name as eventlast %}Posted by</b>: 
+            <br><b>{% blocktrans with event.owner.first_name as eventfirst and event.owner.last_name as eventlast %}Posted by</b>:
             {{ eventfirst }} {{ eventlast }}{% endblocktrans %}
             </font>
         {% endif %}

@@ -27,13 +27,13 @@ from tendenci.core.perms.utils import assign_files_perms
 def details(request, id=None, template_name="stories/view.html"):
     if not id: return HttpResponseRedirect(reverse('story.search'))
     story = get_object_or_404(Story, pk=id)
-    
+
     if not has_view_perm(request.user,'stories.view_story', story):
         raise Http403
 
     EventLog.objects.log(instance=story)
-    
-    return render_to_response(template_name, {'story': story}, 
+
+    return render_to_response(template_name, {'story': story},
         context_instance=RequestContext(request))
 
 
@@ -45,7 +45,7 @@ def print_details(request, id, template_name="stories/print_details.html"):
 
     EventLog.objects.log(instance=story)
 
-    return render_to_response(template_name, {'story': story}, 
+    return render_to_response(template_name, {'story': story},
         context_instance=RequestContext(request))
 
 
@@ -70,7 +70,7 @@ def search(request, template_name="stories/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'stories':stories}, 
+    return render_to_response(template_name, {'stories':stories},
         context_instance=RequestContext(request))
 
 def search_redirect(request):
@@ -78,16 +78,16 @@ def search_redirect(request):
 
 
 @is_enabled('stories')
-@login_required   
+@login_required
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
-    if has_perm(request.user,'stories.add_story'):    
+    if has_perm(request.user,'stories.add_story'):
         if request.method == "POST":
             form = form_class(request.POST, request.FILES, user=request.user)
-            if form.is_valid():           
+            if form.is_valid():
                 story = form.save(commit=False)
-                
+
                 story = update_perms_and_save(request, form, story)
-                
+
                 # save photo
                 photo = form.cleaned_data['photo_upload']
                 if photo:
@@ -97,7 +97,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 if 'rotator' in story.tags:
                     checklist_update('add-story')
 
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % story) 
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % story)
 
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
             else:
@@ -113,7 +113,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
     else:
         raise Http403
 
-    return render_to_response(template_name, {'form':form}, 
+    return render_to_response(template_name, {'form':form},
         context_instance=RequestContext(request))
 
 
@@ -135,21 +135,21 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                     story.save(photo=photo)
 
                 story = update_perms_and_save(request, form, story)
-                
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % story)
-                
+
                 redirect_to = request.REQUEST.get('next', '')
                 if redirect_to:
                     return HttpResponseRedirect(redirect_to)
                 else:
-                    return redirect('story', id=story.pk)             
+                    return redirect('story', id=story.pk)
         else:
             form = form_class(instance=story, user=request.user)
 
     else:
         raise Http403
 
-    return render_to_response(template_name, {'story': story, 'form':form }, 
+    return render_to_response(template_name, {'story': story, 'form':form },
         context_instance=RequestContext(request))
 
 
@@ -167,8 +167,8 @@ def delete(request, id, template_name="stories/delete.html"):
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % story)
 
             return HttpResponseRedirect(reverse('story.search'))
-    
-        return render_to_response(template_name, {'story': story}, 
+
+        return render_to_response(template_name, {'story': story},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -180,7 +180,7 @@ def export(request, template_name="stories/export.html"):
     """Export Stories"""
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
         file_name = "stories.csv"
@@ -200,6 +200,6 @@ def export(request, template_name="stories/export.html"):
         ]
         export_id = run_export_task('stories', 'story', fields)
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

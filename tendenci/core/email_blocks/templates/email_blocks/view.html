@@ -16,20 +16,20 @@
 {% email_blocks_nav email_block %}
 
 <div class="quick-options">
-	{% email_block_options email_block%}
+    {% email_block_options email_block%}
 </div>
 <h1>{% trans 'Email Block View'%}</h1>
 <div class="clear-right"></div>
 
 <p>
 <div>
-	<a href="{% url email_block.view email_block.pk %}">
-	{% if email_block.email %}
-	{{ email_block.email|obfuscate_email }}
-	{% else %}
-	{{ email_block.email_domain }}
-	{% endif %}
-	</a>
+    <a href="{% url email_block.view email_block.pk %}">
+    {% if email_block.email %}
+    {{ email_block.email|obfuscate_email }}
+    {% else %}
+    {{ email_block.email_domain }}
+    {% endif %}
+    </a>
 </div>
 <div class="content"><b>{% trans "Reason:" %}</b> {{ email_block.reason }}</div>
 <br />

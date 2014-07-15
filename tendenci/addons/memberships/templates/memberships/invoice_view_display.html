@@ -3,23 +3,23 @@
 
 <tr>
     <td>
-		{% if obj %}
+        {% if obj %}
 
-			{% trans "Membership #" %}<a href="{% url admin:memberships_membershipdefault_change obj.pk %}" title="Membership">
-			{{ obj.pk }}</a>
+            {% trans "Membership #" %}<a href="{% url admin:memberships_membershipdefault_change obj.pk %}" title="Membership">
+            {{ obj.pk }}</a>
 
-			{{ obj.membership_type.name|truncatewords:30 }} 
-			({{ obj.payment_method.human_name }})
+            {{ obj.membership_type.name|truncatewords:30 }}
+            ({{ obj.payment_method.human_name }})
 
-			{% if invoice.bill_to_first_name or invoice.bill_to_last_name or invoice.bill_to_email %}
-				&nbsp;&ndash;&nbsp;{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }} {{ invoice.bill_to_email }}
-			{% endif %}
+            {% if invoice.bill_to_first_name or invoice.bill_to_last_name or invoice.bill_to_email %}
+                &nbsp;&ndash;&nbsp;{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }} {{ invoice.bill_to_email }}
+            {% endif %}
 
-		{% else %}
-			{% trans "Membership information not available" %}
-		{% endif%}
-	</td>
-	<td class="td-right">
-	    {{ invoice.total|format_currency }}
-	</td>
+        {% else %}
+            {% trans "Membership information not available" %}
+        {% endif%}
+    </td>
+    <td class="td-right">
+        {{ invoice.total|format_currency }}
+    </td>
 </td>

@@ -148,13 +148,13 @@ class GroupMembership(models.Model):
     status = models.BooleanField(default=True)
     status_detail = models.CharField(max_length=50, choices=(
         ('active','Active'), ('inactive','Inactive'),), default='active')
-    
+
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.group.name
-    
+
     class Meta:
         unique_together = ('group', 'member',)
         verbose_name = "Group Membership"

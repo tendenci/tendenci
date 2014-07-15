@@ -30,17 +30,17 @@
                 {% endif %}
             </div>
         </div>
-		<div class="forms">
-    	<form action="{% url event.reassign_type type.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+        <form action="{% url event.reassign_type type.pk %}" method="post">{% csrf_token %}
             <div class="item">
                 <div class="errs">{{ form.type.errors }}</div>
                 <div class="label">{{ form.type.label }}</div>
                 <div class="field" style="margin-left:150px">{{ form.type }}</div>
-				<div class="clear"></div>
+                <div class="clear"></div>
             </div>
-			<input type="Submit" value="Reassign Events" />
+            <input type="Submit" value="Reassign Events" />
         </form>
-		</div>
+        </div>
     </div>
 </div>
 {% endblock %}

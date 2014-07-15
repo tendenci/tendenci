@@ -56,7 +56,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
         # Log the get so we see if someone views setting values
         EventLog.objects.log()
 
-    return render_to_response(template_name, {'form': form, 
+    return render_to_response(template_name, {'form': form,
                                               'scope_category': scope_category }, context_instance=RequestContext(request))
 
 
@@ -73,11 +73,11 @@ def index(request, template_name="site_settings/settings.html"):
 def single_setting(request, scope, scope_category, name, template_name="site_settings/list.html"):
     if not has_perm(request.user,'site_settings.change_setting'):
         raise Http403
-    
+
     settings = Setting.objects.filter(scope=scope, scope_category=scope_category, name=name).order_by('label')
     if not settings:
         raise Http404
-    
+
     if request.method == 'POST':
         form = build_settings_form(request.user, settings)(request.POST, request.FILES)
         if form.is_valid():
@@ -100,6 +100,6 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
 
     else:
         form = build_settings_form(request.user, settings)()
-        
+
     return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
 

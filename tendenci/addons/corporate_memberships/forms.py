@@ -320,7 +320,7 @@ class CorpProfileForm(forms.ModelForm):
             del self.fields['status']
         if 'status_detail' in self.fields:
             del self.fields['status_detail']
-        
+
         self.field_names = [name for name in self.fields.keys()]
 
     def clean_secret_code(self):
@@ -630,7 +630,7 @@ class CorpExportForm(forms.Form):
     export_format = forms.ChoiceField(
                 label=_('Export Format'),
                 choices=(('csv', 'csv (Export)'),))
-    
+
 
 class CreatorForm(forms.ModelForm):
     class Meta:
@@ -885,8 +885,8 @@ class NoticeForm(forms.ModelForm):
     notice_time_type = NoticeTimeTypeField(
         label='When to Send', widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(
-        widget=TinyMCE(attrs={'style':'width:70%'}, 
-                       mce_attrs={'storme_app_label': Notice._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:70%'},
+                       mce_attrs={'storme_app_label': Notice._meta.app_label,
                                   'storme_model':Notice._meta.module_name.lower()}),
         help_text="Click here to view available tokens")
 
@@ -903,29 +903,29 @@ class NoticeForm(forms.ModelForm):
             'email_content',
             'status_detail',)
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(NoticeForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = 0
-        
+
         initial_list = []
         if self.instance.pk:
             initial_list.append(str(self.instance.num_days))
             initial_list.append(str(self.instance.notice_time))
             initial_list.append(str(self.instance.notice_type))
-        
+
         self.fields['notice_time_type'].initial = initial_list
-        
+
         self.fields['email_content'].help_text = get_notice_token_help_text(self.instance)
-        
+
     def clean_notice_time_type(self):
         value = self.cleaned_data['notice_time_type']
-        
+
         data_list = value.split(',')
         d = dict(zip(['num_days', 'notice_time', 'notice_type'], data_list))
-        
+
         try:
             d['num_days'] = int(d['num_days'])
         except:

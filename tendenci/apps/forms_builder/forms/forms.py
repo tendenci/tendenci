@@ -43,10 +43,10 @@ class FormForForm(forms.ModelForm):
     class Meta:
         model = FormEntry
         exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", "creator")
-    
+
     def __init__(self, form, user, *args, **kwargs):
         """
-        Dynamically add each of the form fields for the given form model 
+        Dynamically add each of the form fields for the given form model
         instance and its related field model instances.
         """
         self.user = user
@@ -102,7 +102,7 @@ class FormForForm(forms.ModelForm):
                     field_args["max_length"] = FIELD_NAME_LENGTH
                 elif field.field_function == 'EmailPhoneNumber':
                     field_args["max_length"] = FIELD_PHONE_LENGTH
-                
+
                 form.fields[field_key] = field_class(**field_args)
 
                 if not field_class == EmailVerificationField:
@@ -127,7 +127,7 @@ class FormForForm(forms.ModelForm):
                     if pricing.price == None:
                         pricing_options.append(
                             (pricing.pk, mark_safe(
-                                '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' % 
+                                '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
                                 (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label, pricing.description)))
                         )
                     else:
@@ -165,7 +165,7 @@ class FormForForm(forms.ModelForm):
         else:
             add_fields(self, self.form_fields)
             add_pricing_fields(self, self.form)
-        
+
         if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 
@@ -186,13 +186,13 @@ class FormForForm(forms.ModelForm):
                 custom_price = Decimal(custom_price)
             except ValueError:
                 raise forms.ValidationError("Price must be a valid amount")
-        
+
         self.cleaned_data['custom_price'] = custom_price
         return pricing_option
 
     def save(self, **kwargs):
         """
-        Create a FormEntry instance and related FieldEntry instances for each 
+        Create a FormEntry instance and related FieldEntry instances for each
         form field.
         """
         entry = super(FormForForm, self).save(commit=False)
@@ -216,9 +216,9 @@ class FormForForm(forms.ModelForm):
             entry.payment_method = self.cleaned_data['payment_option']
             entry.pricing = self.cleaned_data['pricing_option']
             entry.save()
-            
+
         return entry
-        
+
     def email_to(self):
         """
         Return the value entered for the first field of type EmailField.
@@ -228,20 +228,20 @@ class FormForForm(forms.ModelForm):
             if field_class == "EmailVerificationField":
                 return self.cleaned_data["field_%s" % field.id]
         return None
-        
-        
+
+
 class FormAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
 
     intro = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Form._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.module_name.lower()}))
 
-    response = forms.CharField(required=False, label='Confirmation Text', 
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Form._meta.app_label, 
+    response = forms.CharField(required=False, label='Confirmation Text',
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.module_name.lower()}))
 
     template = forms.ChoiceField(choices=template_choices)
@@ -275,7 +275,7 @@ class FormAdminForm(TendenciBaseForm):
                   'pricing_name',
                  )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(FormAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -306,7 +306,7 @@ class FormAdminForm(TendenciBaseForm):
                 break
             i += 1
         return slug
-        
+
 class FormForm(TendenciBaseForm):
     # from django.utils.safestring import mark_safe
 
@@ -328,7 +328,7 @@ class FormForm(TendenciBaseForm):
             required=False,
             initial=[1,2,3]
         )
-    
+
     class Meta:
         model = Form
         fields = ('title',
@@ -373,14 +373,14 @@ class FormForm(TendenciBaseForm):
                         'classes': ['permissions'],
                         }),
                     ('Administrator Only', {
-                        'fields': ['status_detail'], 
+                        'fields': ['status_detail'],
                         'classes': ['admin-only'],
                     }),
                     ('Payments', {
                         'fields':['custom_payment','recurring_payment','payment_methods'],
                         'legend':''
                     }),]
-                
+
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
 
@@ -408,14 +408,14 @@ class FormForField(forms.ModelForm):
     class Meta:
         model = Field
         exclude = ["position"]
-        
+
     def clean(self):
         cleaned_data = self.cleaned_data
         field_function = cleaned_data.get("field_function")
         choices = cleaned_data.get("choices")
         field_type = cleaned_data.get("field_type")
         required = cleaned_data.get("required")
-        
+
         if field_function == "GroupSubscription":
             if field_type != "BooleanField":
                 raise forms.ValidationError("This field's function requires Checkbox as a field type")
@@ -429,7 +429,7 @@ class FormForField(forms.ModelForm):
                         raise forms.ValidationError("The group \"%s\" does not exist" % (val))
 
         if field_function == "Recipients":
-            if (field_type != "MultipleChoiceField/django.forms.CheckboxSelectMultiple" and 
+            if (field_type != "MultipleChoiceField/django.forms.CheckboxSelectMultiple" and
                 field_type != "MultipleChoiceField" and
                 field_type != "BooleanField" and
                 field_type != "ChoiceField"):
@@ -453,20 +453,20 @@ class FormForField(forms.ModelForm):
                             raise forms.ValidationError("The \"Email to Recipients\" function requires choices to be in the following format: <choice_label>:<email_address>.")
                         if not email_re.match(val[1].strip()):
                             raise forms.ValidationError("\"%s\" is not a valid email address" % (val[1]))
-                    
+
         if field_function != None and field_function.startswith("Email"):
             if field_type != "CharField":
                 raise forms.ValidationError("This field's function requires Text as a field type")
-        
+
         #unrequire the display only fields
         if field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Description":
             cleaned_data['required'] = False
         elif field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Header":
             cleaned_data['required'] = False
-            
+
         return cleaned_data
 
-        
+
 class PricingForm(forms.ModelForm):
     billing_dt_select = BillingCycleField(label='When to bill',
                                           widget=BillingDateSelectWidget,
@@ -508,14 +508,14 @@ class PricingForm(forms.ModelForm):
         # Setup initial values for billing_cycle and billing_dt_select
         # in order to have empty values for extra forms.
         if self.instance.pk:
-            self.fields['billing_dt_select'].initial = [self.instance.num_days, 
+            self.fields['billing_dt_select'].initial = [self.instance.num_days,
                                                         self.instance.due_sore]
-            self.fields['billing_cycle'].initial = [self.instance.billing_frequency, 
+            self.fields['billing_cycle'].initial = [self.instance.billing_frequency,
                                                     self.instance.billing_period]
         else:
             self.fields['billing_dt_select'].initial = [0, u'start']
             self.fields['billing_cycle'].initial = [1, u'month']
-        
+
         # Add class for recurring payment fields
         self.fields['taxable'].widget.attrs['class'] = 'recurring-payment'
         self.fields['tax_rate'].widget.attrs['class'] = 'recurring-payment'
@@ -523,7 +523,7 @@ class PricingForm(forms.ModelForm):
         self.fields['billing_dt_select'].widget.attrs['class'] = 'recurring-payment'
         self.fields['has_trial_period'].widget.attrs['class'] = 'recurring-payment'
         self.fields['trial_period_days'].widget.attrs['class'] = 'recurring-payment'
-    
+
     def save(self, **kwargs):
         pricing = super(PricingForm, self).save(**kwargs)
         if self.cleaned_data.get('billing_dt_select'):
@@ -534,9 +534,9 @@ class PricingForm(forms.ModelForm):
             cycle = self.cleaned_data.get('billing_cycle').split(',')
             pricing.billing_frequency = cycle[0]
             pricing.billing_period = cycle[1]
-        #pricing.save()    
+        #pricing.save()
         return pricing
-        
+
 class BillingForm(forms.Form):
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)

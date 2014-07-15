@@ -28,7 +28,7 @@ class Profile(Person):
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
 
     # profile meta data
-    salutation = models.CharField(_('salutation'), max_length=15, 
+    salutation = models.CharField(_('salutation'), max_length=15,
         blank=True, choices=(('Mr.', 'Mr.'),('Mrs.', 'Mrs.'),
             ('Ms.', 'Ms.'),('Miss', 'Miss'),('Dr.', 'Dr.'),('Prof.', 'Prof.'),('Hon.', 'Hon.'),))
     initials = models.CharField(_('initials'), max_length=50, blank=True)
@@ -390,9 +390,9 @@ class UserImport(BaseImport):
 
     interactive = models.BooleanField(choices=INTERACTIVE_CHOICES, default=False)
     group_id = models.IntegerField(default=0)
-    
+
     clear_group_membership = models.BooleanField(default=False)
-    
+
     def generate_recap(self):
         if not self.recap_file and self.header_line:
             file_name = 'user_import_%d_recap.csv' % self.id
@@ -419,11 +419,10 @@ class UserImport(BaseImport):
             f.close()
             self.recap_file.name = file_path
             self.save()
-    
+
 
 class UserImportData(BaseImportData):
-    uimport = models.ForeignKey(UserImport, related_name="user_import_data")  
-    
-    
-    
-    
+    uimport = models.ForeignKey(UserImport, related_name="user_import_data")
+
+
+

@@ -25,7 +25,7 @@ class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
         exclude = ["template_id", "create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
-    
+
     zip_file = forms.FileField(required=False)
 
 class GenerateForm(forms.Form):

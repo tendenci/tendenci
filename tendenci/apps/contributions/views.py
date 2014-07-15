@@ -13,9 +13,9 @@ from tendenci.core.perms.utils import has_perm
 def index(request, id=None, template_name="contributions/view.html"):
     if not id: return HttpResponseRedirect(reverse('contribution.search'))
     contribution = get_object_or_404(Contribution, pk=id)
-    
+
     if has_perm(request.user,'contributions.view_contribution',contribution):
-        return render_to_response(template_name, {'contribution': contribution}, 
+        return render_to_response(template_name, {'contribution': contribution},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -33,15 +33,15 @@ def search(request, template_name="contributions/search.html"):
 
     contributions = contributions.order_by('-create_dt')
 
-    return render_to_response(template_name, {'contributions':contributions}, 
+    return render_to_response(template_name, {'contributions':contributions},
         context_instance=RequestContext(request))
 
 @login_required
 def print_view(request, id, template_name="contributions/print-view.html"):
     contribution = get_object_or_404(Contribution, pk=id)
-       
+
     if has_perm(request.user,'contributions.view_contribution',contribution):
-        return render_to_response(template_name, {'contribution': contribution}, 
+        return render_to_response(template_name, {'contribution': contribution},
             context_instance=RequestContext(request))
     else:
         raise Http403

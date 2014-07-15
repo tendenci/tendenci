@@ -10,7 +10,7 @@
             var file_dir = $(this).children('.glyph').attr('path');
             var swfupload = new SWFUpload({
             debug: false,
-        
+
             upload_url: "{% url theme_editor.upload %}",
             flash_url: "{{ LOCAL_STATIC_URL }}swfupload/swfupload.swf",
             post_params: {
@@ -20,10 +20,10 @@
 
             // File upload settings
             file_size_limit : "20480",    // 20 MB
-		    file_types : file_types_available,
+            file_types : file_types_available,
             file_types_description : "Theme Files",
             file_post_name: "upload",
-        
+
             // Button settings (opens file-browse dialogue)
             button_placeholder_id: "glyph_mask",
             button_width: $(this).width(),
@@ -44,10 +44,10 @@
             upload_error_handler : uploadError,
             upload_success_handler : uploadSuccess,
 
-		    custom_settings : {
-			    progressTarget : "swf-progress",
-			    redirect: "{% url theme_editor.editor %}"
-		    },
+            custom_settings : {
+                progressTarget : "swf-progress",
+                redirect: "{% url theme_editor.editor %}"
+            },
 
             // SWFObject settings
             minimum_flash_version : "9.0.28",

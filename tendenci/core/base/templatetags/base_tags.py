@@ -33,15 +33,15 @@ def fb_like_button_iframe(url, show_faces='false', width=400, height=40):
     else:
         show_faces = 'false'
     try:
-        width = int(width) 
+        width = int(width)
     except:
         width = 400
     try:
-        height = int(height) 
+        height = int(height)
     except:
         height = 400
-        
-    return {'url': url, 
+
+    return {'url': url,
             'width': width,
             'height': height,
             'show_faces':show_faces}
@@ -50,15 +50,15 @@ class FanCountNode(Node):
     def __init__(self, service, service_id):
         self.service = service
         self.service_id = service_id
-    
+
     def render(self, context):
         fancount = ''
         fb_api_url = 'http://api.facebook.com/restserver.php'
         tw_api_url = 'http://api.twitter.com'
-        
+
         cache_key = ''
         cache_time = 1800
-        
+
         if self.service == "facebook":
             query = '%s?method=facebook.fql.query&query=SELECT%%20fan_count%%20FROM%%20page%%20WHERE%%20page_id=%s'
             xml_path = query % (fb_api_url, self.service_id)
@@ -94,12 +94,12 @@ class FanCountNode(Node):
                     pass
 
         return fancount
-    
+
 @register.tag
 def fan_count(parser, token):
     """
     Pull a fan count for a social media site:
-    
+
     Usage::
 
         {% fan_count facebook 12345 %}
@@ -107,7 +107,7 @@ def fan_count(parser, token):
         or
 
         {% fan_count twitter username %}
-    
+
     """
     bits = token.contents.split()
     if len(bits) < 3:
@@ -124,20 +124,20 @@ def callMethod(obj, methodName):
             in template: {{ user_this.get_profile|args:user_current|call:'allow_edit_by' }}
     """
     method = getattr(obj, methodName)
- 
+
     if obj.__dict__.has_key("__callArg"):
         ret = method(*obj.__callArg)
         del obj.__callArg
         return ret
     return method()
- 
+
 def args(obj, arg):
     if not obj.__dict__.has_key("__callArg"):
         obj.__callArg = []
-     
+
     obj.__callArg += [arg]
     return obj
- 
+
 register.filter("call", callMethod)
 register.filter("args", args)
 
@@ -148,7 +148,7 @@ class AssignNode(Node):
     def __init__(self, name, value):
         self.name = name
         self.value = value
-        
+
     def render(self, context):
         context[self.name] = self.value.resolve(context, True)
         return ''
@@ -156,12 +156,12 @@ class AssignNode(Node):
 def do_assign(parser, token):
     """
     Assign an expression to a variable in the current context.
-    
+
     Usage::
         {% assign [name] [value] %}
     Example::
         {% assign list entry.get_related %}
-        
+
     """
     bits = token.contents.split()
     if len(bits) != 3:
@@ -176,14 +176,14 @@ class GetProfileNode(Node):
     def __init__(self, obj, var_name):
         self.user_obj = obj
         self.var_name = var_name
-        
+
     def resolve(self, var, context):
         """Resolves a variable out of context if it's not in quotes"""
         if var[0] in ('"', "'") and var[-1] == var[0]:
             return var[1:-1]
         else:
             return Variable(var).resolve(context)
-        
+
     def render(self, context):
         user_obj = self.resolve(self.user_obj, context)
         var_name = self.resolve(self.var_name, context)
@@ -198,15 +198,15 @@ class GetProfileNode(Node):
 def get_or_create_profile_for(parser, token):
     """
     Get or create a user profile if not exists
-    
+
     Example::
         {% get_or_create_profile user_this %}
-        
+
     """
     bits = token.contents.split()
     if len(bits) < 2:
         raise TemplateSyntaxError("'%s' tag takes at least two arguments" % bits[0])
-    
+
     args = {
         'obj': bits[1],
         'var_name': next_bit_for(bits, 'as'),
@@ -225,24 +225,24 @@ class ResetNode(Node):
     def __init__(self, variable, **kwargs):
         # set the context var
         self.variable = Variable(variable)
-            
+
         # get the context vars
         for k, v in kwargs.items():
             if k == 'context':
                 self.context = v
-            
+
     def render(self, context):
         variable = self.variable.resolve(context)
-        context[self.context] = variable 
+        context[self.context] = variable
         return ''
 
-@register.tag      
+@register.tag
 def reset(parser, token):
     """
     Reset a context variable to another one
-    
+
     Usage::
-        {% reset var as var1 %} 
+        {% reset var as var1 %}
     """
     bits = token.split_contents()
 
@@ -250,10 +250,10 @@ def reset(parser, token):
         variable = bits[1]
     except:
         raise TemplateSyntaxError, "'%s' requires at least three arguments." % bits[0]
-    
+
     if bits[1] == 'as':
         raise TemplateSyntaxError, "'%s' first argument must be a context var." % bits[0]
-    
+
     # get the user
     try:
         variable = bits[bits.index('as')-1]
@@ -261,64 +261,64 @@ def reset(parser, token):
     except:
         variable = None
         context = None
-    
+
     if not variable and not context:
         raise TemplateSyntaxError, "'%s' missing arguments. Syntax {% reset var1 as var2 %}" % bits[0]
-    
+
     return ResetNode(variable, context=context)
 
 class ImagePreviewNode(Node):
     def __init__(self, instance, size, **kwargs):
         # set the context var
-        self.instance = Variable(instance)    
+        self.instance = Variable(instance)
         self.size = size
         self.context = None
-        
+
         # get the context vars
         for k, v in kwargs.items():
             if k == 'context':
                 self.context = v
-            
+
     def render(self, context):
         instance = self.instance.resolve(context)
-        
+
         app_label = instance._meta.app_label
         model = instance._meta.object_name.lower()
-        
+
         url = reverse('image_preview', args=(app_label, model, instance.id, self.size))
         if not url_exists(url):
             url = None
-              
+
         if self.context:
-            context[self.context] = url 
+            context[self.context] = url
         else:
             context['image_preview'] = url
-        
+
         return ''
 
-@register.tag      
+@register.tag
 def image_preview(parser, token):
     """
         Gets the url for an image preview base
         on model and model_id
     """
     bits = token.split_contents()
-    
+
     try:
         instance = bits[1]
     except:
         raise TemplateSyntaxError, "'%s' requires at least 2 arguments" % bits[0]
-        
+
     try:
         size = bits[2]
     except:
-        raise TemplateSyntaxError, "'%s' requires at least 2 arguments" % bits[0]        
-         
+        raise TemplateSyntaxError, "'%s' requires at least 2 arguments" % bits[0]
+
     try:
         context = bits[4]
     except:
         context = "image_preview"
-        
+
     return ImagePreviewNode(instance, size, context=context)
 
 
@@ -415,7 +415,7 @@ def get_rss(parser, token):
 
 
 class Md5Hash(Node):
-    
+
     def __init__(self, *args, **kwargs):
         self.bits = [Variable(bit) for bit in kwargs.get("bits", [])[1:]]
 
@@ -571,13 +571,13 @@ class ImageURL(Node):
 def image_url(parser, token):
     """
     Creates a url for a photo that can be resized, cropped, constrianed, and have quality reduced.
-    
+
     Usage::
 
         {% image_url file [options][size=100x100] [crop=True] [constrain=True] [quality=90] %}
 
     Options include:
-    
+
         ``size``
            The size in the format [width]x[height]. **Default: 100x100**
         ``crop``
@@ -610,32 +610,32 @@ def image_url(parser, token):
         raise TemplateSyntaxError(message)
 
     return ImageURL(file, *args, **kwargs)
-    
+
 class NonHashedTagsNode(TagsForObjectNode):
     def render(self, context):
         context[self.context_var] = \
             Tag.objects.get_for_object(self.obj.resolve(context)).exclude(
             name__contains='#')
         return ''
-        
+
 class HashedTagsNode(TagsForObjectNode):
     def render(self, context):
         context[self.context_var] = \
             Tag.objects.get_for_object(self.obj.resolve(context)).filter(
             name__contains='#')
         return ''
-        
+
 def do_non_hash_tags_for_object(parser, token):
     """
     Retrieves a list of ``Tag`` objects that DO NOT start with '#'
     associated with an object and stores them in a context variable.
-    
+
     Usage::
-    
+
        {% tags_strip_hash [object] as [varname] %}
-    
+
     Example::
-    
+
         {% tags_strip_hash foo_object as tag_list %}
     """
     bits = token.contents.split()
@@ -644,18 +644,18 @@ def do_non_hash_tags_for_object(parser, token):
     if bits[2] != 'as':
         raise TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
     return NonHashedTagsNode(bits[1], bits[3])
-    
+
 def do_hash_tags_for_object(parser, token):
     """
     Retrieves a list of ``Tag`` objects that START with '#'
     associated with an object and stores them in a context variable.
-    
+
     Usage::
-    
+
        {% tags_hash_tags[object] as [varname] %}
-    
+
     Example::
-    
+
         {% tags_hash_tags foo_object as tag_list %}
     """
     bits = token.contents.split()
@@ -664,7 +664,7 @@ def do_hash_tags_for_object(parser, token):
     if bits[2] != 'as':
         raise TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
     return HashedTagsNode(bits[1], bits[3])
-    
+
 register.tag('tags_strip_hash', do_non_hash_tags_for_object)
 register.tag('tags_hash_tags', do_hash_tags_for_object)
 

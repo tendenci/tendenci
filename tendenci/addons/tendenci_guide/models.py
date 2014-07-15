@@ -11,7 +11,7 @@ SECTION_CHOICES = (
 
 class Guide(OrderingBaseModel):
     title = models.CharField(max_length=100)
-    slug = models.CharField(max_length=100, unique=True)  
+    slug = models.CharField(max_length=100, unique=True)
     content = models.TextField(blank=True)
     section = models.CharField(max_length=50, choices=SECTION_CHOICES, default="misc")
 

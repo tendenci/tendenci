@@ -8,19 +8,19 @@ register = template.Library()
 class MonthUrlNode(template.Node):
     def __init__(self, kind):
         self.kind = kind
-    
+
     def render(self, context):
         request = context['request']
         now = datetime.now()
         year = int(request.GET.get('year') or str(now.year))
         month = int(request.GET.get('month') or str(now.month))
         year, month = self._move(year, month)
-        
+
         query = request.GET.copy()
         query['month'] = month
         query['year'] = year
         return query.urlencode()
-    
+
     def _move(self, year, month):
         if self.kind == 'previous':
             month -= 1
@@ -33,8 +33,8 @@ class MonthUrlNode(template.Node):
                 month = 1
                 year += 1
         return year, month
-    
-    
+
+
 
 @register.tag
 def month_url(parser, token):

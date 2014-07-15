@@ -24,7 +24,7 @@ cores_list = [
     'files'
 ]
 
-        
+
 class Command(BaseCommand):
     help = "Remove non-profit-organization default data"
 
@@ -32,16 +32,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         module = None
-        if len(args) == 1: 
+        if len(args) == 1:
             module = args[0]
         elif len(args) > 0:
             raise CommandError('Command accepts 1 arguement (%d given)' % len(args))
-            
+
         accepted_modules = addons_list + apps_list + cores_list
         if module and module not in accepted_modules:
             raise CommandError('Invalid module. accepted arguments are %s' % accepted_modules )
         self.removedata(module)
-    
+
     def removedata(self, module):
         modules_list = []
 
@@ -57,8 +57,8 @@ class Command(BaseCommand):
             if module is None or module == core:
                 modules_list.append( "tendenci.core.%s.models" % core )
 
-        
-        contenttypes = ContentType.objects.all() 
+
+        contenttypes = ContentType.objects.all()
 
         for module in modules_list:
             self.delete_module(module, contenttypes)
@@ -83,7 +83,7 @@ class Command(BaseCommand):
                                         obj.delete()
                                 except Exception:
                                     pass
-                                    
+
                             print "deleting %s -- %s" % (m.__name__, instance)
                             instance.delete()
                     print ""
@@ -94,6 +94,6 @@ class Command(BaseCommand):
                     print "Error in deleting %s -- %s" % (m.__module__, m.__name__)
                     import sys, traceback
                     traceback.print_exc(file=sys.stdout)
-                    pass 
-                    
-                
+                    pass
+
+

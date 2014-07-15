@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        """ 
+        """
         Converts passwords with no hashing algorithm to use the default
         algorithm. These passwords are detected by measuring their length.
         """

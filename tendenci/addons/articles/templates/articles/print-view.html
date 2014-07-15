@@ -16,13 +16,13 @@
 {% block body %}
 <div class="t-print">
 
-	<div class='hide-this'>
-		<h1>{% trans "Print View" %}</h1>
+    <div class='hide-this'>
+        <h1>{% trans "Print View" %}</h1>
 
-		<div class="guide">
-			<div><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to the" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></div>
-		</div>
-	</div>
+        <div class="guide">
+            <div><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to the" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></div>
+        </div>
+    </div>
 
     <div class="article-wrap">
         <h2>{{ article.headline }}</h2>

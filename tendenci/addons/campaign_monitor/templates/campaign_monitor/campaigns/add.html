@@ -13,23 +13,23 @@
 
 {% block body %}
 <div class="t">
-	{% campaign_nav request.user %}
-    
+    {% campaign_nav request.user %}
+
     <h1>Campaign Add</h1>
-    
-    <div class="template-wrap">  
-    	<form action="{% url campaign_monitor.campaign_generate %}" method="post">{% csrf_token %}
-    	<div class="forms">
+
+    <div class="template-wrap">
+        <form action="{% url campaign_monitor.campaign_generate %}" method="post">{% csrf_token %}
+        <div class="forms">
             {% if form.non_field_errors %}
                 {{ form.non_field_errors }}
             {% endif %}
-			<div id="module-content" class="module-content">
-	            <h2>{% trans "Module Content" %}</h2>
+            <div id="module-content" class="module-content">
+                <h2>{% trans "Module Content" %}</h2>
                 <div id="module-options">
                     <table border="0">
                         <tr>
                             <td><strong>{% trans "Include Jump Links" %}</strong></td>
-                            <td colspan="2" >{{ form.jump_links }}   
+                            <td colspan="2" >{{ form.jump_links }}
                                 {% trans "Nav at the top or specified location of email" %}
                             </td>
                         </tr>
@@ -90,7 +90,7 @@
                         <tr >
                             <td ><strong>{% trans "Jobs" %}</strong></td>
                             <td >
-                                {{ form.jobs }}                     
+                                {{ form.jobs }}
                             </td>
                             <td>{{ form.jobs_days }} </td>
                         </tr>
@@ -113,8 +113,8 @@
             <div>
                 {{ form.template }}
             </div>
-        	<input type="submit" value="Continue" />
-		</div>
+            <input type="submit" value="Continue" />
+        </div>
         </form>
     </div>
 

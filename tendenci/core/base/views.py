@@ -53,19 +53,19 @@ def image_preview(request, app_label, model, id,  size):
         instance = content_type.get_object_for_this_type(id=id)
     except:
         return HttpResponseNotFound("Image not found.", mimetype="text/plain")
-    
+
     keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
     key = '.'.join(keys)
     response = cache.get(key)
     original_size = size
-    
+
     if not response:
         from tendenci.core.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
 
         # set sizes
         size_min = (30,30)
         size_cap = (512,512)
-        
+
         size_tuple = size.split('x')
         if len(size_tuple) == 2: size = int(size_tuple[0]), int(size_tuple[1])
         else: size = int(size), int(size)
@@ -75,7 +75,7 @@ def image_preview(request, app_label, model, id,  size):
         image_urls = []
 
         image = Pil.new('RGBA',size_min)
-    
+
         # find biggest image, dimension-wise
         for image_url in image_urls:
             image_candidate = make_image_object_from_url(image_url)
@@ -85,21 +85,21 @@ def image_preview(request, app_label, model, id,  size):
 
         if image.size[1] > size_min[1]:
         # rescale, convert-to true-colors; return response
-    
+
             image = image_rescale(image, size)
             if image.mode != "RGB":
                 image = image.convert("RGB")
-    
+
             response = HttpResponse(mimetype='image/jpeg')
-            
+
             image.save(response, "JPEG", quality=100)
-            
+
             keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
             key = '.'.join(keys)
-            
+
             cache.set(key, response)
             return response
-    
+
         else: # raise http 404 error (returns page not found)
             return HttpResponseNotFound("Image not found.", mimetype="text/plain")
     else:
@@ -178,7 +178,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     response["Content-Length"] = len(contents)
     return response
 
-    
+
 def clear_cache(request):
     cache.clear()
     return redirect('dashboard')
@@ -240,7 +240,7 @@ def feedback(request, template_name="base/feedback.html"):
     raise Http404
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
-    
+
 def homepage(request, template_name="homepage.html"):
     from tendenci.core.event_logs.models import EventLog
 
@@ -392,7 +392,7 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
-    
+
     return render_to_response(template_name, {'addon_name': addon_name, 'sid':sid },
                               context_instance=RequestContext(request))
 

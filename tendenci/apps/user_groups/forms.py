@@ -23,7 +23,7 @@ SEARCH_CATEGORIES = (
 
     ('owner__id', 'Owner Userid #'),
     ('owner__username', 'Owner Username'),
-    
+
 )
 
 

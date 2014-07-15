@@ -14,15 +14,15 @@
 {% block body %}
 
 <div class="t">
-	{% nav_nav request.user %}
+    {% nav_nav request.user %}
     <h1>{% firstof MODULE_NAVS_LABEL "Nav" %}  {% trans "Add" %}</h1>
-    
+
     <div class="nav-wrap">
-    	<form action="{% url navs.add %}" method="post">{% csrf_token %}
-    	<div class="forms">
-			{{ form|styled_form }}
-        	<input type="submit" value="{% trans 'Add Nav' %}" />
-		</div>
+        <form action="{% url navs.add %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Add Nav' %}" />
+        </div>
         </form>
     </div>
 

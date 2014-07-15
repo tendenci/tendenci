@@ -319,24 +319,24 @@ def search(request, template_name="profiles/search.html"):
 @login_required
 def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
     if not has_perm(request.user,'profiles.add_profile'):raise Http403
-    
+
     required_fields = get_setting('module', 'users', 'usersrequiredfields')
     if required_fields:
         required_fields_list = required_fields.split(',')
         required_fields_list = [field.strip() for field in required_fields_list]
     else:
         required_fields_list = None
-    
+
     if request.method == "POST":
-        form = form_class(request.POST, 
+        form = form_class(request.POST,
                           user_current=request.user,
                           user_this=None,
                           required_fields_list=required_fields_list)
-        
+
         if form.is_valid():
             profile = form.save(request, None)
             new_user = profile.user
-            
+
             # security_level
             if request.user.profile.is_superuser:
                 security_level = form.cleaned_data['security_level']
@@ -346,18 +346,18 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 elif security_level == 'staff':
                     new_user.is_superuser = 0
                     new_user.is_staff = 1
-                    
+
                 else:
                     new_user.is_superuser = 0
                     new_user.is_staff = 0
 
                 # set up user permission
                 profile.allow_user_view, profile.allow_user_edit = False, False
-                    
+
             else:
                 new_user.is_superuser = 0
                 new_user.is_staff = 0
-                
+
             # interactive
             interactive = form.cleaned_data['interactive']
             try:
@@ -371,7 +371,7 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             new_user.save()
 
             ObjectPermission.objects.assign(new_user, profile)
-          
+
             # send notification to administrators
             recipients = get_notice_recipients('module', 'users', 'userrecipients')
             if recipients:
@@ -381,7 +381,7 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                         'request': request,
                     }
                     notification.send_emails(recipients,'user_added', extra_context)
-           
+
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
         form = form_class(user_current=request.user,
@@ -391,41 +391,41 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
     return render_to_response(template_name, {'form':form, 'user_this':None,
                                               'required_fields_list': required_fields_list,
                                               'auto_pwd': auto_pwd
-                                              }, 
+                                              },
         context_instance=RequestContext(request))
-    
+
 
 @login_required
 def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"):
     user_edit = get_object_or_404(User, pk=id)
-    
+
     try:
         profile = Profile.objects.get(user=user_edit)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
-        
+
     if not profile.allow_edit_by(request.user): raise Http403
-    
+
     required_fields = get_setting('module', 'users', 'usersrequiredfields')
     if required_fields:
         required_fields_list = required_fields.split(',')
         required_fields_list = [field.strip() for field in required_fields_list]
     else:
         required_fields_list = None
-       
+
     if request.method == "POST":
-        form = form_class(request.POST, 
+        form = form_class(request.POST,
                           user_current=request.user,
                           user_this=user_edit,
                           required_fields_list=required_fields_list,
                           instance=profile)
-        
+
         if form.is_valid():
             # get the old profile, so we know what has been changed in admin notification
             old_user = User.objects.get(id=id)
             old_profile = Profile.objects.get(user=old_user)
             profile = form.save(request, user_edit)
-           
+
             if request.user.profile.is_superuser:
                 # superusers cannot demote themselves
                 if user_edit == request.user:
@@ -434,7 +434,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                         messages.add_message(request, messages.INFO, _("You cannot convert yourself to \"%(role)s\" role.") % {'role' : form.cleaned_data['security_level']})
                 else:
                     security_level = form.cleaned_data['security_level']
-                
+
                 if security_level == 'superuser':
                     user_edit.is_superuser = 1
                     user_edit.is_staff = 1
@@ -448,15 +448,15 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                     user_edit.is_staff = 0
                     # remove them from auth_group if any
                     user_edit.groups = []
-                    
-                    
+
+
                 # set up user permission
                 profile.allow_user_view, profile.allow_user_edit = False, False
-                
+
             else:
                 user_edit.is_superuser = 0
                 user_edit.is_staff = 0
-                
+
             # interactive
             interactive = form.cleaned_data['interactive']
             try:
@@ -473,7 +473,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
 
             # update member-number on profile
             profile.refresh_member_number()
-            
+
             # notify ADMIN of update to a user's record
             if get_setting('module', 'users', 'userseditnotifyadmin'):
             #    profile_edit_admin_notify(request, old_user, old_profile, profile)
@@ -488,7 +488,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                             'request': request,
                         }
                         notification.send_emails(recipients,'user_edited', extra_context)
-            
+
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
@@ -496,18 +496,18 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                           user_this=user_edit,
                           required_fields_list=required_fields_list,
                           instance=profile)
-            
+
         else:
             form = form_class(user_current=request.user,
                           user_this=user_edit,
                           required_fields_list=required_fields_list)
 
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,
-                                              'required_fields_list':required_fields_list}, 
+                                              'required_fields_list':required_fields_list},
         context_instance=RequestContext(request))
-    
 
-    
+
+
 
 def delete(request, id, template_name="profiles/delete.html"):
     user = get_object_or_404(User, pk=id)
@@ -515,7 +515,7 @@ def delete(request, id, template_name="profiles/delete.html"):
         profile = Profile.objects.get(user=user)
     except:
         profile = None
-    
+
     if not has_perm(request.user,'profiles.delete_profile',profile): raise Http403
 
     if request.method == "POST":
@@ -535,11 +535,11 @@ def delete(request, id, template_name="profiles/delete.html"):
             profile.save()
         user.is_active = False
         user.save()
-        
-        
+
+
         return HttpResponseRedirect(reverse('profile.search'))
 
-    return render_to_response(template_name, {'user_this':user, 'profile': profile}, 
+    return render_to_response(template_name, {'user_this':user, 'profile': profile},
         context_instance=RequestContext(request))
 
 
@@ -567,14 +567,14 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         EventLog.objects.log(instance=profile)
 
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
-   
-    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form}, 
+
+    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form},
         context_instance=RequestContext(request))
 
 
 def _get_next(request):
     """
-    The part that's the least straightforward about views in this module is how they 
+    The part that's the least straightforward about views in this module is how they
     determine their redirects after they have finished computation.
 
     In short, they will try and determine the next place to go in the following order:
@@ -590,7 +590,7 @@ def _get_next(request):
     if not next:
         next = request.path
     return next
-   
+
 @login_required
 def change_avatar(request, id, extra_context={}, next_override=None):
     user_edit = get_object_or_404(User, pk=id)
@@ -598,10 +598,10 @@ def change_avatar(request, id, extra_context={}, next_override=None):
         profile = Profile.objects.get(user=user_edit)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
-        
+
     #if not has_perm(request.user,'profiles.change_profile',profile): raise Http403
     if not profile.allow_edit_by(request.user): raise Http403
-    
+
     avatars = Avatar.objects.filter(user=user_edit).order_by('-primary')
     if avatars.count() > 0:
         avatar = avatars[0]
@@ -613,7 +613,7 @@ def change_avatar(request, id, extra_context={}, next_override=None):
     if request.method == "POST":
         updated = False
         if 'avatar' in request.FILES:
-            path = avatar_file_path(user=user_edit, 
+            path = avatar_file_path(user=user_edit,
                 filename=request.FILES['avatar'].name)
             avatar = Avatar(
                 user = user_edit,
@@ -649,14 +649,14 @@ def change_avatar(request, id, extra_context={}, next_override=None):
         context_instance = RequestContext(
             request,
             {'user_this': user_edit,
-              'avatar': avatar, 
+              'avatar': avatar,
               'avatars': avatars,
               'primary_avatar_form': primary_avatar_form,
               'next': next_override or _get_next(request), }
         )
     )
-    
-@ssl_required    
+
+@ssl_required
 @csrf_protect
 @login_required
 def password_change(request, id, template_name='registration/password_change_form.html',
@@ -710,13 +710,13 @@ def user_activity_report(request, template_name='reports/user_activity.html'):
     is_ascending_first_name = True
     is_ascending_email = True
     is_ascending_events = True
-    
+
     # get sort order
     sort = request.GET.get('sort', 'events')
     # Hande case if sort exists is one of the url parameters but blank
     if not sort:
         sort = 'events'
-    
+
     if sort == 'username':
         users30days = users30days.order_by('username')
         users60days = users60days.order_by('username')
@@ -767,12 +767,12 @@ def user_activity_report(request, template_name='reports/user_activity.html'):
         users60days = users60days.order_by('event_count')
         users90days = users90days.order_by('event_count')
         is_ascending_events = True
-        
+
     # top 10 only
     users30days = users30days[:10]
     users60days = users60days[:10]
     users90days = users90days[:10]
-    
+
     # Check for number sorting
     reverse = request.GET.get('reverse', 'False')
     if reverse == 'True':
@@ -782,7 +782,7 @@ def user_activity_report(request, template_name='reports/user_activity.html'):
         is_reverse = True
     else:
         is_reverse = False
-    
+
     return render_to_response(template_name, {
         'users30days': users30days,
         'users60days': users60days,
@@ -809,7 +809,7 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
     is_ascending_first_name = True
     is_ascending_email = True
     is_ascending_phone = True
-    
+
     # get sort order
     sort = request.GET.get('sort', 'id')
     if sort == 'id':
@@ -848,7 +848,7 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
     elif sort == '-phone':
         profiles = profiles.order_by('-phone')
         is_ascending_phone = True
-    
+
     return render_to_response(template_name, {
         'profiles': profiles,
         'is_ascending_id': is_ascending_id,
@@ -858,24 +858,24 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
         'is_ascending_email': is_ascending_email,
         'is_ascending_phone': is_ascending_phone,
         }, context_instance=RequestContext(request))
-    
+
 @staff_member_required
 def user_access_report(request):
     now = datetime.now()
     logins_qs = EventLog.objects.filter(application="accounts",action="login")
-    
+
     total_users = User.objects.all().count()
     total_logins = logins_qs.count()
-    
+
     day_logins = []
     for days in [30, 60, 90, 120, 182, 365]:
         count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).values('user_id').distinct().count()
         day_logins.append((days, count))
-    
+
     return render_to_response('reports/user_access.html', {
                   'total_users': total_users,
                   'total_logins': total_logins,
-                  'day_logins': day_logins,},  
+                  'day_logins': day_logins,},
                 context_instance=RequestContext(request))
 
 @login_required
@@ -885,7 +885,7 @@ def admin_list(request, template_name='profiles/admin_list.html'):
         raise Http403
 
     admins = Profile.actives.filter(user__is_superuser=True).select_related()
-    
+
     return render_to_response(template_name, {'admins': admins},
                               context_instance=RequestContext(request))
 
@@ -911,15 +911,15 @@ def users_not_in_groups(request, template_name='profiles/users_not_in_groups.htm
 @login_required
 def user_groups_edit(request, username, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):
     user = get_object_or_404(User, username=username)
-    
+
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user)
-        
+
     if not profile.allow_edit_by(request.user):
         raise Http403
-        
+
     if request.method == 'POST':
         form = form_class(user, request.user, request, request.POST)
         if form.is_valid():
@@ -938,18 +938,18 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
 def user_role_edit(request, username, membership_id, form_class=GroupMembershipEditForm, template_name="profiles/edit_role.html"):
     user = get_object_or_404(User, username=username)
     membership = get_object_or_404(GroupMembership, id=membership_id)
-    
+
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user)
-    
+
     if not profile.allow_edit_by(request.user):
         raise Http403
-    
+
     if not has_perm(request.user,'user_groups.view_group', membership.group):
         raise Http403
-        
+
     if request.method == 'POST':
         form = form_class(request.POST, instance=membership)
         if form.is_valid():
@@ -971,18 +971,18 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
     # this view is redundant and not handling membership add well.
     # redirect to membership add
     return redirect(redirect_url)
-    
+
     user = get_object_or_404(User, username=username)
-    
+
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user)
-        
+
     if not request.user.profile.is_superuser:
         raise Http403
-    
-    form = form_class(request.POST or None)  
+
+    form = form_class(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
             membership = form.save(commit=False)

@@ -67,7 +67,7 @@
                 {% endif %}
                 {% if group.type != "system_generated" %}
                 <li class="divider"></li>
-                {% if can_add_member %} 
+                {% if can_add_member %}
                 <li><a href="{% url group.adduser nav_object.slug %}">{% trans "Add Users" %}</a></li>
                 {% endif %}
                 {% if nav_object.allow_self_add and user.is_authenticated or can_add_member %}

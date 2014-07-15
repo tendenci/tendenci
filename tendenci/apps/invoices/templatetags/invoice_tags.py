@@ -19,7 +19,7 @@ def invoices_search_results_line(request, invoice):
         from django.template.loader import render_to_string
         from django.template import RequestContext
         from django.template import TemplateDoesNotExist
-        
+
         app_label = invoice.object_type.app_label
         model = invoice.object_type.model
         # since membership app has 2 different associated invoices
@@ -121,7 +121,7 @@ def invoice_total_display(request, invoice):
         'tmp_total': tmp_total,
         'payment_method': payment_method,
         'merchant_login': merchant_login
-    } 
+    }
     return context
 
 # display payment history on invoice view
@@ -132,4 +132,4 @@ def payment_history_display(request, invoice):
     return {'request':request,
             'invoice':invoice,
             'payments': payments}
-    
+

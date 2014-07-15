@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
         if scope_category:
             settings = Setting.objects.filter(scope_category=scope_category)
-            
+
             required_keys = [
                 'scope',
                 'scope_category',

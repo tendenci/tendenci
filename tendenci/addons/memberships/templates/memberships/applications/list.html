@@ -5,25 +5,25 @@
 {% block body %}
 
 <style>
-	.membership-application-list {
-		margin-top: 20px;
-	}
+    .membership-application-list {
+        margin-top: 20px;
+    }
 </style>
 
 <div class="t">
-	<h1>Membership Applications</h1>
-	<p>A list of all membership applications</p>
+    <h1>Membership Applications</h1>
+    <p>A list of all membership applications</p>
 
-	<div class="membership-application-list">
-	<ol>
-	{% for app in apps %}
-		<li>
-			<h3><a href="{{ app.get_absolute_url }}">{{ app }}</a></h3>
-			<p>{% firstof app.description "No Description" %}</p>
-		</li>
-	{% endfor %}
-	</ol>
-	</div>
+    <div class="membership-application-list">
+    <ol>
+    {% for app in apps %}
+        <li>
+            <h3><a href="{{ app.get_absolute_url }}">{{ app }}</a></h3>
+            <p>{% firstof app.description "No Description" %}</p>
+        </li>
+    {% endfor %}
+    </ol>
+    </div>
 
 </div>
 {% endblock %}

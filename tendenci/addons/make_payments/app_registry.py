@@ -9,8 +9,8 @@ class MakePaymentRegistry(LogRegistry):
             'add':('671000','66CC00'), # add
             'edit':('672000','66CC33'), # edit
             'delete':('673000','66CC66'), # delete
-            'search':('674000','66FF00'), # search 
-            'view':('675000','66FF33'), # view 
+            'search':('674000','66FF00'), # search
+            'view':('675000','66FF33'), # view
         },
     }
 

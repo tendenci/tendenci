@@ -1,8 +1,8 @@
 //Populate location with value of place
 $('select#id_place-place').change(function() {
-	if($(this).val()) {
-		//Get values of place through ajax
-		$.post(
+    if($(this).val()) {
+        //Get values of place through ajax
+        $.post(
             "{% url event.get_place %}",
             {
                 'id':$(this).val(),
@@ -22,5 +22,5 @@ $('select#id_place-place').change(function() {
                 }
             }
         );
-	}
+    }
 });

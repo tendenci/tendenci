@@ -8,7 +8,7 @@ class HelpFileRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create help files, tutorials and more!'
-    
+
     event_logs = {
         'help_file':{
             'base':('1000000','D11300'),

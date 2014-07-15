@@ -16,11 +16,11 @@ from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query
 def index(request, id=None, template_name="entities/view.html"):
     if not id: return HttpResponseRedirect(reverse('entity.search'))
     entity = get_object_or_404(Entity, pk=id)
-   
+
     if has_perm(request.user,'entities.view_entity',entity):
         EventLog.objects.log(instance=entity)
 
-        return render_to_response(template_name, {'entity': entity}, 
+        return render_to_response(template_name, {'entity': entity},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -31,7 +31,7 @@ def search(request, template_name="entities/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'entities':entities}, 
+    return render_to_response(template_name, {'entities':entities},
         context_instance=RequestContext(request))
 
 def print_view(request, id, template_name="entities/print-view.html"):
@@ -40,41 +40,41 @@ def print_view(request, id, template_name="entities/print-view.html"):
     if has_perm(request.user,'entities.view_entity',entity):
         EventLog.objects.log(instance=entity)
 
-        return render_to_response(template_name, {'entity': entity}, 
+        return render_to_response(template_name, {'entity': entity},
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
 @login_required
-def add(request, form_class=EntityForm, template_name="entities/add.html"):    
-    if has_perm(request.user,'entities.add_entity'):   
+def add(request, form_class=EntityForm, template_name="entities/add.html"):
+    if has_perm(request.user,'entities.add_entity'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
             if form.is_valid():
                 entity = form.save(commit=False)
-                
+
                 # update all permissions and save the model
                 entity = update_perms_and_save(request, form, entity)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % entity)
-                
+
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:
             form = form_class(user=request.user)
-           
-        return render_to_response(template_name, {'form':form}, 
+
+        return render_to_response(template_name, {'form':form},
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
 @login_required
 def edit(request, id, form_class=EntityForm, template_name="entities/edit.html"):
     entity = get_object_or_404(Entity, pk=id)
 
-    if has_perm(request.user,'entities.change_entity',entity):   
+    if has_perm(request.user,'entities.change_entity',entity):
         if request.method == "POST":
             form = form_class(request.POST, instance=entity, user=request.user)
-            if form.is_valid():               
+            if form.is_valid():
                 entity = form.save(commit=False)
 
                 # update all permissions and save the model
@@ -84,23 +84,23 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
         else:
             form = form_class(instance=entity, user=request.user)
 
-        return render_to_response(template_name, {'entity': entity, 'form':form}, 
+        return render_to_response(template_name, {'entity': entity, 'form':form},
             context_instance=RequestContext(request))
     else:
         raise Http403
-   
+
 @login_required
 def delete(request, id, template_name="entities/delete.html"):
     entity = get_object_or_404(Entity, pk=id)
 
-    if has_perm(request.user,'entities.delete_entity'):     
+    if has_perm(request.user,'entities.delete_entity'):
         if request.method == "POST":
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % entity)
             entity.delete()
 
             return HttpResponseRedirect(reverse('entity.search'))
-    
-        return render_to_response(template_name, {'entity': entity}, 
+
+        return render_to_response(template_name, {'entity': entity},
             context_instance=RequestContext(request))
     else:
         raise Http403

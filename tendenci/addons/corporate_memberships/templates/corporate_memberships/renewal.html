@@ -53,7 +53,7 @@ div.id_payment_method ul{
     font-weight: bold;
     text-align: center;
 }
-#total-label,#total-amount{ 
+#total-label,#total-amount{
     font-weight: bold;
 }
 #update_summary{
@@ -90,10 +90,10 @@ div.forms{
 
 {% block body %}
 <div class="t">
-{% corpmemb_nav request.user corp_membership %} 
+{% corpmemb_nav request.user corp_membership %}
 
      <h1>{% trans "Corporate Membership Renewal" %}</h1>
-  
+
 <form action="" method="post">{% csrf_token %}
 
 
@@ -104,20 +104,20 @@ div.forms{
     <p>
      <a href="{% url corpmembership.view corp_membership.id %}" target="_blank">{{ corp_profile.name }}</a><br />
         {% if corp_profile.address %}
-            {{ corp_profile.address }} 
+            {{ corp_profile.address }}
         {% endif %}
         {% if corp_profile.address2 %}
-            {{ corp_profile.address2 }} 
+            {{ corp_profile.address2 }}
         {% endif %}
         <br />
         {% if corp_profile.city %}
-            {{ corp_profile.city }} 
+            {{ corp_profile.city }}
         {% endif %}
         {% if corp_profile.state %}
             {{ corp_profile.state }}
         {% endif %}
         {% if corp_profile.zip %}
-            {{ corp_profile.zip }} 
+            {{ corp_profile.zip }}
         {% endif %}
         <br />
         {% if corp_profile.phone %}
@@ -137,9 +137,9 @@ div.forms{
         {% endif %}
         <br />
      </p>
-     
+
    <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
-        
+
   {% if form.errors %}<h1>{% trans "Please correct the following errors" %}</h1>{% endif %}
 
     {% if form.errors.values %}
@@ -153,7 +153,7 @@ div.forms{
             {% endfor %}
         </div>
     {% endif %}
-    
+
     <div class="form-field">
         <div class="{{ form.corporate_membership_type.auto_id }}{{ form.corporate_membership_type.field.css_classes }}">
             <div class="label{% if form.corporate_membership_type.field.required %} required{% endif %}">
@@ -174,8 +174,8 @@ div.forms{
               {% endif %}
            </div>
         </div>
-       
-        
+
+
      <div class="form-field">
         <div class="{{ form.members.auto_id }}{{ form.members.field.css_classes }}">
             <div class="label{% if form.members.field.required %} required{% endif %}">
@@ -206,8 +206,8 @@ div.forms{
               {% endif %}
            </div>
         <div style="clear: both"></div>
-     </div>    
-      
+     </div>
+
     </div>
 </div>
 
@@ -258,13 +258,13 @@ div.forms{
                     </td>
                 </tr>
             </table>
-            
+
             <noscript>
                 <div>
                     <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
                 </div>
             </noscript>
-            
+
             <div class="form-field">
                 <div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
                   <div class="label{% if form.payment_method.field.required %} required{% endif %}">
@@ -281,20 +281,20 @@ div.forms{
                   {% endif %}
                </div>
             </div>
-            
+
             <div id="renew-button-wrap">
             <input type="submit" value="Renew Now" class="btn" />
             </div>
-        
+
         </div>
     </div>
     </div>
-</div>  
+</div>
 
 <div style="clear:both;"></div>
 
-</form> 
-    
+</form>
+
 </div>
 
 
@@ -303,7 +303,7 @@ div.forms{
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-    
+
     function IndUpdateSummary(memb){
         var ind_qty = $("#ind-qty").html();
         var ind_price = $("#ind-price").html();
@@ -311,7 +311,7 @@ div.forms{
         var total_amount = $("#total-amount").html();
 
         ind_price = parseFloat(ind_price);
-       
+
         if(memb.checked){
             ind_qty = parseInt(ind_qty) + 1;
             if (isNaN(ind_price)==false && ind_price > 0){
@@ -334,8 +334,8 @@ div.forms{
             $("#ind-sub-total").html(ind_sub_total);
             $("#total-amount").html(total_amount);
         }
-       
-       
+
+
     }
 
     function TypeUpdateSummary(corp_type){
@@ -353,7 +353,7 @@ div.forms{
             new_corp_price = 0
         }
         new_corp_price = new_corp_price.toFixed(2);
-        
+
         new_ind_price = parseFloat(new_ind_price);
         if (isNaN(new_ind_price) == true){
             new_ind_price = 0
@@ -384,10 +384,10 @@ div.forms{
         }
 
     }
-    
+
     $(document).ready(function()
     {
-        $("#id_select_all_members").click(function()                
+        $("#id_select_all_members").click(function()
         {
             var checked_status = this.checked;
             $("input[name=members]").each(function()
@@ -398,7 +398,7 @@ div.forms{
                     IndUpdateSummary(this);
                 }
             });
-        }); 
+        });
 
         $("input[name=members]").change(function()
         {
@@ -408,7 +408,7 @@ div.forms{
         $("input[name=corporate_membership_type]").change(function()
         {
             TypeUpdateSummary(this);
-        });                 
+        });
     });
 
     $(window).scroll(function(){
@@ -416,15 +416,15 @@ div.forms{
             $(".float-window").css("position", "fixed");
             $(".float-window").css("top", "8px");
         }
-        
+
         if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
             $(".float-window").css("position", "relative");
             $(".float-window").css("top", $(".float-anchor").offset);
         }
     });
-    
+
     </script>
-   
-    
+
+
 
 {% endblock %}

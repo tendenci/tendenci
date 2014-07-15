@@ -45,10 +45,10 @@ def search(request, template_name="discounts/search.html"):
 
 
 @is_enabled('discounts')
-@login_required    
+@login_required
 def detail(request, id, template_name="discounts/detail.html"):
     discount = get_object_or_404(Discount, id=id)
-    
+
     if not has_perm(request.user, 'discounts.view_discount', discount):
         raise Http403
 
@@ -66,7 +66,7 @@ def detail(request, id, template_name="discounts/detail.html"):
     EventLog.objects.log(instance=discount)
 
     return render_to_response(
-        template_name, 
+        template_name,
         {'discount':discount,
          'registrant_list':registrant_list,
          'membership_list':membership_list},
@@ -79,7 +79,7 @@ def detail(request, id, template_name="discounts/detail.html"):
 def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
     if not has_perm(request.user, 'discounts.add_discount'):
         raise Http403
-    
+
     if request.method == "POST":
         form = form_class(request.POST, user=request.user)
         if form.is_valid():
@@ -90,7 +90,7 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(user=request.user)
-        
+
     return render_to_response(
         template_name,
         {'form':form},
@@ -104,7 +104,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
     discount = get_object_or_404(Discount, id=id)
     if not has_perm(request.user, 'discounts.change_discount', discount):
         raise Http403
-    
+
     if request.method == "POST":
         form = form_class(request.POST, instance=discount, user=request.user)
         if form.is_valid():
@@ -195,7 +195,7 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                     "prices": unicode(new_prices),
                     "discount_total": unicode(discount_total),
                     "total": unicode(total),
-                    "message": "%sYour discount of $%s %s has been added." % (unicode(msg), unicode(discount_total), 
+                    "message": "%sYour discount of $%s %s has been added." % (unicode(msg), unicode(discount_total),
                                                                                discount_detail),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(

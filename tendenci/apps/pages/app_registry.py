@@ -11,7 +11,7 @@ class PageRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create pages to display basic content throughout the site'
     icon = '%simages/icons/pages-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'page':{
             'base':('580000','009900'),

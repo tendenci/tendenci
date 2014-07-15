@@ -13,7 +13,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-day-view.css">
-<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
@@ -71,7 +71,7 @@
                     }
                 </style>
                 <div class="event-type-label"
-                style="color:#{{ event.type.color_set.fg_color }}; 
+                style="color:#{{ event.type.color_set.fg_color }};
                 background-color:#{{ event.type.color_set.bg_color }}"
                 title="{{ event.type.name }}">
                 {{ event.type.name|truncatewords:3 }}
@@ -81,7 +81,7 @@
             <div class="event-info">
 
                 <div class="options">{% event_options user event %}</div>
-                
+
                 <h3>{% if event.priority %}
                         <div class="event-priority"></div>
                     {% endif %}
@@ -97,7 +97,7 @@
                         <div class="attend"><a href="">{% trans "Registration Closed" %}</a></div>
                         <div style="clear:both;"></div>
                     </div>
-                    
+
                     {% else %}
 
                     {% is_registered_user user event as registered_user %}
@@ -112,7 +112,7 @@
                         <div style="clear:both;"></div>
                     </div>
                     {% endif %}
-                        
+
                     {% endif %}
 
                 {% endif %}
@@ -167,10 +167,10 @@
             target:        'more-options-target'
         });
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script type="text/javascript">
-       $(".datepicker").live('focus', function() {
-            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
-       });
+        $(document).ready(function() {
+           $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        });
     </script>
 {% endblock %}

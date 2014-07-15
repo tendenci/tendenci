@@ -70,14 +70,14 @@
                         taken by {{ photo.photographer }}
                     {% else %}
                     uploaded by <a href="{{ photo.creator.get_absolute_url }}"
-                        property="cc:attributionName" 
+                        property="cc:attributionName"
                         rel="cc:attributionURL dct:creator">{% if photo.creator.get_full_name %}{{ photo.creator.get_full_name }}{% else %}{{ photo.creator.username }}{% endif %}</a>.
                     {% endif %}
                     {% if photo.get_license == photo.default_license %}
                         {{ photo.default_license.name }}.
                     {% else %}
                         {% blocktrans with photo.get_license.deed as photo_deed and photo.get_license.name as photo_name %}Licensed under
-                        <a rel="license" href="{{ photo_deed }}"> 
+                        <a rel="license" href="{{ photo_deed }}">
                             {{ photo_name }}</a>.{% endblocktrans %}
                     {% endif %}
                     <br />{% fb_like_button_iframe photo.get_absolute_url %}
@@ -100,7 +100,7 @@
 
         {% if photo.exif_data.Make or photo.exif_data.Model %}
         <div>
-            {% trans "Camera:" %} 
+            {% trans "Camera:" %}
             {% if photo.exif_data.Model %}
                 {{ photo.exif_data.Model }}
             {% else %}

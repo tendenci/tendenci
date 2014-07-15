@@ -21,9 +21,9 @@ def payment_processing_object_updates(request, payment, **kwargs):
         from django.core.mail import send_mail
         from django.conf import settings
         from tendenci.core.site_settings.utils import get_setting
-        
+
         err_msg = traceback.format_exc()
-        subject = 'Payment error from %s (ID:%d)' % (get_setting('site', 'global', 'siteurl'), 
+        subject = 'Payment error from %s (ID:%d)' % (get_setting('site', 'global', 'siteurl'),
                                                      payment.id)
         body = err_msg
         sender = settings.DEFAULT_FROM_EMAIL
@@ -32,12 +32,12 @@ def payment_processing_object_updates(request, payment, **kwargs):
         if not recipients:
             recipients = ['jqian@schipul.com']
         send_mail(subject, body, sender, recipients, fail_silently=True)
-        
+
         # still want the end user know an error occurred
         raise Exception, err_msg
-    
-    
-def log_silent_post(request, payment):    
+
+
+def log_silent_post(request, payment):
     now_str = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
     # log the post
     output = """
@@ -60,7 +60,7 @@ def log_silent_post(request, payment):
                    request.META.get('REMOTE_HOST', ''),
                    request.META.get('REMOTE_USER', ''),
                    request.META.get('REQUEST_METHOD', ''))
-            
+
     log_file_name = "silentpost_%d.log" % payment.id
     log_path = os.path.join('silentposts', log_file_name)
     default_storage.save(log_path, ContentFile(output))
@@ -73,7 +73,7 @@ def log_payment(request, payment):
     else:
         event_id = 282102
         description = '%s edited - credit card declined ' % payment._meta.object_name
-        
+
     log_defaults = {
         'event_id' : event_id,
         'event_data': '%s (%d) edited by %s' % (payment._meta.object_name, payment.pk, request.user),
@@ -83,7 +83,7 @@ def log_payment(request, payment):
         'instance': payment,
     }
     EventLog.objects.log(**log_defaults)
-    
+
 def send_payment_notice(request, payment):
     notif_context = {
         'request': request,
@@ -92,5 +92,4 @@ def send_payment_notice(request, payment):
 
     send_notifications('module','payments', 'paymentrecipients',
             'payment_added', notif_context)
-        
-        
+

@@ -3,7 +3,7 @@ import subprocess
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse 
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
@@ -36,14 +36,14 @@ def index(request, template_name="wp_importer/index.html"):
                 upload.author = request.user
                 upload = form.save()
                 file_name = os.path.join(settings.MEDIA_ROOT, 'blogimport', request.FILES['blog'].name)
-                
+
                 result = WPImportTask.delay(file_name, request.user)
                 #uncomment the next line if there is no celery server yet.
                 #result.wait()
                 subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
 
                 return redirect("detail", result.task_id)
-                
+
             elif not request.FILES['blog'].name.endswith('xml'):
                 messages.add_message(
                     request,
@@ -57,7 +57,7 @@ def index(request, template_name="wp_importer/index.html"):
                     messages.INFO,
                     _('Oops, only upload files smaller than 20 MB!')
                 )
-                
+
         except ValueError:
             messages.add_message(request, messages.INFO, 'Oops, please login before uploading a blog!')
             return redirect('auth_login')
@@ -65,7 +65,7 @@ def index(request, template_name="wp_importer/index.html"):
     else:
         form = BlogImportForm()
 
-    return render_to_response(template_name, {'form':form}, 
+    return render_to_response(template_name, {'form':form},
         context_instance=RequestContext(request))
 
 @login_required
@@ -77,7 +77,7 @@ def detail(request, task_id, template_name="wp_importer/detail.html"):
         #instead of raising 404 we'll assume that there will be one for
         #the id.
         task = None
-    
+
     if task and task.status == "SUCCESS":
         messages.add_message(
             request,
@@ -86,12 +86,12 @@ def detail(request, task_id, template_name="wp_importer/detail.html"):
         )
         return render_to_response(template_name, {},
             context_instance=RequestContext(request))
-    
+
     messages.add_message(
         request,
         messages.INFO,
         _("Your site import is being processed. You will receive an email at %s when the import is complete." % request.user.email)
     )
-    
+
     return render_to_response(template_name, {},
         context_instance=RequestContext(request))

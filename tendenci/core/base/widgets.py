@@ -12,13 +12,13 @@ class SplitDateTimeWidget(MultiWidget):
             del attrs['date_class']
         else:
             date_class = 'datepicker'
-        
+
         if 'time_class' in attrs:
-            time_class = attrs['time_class'] 
+            time_class = attrs['time_class']
             del attrs['time_class']
         else:
             time_class = 'timepicker'
-            
+
         time_attrs = attrs.copy()
         time_attrs['class'] = time_class
         date_attrs = attrs.copy()
@@ -54,13 +54,13 @@ class EmailVerificationWidget(MultiWidget):
             del attrs['email_class_0']
         else:
             email_class_0 = 'email-verification-0'
-        
+
         if 'email_class_1' in attrs:
-            email_class_1 = attrs['email_class_1'] 
+            email_class_1 = attrs['email_class_1']
             del attrs['email_class_1']
         else:
             email_class_1 = 'email-verification-1'
-            
+
         email0_attrs = attrs.copy()
         email0_attrs['class'] = email_class_0
         email0_attrs['maxlength'] = 75

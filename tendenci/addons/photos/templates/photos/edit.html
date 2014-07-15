@@ -13,7 +13,7 @@
 
 {% block extra_head %}
     {{ block.super }}
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
 {% endblock %}
 
 {% block body %}
@@ -25,7 +25,7 @@
 <form name="photo-edit" method="post" action="">{% csrf_token %}
     <div class="forms">
 
-		{{ photo_form|styled_form }}
+        {{ photo_form|styled_form }}
 
         <div class="submit">
             <input type="hidden" name="action" value="update" />
@@ -42,30 +42,30 @@
 <script src="{{ STATIC_URL }}js/jquery.inputfieldtext.js" type="text/javascript"></script>
 <script type="text/javascript">
 
-	// tooltip: black stylish ones
-	$('.photo-sets ul li').tipsy({
-		gravity: 's',
-		delayIn: 1
-	});
+    // tooltip: black stylish ones
+    $('.photo-sets ul li').tipsy({
+        gravity: 's',
+        delayIn: 1
+    });
 
-	// photoset: selectable
-	$('.photo-sets ul').selectable({
-		stop: function(event, ui){
-			var $selected_sets = $(event.target).children();
-			// enable/disable input fields
-			$.each($selected_sets, function(i, element){
-				$element = $(element); // jquerize it
-				if($element.is('.ui-selected')){ // selected
-					$element.children('input[name="photoset"]')
-					.removeAttr("disabled"); // enable input field
-				}
-				else { // not selected
-					$element.children('input[name="photoset"]')
-					.attr("disabled", true); // disable input field
-				}
-			});
-		}
-	});
+    // photoset: selectable
+    $('.photo-sets ul').selectable({
+        stop: function(event, ui){
+            var $selected_sets = $(event.target).children();
+            // enable/disable input fields
+            $.each($selected_sets, function(i, element){
+                $element = $(element); // jquerize it
+                if($element.is('.ui-selected')){ // selected
+                    $element.children('input[name="photoset"]')
+                    .removeAttr("disabled"); // enable input field
+                }
+                else { // not selected
+                    $element.children('input[name="photoset"]')
+                    .attr("disabled", true); // disable input field
+                }
+            });
+        }
+    });
 
 </script>
 {% endblock %}

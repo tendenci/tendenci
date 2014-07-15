@@ -13,66 +13,66 @@
 {% block body %}
 
 <div class="t">
-	{% event_nav user event %}
+    {% event_nav user event %}
     <div id="reg-form-list">
         <h1>Manage Custom Registration Form(s)</h1>
         <h3>Event: <a href="{% url event event.id %}">{{ event.title }}</a></h3>
-    	<div id="reg-form-list-body">
-    		
-    		{% if reg_conf.use_custom_reg_form %}
-    			{% if reg_conf.bind_reg_form_to_conf_only  %}
-    				<div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">This event uses one custom registration form.</div>
-    				<div class="reg-form-list-links">
-    					<div class="reg-form-title">{{ reg_conf.reg_form.name }} </div>
-    					<div class="reg-form-btns">
-    					<a href="javascript:;" class="preview-btn">Preview</a> 
-    					<a href="{% url admin:events_customregform_change reg_conf.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
-    					
-    					<div class="form-wrap" style="display: none;">
-    						<div class="form-builder-wrap">      
-					        	<div class="forms">
-					                {{ reg_conf.reg_form.form_for_form|styled_form }}
-					            	<input type="submit" value="Submit" disabled="true" />
-					    		</div>
-    						</div>
-    					</div>
-    					
-    					
-    					</div>	
-    			{% else %}
-    				<div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
-    					This event uses a separate custom registrations form for each pricing.
-    					<div class="alert-actions">
-							<a class="btn small" href="{% url event event.id %}">View Event</a>
-							<a class="btn small" href="{% url event.edit event.id %}">Edit Event</a>
-						</div>
-    					</div>
-    				{% for price in regconfpricings %}
-    				<div class="reg-form-list-links">
-    					<div class="reg-form-title">Pricing #{{ forloop.counter }}: {{ price.reg_form.name }} (ID: {{ price.reg_form.id }}) </div>
-    					<div class="reg-price">(For <strong>{{ price.price|format_currency }}</strong> {{ price.title }})</div>
-    					<div class="reg-form-btns">
-    					<a href="javascript:;" class="preview-btn">Preview</a> 
-    					<a href="{% url admin:events_customregform_change price.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
-    					
-    					<div class="form-wrap" style="display: none;">
-    						<div class="form-builder-wrap">      
-					        	<div class="forms">
-					                {{ price.reg_form.form_for_form|styled_form }}
-					            	<input type="submit" value="Submit" disabled="true" />
-					    		</div>
-    						</div>
-    					</div>
-    					
-    					</div>
-    				{% endfor %}
-    			{% endif %}
-    			
-    		{% else %}
-    			<p class="reg-form-list-notes">This event doesn't use custom registration forms. </p>
-    		{% endif %}
-    		
-        	
+        <div id="reg-form-list-body">
+
+            {% if reg_conf.use_custom_reg_form %}
+                {% if reg_conf.bind_reg_form_to_conf_only  %}
+                    <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">This event uses one custom registration form.</div>
+                    <div class="reg-form-list-links">
+                        <div class="reg-form-title">{{ reg_conf.reg_form.name }} </div>
+                        <div class="reg-form-btns">
+                        <a href="javascript:;" class="preview-btn">Preview</a>
+                        <a href="{% url admin:events_customregform_change reg_conf.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
+
+                        <div class="form-wrap" style="display: none;">
+                            <div class="form-builder-wrap">
+                                <div class="forms">
+                                    {{ reg_conf.reg_form.form_for_form|styled_form }}
+                                    <input type="submit" value="Submit" disabled="true" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                        </div>
+                {% else %}
+                    <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
+                        This event uses a separate custom registrations form for each pricing.
+                        <div class="alert-actions">
+                            <a class="btn small" href="{% url event event.id %}">View Event</a>
+                            <a class="btn small" href="{% url event.edit event.id %}">Edit Event</a>
+                        </div>
+                        </div>
+                    {% for price in regconfpricings %}
+                    <div class="reg-form-list-links">
+                        <div class="reg-form-title">Pricing #{{ forloop.counter }}: {{ price.reg_form.name }} (ID: {{ price.reg_form.id }}) </div>
+                        <div class="reg-price">(For <strong>{{ price.price|format_currency }}</strong> {{ price.title }})</div>
+                        <div class="reg-form-btns">
+                        <a href="javascript:;" class="preview-btn">Preview</a>
+                        <a href="{% url admin:events_customregform_change price.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
+
+                        <div class="form-wrap" style="display: none;">
+                            <div class="form-builder-wrap">
+                                <div class="forms">
+                                    {{ price.reg_form.form_for_form|styled_form }}
+                                    <input type="submit" value="Submit" disabled="true" />
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+            {% else %}
+                <p class="reg-form-list-notes">This event doesn't use custom registration forms. </p>
+            {% endif %}
+
+
         </div>
     </div>
 </div>
@@ -81,12 +81,12 @@
 {% block extra_body %}
     {{ block.super }}
      <script type="text/javascript">
-    	$(document).ready(function() {
-    		$('.preview-btn').click(function(){
-    			$(this).closest('.reg-form-list-links').find('.form-wrap').toggle('slow');
-    			
-    		});
-    			
-    	 });
+        $(document).ready(function() {
+            $('.preview-btn').click(function(){
+                $(this).closest('.reg-form-list-links').find('.form-wrap').toggle('slow');
+
+            });
+
+         });
      </script>
 {% endblock %}

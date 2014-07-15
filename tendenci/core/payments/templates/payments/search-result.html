@@ -24,18 +24,18 @@
             <p>{% trans 'Invoice' %}: <a href="{% url invoice.view payment.invoice.pk %}">{{ payment.invoice.pk }}</a></p>
             <p>[ {% trans 'Payment Status' %}:
                 {% if not payment.status_detail %}
-			        {% if not payment.verified %}
-			            {% trans "abandoned" %}
-			        {% else %}
-			            {% trans "verified, not received" %}
-			        {% endif %}
-		       	{% else %}
-			        {% if payment.status_detail == 'void' %}
-			            {% trans "voided" %}
-			        {% else %}
-			            {{ payment.status_detail }}
-			        {% endif %}
-		        {% endif %}]</p>
+                    {% if not payment.verified %}
+                        {% trans "abandoned" %}
+                    {% else %}
+                        {% trans "verified, not received" %}
+                    {% endif %}
+                   {% else %}
+                    {% if payment.status_detail == 'void' %}
+                        {% trans "voided" %}
+                    {% else %}
+                        {{ payment.status_detail }}
+                    {% endif %}
+                {% endif %}]</p>
 
             <p>{{ payment.method }} {{ payment.amount|format_currency }}</p>
         </div>

@@ -43,7 +43,7 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'there','these','they','this','tis','to','too','twas','us','wants',
               'was','we','were','what','when','where','which','while','who',
               'whom','why','will','with','would','yet','you','your',
-              'find','very','still','non','here', 'many', 'a','s','t','ve', 
+              'find','very','still','non','here', 'many', 'a','s','t','ve',
               'use', 'don\'t', 'can\'t', 'wont', 'come','you\'ll', 'want']
 
 template_directory = "templates"
@@ -51,11 +51,11 @@ THEME_ROOT = get_theme_root()
 
 def get_deleted_objects(obj, user):
     """
-    Find all objects related to ``obj`` that should also be deleted. 
+    Find all objects related to ``obj`` that should also be deleted.
 
     Returns a nested list of strings suitable for display in the
     template with the ``unordered_list`` filter.
-    
+
     Copied and updated from django.contrib.admin.util for front end display.
 
     """
@@ -94,7 +94,7 @@ def get_deleted_objects(obj, user):
 def now_localized():
     from timezones.utils import adjust_datetime_to_timezone
     from time import strftime, gmtime
-    
+
     os_timezone = strftime('%Z',gmtime())
     if os_timezone == 'CST': os_timezone = 'US/Central'
     django_timezone =  settings.TIME_ZONE
@@ -115,14 +115,14 @@ def localize_date(date, from_tz=None, to_tz=None):
         localize_date(date, from_tz, to_tz=None)
     """
     from timezones.utils import adjust_datetime_to_timezone
-    
+
     # set the defaults
     if from_tz is None:
         from_tz=settings.TIME_ZONE
-    
-    if to_tz is None: 
+
+    if to_tz is None:
         to_tz=settings.TIME_ZONE
-        
+
     return adjust_datetime_to_timezone(date,from_tz=from_tz,to_tz=to_tz)
 
 
@@ -152,26 +152,26 @@ def tcurrency(mymoney):
 
 def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_time='%I:%M %p'):
     """
-        takes datetime objects, start_dt, end_dt and format (for date and time) 
+        takes datetime objects, start_dt, end_dt and format (for date and time)
         returns a formated datetime string with range.
         ex:
-            dt_str = format_datetime_range(datetime(2010, 8, 12, 8, 30, 0), 
+            dt_str = format_datetime_range(datetime(2010, 8, 12, 8, 30, 0),
                                            datetime(2010, 8, 12, 17, 30, 0))
             # returns: Thursday, August 12, 2010 8:30 AM - 05:30 PM
                                                                     - GJQ 8/12/2010
     """
     if isinstance(start_dt, datetime) and isinstance(end_dt, datetime):
         if start_dt.date() == end_dt.date():
-            return '%s %s - %s' % (start_dt.strftime(format_date), 
-                                   start_dt.strftime(format_time), 
+            return '%s %s - %s' % (start_dt.strftime(format_date),
+                                   start_dt.strftime(format_time),
                                    end_dt.strftime(format_time))
         else:
-            return '%s %s - %s %s' % (start_dt.strftime(format_date), 
+            return '%s %s - %s %s' % (start_dt.strftime(format_date),
                                       start_dt.strftime(format_time),
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
-            
-            
+
+
 def day_validate(dt, day):
     """
         validate if this day is valid in the month of dt, and correct it if not.
@@ -181,18 +181,18 @@ def day_validate(dt, day):
             day = int(day)
         except:
             day = 1
-            
+
         if day == 0: day = 1
-        
+
         # the last day of this month
         last_day_of_month = (datetime(dt.year, dt.month, 1) + relativedelta(months=1) - timedelta(days=1)).day
-         
-        # if last_day_of_month = 31 and day = 32, set day = 31   
+
+        # if last_day_of_month = 31 and day = 32, set day = 31
         if day > last_day_of_month:
             day = last_day_of_month
     return day
-        
-            
+
+
 def get_unique_username(user):
     import uuid
     from django.contrib.auth.models import User
@@ -206,18 +206,18 @@ def get_unique_username(user):
         user.username = str(uuid.uuid1())[:7]
     if len(user.username) > 20:
         user.username = user.username[:7]
-        
+
     # check if this username already exists
     users = User.objects.filter(username__istartswith=user.username)
-    
+
     if users:
         t_list = [u.username[len(user.username):] for u in users]
         num = 1
         while str(num) in t_list:
             num += 1
-            
+
         user.username = '%s%s' % (user.username, str(num))
-   
+
     return user.username
 
 
@@ -232,10 +232,10 @@ def send_email_notification(notice_name, recipients, extra_context):
         notification = None
     if notification and recipients:
         notification.send_emails(recipients, notice_name, extra_context)
-    
-                                       
+
+
 def generate_meta_keywords(value):
-    """ 
+    """
         Take any string and removes the html and html entities
         and then runs a keyword density analyizer on the text
         to decided the 20 best one word and two word
@@ -244,31 +244,31 @@ def generate_meta_keywords(value):
     try:
         from re import compile
         from operator import itemgetter
-       
+
         from django.utils.html import strip_tags
         from django.utils.text import unescape_entities
         from django.utils.translation import ugettext_lazy as _
-        
+
         # translate the stop words
         TR_STOP_WORDS = _(' '.join(STOP_WORDS))
         TR_STOP_WORDS = TR_STOP_WORDS.split()
-        
+
         # get rid of the html tags
         value = strip_tags(value)
-        
+
         # get rid of the html entities
         value = unescape_entities(value)
-        
+
         # lower case the value
         value = value.lower()
-    
+
         # get the one word, two word, and three word patterns
         one_word_pattern = compile(r'\s*(\w+[a-zA-Z0-9:\-]*\w*(\'\w{1,2})?)')
         two_word_pattern = compile(r'\s*(\w+[a-zA-Z0-9:\-]*\w*(\'\w{1,2})?)(\s+|_)(\w+[a-zA-Z0-9:\-]*\w*(\'\w{1,2})?)')
-    
+
         # get the length of the value
         value_length = len(value)
-        
+
         # make a list of one words
         search_end = 0
         one_words = []
@@ -279,11 +279,11 @@ def generate_meta_keywords(value):
                 # remove the : from the word
                 if word[-1] == ':':
                     word = word[:-1]
-                    
+
                 one_words.append(word)
-                search_end = s.end()            
+                search_end = s.end()
             else: break
-    
+
         # remove the stop words
         one_words = [word for word in one_words if word not in TR_STOP_WORDS]
 
@@ -294,12 +294,12 @@ def generate_meta_keywords(value):
 
         # sort the tuple by the density
         one_words = sorted(one_words, key=itemgetter(1), reverse=True)
-        
+
         # get the 10 best keywords
         one_words = [word[0] for word in one_words[:10]]
-        
+
         # make a list of two words phrases without stop phrases
-        search_end = 0  
+        search_end = 0
         two_words = []
         while search_end < value_length:
             s = two_word_pattern.search(value, search_end)
@@ -311,22 +311,22 @@ def generate_meta_keywords(value):
                     word1 = word1[:-1]
                 if word2[-1] == ':':
                     word2 = word2[:-1]
-                
+
                 if word1 not in TR_STOP_WORDS:
                     if word2 not in TR_STOP_WORDS:
                         two_word = word1 + ' ' + word2
                         two_words.append(two_word)
-                                
+
                 search_start = s.start()
                 next_search = one_word_pattern.search(value, search_start)
-                search_end = next_search.end()   
+                search_end = next_search.end()
             else:
                 # if no match, advance a word
                 s = one_word_pattern.search(value, search_end)
                 if s:
                     search_end = s.end()
                 else: search_end = value_length
-          
+
         # get the density, and word into a tuple
         two_words_length = len(two_words)
         unique_words = set(words for words in two_words)
@@ -334,22 +334,22 @@ def generate_meta_keywords(value):
 
         # sort the tuple by the density
         two_words = sorted(two_words, key=itemgetter(1), reverse=True)
-        
+
         # get the best 2 word keywords
         two_words = [word[0] for word in two_words[:10]]
-        
+
         # add the two lists together
         keywords = two_words + one_words
-        
-        return ','.join(keywords)           
+
+        return ','.join(keywords)
     except AttributeError:
-        return ''  
+        return ''
 
 def filelog(*args, **kwargs):
     """
         Will generate a file with output to the
         PROJECT_ROOT
-        
+
         filelog(args...Nargs)
         filelog(args, mode='a+', filename='log.txt', path=path)
     """
@@ -357,22 +357,22 @@ def filelog(*args, **kwargs):
         path = kwargs['path']
     else:
         path = getattr(settings,'PROJECT_ROOT','/var/log')
-        
+
     if kwargs.has_key('filename'):
         filename = kwargs['filename']
     else:
         filename = 'filelog.txt'
-        
+
     if kwargs.has_key('mode'):
         mode = kwargs['mode']
     else:
         mode = 'a+'
-        
+
     f = open(path + '/%s' % filename, mode)
     for arg in args:
         f.write(arg)
-    f.close()    
-        
+    f.close()
+
 class FormDateTimes(object):
     """
         Object that creates the start and end dates and times
@@ -382,14 +382,14 @@ class FormDateTimes(object):
         self.start_dt = start_dt
         self.end_dt = end_dt
         self.get_date_times()
-    def get_date_times(self):    
+    def get_date_times(self):
         if self.start_dt is None:
             self.start_dt = datetime.now()
-        
+
         # remove the seconds and microseconds
         self.start_dt = self.start_dt.replace(second=00,microsecond=00)
-             
-        # check if its past the half hour or before and increment the time. 
+
+        # check if its past the half hour or before and increment the time.
         if self.start_dt.minute > 0 and self.start_dt.minute < 30:
             self.start_dt = self.start_dt.replace(minute=30)
         if self.start_dt.minute > 30:
@@ -397,14 +397,14 @@ class FormDateTimes(object):
                 self.start_dt = self.start_dt.replace(hour=00)
             else:
                 self.start_dt = self.start_dt.replace(hour=self.start_dt.hour+1)
-            
-            self.start_dt = self.start_dt.replace(minute=00)    
-        
+
+            self.start_dt = self.start_dt.replace(minute=00)
+
         # set the end time to an hour ahead
         self.end_dt = self.start_dt + timedelta(hours=1)
 
 date_times = FormDateTimes()
-    
+
 def enc_pass(password):
     from base64 import urlsafe_b64encode
     return ''.join(list(reversed(urlsafe_b64encode(password))))
@@ -414,7 +414,7 @@ def dec_pass(password):
 
     pw_list = list(str(password))
     pw_list.reverse()
-    
+
     return urlsafe_b64decode(''.join(pw_list))
 
 def url_exists(url):
@@ -422,18 +422,18 @@ def url_exists(url):
     import httplib
     from parse_uri import ParseUri
     from django.contrib.sites.models import Site
-    
+
     # parse url
     p = ParseUri()
     parsed_url = p.parse(url)
-    
+
     # doesn't have a host so it's relative to the website
-    if not parsed_url.host: 
+    if not parsed_url.host:
         parsed_url = p.parse(Site.objects.get_current().domain + url)
-    
+
     conn = httplib.HTTPConnection(parsed_url.authority)
     conn.request("HEAD", parsed_url.path)
-    
+
     try:
         socket.setdefaulttimeout(1.5)
         response = conn.getresponse()
@@ -458,9 +458,9 @@ def make_image_object_from_url(image_url):
     # parse url
     p = ParseUri()
     parsed_url = p.parse(image_url)
-    
-    # handle absolute and relative urls, Assuming http for now. 
-    if not parsed_url.host: 
+
+    # handle absolute and relative urls, Assuming http for now.
+    if not parsed_url.host:
         parsed_url = p.parse(Site.objects.get_current().domain + image_url)
         parsed_url.protocol = "http"
         parsed_url.source = parsed_url.protocol + "://" + parsed_url.source
@@ -472,9 +472,9 @@ def make_image_object_from_url(image_url):
     # make image object
     try:
         socket.setdefaulttimeout(1.5)
-        data = opener.open(request).read() # get data 
+        data = opener.open(request).read() # get data
         im = Image.open(StringIO(data))
-    except: 
+    except:
         im = None
     return im
 
@@ -578,10 +578,10 @@ def template_exists(template):
     return True
 
 def fieldify(s):
-    """Convert the fields in the square brackets to the django field type. 
-    
-        Example: "[First Name]: Lisa" 
-                    will be converted to 
+    """Convert the fields in the square brackets to the django field type.
+
+        Example: "[First Name]: Lisa"
+                    will be converted to
                 "{{ first_name }}: Lisa"
     """
     #p = re.compile('(\[([\w\d\s_-]+)\])')
@@ -767,7 +767,7 @@ def create_salesforce_contact(profile):
                     'MailingCountry':profile.country,
                     'MailingPostalCode':profile.zipcode,
                     })
-                
+
                 profile.sf_contact_id = contact['id']
                 profile.save()
                 return contact['id']
@@ -781,7 +781,7 @@ def directory_cleanup(dir_path, ndays):
     """
     if not default_storage.exists(dir_path):
         return
-    
+
     foldernames, filenames = default_storage.listdir(dir_path)
     for filename in filenames:
         if not filename:

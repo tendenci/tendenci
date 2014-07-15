@@ -21,7 +21,7 @@
     <h1>{% trans "Superusers" %}</h1>
     {% autopaginate admins 50 %}
 
-	<div class="profiles-wrap">
+    <div class="profiles-wrap">
     <div class="admin-list">
     {% for admin in admins %}
         <div class="admin-item">
@@ -46,10 +46,10 @@
             </div>
             <div style="clear: both"></div>
         </div>
-	{% empty %}
-		<div>{% trans "No administrators found." %}</div>
+    {% empty %}
+        <div>{% trans "No administrators found." %}</div>
     {% endfor %}
-	</div>
+    </div>
     </div>
     {% paginate %}
 </div>

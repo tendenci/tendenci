@@ -26,9 +26,9 @@ class SearchResultNode(IncludeNode):
 
             if not result_object:
                 return u''
-            
+
             var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
-            
+
             # class_name is static - it won't be changed by the user
             class_name = result_object.__class__.__name__.lower()
             if class_name == 'corporatemembership':

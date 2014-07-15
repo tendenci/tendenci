@@ -11,8 +11,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <style>
     .inline-block{
@@ -63,22 +63,22 @@
 {% block body %}
 <div class="t">
 <div class="application-form-wrap">
-{% corpmemb_nav request.user corp_membership %} 
+{% corpmemb_nav request.user corp_membership %}
         <h1>{% trans "Edit Corporate Membership" %}</h1>
         {{ app.description|safe }}
 
    <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-       
+
     {% if corpmembership_form.errors.values %}
         <div class="form-errors">
-            
+
             There were some problems in the form. Please review. Thanks!
             {% if corpmembership_form.errors.values %}
             {% for error in corpmembership_form.non_field_errors %}
                 <p><a href="#">{{ error }}</a></p>
             {% endfor %}
             {% endif %}
-            
+
             {% for field in corpmembership_form %}
                 {% if field.errors %}
                       {% for error in field.errors %}
@@ -86,19 +86,19 @@
                       {% endfor %}
                 {% endif %}
             {% endfor %}
-    
+
         </div>
   {% endif %}
-           
+
        {% for field_obj in app_fields %}
-            {% render_corpmembership_field request field_obj corpprofile_form corpmembership_form %} 
+            {% render_corpmembership_field request field_obj corpprofile_form corpmembership_form %}
         {% endfor %}
-        
+
         <div class="submit-wrap">
         <input class="btn" type="submit" name="submit" value="Submit" />
         </div>
     </form>
-    
+
 </div>
 </div>
 {% endblock %}
@@ -106,14 +106,13 @@
 
 {% block extra_body %}
     {{ block.super }}
-      <script type="text/javascript" 
-      src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-      <script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+      <script type="text/javascript"
+      src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+      <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
       <script type="text/javascript">
-            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
-            $('.timepicker').timePicker({
-              show24Hours: false,
-              step: 15
+            $(document).ready(function() {
+                $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+                $('.timepicker').timepicker({'step':15});
             });
       </script>
 {% endblock extra_body %}

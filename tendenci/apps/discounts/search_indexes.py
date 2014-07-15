@@ -14,9 +14,9 @@ class DiscountIndex(TendenciBaseSearchIndex):
     never_expires = indexes.BooleanField(model_attr='never_expires')
     value = indexes.DecimalField(model_attr='value')
     cap = indexes.IntegerField(model_attr='cap')
-    
+
     num_of_uses = indexes.IntegerField()
-    
+
     def prepare_num_of_uses(self, obj):
         return obj.num_of_uses()
 

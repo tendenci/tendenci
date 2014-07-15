@@ -142,8 +142,7 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.20.custom.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 <script type="text/javascript">
     $(".photo-bulk-editor .title").keyup(function(event){
         $('.title-wrap input').val($(this).val())
@@ -153,11 +152,11 @@
     });
     $(".photo-bulk-editor .tags").keyup(function(event){
         $('.tags-wrap input').val($(this).val())
-    }); 
+    });
 
     $(".photo-bulk-editor .photographer").keyup(function(event){
         $('.photographer-wrap input').val($(this).val())
-    }); 
+    });
 
     $(".bulk-license select").change(function(event) {
         $(".license-wrap select").val($(this).val());

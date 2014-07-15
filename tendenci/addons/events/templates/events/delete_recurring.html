@@ -12,8 +12,8 @@
         </div>
     </div>
     <div class="event-info" style="margin-top:10px;">
-        
-        {% for event in events %}    
+
+        {% for event in events %}
         <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
         <div class="place">{{ event.place }}</div>
 

@@ -692,7 +692,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                  'ResolutionUnit',
                  'SubjectLocation',
                  )
-    
+
     guid = models.CharField(max_length=40, editable=False)
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
@@ -732,7 +732,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         initial_save = not self.id
         if not self.id:
             self.guid = str(uuid.uuid1())
-        
+
         super(Image, self).save(*args, **kwargs)
        # # clear the cache
        # caching.instance_cache_clear(self, self.pk)
@@ -762,9 +762,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         """
         Delete image-file and all resized versions
         """
-        
+
         super(Image, self).delete(*args, **kwargs)
-        
+
         if self.image:
             cache_path = self.cache_path()
 
@@ -782,7 +782,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             # delete actual image; do not save() self.instance
             self.image.delete(save=False)
 
-        
+
 
     @models.permalink
     def get_absolute_url(self):
@@ -791,7 +791,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         except IndexError:
             return ("photo", [self.pk])
         return ("photo", [self.pk, photo_set.pk])
-    
+
     def get_exif_data(self):
         """
         Extract EXIF data from image and store in the field exif_data.
@@ -807,7 +807,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                 key = PILTAGS.get(tag, tag)
                 if key in self.EXIF_KEYS:
                     self.exif_data[key] = value
-                       
+
         self.exif_data['lat'], self.exif_data['lng'] = self.get_lat_lng(
                                     self.exif_data.get('GPSInfo'))
         self.exif_data['location'] = self.get_location_via_latlng(
@@ -829,16 +829,16 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                 lngref = gps_info[3]
             except (KeyError, ZeroDivisionError):
                 return None, None
-                
+
             lat = lat[0] + lat[1]/60 + lat[2]/3600
             lng = lng[0] + lng[1]/60 + lng[2]/3600
             if latref == 'S':
                 lat = -lat
             if lngref == 'W':
                 lng = -lng
-            
+
         return lat, lng
-    
+
     def get_location_via_latlng(self, lat, lng):
         """
         Get location via lat and lng.

@@ -61,7 +61,7 @@ from tendenci.addons.corporate_memberships.forms import (
                                          CorpMembershipRepForm,
                                          CreatorForm,
                                          CorpApproveForm,
-                                         RosterSearchForm, 
+                                         RosterSearchForm,
                                          CSVForm,
                                          )
 from tendenci.addons.corporate_memberships.utils import (
@@ -71,7 +71,7 @@ from tendenci.addons.corporate_memberships.utils import (
                                          corp_membership_rows,
                                          corp_membership_update_perms,
                                          get_corp_memb_summary,
-                                         corp_memb_inv_add, 
+                                         corp_memb_inv_add,
                                          dues_rep_emails_list,
                                          get_over_time_stats,
                                          get_summary,
@@ -101,7 +101,7 @@ def free_passes_list(request,
 
     context = {'corp_memberships': corp_memberships}
     return render_to_response(template, context, RequestContext(request))
-    
+
 
 @staff_member_required
 def free_passes_edit(request, id,
@@ -117,11 +117,11 @@ def free_passes_edit(request, id,
             # log an event
             EventLog.objects.log(instance=corp_membership)
             messages.add_message(request, messages.SUCCESS,
-                    'Successfully updated free passes for %s' % corp_membership) 
-            # redirect to view 
+                    'Successfully updated free passes for %s' % corp_membership)
+            # redirect to view
             return HttpResponseRedirect(reverse('corpmembership.view',
-                                                args=[corp_membership.id]))      
-    
+                                                args=[corp_membership.id]))
+
     context = {'corp_membership': corp_membership,
                'form': form}
     return render_to_response(template, context, RequestContext(request))
@@ -266,7 +266,7 @@ def corpmembership_add(request, slug='',
             corp_membership = corpmembership_form.save(
                                                 creator=creator,
                                                 corp_profile=corp_profile)
-            
+
             corp_memb_type = corp_membership.corporate_membership_type
             # assign free passes
             corp_membership.total_passes_allowed = corp_memb_type.number_passes
@@ -433,7 +433,7 @@ def corpmembership_edit(request, id,
                                         extra_context)
             # log an event
             EventLog.objects.log(instance=corp_membership)
-            # redirect to view 
+            # redirect to view
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corp_membership.id]))
 
@@ -710,7 +710,7 @@ def corpmembership_delete(request, id,
     if has_perm(request.user,
                 'corporate_memberships.delete_corporatemembership'):
         if request.method == "POST":
-            messages.add_message(request, messages.SUCCESS, 
+            messages.add_message(request, messages.SUCCESS,
                                  'Successfully deleted %s' % corp_memb)
 
             # send email notification to admin
@@ -1496,9 +1496,9 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
                 return HttpResponseRedirect(reverse('corpmembership.view',
                                                     args=[corp_memb.id]))
 
-    return render_to_response(template_name, {'corp_memb': corp_memb, 
+    return render_to_response(template_name, {'corp_memb': corp_memb,
                                               'form': form,
-                                              'reps': reps}, 
+                                              'reps': reps},
         context_instance=RequestContext(request))
 
 
@@ -1600,17 +1600,17 @@ def summary_report(request,
 def add_pre(request, slug, template='corporate_memberships/add_pre.html'):
     corp_app = get_object_or_404(CorpApp, slug=slug)
     form = CreatorForm(request.POST or None)
-    
+
     if request.method == "POST":
         if form.is_valid():
             creator = form.save()
             hash = md5('%d.%s' % (creator.id, creator.email)).hexdigest()
             creator.hash = hash
             creator.save()
-            
+
             # redirect to add
             return HttpResponseRedirect(reverse('corp_memb.anonymous_add', args=[slug, hash]))
-    
+
     context = {"form": form,
                'corp_app': corp_app}
     return render_to_response(template, context, RequestContext(request))
@@ -1620,17 +1620,17 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
         add a corporate membership
         request.user will be set as a representative of the corporate membership.
         admin - active
-        user - if paid, active, otherwise, pending 
-    """ 
+        user - if paid, active, otherwise, pending
+    """
     corp_app = get_object_or_404(CorpApp, slug=slug)
     user_is_superuser = request.user.profile.is_superuser
-    
+
     if not user_is_superuser and corp_app.status <> 1 and corp_app.status_detail <> 'active':
         raise Http403
 
     creator = None
     if not request.user.is_authenticated():
-#        # if app requires login and they are not logged in, 
+#        # if app requires login and they are not logged in,
 #        # prompt them to log in and redirect them back to this add page
 #        messages.add_message(request, messages.INFO, 'Please log in or sign up to the site before signing up the corporate membership.')
 #        return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'), reverse('corp_memb.add', args=[corp_app.slug])))
@@ -1644,16 +1644,16 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
     field_objs = corp_app.fields.filter(visible=1)
     if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
-    
+
     field_objs = list(field_objs.order_by('position'))
-    
+
     form = CorpMembForm(corp_app, field_objs, request.POST or None, request.FILES or None)
-    
+
     # corporate_membership_type choices
     form.fields['corporate_membership_type'].choices = get_corporate_membership_type_choices(request.user, corp_app)
-    
+
     form.fields['payment_method'].choices = get_payment_method_choices(request.user, corp_app)
-    
+
     # add an admin only block for admin
     if user_is_superuser:
         field_objs.append(CorpField(label='Admin Only', field_type='section_break', admin_only=1))
@@ -1665,13 +1665,13 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
         del form.fields['status']
         del form.fields['status_detail']
     del form.fields['expiration_dt']
-    
+
     # captcha
     #if corp_app.use_captcha and (not request.user.is_authenticated()):
     #    field_objs.append(CorpField(label='Type the code below', field_name='captcha'))
     #else:
     #    del form.fields['captcha']
-    
+
     if request.method == "POST":
         if form.is_valid():
             if creator:
@@ -1680,37 +1680,37 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
                 corporate_membership = form.save(request.user)
             if creator:
                 corporate_membership.anonymous_creator = creator
-            
+
             # calculate the expiration
             corp_memb_type = corporate_membership.corporate_membership_type
             corporate_membership.expiration_dt = corp_memb_type.get_expiration_dt(join_dt=corporate_membership.join_dt)
-            
+
             #if corp_app.authentication_method == 'secret_code':
             # assign a secret code for this corporate
             # secret code is a unique 6 characters long string
             corporate_membership.assign_secret_code()
             corporate_membership.save()
-            
+
             # generate invoice
             inv = corp_memb_inv_add(request.user, corporate_membership)
             # update corp_memb with inv
             corporate_membership.invoice = inv
             corporate_membership.save(log=False)
-            
+
             if request.user.is_authenticated():
                 # set the user as representative of the corp. membership
                 rep = CorporateMembershipRep.objects.create(
                     corporate_membership = corporate_membership,
                     user = request.user,
                     is_dues_rep = True)
-            
+
             # assign object permissions
             if not creator:
                 corp_memb_update_perms(corporate_membership)
-            
+
             # email to user who created the corporate membership
             # include the secret code in the email if authentication_method == 'secret_code'
-            
+
             # send notification to user
             if creator:
                 recipients = [creator.email]
@@ -1722,7 +1722,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
                 'invoice': inv,
             }
             send_email_notification('corp_memb_added_user', recipients, extra_context)
-                        
+
             # send notification to administrators
             recipients = get_notice_recipients('module', 'corporate_memberships', 'corporatemembershiprecipients')
             extra_context = {
@@ -1731,16 +1731,16 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
                 'creator': creator
             }
             send_email_notification('corp_memb_added', recipients, extra_context)
-            
-                        
+
+
             # handle online payment
             #if corporate_membership.payment_method.lower() in ['credit card', 'cc']:
             if corporate_membership.payment_method.is_online:
                 if corporate_membership.invoice and corporate_membership.invoice.balance > 0:
-                    return HttpResponseRedirect(reverse('payment.pay_online', args=[corporate_membership.invoice.id, corporate_membership.invoice.guid])) 
-            
+                    return HttpResponseRedirect(reverse('payment.pay_online', args=[corporate_membership.invoice.id, corporate_membership.invoice.guid]))
+
             return HttpResponseRedirect(reverse('corp_memb.add_conf', args=[corporate_membership.id]))
-        
+
     context = {"corp_app": corp_app, "field_objs": field_objs, 'form':form}
     return render_to_response(template, context, RequestContext(request))
 
@@ -1752,10 +1752,10 @@ def search(request, template_name="corporate_memberships/search.html"):
 def reps_lookup(request):
     q = request.REQUEST['term']
     use_search_index = get_setting('site', 'global', 'searchindex')
-    
+
     if use_search_index:
         profiles = Profile.objects.search(
-                            q, 
+                            q,
                             user=request.user
                             ).order_by('last_name_exact')
     else:
@@ -1765,7 +1765,7 @@ def reps_lookup(request):
                                        | Q(user__username__istartswith=q) \
                                        | Q(user__email__istartswith=q))
         profiles  = profiles.order_by('user__last_name')
-        
+
     if profiles and len(profiles) > 10:
         profiles = profiles[:10]
 
@@ -1773,7 +1773,7 @@ def reps_lookup(request):
         users = [p.object.user for p in profiles]
     else:
         users = [p.user for p in profiles]
-         
+
     results = []
     for u in users:
         value = '%s, %s (%s) - %s' % (u.last_name, u.first_name, u.username, u.email)
@@ -1782,13 +1782,13 @@ def reps_lookup(request):
     return HttpResponse(simplejson.dumps(results),mimetype='application/json')
 
 
-@staff_member_required             
+@staff_member_required
 def new_over_time_report(request, template_name='reports/corp_mems_over_time.html'):
     """
     Shows a report of corp memberships over time.
     1 report for 1 month, 2 months, 3 months, 6 months, and 1 year
     """
-    
+
     stats = get_over_time_stats()
 
     EventLog.objects.log()
@@ -1797,7 +1797,7 @@ def new_over_time_report(request, template_name='reports/corp_mems_over_time.htm
         'stats':stats,
         }, context_instance=RequestContext(request))
 
-@staff_member_required 
+@staff_member_required
 def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
     """
     Shows a report of corporate memberships per corporate membership type.

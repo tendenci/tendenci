@@ -55,7 +55,7 @@ direct_response_fields = (
 
 def direct_response_dict(direct_response_str):
     """
-    Return a dictionary from a direct response string. 
+    Return a dictionary from a direct response string.
     """
 #    direct_response_str = "1,1,1,This transaction has been" + \
 #        "approved.,000000,Y,2000000001,INV000001,description of" + \
@@ -71,7 +71,7 @@ def direct_response_dict(direct_response_str):
     for i, value in enumerate(direct_response_list):
         if i < max_length:
             response_dict[direct_response_fields[i]] = value
-            
+
     return response_dict
 
 def payment_update_from_response(payment, direct_response_str):
@@ -82,7 +82,7 @@ def payment_update_from_response(payment, direct_response_str):
     for key in response_dict.keys():
         if hasattr(payment, key):
             setattr(payment, key, response_dict[key])
-            
+
     return payment
 
 
@@ -94,34 +94,34 @@ def to_camel_case(d):
     if type(d) is dict:
         to_upper = lambda match: match.group(1).upper()
         to_camel = lambda x: re.sub("_([a-z])", to_upper, x)
-        
+
         return dict(map(lambda x: (to_camel(x[0]), x[1]), d.items()))
     return d
 
-  
+
 def get_test_mode():
     """Return test_mode (false/true) - to be used in js
     """
     test_mode = 'false'
     if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and  settings.AUTHNET_CIM_TEST_MODE:
         test_mode = 'true'
-       
+
     return test_mode
-    
+
 def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_url='', is_secure=False):
     """Get the token from payment gateway for this customer (ex: customer_profile_id=4356210).
        Return token and gateway_error
     """
     gateway_error = False
-    
+
     site_url = get_setting('site', 'global', 'siteurl')
     if is_secure:
         site_url = site_url.replace('http://', 'https://')
     if not iframe_communicator_url:
         iframe_communicator_url = '%s%s' % (
-                                site_url, 
+                                site_url,
                                 reverse('recurring_payment.authnet.iframe_communicator'))
-    
+
     token = ""
     if not rp.customer_profile_id:
         # customer_profile is not available yet for this customer, create one now
@@ -139,16 +139,16 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_
             return token, gateway_error
 
     hosted_profile_page = CIMHostedProfilePage(rp.customer_profile_id)
-    
-    d = {'hosted_profile_settings': 
+
+    d = {'hosted_profile_settings':
          {'hosted_profile_heading_bg_color': '#e0e0e0',     # the bg color of sections can be customized
          'hosted_profile_iFrame_communicator_url': '%s' % iframe_communicator_url}}
     success, response_d = hosted_profile_page.get(**d)
     #print success, response_d
-    
+
     if not success:
         gateway_error = True
     else:
         token = response_d['token']
-    
+
     return token, gateway_error

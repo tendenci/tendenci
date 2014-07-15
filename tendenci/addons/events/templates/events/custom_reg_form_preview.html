@@ -12,23 +12,23 @@
 {% block body %}
 
 <div class="t">
-	{% event_nav user %}
+    {% event_nav user %}
     <div class="form-wrap">
-        
+
         <h1>{{ form.name }}</h1>
-        
-        <p class="preview-reminder">This is just the <span style="color:#000;">preview</span>. 
-        	The real look can only be viewed through the event registration
-        	 if it is 
-        	associated with an event.</p>
-    
-    	<div class="form-builder-wrap">
-        	<form method="post">{% csrf_token %}
-      
-        	<div class="forms">
+
+        <p class="preview-reminder">This is just the <span style="color:#000;">preview</span>.
+            The real look can only be viewed through the event registration
+             if it is
+            associated with an event.</p>
+
+        <div class="form-builder-wrap">
+            <form method="post">{% csrf_token %}
+
+            <div class="forms">
                 {{ form_for_form|styled_form }}
-            	<input type="submit" value="Submit" disabled="true" />
-    		</div>
+                <input type="submit" value="Submit" disabled="true" />
+            </div>
             </form>
         </div>
     </div>

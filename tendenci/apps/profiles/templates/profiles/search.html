@@ -40,7 +40,7 @@
         margin: 1em 0;
     }
     .profile-search-form input[type=submit]{
-       font-size: 1.0em; 
+       font-size: 1.0em;
     }
 </style>
 {% endblock %}
@@ -51,7 +51,7 @@
 {% users_nav request.user user_this %}
     <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "People Search" %}{% else %}{% trans "People List" %}{% endif %}</h1>
     {{ MODULE_USERS_USERSEARCHSTATEMENT }}
-    
+
     {% autopaginate profiles 10 %}
     {% profile_search %}
     {% if profiles %}
@@ -59,13 +59,13 @@
     {% else %}
         <p>{% trans "Sorry, we didn't find anything for your search."%}</p>
     {% endif %}
-    
+
 
     <div class="profiles-wrap">
     {% for profile in profiles %}
         {% search_result profile %}
     {% empty %}
-        
+
     {% endfor %}
     </div>
 

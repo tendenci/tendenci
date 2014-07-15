@@ -46,12 +46,12 @@ class StoryAdmin(TendenciBaseModelAdmin):
             "all": ("css/websymbols.css",)
         }
         js = (
-            'js/jquery-1.6.2.min.js',
-            'js/jquery-ui-1.8.17.custom.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             'js/admin/admin-list-reorder.js',
             'js/global/tinymce.event_handlers.js',
         )
-    
+
     def save_model(self, request, object, form, change):
         story = form.save(commit=False)
 
@@ -123,8 +123,8 @@ class RotatorAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            'js/jquery-1.6.2.min.js',
-            'js/jquery-ui-1.8.17.custom.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             'js/admin/rotator-story-inline-ordering.js',
         )
         css = {'all': ['css/admin/dynamic-inlines-with-sort.css'], }

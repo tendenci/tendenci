@@ -27,7 +27,7 @@
 
     <div class="directory-wrap">
         <h2>{{ directory.headline }}</h2>
-        {% if directory.logo %} 
+        {% if directory.logo %}
             <img src="{{ directory.get_logo_url }}" alt="{{ directory.headline|truncatechars:123 }}" title="{{ directory.headline|truncatechars:123 }}" />
         {% endif %}
         <div class="content">{{ directory.body|safe }}</div>

@@ -36,7 +36,7 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.ship_date = datetime.now()
     inv.message = 'Thank You.'
     inv.status = True
-    
+
     inv.estimate = True
     inv.status_detail = 'estimate'
     inv.object_type = ContentType.objects.get(app_label=make_payment._meta.app_label, model=make_payment._meta.module_name)
@@ -44,7 +44,7 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.subtotal = make_payment.payment_amount
     inv.total = make_payment.payment_amount
     inv.balance = make_payment.payment_amount
-    
+
     if user and not user.is_anonymous():
         inv.set_creator(user)
         inv.set_owner(user)
@@ -53,7 +53,7 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     # tender the invoice
     inv.tender(user)
     make_payment.invoice_id = inv.id
-    
+
     return inv
 
 def make_payment_email_user(request, make_payment, invoice, **kwargs):
@@ -61,8 +61,8 @@ def make_payment_email_user(request, make_payment, invoice, **kwargs):
     from django.template.loader import render_to_string
     from django.conf import settings
     from django.template import RequestContext
-    
-    subject = render_to_string('make_payments/email_user_subject.txt', 
+
+    subject = render_to_string('make_payments/email_user_subject.txt',
                                {'make_payment':make_payment},
                                context_instance=RequestContext(request))
     body = render_to_string('make_payments/email_user.txt', {'make_payment':make_payment,
@@ -76,8 +76,7 @@ def make_payment_email_user(request, make_payment, invoice, **kwargs):
         msg.send()
     except:
         pass
-    
-    
-    
 
-    
+
+
+

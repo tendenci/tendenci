@@ -50,7 +50,7 @@ def search(request, template_name="navs/search.html"):
 def detail(request, id, template_name="navs/detail.html"):
     return redirect(reverse('admin:navs_nav_change', args=[id]))
     # nav = get_object_or_404(Nav, id=id)
-    
+
     # if not has_view_perm(request.user, 'navs.view_nav', nav):
     #     raise Http403
 
@@ -95,7 +95,7 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
     # nav = get_object_or_404(Nav, id=id)
     # if not has_perm(request.user, 'navs.change_nav', nav):
     #     raise Http403
-    
+
     # if request.method == "POST":
     #     form = form_class(request.POST, instance=nav, user=request.user)
     #     if form.is_valid():

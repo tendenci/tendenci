@@ -23,7 +23,7 @@
     {% autopaginate directories 10 %}
     {% directory_search %}
     <span><em>{{ paginator.count }} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} {% trans "Found" %}</em></span>
-    
+
     <div class="directories-wrap">
     {% for directory in directories %}
         {% search_result directory %}

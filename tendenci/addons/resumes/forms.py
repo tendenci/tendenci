@@ -16,14 +16,14 @@ ALLOWED_FILE_EXT = (
     '.doc',
     '.docx',
     '.pdf',
-    '.rtf' 
-)   
+    '.rtf'
+)
 
 class ResumeForm(TendenciBaseForm):
 
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Resume._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Resume._meta.app_label,
         'storme_model':Resume._meta.module_name.lower()}))
 
     resume_url = forms.CharField(
@@ -58,7 +58,7 @@ class ResumeForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-    
+
     class Meta:
         model = Resume
         fields = (
@@ -151,14 +151,14 @@ class ResumeForm(TendenciBaseForm):
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
-    
+
     def __init__(self, *args, **kwargs):
         super(ResumeForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
-            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0        
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
         # adjust fields depending on user status
         fields_to_pop = []
@@ -166,7 +166,7 @@ class ResumeForm(TendenciBaseForm):
             fields_to_pop += [
                 'allow_anonymous_view',
                 'user_perms',
-                'member_perms',               
+                'member_perms',
                 'group_perms',
                 'activation_dt',
                 'expiration_dt',
@@ -190,7 +190,7 @@ class ResumeForm(TendenciBaseForm):
             ]
         for f in list(set(fields_to_pop)):
             if f in self.fields: self.fields.pop(f)
-        
+
     def clean_resume_file(self):
         resume = self.cleaned_data['resume_file']
         if resume:

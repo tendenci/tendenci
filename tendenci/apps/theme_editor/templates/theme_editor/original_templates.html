@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 {% endblock %}
-        
+
 {% block body %}
 <div class="t">
     <div class="editor-nav" style="float:right">
@@ -29,7 +29,7 @@
            </p>
         {% endif %}
         {% if dirs %}
-           <ul class="dir_list">   
+           <ul class="dir_list">
                 {% for dir in dirs %}
                     <li class="dir_item"><a href="{% if app %}{% url theme_editor.original_templates app %}{% else %}{% url theme_editor.original_templates %}{% endif %}?dir={{ dir }}">
                     {{ dir|basename|safe }}</a></li>

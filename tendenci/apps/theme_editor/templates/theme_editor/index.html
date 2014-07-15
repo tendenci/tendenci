@@ -11,7 +11,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}codemirror2/lib/codemirror.css" />
@@ -31,13 +31,13 @@
             {% if is_file %}
             <form id="editorForm" class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
                 {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
-					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
-   					{{ file_form.rf_path }}
-				
-    				<div id="fileupdatemessage"></div>
-    				<div class="form_block">
-    					<input type="hidden" name="action" value="edit" />
-                    	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
+           <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
+             {{ file_form.rf_path }}
+
+            <div id="fileupdatemessage"></div>
+            <div class="form_block">
+              <input type="hidden" name="action" value="edit" />
+                      <input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
                         <span id="save_message" class="alert-message fade in"></span>
                     </div>
               </form>
@@ -45,19 +45,19 @@
             <a id="delete-btn" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
             {% endif %}
             <div style="clear:both"></div>
-            
-        	<div id="file_version_box">
-            	<h2>{% trans "Previous Versions" %} <span class="tooltip" title="Click a version below to load it in the editor. The version will not be restored until you save your changes."><sup><a href="#">?</a></sup></span></h2>
-            	{% if archives %}
-                	<div id="file_versions">
-                    	{% for archive in archives %}
-                    		<div data-string="{{ archive.file_name }} versioned on {{ archive.create_dt|date:'long' }} by {{ archive.author}}" title="Click to open in the text area above" class="archived_file archived_file_{{ archive.id }}" onclick="open_archive({{ archive.id }}); return false;">
-                    			<a href="#">{% blocktrans with archive.file_name as archname and archive.create_dt|date:"long" as archdate and archive.author as archauth %}Load {{ archname }}  versioned on {{ archdate }} by {{ archauth }}{% endblocktrans %}</a>
-                    		</div>
+
+          <div id="file_version_box">
+              <h2>{% trans "Previous Versions" %} <span class="tooltip" title="Click a version below to load it in the editor. The version will not be restored until you save your changes."><sup><a href="#">?</a></sup></span></h2>
+              {% if archives %}
+                  <div id="file_versions">
+                      {% for archive in archives %}
+                        <div data-string="{{ archive.file_name }} versioned on {{ archive.create_dt|date:'long' }} by {{ archive.author}}" title="Click to open in the text area above" class="archived_file archived_file_{{ archive.id }}" onclick="open_archive({{ archive.id }}); return false;">
+                          <a href="#">{% blocktrans with archive.file_name as archname and archive.create_dt|date:"long" as archdate and archive.author as archauth %}Load {{ archname }}  versioned on {{ archdate }} by {{ archauth }}{% endblocktrans %}</a>
+                        </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                	<p>{% trans "No versions available." %}</p>
+                  <p>{% trans "No versions available." %}</p>
                 {% endif %}
             </div>
             {% else %}
@@ -154,9 +154,9 @@
                                </div>
 
                                <div class="well well-small">
-                               	<h4>Create a new template:</h4>
-                               		Click the button below to add a new template.
-                               		<button class="btn btn-mini new-template-btn">New Template</button>
+                                 <h4>Create a new template:</h4>
+                                   Click the button below to add a new template.
+                                   <button class="btn btn-mini new-template-btn">New Template</button>
                                </div>
 
            </div>
@@ -166,16 +166,16 @@
 
 
 <div id="create-tform" title="Create new template">
-	<p class="validateTips">Please enter template name.</p>
-	<form>
-		<fieldset>
-		<div><label for="tname">Template Name:</label></div>
-		<div>
-		default-<input type="text" name="tname" id="tname" class="text ui-widget-content ui-corner-all" />
-		.html
-		</div>
-		</fieldset>
-	</form>
+  <p class="validateTips">Please enter template name.</p>
+  <form>
+    <fieldset>
+    <div><label for="tname">Template Name:</label></div>
+    <div>
+    default-<input type="text" name="tname" id="tname" class="text ui-widget-content ui-corner-all" />
+    .html
+    </div>
+    </fieldset>
+  </form>
 </div>
 
 
@@ -186,13 +186,13 @@
 
 {{ block.super }}
 <script src="{{ STATIC_URL }}codemirror/js/codemirror.js" type="text/javascript"></script>
-<script src="/static/js/jquery-ui-1.10.3.dialog.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 {% include 'theme_editor/include/multi_upload.html' %}
 <script type="text/javascript">
 {% include 'theme_editor/include/new_template.js' %}
 {% include 'theme_editor/include/editor_submit.js' %}
 </script>
- 
+
 <script type="text/javascript">
 var editor;
 $(document).ready(function(){
@@ -204,45 +204,45 @@ $(document).ready(function(){
     continuousScanning: 500,
     lineNumbers: true,
     textWrapping: false
-  }); 
+  });
 })
 
 function open_archive(id)
 {
-	var classname = ".archived_file_" + id;
-	if (confirm("Open " + $(classname).attr('data-string') + "?"))
-	{
-		var myurl = "/theme-editor/get-version/" + id + "/";
-		var mydata = {};
-		mydata["id"] =id;
-		mydata["csrfmiddlewaretoken"] = "{{ csrf_token }}";
+  var classname = ".archived_file_" + id;
+  if (confirm("Open " + $(classname).attr('data-string') + "?"))
+  {
+    var myurl = "/theme-editor/get-version/" + id + "/";
+    var mydata = {};
+    mydata["id"] =id;
+    mydata["csrfmiddlewaretoken"] = "{{ csrf_token }}";
         $.ajax({
            type: "POST",
            url: myurl,
            data: mydata,
-           dataType: "html", 
+           dataType: "html",
            success: function(filecontent){
-		   	 $("#id_content").val(filecontent);
-			  editor.setCode(filecontent);
+          $("#id_content").val(filecontent);
+        editor.setCode(filecontent);
            }
          });
-	}
-	
+  }
+
 }
 </script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
 <script type="text/javascript">
     $('table#file-editor div.pwd').tipsy({
-		gravity: 's',
-		live: true,
-	});
+    gravity: 's',
+    live: true,
+  });
 </script>
 
 <script type="text/javascript">
     $('.tooltip').tipsy({
-		gravity: 's',
-		live: true,
-	});
+    gravity: 's',
+    live: true,
+  });
 </script>
 
 <script type="text/javascript">
@@ -269,8 +269,8 @@ function open_archive(id)
         };
         $('#upload_form').ajaxForm(options);
     });
-    
-    function showResponse(response, status, xhr, $form)  { 
+
+    function showResponse(response, status, xhr, $form)  {
         if (response.error) {
 //            if (response.error = "file already exists") {
 //                if(window.confirm("The file '"+ response.file_name +"' exists already. Do you want to overwrite it?")){
@@ -296,7 +296,7 @@ function open_archive(id)
         current_file.parents().show();
         //current_file.parents().siblings().show();
         current_file.closest('ul').parent().siblings().show();
-        
+
         current_file.parent().parent().children(":first").addClass('open');
         folder_text = current_file.parent().parent().children(":first").text();
         current_file.parent().parent().children(":first").text(folder_text.replace('+ ', '– '));
@@ -306,15 +306,15 @@ function open_archive(id)
         current_file.parent().parent().parent().parent().children(":first").text(p_folder_text.replace('+ ', '– '));
 
         current_file.parent().parent().parent().parent().parent().parent().children(":first").addClass('open');
-        
+
         if(current_file.parent().parent().parent().parent().parent().is('#file-tree ul')) {
         p_p_folder_text = current_file.parent().parent().parent().parent().parent().parent().children(":first").text();
-        current_file.parent().parent().parent().parent().parent().parent().children(":first").text(p_p_folder_text.replace('+ ', '– ')); 
+        current_file.parent().parent().parent().parent().parent().parent().children(":first").text(p_p_folder_text.replace('+ ', '– '));
         }
-        
+
         if(current_file.parent().parent().parent().parent().parent().parent().parent().is('#file-tree ul')) {
         p_p_p_folder_text = current_file.parent().parent().parent().parent().parent().parent().parent().parent().children(":first").text();
-        current_file.parent().parent().parent().parent().parent().parent().parent().parent().children(":first").text(p_p_p_folder_text.replace('+ ', '– '));       
+        current_file.parent().parent().parent().parent().parent().parent().parent().parent().children(":first").text(p_p_p_folder_text.replace('+ ', '– '));
 }
     });
 

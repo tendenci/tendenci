@@ -72,24 +72,24 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
     redirect = get_object_or_404(Redirect, pk=id)
 
     # check permission
-    if not has_perm(request.user,'redirects.add_redirect'):  
+    if not has_perm(request.user,'redirects.add_redirect'):
         raise Http403
 
     form = form_class(instance=redirect)
-    
+
     if request.method == "POST":
         form = form_class(request.POST, instance=redirect)
         if form.is_valid():
-            redirect = form.save(commit=False)     
+            redirect = form.save(commit=False)
             redirect.save() # get pk
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % redirect)
- 
+
             # reload the urls
             reload(dynamic_urls)
-                       
+
             return HttpResponseRedirect(reverse('redirects'))
-       
+
     return render_to_response(template_name, {'redirect': redirect,'form':form}, context_instance=RequestContext(request))
 
 @login_required
@@ -97,7 +97,7 @@ def delete(request, id, template_name="redirects/delete.html"):
     redirect = get_object_or_404(Redirect, pk=id)
 
     # check permission
-    if not has_perm(request.user,'redirects.delete_redirect'):  
+    if not has_perm(request.user,'redirects.delete_redirect'):
         raise Http403
 
     if request.method == "POST":
@@ -105,16 +105,16 @@ def delete(request, id, template_name="redirects/delete.html"):
         redirect.delete()
         return HttpResponseRedirect(reverse('redirects'))
 
-    return render_to_response(template_name, {'redirect': redirect}, 
+    return render_to_response(template_name, {'redirect': redirect},
         context_instance=RequestContext(request))
 
 @login_required
 def export(request, template_name="redirects/export.html"):
     """Export redirects"""
-    
+
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
         file_name = "redirects.csv"
@@ -129,6 +129,6 @@ def export(request, template_name="redirects/export.html"):
         ]
         export_id = run_export_task('redirects', 'redirect', fields)
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

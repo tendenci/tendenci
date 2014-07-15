@@ -24,7 +24,7 @@ from tendenci.libs.storage import get_default_storage
 
 def resize_s3_image(image_path, width=200, height=200):
     """
-    Resize an image on s3. 
+    Resize an image on s3.
     The image_path is the relative path to the media storage.
     """
     storage = get_default_storage()
@@ -49,14 +49,14 @@ def get_duration_choices(user):
                 continue
         else:
             if pricing.show_member_pricing and user.profile.is_member:
-                prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member, 
+                prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member,
                                             pricing.premium_price_member)
             else:
-                prices = "%s%s(R)/%s(P)" % (currency_symbol, pricing.regular_price, 
+                prices = "%s%s(R)/%s(P)" % (currency_symbol, pricing.regular_price,
                                     pricing.premium_price)
             choice = (pricing.pk, '%d days for %s' % (pricing.duration, prices))
         choices.append(choice)
-        
+
     return choices
 
 def get_payment_method_choices(user):
@@ -69,16 +69,16 @@ def get_payment_method_choices(user):
         if directory_payment_types:
             directory_payment_types_list = directory_payment_types.split(',')
             directory_payment_types_list = [item.strip() for item in directory_payment_types_list]
-            
+
             return [(item, item) for item in directory_payment_types_list]
         else:
             return ()
-  
-def directory_set_inv_payment(user, directory, pricing): 
+
+def directory_set_inv_payment(user, directory, pricing):
     if get_setting('module', 'directories', 'directoriesrequirespayment'):
         if not directory.invoice:
             inv = Invoice()
-            inv.object_type = ContentType.objects.get(app_label=directory._meta.app_label, 
+            inv.object_type = ContentType.objects.get(app_label=directory._meta.app_label,
                                               model=directory._meta.module_name)
             inv.object_id = directory.id
             profile = user.get_profile()
@@ -112,37 +112,37 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.ship_date = datetime.now()
             inv.message = 'Thank You.'
             inv.status = True
-            
+
             inv.total = get_directory_price(user, directory, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
             inv.estimate = True
             inv.status_detail = 'estimate'
-            
+
             if user and not user.is_anonymous():
                 inv.set_creator(user)
                 inv.set_owner(user)
-                
+
             inv.save(user)
-            
+
             # tender the invoice
             inv.tender(user)
-            
+
             # update job
             directory.invoice = inv
             directory.save()
-            
+
             if user.profile.is_superuser:
                 if directory.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-                    boo_inv = inv.tender(user) 
-                    
+                    boo_inv = inv.tender(user)
+
                     # payment
                     payment = Payment()
                     boo = payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                     payment.mark_as_paid()
                     payment.method = directory.payment_method
                     payment.save(user)
-                    
+
                     # this will make accounting entry
                     inv.make_payment(user, payment.amount)
 

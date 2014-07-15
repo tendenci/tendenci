@@ -5,12 +5,12 @@ from tendenci.apps.redirects.managers import RedirectManager
 
 HTTP_STATUS_CHOICES = (
     (301, '301 - Permanent Redirect'),
-    (302, '302 - Temporary Redirect'),         
+    (302, '302 - Temporary Redirect'),
 )
 
 STATUS_CHOICES = (
     (1,'Active'),
-    (0,'Inactive'),         
+    (0,'Inactive'),
 )
 
 uses_regex_helptext = _("Check if the From URL uses a regular expression.")
@@ -25,9 +25,9 @@ class Redirect(models.Model):
     uses_regex = models.BooleanField(_('Uses Regular Expression'), default=False, help_text=uses_regex_helptext)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-        
+
     objects = RedirectManager()
-    
+
     def __unicode__(self):
         if self.from_app:
             return "Redirect from App: %s" % self.from_app

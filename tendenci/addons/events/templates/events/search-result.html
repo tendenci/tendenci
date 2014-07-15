@@ -19,7 +19,7 @@
             {{ event.start_dt|timeuntil }}
         </div>
         {% endif %}
-        
+
         {% if event.type %}
             <style type="text/css">
                 .event-type-label {
@@ -29,7 +29,7 @@
                 }
             </style>
             <div class="event-type-label"
-            style="color:#{{ event.type.color_set.fg_color }}; 
+            style="color:#{{ event.type.color_set.fg_color }};
             background-color:#{{ event.type.color_set.bg_color }}"
             title="{{ event.type.name }}">
             {{ event.type.name|truncatewords:3 }}
@@ -50,11 +50,11 @@
         {% if event.place %}
         <div class="place" itemprop="location">{{ event.place }}</div>
 		 {% endif %}
-		 
+
         <div class="time-period">
             <span itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span> -
             <span itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y P" }}</span>
-        </div> 
+        </div>
 
         <div class="description" itemprop="description">
             {{ event.description|striptags|safe|truncatewords:40 }}
@@ -69,7 +69,7 @@
                 <div class="attend"><a href="">{% trans "Registration Closed" %}</a></div>
                 <div style="clear:both;"></div>
             </div>
-            
+
             {% else %}
 
             {% is_registered_user user event as registered_user %}

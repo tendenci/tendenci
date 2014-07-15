@@ -1,6 +1,6 @@
 from optparse import make_option
 from django.core.management.base import BaseCommand
-from django.core.exceptions import ObjectDoesNotExist 
+from django.core.exceptions import ObjectDoesNotExist
 
 class Command(BaseCommand):
     """
@@ -18,7 +18,7 @@ class Command(BaseCommand):
         from django.contrib.auth.models import User
 
         contribs = []
-        
+
         try:
             from tendenci.addons.directories.models import Directory
             for directory in Directory.objects.all():
@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 contribs.append(directory.owner)
         except ImportError:
             pass
-        
+
         try:
             from tendenci.addons.articles.models import Article
             for article in Article.objects.all():
@@ -34,7 +34,7 @@ class Command(BaseCommand):
                 contribs.append(article.owner)
         except ImportError:
             pass
-        
+
         try:
             from tendenci.addons.events.models import Event
             for event in Event.objects.all():

@@ -13,7 +13,7 @@
 {% block body %}
 <div class="t">
     <h1>{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %} {% trans "Print" %}</h1>
-    
+
     {% contact_nav request.user contact %}
 
     <div class="contact-wrap">

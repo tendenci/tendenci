@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
         # Query all events that are not yet marked for checking
         directories = Directory.objects.filter(renewal_notice_sent=False)
-        
+
         days = get_setting('module', 'directories', 'renewaldays')
         days = int(days)
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
                     'directory': directory,
                     }
                 )
-    
+
                 directory.renewal_notice_sent = True
                 directory.save()
             else:

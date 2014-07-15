@@ -19,7 +19,7 @@
             {% for option in addon.options.all %}
                 <li>
                 <input {% if forloop.first %}checked="checked"{% endif %} type="radio" name="add-addon-option-{{ addon.pk }}"
-                    value="{{ option.pk }}" title="{{ option.title }}" 
+                    value="{{ option.pk }}" title="{{ option.title }}"
                     {% if anon_pricing and not addon.allow_anonymous %}DISABLED{% endif %} />
                 {{ option.title }}
                 </li>

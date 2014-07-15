@@ -6,25 +6,25 @@
     <div class="meta-left">
         <div class="submitted"><strong>{% trans "Released:" %}</strong> {{ article.release_dt|date:"long" }}
         </div>
-        
-        {% if article.first_name or article.last_name or article.phone or article.fax or article.email or article.website %} 
+
+        {% if article.first_name or article.last_name or article.phone or article.fax or article.email or article.website %}
         <div class="contact">
             {% if article.first_name or article.last_name %}
                 <div><strong>{% trans "Author:" %}</strong> {{ article.first_name }} {{ article.last_name }}</div>
-            {% endif %}	
+            {% endif %}
             {% if article.phone %}
-                <div><strong>{% trans "Phone:" %}</strong> {{ article.phone|phonenumber }}</div>	
-            {% endif %}	
+                <div><strong>{% trans "Phone:" %}</strong> {{ article.phone|phonenumber }}</div>
+            {% endif %}
             {% if article.fax %}
-                <div><strong>{% trans "Fax:" %}</strong> {{ article.fax }}</div>	
-            {% endif %}	
+                <div><strong>{% trans "Fax:" %}</strong> {{ article.fax }}</div>
+            {% endif %}
             {% if article.email %}
             <div><strong>{% trans "Email:" %}</strong>{{ article.email|obfuscate_email }}</div>
             {% endif %}
-            {% if article.website %}	
-            <div><strong>{% trans "Website:" %}</strong>{{ article.website|urlize }}</div>	
+            {% if article.website %}
+            <div><strong>{% trans "Website:" %}</strong>{{ article.website|urlize }}</div>
             {% endif %}
-        </div> 
+        </div>
         {% endif %}
 
         {% with article.category_set as article_cat %}
@@ -80,7 +80,7 @@
             <ul>
                 <li>
                     <a class="delete" href="{% url article.delete article.pk %}">{% trans "Delete" %}</a>
-                </li>               
+                </li>
                 <li><a href="{% url article.edit.meta article.pk %}">{% trans "Edit Meta" %}</a></li>
                 <li><a href="{% url category.update article.opt_app_label article.opt_module_name article.pk %}">{% trans "Edit Categories" %}</a></li>
             </ul>
@@ -88,5 +88,5 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

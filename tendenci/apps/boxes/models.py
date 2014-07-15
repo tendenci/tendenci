@@ -25,16 +25,16 @@ class Box(OrderingBaseModel, TendenciBaseModel):
         permissions = (("view_box","Can view box"),)
         verbose_name_plural = "Boxes"
         ordering = ['position']
-    
+
     def __unicode__(self):
         return self.title
-        
+
     def safe_content(self):
         return mark_safe(self.content)
 
     def save(self, *args, **kwargs):
         model = self.__class__
-        
+
         if self.position is None:
             # Append
             try:

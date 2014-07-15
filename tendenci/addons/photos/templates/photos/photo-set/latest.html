@@ -24,8 +24,8 @@
     </div>
 
 
-	{% photo_set_search %}
-	<span><em>{{ photo_sets|length }} {% trans 'Photo Sets' %} {% trans "Found" %}</em></span>
+    {% photo_set_search %}
+    <span><em>{{ photo_sets|length }} {% trans 'Photo Sets' %} {% trans "Found" %}</em></span>
     {% autopaginate photo_sets %}
 
     {% if photo_sets %}
@@ -45,10 +45,10 @@
 {{ block.super }}
 <script type="text/javascript">
 
-	// photo: delete confirmation
-	$('.photo-set .info .actions .delete-set').click(function(){
-		var delete_photo = confirm('Permenantly delete photo set?'); // confirm
-		if(!delete_photo) return false; // do not delete
-	});
+    // photo: delete confirmation
+    $('.photo-set .info .actions .delete-set').click(function(){
+        var delete_photo = confirm('Permenantly delete photo set?'); // confirm
+        if(!delete_photo) return false; // do not delete
+    });
 </script>
 {% endblock %}

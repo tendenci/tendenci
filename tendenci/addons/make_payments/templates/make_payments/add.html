@@ -16,17 +16,17 @@
 <h1>{% trans "Make a Payment" %}</h1>
 
 <form method="post" action="{% url make_payment.add %}">{% csrf_token %}
-	<div class="forms">
-	{{ form|styled_form }}
-	<div class="submitbutton">
-		<input type="submit" name="submit" value="Make a Payment" />
-	</div>
-	</div>
+    <div class="forms">
+    {{ form|styled_form }}
+    <div class="submitbutton">
+        <input type="submit" name="submit" value="Make a Payment" />
+    </div>
+    </div>
 </form>
 
 </div>
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 {% endblock %}

@@ -22,7 +22,7 @@
     {% autopaginate files 10 %}
     {% file_search %}
     <div class="files-found">{{ paginator.count }} {% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %} {% trans "Found" %}</div>
-    
+
     <div class="files-wrap clearfix">
     {% for file in files %}
         {% search_result file %}
@@ -35,7 +35,6 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
 

@@ -10,8 +10,8 @@
 {% block extra_head %}
 {{ block.super }}
 
-<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
-<link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />	
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />
 <link type="text/css" href="{{ STATIC_URL }}css/recurring_payments.css" rel="Stylesheet" />
 
 
@@ -20,199 +20,199 @@
   <!--[if lte IE 6]>
   <link href="{{ STATIC_URL }}authnet_cim/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
  <![endif]-->
-  
+
  <style>
- 	.bs-callout-warning{
- 		background-color: #FEFBED;
-    	border-left: 5px solid #F1E7BC;
-    	padding: 1em;
-    	color: red;
-    	display: block;
- 	}
- 	.rp-warning-wrap{
- 		margin: 1em 0;
- 	}
- </style> 
+     .bs-callout-warning{
+         background-color: #FEFBED;
+        border-left: 5px solid #F1E7BC;
+        padding: 1em;
+        color: red;
+        display: block;
+     }
+     .rp-warning-wrap{
+         margin: 1em 0;
+     }
+ </style>
 
 {% endblock %}
 
 {% block body %}
- 
+
 <div class="t">
 <div id="t-rp">
 <div id="t-view">
 
  {% rp_nav request.user rp %}
- 
-		{% if not is_active %}
-		<div class="not-active-alert">This account is {{ rp.status_detail }}</div>
-		{% endif %}
-		
-	    <h1>Recurring Payment Account </h1>
-	    
-	    {% if is_active %}
-	    <div id="btn-pm-wrap">
-	    <button id="btn-pm" class="btn primary">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
-	    {% if payment_profile %}
-	    <div class="last-updated">Last updated by {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
-	    {% endif %}
-	    </div>
-	    {% endif %}
 
-		{% if not payment_profile %}
-		<div class="rp-warning-wrap"><span class="bs-callout-warning">NOT complete yet! <br />Please click the button at right to add a payment method.</span></div>
-		{% endif %}
-	    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
-	    {% if rp.url %}
-	    <div class="rp-dname">URL: {{ rp.url|urlize }}</div>
-	    {% endif %}
-	    <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
-	   
-	    <div style="clear: right;"></div>
-	    
-	    {% if num_accounts > 1 %}
-	    <div><a href="{% url recurring_payment.my_accounts rp.user.username %}">View all {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
-	  	{% endif %}
-	  
-	  <div id="rpview-tabs">
-	      <ul>
-	         <li><a href="#rpview-overview" id="overview"><span>{% trans "Overview" %}</span></a></li>
-	          
-	         <li><a href="#rpview-invoices" id="invoices"><span>{% trans "Invoices" %}</span></a></li>
-	          
-	         <li><a href="#rpview-transactions" id="transactions"><span>{% trans "Transaction History" %}</span></a></li>
-                
-	       </ul>
-	   </div>
-	    
-	<div id="rpview-overview">
-  		<div class="basic-info">
-  		Current account balance: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
-  		<br />
-  		<br />
-  		
-  		{% if last_paid_payment_transaction %}
-  				The last payment (<span class="body-bold">{{ last_paid_payment_transaction.amount|format_currency }}</span>)
-  				received date:  {{ last_paid_payment_transaction.create_dt  }}.
-		  		<br />
-  				<br />
-  		{% endif %}
-  		
-  		
-  		{% if last_failed_payment_transaction %}
-  				The last payment ({{ last_paid_payment_transaction.amount|format_currency }})
-  				was failed on {{ last_failed_payment_transaction.create_dt|date  }}.
-  				
-  				<br />
-  				<br />
-  		{% endif %}
-  		
-  		The number of billing cycle completed: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span>
-  		<br />
-  		<br />
-  		The number of billing cycle failed: {{ rp.num_billing_cycle_failed }}
-  		
-  		</div>
-  		
-  		<div class="l0"></div>
-  		
-  		<div class="section-header">Recurring Billing Settings</div>
-  		
-  		<div class="rp-body">
-		<div >Payment Amount: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
-		{% if rp.tax_rate %}
-		<div >Tax Rate: <span class="body-bold">{{ rp.tax_rate_percentage }}</span></div>
-		{% endif %}
-	
-		<div>Initial Billing Cycle Start Date: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
-	
-		<div>Billing Frequency: <span class="body-bold">Once every {{ rp.billing_frequency }} 
-		{{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
-	
-		<div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle {{ rp.due_sore }} date</span></div>
-	
-  		</div>
-  		
-  		{% if rp.has_trial_period %}
-	  		<div class="l0"></div>
-	  		<div class="section-header">Trial Period</div>
-	  		<div class="rp-body">
-		  		<div>Amount: <span class="body-bold">{{ rp.trial_amount|format_currency }}</span></div>
-		  		<div>From {{ rp.trial_period_start_dt|date }} to {{ rp.trial_period_end_dt|date }}</div>
-		  	</div>
-		  		
-  		{% endif %}
-		
+        {% if not is_active %}
+        <div class="not-active-alert">This account is {{ rp.status_detail }}</div>
+        {% endif %}
+
+        <h1>Recurring Payment Account </h1>
+
+        {% if is_active %}
+        <div id="btn-pm-wrap">
+        <button id="btn-pm" class="btn primary">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
+        {% if payment_profile %}
+        <div class="last-updated">Last updated by {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
+        {% endif %}
+        </div>
+        {% endif %}
+
+        {% if not payment_profile %}
+        <div class="rp-warning-wrap"><span class="bs-callout-warning">NOT complete yet! <br />Please click the button at right to add a payment method.</span></div>
+        {% endif %}
+        <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+        {% if rp.url %}
+        <div class="rp-dname">URL: {{ rp.url|urlize }}</div>
+        {% endif %}
+        <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
+
+        <div style="clear: right;"></div>
+
+        {% if num_accounts > 1 %}
+        <div><a href="{% url recurring_payment.my_accounts rp.user.username %}">View all {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
+          {% endif %}
+
+      <div id="rpview-tabs">
+          <ul>
+             <li><a href="#rpview-overview" id="overview"><span>{% trans "Overview" %}</span></a></li>
+
+             <li><a href="#rpview-invoices" id="invoices"><span>{% trans "Invoices" %}</span></a></li>
+
+             <li><a href="#rpview-transactions" id="transactions"><span>{% trans "Transaction History" %}</span></a></li>
+
+           </ul>
+       </div>
+
+    <div id="rpview-overview">
+          <div class="basic-info">
+          Current account balance: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
+          <br />
+          <br />
+
+          {% if last_paid_payment_transaction %}
+                  The last payment (<span class="body-bold">{{ last_paid_payment_transaction.amount|format_currency }}</span>)
+                  received date:  {{ last_paid_payment_transaction.create_dt  }}.
+                  <br />
+                  <br />
+          {% endif %}
+
+
+          {% if last_failed_payment_transaction %}
+                  The last payment ({{ last_paid_payment_transaction.amount|format_currency }})
+                  was failed on {{ last_failed_payment_transaction.create_dt|date  }}.
+
+                  <br />
+                  <br />
+          {% endif %}
+
+          The number of billing cycle completed: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span>
+          <br />
+          <br />
+          The number of billing cycle failed: {{ rp.num_billing_cycle_failed }}
+
+          </div>
+
+          <div class="l0"></div>
+
+          <div class="section-header">Recurring Billing Settings</div>
+
+          <div class="rp-body">
+        <div >Payment Amount: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
+        {% if rp.tax_rate %}
+        <div >Tax Rate: <span class="body-bold">{{ rp.tax_rate_percentage }}</span></div>
+        {% endif %}
+
+        <div>Initial Billing Cycle Start Date: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
+
+        <div>Billing Frequency: <span class="body-bold">Once every {{ rp.billing_frequency }}
+        {{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
+
+        <div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle {{ rp.due_sore }} date</span></div>
+
+          </div>
+
+          {% if rp.has_trial_period %}
+              <div class="l0"></div>
+              <div class="section-header">Trial Period</div>
+              <div class="rp-body">
+                  <div>Amount: <span class="body-bold">{{ rp.trial_amount|format_currency }}</span></div>
+                  <div>From {{ rp.trial_period_start_dt|date }} to {{ rp.trial_period_end_dt|date }}</div>
+              </div>
+
+          {% endif %}
+
     </div>
-    
-    
-    
 
-	<div id="rpview-invoices">
-	{% if rp_invoices %}
-		<table width="90%" class="tablesorter" id="rpinvoicetable">
-			<thead>
-			<tr>
-				<th class="iheader">Billing Cycle</th>
-				<th class="iheader">Amount</th>
-				<th class="iheader">Due Date</th>
-				<th class="iheader">Payment Received Date</th>
-				<th class="iheader">Paid?</th>
-				<th class="iheader">Invoice #</th>
-			</tr>
-			</thead>
-			<tbody>
-			{% for rp_invoice in  rp_invoices %}
-				<tr>
-					<td>{{ rp_invoice.billing_cycle_start_dt|date:"n/j/Y" }} - {{ rp_invoice.billing_cycle_end_dt|date:"n/j/Y" }}</td>
-					<td>{{ rp_invoice.invoice.total|format_currency }} </td>
-					<td>{{ rp_invoice.billing_dt|date:"n/j/Y" }}</td>
-					<td>{% if rp_invoice.payment_received_dt %}{{ rp_invoice.payment_received_dt|date:"n/j/Y" }}{% endif %}</td>
-					<td>{% if rp_invoice.invoice.balance <= 0 %}Y{% else %}N{% endif %}</td>
-					<td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid   %}" title="view invoice" target="_blank">{{ rp_invoice.invoice.id }}</a></td>
-				</tr>
-			{% endfor %}
-			</tbody>
-		</table>	
-	{% else %}	
-		No invoices available yet. 
-	{% endif %}	
-	</div>
-	
-	<div id="rpview-transactions">
-	
-	{% if payment_transactions %}
-		<table width="90%" class="tablesorter" id="rptranstable">
-			<thead>
-			<tr>
-				<th class="iheader">Date</th>
-				<th class="iheader">Invoice #</th>
-				<th class="iheader">Amount</th>
-				<th class="iheader">Result</th>
-				<th class="iheader">Reason if Failed</th>
-				<th class="iheader">View Receipt</th>
-			</tr>
-			</thead>
-			<tbody>
-			{% for pt in  payment_transactions %}
-			{% with pt.recurring_payment_invoice as rp_invoice %}
-				<tr>
-					<td>{{ pt.create_dt|date:"n/j/Y" }}</td>
-					<td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid  %}" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
-					<td>{{ pt.amount|format_currency }} </td>
-					<td>{% if pt.status  %}<span class="transaction-success">Success</span>{% else %}<span class="transaction-failed">Failed</span>{% endif %}</td>
-					<td>{% if not pt.status %}{{ pt.message_text }}{% endif %}</td>
-					<td>{% if pt.status  %}<a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a>{% endif %}</td>
-				</tr>
-			{% endwith %}
-			{% endfor %}
-			</tbody>
-		</table>	
-	{% else %}	
-		No payment transactions available yet. 
-	{% endif %}	
-		
-	</div>
+
+
+
+    <div id="rpview-invoices">
+    {% if rp_invoices %}
+        <table width="90%" class="tablesorter" id="rpinvoicetable">
+            <thead>
+            <tr>
+                <th class="iheader">Billing Cycle</th>
+                <th class="iheader">Amount</th>
+                <th class="iheader">Due Date</th>
+                <th class="iheader">Payment Received Date</th>
+                <th class="iheader">Paid?</th>
+                <th class="iheader">Invoice #</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for rp_invoice in  rp_invoices %}
+                <tr>
+                    <td>{{ rp_invoice.billing_cycle_start_dt|date:"n/j/Y" }} - {{ rp_invoice.billing_cycle_end_dt|date:"n/j/Y" }}</td>
+                    <td>{{ rp_invoice.invoice.total|format_currency }} </td>
+                    <td>{{ rp_invoice.billing_dt|date:"n/j/Y" }}</td>
+                    <td>{% if rp_invoice.payment_received_dt %}{{ rp_invoice.payment_received_dt|date:"n/j/Y" }}{% endif %}</td>
+                    <td>{% if rp_invoice.invoice.balance <= 0 %}Y{% else %}N{% endif %}</td>
+                    <td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid   %}" title="view invoice" target="_blank">{{ rp_invoice.invoice.id }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No invoices available yet.
+    {% endif %}
+    </div>
+
+    <div id="rpview-transactions">
+
+    {% if payment_transactions %}
+        <table width="90%" class="tablesorter" id="rptranstable">
+            <thead>
+            <tr>
+                <th class="iheader">Date</th>
+                <th class="iheader">Invoice #</th>
+                <th class="iheader">Amount</th>
+                <th class="iheader">Result</th>
+                <th class="iheader">Reason if Failed</th>
+                <th class="iheader">View Receipt</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for pt in  payment_transactions %}
+            {% with pt.recurring_payment_invoice as rp_invoice %}
+                <tr>
+                    <td>{{ pt.create_dt|date:"n/j/Y" }}</td>
+                    <td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid  %}" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
+                    <td>{{ pt.amount|format_currency }} </td>
+                    <td>{% if pt.status  %}<span class="transaction-success">Success</span>{% else %}<span class="transaction-failed">Failed</span>{% endif %}</td>
+                    <td>{% if not pt.status %}{{ pt.message_text }}{% endif %}</td>
+                    <td>{% if pt.status  %}<a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a>{% endif %}</td>
+                </tr>
+            {% endwith %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No payment transactions available yet.
+    {% endif %}
+
+    </div>
 
 </div>
 </div>
@@ -225,22 +225,22 @@
   <input type="hidden" name="ShippingAddressId" value="" />
 </form>
 
-	<div id="divAuthorizeNetPopup" style="display:none;" class="AuthorizeNetPopupSimpleTheme">
-	  <div class="AuthorizeNetPopupOuter">
-	    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/recurring_payments/authnet/empty/" frameborder="0" 
-	    scrolling="no"></iframe>
-	  </div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowR"></div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowB"></div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowL"></div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowTR"></div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowBR"></div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowBL"></div>
-	  <div class="AuthorizeNetShadow AuthorizeNetShadowTL"></div>
-	</div>
-	
-	<div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
+    <div id="divAuthorizeNetPopup" style="display:none;" class="AuthorizeNetPopupSimpleTheme">
+      <div class="AuthorizeNetPopupOuter">
+        <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/recurring_payments/authnet/empty/" frameborder="0"
+        scrolling="no"></iframe>
+      </div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowB"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowL"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowTR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowBR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowBL"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowTL"></div>
+    </div>
+
+    <div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
 {% endif %}
 {% endblock %}
 
@@ -248,18 +248,18 @@
 {{ block.super }}
 {# dynamically load jquery #}
 <script>
-	if (!(window.jQuery)) { 
-		var s = document.createElement('script');
-		s.setAttribute('src', '{{ STATIC_URL }}js/jquery-1.4.2.min.js'); 
-		s.setAttribute('type', 'text/javascript');
-		document.getElementsByTagName('head')[0].appendChild(s);}
+    if (!(window.jQuery)) {
+        var s = document.createElement('script');
+        s.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js');
+        s.setAttribute('type', 'text/javascript');
+        document.getElementsByTagName('head')[0].appendChild(s);}
 </script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script> 
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script>
 
  {% if is_active %}
 <script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
-  
+
 <script type="text/javascript">
   //<![CDATA[
   // Uncomment this line if eCheck is enabled. This does not affect functionality, only the initial sizing of the popup page for add payment.
@@ -277,78 +277,78 @@
 <script type="text/javascript">
 $(document).ready(function(){
     if(document.location.hash != ""){window.scrollTo(0,0);}
-	var $tabs = $("#rpview-tabs").tabs();
-	
-	// extend the default setting to always include the zebra widget. 
-        $.tablesorter.defaults.widgets = ['zebra']; 
-        // extend the default setting to always sort on the first column 
-        $.tablesorter.defaults.sortList = [[0,1]]; 
-        
+    var $tabs = $("#rpview-tabs").tabs();
+
+    // extend the default setting to always include the zebra widget.
+        $.tablesorter.defaults.widgets = ['zebra'];
+        // extend the default setting to always sort on the first column
+        $.tablesorter.defaults.sortList = [[0,1]];
+
         $.tablesorter.addParser({
-		        // set a unique id
-		        id: 'billing-cycle',
-		        is: function(s) {
-		                // return false so this parser is not auto detected
-		                return false;
-		        },
-		        format: function(s) {
-		                // format your data for normalization
-		                var bc_dates = s.split(' - ');
-		
-		                if(bc_dates.length !== 2)
-		                        return 0;
-		                        
-		                var bc_start_dt = (bc_dates[0]).split('/');
-		                        
-		                return new Date(bc_start_dt[2], bc_start_dt[0], bc_start_dt[1]);
-		
-		        },
-		        // set type, either numeric or text
-		        type: 'numeric'
-		});
-        
-        
-        // call the tablesorter plugin 
+                // set a unique id
+                id: 'billing-cycle',
+                is: function(s) {
+                        // return false so this parser is not auto detected
+                        return false;
+                },
+                format: function(s) {
+                        // format your data for normalization
+                        var bc_dates = s.split(' - ');
+
+                        if(bc_dates.length !== 2)
+                                return 0;
+
+                        var bc_start_dt = (bc_dates[0]).split('/');
+
+                        return new Date(bc_start_dt[2], bc_start_dt[0], bc_start_dt[1]);
+
+                },
+                // set type, either numeric or text
+                type: 'numeric'
+        });
+
+
+        // call the tablesorter plugin
         $("#rpinvoicetable").tablesorter({
-             headers: { 
-            // assign the first column (we start counting zero) 
-            0: { 
-                // disable it by setting the property sorter to false 
-                sorter: 'billing-cycle' 
-                } 
-            } 
-        }); 
-        
+             headers: {
+            // assign the first column (we start counting zero)
+            0: {
+                // disable it by setting the property sorter to false
+                sorter: 'billing-cycle'
+                }
+            }
+        });
+
         $("#rptranstable").tablesorter({
-             headers: { 
-            // assign the first column (we start counting zero) 
-            0: { 
-                // disable it by setting the property sorter to false 
-                //sorter: false 
-                } 
-            } 
-        }); 
-        
+             headers: {
+            // assign the first column (we start counting zero)
+            0: {
+                // disable it by setting the property sorter to false
+                //sorter: false
+                }
+            }
+        });
+
      $("#btn-pm").click(function(){
-     	$.ajax({
-		   type: "POST",
-		   url: "{% url recurring_payment.authnet.retrieve_token %}",
-		   data: {rpid : {{rp.id}}, guid : '{{rp.guid}}' },
-		   success: function(t){
-		     $("input[name=Token]").val(t);
-		     {% if payment_profile %}
-		  	   AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}');
-			 {% else %}
-			   AuthorizeNetPopup.openAddPaymentPopup();
-		     {% endif %}
-		   },
+         $.ajax({
+           type: "POST",
+           url: "{% url recurring_payment.authnet.retrieve_token %}",
+           data: {rpid : {{rp.id}}, guid : '{{rp.guid}}' },
+           success: function(t){
+             $("input[name=Token]").val(t);
+             {% if payment_profile %}
+                 AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}');
+             {% else %}
+               AuthorizeNetPopup.openAddPaymentPopup();
+             {% endif %}
+           },
            error: function(t){
               alert("An error occured. Please try again.");
            }
-		 });
-     }); 
+         });
+     });
 
-    {% if is_active %}  
+    {% if is_active %}
         AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
         if(action_result=="successfulSave"){
             $.ajax({
@@ -363,21 +363,21 @@ $(document).ready(function(){
                    }
                  });
         }
-        };   
+        };
     {% endif %}
-	
-}); 
+
+});
 
 
 </script>
 
 <script type="text/javascript">
-	// disable confirmation
-	$('.disable').click(function(){
-		var disable_account = confirm('Are you sure you want to disable this account?');	// confirm
-		if(disable_account) $('form[name="rp-disable"]').submit(); // disable: if OK
-		return false;	// cancel
-	});
+    // disable confirmation
+    $('.disable').click(function(){
+        var disable_account = confirm('Are you sure you want to disable this account?');    // confirm
+        if(disable_account) $('form[name="rp-disable"]').submit(); // disable: if OK
+        return false;    // cancel
+    });
 </script>
 
 {% endblock %}

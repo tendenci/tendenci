@@ -15,8 +15,8 @@
 
 {% user_group_nav request.user group %}
 <div class="quick-options">
-		{% user_group_options request.user group %} 
-	</div>
+        {% user_group_options request.user group %}
+    </div>
 
 <h1>{% if groupmembership %}{% blocktrans with groupmembership.member.get_absolute_url as urlz and groupmembership.member as group_member %}Edit Member <a href="{{ urlz }}">{{ group_member }}</a> in Group{% endblocktrans %}{% else %}{% blocktrans %}Add Member to Group{% endblocktrans %}{% endif %} </h1>
 <div class="clear-right"></div>
@@ -27,8 +27,8 @@
 {{ form.as_p }}
 
 <div class="submit-row">
-		<input type="submit" value="Save" class="default" />
-	</div>
+        <input type="submit" value="Save" class="default" />
+    </div>
 </form>
 
 </div>

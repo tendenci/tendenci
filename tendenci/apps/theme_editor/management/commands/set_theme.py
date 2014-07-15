@@ -32,5 +32,5 @@ class Command(BaseCommand):
         except Setting.DoesNotExist:
             if int(options['verbosity']) > 0:
                 print "We could not update the theme because the setting or theme is not available."
-            
+
 

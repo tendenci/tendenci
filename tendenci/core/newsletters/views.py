@@ -26,7 +26,7 @@ class NewsletterGeneratorView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorView, self).get_context_data(**kwargs)
-        cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
+        cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
         cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 
         context['CAMPAIGNMONITOR_ENABLED'] = (cm_api_key and cm_client_id)
@@ -84,33 +84,33 @@ def template_view(request, template_id, render=True):
     login_content = ""
     include_login = int(request.GET.get('include_login', 0))
     if include_login:
-        login_content = render_to_string('newsletters/login.txt',  
+        login_content = render_to_string('newsletters/login.txt',
                                         context_instance=RequestContext(request))
-    
+
     jumplink_content = ""
     jump_links = int(request.GET.get('jump_links', 1))
     if jump_links:
-        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(), 
+        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
                                         context_instance=RequestContext(request))
-    
-    art_content = ""    
+
+    art_content = ""
     articles = int(request.GET.get('articles', 1))
     articles_days = request.GET.get('articles_days', 60)
     if articles:
         articles_list, articles_content = newsletter_articles_list(request, articles_days, simplified)
-    
+
     news_content = ""
     news = int(request.GET.get('news', 1))
     news_days = request.GET.get('news_days',30)
     if news:
         news_list, news_content = newsletter_news_list(request, news_days, simplified)
-    
+
     jobs_content = ""
     jobs = int(request.GET.get('jobs', 1))
     jobs_days = request.GET.get('jobs_days', 30)
     if jobs:
         jobs_list, jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
-    
+
     pages_content = ""
     pages = int(request.GET.get('pages', 0))
     pages_days = request.GET.get('pages_days', 7)
@@ -124,7 +124,7 @@ def template_view(request, template_id, render=True):
         event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
 
         end_y, end_m, end_d = request.GET.get(
-            'event_end_dt', 
+            'event_end_dt',
             str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
         event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
 
@@ -137,9 +137,9 @@ def template_view(request, template_id, render=True):
     except ImportError:
         events_list = []
         events_type = None
- 
+
     text = DTemplate(apply_template_media(template))
-    context = RequestContext(request, 
+    context = RequestContext(request,
             {
                 'jumplink_content':jumplink_content,
                 'login_content':login_content,

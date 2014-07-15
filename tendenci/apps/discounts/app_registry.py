@@ -8,7 +8,7 @@ class DiscountRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create and Manage Discount Codes for Your Events'
-    
+
     url = {
         'add': lazy_reverse('discount.add'),
         'search': lazy_reverse('discounts'),

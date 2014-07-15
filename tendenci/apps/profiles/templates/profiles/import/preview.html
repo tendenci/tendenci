@@ -14,13 +14,13 @@
 
 {% block body %}
 <div class="t">
-	{% users_nav request.user None %}
+    {% users_nav request.user None %}
 <div id="import-wrap">
-    
+
     <h1>{% trans "Import Users" %}</h1>
     <h3 class="import-step">{% trans "Step 2/3 - Preview" %}</h3>
-    
-    
+
+
 {% if uimport.status == 'preprocess_done' %}
 <p>{% trans "You're almost done!  Please review your settings.  To complete your import, click the button"%} <strong>Import Now</strong>. </p>
 {% endif %}
@@ -32,29 +32,29 @@
             Blank Fields
             {% else %}
             All Fields (override)
-            {% endif %} 
-            </strong>    
+            {% endif %}
+            </strong>
         </div>
         <div>{% trans "Identify Duplicates by" %}: <strong>{{ uimport.key }}</strong> </div>
-        
+
         {% if uimport.group_id and uimport.group %}
         <div>{% trans "Add users to the group" %}:
-        	<strong>{{ uimport.group }}</strong>
-        	
-        	{% if uimport.clear_group_membership %}
-        	<div>
-        	{% trans "Delete members in group before importing" %}:
-        	<strong>{{ uimport.clear_group_membership }}</strong>
-        	</div>
-        	{% endif %}
-        	
+            <strong>{{ uimport.group }}</strong>
+
+            {% if uimport.clear_group_membership %}
+            <div>
+            {% trans "Delete members in group before importing" %}:
+            <strong>{{ uimport.clear_group_membership }}</strong>
+            </div>
+            {% endif %}
+
         </div>
         {% endif %}
-        
+
         <div>&nbsp;</div>
         <div>
-         <strong>{% trans "Total Rows" %}:  {{ total_rows }}</strong>    
-        </div>  
+         <strong>{% trans "Total Rows" %}:  {{ total_rows }}</strong>
+        </div>
 </div> <!-- dimport settings -->
 
 {% if uimport.status == 'preprocess_done' %}
@@ -80,7 +80,7 @@
                 {% endif %}
                 <th>Reason if to be skipped</th>
             </tr>
-            
+
             {% for u in users_list %}
             <tr class="row-{{ u.action }}">
                 <td>{{ u.row_num }}</td>
@@ -108,14 +108,14 @@
                     {{ u.error }}
                     {% endif %}
                 </td>
-                
+
             </tr>
-            
+
             {% endfor %}
         </table>
-        
+
     </div>
-    
+
     {% if num_pages > 1%}
     <div id="import-paginate">
         {% if prev %}
@@ -123,7 +123,7 @@
         {% else %}
         Prev
          {% endif %}
-         
+
         {% for page in page_range %}
             {% if page = '...' %}
                 {{ page }}
@@ -135,7 +135,7 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
-        
+
         {% if curr_page >= num_pages  %}
         Next
         {% else %}
@@ -170,7 +170,7 @@
      // http://jqueryui.com/progressbar/#animated
     var value;
     var status_check_intval;
-    
+
     var status_check = function(){
         $.ajax({
            type: "POST",
@@ -186,14 +186,14 @@
              }
          });
      }
-    
+
     status_check();
     status_check_intval = setInterval(function() {
         status_check();  // check every 5 seconds
     }, 5000);
-    
+
   });
-  
+
 {% endif %}
 </script>
 

@@ -18,10 +18,10 @@
          {% if corp_app %}
             <ol>
                 <li>
-                    <a href="{% url corpmembership_app.preview corp_app.slug %}">{{ corp_app.name }}</a> 
+                    <a href="{% url corpmembership_app.preview corp_app.slug %}">{{ corp_app.name }}</a>
                     (<a href="{% url admin:corporate_memberships_corpmembershipapp_change corp_app.id %}">{% trans "Edit" %}</a>)
-                   
-                    
+
+
                     <h2>{% trans "Types:" %}</h2>
                     <table width="90%">
                     <tr>
@@ -32,16 +32,16 @@
                         <tr>
                         <td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change cm_type.id %}">{{ cm_type.name }}</a></td>
                         <td><a href="{% url admin:memberships_membershiptype_change cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>
-                        
+
                         </tr>
                     {% endfor %}
                     </table>
                     <br />
-                
+
                 </li>
-                
+
             </ol>
-            
+
             <h2>{% trans "Other links:" %}</h2>
             <ol>
             <li><a href="{% url corpmembership.search %}">{% trans "Search Corporate Memberships" %}</a></li>

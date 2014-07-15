@@ -5,8 +5,8 @@ from tinymce.widgets import TinyMCE
 
 class BoxForm(TendenciBaseForm):
     content = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Box._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Box._meta.app_label,
         'storme_model':Box._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
@@ -25,7 +25,7 @@ class BoxForm(TendenciBaseForm):
             'status_detail',
             )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(BoxForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk

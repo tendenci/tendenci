@@ -39,7 +39,7 @@
             {% endif %}
         {% endif %}
     </div>
-    
+
     <div class="meta-right">
         <a class="print-link" href="{% url story.print_details story.pk %}">{% trans "Print" %}</a>
     </div>
@@ -61,9 +61,9 @@
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
-                <li><a class="delete" href="{% url story.delete story.pk %}">{% trans "Delete" %}</a></li>               
+                <li><a class="delete" href="{% url story.delete story.pk %}">{% trans "Delete" %}</a></li>
                 <li><a href="{% url category.update story.opt_app_label story.opt_module_name story.pk %}">{% trans "Edit Categories" %}</a></li>
-                
+
             </ul>
         </div>
         </li>

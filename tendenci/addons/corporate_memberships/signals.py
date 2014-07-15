@@ -12,7 +12,7 @@ def add_rep_to_group(sender, instance=None, created=False, **kwargs):
             user = instance.user
             if not reps_group.is_member(user):
                 reps_group.add_user(user)
-                
+
 def remove_rep_from_group(sender, instance=None, **kwargs):
     if instance:
         if reps_group:
@@ -21,7 +21,7 @@ def remove_rep_from_group(sender, instance=None, **kwargs):
                 gm = GroupMembership.objects.get(group=reps_group,
                                                  member=user)
                 gm.delete()
-        
+
 def init_signals():
     from django.db.models.signals import post_save, pre_delete
     from tendenci.addons.corporate_memberships.models import CorpMembership, CorpMembershipRep

@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd"> 
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>{% trans "File Delete Notice" %}</title>
@@ -12,7 +12,7 @@
 <p>{% blocktrans %}A file has been deleted from the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Files module by{% endblocktrans %} {{ author }}. {% trans "The details are given below:" %}</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
+  <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> File:</td>
     <td width="75%"><b>{{ object.get_name }}</b></td>
@@ -20,6 +20,6 @@
 </table>
 
 <P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
- 
+
 </body>
 </html>

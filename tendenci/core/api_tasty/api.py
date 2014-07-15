@@ -16,10 +16,10 @@ class SafeApi(Api):
         """
         serializer = SafeSerializer()
         available_resources = {}
-        
+
         if api_name is None:
             api_name = self.api_name
-        
+
         for name in sorted(self._registry.keys()):
             available_resources[name] = {
                 'list_endpoint': self._build_reverse_url("api_dispatch_list", kwargs={
@@ -31,17 +31,17 @@ class SafeApi(Api):
                     'resource_name': name,
                 }),
             }
-        
+
         desired_format = determine_format(request, serializer)
         options = {}
-        
+
         if 'text/javascript' in desired_format:
             callback = request.GET.get('callback', 'callback')
-        
+
             if not is_valid_jsonp_callback_value(callback):
                 raise BadRequest('JSONP callback name is invalid.')
-        
+
             options['callback'] = callback
-        
+
         serialized = serializer.serialize(available_resources, desired_format, options)
         return HttpResponse(content=serialized, content_type=build_content_type(desired_format))

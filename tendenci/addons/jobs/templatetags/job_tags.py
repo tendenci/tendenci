@@ -90,10 +90,10 @@ def list_jobs(parser, token):
 
         {% list_jobs as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``jobs_sidebar`` or 
+    Be sure the [varname] has a specific name like ``jobs_sidebar`` or
     ``jobs_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``

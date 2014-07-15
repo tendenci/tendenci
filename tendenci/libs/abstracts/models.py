@@ -42,7 +42,7 @@ class TendenciBaseModel(models.Model):
     def obj_perms(self):
         from tendenci.core.perms.fields import has_groups_perms
         t = '<span class="perm-%s">%s</span>'
- 
+
         if self.allow_anonymous_view:
             value = t % ('public','Public')
         elif self.allow_user_view:

@@ -233,7 +233,7 @@ class Command(BaseCommand):
                     'expire_dt': time.strftime(
                     "%d-%b-%y %I:%M %p",
                     membership.expire_dt.timetuple()),
-                })  
+                })
 
             if membership.payment_method:
                 payment_method_name = membership.payment_method.human_name

@@ -26,8 +26,8 @@
                         {{ field }}
                         <span class="label{% if field.field.required %} required{% endif %}">
                             {{ field.label_tag }}
-                        </span> 
-                    </div> 
+                        </span>
+                    </div>
 
                     {% if field.help_text %}
                         <div class="help-text">{{ field.help_text }}</div>
@@ -101,7 +101,7 @@
                         </div>
 
                     {% endif %}
-                    
+
                     {% if field_obj.field_stype == 'textarea' %}
                     <div class="clear"></div>
                     {% endif %}

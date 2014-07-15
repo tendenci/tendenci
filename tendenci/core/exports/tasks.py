@@ -11,7 +11,7 @@ class TendenciExportTask(Task):
     """Export Task for Celery
     This exports the entire queryset of a given TendenciBaseModel.
     """
-    
+
     def run(self, model, fields, file_name, **kwargs):
         """Create the xls file"""
         if issubclass(model, TendenciBaseModel):
@@ -30,7 +30,7 @@ class TendenciExportTask(Task):
                 'status',
                 'status_detail',
             )
-            
+
         items = model.objects.filter(status=True)
         data_row_list = []
         for item in items:
@@ -52,7 +52,7 @@ class TendenciExportTask(Task):
                     else:
                         value = f.value_from_object(item)
                     d[f.name] = value
-            
+
             # append the accumulated values as a data row
             # keep in mind the ordering of the fields
             data_row = []
@@ -60,7 +60,7 @@ class TendenciExportTask(Task):
                 # clean the derived values into unicode
                 value = unicode(d[field]).rstrip()
                 data_row.append(value)
-            
+
             data_row_list.append(data_row)
-        
+
         return render_csv(file_name, fields, data_row_list)

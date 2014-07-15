@@ -7,7 +7,7 @@
 <div class="file-wrap {{ layout }}-wrap">
     <div class="options">
         <div class="quick-options">
-            {% file_options request.user file %}           
+            {% file_options request.user file %}
         </div>
     </div>
 
@@ -30,7 +30,7 @@
         </div>
         {% endif %}
         {% endwith %}
-    
+
         {% if tags %}
         <div class="tags">
             <strong>Tags: </strong>
@@ -54,8 +54,8 @@
         <div class="submitted">
             {% if layout == "list" %}<span>{% trans "Created" %} {{ file.create_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</span><br />{% endif %}
             <a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">
-            {% trans "Updated" %} 
-            {% if layout == "list" %}{{ file.update_dt|date:"D d M Y P" }} 
+            {% trans "Updated" %}
+            {% if layout == "list" %}{{ file.update_dt|date:"D d M Y P" }}
             {% else %}{{ file.update_dt|date:"m/d/y P" }}<br>
             {% endif %}
             {% if file.owner %}

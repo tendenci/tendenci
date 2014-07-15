@@ -11,7 +11,7 @@
 <div class="t">
     {% job_nav request.user %}
     <h1>{% trans "Approve" %} {% firstof MODULE_JOBS_LABEL 'Job' %}</h1>
-    
+
     <div class="job-wrap">
     <p><a href="{{ job.get_absolute_url }}" title="{{ job.title }}">{{ job.title }}</a></p>
     <p>{% trans "Are you sure you want to approve this" %} {% firstof MODULE_JOBS_LABEL 'job' %}?</p>

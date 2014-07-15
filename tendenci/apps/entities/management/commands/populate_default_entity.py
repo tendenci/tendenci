@@ -130,5 +130,5 @@ class Command(BaseCommand):
                 print 'Group created: ', group.name
             except Exception as e:
                 print e
-            
+
         print 'All done.'

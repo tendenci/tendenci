@@ -6,7 +6,7 @@ class AccountRegistry(LogRegistry):
     """User related logs
     The logs here are not limited to the accounts app
     """
-    
+
     event_logs = {
         'account':{
             'login':('125200', '66CCFF'), # accounts app

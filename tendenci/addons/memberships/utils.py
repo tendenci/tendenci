@@ -876,7 +876,7 @@ def render_to_max_types(*args, **kwargs):
     httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
 
     response = HttpResponseServerError(loader.render_to_string(*args, **kwargs), **httpresponse_kwargs)
-    
+
     return response
 
 
@@ -1437,7 +1437,7 @@ class ImportMembDefault(object):
         if profile.status_detail == 'active' and not profile.status:
             profile.status = True
 
-        profile.save() 
+        profile.save()
 
         # membership_demographic
         if self.mimport.num_processed == 0:

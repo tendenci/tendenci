@@ -14,9 +14,9 @@
             {{ profile.display_name }}
         {% else %}
             {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
-        {% endif %}({{ profile.user.username }})</a> 	
+        {% endif %}({{ profile.user.username }})</a>
     </h2>
-    
+
     <div class="clear-right"></div>
 
     <div class="profile-avatar-left" style="float: left; padding-right:1em;">
@@ -39,15 +39,15 @@
         <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
         {% endif %}
     </div>
-		{% if profile.is_member %}
-        	{% if profile|allow_edit_by:user %}
-            	<div style="float: right;">
-            	<span class="member-icon">Member ID: {{ profile.member_number }}</span>
-            	</div>
-        	{% endif %}
-            
-    	{% endif %}
-    	
+        {% if profile.is_member %}
+            {% if profile|allow_edit_by:user %}
+                <div style="float: right;">
+                <span class="member-icon">Member ID: {{ profile.member_number }}</span>
+                </div>
+            {% endif %}
+
+        {% endif %}
+
     <div class="clear"></div>
 
 </div>

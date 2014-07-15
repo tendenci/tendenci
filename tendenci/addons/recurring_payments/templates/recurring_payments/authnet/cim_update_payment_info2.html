@@ -10,8 +10,8 @@
   <!--[if lte IE 6]>
   <link href="{{ STATIC_URL }}authnet_cim/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
  <![endif]-->
-  
-  
+
+
 {% endblock %}
 
 {% block body %}
@@ -23,7 +23,7 @@
 </form>
 
 <div class="t">
-	 {% rp_nav request.user rp %}
+   {% rp_nav request.user rp %}
     <h1>
     {% if request.user.id == rp.user.id %}
        Manage my Payment Info
@@ -31,19 +31,19 @@
     {% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
     {% endif %}
     </h1>
-    
+
  <div>
       <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
       <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
-     	<p id="dnotes" style="display:none;"></p>
+       <p id="dnotes" style="display:none;"></p>
   </div>
 
 <br />
 
-	  <div class="AuthorizeNetPopupOuter">
-	    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" frameborder="0" 
-	    scrolling="auto" style="width: 482px !important; height: 678px !important;"></iframe>
-	  </div>
+    <div class="AuthorizeNetPopupOuter">
+      <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" frameborder="0"
+      scrolling="auto" style="width: 482px !important; height: 678px !important;"></iframe>
+    </div>
 </div>
 
 {% endblock %}
@@ -52,15 +52,15 @@
     {{ block.super }}
 {# dynamically load jquery #}
 <script>
-	if (!(window.jQuery)) { 
-		var s = document.createElement('script');
-		s.setAttribute('src', '{{ STATIC_URL }}js/jquery-1.4.2.min.js'); 
-		s.setAttribute('type', 'text/javascript');
-		document.getElementsByTagName('head')[0].appendChild(s);}
-</script>    
-    
+  if (!(window.jQuery)) {
+    var s = document.createElement('script');
+    s.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js');
+    s.setAttribute('type', 'text/javascript');
+    document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+
 <script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup_custom.js"></script>
-  
+
 <script type="text/javascript">
   //<![CDATA[
   // Uncomment this line if eCheck is enabled. This does not affect functionality, only the initial sizing of the popup page for add payment.
@@ -75,42 +75,42 @@
 </script>
 
 <script text="text/javascript">
-	{% if payment_profile %}
-  	AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}');
-	{% else %}
-	AuthorizeNetPopup.openAddPaymentPopup();
+  {% if payment_profile %}
+    AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}');
+  {% else %}
+  AuthorizeNetPopup.openAddPaymentPopup();
    {% endif %}
 
-	AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
-		if(action_result=="successfulSave"){
-			$('.AuthorizeNetPopupOuter').hide();
+  AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
+    if(action_result=="successfulSave"){
+      $('.AuthorizeNetPopupOuter').hide();
 
-			$.ajax({
-				   type: "POST",
-				   url: "{% url recurring_payment.authnet.update_payment_profile_local %}",
-				   data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
-				   success: function(result_data){
-                        		$('#dnotes').show();
-                        		$('#dnotes').html("<p>Thank you. Your information has been saved.</p>");
-                        		$('#dnotes').css({'color':'green', 'font-size':'1.2em', 'padding': '5px'});
-                        		$('#dnotes').css({'border':'1px solid #DDAC2B', 'background-color': '#F9F6CA', 'width': '80%'});
-                        		var obj = $.parseJSON(result_data);
-                        		if (!obj.valid_cpp_id){
-                            			$('.AuthorizeNetPopupOuter').show();
-                            			if (obj.invalid_cpp_id){
-                                			AuthorizeNetPopup.openEditPaymentPopup(obj.invalid_cpp_id);
-                            			}else{
-                                			AuthorizeNetPopup.openAddPaymentPopup();
-                            			}
-                        		}
-				   }
-				 });
-		}else{
-			// go to view page
-			window.location = '{% url recurring_payment.view_account rp.id %}';
-		}
-	};
+      $.ajax({
+           type: "POST",
+           url: "{% url recurring_payment.authnet.update_payment_profile_local %}",
+           data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
+           success: function(result_data){
+                            $('#dnotes').show();
+                            $('#dnotes').html("<p>Thank you. Your information has been saved.</p>");
+                            $('#dnotes').css({'color':'green', 'font-size':'1.2em', 'padding': '5px'});
+                            $('#dnotes').css({'border':'1px solid #DDAC2B', 'background-color': '#F9F6CA', 'width': '80%'});
+                            var obj = $.parseJSON(result_data);
+                            if (!obj.valid_cpp_id){
+                                  $('.AuthorizeNetPopupOuter').show();
+                                  if (obj.invalid_cpp_id){
+                                      AuthorizeNetPopup.openEditPaymentPopup(obj.invalid_cpp_id);
+                                  }else{
+                                      AuthorizeNetPopup.openAddPaymentPopup();
+                                  }
+                            }
+           }
+         });
+    }else{
+      // go to view page
+      window.location = '{% url recurring_payment.view_account rp.id %}';
+    }
+  };
 
 </script>
-	
+
 {% endblock %}

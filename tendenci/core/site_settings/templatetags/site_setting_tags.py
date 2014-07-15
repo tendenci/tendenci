@@ -1,4 +1,4 @@
-from django.template import Library, Node 
+from django.template import Library, Node
 
 from tendenci.core.site_settings.utils import get_setting as gs
 
@@ -22,19 +22,19 @@ def get_setting(parser, token):
         {% get_setting scope scope_category name as context}
     """
     bits  = token.split_contents()
-    
+
     try: scope = bits[1]
     except: scope = None
-    
+
     try: scope_category = bits[2]
     except: scope_category = None
-        
+
     try: name = bits[3]
     except: name = None
-    
+
     try: context_var = bits[5]
     except: context_var = None
-    
+
     return GetSettingNode(scope, scope_category, name, context_var=context_var)
 
 @register.inclusion_tag("site_settings/options.html", takes_context=True)
@@ -48,7 +48,7 @@ def settings_options(context, user, setting):
 @register.inclusion_tag("site_settings/nav.html", takes_context=True)
 def settings_nav(context, user, scope_category=None):
     context.update({
-        "user": user, 
+        "user": user,
         'scope_category': scope_category
     })
     return context

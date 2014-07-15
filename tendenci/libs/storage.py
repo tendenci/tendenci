@@ -25,7 +25,7 @@ def get_file_content(name, storage_type='default'):
     f = storage.open(name)
     content = f.read()
     f.close()
-    
+
     return content
 
 def save_file_content(name, content, storage_type='default'):
@@ -36,6 +36,6 @@ def save_file_content(name, content, storage_type='default'):
         storage = get_static_storage()
     else:
         storage = get_default_storage()
-        
+
     return storage.save(name, content)
-    
+

@@ -29,7 +29,7 @@
         {% for registrant in registrants %}
             <div class='avatar'>{% avatar registrant.user 56 %}</div>
             <div class="info">
-                
+
                 <div class="name">
                 {% if registrant.first_name or registrant.last_name %}
                     {% if registrant.first_name %}
@@ -42,7 +42,7 @@
                     {% blocktrans with forloop.counter0 as forl %}Guest #{{ forl }}{% endblocktrans %}
                 {% endif %}
                 </div>
-                
+
                 <div class="email">{% firstof registrant.email trans "Email Not Recorded" %}</div>
                 <div class="amount">{% trans "Amount: " %}
                 <span{% if registrant.cancel_dt %} class="canceled-amount"{% endif %}>
@@ -59,7 +59,7 @@
         {% for registrant in cancelled_registrants %}
             <div class='avatar'>{% avatar registrant.user 56 %}</div>
             <div class="info">
-                
+
                 <div class="name">
                 {% if registrant.first_name or registrant.last_name %}
                     {% if registrant.first_name %}
@@ -69,10 +69,10 @@
                         {{ registrant.last_name }}
                     {% endif %}
                 {% else %}
-                    {% blocktrans %} Guest #{% endblocktrans %}{{ forloop.counter0 }} 
+                    {% blocktrans %} Guest #{% endblocktrans %}{{ forloop.counter0 }}
                 {% endif %}
                 </div>
-                
+
                 <div class="email">{% firstof registrant.email trans "Email Not Recorded" %}</div>
                 <div class="amount">{% trans "Amount:" %}
                 <span{% if registrant.cancel_dt %} class="canceled-amount"{% endif %}>

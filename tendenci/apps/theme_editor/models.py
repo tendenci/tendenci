@@ -9,7 +9,7 @@ class ThemeFileVersion(models.Model):
     relative_file_path = models.CharField(max_length=500, blank=True)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         verbose_name        = _('theme archive')
         verbose_name_plural = _('theme archives')

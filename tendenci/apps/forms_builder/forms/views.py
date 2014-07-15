@@ -275,7 +275,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     # check permission
     if not has_perm(request.user,'forms.change_form',entry.form):
         raise Http403
-    
+
 
     form_template = entry.form.template
     if not form_template or not template_exists(form_template):
@@ -319,19 +319,19 @@ def entries_export_status(request, task_id, template_name="forms/entry_export_st
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     return render_to_response(template_name, {
         'task':task,
         'task_id':task_id,
         'user_this':None,
     }, context_instance=RequestContext(request))
-    
+
 def entries_export_check(request, task_id):
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     if task and task.status == "SUCCESS":
         return HttpResponse("OK")
     else:
@@ -388,7 +388,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             response['Location'] += '?next=%s' % form.get_absolute_url()
             return response
         if request.user.is_superuser and not email_field:
-            messages.add_message(request, messages.WARNING, 
+            messages.add_message(request, messages.WARNING,
                     'Please edit the form to include an email field ' + \
                     'as it is required for setting up a recurring ' + \
                     'payment for anonymous users.')
@@ -417,7 +417,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     if user_list:
                         anonymous_creator = user_list[0]
                     else:
-                        anonymous_creator = User(username=emailfield[:30], email=emailfield, 
+                        anonymous_creator = User(username=emailfield[:30], email=emailfield,
                                                  first_name=firstnamefield, last_name=lastnamefield)
                         anonymous_creator.set_password(password)
                         anonymous_creator.is_active = False
@@ -461,7 +461,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
             subject = subject.encode(errors='ignore')
             email_recipients = entry.get_function_email_recipients()
-            
+
             if email_copies or email_recipients:
                 # prepare attachments
                 attachments = []

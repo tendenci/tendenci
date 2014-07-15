@@ -8,7 +8,7 @@
 {% has_perm user user_groups.add_groupmembership as can_add_member %}
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
-    <div class="meta-left">        
+    <div class="meta-left">
         {% if user.is_authenticated %}
             <div class="submitted">{% blocktrans with group.create_dt|date:"long" as create_date %}Created on {{ create_date }}
             by:{% endblocktrans %} <a href="{{ group.creator.get_absolute_url }}">
@@ -25,7 +25,7 @@
             {% endif %}</a>
             </div>
         {% endif %}
-        
+
     </div>
     <div class="meta-right">
     </div>
@@ -50,7 +50,7 @@
                 {% if can_delete and group.type != 'system_generated' %}
                 <li>
                     <a class="delete" href="{% url group.delete group.pk %}">{% trans "Delete" %}</a>
-                </li>               
+                </li>
                 {% endif %}
                 <li><a href="{% url group.edit_perms group.id %}" class="option-link permissions" title="Edit Permissions">{% trans "Permissions" %}</a></li>
                 {% if can_add_member %}
@@ -59,7 +59,7 @@
                 {% if user|in_group:group.id %}
                     {% if group.allow_self_remove and user.is_authenticated or can_add_member %}
                         <li><a href="{% url group.selfremove group.slug user.id %}" title="Remove myself from group">{% trans "Remove myself from group" %}</a></li>
-                    {% endif %}  	
+                    {% endif %}
                     {% else %}
                         {% if group.allow_self_add and user.is_authenticated or can_add_member %}
                             <li><a href="{% url group.selfadd group.slug user.id %}" class="option-link addmember" title="Add myself to group">{% trans "Add Myself to Group" %}</a></li>
@@ -70,5 +70,5 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

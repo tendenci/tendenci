@@ -14,9 +14,9 @@
 {% block body %}
     <div class="t">
     {% user_group_nav request.user %}
-    
+
     <h1>{% trans "Import Results for" %} {{ group.name }}</h1>
-    
+
     <div class="import-result">
     {% for sub in subs %}
         <div class="subscriber">
@@ -33,7 +33,7 @@
         <p>No valid subscriber was found in the import file.</p>
     {% endfor %}
     </div>
-    
+
     </div>
 {% endblock %}
 

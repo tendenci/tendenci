@@ -11,17 +11,17 @@ class UploadForm(forms.Form):
     """
     CSV upload form for locations imports
     """
-    
+
     csv = forms.FileField(label='')
 
 
 class ImportMapForm(forms.Form):
-    
+
     def __init__(self, *args, **kwargs):
 
         locport = kwargs.pop('locport')
         super(ImportMapForm, self).__init__(*args, **kwargs)
-        
+
         #file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
         file_path = str(locport.get_file().file.name)
         csv = csv_to_dict(file_path)
@@ -33,7 +33,7 @@ class ImportMapForm(forms.Form):
 
         choice_tuples.insert(0, ('',''))  # insert blank option; top option
         choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
-        
+
         native_fields = [
             'Location Name',
             'Description',

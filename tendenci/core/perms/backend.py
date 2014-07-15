@@ -146,7 +146,7 @@ class ObjectPermBackend(object):
         # no anonymous user currently
         if not user.is_authenticated():
             return False
-        
+
         # check creator and owner
         if hasattr(obj, 'creator'):
             if obj.creator_id == user.id:
@@ -154,7 +154,7 @@ class ObjectPermBackend(object):
         if hasattr(obj, 'owner'):
             if obj.owner_id == user.id:
                 return True
-            
+
 
         if not isinstance(obj, Model):
             return False

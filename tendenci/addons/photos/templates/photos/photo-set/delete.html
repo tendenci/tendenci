@@ -11,7 +11,7 @@
 <div class="t">
     {% photo_set_nav request.user photo_set %}
     <h1>{% firstof MODULE_PHOTOS_LABEL 'Photo Set' %} {% trans "Delete Page" %}</h1>
-    <div class="delete-prompt"> 
+    <div class="delete-prompt">
         {% trans "Are you sure you want to permanently delete this photo set?" %}
     </div>
     <div class="info" style="margin: 10px 0px 10px 0px;">

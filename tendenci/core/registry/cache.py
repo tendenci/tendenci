@@ -16,9 +16,9 @@ def cache_reg_apps(apps):
     """
     keys = [settings.CACHE_PRE_KEY, REGISTRY_PRE_KEY, 'reg_apps']
     key = '.'.join(keys)
-    
+
     value = apps.all_apps
-    
+
     cache.set(key, value)
 
 def get_reg_apps():
@@ -26,7 +26,7 @@ def get_reg_apps():
     """
     keys = [settings.CACHE_PRE_KEY, REGISTRY_PRE_KEY, 'reg_apps']
     key = '.'.join(keys)
-    
+
     all_apps = cache.get(key)
-    
+
     return all_apps

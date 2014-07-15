@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
@@ -44,14 +44,14 @@
     </div>
 
     <div class="event-wrap">
-    	<form id="event-form" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">
-			{{ multi_event_forms|styled_multi_forms }}
+        <form id="event-form" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ multi_event_forms|styled_multi_forms }}
             {% if label != "pricing" %}
             <input type="submit" value="Save and Continue Editing" name="_continue"/>
             {% endif %}
-			<input type="submit" value="Save Changes" name="_save"/>
-		</div>
+            <input type="submit" value="Save Changes" name="_save"/>
+        </div>
         </form>
 
         <div id="confirm-dialog" title="Apply changes to all events?">
@@ -66,18 +66,18 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/events_formset.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript">
         var slugit = new Slugify({
-			input_element : 'input#id_title',
-			slug_element : 'input#id_slug',
-			submit_element : 'input[type="submit"]',
-			help: false,
-			limit : 150
-		});
+            input_element : 'input#id_title',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
         var displayConfirmation = true;
         $('#confirm-dialog').dialog({
             autoOpen: false,
@@ -100,9 +100,9 @@
                 return false;
             }
         });
-	</script>
+    </script>
 
-	<script type="text/javascript">
+    <script type="text/javascript">
         {% include 'events/include/event_place.js' %}
     </script>
 
@@ -113,6 +113,6 @@
         $(document).ready(function() {
             $('.regconfpricing_formset .section-description').addClass('well');
         });
-	</script>
+    </script>
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

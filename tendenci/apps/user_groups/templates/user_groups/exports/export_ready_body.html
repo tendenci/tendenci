@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd"> 
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>{% trans "Export is Ready" %}</title>
@@ -12,7 +12,7 @@
         Hello {{ user.first_name }},<br /><br />
         Your group members export for "{{ group.name }}" is ready.
         <br /><br />
-        
+
         To download the export file, go to: <br />
         <a href="{{ site_url }}{{ download_url }}">{{ site_url }}{{ download_url }}</a>
         <br /><br />
@@ -20,9 +20,9 @@
         <br /><br />
         Thanks,<br />
         {{ site_display_name }}
-        <br /><br />    
+        <br /><br />
     </p>
     <P>Time submitted:  {% now "D d M Y P" %}</P>
-    
+
 </body>
 </html>

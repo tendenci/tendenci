@@ -16,7 +16,7 @@
             {% endif %}
         </div>
     </div>
-    
+
     {% include 'news/meta.html' %}
     <!-- delete-news form -->
     <form name="news-delete" method="POST" action="{% url news.delete news.pk %}">{% csrf_token %}

@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     """
-    Convert status_detail to lowercase. With the update function, 
+    Convert status_detail to lowercase. With the update function,
     we only update the status_detail field
     .
     """

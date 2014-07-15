@@ -13,9 +13,9 @@
     {% has_perm user jobs.change_jobpricing as can_edit_job_pricing %}
 {% endif %}
 
-
+{% if not SITE_GLOBAL_HIDEALLTABS %}
 <ul id="module-tabs" class="tabs">
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
@@ -66,3 +66,4 @@
     <li><a href="{% url resumes %}">{% firstof MODULE_RESUME_LABEL trans 'Resumes' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}

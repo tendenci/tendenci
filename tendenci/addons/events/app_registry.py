@@ -11,7 +11,7 @@ class EventRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Manage Your Events Calendar and Event Registrations'
     icon = '%simages/icons/events-color-64x64.png' % settings.STATIC_URL
-    
+
     # events
     event_logs = {
         'event':{
@@ -31,7 +31,7 @@ class EventRegistry(CoreRegistry):
             'view':('275000','FFCC99'),
         }
     }
-    
+
     url = {
         'add': lazy_reverse('event.add'),
         'search': lazy_reverse('event.search'),

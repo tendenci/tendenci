@@ -1,27 +1,27 @@
 .table-striped{
-	width: 88%;
+    width: 88%;
 }
 .table-striped tr.alt td{
-	background: #efefef;
+    background: #efefef;
 }
 .table-striped tr.over td{
-	background: #ecf6fc;
+    background: #ecf6fc;
 }
 .table-striped th{
-	padding: 6px 6px;
-	background: #577FBA;
-	color: #fff;
-	white-space: nowrap;
+    padding: 6px 6px;
+    background: #577FBA;
+    color: #fff;
+    white-space: nowrap;
 }
 
 .table-striped td{
-	padding: 6px 11px;
-	border-bottom: 1px solid #95bce2;
-	vertical-align: middle;
+    padding: 6px 11px;
+    border-bottom: 1px solid #95bce2;
+    vertical-align: middle;
 }
 .table-striped td *{
-	padding: 6px 0px;
+    padding: 6px 0px;
 }
 td.align_center{
-	text-align: center;
+    text-align: center;
 }

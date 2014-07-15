@@ -71,7 +71,7 @@
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
 
-                <div id="reg-form-box">    
+                <div id="reg-form-box">
                     <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
                     <div class="summary-total">
                         {{ SITE_GLOBAL_CURRENCYSYMBOL }}
@@ -172,7 +172,7 @@
                                     <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                                     <div class="field">{{ field }}</div>
                                     {% if field.help_text %}
-                                    <div class="help-text">{{ field.help_text }}</div>   
+                                    <div class="help-text">{{ field.help_text }}</div>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -265,8 +265,8 @@
                 {% if price.quantity == 1 %}
                 <div class="add-registrants-text">
                 {% blocktrans %}
-                    Add <input class="extra-registrants" type="text" name="extra-registrant-amount" value="1" /> 
-                    additional registrant(s). Click to 
+                    Add <input class="extra-registrants" type="text" name="extra-registrant-amount" value="1" />
+                    additional registrant(s). Click to
                     <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrants(this, 'registrant'); return false;">
                     Add More registrants</a>.
                 {% endblocktrans %}

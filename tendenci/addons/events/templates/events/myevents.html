@@ -17,7 +17,7 @@
 
 <div class='t search-view'>
     {% event_nav request.user %}
-    
+
     <div class="header" style="margin-bottom: 20px;">
         <h1>{% trans "My Upcoming Events" %}</h1>
         {% if show %}
@@ -26,14 +26,14 @@
             <a class="show-all-link" href="{% url event.myevents %}">{% trans "Show upcoming events only." %}</a>
         {% endif %}
     </div>
-    
+
     {% autopaginate events 10 %}
-    
+
     <div class="events-wrap">
         {% for event in events %}
             {% search_result event %}
         {% empty %}
-            {% trans "You're not registered for any upcoming events." %}<a href="{% url events %}">{% trans "View our upcoming events!" %}</a>            
+            {% trans "You're not registered for any upcoming events." %}<a href="{% url events %}">{% trans "View our upcoming events!" %}</a>
         {% endfor %}
     </div>
 

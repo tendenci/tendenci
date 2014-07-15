@@ -16,15 +16,15 @@ class GroupSubscription(models.Model):
     subscriber = models.ForeignKey(FormEntry, related_name='subscriptions', null=True)
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         unique_together = ('group', 'subscriber',)
         verbose_name = "Group Subscription"
         verbose_name_plural = "Group Subscriptions"
-        
+
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.email)
-    
+
     @property
     def name(self):
         if self.subscriber:
@@ -51,7 +51,7 @@ class GroupSubscription(models.Model):
                 else:
                     return name_data[0].value
         return None
-        
+
     @property
     def email(self):
         if self.subscriber:

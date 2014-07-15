@@ -4,7 +4,7 @@
 <html>
 <head>
 <title>Payment Thank You</title>
-<body> 
+<body>
 <p>Processing...please wait.</p>
 <script language="javascript">
     window.location = "{{ SITE_GLOBAL_SITEURL }}{% url payment.receipt payment.id payment.guid %}";

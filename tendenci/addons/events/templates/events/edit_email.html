@@ -35,18 +35,18 @@
 <div class="t">
      {% event_nav request.user event %}
     <h1>{% trans "Edit Email to Event Registrants" %}</h1>
-    
+
     <div class="well">
         This Email is used for:
         <ul>
-        <li>The event reminders to the registrants </li> 
+        <li>The event reminders to the registrants </li>
         </ul>
     </div>
-    
+
     <h3>{% trans "Event: " %}<a href="{% url event event.id %}">{{ event.title }}</a></h3>
-    
+
     <div class="forms">
-        
+
     {% if form.errors.values %}
         <div class="errors">
             <ul>
@@ -69,29 +69,29 @@
                 <a href="{% url event.registrant.roster event.id %}">{% trans "View all registrant(s)" %}</a>
                 </div>
             </div>
-            
+
             {% for field in form %}
             <div class="form-field">
                 <div class="error">{{ field.errors }}</div>
                 <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                 <div class="field"> {{ field }}</div>
-                <div class="help-text">{{ field.help_text|safe }}</div>   
+                <div class="help-text">{{ field.help_text|safe }}</div>
             </div>
             {% endfor %}
-            
+
             <div style="float:right;">
             <input class="btn btn-secondary" type="submit" name="submit" value="Save & Test" title="Save and receive a test email" />
             </div>
-            
-            <div>               
+
+            <div>
             <input class="btn btn-primary btn-large" name="submit" type="submit" value="Save" />
             </div>
             <div style="clear: right;"></div>
-        
+
         </form>
-        
+
   </div>
-  
+
 </div>
 
 {% endblock %}

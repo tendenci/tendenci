@@ -8,7 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui///ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
@@ -25,11 +25,11 @@
         <div>
             You are renewing: {{ directory.headline }}. Click submit below to complete your renewal.
         </div>
-    	<form action="{% url directory.renew directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">
-			{{ form|styled_form }}
-        	<input type="submit" value="Submit Renewal" />
-		</div>
+        <form action="{% url directory.renew directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="Submit Renewal" />
+        </div>
         </form>
     {% else %}
         <p>Sorry, this directory isn't available for renewal right now. Please contact your site administrator with any questions.</p>

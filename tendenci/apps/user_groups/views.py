@@ -307,7 +307,7 @@ def group_membership_self_add(request, slug, user_id):
 
         group_membership.save()
 
-        EventLog.objects.log(instance=group_membership)     
+        EventLog.objects.log(instance=group_membership)
 
         messages.add_message(request, messages.SUCCESS, 'Successfully added yourself to group %s' % group)
     else:
@@ -421,8 +421,8 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
 
             group_membership.save()
 
-            EventLog.objects.log(instance=group_membership)       
-            
+            EventLog.objects.log(instance=group_membership)
+
             return HttpResponseRedirect(group.get_absolute_url())
     else:
         form = form_class(group, user_id, instance=group_membership)
@@ -585,7 +585,7 @@ def group_members_export_download(request, group_slug, export_target, identifier
     group = get_object_or_404(Group, slug=group_slug)
     if not has_perm(request.user,'user_groups.change_group', group):
         raise Http403
-    
+
     file_dir = 'export/groups/'
     file_name = 'group_%d_%s_%s.csv' % (group.id, export_target, identifier)
     export_path = '%s%s' % (file_dir, file_name)
@@ -596,7 +596,7 @@ def group_members_export_download(request, group_slug, export_target, identifier
     response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
     response.content = default_storage.open(export_path).read()
     return response
-    
+
 
 def group_member_export(request, group_slug):
     """

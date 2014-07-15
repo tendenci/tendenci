@@ -20,7 +20,7 @@ ALLOWED_IMG_EXT = (
     '.jpg',
     '.jpeg',
     '.gif',
-    '.png' 
+    '.png'
 )
 CONTRIBUTOR_CHOICES = (
     (Page.CONTRIBUTOR_AUTHOR, mark_safe('Author <i class="gauthor-info fa fa-lg fa-question-circle"></i>')),
@@ -30,13 +30,13 @@ GOOGLE_PLUS_HELP_TEXT = 'Additional Options for Authorship <i class="gauthor-hel
 
 class PageAdminForm(TendenciBaseForm):
     content = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Page._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Page._meta.app_label,
         'storme_model':Page._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-    
+
     template = forms.ChoiceField(choices=template_choices)
 
     meta_title = forms.CharField(required=False)
@@ -65,8 +65,8 @@ class PageAdminForm(TendenciBaseForm):
         'syndicate',
         'status_detail',
         )
-        
-    def __init__(self, *args, **kwargs): 
+
+    def __init__(self, *args, **kwargs):
         super(PageAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -77,7 +77,7 @@ class PageAdminForm(TendenciBaseForm):
                 self.fields['meta_canonical_url'].initial = self.instance.meta.canonical_url
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
-        
+
         template_choices = [('default.html','Default')]
         template_choices += get_template_list()
         self.fields['template'].choices = template_choices
@@ -99,15 +99,15 @@ class PageAdminForm(TendenciBaseForm):
                 self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
                 del cleaned_data['slug']
 
-        return cleaned_data  
+        return cleaned_data
 
 class PageForm(TendenciBaseForm):
     header_image = forms.ImageField(required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current header image'), required=False)
 
     content = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Page._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Page._meta.app_label,
         'storme_model':Page._meta.module_name.lower()}))
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
@@ -119,7 +119,7 @@ class PageForm(TendenciBaseForm):
     tags = forms.CharField(required=False, help_text=mark_safe('<a href="/tags/" target="_blank">Open All Tags list in a new window</a>'))
 
     template = forms.ChoiceField(choices=template_choices)
-    
+
     class Meta:
         model = Page
         fields = (
@@ -163,7 +163,7 @@ class PageForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
 
@@ -184,17 +184,17 @@ class PageForm(TendenciBaseForm):
                 self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
                 del cleaned_data['slug']
 
-        return cleaned_data    
-    
+        return cleaned_data
+
     def clean_header_image(self):
         header_image = self.cleaned_data['header_image']
         if header_image:
             extension = splitext(header_image.name)[1]
-            
+
             # check the extension
             if extension.lower() not in ALLOWED_IMG_EXT:
                 raise forms.ValidationError('The header image must be of jpg, gif, or png image type.')
-            
+
             # check the image header_image
             image_type = '.%s' % imghdr.what('', header_image.read())
             if image_type not in ALLOWED_IMG_EXT:
@@ -208,7 +208,7 @@ class PageForm(TendenciBaseForm):
 
         return header_image
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
         if self.instance.header_image:
             self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.header_image.pk, basename(self.instance.header_image.file.name))

@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="event-info" style="margin-top:10px;">
-            
+
         <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
         {% if event.place %}
             <div class="place">{{ event.place }}</div>
@@ -29,7 +29,7 @@
             {{ event.get_description }}
         {% endif %}
         </div>
-        
+
         <div class="form" style="margin-top:10px;">
             <form name="approve" method="POST" action="{% url event.approve event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="approve">

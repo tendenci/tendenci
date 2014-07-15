@@ -9,7 +9,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-reg-search.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
 {% endblock %}
@@ -17,7 +17,7 @@
 {% block body %}
 
 <div class="global-reg-search">
-	{% event_nav request.user %}
+    {% event_nav request.user %}
 
     {% global_registrant_search %}
 
@@ -64,7 +64,7 @@
                 <div>{{ reg.phone|phonenumber }} &middot; {{ reg.email }}</div>
             {% else %}
                 {% if reg.phone %}
-                <div>{{ reg.phone|phonenumber }}</div>	
+                <div>{{ reg.phone|phonenumber }}</div>
                 {% else %}
                     {% if reg.email %}
                     <div>{{ reg.email }}</div>
@@ -91,7 +91,7 @@
                 <a href="{% url event.registration_confirmation reg.registration.event.pk reg.registration.pk %}">{{ reg.registration.pk }}</a>
             </div>
             <div>{% trans "Registration Date: "%}{{ reg.registration.create_dt }}</div>
-            
+
             <div>{% trans "Event: " %}
                 <a href="{% url event reg.registration.event.pk %}">{{ reg.registration.event }}</a>
             </div>
@@ -109,7 +109,7 @@
         </div>
     </div>
     {% empty %}
-	    <div>{% trans "0 Results Found" %}</div>
+        <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
     {% paginate %}
 </div>
@@ -117,11 +117,11 @@
 
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
-	<script type="text/javascript">
-	   $(".datepicker").live('focus', function() {
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+       $(".datepicker").live('focus', function() {
             console.log('this', this);
             $(this).datepicker({ dateFormat: 'yy-mm-dd' });
        });
-	</script>
+    </script>
 {% endblock %}

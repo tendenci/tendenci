@@ -29,16 +29,16 @@ def prepare_firstdata_form(request, payment):
     #currency_code = get_setting("site", "global", 'currency')
     #if not currency_code: currency_code = 'USD'
     #currency = currency_number_d.get(currency_code, '840')
-    
+
     # SHA1 hash
     #s = '%s%s%s%s%s' % (settings.MERCHANT_LOGIN, txndatetime, chargetotal, currency, settings.MERCHANT_TXN_KEY)
     #hash = hashlib.sha1(s).hexdigest()
-    
+
     if request.user.is_authenticated():
         userid = request.user.id
     else:
         userid = 0
-    
+
     params = {
               'storename':settings.MERCHANT_LOGIN,
               'mode':'payonly',
@@ -53,7 +53,7 @@ def prepare_firstdata_form(request, payment):
               #'objectguid':payment.guid,
               'paymentid':payment.id,
               'invoiceid':payment.invoice.id,
-              'referurl': '%s%s' % (get_setting('site', 'global', 'siteurl'), 
+              'referurl': '%s%s' % (get_setting('site', 'global', 'siteurl'),
                                     reverse('payment.pay_online', args=[payment.invoice.id])),
               'chargetotal':chargetotal,
               'bname':'%s %s' % (payment.first_name, payment.last_name),
@@ -71,7 +71,7 @@ def prepare_firstdata_form(request, payment):
               'responseFailURL': payment.response_page,
         }
     form = FirstDataPaymentForm(initial=params)
-    
+
     return form
 
 def firstdata_thankyou_processing(request, response_d, **kwargs):
@@ -83,20 +83,20 @@ def firstdata_thankyou_processing(request, response_d, **kwargs):
     except:
         paymentid = 0
     payment = get_object_or_404(Payment, pk=paymentid)
-    
+
     if payment.invoice.balance > 0:     # if balance==0, it means already processed
         payment_update_firstdata(request, response_d, payment)
         payment_processing_object_updates(request, payment)
-        
+
         # log an event
         log_payment(request, payment)
-        
+
         # send payment recipients notification
         send_payment_notice(request, payment)
-        
-        
+
+
     return payment
-        
+
 def payment_update_firstdata(request, response_d, payment, **kwargs):
     bname = response_d.get('bname', '')
     if bname:
@@ -121,9 +121,9 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
     payment.ship_to_city = response_d.get('scity', '')
     payment.ship_to_state = response_d.get('sstate', '')
     payment.ship_to_country = response_d.get('scountry', '')
-    
+
     payment.status_detail = (response_d.get('status', '')).lower()
-    
+
     if payment.status_detail == 'approved':
         payment.response_code = '1'
         payment.response_subcode = '1'
@@ -136,8 +136,8 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
         payment.response_code = 0
         payment.response_reason_code = 0
         payment.response_reason_text = response_d.get('failReason', '')
-    
-    
+
+
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
@@ -146,7 +146,7 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
         payment.save()
-            
-    
-    
-    
+
+
+
+

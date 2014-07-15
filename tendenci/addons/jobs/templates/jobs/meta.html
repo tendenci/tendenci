@@ -32,17 +32,17 @@
             </div>
             {% endif %}
             {% endif %}
-            
+
             {% if user.profile.is_staff or user == job.creator or user == job.owner %}
                 {% meta_creator_owner job %}
             {% endif %}
         {% endif %}
     </div>
-    
+
     <div class="meta-right">
         <a class="print-link" href="{% url job.print_view job.slug %}">{% trans "Print" %}</a>
     </div>
-    
+
 </div>
 {% if user.profile.is_superuser %}
 <div class="editor-bar">
@@ -70,5 +70,5 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

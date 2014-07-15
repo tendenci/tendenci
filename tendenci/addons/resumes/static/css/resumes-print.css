@@ -1,9 +1,9 @@
 body {
-	background-color: #EEE;
+    background-color: #EEE;
 }
 
 @media print {
-	#admin-bar {
-		display: none;
-	}
+    #admin-bar {
+        display: none;
+    }
 }

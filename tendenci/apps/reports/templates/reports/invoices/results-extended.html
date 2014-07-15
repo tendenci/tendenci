@@ -87,7 +87,7 @@
                 <td>{{ invoice.bill_to_first_name }}</td>
                 <td>{{ invoice.bill_to_last_name }}</td>
                 <td>{{ invoice.bill_to_phone }}</td>
-                <td>{{ invoice.bill_to_email }}</td>    
+                <td>{{ invoice.bill_to_email }}</td>
                 <td>
                     {% if invoice.get_object.event.pk %}
                     <a href="{% url event invoice.get_object.event.pk %}">{{ invoice.get_object.event.pk }}</a> - {{ invoice.get_object.event.title|truncatewords:"3" }}

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.core.exceptions import ObjectDoesNotExist 
+from django.core.exceptions import ObjectDoesNotExist
 
 class Command(BaseCommand):
     """
@@ -14,7 +14,7 @@ class Command(BaseCommand):
         for user in users:
             try:
                 profile = user.get_profile()
-            except ObjectDoesNotExist: 
+            except ObjectDoesNotExist:
                 profile = Profile.objects.create_profile(user)
                 if options['verbosity'] > 1:
                     print profile

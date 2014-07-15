@@ -23,7 +23,7 @@ except:
 def add(request, form_class=MakePaymentForm, template_name="make_payments/add.html"):
     if request.method == "POST":
         form = form_class(request.user, request.POST)
-        
+
         if form.is_valid():
             mp = form.save(commit=False)
             # we might need to create a user record if not exist
@@ -40,7 +40,7 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
                 mp.creator = user
                 mp.creator_username = user.username
             mp.save(user)
-            
+
             # create invoice
             invoice = make_payment_inv_add(user, mp)
 
@@ -50,7 +50,7 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
             mp.save(user)
 
             EventLog.objects.log(instance=mp)
-            
+
             # send notification to administrators
             # get admin notice recipients
             recipients = get_notice_recipients('module', 'payments', 'paymentrecipients')
@@ -62,12 +62,12 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
                         'request': request,
                     }
                     notification.send_emails(recipients,'make_payment_added', extra_context)
-            
-            # email to user 
+
+            # email to user
             email_receipt = form.cleaned_data['email_receipt']
             if email_receipt:
                 make_payment_email_user(request, mp, invoice)
-            
+
             # redirect to online payment or confirmation page
             if mp.payment_method == 'cc' or mp.payment_method == 'credit card':
                 return HttpResponseRedirect(reverse('payment.pay_online', args=[invoice.id, invoice.guid]))
@@ -94,10 +94,10 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
-       
-    return render_to_response(template_name, {'form':form, 'currency_symbol': currency_symbol}, 
+
+    return render_to_response(template_name, {'form':form, 'currency_symbol': currency_symbol},
         context_instance=RequestContext(request))
-    
+
 def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
     return render_to_response(template_name, context_instance=RequestContext(request))
 
@@ -108,5 +108,5 @@ def view(request, id=None, template_name="make_payments/view.html"):
     EventLog.objects.log(instance=mp)
 
     mp.payment_amount = tcurrency(mp.payment_amount)
-    return render_to_response(template_name, {'mp':mp}, 
+    return render_to_response(template_name, {'mp':mp},
         context_instance=RequestContext(request))

@@ -14,10 +14,10 @@ class Topic(models.Model):
     """Help topic"""
     title = models.CharField(max_length=255)
     content = models.TextField(null=True, blank=True)
-    
+
     class Meta:
         ordering = ['title']
-        
+
     @models.permalink
     def get_absolute_url(self):
         return ("help_files.topic", [self.pk])
@@ -54,10 +54,10 @@ class HelpFile(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("help_file.details", [self.slug])
-                
+
     def __unicode__(self):
         return self.question
-    
+
     def level_is(self):
         "Template helper: {% if file.level_is.basic %}..."
         return dict([i, self.level==i] for i in HelpFile.LEVELS)
@@ -65,8 +65,8 @@ class HelpFile(TendenciBaseModel):
 
 class HelpFile_Topics(models.Model):
     """
-    This table is created automatically by the Many To 
-    Many Relationship. It is added here to use in the 
+    This table is created automatically by the Many To
+    Many Relationship. It is added here to use in the
     views to help optimize for certain queries.
     """
     helpfile = models.ForeignKey(HelpFile)
@@ -77,10 +77,10 @@ class HelpFile_Topics(models.Model):
 
 class Request(models.Model):
     question = models.TextField()
-    
+
     def __unicode__(self):
         return self.question
-    
+
 
 class HelpFileMigration(models.Model):
     """
@@ -89,10 +89,9 @@ class HelpFileMigration(models.Model):
     """
     t4_id = models.IntegerField()
     t5_id = models.IntegerField()
-    
+
     class Meta:
         managed = False
         db_table = 'mig_help_files_helpfile_t4_to_t5'
-        
-        
-    
+
+

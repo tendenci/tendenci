@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 class Command(BaseCommand):
     """
     Update corporate membership representatives group
-        1) Create the group if not already exists, 
-            and add a setting corpmembershiprepsgroupid and 
-            store the group id to the setting 
+        1) Create the group if not already exists,
+            and add a setting corpmembershiprepsgroupid and
+            store the group id to the setting
         2) Loop through corp reps and add reps to the group.
         3) Remove the non-rep users from the group.
 
@@ -47,7 +47,7 @@ class Command(BaseCommand):
             # first check if we have a default group. if not, create one
             # so that this reps group won't become the one with id=1
             Group.objects.get_or_create_default()
- 
+
             group = Group(
                       name='Corporate Membership Representatives',
                       slug='corporate-membership-representatives',
@@ -82,6 +82,5 @@ class Command(BaseCommand):
                 if verbosity >= 2:
                     print('Adding user "%s" to group' % user.username)
                 group.add_user(user)
-        
-            
-        
+
+

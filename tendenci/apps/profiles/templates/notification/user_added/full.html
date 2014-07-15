@@ -2,7 +2,7 @@
 {% load base_filters %}
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd"> 
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>{% trans "User Add Notice" %}</title>
@@ -10,16 +10,16 @@
 </head>
 
 <body bgcolor="#ffffff" text="#000000">
-<p>{% blocktrans %}The following user was 
+<p>{% blocktrans %}The following user was
   added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }}:{% endblocktrans %}</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
+  <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "First name:" %}</td>
     <td width="75%"><b>{{ object.user.first_name }}</b></td>
   </tr>
-  <tr> 
+  <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Last name:" %}</td>
     <td width="75%"><b>{{ object.user.last_name }}</b></td>
@@ -35,10 +35,10 @@
     <td><b>{{ object.user.email }}</b></td>
   </tr>
 </table>
-<p>{% blocktrans %}To view the details of this 
+<p>{% blocktrans %}To view the details of this
   user, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile object.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile object.user.username %}</b><br>
-   
+
   <P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
- 
+
 </body>
 </html>

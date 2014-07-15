@@ -11,9 +11,9 @@
 
     <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Add</h1>
 
-	<div class="form-builder-wrap">
-    	<form action="." method="post">{% csrf_token %}
-    	<div class="forms">
+    <div class="form-builder-wrap">
+        <form action="." method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
             <fieldset id='pricing-options'>
                 <legend>Pricing Options</legend>
@@ -21,7 +21,7 @@
                 {{ formset|styled_form_set }}
             </fieldset>
             <input type="submit" value="Add {% firstof MODULE_FORMS_LABEL 'Form' %}" />
-		</div>
+        </div>
         </form>
     </div>
 
@@ -60,7 +60,7 @@
             $('.id_payment_methods').hide();
             $('.id_recurring_payment').hide();
         }
-        
+
         var recurring_payment = $('#id_recurring_payment');
         recurring_payment.change(function(){
             rp = $(this).attr('checked');
@@ -70,13 +70,13 @@
                 $('.recurring-payment').closest('div.form-field').hide();
             }
         });
-        
+
         /*Presenting recurring payment display */
         if (recurring_payment.attr('checked')){
             $('.recurring-payment').closest('div.form-field').show();
         } else {
             $('.recurring-payment').closest('div.form-field').hide();
-	    }
+        }
 
     });
 

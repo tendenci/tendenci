@@ -13,9 +13,9 @@ class StripeCardForm(forms.Form):
                                 widget=NoNameTextInput())
     card_expiry_year = forms.CharField(required=False, max_length=4,
                                 widget=NoNameTextInput())
-    
+
     stripe_token = forms.CharField(required=True, widget=forms.HiddenInput())
-    
+
     def __init__(self, *args, **kwargs):
         super(StripeCardForm, self).__init__(*args, **kwargs)
         self.fields['card_number'].widget.attrs.update({'autocomplete': 'off'})
@@ -28,13 +28,13 @@ class StripeCardForm(forms.Form):
                                                      'size': '4'})
         self.fields['card_expiry_month'].widget.attrs.update({'size': '2'})
         self.fields['card_expiry_year'].widget.attrs.update({'size': '4'})
-        
-        
+
+
 class BillingInfoForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ('first_name',
-                  'last_name', 
+                  'last_name',
                   'email',
                   'company',
                   'address',
@@ -46,7 +46,7 @@ class BillingInfoForm(forms.ModelForm):
                   'phone',
                   'fax',
                   )
-        
+
     def __init__(self, *args, **kwargs):
         super(BillingInfoForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs.update({'size': '30'})
@@ -61,4 +61,3 @@ class BillingInfoForm(forms.ModelForm):
         self.fields['zip'].widget.attrs.update({'size': '10'})
         self.fields['phone'].widget.attrs.update({'size': '10'})
         self.fields['fax'].widget.attrs.update({'size': '10'})
-        

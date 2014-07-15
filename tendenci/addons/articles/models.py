@@ -99,13 +99,13 @@ class Article(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         self.assign_release_dt_local()
         super(Article, self).save(*args, **kwargs)
-        
+
     def assign_release_dt_local(self):
         """
         convert release_dt to the corresponding local time
-        
+
         example:
-        
+
         if
             release_dt: 2014-05-09 03:30:00
             timezone: US/Pacific

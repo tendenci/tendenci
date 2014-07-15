@@ -13,7 +13,7 @@ class NoticeLogSearchForm(forms.Form):
     end_dt = SplitDateTimeField(label=_('Sent End Date/Time'),
         initial=datetime.now(), required=False)
     notice_id = forms.ChoiceField(required=False)
-    
+
     def __init__(self, *args, **kwargs):
         super(NoticeLogSearchForm, self).__init__(*args, **kwargs)
         self.fields['notice_id'].choices = get_membership_notice_choices()

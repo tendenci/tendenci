@@ -293,7 +293,7 @@ class MembershipSet(models.Model):
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
-        
+
     @property
     def group(self):
         return self.memberships[0].group
@@ -570,7 +570,7 @@ class MembershipDefault(TendenciBaseModel):
                     except Exception as e:
                         is_file = False
 
-                    if is_file: 
+                    if is_file:
                         field_list.append((field_label, eval(data).get('html')))
                     else:
                         field_list.append((field_label, data))
@@ -691,7 +691,7 @@ class MembershipDefault(TendenciBaseModel):
         Notice.log_notices([self],
                            notice_type=notice_type
                            )
-        
+
         return ret
 
     def email_corp_reps(self, request):
@@ -1346,7 +1346,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         # Get invoice from membership set
         if self.membership_set:
-            return self.membership_set.invoice 
+            return self.membership_set.invoice
 
         # Check if there is an invoice bound to by content_type
         content_type = ContentType.objects.get(
@@ -1485,7 +1485,7 @@ class MembershipDefault(TendenciBaseModel):
             if not isinstance(base_number, int):
                 # default to 5000 if not specified
                 base_number = 5000
-                
+
             new_member_number = str(base_number + self.id)
             # check if this number's already been taken
             if MembershipDefault.objects.filter(
@@ -2050,7 +2050,7 @@ class Notice(models.Model):
                                         membership=membership)
                 notice_log_record.save()
         return True
-        
+
 
     @classmethod
     def send_notice(cls, **kwargs):
@@ -2216,7 +2216,7 @@ class MembershipApp(TendenciBaseModel):
         fields = self.fields.all()
         for field in fields:
             field.clone(app_cloned)
-            
+
         return app_cloned
 
     def application_form_link(self):
@@ -2286,7 +2286,7 @@ class MembershipAppField(OrderingBaseModel):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
-    
+
     def clone(self, membership_app):
         """
         Clone this field.
@@ -2294,7 +2294,7 @@ class MembershipAppField(OrderingBaseModel):
         params = dict([(field.name, getattr(self, field.name)) \
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_field = self.__class__.objects.create(**params)
-        
+
         cloned_field.membership_app = membership_app
         cloned_field.save()
         return cloned_field

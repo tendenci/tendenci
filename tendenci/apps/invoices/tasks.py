@@ -13,7 +13,7 @@ class InvoiceExportTask(Task):
     """Export Task for Celery
     This exports the entire queryset of a given TendenciBaseModel.
     """
-    
+
     def run(self, model, start_dt, end_dt, file_name, **kwargs):
         """Create the xls file"""
         fields = (
@@ -121,7 +121,7 @@ class InvoiceExportTask(Task):
                 # clean the derived values into unicode
                 value = unicode(d[field]).rstrip()
                 data_row.append(value)
-            
+
             data_row_list.append(data_row)
-        
+
         return render_csv(file_name, fields, data_row_list)

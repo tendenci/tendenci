@@ -18,16 +18,16 @@
     <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} {% trans "Edit" %}</h1>
 
     <div class="location-wrap">
-    	<form action="{% url location.edit location.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">
-        	{{ form|styled_form }}
+        <form action="{% url location.edit location.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
             <input type="submit" value="Save Changes" />
-		</div>
+        </div>
         </form>
     </div>
 </div>
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 {% endblock %}

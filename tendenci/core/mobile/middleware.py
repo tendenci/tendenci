@@ -41,7 +41,7 @@ def user_agent(request):
 def is_mobile_cookie_on(request):
     cookiename =  getattr(settings, 'MOBILE_COOKIE_NAME', "tendenci_mobile")
     if cookiename in request.COOKIES:
-        if request.COOKIES[cookiename] == "0":  
+        if request.COOKIES[cookiename] == "0":
             return False
     return True
 
@@ -51,16 +51,16 @@ def is_mobile_browser(request):
             if ma.lower() in request.user_agent:
                 return True
     return False
-    
+
 def show_mobile(request):
     if not is_mobile_cookie_on(request):
         # no need to check any further, the user opt-out
         return False
-    
+
     if is_mobile_browser(request):
         return True
     return False
-    
+
 
 class MobileMiddleware(object):
     def process_request(self, request):

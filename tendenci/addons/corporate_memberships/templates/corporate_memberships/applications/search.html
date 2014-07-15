@@ -41,12 +41,12 @@
     {% if 'cp_id' in search_form.fields %}
     {{ search_form.cp_id.label }}: {{ search_form.cp_id }}
     {% endif %}
-     
+
     {% if 'industry' in search_form.fields %}
     <br />
     {{ search_form.industry.label }}: {{ search_form.industry }}
     {% endif %}
-    
+
     <br />
    {% trans 'Search By'%}: {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
 
@@ -61,7 +61,7 @@
     {% for corp_memb in corp_members %}
         {% with corp_memb|get_object as corporate_membership %}
             {% include 'corporate_memberships/applications/search-result.html' %}
-        {% endwith %}   
+        {% endwith %}
     {% empty %}
         <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
@@ -69,7 +69,7 @@
 
 
  {% paginate %}
- 
+
  </div>
 </div>
 
@@ -89,7 +89,7 @@
    </script>
 <script>
     var filename = "{{ STATIC_URL }}js/global/dropdown.js";
-    
+
     if (typeof dropdown == "undefined")
     {
         var fileref=document.createElement('script');
@@ -109,5 +109,5 @@ var iconrow = new dropdown({
 </script>
 
 {{ block.super }}
-    
+
 {% endblock %}

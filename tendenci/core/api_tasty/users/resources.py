@@ -22,17 +22,17 @@ class UserResource(ModelResource):
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'put', 'delete']
         excludes = ['username', 'password']
-        
+
     def dehydrate(self, bundle):
-        bundle.data['username'] = bundle.obj.username 
+        bundle.data['username'] = bundle.obj.username
         return bundle
-        
+
     def obj_create(self, bundle, request=None, **kwargs):
         bundle = super(UserResource, self).obj_create(bundle, request, **kwargs)
         bundle.obj.set_password(bundle.data.get('password'))
         bundle.obj.save()
         return bundle
-        
+
     def obj_update(self, bundle, request=None, **kwargs):
         bundle = super(UserResource, self).obj_update(bundle, request, **kwargs)
         password = bundle.data.get('password')
@@ -40,4 +40,4 @@ class UserResource(ModelResource):
             bundle.obj.set_password(password)
         bundle.obj.save()
         return bundle
-        
+

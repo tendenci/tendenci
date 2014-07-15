@@ -1,19 +1,19 @@
 [
     {
-        "default_value": "true", 
-        "description": "Module is enabled or not.", 
-        "data_type": "boolean", 
-        "update_dt": "2011-11-29 13:32:43", 
-        "input_type": "select", 
-        "client_editable": true, 
-        "name": "enabled", 
-        "value": "true", 
-        "label": "Enabled", 
-        "input_value": "true,false", 
-        "parent_id": 0, 
-        "scope": "module", 
-        "scope_category": "boxes", 
-        "store": true, 
+        "default_value": "true",
+        "description": "Module is enabled or not.",
+        "data_type": "boolean",
+        "update_dt": "2011-11-29 13:32:43",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "enabled",
+        "value": "true",
+        "label": "Enabled",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "boxes",
+        "store": true,
         "updated_by": ""
     }
 ]

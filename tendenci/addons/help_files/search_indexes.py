@@ -12,17 +12,17 @@ class HelpFileIndex(TendenciBaseSearchIndex):
     answer = indexes.CharField(model_attr='answer')
     syndicate = indexes.BooleanField(model_attr='syndicate')
     topic = indexes.MultiValueField()
-    
+
     # RSS field
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
-    
+
     def prepare_answer(self, obj):
         answer = obj.answer
         answer = strip_tags(answer)
         answer = strip_entities(answer)
         return answer
-    
+
     def prepare_topic(self, obj):
         return [topic.pk for topic in obj.topics.all()]
 

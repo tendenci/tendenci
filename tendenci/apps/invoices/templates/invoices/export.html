@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
 <style>
     .ui-datepicker {z-index: 999 !important;}
 </style>
@@ -48,10 +48,10 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script type="text/javascript">
-       $(".datepicker").live('focus', function() {
-            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+       $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
        });
     </script>
 {% endblock extra_body %}

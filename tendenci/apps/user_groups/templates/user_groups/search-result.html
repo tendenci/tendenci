@@ -10,11 +10,11 @@
         {% if group.notes %}
             <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
         {% endif %}
-        
+
         {% if group.type == 'system_generated' %}
-		<div class="system-generated">System Generated Group</div>
-		{% endif %}
+        <div class="system-generated">System Generated Group</div>
+        {% endif %}
     </div>
-    
+
     {% include 'user_groups/meta.html' %}
 </div>

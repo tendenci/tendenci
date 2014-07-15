@@ -28,11 +28,11 @@
   {% endfor %}
 {% endif %}
     <div class="profile-wrap">
-    	<form action="." method="post">{% csrf_token %}
-    	<div class="forms">
-           
-           <table width="100%" border="0"> 
-           		<tr bgcolor="#f2f2f2">
+      <form action="." method="post">{% csrf_token %}
+      <div class="forms">
+
+           <table width="100%" border="0">
+               <tr bgcolor="#f2f2f2">
                    <td colspan="6" ><h2>A) {% trans 'Name Information'%} </h2></td>
                  </tr>
                  <tr>
@@ -44,14 +44,14 @@
                        <tr >
                          <td width="120" class="label" ><label for="id_first_name">{% trans 'First Name'%}{{form.first_name.required}}</label> <span class="body-copy-alerts">*</span></td>
                          <td>
-	                        {% if form.first_name.errors %}
-								{{ form.first_name.errors }}
-							{% endif %}
-							{{ form.first_name }}
-						</td>
+                          {% if form.first_name.errors %}
+                {{ form.first_name.errors }}
+              {% endif %}
+              {{ form.first_name }}
+            </td>
                        </tr>
                        <tr >
-                         <td class="label"><label for="id_initials">{% trans 'Initial'%}{%if form.initial.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> 
+                         <td class="label"><label for="id_initials">{% trans 'Initial'%}{%if form.initial.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
                          </span></td>
                          <td>{{ form.initials }}</td>
                        </tr>
@@ -59,27 +59,27 @@
                          <td width="120" class="label"><label for="id_last_name">{% trans 'Last Name'%}</label> <span class="body-copy-alerts">*</span></td>
                          <td>
                           {% if form.last_name.errors %}
-								{{ form.last_name.errors }}
-							{% endif %}
-							{{ form.last_name }}
+                {{ form.last_name.errors }}
+              {% endif %}
+              {{ form.last_name }}
                          </td>
                        </tr>
                        <tr >
                          <td class="label"><label for="id_position_title">{% trans 'Position Title'%}{%if form.position_title.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                          <td>
-							{% if form.position_title.errors %}
-								{{ form.position_title.errors }}
-							{% endif %}
-							{{ form.position_title }}
-						</td>
+              {% if form.position_title.errors %}
+                {{ form.position_title.errors }}
+              {% endif %}
+              {{ form.position_title }}
+            </td>
                        </tr>
-                       
+
                        <tr >
                          <td class="label"><label for="id_display_name">{% trans 'Display Name'%}{%if form.display_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                          <td>
                          {% if form.display_name.errors %}
-								{{ form.display_name.errors }}
-							{% endif %}
+                {{ form.display_name.errors }}
+              {% endif %}
                          {{form.display_name}}
                          </td>
                        </tr>
@@ -95,7 +95,7 @@
                  <tr>
                    <td colspan="6" >&nbsp;</td>
                  </tr>
-                 
+
                    <tr bgcolor="#f2f2f2">
                         <td colspan="6" ><h2>B) {% trans 'Phone Information'%} </h2></td>
                       </tr>
@@ -105,15 +105,15 @@
                               <td  class="label"><label for="id_phone">{% trans 'Phone'%}{%if form.phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="180">
                                {% if form.phone.errors %}
-									{{ form.phone.errors }}
-								{% endif %}
+                  {{ form.phone.errors }}
+                {% endif %}
                               {{ form.phone }}
                               </td>
                               <td  class="label"><label for="id_phone2">{% trans 'Phone2'%}{%if form.phone2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %} </td>
                               <td width="186">
                               {% if form.phone2.errors %}
-									{{ form.phone2.errors }}
-							{% endif %}
+                  {{ form.phone2.errors }}
+              {% endif %}
                               {{form.phone2}}
                               </td>
                             </tr>
@@ -121,15 +121,15 @@
                               <td  class="label"><label for="id_home_phone">{% trans 'Home Phone'%}{%if form.home_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="180">
                                {% if form.home_phone.errors %}
-									{{ form.home_phone.errors }}
-								{% endif %}
+                  {{ form.home_phone.errors }}
+                {% endif %}
                               {{ form.home_phone }}
                               </td>
                               <td  class="label"><label for="id_work_phone">{% trans 'Work Phone'%}{%if form.work_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %} </label></td>
                               <td width="186">
                               {% if form.work_phone.errors %}
-									{{ form.work_phone.errors }}
-								{% endif %}
+                  {{ form.work_phone.errors }}
+                {% endif %}
                               {{ form.work_phone }}
                               </td>
                             </tr>
@@ -137,15 +137,15 @@
                               <td  class="label"><label for="id_fax">{% trans 'Fax'%}{%if form.fax.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="180">
                                {% if form.fax.errors %}
-									{{ form.fax.errors }}
-								{% endif %}
+                  {{ form.fax.errors }}
+                {% endif %}
                               {{ form.fax }}
                               </td>
                               <td  class="label"><label for="id_mobile_phone">{% trans 'Mobile Phone'%}{%if form.mobile_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="186">
                               {% if form.mobile_phone.errors %}
-									{{ form.mobile_phone.errors }}
-								{% endif %}
+                  {{ form.mobile_phone.errors }}
+                {% endif %}
                               {{ form.mobile_phone }}
                               </td>
                             </tr>
@@ -159,7 +159,7 @@
                       <tr>
                         <td colspan="6" >&nbsp;</td>
                       </tr>
-                      
+
                        <tr bgcolor="#f2f2f2">
                         <td colspan="6" ><h2>C) {% trans 'E-mail and Internet Information'%} </h2></td>
                       </tr>
@@ -170,8 +170,8 @@
                               </td>
                               <td>
                               {% if form.email.errors %}
-									{{ form.email.errors }}
-								{% endif %}
+                  {{ form.email.errors }}
+                {% endif %}
                               {{ form.email }}
                                  &nbsp;&nbsp;<label for="id_direct_mail">{% trans 'Receive Email?'%}</label>
                                 {{ form.direct_mail }}
@@ -180,33 +180,33 @@
                             <tr >
                               <td width="120" class="label"><label for="id_email2">{% trans 'Secondary Email'%}{%if form.email2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td>
-								{% if form.email2.errors %}
-									{{ form.email2.errors }}
-								{% endif %}
+                {% if form.email2.errors %}
+                  {{ form.email2.errors }}
+                {% endif %}
                               {{ form.email2 }}
-							</td>
+              </td>
                             </tr>
                             <tr >
                               <td width="120" class="label"><label for="id_url">{% trans 'Web Site'%}{%if form.url.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                               <td>
-								{% if form.url.errors %}
-									{{ form.url.errors }}
-								{% endif %}
+                {% if form.url.errors %}
+                  {{ form.url.errors }}
+                {% endif %}
                               {{ form.url }}
-							 </td>
+               </td>
                             </tr>
                             <tr >
-                              <td colspan="2"><label for="id_hide_email">{% trans 'Hide email addresses?'%} </label>&nbsp;&nbsp;&nbsp; 
-								{{ form.hide_email }}
-								 Yes </td>
+                              <td colspan="2"><label for="id_hide_email">{% trans 'Hide email addresses?'%} </label>&nbsp;&nbsp;&nbsp;
+                {{ form.hide_email }}
+                 Yes </td>
                               </tr>
                         </table></td>
                       </tr>
                       <tr>
                         <td colspan="6" >&nbsp;</td>
                       </tr>
-                      
-                      
+
+
                        <tr bgcolor="#f2f2f2">
                         <td colspan="6" ><h2>D) {% trans 'Company Information'%} </h2></td>
                       </tr>
@@ -215,32 +215,32 @@
                         <tr >
                           <td class="label"><label for="id_company">{% trans 'Company'%}{%if form.company.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td>
-							{% if form.company.errors %}
-									{{ form.company.errors }}
-								{% endif %}
+              {% if form.company.errors %}
+                  {{ form.company.errors }}
+                {% endif %}
                               {{ form.company }}
-							
-							</td>
+
+              </td>
                         </tr>
                          <tr >
                           <td class="label"><label for="id_department">{% trans 'Department'%}{%if form.department.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td>
-							{% if form.department.errors %}
-									{{ form.department.errors }}
-								{% endif %}
+              {% if form.department.errors %}
+                  {{ form.department.errors }}
+                {% endif %}
                               {{ form.department }}
-							
-							</td>
+
+              </td>
                         </tr>
                          </table></td>
                       </tr>
-                        
+
                       <tr>
                         <td colspan="6" >&nbsp;</td>
                       </tr>
-                 
-      
-      				<tr bgcolor="#f2f2f2">
+
+
+              <tr bgcolor="#f2f2f2">
                         <td colspan="6" ><h2>E) {% trans 'Address Information'%} </h2></td>
                       </tr>
                   <tr>
@@ -248,19 +248,19 @@
                         <tr >
                           <td width="120" class="label"><label for="id_mailing_name">{% trans 'Mailing Name'%}{%if form.mailing_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                           <td colspan="2" nowrap>(&quot;Mr &amp; Mrs ?&quot;)
-                          
-							{% if form.mailing_name.errors %}
-									{{ form.mailing_name.errors }}
-								{% endif %}
+
+              {% if form.mailing_name.errors %}
+                  {{ form.mailing_name.errors }}
+                {% endif %}
                               {{ form.mailing_name }}
-						</td>
+            </td>
                         </tr>
                         <tr >
                           <td class="label"><label for="id_address">{% trans 'Address'%}{%if form.address.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td colspan="2">
                           {% if form.address.errors %}
-									{{ form.address.errors }}
-								{% endif %}
+                  {{ form.address.errors }}
+                {% endif %}
                               {{ form.address }}
                           <span class="copyright">{% trans '(line 1)'%}</span></td>
                         </tr>
@@ -268,48 +268,48 @@
                           <td class="label"><label for="id_address2">{% trans 'Address Line 2'%}</label></td>
                           <td colspan="2">
                           {% if form.address2.errors %}
-									{{ form.address2.errors }}
-								{% endif %}
+                  {{ form.address2.errors }}
+                {% endif %}
                               {{ form.address2 }}
                           <span class="copyright">{% trans '(line 2)'%}</span></td>
                         </tr>
                         <tr >
-                          <td nowrap><label for="id_city">{% trans 'City'%}{%if form.city.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> 
+                          <td nowrap><label for="id_city">{% trans 'City'%}{%if form.city.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
                           / <label for="id_state">{% trans 'State'%}{%if form.state.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
                            / <label for="id_zipcode">{% trans 'Zipcode'%}{%if form.zipcode.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
                           </td>
                           <td colspan="2">
-                          	{% if form.city.errors %}
-									{{ form.city.errors }}
-								{% endif %}
-								 {% if form.state.errors %}
-									{{ form.state.errors }}
-								{% endif %}
-								 {% if form.zipcode.errors %}
-									{{ form.zipcode.errors }}
-								{% endif %}
+                            {% if form.city.errors %}
+                  {{ form.city.errors }}
+                {% endif %}
+                 {% if form.state.errors %}
+                  {{ form.state.errors }}
+                {% endif %}
+                 {% if form.zipcode.errors %}
+                  {{ form.zipcode.errors }}
+                {% endif %}
                           {{ form.city }} / {{ form.state }} / {{ form.zipcode }}
-							</td>
+              </td>
                         </tr>
                         <tr >
                           <td class="label"><label for="id_country">{% trans 'Country'%}{%if form.country.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td colspan="2">
-                          	{% if form.country.errors %}
-									{{ form.country.errors }}
-								{% endif %}
+                            {% if form.country.errors %}
+                  {{ form.country.errors }}
+                {% endif %}
                               {{ form.country }}
                            </td>
                         </tr>
                         <tr >
                           <td class="label"><label for="id_hide_address">{% trans 'Hide address?'%} </td>
-                          <td colspan="2">{{form.hide_address}} {% trans "Yes" %} 
+                          <td colspan="2">{{form.hide_address}} {% trans "Yes" %}
                           </td>
                         </tr>
                         </table></td>
                         </tr>
-                        
-                        
-                        
+
+
+
                       <tr bgcolor="#f2f2f2">
                         <td colspan="6" ><h2>F) {% trans 'Login Information'%} </h2></td>
                       </tr>
@@ -318,43 +318,43 @@
                            <tr >
                              <td width="120" class="label"><label for="id_username">{% trans 'Username'%}</label> <span class="body-copy-alerts">*</span></td>
                              <td >
-								{% if form.username.errors %}
-									{{ form.username.errors }}
-								{% endif %}
+                {% if form.username.errors %}
+                  {{ form.username.errors }}
+                {% endif %}
                               <div>{{ form.username }}</div>
-			      <a href="{% url auth_password_change user_this.pk %}">{% trans "change password" %}</a>
-							 </td>
+            <a href="{% url auth_password_change user_this.pk %}">{% trans "change password" %}</a>
+               </td>
                            </tr>
-                      
+
                            <tr >
                              <td nowrap class="label"><label for="id_interactive">{% trans 'Interactive'%}</label> </td>
                              <td>
                              {% if form.interactive.errors %}
-									{{ form.interactive.errors }}
-								{% endif %}
+                  {{ form.interactive.errors }}
+                {% endif %}
                              {{ form.interactive }}
                              </td>
                            </tr>
 
-							{% if form.status_detail %}
+              {% if form.status_detail %}
                            <tr >
                              <td nowrap class="label"><label for="id_status_detail">{% trans 'Status Detail'%}</label> </td>
                              <td>
                              {% if form.status_detail.errors %}
-									{{ form.status_detail.errors }}
-								{% endif %}
+                  {{ form.status_detail.errors }}
+                {% endif %}
                              {{ form.status_detail }}
                              </td>
                            </tr>
-						   {% endif %}
+               {% endif %}
                       </table></td>
                       </tr>
-                       
+
                       <tr>
                         <td colspan="6" >&nbsp;</td>
                       </tr>
-                      
-      				<tr bgcolor="#f2f2f2">
+
+              <tr bgcolor="#f2f2f2">
                         <td colspan="6" ><h2>H) {% trans 'Notes '%}</h2></td>
                       </tr>
                       <tr>
@@ -363,15 +363,15 @@
                               <td width="50" colspan="3" valign="top" class="label"><label for="id_notes">{% trans 'Notes'%}</label> </td>
                               <td>{{ form.notes }} </td>
                             </tr>
-                           
+
                         </table></td>
                       </tr>
                       <tr>
                         <td colspan="6" >&nbsp;</td>
-                      </tr>                
-  
-      
-      				 <tr bgcolor="#f2f2f2">
+                      </tr>
+
+
+               <tr bgcolor="#f2f2f2">
                         <td colspan="6" ><h2>I) {% trans 'Optional Information'%} </h2></td>
                       </tr>
                       <tr>
@@ -380,24 +380,24 @@
                               <td width="80" nowrap class="label"><label for="id_time_zone">{% trans 'Time Zone'%}</label> </td>
                               <td colspan="3" >
                                {% if form.time_zone.errors %}
-									{{ form.time_zone.errors }}
-								{% endif %}
+                  {{ form.time_zone.errors }}
+                {% endif %}
                               {{ form.time_zone }}</td>
                             </tr>
                             <tr >
                               <td width="80" class="label"><label for="id_language">{% trans 'Language'%} </td>
                               <td width="191" >
                               {% if form.language.errors %}
-									{{ form.language.errors }}
-								{% endif %}
+                  {{ form.language.errors }}
+                {% endif %}
                               {{ form.language }}
                               </td>
                               <td width="58" class="label"><label for="id_sex">{% trans 'Gender'%}</label>
                                </td>
                               <td width="203" >
                               {% if form.sex.errors %}
-									{{ form.sex.errors }}
-								{% endif %}
+                  {{ form.sex.errors }}
+                {% endif %}
                               {{ form.sex }}
                               </td>
                             </tr>
@@ -405,12 +405,12 @@
                               <td  class="label"><label for="id_spouse">{% trans 'Spouse'%}{%if form.spouse.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td >
                               {% if form.spouse.errors %}
-									{{ form.spouse.errors }}
-								{% endif %}
+                  {{ form.spouse.errors }}
+                {% endif %}
                               {{ form.spouse }}
                               </td>
                               <td class="label"><label for="id_dob">{% trans 'DOB'%}{%if form.dob.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
-                              <td > 
+                              <td >
                               {% if form.dob.errors %}
                                 {{ form.dob.errors }}
                               {% endif %}
@@ -423,7 +423,7 @@
                         <td colspan="6" >&nbsp;</td>
                       </tr>
 {% if request.user.is_superuser  %}
-					<tr>
+          <tr>
                      <td colspan="6" ></td>
                    </tr>
                    <tr>
@@ -464,7 +464,7 @@
                      <td colspan="6"><span >
                      </span></td>
                    </tr>
-	
+
 {% endif %}
                     <tr>
                      <td colspan="6">&nbsp;</td>
@@ -478,12 +478,12 @@
                      </td>
                      <td>&nbsp;</td>
                     </tr>
-      
-      
+
+
            </table>
-           
-           
-		</div>
+
+
+    </div>
         </form>
     </div>
 </div>
@@ -492,5 +492,5 @@
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 {% endblock %}

@@ -7,13 +7,13 @@
 
 <div class="t-iconrow">
 
-	{% if can_edit %}
-		<a class="option-link edit" href="{% url navs.edit opt_object.pk %}">{% trans "Edit" %}</a>
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url navs.edit opt_object.pk %}">{% trans "Edit" %}</a>
         <a class="option-link edit" href="{% url navs.edit_items opt_object.pk %}">{% trans "Edit Nav Items" %}</a>
-	{% endif %}
-    
-    {% if can_delete %}
-        <a class="option-link delete" href="{% url navs.delete opt_object.pk %}">{% trans "Delete" %}</a>			
     {% endif %}
-    
+
+    {% if can_delete %}
+        <a class="option-link delete" href="{% url navs.delete opt_object.pk %}">{% trans "Delete" %}</a>
+    {% endif %}
+
 </div>

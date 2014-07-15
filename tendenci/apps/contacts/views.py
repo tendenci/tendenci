@@ -29,9 +29,9 @@ except: notification = None
 def details(request, id=None, template_name="contacts/view.html"):
     if not id: return HttpResponseRedirect(reverse('contacts'))
     contact = get_object_or_404(Contact, pk=id)
-    
+
     if has_view_perm(request.user,'contacts.view_contact',contact):
-        return render_to_response(template_name, {'contact': contact}, 
+        return render_to_response(template_name, {'contact': contact},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -65,7 +65,7 @@ def print_view(request, id, template_name="contacts/print-view.html"):
     contact = get_object_or_404(Contact, pk=id)
 
     if has_view_perm(request.user,'contacts.view_contact',contact):
-        return render_to_response(template_name, {'contact': contact}, 
+        return render_to_response(template_name, {'contact': contact},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -76,7 +76,7 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
 
         if request.method == "POST":
             form = form_class(request.POST)
-            if form.is_valid():           
+            if form.is_valid():
                 contact = form.save(commit=False)
                 # set up the user information
                 contact.creator = request.user
@@ -86,28 +86,28 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
                 contact.allow_anonymous_view = False
                 contact.save()
 
-                ObjectPermission.objects.assign(contact.creator, contact) 
-                
+                ObjectPermission.objects.assign(contact.creator, contact)
+
                 return HttpResponseRedirect(reverse('contact', args=[contact.pk]))
         else:
             form = form_class()
             print form_class()
-           
-        return render_to_response(template_name, {'form':form}, 
+
+        return render_to_response(template_name, {'form':form},
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
 @login_required
 def delete(request, id, template_name="contacts/delete.html"):
     contact = get_object_or_404(Contact, pk=id)
 
-    if has_perm(request.user,'contacts.delete_contact'):   
+    if has_perm(request.user,'contacts.delete_contact'):
         if request.method == "POST":
             contact.delete()
             return HttpResponseRedirect(reverse('contact.search'))
-    
-        return render_to_response(template_name, {'contact': contact}, 
+
+        return render_to_response(template_name, {'contact': contact},
             context_instance=RequestContext(request))
     else:
         raise Http403

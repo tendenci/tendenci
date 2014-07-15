@@ -13,10 +13,10 @@
 <div class="t">
 {{ block.super }}
 {% users_nav request.user user_this %}
-	{% users_options request.user user_this %}
-	<h1>{% trans "Upload / Change Avatar" %}</h1>
-	 <div class="clear-right"></div>
-	<h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url }}">{{user_this.first_name }} {{ user_this.last_name }}</a></h2>
+    {% users_options request.user user_this %}
+    <h1>{% trans "Upload / Change Avatar" %}</h1>
+     <div class="clear-right"></div>
+    <h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url }}">{{user_this.first_name }} {{ user_this.last_name }}</a></h2>
     <p>{% trans "Current avatar:" %} </p>
     {% avatar user_this %}
     {% if not avatars %}
@@ -38,9 +38,9 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 <script type="text/javascript">
 var iconrow = new dropdown({
-	container:	'more-options-wrap',
-	trigger:	'more-options-trigger',
-	target:		'more-options-target'
+    container:    'more-options-wrap',
+    trigger:    'more-options-trigger',
+    target:        'more-options-target'
 });
 </script>
 {% endblock %}

@@ -18,8 +18,8 @@ ALLOWED_LOGO_EXT = (
     '.jpg',
     '.jpeg',
     '.gif',
-    '.png' 
-)   
+    '.png'
+)
 
 END_DT_INITIAL = datetime.now() + timedelta(weeks=2)
 
@@ -88,19 +88,19 @@ class StoryForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
-                    })]   
+                    })]
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:
             extension = splitext(photo_upload.name)[1]
-            
+
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
-            
+
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
@@ -122,7 +122,7 @@ class StoryForm(TendenciBaseForm):
             return group
         except Group.DoesNotExist:
             raise forms.ValidationError(_('Invalid group selected.'))
-                 
+
     def __init__(self, *args, **kwargs):
         super(StoryForm, self).__init__(*args, **kwargs)
         if self.instance.image:

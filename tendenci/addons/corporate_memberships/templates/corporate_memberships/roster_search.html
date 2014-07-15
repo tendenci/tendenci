@@ -37,13 +37,13 @@
 
 </style>
 {% endblock %}
-   
+
 {% block body %}
 <div class="t">
 <div class="t-search">
  {% corpmemb_nav request.user corp_membership %}
- 
-<h1>Roster - 
+
+<h1>Roster -
     {% if corp_membership %}
     <a href="{% url corpmembership.view corp_membership.id %}">{{ corp_profile.name }}</a>
     {% else %}
@@ -100,11 +100,11 @@
 <div class="float-left">
       <div class="form-field" style="margin-left: 3em;">
         {{ form.email.label }}: {{ form.email }}
-    </div> 
-     <div class="form-field" style="margin-left: 3em;">
-    {{ form.active_only }} <label for="id_active_only" style="display: inline;">{{ form.active_only.label }}</label> 
     </div>
-     
+     <div class="form-field" style="margin-left: 3em;">
+    {{ form.active_only }} <label for="id_active_only" style="display: inline;">{{ form.active_only.label }}</label>
+    </div>
+
 </div>
 <div class="clear-left"></div>
 <div class="form-field">
@@ -117,7 +117,7 @@
 {% autopaginate memberships 10 %}
 <div class="roster-search-wrap">
 <span><em>{{ paginator.count }} {% if active_only %}{% trans "Active" %}{% endif %} {% trans "Member" %}{{ paginator.count|pluralize }} {% trans "Found" %}</em></span>
-    
+
     {% for membership in memberships %}
 	    {% with membership|get_object as membership %}
 			<div class="member-line {% if membership.status_detail != 'active' %}inactive{% endif %}">
@@ -132,7 +132,7 @@
 							<span class="label">Inactive</span>
 							{% endif %}
 					</div>
-					
+
 					<div class="member-left">
 						<div>{% trans "Email: " %}{{ membership.user.email }}</div>
 						<div>{% trans "Member Type: " %}{{ membership.membership_type }}</div>
@@ -149,19 +149,19 @@
 				    	    {% trans "Status: " %}
 				    	    {% if request.user.profile.is_superuser %}
 				    	    <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.status_detail|capfirst }}</a>
-				    	    
+
 				    	    {% else %}
 				    	    {{ membership.status_detail|capfirst }}
 				    	    {% endif %}
 				    	</div>
 					</div>
-					
+
 				</div>
-	    	
-	    	<div class="clear-left"></div>	
+
+	    	<div class="clear-left"></div>
 	    	</div>
-	    	
-		{% endwith %}	
+
+		{% endwith %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
 	{% endfor %}
@@ -169,7 +169,7 @@
 
 
  {% paginate %}
- 
+
  </div>
 </div>
 

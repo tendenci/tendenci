@@ -39,7 +39,7 @@ class Meta(models.Model):
             raise AttributeError, 'Method get_meta() does not exist in %s' % self.object._meta.object_name
 
         return getattr(self.object,'get_meta')(meta_name)
-        
+
     def add_accessor_methods(self):
         """
         Dynamically create Meta methods.

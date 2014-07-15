@@ -14,7 +14,7 @@ class Command(BaseCommand):
         expired = MembershipDefault.objects.filter(expire_dt__lt=datetime.now(), status_detail='active'
             ).update(status_detail='expired')
 
-        
+
         # memberships will be set to active because of the expire_dt
         active = MembershipDefault.objects.filter(expire_dt__gt=datetime.now(), status_detail='expired'
         ).update(status_detail='active')

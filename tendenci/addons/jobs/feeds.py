@@ -13,7 +13,7 @@ class LatestEntriesFeed(SubFeed):
     def items(self):
         items = Job.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-update_dt')[:20]
         return items
-    
+
     def item_title(self, item):
         return item.title
 
@@ -30,8 +30,8 @@ class JobSitemap(TendenciSitemap):
     """ Sitemap information for jobs """
     changefreq = "monthly"
     priority = 0.5
-    
-    def items(self):     
+
+    def items(self):
         items = Job.objects.filter(**PUBLIC_FILTER).order_by('-update_dt')
         return items
 

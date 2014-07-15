@@ -16,60 +16,60 @@
 <h1>{% if email %}{% trans 'Edit an Email Block'%}{% else %}{% trans 'Add an Email Block'%}{% endif %}</h1>
 <p>{% trans "Please enter Email or Email Domain, but not both." %}</p>
 <form method="post" action=".">{% csrf_token %}
-	<div class="field-wrapper">
-		{% if form.email.errors %}
-			{{ form.email.errors }}
-		{% endif %}
-		<label for="id_email" class="field-label">{% trans 'Email'%} :</label>
-		{{ form.email }}
-	</div>
-	<div class="clear-left"></div>
-	
-	<div class="field-wrapper">
-		<div class="field-label">{% trans 'OR'%}</div>
-	</div>
-	<div class="clear-left"></div>
-	
-	<div class="field-wrapper">
-		{% if form.email_domain.errors %}
-			{{ form.email_domain.errors }}
-		{% endif %}
-		<label for="id_email_domain" class="field-label">{% trans 'Email Domain'%} :</label>
-		{{ form.email_domain }}
-	</div>
-	<div class="clear-left"></div>
-	
-	<div class="field-wrapper">
-		{% if form.reason.errors %}
-			{{ form.reason.errors }}
-		{% endif %}
-		<label for="id_reason" class="field-label">{% trans 'Reason'%} :</label>
-		{{ form.reason }}
-	</div>
-	<div class="clear-left"></div>
-	
-	
-	<div class="field-wrapper">
-		{% if form.status_detail.errors %}
-			{{ form.status_detail.errors }}
-		{% endif %}
-		<label for="id_status_detail" class="field-label">{% trans 'Status Detail'%} :</label>
-		{{ form.status_detail }}
-	</div>
-	<div class="clear-left"></div>
-	
-	<div class="field-wrapper">
-		{% if form.status.errors %}
-			{{ form.status.errors }}
-		{% endif %}
-		<label for="id_status" class="field-label">{% trans 'Status'%} :</label>
-		{{ form.status }}
-	</div>
-	<div class="clear-left"></div>
+    <div class="field-wrapper">
+        {% if form.email.errors %}
+            {{ form.email.errors }}
+        {% endif %}
+        <label for="id_email" class="field-label">{% trans 'Email'%} :</label>
+        {{ form.email }}
+    </div>
+    <div class="clear-left"></div>
 
-	<div class="submitbutton">
-	<input type="submit" name="submit" value="Save" id="email-submit-button" />
-	</div>
+    <div class="field-wrapper">
+        <div class="field-label">{% trans 'OR'%}</div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+        {% if form.email_domain.errors %}
+            {{ form.email_domain.errors }}
+        {% endif %}
+        <label for="id_email_domain" class="field-label">{% trans 'Email Domain'%} :</label>
+        {{ form.email_domain }}
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+        {% if form.reason.errors %}
+            {{ form.reason.errors }}
+        {% endif %}
+        <label for="id_reason" class="field-label">{% trans 'Reason'%} :</label>
+        {{ form.reason }}
+    </div>
+    <div class="clear-left"></div>
+
+
+    <div class="field-wrapper">
+        {% if form.status_detail.errors %}
+            {{ form.status_detail.errors }}
+        {% endif %}
+        <label for="id_status_detail" class="field-label">{% trans 'Status Detail'%} :</label>
+        {{ form.status_detail }}
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+        {% if form.status.errors %}
+            {{ form.status.errors }}
+        {% endif %}
+        <label for="id_status" class="field-label">{% trans 'Status'%} :</label>
+        {{ form.status }}
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="submitbutton">
+    <input type="submit" name="submit" value="Save" id="email-submit-button" />
+    </div>
 </form>
 
 </div>

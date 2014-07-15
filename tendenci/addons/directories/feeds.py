@@ -13,7 +13,7 @@ class LatestEntriesFeed(SubFeed):
     def items(self):
         items = Directory.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]
         return items
-    
+
     def item_title(self, item):
         return item.headline
 
@@ -30,7 +30,7 @@ class DirectorySitemap(TendenciSitemap):
     """ Sitemap information for directories """
     changefreq = "monthly"
     priority = 0.5
-    
+
     def items(self):
         items = Directory.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items

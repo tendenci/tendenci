@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
@@ -19,15 +19,15 @@
     {% event_nav request.user event %}
 
     <h1>{% trans "Add Addon for" %} {{ event.title }}</h1>
-    
+
     <div class="event-wrap">
-    	<form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">
-			{{ form|styled_form }}
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
             <h3>Options</h3>
             {{ formset|styled_multi_forms }}
-			<input type="submit" value="Add" />
-		</div>
+            <input type="submit" value="Add" />
+        </div>
         </form>
     </div>
 </div>
@@ -36,8 +36,8 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
 {% endblock %}

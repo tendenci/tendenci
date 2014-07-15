@@ -11,11 +11,11 @@ class PaymentRegistry(LogRegistry):
             'add':('281000', 'FF6666'), # add
             'edit':('282000', 'FF6666'), # edit
             'delete':('283000', 'FF6666'), # delete
-            'search':('284000', 'FF6666'), # search 
-            'view':('285000', 'FF6666'), # view 
-            'export':('286000', 'FF6666'), # export 
-            'edit_credit_card_approved':('282101', 'FF6666'), # Edit - Credit card approved 
-            'edit_credit_card_declined':('282102', 'FF6666'), # Edit - Credit card declined 
+            'search':('284000', 'FF6666'), # search
+            'view':('285000', 'FF6666'), # view
+            'export':('286000', 'FF6666'), # export
+            'edit_credit_card_approved':('282101', 'FF6666'), # Edit - Credit card approved
+            'edit_credit_card_declined':('282102', 'FF6666'), # Edit - Credit card declined
         },
     }
 

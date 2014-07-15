@@ -6,7 +6,7 @@ function getUserStatus(form){
     var email = form.find('.registrant-email').val();
     var memberid = form.find('.registrant-memberid').val();
     var pricingid = form.find('.registrant-pricing').val();
-    
+
     $.ajax({
         url: "{% url event.reg_user_status event.pk %}",
         type: "GET",
@@ -43,7 +43,7 @@ function getPricingList(){
         dataType: "json",
         success: function(d){
             var p_list = d['pricings'];
-            
+
             // reinitialize pricings
             var p_html = "";
             for(i=0; i<p_list.length; i++){
@@ -64,7 +64,7 @@ function getPricingList(){
                 p_html = p_html + ' ' + p_list[i]['title'] + ' (' + p_list[i]['quantity'] + ' for {{ SITE_GLOBAL_CURRENCYSYMBOL }}' + p_list[i]['price'] + ')</div>'
             }
             $('#pricing-choices').html(p_html);
-            
+
             //reinitialize addons
             $('.add-addons-box').html(d['add-addons-form']);
         }
@@ -76,7 +76,7 @@ $(document).ready(function(){
     $('#pricing-check').click(function(){
         getPricingList();
     });
-    
+
     $('#discount_check').click(function(){
         var code = $('#id_discount').val();
         var price = $('#total-amount').html();
@@ -105,13 +105,13 @@ $(document).ready(function(){
             }
         );
     });
-    
+
     $('.register-submit').click(function(){
         // validate that emails/memberids are only used once.
-        
+
         emails = $('.registrant-email');
         memberids = $('.registrant-memberid');
-        
+
         // check email uniqueness
         var match_found = false;
         for(i=0;i<emails.length-1;i++){
@@ -128,12 +128,12 @@ $(document).ready(function(){
                     break
                 }
             }
-        };        
+        };
         if(match_found){
             alert('{% trans "An email can only be used once per registration!" %}');
             return false;
         }
-        
+
         // check memberid uniqueness
         var match_found = false;
         for(i=0;i<memberids.length-1;i++){
@@ -150,11 +150,11 @@ $(document).ready(function(){
                     break
                 }
             }
-        };        
+        };
         if(match_found){
             alert('{% trans "An Member ID can only be used once per registration!" %}');
             return false;
-        }        
+        }
     });
 
 });

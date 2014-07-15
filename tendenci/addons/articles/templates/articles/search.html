@@ -11,15 +11,15 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 <link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url article.feed %}" />
 {% endblock %}
 
 {% block extra_body %}
-	{{block.super}}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/articles.js"></script>
+    {{block.super}}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/articles.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -30,7 +30,7 @@
     {% autopaginate articles 10 %}
     {% article_search %}
     <span><em>{{ paginator.count }} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Article Search' %} {% trans "Found" %}</em></span>
-    
+
     <div class="articles-wrap">
     {% for article in articles %}
         {% search_result article %}

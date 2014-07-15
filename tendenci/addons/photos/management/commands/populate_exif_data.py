@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from tendenci.addons.photos.models import Image
-        
+
         images = Image.objects.all()
         for image in images:
             if not image.exif_data:

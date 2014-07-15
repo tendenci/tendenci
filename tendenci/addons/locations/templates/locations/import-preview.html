@@ -15,18 +15,18 @@
 {% block body %}
 
 <div id="import-wrap" class="preview">
-    
-	<h1>{% trans "Locations Import Preview" %}</h1>
-    
-	<p class="timestamp">{% trans "Step 3/4" %} &middot; {{ now }}</p>
-    
-	<p class="msg">
+
+    <h1>{% trans "Locations Import Preview" %}</h1>
+
+    <p class="timestamp">{% trans "Step 3/4" %} &middot; {{ now }}</p>
+
+    <p class="msg">
         <em>{{ stats.all }}</em> import{{ stats.all|pluralize }};
         <em>{{ stats.added }}</em> will be added,
         and <em>{{ stats.skipped }}</em> will be skipped.</p>
         <em><a title="Looks good!" href="{% url membership_import_confirm locport.id %}" id="import-confirm">Import Now &rarr;</a></em>
     </p>
-    
+
     <div style="margin-top:10px; overflow:scroll;">
         <table>
             <tr class="header">
@@ -78,7 +78,7 @@
             {% endfor %}
         </table>
     </div>
-    
+
     <div style="display: none;">
         <form id="mapping-form" action="{% url locations_import_confirm locport.id %}" method="post">{% csrf_token %}
             {{ form.as_p }}
@@ -90,13 +90,13 @@
 
 {% block extra_body %}
 <script type="text/javascript">
-	$(document).ready(function(){
-		// import submit
+    $(document).ready(function(){
+        // import submit
         // this is used to resubmit the mapping form on confirmation
-		$('#import-confirm').click(function(){
-			$('#mapping-form').submit();
-			return false;	// cancel
-		});
-	});
+        $('#import-confirm').click(function(){
+            $('#mapping-form').submit();
+            return false;    // cancel
+        });
+    });
 </script>
 {% endblock %}

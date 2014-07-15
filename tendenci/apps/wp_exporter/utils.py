@@ -7,7 +7,7 @@ from tagging.models import Tag
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.categories.models import Category
 from tendenci.apps.pages.models import Page
-    
+
 
 def gen_xml(data):
     """
@@ -59,7 +59,7 @@ def encode_site(xml):
     #xml.write("<wp:base_blog_url>http://sambixly.wordpress.com</wp:base_blog_url>", depth=1)
     encode_categories(xml)
     encode_tags(xml)
-    
+
 def encode_categories(xml):
     # since wordpress categories can only have single parents,
     # I will be not be associating the categories with any parents.
@@ -94,7 +94,7 @@ def encode_categories(xml):
         ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
     except ImportError:
         ct_casestudy = None
-    
+
     #encode tendenci categories
     cats = Category.objects.filter(
         Q(categoryitem_category__content_type=ct_page) or
@@ -108,7 +108,7 @@ def encode_categories(xml):
         xml.write("<wp:category_parent></wp:category_parent>", depth=2)
         xml.write("<wp:cat_name><![CDATA[%s]]></wp:cat_name>"%cat.name, depth=2)
         xml.close("wp:category", depth=1)
-        
+
     #encode content types as categories
     types = [ct_article, ct_job, ct_event, ct_news, ct_page, ct_resume, ct_casestudy]
     for type in types:
@@ -162,36 +162,36 @@ def encode_tags(xml):
         xml.write("<wp:tag_slug>%s</wp:tag_slug>"%slugify(tag), depth=2)
         xml.write("<wp:tag_name><![CDATA[%s]]></wp:tag_name>"%tag, depth=2)
         xml.close("wp:tag", depth=1)
-        
+
 def encode_item(xml, offset, item, ct, title="", content=""):
     xml.open("item", depth=1)
     xml.write("<title>%s</title>"%title, depth=2)
     xml.write("<pubDate>%s</pubDate>"%item.create_dt.strftime("%a, %d %b %Y %H:%M:%S %z"), depth=2)
     xml.write("<dc:creator><![CDATA[%s]]></dc:creator>"%item.creator_username, depth=2)
-    
+
     #get all the item's categories
     cats = Category.objects.filter(
         categoryitem_category__object_id = item.id,
         categoryitem_category__content_type = ct)
-    
+
     #encode item's categories
     for cat in cats:
         xml.write("<category><![CDATA[%s]]></category>"%cat.name, depth=2)
         xml.write('<category domain="category" nicename="%s"><![CDATA[%s]]></category>' \
             % (slugify(cat.name),cat.name), depth=2)
-        
+
     #encode ct as category
     xml.write("<category><![CDATA[%s]]></category>"%ct, depth=2)
     xml.write('<category domain="category" nicename="%s"><![CDATA[%s]]></category>' \
             % (slugify(ct),ct), depth=2)
-    
+
     # get all the item's tags and encode
     tags = Tag.objects.get_for_object(item)
     for tag in tags:
         xml.write('<category domain="tag"><![CDATA[%s]]></category>'%tag.name, depth=2)
         xml.write('<category domain="tag" nicename="%s"><![CDATA[%s]]></category>' \
             % (slugify(tag.name), tag.name), depth=2)
-            
+
     xml.write("<description></description>", depth=2)
     xml.write("<content:encoded><![CDATA[%s]]></content:encoded>"%content, depth=2)
     xml.write("<excerpt:encoded><![CDATA[]]></excerpt:encoded>", depth=2)
@@ -208,7 +208,7 @@ def encode_item(xml, offset, item, ct, title="", content=""):
     xml.write("<wp:post_password></wp:post_password>", depth=2)
     xml.write("<wp:is_sticky>0</wp:is_sticky>", depth=2)
     xml.close("item", depth=1)
-    
+
 def encode_pages(xml, offset=0):
     pages = Page.objects.filter(status=True)
     ct = ContentType.objects.get_for_model(Page)
@@ -216,7 +216,7 @@ def encode_pages(xml, offset=0):
         offset = offset+1
         encode_item(xml, offset, page, ct, title=page.title, content=page.content)
     return offset
-        
+
 def encode_articles(xml, offset=0):
     try:
         from tendenci.addons.articles.models import Article
@@ -228,7 +228,7 @@ def encode_articles(xml, offset=0):
         return offset
     except ImportError:
         pass
-        
+
 def encode_news(xml, offset=0):
     try:
         from tendenci.addons.news.models import News
@@ -240,7 +240,7 @@ def encode_news(xml, offset=0):
         return offset
     except ImportError:
         pass
-        
+
 def encode_jobs(xml, offset=0):
     try:
         from tendenci.addons.jobs.models import Job
@@ -273,7 +273,7 @@ def encode_events(xml, offset=0):
         return offset
     except ImportError:
         pass
-        
+
 def encode_resumes(xml, offset=0):
     try:
         from tendenci.addons.resumes.models import Resume
@@ -296,7 +296,7 @@ def encode_resumes(xml, offset=0):
         return offset
     except ImportError:
         pass
-        
+
 def encode_casestudies(xml, offset=0):
     try:
         from tendenci.addons.case_studies.models import CaseStudy

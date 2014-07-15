@@ -18,5 +18,5 @@ def thank_you(request, payment_id, template_name='payments/receipt.html'):
         else:
             payment.response_reason_text = "Your transaction has been declined."
 
-    return render_to_response(template_name,{'payment':payment}, 
+    return render_to_response(template_name,{'payment':payment},
                               context_instance=RequestContext(request))

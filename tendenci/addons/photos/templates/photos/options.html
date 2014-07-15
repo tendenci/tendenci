@@ -10,7 +10,7 @@
 <ul>
     <li class="photo-view"><a href="{% url photo_medium_640 opt_object.pk %}">View all sizes</a></li>
 
-	{% if can_change %}
+    {% if can_change %}
         {% if photo_set_id %}
             <li class="photo-edit" data-id="{{ opt_object.pk }}"><a href="{% url photo_edit opt_object.pk photo_set_id %}">{% trans "Edit" %}</a></li>
         {% else %}
@@ -18,11 +18,11 @@
         {% endif %}
     {% endif %}
 
-	{% if can_delete %}
+    {% if can_delete %}
         {% if photo_set_id %}
             <li class="photo-delete" data-id="{{ opt_object.pk }}"><a href="{% url photo_destroy opt_object.pk photo_set_id %}">{% trans "Delete" %}</a></li>
         {% else %}
             <li class="photo-delete" data-id="{{ opt_object.pk }}"><a href="{% url photo_destroy opt_object.pk %}">{% trans "Delete" %}</a></li>
         {% endif %}
-	{% endif %}
+    {% endif %}
 </ul>

@@ -58,12 +58,12 @@ class DiscountForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })
                     ]
-        
+
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-        
+
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
         if not self.user.profile.is_superuser:
@@ -73,7 +73,7 @@ class DiscountForm(TendenciBaseForm):
                                 'membershipset']
         content_types = ContentType.objects.filter(model__in=MODELS_WITH_DISCOUNT)
         self.fields['apps'].choices = ((c.id, c.app_label) for c in content_types)
-            
+
     def clean_discount_code(self):
         data = self.cleaned_data['discount_code']
         try:
@@ -102,7 +102,7 @@ class DiscountCodeForm(forms.Form):
     code = forms.CharField()
     model = forms.CharField()
     count = forms.IntegerField()
-    
+
     def clean(self):
         code = self.cleaned_data.get('code', '')
         count = self.cleaned_data.get('count', 1)
@@ -115,7 +115,7 @@ class DiscountCodeForm(forms.Form):
         if not discount.available_for(count):
             raise forms.ValidationError('This is not a valid discount code.')
         return self.cleaned_data
-        
+
     def new_price(self):
         code = self.cleaned_data['code']
         price = self.cleaned_data['price']
@@ -125,8 +125,8 @@ class DiscountCodeForm(forms.Form):
         if new_price < 0:
             new_price = Decimal('0.00')
         return (new_price, discount)
-    
-    
+
+
 class DiscountHandlingForm(forms.Form):
     """
     Process a list of prices, and returns a list of discounted prices.
@@ -134,31 +134,31 @@ class DiscountHandlingForm(forms.Form):
     prices = forms.CharField()
     code = forms.CharField()
     model = forms.CharField()
-    
+
     def clean(self):
         code = self.cleaned_data.get('code', '')
         model = self.cleaned_data.get('model', '')
         [self.discount] = Discount.objects.filter(discount_code=code, apps__model=model)[:1] or [None]
         if not self.discount:
             raise forms.ValidationError('This is not a valid discount code.')
-        
+
         if not self.discount.never_expires:
             now = datetime.now()
             if self.discount.start_dt > now:
                 raise forms.ValidationError('This discount code is not in effect yet.')
-            if self.discount.end_dt <= now:    
+            if self.discount.end_dt <= now:
                 raise forms.ValidationError('This discount code has expired.')
-        
+
         self.limit = 0
         if self.discount.cap != 0:
             self.limit = self.discount.cap - self.discount.num_of_uses()
             if self.limit <= 0:
                 raise forms.ValidationError('This discount code has passed the limit.')
-        
+
         return self.cleaned_data
-        
+
     def get_discounted_prices(self):
         prices = self.cleaned_data['prices']
         price_list = [Decimal(price) for price in prices.split(';')]
-        
+
         return assign_discount(price_list, self.discount)

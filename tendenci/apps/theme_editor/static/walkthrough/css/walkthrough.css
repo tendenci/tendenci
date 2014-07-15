@@ -78,7 +78,7 @@
 
 
 /*** tooltip ***/
-#jpWalkthrough #jpwTooltip{    
+#jpWalkthrough #jpwTooltip{
     overflow: visible;
     padding:10px;
     background: #222;
@@ -97,7 +97,7 @@
     display: block;
     top: 25px;
     clear: both;
-} 
+}
 
 #jpWalkthrough #jpwTooltip .draggable-area{
     display: block;
@@ -110,7 +110,7 @@
     z-index: 10000;
 }
 
-/*#jpWalkthrough #jpwTooltip #tooltipWrapper{    
+/*#jpWalkthrough #jpwTooltip #tooltipWrapper{
 
     margin: 3px 29px 20px 3px;
     background: url(../images/skin.png) no-repeat left top;

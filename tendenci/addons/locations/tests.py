@@ -19,17 +19,17 @@ class LocationLocationTest(TestCase):
         self.user.set_password('google')
         self.user.is_active = True
         self.user.save()
-        
-    
+
+
     def tearDown(self):
         self.client = None
         self.location = None
         self.user = None
-        
+
     def test_save(self):
         self.location.location_name = 'Unit Testing'
         self.location.description = 'Unit Testing'
-        
+
         # required fields
         self.location.creator = self.user
         self.location.creator_username = self.user.username
@@ -37,11 +37,11 @@ class LocationLocationTest(TestCase):
         self.location.owner_username = self.user.username
         self.location.status = True
         self.location.status_detail = 'active'
-        self.location.enclosure_length = 0   
+        self.location.enclosure_length = 0
         self.location.timezone = 'America/Chicago'
-        
+
         self.location.save()
-        
+
         self.assertEquals(type(self.location.id), long)
-        
+
 

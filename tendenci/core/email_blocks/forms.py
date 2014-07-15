@@ -23,6 +23,5 @@ class EmailBlockForm(forms.ModelForm):
                 self.instance.creator_username = user.username
             self.instance.owner = user
             self.instance.owner_username = user.username
-            
+
         return super(EmailBlockForm, self).save(*args, **kwargs)
-        

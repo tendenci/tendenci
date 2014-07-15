@@ -8,7 +8,7 @@
 <div class="t">
 {% dashboard_nav user %}
 <div class="imports">
-    <b>{% blocktrans with request.user.username as requser %}You ({{ requser }}) are importing the following file at (time) {% endblocktrans %}({% now "D d M Y P" %})</b>: <br> 
+    <b>{% blocktrans with request.user.username as requser %}You ({{ requser }}) are importing the following file at (time) {% endblocktrans %}({% now "D d M Y P" %})</b>: <br>
     <font color="red">
     {{ file_name }}
     </font>
@@ -42,7 +42,7 @@ $(document).ready(function(){
 
         $.ajax({
             type: "GET",
-            url: myurl, 
+            url: myurl,
             async: true,
             success: function(data){
                 data = data.replace(/^\s+|\s+$/g, '');
@@ -54,7 +54,7 @@ $(document).ready(function(){
                     $(".results").append(data);
                 }
 
-                if (data == ''){ 
+                if (data == ''){
                     completed = true;
                     $('.loading-icon').remove();
                 }

@@ -46,7 +46,7 @@ function save_color_changes() {
     var data = {'csrfmiddlewaretoken':$('input[name="csrfmiddlewaretoken"]').val(),
                 'colors':colorInput.val()
                };
- 
+
     $.ajax({
         type: 'post',
         dataType: 'json',

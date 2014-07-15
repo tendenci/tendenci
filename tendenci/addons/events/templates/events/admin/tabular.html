@@ -126,10 +126,10 @@
                 alternatingRows(row);
             })
         });
-        
-        
-        
-        
+
+
+
+
         var has_mapped_field = function(field){
         	var field_name = $(field).attr('name');
         	var mapped_field = $(".inline-group tr.dynamic-fields")
@@ -140,37 +140,37 @@
         		return false;
         	}
         }
-        
+
         var get_mapped_row = function(field){
         	var field_name = $(field).attr('name');
         	var mapped_field = $(".inline-group tr.dynamic-fields")
         						.find('.map_to_field select option[value="' + field_name + '"]:selected');
         	return $(mapped_field).closest('tr.dynamic-fields');
-        	
+
         }
-        
+
         var addMappedField = function(field){
         	var add_btn = $('.add-row a');
         	$(add_btn).trigger('click');
         	var template = $("#{{ inline_admin_formset.formset.prefix }}-empty");
         	var row_added = $(template).prev();
-        	
+
         	// get field_name and field_label from checkbox
         	var field_name = $(field).attr('name');
         	var field_label = $(field).next('label').html();
         	$(row_added).find('.label input').attr('value', field_label);
-        	
+
         	// remove the error message for label field
         	$(row_added).find('.label ul.errorlist').remove();
-        	
+
         	// remove the error message for field type
         	$(row_added).find('.field_type ul.errorlist').remove();
-        	
+
         	// select for map to user field
         	$(row_added).find('.map_to_field select')
         		.find('option[value="' + field_name + '"]').attr('selected', 'selected');
-        	
-        	// select for field type & choices	
+
+        	// select for field type & choices
         	var field_type = 'CharField';
         	if (field_name == 'comments'){
         		field_type = 'CharField/django.forms.Textarea';
@@ -180,21 +180,21 @@
         	}
         	if (field_name == 'meal_option'){
         		field_type = 'ChoiceField';
-        		
+
         		$(row_added).find('.choices input[type="text"]').attr('value', 'Vegetarian,Non-Vegetarian');
         	}
         	$(row_added).find('.field_type select option[value="' + field_type + '"]').attr('selected', 'selected');
-        	
+
         	// check display on roster
         	$(row_added).find('.display_on_roster input[type="checkbox"]').attr('checked', 'checked');
         	if (field_name !== 'first_name' && field_name !== 'last_name' && field_name !== 'email'){
-        		$(row_added).find('.required input[type="checkbox"]').removeAttr('checked'); 
+        		$(row_added).find('.required input[type="checkbox"]').removeAttr('checked');
         	}
-        	
+
         	if (field_name == 'first_name' || field_name == 'last_name' || field_name == 'email'){
     			$(field).attr('disabled', true);
     		}
-        	
+
         	// test if we have the delete checkbox, if so, we're on the edit page. Otherwise, on add.
         	var delete_checkbox = $(row_added).find('td.delete input[type="checkbox"]');
         	if (delete_checkbox.length > 0){
@@ -204,9 +204,9 @@
         		// hide the delete btn
         		$(row_added).find('td.delete div .inline-deletelink').closest('td div').hide();
         	}
-		
+
         }
-        
+
         var updateElementIndex2 = function(el, prefix, ndx) {
 			var id_regex = new RegExp("(" + prefix + "-\\d+)");
 			var replacement = prefix + "-" + ndx;
@@ -221,10 +221,10 @@
 			}
 		};
 
-        
+
         var deleteMappedField = function(field){
         	var field_name = $(field).attr('name');
-        	
+
         	var map_to_option = $('.map_to_field select option[value="' + field_name + '"]:selected');
         	if (map_to_option){
         		var delete_btn = $(map_to_option).closest('tr').find('td.delete .inline-deletelink');
@@ -232,7 +232,7 @@
         			delete_btn.trigger('click');
         		}else{
         			var row = $(map_to_option).parents(".dynamic-fields");
-        			
+
         			// no delete button. check if we have delete checkbox (on edit)
         			delete_checkbox = $(row).find('td.delete input[type="checkbox"]');
         			if (delete_checkbox.length > 0){
@@ -240,11 +240,11 @@
         				//$(delete_checkbox).attr('checked', 'checked');
         			}else{
         				row.remove();
-				
+
 						// Update the TOTAL_FORMS form count.
 						var forms = $(".dynamic-fields");
 						$("#id_fields-TOTAL_FORMS").val(forms.length);
-				
+
 						// Also, update names and ids for all remaining form controls
 						// so they remain in sequence:
 						for (var i=0, formCount=forms.length; i<formCount; i++)
@@ -254,25 +254,25 @@
 							});
 						}
 						return false;
-        				
+
         			}
         		}
         	}
-        	
+
         }
-        
+
         $('.mapped-fields .form-row .field-box').css({'width': '150px'});
         $('.mapped-fields .form-row label').css({'color': '#01437D'});
         $('.tabular td.choices input[type=text]').css({'width': '10em'});
         $('.tabular td.default input[type=text]').css({'width': '5em'});
         // lock the dropdown of Map to User field
        $('.map_to_field select').attr('disabled', true);
-        
+
         var existing_rows = $('.inline-group tr.dynamic-fields');
         if (existing_rows.length == 0){
         	// initialize
         	var field;
-        	var myfields = ['#id_first_name', '#id_last_name', '#id_email', 
+        	var myfields = ['#id_first_name', '#id_last_name', '#id_email',
         					'#id_company_name', '#id_phone', '#id_comments'];
         	for (var i=0; i<myfields.length; i++){
         		field = $(myfields[i]);
@@ -287,11 +287,11 @@
         		if (has_mapped_field($(myfields[i]))){
         			$(myfields[i]).attr('disabled', true);
         		}
-        		
+
         	}
         }
-	
-        
+
+
         // field checkboxes on change
         $('.mapped-fields .form-row input[type="checkbox"]').change(function(){
         	var $this = $(this);
@@ -303,13 +303,13 @@
         			var row = get_mapped_row($this);
         			var delete_checkbox = $(row).find('td.delete input[type="checkbox"]');
         			$(delete_checkbox).removeAttr('checked');
-        			
-        		}	
+
+        		}
         	}else{
         		deleteMappedField($this);
         	}
         });
-        
+
         // disable the delete buttons for mapped fields
         $(".inline-group tr.dynamic-fields").each(function(){
         	var $this = $(this);
@@ -318,7 +318,7 @@
         		$(this).find('td.delete input[type="checkbox"]').attr('disabled', true);
         	}
         });
-        
+
         // form on submit
         $('input[type="submit"]').click(function(){
         	$('.map_to_field select').removeAttr('disabled');
@@ -328,8 +328,8 @@
         	$('.inline-group tr.dynamic-fields td.delete input[type="checkbox"]').removeAttr('disabled');
         	$('#fields-group td.delete div').show();
         });
-         
-       
+
+
     });
 })(django.jQuery);
 </script>

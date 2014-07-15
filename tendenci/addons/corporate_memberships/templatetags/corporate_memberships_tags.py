@@ -107,16 +107,16 @@ class AllowViewCorpNode(Node):
         self.corp_memb = corp_memb
         self.user = user
         self.var_name = context_var
-        
+
     def resolve(self, var, context):
         return Variable(var).resolve(context)
-        
+
     def render(self, context):
         corp_memb = self.resolve(self.corp_memb, context)
         user = self.resolve(self.user, context)
 
         boo = corp_memb.allow_view_by(user)
-    
+
         if self.var_name:
             context[self.var_name] = boo
             return ""
@@ -129,13 +129,13 @@ def allow_view_corp(parser, token):
         {% allow_view_corp corp_memb user as allow_view %}
     """
     bits  = token.split_contents()
-    
+
     try: corp_memb = bits[1]
     except: corp_memb = None
-    
+
     try: user = bits[2]
     except: user = None
-    
+
     if len(bits) >= 5:
         context_var = bits[4]
     else:
@@ -148,16 +148,16 @@ class AllowEditCorpNode(Node):
         self.corp_memb = corp_memb
         self.user = user
         self.var_name = context_var
-        
+
     def resolve(self, var, context):
         return Variable(var).resolve(context)
-        
+
     def render(self, context):
         corp_memb = self.resolve(self.corp_memb, context)
         user = self.resolve(self.user, context)
 
         boo = corp_memb.allow_edit_by(user)
-    
+
         if self.var_name:
             context[self.var_name] = boo
             return ""
@@ -170,13 +170,13 @@ def allow_edit_corp(parser, token):
         {% allow_edit_corp corp_memb user as allow_edit %}
     """
     bits  = token.split_contents()
-    
+
     try: corp_memb = bits[1]
     except: corp_memb = None
-    
+
     try: user = bits[2]
     except: user = None
-    
+
     if len(bits) >= 5:
         context_var = bits[4]
     else:
@@ -291,10 +291,10 @@ def list_corporate_memberships(parser, token):
 
         {% list_corporate_memberships as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``corpmembership_sidebar`` or 
+    Be sure the [varname] has a specific name like ``corpmembership_sidebar`` or
     ``corpmembership_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``query="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``

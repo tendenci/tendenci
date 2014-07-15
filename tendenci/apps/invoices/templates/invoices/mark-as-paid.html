@@ -9,8 +9,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/invoices.css">
 {% endblock %}
 
@@ -83,7 +83,7 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
 {% endblock %}

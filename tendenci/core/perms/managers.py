@@ -337,14 +337,14 @@ class TendenciBaseManager(models.Manager):
     def _member_sqs(self, sqs, user, **kwargs):
         """
         Filter the query set for members.
-        
+
         (status AND status_detail AND
         (anon_view OR user_view OR member_view))
         OR
         (users_can_view__in user.pk)
         OR
         (groups_can_view__in user's groups)
-        
+
         user is a required argument since we'll be filtering by user.pk.
         """
         groups = [g.pk for g in user.group_set.all()]
@@ -357,10 +357,10 @@ class TendenciBaseManager(models.Manager):
         status_q = SQ(status=status, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
-        
+
         creator_q = SQ(creator_id=user.id)
         owner_q = SQ(owner_id=user.id)
-        
+
         if groups:
             sqs = sqs.filter(
                 (status_q & (anon_q | user_q | creator_q | owner_q)) |
@@ -393,7 +393,7 @@ class TendenciBaseManager(models.Manager):
         status_q = SQ(status=status, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
-        
+
         creator_q = SQ(creator_id=user.id)
         owner_q = SQ(owner_id=user.id)
 
@@ -408,12 +408,12 @@ class TendenciBaseManager(models.Manager):
             )
 
         return sqs
-    
+
     def _user_or_member_sqs(self, sqs, user, **kwargs):
         """
         Filter the query set for user or members.
-        
-        Here we check the existence of the fields to be tested, 
+
+        Here we check the existence of the fields to be tested,
         and handle the queries that need to be directly pulled from db.
 
         (status AND status_detail AND
@@ -429,7 +429,7 @@ class TendenciBaseManager(models.Manager):
         status_detail = kwargs.get('status_detail', 'active')
         status = kwargs.get('status', True)
         is_member = kwargs.get('is_member', True)
-        
+
         # allow_xxx and creator and owner fields to be checked
         fields_ors_sq = None
         fields_ors_sq_list = []
@@ -446,29 +446,29 @@ class TendenciBaseManager(models.Manager):
             fields_ors_sq_list.append(SQ(creator_username=user.username))
         if 'owner_username' in model_fiels:
             fields_ors_sq_list.append(SQ(owner_username=user.username))
-            
+
         for field_sq in fields_ors_sq_list:
             if fields_ors_sq:
                 fields_ors_sq = fields_ors_sq | field_sq
             else:
                 fields_ors_sq = field_sq
-        
-        # status and status_detail if exist                
+
+        # status and status_detail if exist
         status_d = {}
         if 'status' in model_fiels:
             status_d.update({'status': status})
         if 'status_detail' in model_fiels:
             status_d.update({'status_detail': status_detail})
-            
+
         if status_d:
             status_q = SQ(**status_d)
         else:
             status_q = None
-           
-        direct_db = kwargs.get('direct_db', 0) 
-        
+
+        direct_db = kwargs.get('direct_db', 0)
+
         # object permissions
-        
+
         if not direct_db:
             group_perm_q = SQ(groups_can_view__in=groups)
             # user is not being recorded in the ObjectPermission
@@ -488,7 +488,7 @@ class TendenciBaseManager(models.Manager):
                                             codename=codename,
                                             group__in=groups).values_list('id', flat=True)
             group_perm_q = SQ(id__in=group_allowed_object_ids)
-            
+
             # user is not being recorded in the ObjectPermission
             # so, commenting it out for now
 #            user_allowed_object_ids = ObjectPermission.objects.filter(
@@ -496,8 +496,8 @@ class TendenciBaseManager(models.Manager):
 #                                            codename=codename,
 #                                            user__in=[user]).values_list('id', flat=True)
             group_perm_q = SQ(id__in=group_allowed_object_ids)
-            
-            
+
+
         filters = None
         if status_q or fields_ors_sq:
             if status_q and fields_ors_sq:
@@ -506,16 +506,16 @@ class TendenciBaseManager(models.Manager):
                 filters = status_q
             else:
                 filters = fields_ors_sq
-        
+
         if groups:
             if not filters:
                 filters = group_perm_q
             else:
                 filters = filters | group_perm_q
-                
+
         if filters:
             sqs = sqs.filter(filters)
-        
+
         return sqs
 
     def _impersonation(self, user):
@@ -539,7 +539,7 @@ class TendenciBaseManager(models.Manager):
             else:
                 sqs = self._user_sqs(sqs, user, status=status,
                     status_detail=status_detail)
-           
+
         return sqs
 
     # Public functions

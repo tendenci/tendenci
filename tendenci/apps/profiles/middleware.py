@@ -18,7 +18,7 @@ class ProfileMiddleware(object):
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=request.user)
 
-        
+
 class ProfileLanguageMiddleware(object):
     """This middleware should come before django's LocaleMiddleware
     """
@@ -32,7 +32,7 @@ class ProfileLanguageMiddleware(object):
             if not lang:
                 lang = get_setting('site', 'global', 'localizationlanguage')
             return lang
-    
+
         def process_request(self, request):
             """check user language and assign it to session or cookie accordingly
             """
@@ -46,7 +46,7 @@ class ProfileLanguageMiddleware(object):
                     lang_code_in_cookie = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
                     if lang_code_in_cookie and lang_code_in_cookie != user_language:
                         request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = user_language
-                        
+
         def process_response(self, request, response):
             """assign user_language to cookie LANGUAGE_COOKIE_NAME
             """
@@ -55,8 +55,7 @@ class ProfileLanguageMiddleware(object):
             if user_language and (not lang_code_in_cookie or user_language != lang_code_in_cookie):
                 response.set_cookie(settings.LANGUAGE_COOKIE_NAME, user_language)
             return response
-            
-            
-            
-                
-                
+
+
+
+

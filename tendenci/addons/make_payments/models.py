@@ -42,7 +42,7 @@ class MakePayment(models.Model):
 
     def __unicode__(self):
         return 'Payment'
-    
+
     def save(self, user=None):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -52,21 +52,21 @@ class MakePayment(models.Model):
         if user and user.id:
             self.owner=user
             self.owner_username=user.username
-            
+
         super(MakePayment, self).save()
-        
+
     def allow_view_by(self, user2_compare):
         boo = False
         if user2_compare.profile.is_superuser:
             boo = True
-        else: 
+        else:
             if user2_compare and user2_compare.id > 0:
                 if self.creator == user2_compare or self.owner == user2_compare:
                     if self.status == 1:
                         boo = True
-            
+
         return boo
-    
+
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """

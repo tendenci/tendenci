@@ -28,7 +28,7 @@ cl = Client(auth, client_id)
 
 def random_string(n=32):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(n))
-    
+
 def temporary_id():
     exists = True
     while(exists):
@@ -51,7 +51,7 @@ def sync_campaigns():
         campaign.total_recipients = c.TotalRecipients
         campaign.status = 'S' #sent
         campaign.save()
-    
+
     if hasattr(cl,'scheduled'): scheduled = cl.scheduled()
     else: scheduled = []
     for c in scheduled:
@@ -66,7 +66,7 @@ def sync_campaigns():
         campaign.preview_url = c.PreviewURL
         campaign.status = 'C' #Scheduled
         campaign.save()
-    
+
     if hasattr(cl,'drafts'): drafts = cl.drafts()
     else: drafts = []
     for c in drafts:
@@ -197,4 +197,4 @@ def update_subscription(profile, old_email):
                     subscriber.update(user.email, user.get_full_name(), [], False)
                 except BadRequest, e:
                     print e
-            
+

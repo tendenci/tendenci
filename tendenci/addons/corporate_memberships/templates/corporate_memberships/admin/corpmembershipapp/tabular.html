@@ -126,13 +126,13 @@
                 alternatingRows(row);
             })
         });
-        
+
         // $('.tabular td.field-label input[type=text]').css({'width': '10em'});
         // $('.tabular td.field-choices input[type=text]').css({'width': '10em'});
         // $('.tabular td.field-default_value input[type=text]').css({'width': '5em'});
         // $('.tabular td.field-help_text input[type=text]').css({'width': '10em'});
         // $('.tabular td.field-css_class input[type=text]').css({'width': '5em'});
-        
+
         var addMappedField = function(obj){
             var add_btn = $('.add-row a');
             $(add_btn).trigger('click');
@@ -146,11 +146,11 @@
             var admin_only = obj.admin_only;
             $(row_added).find('.field-label input').attr('value', field_label);
             $(row_added).find('.field-field_name input').attr('value', field_name);
-            
+
             if (display === "true"){
                 $(row_added).find('.field-display input[type="checkbox"]').attr('checked', 'checked');
             }else{
-               $(row_added).find('.field-display input[type="checkbox"]').attr('checked', ''); 
+               $(row_added).find('.field-display input[type="checkbox"]').attr('checked', '');
             }
             if (required === "true"){
                 $(row_added).find('.field-required input[type="checkbox"]').attr('checked', 'checked');
@@ -161,9 +161,9 @@
                 $(row_added).find('.field-admin_only input[type="checkbox"]').attr('checked', 'checked');
             }else{
                 $(row_added).find('.field-admin_only input[type="checkbox"]').attr('checked', '');
-            }     
+            }
         }
-        
+
         var required_fields = ['name', 'corporate_membership_type', 'payment_method', 'authorized_domain', 'secret_code'];
         var required_field;
         var disableFields = function(){
@@ -179,19 +179,19 @@
                         if ($this.find('input').val() == required_field){
                             $this.siblings('td.field-display').find('input').attr('disabled', true);
                             $this.siblings('td.field-required').find('input').attr('disabled', true);
-                            
+
                             if (required_field == 'authorized_domain' || required_field == 'secret_code'){
                                 $this.siblings('td.field-label').find('input').attr('disabled', true);
                             }
                         }
-                     });    
+                     });
                }
                $('.field-field_name input').attr('disabled', true);
                // remove add another
                $('tr.add-row td').html('');
         }
-        
-        
+
+
         if ($('.dynamic-fields').length == 0){
             $.ajax({
                type: "POST",
@@ -200,19 +200,19 @@
                    var objs = $.parseJSON(status_data);
                     for (var i=0; i<objs.length; i++){
                        addMappedField(objs[i]);
-                        
+
                     }
-    
-                  disableFields(); 
+
+                  disableFields();
                 },
-               
+
              });
          }else{
-             disableFields(); 
-             
+             disableFields();
+
          }
-        
-        
+
+
          // form on submit
         $('input[type="submit"]').click(function(){
             $('.field-field_name input').removeAttr('disabled');
@@ -220,7 +220,7 @@
             $('.field-required input').removeAttr('disabled');
             $('.field-label input').removeAttr('disabled');
         });
-         
+
     });
 })(django.jQuery);
 </script>

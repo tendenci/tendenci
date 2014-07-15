@@ -18,14 +18,14 @@
     <script type="text/javascript" src="{{ STATIC_URL }}tinymce/plugins/stormeimage/js/json2.min.packed.js"></script>
 
     <!-- swfupload (and jquery) -->
-    <script src="{{ STATIC_URL }}js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}swfupload/swfupload.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}swfupload/swfupload.cookies.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}tinymce/plugins/stormeimage/js/swfupload.handlers.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}swfupload/swfupload.swfobject.js" type="text/javascript"></script>
 </head>
 <body id="stormeimage" style="display: none">
-    <form onsubmit="ImageDialog.insert();return false;" action="#"> 
+    <form onsubmit="ImageDialog.insert();return false;" action="#">
         <div class="tabs">
             <ul>
                 <li id="fromcomputer_tab" class="current"><span><a href="javascript:mcTabs.displayTab('fromcomputer_tab','fromcomputer_panel');" onmousedown="return false;">{#stormeimage_dlg.tab_fromcomputer}</a></span></li>
@@ -38,7 +38,7 @@
             <div id="fromcomputer_panel" class="panel current">
 
                     <div id="flashUI">
-                    
+
                         <div>
                             <span class="select-photos">
                             <span id="spanButtonPlaceholder"></span>
@@ -68,7 +68,7 @@
             <div id="gallery_panel" class="panel">
 
                     <div id="flashUI">
-                    
+
                         <fieldset id="chosen-photos">
                             <legend>{% trans "Files" %}</legend>
                             <div class="flash" id="galleryWrapper">
@@ -123,7 +123,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td colspan="3" style="text-align: center;"><input style="width:30px;" type="text" size="3" name="edit_bottom_margin" value="" /></td>
-                                                    </tr>        
+                                                    </tr>
                                                 </table>
                                             </td>
                                             <td>
@@ -146,7 +146,7 @@
                                                             </select>&nbsp;
                                                         </td>
                                                     </tr>
-                                                </table>                                    
+                                                </table>
                                             </td>
                                         </tr>
                                     </table>
@@ -154,11 +154,11 @@
                             </tr>
                             <input style="width:30px" type="hidden" name="edit_vspace" value="0" />
                             <input style="width:30px" type="hidden" name="edit_hspace" value="0" />
-                            <input style="width:30px" type="hidden" name="edit_align" value="-- not set --" />            
+                            <input style="width:30px" type="hidden" name="edit_align" value="-- not set --" />
                         </table>
                         <div class="actions">
-                            <a class="update-btn" onclick="ImageDialog.update();" href="javascript:;">{% trans "Update Image" %}</a>  
-                            <a class="delete-btn" onclick="ImageDialog.remove_image();" href="javascript:;">{% trans "Remove Image" %}</a> 
+                            <a class="update-btn" onclick="ImageDialog.update();" href="javascript:;">{% trans "Update Image" %}</a>
+                            <a class="delete-btn" onclick="ImageDialog.remove_image();" href="javascript:;">{% trans "Remove Image" %}</a>
                         </div>
                     </div>
                 </div>
@@ -173,8 +173,8 @@
                             <tr>
                                 <td class="column1"><label id="srclabel" for="src">{#stormeimage_dlg.src}</label></td>
                                 <td colspan="2"><table border="0" cellspacing="0" cellpadding="0">
-                                    <tr> 
-                                      <td><input name="src" type="text" id="src" value="" onchange="ImageDialog.showPreviewImage(this.value);" /></td> 
+                                    <tr>
+                                      <td><input name="src" type="text" id="src" value="" onchange="ImageDialog.showPreviewImage(this.value);" /></td>
                                       <td id="srcbrowsercontainer">&nbsp;</td>
                                     </tr>
                                   </table></td>
@@ -183,13 +183,13 @@
                                 <td><label for="src_list">{#stormeimage_dlg.image_list}</label></td>
                                 <td><select id="src_list" name="src_list" onchange="document.getElementById('src').value=this.options[this.selectedIndex].value;document.getElementById('alt').value=this.options[this.selectedIndex].text;document.getElementById('title').value=this.options[this.selectedIndex].text;ImageDialog.showPreviewImage(this.options[this.selectedIndex].value);"><option value=""></option></select></td>
                             </tr>
-                            <tr> 
-                                <td class="column1"><label id="altlabel" for="alt">{#stormeimage_dlg.alt}</label></td> 
-                                <td colspan="2"><input id="alt" name="alt" type="text" value="" /></td> 
-                            </tr> 
-                            <tr> 
-                                <td class="column1"><label id="titlelabel" for="title">{#stormeimage_dlg.title}</label></td> 
-                                <td colspan="2"><input id="title" name="title" type="text" value="" /></td> 
+                            <tr>
+                                <td class="column1"><label id="altlabel" for="alt">{#stormeimage_dlg.alt}</label></td>
+                                <td colspan="2"><input id="alt" name="alt" type="text" value="" /></td>
+                            </tr>
+                            <tr>
+                                <td class="column1"><label id="titlelabel" for="title">{#stormeimage_dlg.title}</label></td>
+                                <td colspan="2"><input id="title" name="title" type="text" value="" /></td>
                             </tr>
                         </table>
                 </fieldset>
@@ -205,10 +205,10 @@
                     <legend>{#stormeimage_dlg.tab_appearance}</legend>
 
                     <table border="0" cellpadding="4" cellspacing="0">
-                        <tr> 
-                            <td class="column1"><label id="alignlabel" for="align">{#stormeimage_dlg.align}</label></td> 
-                            <td><select id="align" name="align" onchange="ImageDialog.updateStyle('align');ImageDialog.changeAppearance();"> 
-                                    <option value="">{#not_set}</option> 
+                        <tr>
+                            <td class="column1"><label id="alignlabel" for="align">{#stormeimage_dlg.align}</label></td>
+                            <td><select id="align" name="align" onchange="ImageDialog.updateStyle('align');ImageDialog.changeAppearance();">
+                                    <option value="">{#not_set}</option>
                                     <option value="baseline">{#stormeimage_dlg.align_baseline}</option>
                                     <option value="top">{#stormeimage_dlg.align_top}</option>
                                     <option value="middle">{#stormeimage_dlg.align_middle}</option>
@@ -217,7 +217,7 @@
                                     <option value="text-bottom">{#stormeimage_dlg.align_textbottom}</option>
                                     <option value="left">{#stormeimage_dlg.align_left}</option>
                                     <option value="right">{#stormeimage_dlg.align_right}</option>
-                                </select> 
+                                </select>
                             </td>
                             <td rowspan="6" valign="top">
                                 <div class="alignPreview">
@@ -233,7 +233,7 @@
                         <tr>
                             <td class="column1"><label id="widthlabel" for="width">{#stormeimage_dlg.dimensions}</label></td>
                             <td class="nowrap">
-                                <input name="width" type="text" id="width" value="" size="5" maxlength="5" class="size" onchange="ImageDialog.changeHeight();" /> x 
+                                <input name="width" type="text" id="width" value="" size="5" maxlength="5" class="size" onchange="ImageDialog.changeHeight();" /> x
                                 <input name="height" type="text" id="height" value="" size="5" maxlength="5" class="size" onchange="ImageDialog.changeWidth();" /> px
                             </td>
                         </tr>
@@ -249,19 +249,19 @@
                         </tr>
 
                         <tr>
-                            <td class="column1"><label id="vspacelabel" for="vspace">{#stormeimage_dlg.vspace}</label></td> 
+                            <td class="column1"><label id="vspacelabel" for="vspace">{#stormeimage_dlg.vspace}</label></td>
                             <td><input name="vspace" type="text" id="vspace" value="" size="3" maxlength="3" class="number" onchange="ImageDialog.updateStyle('vspace');ImageDialog.changeAppearance();" onblur="ImageDialog.updateStyle('vspace');ImageDialog.changeAppearance();" />
                             </td>
                         </tr>
 
-                        <tr> 
-                            <td class="column1"><label id="hspacelabel" for="hspace">{#stormeimage_dlg.hspace}</label></td> 
-                            <td><input name="hspace" type="text" id="hspace" value="" size="3" maxlength="3" class="number" onchange="ImageDialog.updateStyle('hspace');ImageDialog.changeAppearance();" onblur="ImageDialog.updateStyle('hspace');ImageDialog.changeAppearance();" /></td> 
+                        <tr>
+                            <td class="column1"><label id="hspacelabel" for="hspace">{#stormeimage_dlg.hspace}</label></td>
+                            <td><input name="hspace" type="text" id="hspace" value="" size="3" maxlength="3" class="number" onchange="ImageDialog.updateStyle('hspace');ImageDialog.changeAppearance();" onblur="ImageDialog.updateStyle('hspace');ImageDialog.changeAppearance();" /></td>
                         </tr>
 
                         <tr>
-                            <td class="column1"><label id="borderlabel" for="border">{#stormeimage_dlg.border}</label></td> 
-                            <td><input id="border" name="border" type="text" value="" size="3" maxlength="3" class="number" onchange="ImageDialog.updateStyle('border');ImageDialog.changeAppearance();" onblur="ImageDialog.updateStyle('border');ImageDialog.changeAppearance();" /></td> 
+                            <td class="column1"><label id="borderlabel" for="border">{#stormeimage_dlg.border}</label></td>
+                            <td><input id="border" name="border" type="text" value="" size="3" maxlength="3" class="number" onchange="ImageDialog.updateStyle('border');ImageDialog.changeAppearance();" onblur="ImageDialog.updateStyle('border');ImageDialog.changeAppearance();" /></td>
                         </tr>
 
                         <tr>
@@ -270,13 +270,13 @@
                         </tr>
 
                         <tr>
-                            <td class="column1"><label id="stylelabel" for="style">{#stormeimage_dlg.style}</label></td> 
-                            <td colspan="2"><input id="style" name="style" type="text" value="" onchange="ImageDialog.changeAppearance();" /></td> 
+                            <td class="column1"><label id="stylelabel" for="style">{#stormeimage_dlg.style}</label></td>
+                            <td colspan="2"><input id="style" name="style" type="text" value="" onchange="ImageDialog.changeAppearance();" /></td>
                         </tr>
 
                         <!-- <tr>
-                            <td class="column1"><label id="classeslabel" for="classes">{#stormeimage_dlg.classes}</label></td> 
-                            <td colspan="2"><input id="classes" name="classes" type="text" value="" onchange="selectByValue(this.form,'classlist',this.value,true);" /></td> 
+                            <td class="column1"><label id="classeslabel" for="classes">{#stormeimage_dlg.classes}</label></td>
+                            <td colspan="2"><input id="classes" name="classes" type="text" value="" onchange="selectByValue(this.form,'classlist',this.value,true);" /></td>
                         </tr> -->
                     </table>
                 </fieldset>
@@ -291,10 +291,10 @@
 
                     <table border="0" cellpadding="4" cellspacing="0" width="100%">
                             <tr>
-                                <td class="column1"><label id="onmouseoversrclabel" for="onmouseoversrc">{#stormeimage_dlg.mouseover}</label></td> 
-                                <td><table border="0" cellspacing="0" cellpadding="0"> 
-                                    <tr> 
-                                      <td><input id="onmouseoversrc" name="onmouseoversrc" type="text" value="" /></td> 
+                                <td class="column1"><label id="onmouseoversrclabel" for="onmouseoversrc">{#stormeimage_dlg.mouseover}</label></td>
+                                <td><table border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                      <td><input id="onmouseoversrc" name="onmouseoversrc" type="text" value="" /></td>
                                       <td id="onmouseoversrccontainer">&nbsp;</td>
                                     </tr>
                                   </table></td>
@@ -303,14 +303,14 @@
                                 <td><label for="over_list">{#stormeimage_dlg.image_list}</label></td>
                                 <td><select id="over_list" name="over_list" onchange="document.getElementById('onmouseoversrc').value=this.options[this.selectedIndex].value;"><option value=""></option></select></td>
                             </tr>
-                            <tr> 
-                                <td class="column1"><label id="onmouseoutsrclabel" for="onmouseoutsrc">{#stormeimage_dlg.mouseout}</label></td> 
-                                <td class="column2"><table border="0" cellspacing="0" cellpadding="0"> 
-                                    <tr> 
-                                      <td><input id="onmouseoutsrc" name="onmouseoutsrc" type="text" value="" /></td> 
+                            <tr>
+                                <td class="column1"><label id="onmouseoutsrclabel" for="onmouseoutsrc">{#stormeimage_dlg.mouseout}</label></td>
+                                <td class="column2"><table border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                      <td><input id="onmouseoutsrc" name="onmouseoutsrc" type="text" value="" /></td>
                                       <td id="onmouseoutsrccontainer">&nbsp;</td>
-                                    </tr> 
-                                  </table></td> 
+                                    </tr>
+                                  </table></td>
                             </tr>
                             <tr>
                                 <td><label for="out_list">{#stormeimage_dlg.image_list}</label></td>
@@ -324,33 +324,33 @@
 
                     <table border="0" cellpadding="4" cellspacing="0">
                         <tr>
-                            <td class="column1"><label id="idlabel" for="id">{#stormeimage_dlg.id}</label></td> 
-                            <td><input id="id" name="id" type="text" value="" /></td> 
+                            <td class="column1"><label id="idlabel" for="id">{#stormeimage_dlg.id}</label></td>
+                            <td><input id="id" name="id" type="text" value="" /></td>
                         </tr>
 
                         <tr>
-                            <td class="column1"><label id="dirlabel" for="dir">{#stormeimage_dlg.langdir}</label></td> 
+                            <td class="column1"><label id="dirlabel" for="dir">{#stormeimage_dlg.langdir}</label></td>
                             <td>
-                                <select id="dir" name="dir" onchange="ImageDialog.changeAppearance();"> 
-                                        <option value="">{#not_set}</option> 
-                                        <option value="ltr">{#stormeimage_dlg.ltr}</option> 
-                                        <option value="rtl">{#stormeimage_dlg.rtl}</option> 
+                                <select id="dir" name="dir" onchange="ImageDialog.changeAppearance();">
+                                        <option value="">{#not_set}</option>
+                                        <option value="ltr">{#stormeimage_dlg.ltr}</option>
+                                        <option value="rtl">{#stormeimage_dlg.rtl}</option>
                                 </select>
-                            </td> 
+                            </td>
                         </tr>
 
                         <tr>
-                            <td class="column1"><label id="langlabel" for="lang">{#stormeimage_dlg.langcode}</label></td> 
+                            <td class="column1"><label id="langlabel" for="lang">{#stormeimage_dlg.langcode}</label></td>
                             <td>
                                 <input id="lang" name="lang" type="text" value="" />
-                            </td> 
+                            </td>
                         </tr>
 
                         <tr>
-                            <td class="column1"><label id="usemaplabel" for="usemap">{#stormeimage_dlg.map}</label></td> 
+                            <td class="column1"><label id="usemaplabel" for="usemap">{#stormeimage_dlg.map}</label></td>
                             <td>
                                 <input id="usemap" name="usemap" type="text" value="" />
-                            </td> 
+                            </td>
                         </tr>
 
                         <tr>
@@ -360,7 +360,7 @@
                                       <td><input id="longdesc" name="longdesc" type="text" value="" /></td>
                                       <td id="longdesccontainer">&nbsp;</td>
                                     </tr>
-                                </table></td> 
+                                </table></td>
                         </tr>
                     </table>
                 </fieldset>
@@ -379,11 +379,11 @@
         window.onload = function() {
             swfupload = new SWFUpload({
             debug: false,
-            
+
             upload_url: "/files/swfupload/",
             //flash_url: "{{ STATIC_URL }}swfupload/swfupload.swf",
             flash_url: "/static/swfupload/swfupload.swf",
-            
+
             post_params: {
                 "storme_app_label" : ImageDialog.storme_app_label,
                 "storme_model" : ImageDialog.storme_model,
@@ -396,7 +396,7 @@
 //            file_types : "*.jpg;*.jpeg;*.gif;*.tif;*.tiff;*.png",
 //            file_types_description : "All Files",
             file_post_name: "file",
-            
+
             // Button settings (opens file-browse dialogue)
             button_placeholder_id: "spanButtonPlaceholder",
             button_width: 175,
@@ -421,7 +421,7 @@
                 progressTarget : "fsUploadProgress",
                 cancelButtonId : "btnCancel1"
             },
-            
+
             // SWFObject settings
             minimum_flash_version : "9.0.28",
             });
@@ -476,5 +476,5 @@
             }
         }
     </script>
-</body> 
-</html> 
+</body>
+</html>

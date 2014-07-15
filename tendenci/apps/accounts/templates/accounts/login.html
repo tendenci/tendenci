@@ -8,7 +8,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/accounts.css">
 {% endblock %}
- 
+
 {% block body %}
 <h2>{% trans "Log In to the Site" %}</h2>
 {% if user.is_authenticated %}
@@ -17,18 +17,18 @@
         <a href="{% url auth_logout %}">{% trans "Logout?" %}</a>
     </p>
 {% else %}
- 
+
 <form id="login-form" method="post" action="">{% csrf_token %}
 {{form.as_p}}
- 
+
 <div class="submitbutton">
 <input type="submit" name="submit" value="Log in" />
 </div>
 </form>
- 
+
 <h3>{% trans "Forgot your password?" %}</h3>
 <p><a href="{% url auth_password_reset %}">{% trans "Click here to reset your password." %}</a></p>
- 
+
 {% if MODULE_USERS_SELFREGISTRATION %}
 <h3>{% trans "Don't have an account?" %}</h3>
 <p><a href="{% url registration_register %}">{% trans "Register Now" %}</a></p>
@@ -36,6 +36,6 @@
 <p><a href="{% url social_begin 'facebook' %}">{% trans "Log in with Facebook" %}</a></p>
 {% endcomment %}
 {% endif %}
- 
+
 {% endif %}
 {% endblock %}

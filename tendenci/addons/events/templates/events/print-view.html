@@ -28,7 +28,7 @@
         <h2>{{ event.title }}</h2>
       <div class="content"><p>{{ event.description|safe }}</p>
         {% if event.place.name or event.place.address %}
-          <p><strong>Location:</strong> 
+          <p><strong>Location:</strong>
           {% if event.place.name %}
               {{ event.place.name }}<br />
           {% endif %}
@@ -38,7 +38,7 @@
           {{ event.place.city }}
           {% if event.place.city and event.place.state %}, {% endif %}
             {{ event.place.state }} {{ event.place.zip }}</p>
-        {% endif %} 
+        {% endif %}
         <strong>Date:</strong> {{ event.start_dt }} - {{ event.end_dt }}
 
           </div>

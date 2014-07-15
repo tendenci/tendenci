@@ -14,12 +14,12 @@ class Command(BaseCommand):
         We put the user in the admin group
         """
         # command to run: python manage.py admin_converter
-        
+
         if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
             name = settings.ADMIN_AUTH_GROUP_NAME
         else:
             name = 'Admin'
-        
+
         try:
             auth_group = Auth_Group.objects.get(name=name)
         except Auth_Group.DoesNotExist:
@@ -28,11 +28,11 @@ class Command(BaseCommand):
             print 'Successfully added admin auth group "%s".' % name
 
         # assign permission to group, but exclude the auth content
-        content_to_exclude = ContentType.objects.filter(app_label='auth')    
+        content_to_exclude = ContentType.objects.filter(app_label='auth')
         permissions = Permission.objects.all().exclude(content_type__in=content_to_exclude)
         auth_group.permissions = permissions
         auth_group.save()
-        
+
         print "Adding users (admins) to admin auth group...\n"
 
         count = 0
@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
             count += 1
             print 'User "%s(%s)" -- added' % (u.get_full_name(), u.username)
-        
+
         if count == 1:
             print "1 user added"
         else:

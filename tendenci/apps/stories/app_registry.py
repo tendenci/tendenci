@@ -12,7 +12,7 @@ class StoryRegistry(CoreRegistry):
     description = 'Stories can be created and rotated on ' \
                   'a specified area on the site'
     icon = '%simages/icons/stories-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'story':{
             'base':('1060000','FF33FF'),
@@ -24,7 +24,7 @@ class StoryRegistry(CoreRegistry):
             'print_view':('1060501', '99FF00'),
         },
     }
-    
+
     url = {
         'add': lazy_reverse('story.add'),
         'search': lazy_reverse('stories'),

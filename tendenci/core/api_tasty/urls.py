@@ -7,7 +7,7 @@ from tendenci.core.api_tasty.profiles.resources import ProfileResource
 from tendenci.core.api_tasty.discounts.resources import DiscountResource
 from tendenci.core.api_tasty.entities.resources import EntityResource
 from tendenci.core.api_tasty.payments.resources import PaymentMethodResource
-from tendenci.core.api_tasty.memberships.resources import (MembershipResource, 
+from tendenci.core.api_tasty.memberships.resources import (MembershipResource,
     MembershipTypeResource, AppResource)
 from tendenci.core.api_tasty.events.resources import (EventResource, TypeResource,
     PlaceResource)

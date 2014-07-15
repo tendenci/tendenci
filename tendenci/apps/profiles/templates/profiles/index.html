@@ -16,12 +16,12 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
-<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
+<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />
 <style>
     .app-links{
         margin: 3px 5em 1em 5em;
     }
-    
+
 </style>
 {% endblock %}
 
@@ -38,41 +38,41 @@
     </div>
     {% endfor %}
 
-	{% users_nav request.user user_this %}
+    {% users_nav request.user user_this %}
 
-	<div id="t-view">
-	<div class="intro info">
-		<div class="profile-icon">
-			<a href="{% url profile.change_avatar  user_this.id %}">
-				{% avatar user_this 128 %}
-			</a>
-		</div>
+    <div id="t-view">
+    <div class="intro info">
+        <div class="profile-icon">
+            <a href="{% url profile.change_avatar  user_this.id %}">
+                {% avatar user_this 128 %}
+            </a>
+        </div>
         {% if profile.display_name %}
             <h1>{% firstof profile.display_name %}</h1>
-		    <h3>{% firstof user_this.get_full_name user_this.username %}</h3>
+            <h3>{% firstof user_this.get_full_name user_this.username %}</h3>
         {% else %}
             <h1>{% firstof user_this.get_full_name user_this.username %}</h1>
         {% endif %}
-			{% if profile.member_number %}
-			{% if profile|allow_edit_by:user %}
-			<div style="padding-bottom: 1em;">
-	    	<span class="member-icon">Member ID: {{ profile.member_number}}</span>
-	    	</div>
-	    	{% endif %}
-	    	{% endif %}
+            {% if profile.member_number %}
+            {% if profile|allow_edit_by:user %}
+            <div style="padding-bottom: 1em;">
+            <span class="member-icon">Member ID: {{ profile.member_number}}</span>
+            </div>
+            {% endif %}
+            {% endif %}
 
         <p><strong>{% trans 'Username' %}:</strong> {{ profile.user.username }}</p>
-		{% if profile.company %}
-			<p>{{ profile.company }}</p>
-		{% endif %}
+        {% if profile.company %}
+            <p>{{ profile.company }}</p>
+        {% endif %}
 
-		{% if profile.position_title %}
-			<p>{{ profile.position_title }}</p>
-		{% endif %}
+        {% if profile.position_title %}
+            <p>{{ profile.position_title }}</p>
+        {% endif %}
 
-		{% if city_state %}
-			<p>{{ city_state }}</p>
-		{% endif %}
+        {% if city_state %}
+            <p>{{ city_state }}</p>
+        {% endif %}
 
         {% if request.user == user_this or admin %}
         {% if content_counts.invoice > 0 %}
@@ -80,101 +80,101 @@
         {% endif %}
         {% endif %}
 
-		<div class="clear"></div>
+        <div class="clear"></div>
     </div>
 
     <div class="contact info">
 
-		<h2>Contact Information</h2>
+        <h2>Contact Information</h2>
 
-		<table>
+        <table>
 
             {% if can_edit or not profile.hide_email %}
-			<tr>
-				<td>Email</td>
-				<td>{{ user_this.email }}</td>
-			</tr>
+            <tr>
+                <td>Email</td>
+                <td>{{ user_this.email }}</td>
+            </tr>
             {% endif %}
 
             {% if can_edit or not profile.hide_phone %}
-			<tr>
-				<td>Phone</td>
-				<td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
-			</tr>
+            <tr>
+                <td>Phone</td>
+                <td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
+            </tr>
             {% endif %}
 
-			<tr>
-				<td>Website</td>
-				<td>{{ profile.url }}</td>
-			</tr>
+            <tr>
+                <td>Website</td>
+                <td>{{ profile.url }}</td>
+            </tr>
 
             {% if can_edit or not profile.hide_address %}
-			<tr>
-				<td>Address</td>
-				<td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
-			</tr>
+            <tr>
+                <td>Address</td>
+                <td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
+            </tr>
             {% endif %}
 
-		</table>
-		
+        </table>
+
     </div>
-    
+
     {% if request.user.profile.is_superuser %}
     <div class="admin_notes info">
         <h2> Admin Notes </h2>
-        <p> 
-            {% if profile.admin_notes %} 
-                {{ profile.admin_notes }} 
+        <p>
+            {% if profile.admin_notes %}
+                {{ profile.admin_notes }}
             {% else %}
                 No admin notes.
             {% endif %}
         </p>
-	</div>
-    {% endif %} 
+    </div>
+    {% endif %}
 
     {% if request.user == user_this or request.user.profile.is_superuser %}
     {% if MODULE_MEMBERSHIPS_ENABLED %}
     <div class="membership info">
 
-		<h2>Memberships 
-		{% if membership_apps %}
-    		<a title="Join membership" href="{% url membership_default.add membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
-    	{% else %}
-    	    <a title="Create a membership application" href="{% url admin:memberships_membershipapp_add %}" class="glyph plus">+</a>
-		{% endif %}
-		</h2>
+        <h2>Memberships
+        {% if membership_apps %}
+            <a title="Join membership" href="{% url membership_default.add membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+        {% else %}
+            <a title="Create a membership application" href="{% url admin:memberships_membershipapp_add %}" class="glyph plus">+</a>
+        {% endif %}
+        </h2>
 
-		{% if multiple_apps %}
-		  <div class="app-links">
-		  {% for app in membership_apps %}
-		      <div>
-		          <a title="Join membership" href="{% url membership_default.add app.slug %}?username={{ user_this.username }}">Join</a>
-		          {{ app.name }}
-		      </div>
-		  {% endfor %}
-		  </div>
-		{% endif %}
+        {% if multiple_apps %}
+          <div class="app-links">
+          {% for app in membership_apps %}
+              <div>
+                  <a title="Join membership" href="{% url membership_default.add app.slug %}?username={{ user_this.username }}">Join</a>
+                  {{ app.name }}
+              </div>
+          {% endfor %}
+          </div>
+        {% endif %}
 
-		{% if memberships %}
-    	<table>
+        {% if memberships %}
+        <table>
         {% for membership in memberships %}
-        		<tr>
-        			<td>
+                <tr>
+                    <td>
                         {% if request.user.profile.is_superuser or request.user == membership.user %}
-        				 <a href="{% url membership.details membership.pk %}">{{ membership.membership_type }}
-        				</a>
+                         <a href="{% url membership.details membership.pk %}">{{ membership.membership_type }}
+                        </a>
                         {% else %}
                         {{ membership.member_number }} {{ membership.membership_type }}
                         {% endif %}
-        			</td>
-        			<td>
+                    </td>
+                    <td>
                         {{ membership.join_dt|date:"M j, Y" }}
-                        
+
                         {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
 
-                        &#43; (grace period: 
+                        &#43; (grace period:
                         {{ membership.membership_type.expiration_grace_period }} days)
-                        
+
                         {% endif %}
 
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
@@ -199,62 +199,62 @@
                             {% endif %}
                         {% endif %}
 
-	        		</td>
-	        		<td>
-	        		    {% with membership.get_invoice as invoice %}
-	        			{% if invoice %}
-	        			<a href="{% url invoice.view invoice.pk %}">
-	        				Balance {{ invoice.balance|format_currency }}
-	        			</a>
-	        			{% endif %}
-	        			{% endwith %}
-	        		</td>
-        		</tr>
+                    </td>
+                    <td>
+                        {% with membership.get_invoice as invoice %}
+                        {% if invoice %}
+                        <a href="{% url invoice.view invoice.pk %}">
+                            Balance {{ invoice.balance|format_currency }}
+                        </a>
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+                </tr>
         {% endfor %}
-    	</table>
-    	{% else %}
+        </table>
+        {% else %}
         <p>Not a member.</p>
-    	{% endif %}
+        {% endif %}
 
     </div>
-     {% endif  %}  
-        
+     {% endif  %}
+
 {% endif %}
 
     <div class="group info">
 
-		<h2>Groups
-		{% if request.user = user_this or admin %}
-		<a title="Join or leave group" href="{% url profile.edit_groups user_this.username %}" class="glyph gears">S</a>
-		{% endif %}
-		</h2>
-		
-		{% if group_memberships %}
-			<table>
-			{% for gm in group_memberships %}
-				<tr>
-					<td>
-						{% if user.profile.is_superuser %}
-							<a href="{% url group.edituser gm.group.slug user_this.pk %}">
-								{% firstof gm.role 'Member' %}
-							</a>
-						{% else %}
-							{% firstof gm.role 'Member' %}
-						{% endif %} of
+        <h2>Groups
+        {% if request.user = user_this or admin %}
+        <a title="Join or leave group" href="{% url profile.edit_groups user_this.username %}" class="glyph gears">S</a>
+        {% endif %}
+        </h2>
 
-						<a href="{% url group.detail gm.group.slug %}">
-							{% firstof gm.group.label gm.group.name %}
-						</a>
-					</td>
-				</tr>
-			{% endfor %}
-			</table>
-		{% else %}
-			<p>Not in any groups.</p>
-		{% endif %}
+        {% if group_memberships %}
+            <table>
+            {% for gm in group_memberships %}
+                <tr>
+                    <td>
+                        {% if user.profile.is_superuser %}
+                            <a href="{% url group.edituser gm.group.slug user_this.pk %}">
+                                {% firstof gm.role 'Member' %}
+                            </a>
+                        {% else %}
+                            {% firstof gm.role 'Member' %}
+                        {% endif %} of
+
+                        <a href="{% url group.detail gm.group.slug %}">
+                            {% firstof gm.group.label gm.group.name %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+            <p>Not in any groups.</p>
+        {% endif %}
 
     </div>
-    
+
 {% if request.user == user_this or request.user.profile.is_superuser %}
     <div class="events info">
     <h2>{% trans "Upcoming Event Registrations" %}</h2>
@@ -282,40 +282,40 @@
     {% endif %}
     </div>
 {% endif %}
-    
 
-	{% latest_contributions user_this as contributions %}
-	{% if  contributions %}
 
-	    <div class="contribution info">
+    {% latest_contributions user_this as contributions %}
+    {% if  contributions %}
 
-		<h2>{% trans "Contributions" %}</h2>
-		<span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">more &raquo;</a></span>
-		<div class="clear"></div>
+        <div class="contribution info">
 
-		{% for contribution in contributions|slice:":5" %}
-			<div class="item">
-				{% if contribution.object.get_absolute_url %}
-					<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.content_type.name|capfirst }}: {{ contribution.title|truncatewords_html:8|slice:":-4" }}</a> <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
-				{% else %}
-					{{ contribution.title }} <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
-				{% endif %}
-			</div>
-		{% endfor %}
+        <h2>{% trans "Contributions" %}</h2>
+        <span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">more &raquo;</a></span>
+        <div class="clear"></div>
 
-	    </div>
+        {% for contribution in contributions|slice:":5" %}
+            <div class="item">
+                {% if contribution.object.get_absolute_url %}
+                    <a href="{{ contribution.object.get_absolute_url }}">{{ contribution.content_type.name|capfirst }}: {{ contribution.title|truncatewords_html:8|slice:":-4" }}</a> <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+                {% else %}
+                    {{ contribution.title }} <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+                {% endif %}
+            </div>
+        {% endfor %}
 
-	{% else %}
+        </div>
 
-		{% if user.profile.is_superuser %}
-		<div class="contribution info no-contribs">
-			{% firstof request.user.first_name request.user.username %}, this person has not made any contributions yet.
-		</div>
-		{% endif %}
+    {% else %}
 
-	{% endif %}
+        {% if user.profile.is_superuser %}
+        <div class="contribution info no-contribs">
+            {% firstof request.user.first_name request.user.username %}, this person has not made any contributions yet.
+        </div>
+        {% endif %}
 
-	{% profile_meta "True" %}
+    {% endif %}
+
+    {% profile_meta "True" %}
 
 </div></div></div>
 
@@ -326,14 +326,14 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 <script type="text/javascript">
 var iconrow = new dropdown({
-	container:	'more-options-wrap',
-	trigger:	'more-options-trigger',
-	target:		'more-options-target'
+    container:    'more-options-wrap',
+    trigger:    'more-options-trigger',
+    target:        'more-options-target'
 });
 </script>
 <script type="text/javascript">
     $(".app-links").hide();
-    
+
     $(".toggle-app-links").click(function(e){
         $(".app-links").toggle('slow');
         e.preventDefault();

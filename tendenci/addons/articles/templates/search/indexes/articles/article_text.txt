@@ -21,6 +21,6 @@ sub_category:{{ obj_cats.sub_category.pk }}
 
 {% if object.tags %}
 {% for tag in object.tags|tag_split %}
-tag:{{ tag }} 
+tag:{{ tag }}
 {% endfor %}
 {% endif %}

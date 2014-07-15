@@ -11,14 +11,14 @@ def settings(request):
     """
     key = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 'all']
     key = '.'.join(key)
-    
+
     settings = cache.get(key)
     if not settings:
         settings = Setting.objects.all()
         is_set = cache.add(key, settings)
         if not is_set:
             cache.set(key, settings)
-    
+
     contexts = {}
     for setting in settings:
         context_key = [setting.scope, setting.scope_category,
@@ -26,7 +26,7 @@ def settings(request):
         context_key = '_'.join(context_key)
 
         value = setting.get_value().strip()
-        
+
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
         if setting.data_type == 'int':

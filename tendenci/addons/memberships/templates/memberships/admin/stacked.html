@@ -7,9 +7,9 @@
 {{ inline_admin_formset.formset.non_form_errors }}
 
 <div class="toggle-all-button">
-		<div class="collapse-all-button">
-			<a href="javascript:;">{% trans "Collapse ALL" %}</a></div>
-		<div class="expand-all-button" style="display:none;"><a href="javascript:;">{% trans "Expand ALL" %}</a></div>
+        <div class="collapse-all-button">
+            <a href="javascript:;">{% trans "Collapse ALL" %}</a></div>
+        <div class="expand-all-button" style="display:none;"><a href="javascript:;">{% trans "Expand ALL" %}</a></div>
 </div>
 
 {% for inline_admin_form in inline_admin_formset %}<div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
@@ -46,69 +46,69 @@
   {% if inline_admin_form.form.non_field_errors %}{{ inline_admin_form.form.non_field_errors }}{% endif %}
   {% for fieldset in inline_admin_form %}
     {#{% include "admin/includes/fieldset.html" %}#}
-    
+
     <fieldset class="module aligned {{ fieldset.classes }}">
-	    {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
-	    {% if fieldset.description %}
-	        <div class="description">{{ fieldset.description|safe }}</div>
-	    {% endif %}
-	    {% for line in fieldset %}
+        {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+        {% if fieldset.description %}
+            <div class="description">{{ fieldset.description|safe }}</div>
+        {% endif %}
+        {% for line in fieldset %}
 
-	    	{% if inline_admin_form.original.field_type in fields_to_check and forloop.counter in excluded_lines %}
+            {% if inline_admin_form.original.field_type in fields_to_check and forloop.counter in excluded_lines %}
                 {{ field.field }}
-	    	{% else %}
-		        <div class="form-row{% if line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %}">
-		            {{ line.errors }}
-		            {% for field in line %}
+            {% else %}
+                <div class="form-row{% if line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %}">
+                    {{ line.errors }}
+                    {% for field in line %}
 
-		            	{% if inline_admin_form.original.field_type in fields_to_check and field.field.name in excluded_fields%}
+                        {% if inline_admin_form.original.field_type in fields_to_check and field.field.name in excluded_fields%}
                             {{ field.field }}
-		            	{% else %}
-			                <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
+                        {% else %}
+                            <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
                                 {% if field.field.name == "field_function" %}<div class="field_function">{% endif %}
                                 {% if field.field.name == "function_params" %}<div class="function_params">{% endif %}
                                 {% if field.field.name == "field_type" %}<div class="field_type">{% endif %}
-			                    {% if field.is_checkbox %}
-			                        {{ field.field }}{{ field.label_tag }}
-			                    {% else %}
+                                {% if field.is_checkbox %}
+                                    {{ field.field }}{{ field.label_tag }}
+                                {% else %}
                                     {% if not field.field.is_hidden %}
                                         {{ field.label_tag }}
                                     {% endif %}
 
-			                        {% if field.is_readonly %}
-			                            <p>{{ field.contents }}</p>
-			                        {% else %}
-			                            {{ field.field }}
-			                        {% endif %}
-			                    {% endif %}
-			                    {% if field.field.field.help_text %}
-			                        <p class="help">{{ field.field.field.help_text|safe }}</p>
-			                    {% endif %}
+                                    {% if field.is_readonly %}
+                                        <p>{{ field.contents }}</p>
+                                    {% else %}
+                                        {{ field.field }}
+                                    {% endif %}
+                                {% endif %}
+                                {% if field.field.field.help_text %}
+                                    <p class="help">{{ field.field.field.help_text|safe }}</p>
+                                {% endif %}
                                 {% if field.field.name == "field_function" %}</div>{% endif %}
                                 {% if field.field.name == "function_params" %}</div>{% endif %}
                                 {% if field.field.name == "field_type" %}</div>{% endif %}
-			                </div>
-		                {% endif %}
-		            {% endfor %}
-		        </div>
-	        {% endif %}
-	        
-	    	{% if forloop.first %}
-	    		<div class="inline-fields-to-toggle">
-	    	{% endif %}
-	    	{% if forloop.last %}
-	    		</div>
-	    	{% endif %}
-	        
-	    {% endfor %}
-	</fieldset>
-    
-    
-	<div class="collapse-expand-button">
-		<div class="collapse-button">
-			<a href="javascript:;">{% trans "Collapse" %}</a></div>
-		<div class="expand-button" style="display:none;"><a href="javascript:;">{% trans "Expand" %}</a></div>
-	</div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if forloop.first %}
+                <div class="inline-fields-to-toggle">
+            {% endif %}
+            {% if forloop.last %}
+                </div>
+            {% endif %}
+
+        {% endfor %}
+    </fieldset>
+
+
+    <div class="collapse-expand-button">
+        <div class="collapse-button">
+            <a href="javascript:;">{% trans "Collapse" %}</a></div>
+        <div class="expand-button" style="display:none;"><a href="javascript:;">{% trans "Expand" %}</a></div>
+    </div>
   {% endfor %}
   {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
   {{ inline_admin_form.fk_field.field }}
@@ -174,50 +174,50 @@
 
         // collapse all fields as default
         $('div.inline-fields-to-toggle').each(function(){
-           	if ($(this).is(':visible')){
-           		$(this).hide('slideUp');
-           		$(this).closest('div.inline-related').find('.expand-button').show();
-           		$(this).closest('div.inline-related').find('.collapse-button').hide();
-           	}
-       	});
-       	$('div.expand-all-button').show();
-       	$('div.collapse-all-button').hide();
+               if ($(this).is(':visible')){
+                   $(this).hide('slideUp');
+                   $(this).closest('div.inline-related').find('.expand-button').show();
+                   $(this).closest('div.inline-related').find('.collapse-button').hide();
+               }
+           });
+           $('div.expand-all-button').show();
+           $('div.collapse-all-button').hide();
 
         // collapse and expand buttons to toggle the fields
         $('.collapse-button').click(function(){
-        	$(this).closest('div.inline-related').find('div.inline-fields-to-toggle').hide('slideUp');
-        	$(this).closest('.collapse-expand-button').find('.expand-button').show();
-        	$(this).hide();
+            $(this).closest('div.inline-related').find('div.inline-fields-to-toggle').hide('slideUp');
+            $(this).closest('.collapse-expand-button').find('.expand-button').show();
+            $(this).hide();
         });
         $('.expand-button').click(function(){
-        	$(this).closest('div.inline-related').find('div.inline-fields-to-toggle').show('slideDown');
-        	$(this).closest('.collapse-expand-button').find('.collapse-button').show();
-        	$(this).hide();
+            $(this).closest('div.inline-related').find('div.inline-fields-to-toggle').show('slideDown');
+            $(this).closest('.collapse-expand-button').find('.collapse-button').show();
+            $(this).hide();
         });
         $('.toggle-all-button > .collapse-all-button').click(function(){
-        	$('div.inline-fields-to-toggle').each(function(){
-            	if ($(this).is(':visible')){
-            		$(this).hide('slideUp');
-            		$(this).closest('div.inline-related').find('.expand-button').show();
-            		$(this).closest('div.inline-related').find('.collapse-button').hide();
-            	}
-        	});
-        	$('div.expand-all-button').show();
-        	$(this).hide();
+            $('div.inline-fields-to-toggle').each(function(){
+                if ($(this).is(':visible')){
+                    $(this).hide('slideUp');
+                    $(this).closest('div.inline-related').find('.expand-button').show();
+                    $(this).closest('div.inline-related').find('.collapse-button').hide();
+                }
+            });
+            $('div.expand-all-button').show();
+            $(this).hide();
         });
         $('.toggle-all-button > .expand-all-button').click(function(){
-        	$('div.inline-fields-to-toggle').each(function(){
-            	if ($(this).is(':hidden')){
-            		$(this).show('slideDown');
-            		$(this).closest('div.inline-related').find('.expand-button').hide();
-            		$(this).closest('div.inline-related').find('.collapse-button').show();
-            	}
-        	});
-        	$('div.collapse-all-button').show();
-        	$(this).hide();
+            $('div.inline-fields-to-toggle').each(function(){
+                if ($(this).is(':hidden')){
+                    $(this).show('slideDown');
+                    $(this).closest('div.inline-related').find('.expand-button').hide();
+                    $(this).closest('div.inline-related').find('.collapse-button').show();
+                }
+            });
+            $('div.collapse-all-button').show();
+            $(this).hide();
         });
-        
+
     });
-    
+
 })(django.jQuery);
-</script>  
+</script>

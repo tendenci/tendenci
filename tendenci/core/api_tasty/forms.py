@@ -7,11 +7,11 @@ class ApiKeyForm(forms.ModelForm):
     """
     From for setting up ApiKeys for superusers.
     """
-    
+
     class Meta:
         model = ApiKey
         exclude = ('created', 'key')
-        
+
     def clean_user(self):
         user = self.cleaned_data['user']
         if not user.profile.is_superuser:

@@ -10,7 +10,7 @@ from update_index import Command as UpdateCommand
 class Command(BaseCommand):
     help = "Completely rebuilds the search index by removing the old data and then updating."
     option_list = BaseCommand.option_list + (ClearCommand.base_options[0],) + UpdateCommand.base_options
-    
+
     def handle(self, **options):
         call_command('clear_index', **options)
         call_command('update_index', **options)

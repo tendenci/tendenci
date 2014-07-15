@@ -5,9 +5,8 @@
     {% blocktrans %}To unsubscribe, reply with the subject "remove" or click here:{% endblocktrans %}
 
     {{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser action.group.slug user_this.id %}
- {% endif %}          
+ {% endif %}
     {% blocktrans %}RSS syndication available for the {{ SITE_GLOBAL_SITEDISPLAYNAME }}:{% endblocktrans %}
-    
+
     {# need to replace with the real rss link #}
-    {{ SITE_GLOBAL_SITEURL }}/rss/index 
-   
+    {{ SITE_GLOBAL_SITEURL }}/rss/index

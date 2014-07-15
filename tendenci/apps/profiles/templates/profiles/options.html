@@ -7,7 +7,7 @@
 {% assign can_edit_user user_this_profile|args:request.user|call:'allow_edit_by' %}
 
     {% if user_this.id %}
-        {% if can_edit_user %} 
+        {% if can_edit_user %}
             {% if user_this.profile.is_superuser %}
                 <span class="copyright body-copy-alerts"><em>{% trans "Superuser" %}</em></span>
             {% endif %}
@@ -17,18 +17,18 @@
             {% else %}
                 {% if profile.status_detail %}
                     {% if profile.status_detail|lower != 'active' %}
-                        <a href="{% url profile.edit user_this.id %}" class="t-statusdetail" 
+                        <a href="{% url profile.edit user_this.id %}" class="t-statusdetail"
                         title="{{ profile.status_detail }}"  style="background-color:#52008F;">{{ profile.status_detail|title }}</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
-            
-            
+
+
                 {% if not user_this.is_active %}
-                    <img class="non-interactive" src="{{ STATIC_URL }}images/icons/answer_incorrect.gif" 
+                    <img class="non-interactive" src="{{ STATIC_URL }}images/icons/answer_incorrect.gif"
                     alt="Non-Interactive" title="Non-Interactive">
                 {% endif %}
-            
+
                 <a href="{% url profile.edit user_this.id %}" class="option-link edit">{% trans "Edit" %}</a>
         {% endif %}
     {% endif %}
@@ -43,7 +43,7 @@
                 </li>
                 <li>
                  <a href="{% url auth_password_change user_this.id %}" class="changepassword" title=="Change Password">{% trans "Change Password" %}</a>
-                </li> 
+                </li>
                 {% if request.user.is_superuser %}
                 <li>
                 <a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">{% trans "Permissions" %}</a>

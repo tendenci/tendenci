@@ -7,5 +7,5 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from tendenci.core.perms.object_perms import ObjectPermission
-        
+
         ObjectPermission.objects.filter(group__isnull=True).delete()

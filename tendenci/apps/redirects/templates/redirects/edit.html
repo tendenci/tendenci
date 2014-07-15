@@ -14,13 +14,13 @@
 <div class="t">
 {% redirect_nav request.user redirect %}
     <h1>{% trans "Redirect Edit" %}</h1>
- 
+
     <div class="redirect-wrap">
-    	<form action="{% url redirect.edit redirect.pk %}" method="post">{% csrf_token %}
-    	<div class="forms">
+        <form action="{% url redirect.edit redirect.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Save Changes" />
-		</div>
+            <input type="submit" value="Save Changes" />
+        </div>
         </form>
     </div>
 

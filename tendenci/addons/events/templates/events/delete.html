@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="event-info" style="margin-top:10px;">
-            
+
         <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
         <div class="place">{{ event.place }}</div>
 
@@ -27,7 +27,7 @@
             {{ event.get_description }}
         {% endif %}
         </div>
-        
+
         <div class="delete-form" style="margin-top:10px;">
             <form name="directory-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">

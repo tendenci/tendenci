@@ -23,22 +23,22 @@ class BaseNoticeFeed(Feed):
             Site.objects.get_current().domain,
             notification.get_absolute_url(),
         )
-    
+
     def item_title(self, notification):
         return striptags(notification.message)
-    
+
     def item_updated(self, notification):
         return notification.added
-    
+
     def item_published(self, notification):
         return notification.added
-    
+
     def item_content(self, notification):
         return {"type" : "html", }, linebreaks(escape(notification.message))
-    
+
     def item_links(self, notification):
         return [{"href" : self.item_id(notification)}]
-    
+
     def item_authors(self, notification):
         return [{"name" : notification.user.username}]
 

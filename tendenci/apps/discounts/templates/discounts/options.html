@@ -6,13 +6,13 @@
 {% has_perm user discounts.delete_discount opt_object as can_delete %}
 
 <div class="t-iconrow">
-    
-	{% if can_edit %}
-		<a class="option-link edit" href="{% url discount.edit opt_object.pk %}">{% trans "Edit" %}</a>
-	{% endif %}
-    
-    {% if can_delete %}
-        <a class="option-link delete" href="{% url discount.delete opt_object.pk %}">{% trans "Delete" %}</a>			
+
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url discount.edit opt_object.pk %}">{% trans "Edit" %}</a>
     {% endif %}
-    
+
+    {% if can_delete %}
+        <a class="option-link delete" href="{% url discount.delete opt_object.pk %}">{% trans "Delete" %}</a>
+    {% endif %}
+
 </div>

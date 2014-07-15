@@ -23,20 +23,20 @@ class SlugField(CharField):
                      u" underscores (_), front-slashes (/) or hyphens."),
     }
     default_validators = [validate_slug]
-    
+
     def __init__(self, help_text=None, *args, **kwargs):
         super(SlugField, self).__init__(*args, **kwargs)
-        
+
     def clean(self, value):
-        value = self.to_python(value)     
+        value = self.to_python(value)
         value = value.replace('//','')
         value = value.strip('/')
 
         self.validate(value)
         self.run_validators(value)
-        
+
         return value
-    
+
 class SimpleMathField(forms.IntegerField):
     def __init__(self, *args, **kwargs):
         kwargs['required'] = True
@@ -50,17 +50,17 @@ class SimpleMathField(forms.IntegerField):
             value = 0
         if value != SIMPLE_ANSWER:
             raise forms.ValidationError("Incorrect. Please try again.")
-        
+
         return value
 
 class PasswordForm(forms.Form):
     password = forms.CharField(label=_(u'Password'),
         widget=forms.PasswordInput())
-    
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super(PasswordForm, self).__init__(*args, **kwargs)
-        
+
     def clean(self):
         password = self.cleaned_data['password']
         if not self.user.check_password(password):

@@ -21,7 +21,7 @@
 
         <div class="options">
             <div class="quick-options">
-                {% event_log_options request.user event_log %} 
+                {% event_log_options request.user event_log %}
             </div>
         </div>
 
@@ -47,7 +47,7 @@
             <p>{% trans "Request method :" %}{{ event_log.request_method  }}</p>
             <p>{% trans "Query string :" %}{{ event_log.query_string  }}</p>
             <p>{% trans "Robot :" %}{{ event_log.robot  }}</p>
-            <p>{% trans "Create dt :" %}{{ event_log.create_dt|date:"short"  }}</p>        
+            <p>{% trans "Create dt :" %}{{ event_log.create_dt|date:"short"  }}</p>
         </div>
         <div class="meta">
             <div class="submitted">{% blocktrans with event_log.create_dt|date:"long" as create_date %}Logged on {{ create_date }}{% endblocktrans %}</div>

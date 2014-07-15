@@ -12,28 +12,28 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <style>
-	input[name='total_passes_allowed']{
-		width: 21% !important;
-	}
+    input[name='total_passes_allowed']{
+        width: 21% !important;
+    }
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="t">
-{% corpmemb_nav request.user corp_memb %} 
+{% corpmemb_nav request.user corp_memb %}
 <div class="corp-reps">
      <h1>{% trans "Corporate Membership Edit Free Passes" %}</h1>
      <div><a href="{% url corpmembership.view corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></div>
     <p>
     <form action="" method="post">{% csrf_token %}
-	<div class="forms">
-		{{ form|styled_form }}
+    <div class="forms">
+        {{ form|styled_form }}
         <input type="submit" name="submit" value="Save" />
-	</div>
-	
-	</form>
-	</p>
-</div>	
+    </div>
+
+    </form>
+    </p>
+</div>
 </div>
 {% endblock %}
 

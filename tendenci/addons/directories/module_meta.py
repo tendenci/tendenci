@@ -10,16 +10,16 @@ class DirectoryMeta():
     """
     SEO specific tags carefully constructed follow.  These must *NOT* be perfect
     but rather should be strong. - ES
-    
+
     create a search engine friendly html TITLE tag for the page
     - we want similar phrases but NOT the exact same between TITLE and META tags
     - It MUST produce the exact same result if the spider returns but must also differ
     by site for sites that feed from the same central data
-    """ 
+    """
     def get_title(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
@@ -75,7 +75,7 @@ class DirectoryMeta():
     def get_description(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         category_set = object.category_set
         category = category_set.get('category', '')
@@ -128,7 +128,7 @@ class DirectoryMeta():
     def get_keywords(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         dynamic_keywords = generate_meta_keywords(object.body)
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         secondary_keywords = get_setting('site','global','sitesecondarykeywords')
@@ -162,7 +162,7 @@ class DirectoryMeta():
             for item in list:
                 if not item.strip():
                     list.remove(item)
- 
+
             value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
 
         else:
@@ -199,6 +199,5 @@ class DirectoryMeta():
             if object.meta and object.meta.canonical_url: return object.meta.canonical_url
             else: return self.get_canonical_url()
         return ''
-    
-    
-    
+
+

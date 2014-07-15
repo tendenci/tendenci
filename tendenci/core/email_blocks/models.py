@@ -8,14 +8,14 @@ class EmailBlock(TendenciBaseModel):
     email =models.CharField(max_length=255)
     reason = models.CharField(max_length=500)
     email_domain = models.CharField(max_length=255)
-    
+
     class Meta:
         permissions = (("view_email_block","Can view email block"),)
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("email_block.view", [self.pk])
-    
+
     def save(self, user=None):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -25,16 +25,16 @@ class EmailBlock(TendenciBaseModel):
         if user and user.id:
             self.owner=user
             self.owner_username=user.username
-            
+
         super(EmailBlock, self).save()
-        
+
     # if this email allows view by user2_compare
     def allow_view_by(self, user2_compare):
         boo = False
-       
+
         if user2_compare.profile.is_superuser:
             boo = True
-        else: 
+        else:
             if user2_compare == self.creator or user2_compare == self.owner:
                 if self.status:
                     boo = True
@@ -43,13 +43,13 @@ class EmailBlock(TendenciBaseModel):
                     if self.status == 1 and self.status_detail=='active':
                         boo = True
         return boo
-    
+
     # if this email allows edit by user2_compare
     def allow_edit_by(self, user2_compare):
         boo = False
         if user2_compare.profile.is_superuser:
             boo = True
-        else: 
+        else:
             if user2_compare == self.user:
                 boo = True
             else:
@@ -61,4 +61,3 @@ class EmailBlock(TendenciBaseModel):
                         if self.status:
                             boo = True
         return boo
-            

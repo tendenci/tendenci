@@ -48,7 +48,7 @@ class TendenciBaseModel(models.Model):
     def obj_perms(self):
         from tendenci.core.perms.fields import has_groups_perms
         t = '<span class="perm-%s">%s</span>'
- 
+
         if self.allow_anonymous_view:
             value = t % ('public','Public')
         elif self.allow_user_view:
@@ -136,7 +136,7 @@ class TendenciBaseModel(models.Model):
                 if log:
                     application = self.__module__
                     EventLog.objects.log(instance=self, application=application)
-        
+
         # delete object from the database.
         super(TendenciBaseModel, self).delete(*args, **kwargs)
 
@@ -148,9 +148,9 @@ class TendenciBaseModel(models.Model):
             Category.objects.remove(self, 'sub_category')
         else:
             Category.objects.update(self, category_value, 'category')
-            
+
         if not category_removed:
-            # update the sub category of this object                
+            # update the sub category of this object
             if not subcategory_value or subcategory_value == '0':  # remove
                 Category.objects.remove(self, 'sub_category')
             else:

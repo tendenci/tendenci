@@ -9,7 +9,7 @@ def cache_nav(nav, show_title=False):
     """
     Caches a nav's rendered html code
     """
-    
+
     keys = [settings.CACHE_PRE_KEY, NAV_PRE_KEY, str(nav.id)]
     key = '.'.join(keys)
     value = render_to_string("navs/render_nav.html", {'nav':nav, "show_title": show_title})

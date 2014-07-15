@@ -172,7 +172,7 @@ class RegistrationConfiguration(models.Model):
     send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
     reminder_days = models.CharField(_('Specify when (? days before the event ' + \
                                        'starts) the reminder should be sent '),
-                                     max_length=20, 
+                                     max_length=20,
                                      null=True, blank=True,
                                      help_text='Comma delimited. Ex: 7,1')
 
@@ -199,9 +199,9 @@ class RegistrationConfiguration(models.Model):
 
     def get_available_pricings(self, user, is_strict=False, spots_available=-1):
         """
-        Get the available pricings for this user. 
+        Get the available pricings for this user.
         """
-        filter_and, filter_or = RegConfPricing.get_access_filter(user, 
+        filter_and, filter_or = RegConfPricing.get_access_filter(user,
                                                                  is_strict=is_strict,
                                                                  spots_available=spots_available)
 
@@ -220,7 +220,7 @@ class RegistrationConfiguration(models.Model):
                     )
         if q_obj:
             pricings = pricings.filter(q_obj)
-            
+
         return pricings
 
     def has_member_price(self):
@@ -250,14 +250,14 @@ class RegConfPricing(OrderingBaseModel):
                                    help_text='Example: 0.0825 for 8.25%.')
     payment_required = models.NullBooleanField(help_text='A payment required before registration is accepted.')
 
-    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfpricings',
                                  help_text="You'll have the chance to edit the selected form")
 
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
     end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
-    
+
     allow_anonymous = models.BooleanField(_("Public can use this pricing"))
     allow_user = models.BooleanField(_("Signed in user can use this pricing"))
     allow_member = models.BooleanField(_("All members can use this pricing"))
@@ -401,9 +401,9 @@ class Registration(models.Model):
     quantity = models.IntegerField(_('Number of registrants for a table'), default=1)
     # admin price override for table
     override_table = models.BooleanField(_('Admin Price Override?'), default=False)
-    override_price_table = models.DecimalField(_('Override Price'), max_digits=21, 
-                                         decimal_places=2, 
-                                         blank=True, 
+    override_price_table = models.DecimalField(_('Override Price'), max_digits=21,
+                                         decimal_places=2,
+                                         blank=True,
                                          default=0)
     canceled = models.BooleanField(_('Canceled'), default=False)
 
@@ -575,7 +575,7 @@ class Registration(models.Model):
         status_detail = kwargs.get('status_detail', 'tendered')
         admin_notes = kwargs.get('admin_notes', None)
 
-        object_type = ContentType.objects.get(app_label=self._meta.app_label, 
+        object_type = ContentType.objects.get(app_label=self._meta.app_label,
             model=self._meta.module_name)
 
         try: # get invoice
@@ -590,7 +590,7 @@ class Registration(models.Model):
             invoice.object_type = object_type
             invoice.object_id = self.pk
 
-        # primary registrant is responsible for billing    
+        # primary registrant is responsible for billing
         primary_registrant = self.registrant
         invoice.bill_to =  primary_registrant.first_name + ' ' + primary_registrant.last_name
         invoice.bill_to_first_name = primary_registrant.first_name
@@ -729,7 +729,7 @@ class Registrant(models.Model):
 
     def register_pricing(self):
         # The pricing is a field recently added. The previous registrations
-        # store the pricing in registration. 
+        # store the pricing in registration.
         return self.pricing or self.registration.reg_conf_price
 
     @property
@@ -1342,7 +1342,7 @@ class CustomRegForm(models.Model):
     def is_template(self):
         """
         A custom registration form is a template when it is not associated with
-        registration configuration and any event registration conf pricing. 
+        registration configuration and any event registration conf pricing.
         A form template can be re-used and will be cloned if it is selected by
         a regconf or an regconfpricing.
         """
@@ -1376,7 +1376,7 @@ class CustomRegField(OrderingBaseModel):
         choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
-    choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
+    choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text="Default value of the field")
@@ -1457,7 +1457,7 @@ class CustomRegFormEntry(models.Model):
         return ''
 
     def get_lastname_firstname(self):
-        name = '%s, %s' % (self.get_value_of_mapped_field('last_name'), 
+        name = '%s, %s' % (self.get_value_of_mapped_field('last_name'),
                          self.get_value_of_mapped_field('first_name'))
         return name.strip()
 
@@ -1483,9 +1483,9 @@ class CustomRegFormEntry(models.Model):
     def roster_field_entry_list(self):
         list_on_roster = []
         field_entries = self.field_entries.exclude(field__map_to_field__in=[
-                                    'first_name', 
-                                    'last_name', 
-                                    'position_title', 
+                                    'first_name',
+                                    'last_name',
+                                    'position_title',
                                     'company_name'
                                     ]).filter(field__display_on_roster=1).order_by('field')
 

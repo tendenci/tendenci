@@ -22,7 +22,7 @@ def decrypt(value):
     This removes the padding character '\0'
     """
     cipher = AES.new(settings.SITE_SETTINGS_KEY, AES.MODE_ECB)
-    value = base64.b64decode(value) 
+    value = base64.b64decode(value)
     value = cipher.decrypt(value)
     return value.replace('\0', '')
 

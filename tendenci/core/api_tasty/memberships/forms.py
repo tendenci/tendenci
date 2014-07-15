@@ -7,15 +7,15 @@ class MembershipForm(TendenciForm):
     create_user = forms.BooleanField(required=False)
     username = forms.CharField(required=False)
     password = forms.CharField(required=False)
-    
+
     class Meta:
         model = MembershipDefault
         exclude = ('user', 'guid')
-    
+
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(MembershipForm, self).__init__(*args, **kwargs)
-    
+
     def clean(self):
         data = self.cleaned_data
         if data['create_user']:

@@ -26,7 +26,7 @@ class FormsExportTask(Task):
     """Export Task for Celery
     This exports all forms along with their fields.
     """
-    
+
     def run(self, **kwargs):
         """Create the xls file"""
         form_fields = [
@@ -70,13 +70,13 @@ class FormsExportTask(Task):
             'label',
             'price',
         ]
-        
+
         forms = Form.objects.filter(status=True)
         max_fields = forms.annotate(num_fields=Count('fields')).aggregate(Max('num_fields'))['num_fields__max']
         max_pricings = forms.annotate(num_pricings=Count('pricing')).aggregate(Max('num_pricings'))['num_pricings__max']
         file_name = 'forms.csv'
         data_row_list = []
-        
+
         for form in forms:
             data_row = []
             # form setup
@@ -88,7 +88,7 @@ class FormsExportTask(Task):
                     value = form_d[field]
                 value = unicode(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
-                
+
             if form.fields.all():
                 # field setup
                 for field in form.fields.all():
@@ -97,13 +97,13 @@ class FormsExportTask(Task):
                         value = field_d[f]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
-            
+
             # fill out the rest of the field columns
             if form.fields.all().count() < max_fields:
                 for i in range(0, max_fields - form.fields.all().count()):
                     for f in field_fields:
                         data_row.append('')
-                        
+
             if form.pricing_set.all():
                 # field setup
                 for pricing in form.pricing_set.all():
@@ -112,15 +112,15 @@ class FormsExportTask(Task):
                         value = pricing_d[f]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
-            
+
             # fill out the rest of the field columns
             if form.pricing_set.all().count() < max_pricings:
                 for i in range(0, max_pricings - form.pricing_set.all().count()):
                     for f in pricing_fields:
                         data_row.append('')
-            
+
             data_row_list.append(data_row)
-        
+
         fields = form_fields
         for i in range(0, max_fields):
             fields = fields + ["field %s %s" % (i, f) for f in field_fields]

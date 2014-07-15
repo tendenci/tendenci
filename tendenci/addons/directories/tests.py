@@ -19,17 +19,17 @@ class DirectoryTest(TestCase):
         self.user.set_password('google')
         self.user.is_active = True
         self.user.save()
-        
-    
+
+
     def tearDown(self):
         self.client = None
         self.directory = None
         self.user = None
-        
+
     def test_save(self):
         self.directory.headline = 'Unit Testing'
         self.directory.summary = 'Unit Testing'
-        
+
         # required fields
         self.directory.creator = self.user
         self.directory.creator_username = self.user.username
@@ -37,11 +37,11 @@ class DirectoryTest(TestCase):
         self.directory.owner_username = self.user.username
         self.directory.status = True
         self.directory.status_detail = 'active'
-        self.directory.enclosure_length = 0   
+        self.directory.enclosure_length = 0
         self.directory.timezone = 'America/Chicago'
-        
+
         self.directory.save()
-        
+
         self.assertEquals(type(self.directory.id), long)
-        
+
 

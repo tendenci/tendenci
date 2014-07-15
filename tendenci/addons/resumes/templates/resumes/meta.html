@@ -19,7 +19,7 @@
             {% for tag in nonhash_tags %}
                 <a href="{% url resumes %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
-            
+
             {% if hash_tags and can_edit %}
             {% for tag in hash_tags %}
                 {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url resumes %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
@@ -27,7 +27,7 @@
             {% endif %}
         </div>
         {% endif %}
-        
+
         {% if user.is_authenticated %}
             <div class="submitted">{% blocktrans with resume.create_dt|date:"long" as create_date %}Created on {{ create_date }}
             by:{% endblocktrans %} <a href="{{ resume.creator.get_absolute_url }}">
@@ -68,14 +68,14 @@
             {% if can_delete %}
             <li>
                 <a class="delete" href="{% url resume.delete resume.pk %}">{% trans "Delete" %}</a>
-            </li>               
+            </li>
             {% endif %}
                 <li><a href="{% url resume.edit.meta resume.pk %}">{% trans "Edit Meta" %}</a></li>
-                
+
             </ul>
         </div>
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

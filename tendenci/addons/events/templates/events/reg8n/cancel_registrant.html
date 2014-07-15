@@ -21,16 +21,16 @@
         <div class="event-title">{{ event.title }}</div>
         <div class="event-cancel-amount">
                 {% if registrant.first_name or registrant.last_name %}
-                    {% blocktrans %} Cancelling registration for{% endblocktrans %} {{ registrant.first_name }}  {{ registrant.last_name }}                    
+                    {% blocktrans %} Cancelling registration for{% endblocktrans %} {{ registrant.first_name }}  {{ registrant.last_name }}
                 {% else %}
-                    {% blocktrans %} Cancelling registration for Guest #: {% endblocktrans %}{{ forloop.counter0 }} 
+                    {% blocktrans %} Cancelling registration for Guest #: {% endblocktrans %}{{ forloop.counter0 }}
                 {% endif %}
         </div>
     </div>
     <div class="event-registrants">
         <div class='avatar'>{% avatar registrant.user 56 %}</div>
         <div class="info">
-            
+
             <div class="name">
             {% if registrant.first_name or registrant.last_name %}
                 {% if registrant.first_name %}
@@ -43,9 +43,9 @@
                 Guest #{{ forloop.counter0 }}
             {% endif %}
             </div>
-            
+
             <div class="email">{% firstof registrant.email trans "Email Not Recorded" %}</div>
-            <div class="amount">{% trans "Amount:" %} 
+            <div class="amount">{% trans "Amount:" %}
             <span{% if registrant.cancel_dt %} class="canceled-amount"{% endif %}>
                     {{ registrant.amount|format_currency }}
             </span>

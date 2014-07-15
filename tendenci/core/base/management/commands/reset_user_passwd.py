@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 class Command(BaseCommand):
     """
     Reset password for a given user
-    
+
     Usage: manage.py reset_user_passwd --username username --password password
     """
     option_list = BaseCommand.option_list + (
@@ -45,7 +45,7 @@ class Command(BaseCommand):
         except ObjectDoesNotExist:
             print 'User with username (%s) could not be found' % username
             return
-        
+
         u.set_password(password)
         u.save()
 

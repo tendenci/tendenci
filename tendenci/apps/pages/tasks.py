@@ -12,7 +12,7 @@ class PagesExportTask(Task):
     """Export Task for Celery
     This exports all active pages
     """
-    
+
     def run(self, **kwargs):
         """Create the xls file"""
         fields = [
@@ -43,9 +43,9 @@ class PagesExportTask(Task):
             'status',
             'status_detail',
         ]
-        
+
         file_name = 'pages.csv'
-            
+
         pages = Page.objects.active()
         data_row_list = []
         for page in pages:
@@ -64,7 +64,7 @@ class PagesExportTask(Task):
                     else:
                         value = f.value_from_object(page)
                     d[f.name] = value
-            
+
             # append the accumulated values as a data row
             # keep in mind the ordering of the fields
             data_row = []
@@ -72,7 +72,7 @@ class PagesExportTask(Task):
                 # clean the derived values into unicode
                 value = unicode(d[field]).rstrip()
                 data_row.append(value)
-            
+
             data_row_list.append(data_row)
-        
+
         return render_csv(file_name, fields, data_row_list)

@@ -30,8 +30,8 @@ class HelpFileSitemap(TendenciSitemap):
     """ Sitemap information for help files """
     changefreq = "monthly"
     priority = 0.5
-    
-    def items(self):     
+
+    def items(self):
         items = HelpFile.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items
 

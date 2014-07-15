@@ -20,39 +20,39 @@
     {% entity_nav request.user entity %}
 
     <div class="entity-wrap">
-		<div class="options">
+        <div class="options">
              <div class="quick-options">
-				{% entity_options request.user entity %} 	       
+                {% entity_options request.user entity %}
              </div>
-		</div>
-			
+        </div>
+
         <h2>{{ entity.entity_name }}</h2>
         <div class="content">
-        
-         <div class="notes">{{ entity.notes|safe }}</div>    
-         <div class="summary">{{ entity.summary|safe }}</div> 
-         
-	         <p>    
-	         <div class="contact"><h3>{% trans "Contact:" %}</h3>
-		         {{ entity.contact_name|safe }}<br>	
-		         {{ entity.phone|safe }}  {{ entity.fax|safe }}<br>
-		         {{ entity.email|safe }}<br>
-		         {{ entity.website|safe }}
-	         </div>  
-	  		 </p>
-	           <p>    
-	           <div class="admin_notes">{{ entity.admin_notes|safe }}</div>             
-	   		 </p>      
-        
+
+         <div class="notes">{{ entity.notes|safe }}</div>
+         <div class="summary">{{ entity.summary|safe }}</div>
+
+             <p>
+             <div class="contact"><h3>{% trans "Contact:" %}</h3>
+                 {{ entity.contact_name|safe }}<br>
+                 {{ entity.phone|safe }}  {{ entity.fax|safe }}<br>
+                 {{ entity.email|safe }}<br>
+                 {{ entity.website|safe }}
+             </div>
+               </p>
+               <p>
+               <div class="admin_notes">{{ entity.admin_notes|safe }}</div>
+                </p>
+
         </div>
-        
-       
+
+
         <div class="meta">
-            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as encreate %}Submitted on {{ encreate }} 
-			by:{% endblocktrans %} {% firstof entity.creator.get_profile.display_name entity.creator %}</div>
+            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as encreate %}Submitted on {{ encreate }}
+            by:{% endblocktrans %} {% firstof entity.creator.get_profile.display_name entity.creator %}</div>
         </div>
-        
-		<br />
+
+        <br />
         {% url entity entity.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
     </div>
@@ -68,21 +68,21 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_entity = confirm("Permenantly delete {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");	// confirm
-				if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_entity = confirm("Permenantly delete {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
+                if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
 {% endblock %}

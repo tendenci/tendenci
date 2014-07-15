@@ -35,7 +35,7 @@
     {% endif %}
 {% else %}
     <p>{% blocktrans %}Are you sure you want to delete the group {{ object_name }}? All of the following objects and their related items will be deleted:{% endblocktrans %}</p>
-    
+
         <ul>{{ deleted_objects|unordered_list }}</ul>
 
     <form action="" method="post">{% csrf_token %}

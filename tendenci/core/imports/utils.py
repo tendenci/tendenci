@@ -30,7 +30,7 @@ field_type_dict = dict(zip(user_field_names, user_field_types))
 user_fields = None
 user_field_types = None
 
-profile_fields = [field for field in Profile._meta.fields if field.editable 
+profile_fields = [field for field in Profile._meta.fields if field.editable
                   and (not field.__class__ == AutoField)]
 profile_field_names = [smart_str(field.name) for field in profile_fields]
 profile_field_types = [field.__class__.__name__ for field in profile_fields]

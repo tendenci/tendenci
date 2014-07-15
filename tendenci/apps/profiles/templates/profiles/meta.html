@@ -23,11 +23,11 @@
         {% if profile.user.is_superuser %}
         <li><span class="role-superuser">Superuser</span></li>
         {% else %}
-        	{% if profile.user.is_staff %}
-	        <li><span class="role-staff">Staff</span></li>
-	        {% endif %}
+            {% if profile.user.is_staff %}
+            <li><span class="role-staff">Staff</span></li>
+            {% endif %}
         {% endif %}
-        
+
     </ul>
     </div>
     <div class="edit-links">
@@ -47,12 +47,12 @@
                 </li>
                 <li>
                     <a href="{% url invoice.search %}?bill_to_email={{ user_this.email}}" title=="View invoices">{% trans "Invoices" %}</a>
-                </li> 
+                </li>
                 <li>
                     <a href="{% url profile.edit_perms profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
                 </li>
                 {% if request.user.is_superuser and MODULE_IMPERSONATION_ENABLED %}
-                
+
                 <li>
                     <a href ="{{ request.path }}?_impersonate={{ profile.user.username }}" title="Impersonate">{% trans "Impersonate" %}</a>
                 </li>
@@ -65,5 +65,5 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

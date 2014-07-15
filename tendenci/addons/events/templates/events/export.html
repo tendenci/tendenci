@@ -7,7 +7,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/events.css">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css"/>
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/>
 <style>
     .inline-block { display: inline-block;}
     .label {width: 150px; font-size: 14px; text-align: left;}
@@ -65,7 +65,7 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script>
     $(function() {
         $( "#id_start_dt" ).datepicker({

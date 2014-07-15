@@ -41,11 +41,11 @@
       <a href="../../">
         {% trans "Home" %}
       </a>
-       &rsaquo; 
+       &rsaquo;
        <a href="../">
          {{ app_label|capfirst }}
       </a>
-      &rsaquo; 
+      &rsaquo;
       {{ cl.opts.verbose_name_plural|capfirst }}
     </div>
   {% endblock %}
@@ -89,7 +89,7 @@
           </div>
         {% endif %}
       {% endblock %}
-      
+
       <form id="changelist-form" action="" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
       {% if cl.formset %}
         {{ cl.formset.management_form }}

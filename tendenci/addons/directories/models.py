@@ -13,7 +13,7 @@ from timezones.fields import TimeZoneField
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.base.fields import SlugField
-from tendenci.core.perms.models import TendenciBaseModel 
+from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
 from tendenci.apps.invoices.models import Invoice
@@ -30,7 +30,7 @@ def file_directory(instance, filename):
     return 'directories/%d/%s' % (instance.id, filename)
 
 class Directory(TendenciBaseModel):
- 
+
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
     timezone = TimeZoneField(_('Time Zone'))
@@ -38,8 +38,8 @@ class Directory(TendenciBaseModel):
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField()
     source = models.CharField(max_length=300, blank=True)
-    # logo = models.FileField(max_length=260, upload_to=file_directory, 
-    #                         help_text=_('Company logo. Only jpg, gif, or png images.'), 
+    # logo = models.FileField(max_length=260, upload_to=file_directory,
+    #                         help_text=_('Company logo. Only jpg, gif, or png images.'),
     #                         blank=True)
 
     logo_file = models.ForeignKey(File, null=True)
@@ -58,26 +58,26 @@ class Directory(TendenciBaseModel):
     email = models.CharField(_('Email'), max_length=120, blank=True)
     email2 = models.CharField(_('Email 2'), max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
-    
+
     renewal_notice_sent = models.BooleanField(default=False)
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
     pricing = models.ForeignKey('DirectoryPricing', null=True)
     activation_dt = models.DateTimeField(_('Activation Date/Time'), null=True, blank=True)
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True) 
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
 
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
     tags = TagField(blank=True)
-   
+
     # for podcast feeds
     enclosure_url = models.CharField(_('Enclosure URL'), max_length=500, blank=True)
     enclosure_type = models.CharField(_('Enclosure Type'), max_length=120, blank=True)
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
-    
+
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
@@ -100,9 +100,9 @@ class Directory(TendenciBaseModel):
         This method is standard across all models that are
         related to the Meta model.  Used to generate dynamic
         methods coupled to this instance.
-        """    
+        """
         return DirectoryMeta().get_meta(self, name)
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("directory", [self.slug])
@@ -207,7 +207,7 @@ class Directory(TendenciBaseModel):
             elif cat.parent:
                 items["sub_category"] = cat.parent
         return items
-    
+
     def renew_window(self):
         days = get_setting('module', 'directories', 'renewaldays')
         days = int(days)
@@ -234,7 +234,7 @@ class DirectoryPricing(models.Model):
 
     class Meta:
         permissions = (("view_directorypricing", "Can view directory pricing"),)
-    
+
     def __unicode__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
         price = "%s%s(R)/%s(P)" % (currency_symbol, self.regular_price, self.premium_price)
@@ -251,7 +251,7 @@ class DirectoryPricing(models.Model):
             self.owner_username=user.username
         if not self.regular_price: self.regular_price = 0
         if not self.premium_price: self.premium_price = 0
-            
+
         super(DirectoryPricing, self).save(*args, **kwargs)
 
     def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):

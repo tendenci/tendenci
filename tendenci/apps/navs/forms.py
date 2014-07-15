@@ -8,7 +8,7 @@ from tendenci.apps.navs.models import Nav, NavItem
 class NavForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-    
+
     class Meta:
         model = Nav
         fields = (
@@ -45,12 +45,12 @@ class NavForm(TendenciBaseForm):
 class PageSelectForm(forms.Form):
     pages = forms.ModelMultipleChoiceField(label = _('Pages'),
                 queryset = Page.objects.exclude(status_detail='archive').order_by('title'), widget=forms.CheckboxSelectMultiple)
-    
+
     def __init__(self, *args, **kwargs):
         super(PageSelectForm, self).__init__(*args, **kwargs)
 
 class ItemForm(forms.ModelForm):
-    
+
     class Meta:
         model = NavItem
         fields = (
@@ -63,7 +63,7 @@ class ItemForm(forms.ModelForm):
             'url',
             'new_window',
             )
-    
+
     def __init__(self, *args, **kwargs):
         super(ItemForm, self).__init__(*args, **kwargs)
         #we dont need the select widget for this since it will be hidden
@@ -88,12 +88,12 @@ class ItemForm(forms.ModelForm):
 #         if not self.cleaned_data['page']:
 #             newpage = Page(title=self.cleaned_data['label'],slug=self.cleaned_data.get('url')),creator_id=
 #             newpage.save()
-#         
+#
 #         return self.cleaned_data['page']
 
 
 class ItemAdminForm(forms.ModelForm):
-    
+
     class Meta:
         model = NavItem
         fields = (
@@ -106,7 +106,7 @@ class ItemAdminForm(forms.ModelForm):
             'url',
             'new_window',
             )
-    
+
     def __init__(self, *args, **kwargs):
         super(ItemAdminForm, self).__init__(*args, **kwargs)
         self.fields['page'].required = False

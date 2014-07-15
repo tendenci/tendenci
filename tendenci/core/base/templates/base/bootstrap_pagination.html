@@ -15,7 +15,7 @@
                 <li><a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">{{ page }}</a></li>
             {% endifequal %}
         {% else %}
-        <li class="disabled"><a href="#">...</a></li>  
+        <li class="disabled"><a href="#">...</a></li>
         {% endif %}
     {% endfor %}
     {% if page_obj.has_next %}

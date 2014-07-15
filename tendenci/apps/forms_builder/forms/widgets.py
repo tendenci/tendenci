@@ -16,7 +16,7 @@ class Output(forms.Widget):
         if value is None:
             value = ''
         return force_unicode(self._format_value(value))
-        
+
 class Header(Output):
     """
     Outputs text.  Using class name to identify the type

@@ -11,7 +11,7 @@ class PlaceResource(ModelResource):
         resource_name = 'place'
         list_allowed_methods = ['get',]
         detail_allowed_methods = ['get',]
-        
+
 class TypeResource(ModelResource):
     class Meta:
         queryset = Type.objects.all()
@@ -23,7 +23,7 @@ class EventResource(TendenciResource):
     entity = fields.ForeignKey(EntityResource, 'entity', null=True)
     type = fields.ForeignKey(TypeResource, 'type', null=True)
     place = fields.ForeignKey(PlaceResource, 'place', null=True)
-    
+
     class Meta(TendenciResource.Meta):
         queryset = Event.objects.all()
         resource_name = 'event'

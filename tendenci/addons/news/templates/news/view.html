@@ -26,11 +26,11 @@
     {% news_nav request.user news %}
 
     <div class="news-wrap">
-		<div class="options">
+        <div class="options">
              <div class="quick-options">
-				{% news_options request.user news %} 	       
+                {% news_options request.user news %}
              </div>
-		</div>
+        </div>
 
         <h1>{{ news.headline }}</h1>
         {% if news.google_profile %}
@@ -42,27 +42,27 @@
         {% endif %}
 
         <div class="content">
-        	{{ news.body|safe }} 
-	         <div class="contact">
-		         {% if news.first_name and news.last_name %}
-		         	<div>{{ news.first_name }} {{ news.last_name }}</div>
-		         {% endif %}	
-		         {% if news.phone %}    
-		         <div>{% trans "Phone" %}: {{ news.phone|phonenumber }}</div>
-		         {% endif %}	
-		         {% if news.fax %} 
-		         <div>{% trans "Fax" %}: {{ news.fax }}</div>	
-		         {% endif %}	
-		         {% if news.email %} 
-		         <div>{{ news.email|urlize }}</div>	
-		         {% endif %}	
-		         {% if news.website %} 
-		         <div>{{ news.website|urlize }}</div>
-		         {% endif %}		
-	         </div>                 
+            {{ news.body|safe }}
+             <div class="contact">
+                 {% if news.first_name and news.last_name %}
+                     <div>{{ news.first_name }} {{ news.last_name }}</div>
+                 {% endif %}
+                 {% if news.phone %}
+                 <div>{% trans "Phone" %}: {{ news.phone|phonenumber }}</div>
+                 {% endif %}
+                 {% if news.fax %}
+                 <div>{% trans "Fax" %}: {{ news.fax }}</div>
+                 {% endif %}
+                 {% if news.email %}
+                 <div>{{ news.email|urlize }}</div>
+                 {% endif %}
+                 {% if news.website %}
+                 <div>{{ news.website|urlize }}</div>
+                 {% endif %}
+             </div>
         </div>
         {% include "news/meta.html" %}
-		<br />
+        <br />
         <p>{% fb_like_button_iframe news.get_absolute_url %}</p>
     </div>
 
@@ -72,11 +72,11 @@
 {% block extra_body %}
 {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
 {% endblock %}

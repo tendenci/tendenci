@@ -11,9 +11,9 @@ from tendenci.core.api_tasty.users.resources import UserResource
 class TendenciResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner')
     creator = fields.ForeignKey(UserResource, 'creator')
-    
+
     class Meta:
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
-    
+

@@ -59,14 +59,14 @@ class News(TendenciBaseModel):
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0) # for podcast feeds
 
     use_auto_timestamp = models.BooleanField(_('Auto Timestamp'))
-        
+
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-    
+
     categories = generic.GenericRelation(CategoryItem,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
-    
+
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -150,13 +150,13 @@ class News(TendenciBaseModel):
     @property
     def has_google_publisher(self):
         return self.contributor_type == self.CONTRIBUTOR_PUBLISHER
-    
+
     def assign_release_dt_local(self):
         """
         convert release_dt to the corresponding local time
-        
+
         example:
-        
+
         if
             release_dt: 2014-05-09 03:30:00
             timezone: US/Pacific
@@ -171,7 +171,7 @@ class News(TendenciBaseModel):
             self.release_dt_local = self.release_dt + time_diff
         else:
             self.release_dt_local = self.release_dt
-                
+
 
 
 class NewsImage(File):

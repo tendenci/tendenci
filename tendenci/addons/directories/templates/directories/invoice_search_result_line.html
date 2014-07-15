@@ -3,26 +3,26 @@
 {% load i18n %}
 
 <table width="100%">
-   {% invoices_search_line_header request invoice '#cccc33' %}  
-     
-   {# display directory info #} 
+   {% invoices_search_line_header request invoice '#cccc33' %}
+
+   {# display directory info #}
    <tr>
-   	<td>{% trans "ID" %}</td>
-   	<td>{% trans "Name" %}</td>
-   	<td>{% trans "Headline" %}</td>
-   	<td>{% trans "Date" %}</td>
-   	<td>{% trans "Amount" %}</td>
-   	<td>{% trans "Balance" %}</td>
+       <td>{% trans "ID" %}</td>
+       <td>{% trans "Name" %}</td>
+       <td>{% trans "Headline" %}</td>
+       <td>{% trans "Date" %}</td>
+       <td>{% trans "Amount" %}</td>
+       <td>{% trans "Balance" %}</td>
    </tr>
-   
-   {% if obj %} 
+
+   {% if obj %}
    <tr>
-   	<td><a href="{% url directory obj.slug %}">{{obj.id}}</a></td>
-   	<td>{{obj.first_name}} {{obj.last_name}}</td>
-   	<td><a href="{% url directory obj.slug %}">{{obj.headline|truncatewords:5}}</a></td>
-   	<td>{{obj.activation_dt|date:'long'}}</td>
-   	<td>{{invoice.total|format_currency}}</td>
-   	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
-   </tr> 
-   {% endif %}         
+       <td><a href="{% url directory obj.slug %}">{{obj.id}}</a></td>
+       <td>{{obj.first_name}} {{obj.last_name}}</td>
+       <td><a href="{% url directory obj.slug %}">{{obj.headline|truncatewords:5}}</a></td>
+       <td>{{obj.activation_dt|date:'long'}}</td>
+       <td>{{invoice.total|format_currency}}</td>
+       <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+   </tr>
+   {% endif %}
  </table>

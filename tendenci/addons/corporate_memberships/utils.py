@@ -292,7 +292,7 @@ def dues_rep_emails_list(corp_memb):
 def corp_membership_update_perms(corp_memb, **kwargs):
     """
     update object permissions to creator, owner and representatives.
-    view and change permissions only - no delete permission assigned 
+    view and change permissions only - no delete permission assigned
     because we don't want them to delete corp membership records.
     """
     from tendenci.core.perms.object_perms import ObjectPermission
@@ -381,15 +381,15 @@ def get_corp_memb_summary():
 
 # get the corpapp default fields list from json
 def get_corpapp_default_fields_list():
-#    json_fields_path = os.path.join(settings.PROJECT_ROOT, 
+#    json_fields_path = os.path.join(settings.PROJECT_ROOT,
 #                                    "templates/corporate_memberships/regular_fields.json")
 #    fd = open(json_fields_path, 'r')
 #    data = ''.join(fd.read())
 #    fd.close()
-    
-    data = render_to_string('corporate_memberships/regular_fields.json', 
+
+    data = render_to_string('corporate_memberships/regular_fields.json',
                                {}, context_instance=None)
-    
+
     if data:
         return simplejson.loads(data)
     return None
@@ -398,12 +398,12 @@ def get_corpapp_default_fields_list():
 def get_corporate_membership_type_choices(user, corpapp, renew=False):
     cmt_list = []
     corporate_membership_types = corpapp.corp_memb_type.all()
-    
+
     if not user.profile.is_superuser:
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
     corporate_membership_types = corporate_membership_types.order_by('position')
     currency_symbol = get_setting("site", "global", "currencysymbol")
-    
+
     for cmt in corporate_membership_types:
         if not renew:
             price_display = '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)
@@ -416,33 +416,33 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
             if not cmt.renewal_price:
                 cmt.renewal_price = 0
 
-            price_display = """%s - <b>%s<span class="type-corp-price">%0.2f</span></b> 
-                            (individual members renewal: 
-                            <b>%s</b>)""" % (cmt.name, 
-                                            currency_symbol, 
+            price_display = """%s - <b>%s<span class="type-corp-price">%0.2f</span></b>
+                            (individual members renewal:
+                            <b>%s</b>)""" % (cmt.name,
+                                            currency_symbol,
                                             cmt.renewal_price,
                                             indiv_renewal_price)
         price_display = mark_safe(price_display)
         cmt_list.append((cmt.id, price_display))
 
     return cmt_list
-  
+
 
 def get_payment_method_choices(user, corp_app):
     payment_methods = corp_app.payment_methods.all()
-    
+
     if not user.profile.is_superuser:
         payment_methods = payment_methods.filter(admin_only=False)
-    
-    pm_choices = []    
+
+    pm_choices = []
     for pm in payment_methods:
         pm_choices.append((pm.pk, pm.human_name))
     return pm_choices
-  
-  
+
+
 def csv_to_dict(file_path):
     data_list = []
-    
+
     data = csv.reader(default_storage.open(file_path, 'rU'))
     fields = data.next()
 
@@ -486,9 +486,9 @@ def get_over_time_stats():
         ("Last 6 Months", last_n_month(5), 3),
         ("Year", this_year, 4),
     ]
-    
+
     stats = []
-    
+
     for time in times:
         start_dt = time[1]
         d = {}
@@ -501,7 +501,7 @@ def get_over_time_stats():
         d['end_dt'] = now
         d['order'] = time[2]
         stats.append(d)
-    
+
     return sorted(stats, key=lambda x:x['order'])
 
 def get_summary():
@@ -529,7 +529,7 @@ def get_summary():
             'expired':expired.count(),
             'total':mems.count(),
         })
-    
+
     return (sorted(summary, key=lambda x:x['type'].name),
         (total_active, total_pending, total_expired, total_total))
 

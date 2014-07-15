@@ -14,8 +14,8 @@
 {% block body %}
 
 <div class="t">
-	{% nav_nav request.user current_nav %}
-    
+    {% nav_nav request.user current_nav %}
+
     <div class="nav-wrap">
         <div class="nav-edit-menu">
             <h3>{{ page_select.pages.label }} {% trans 'list' %}</h3>
@@ -38,7 +38,7 @@
                 <div id="nav-items">
                 {% for form in formset.forms %}
                 <div class="nav-item" {% if forloop.first %}id="first-item"{% endif %}>
-                    <input type="hidden" name="form-{{ forloop.counter0 }}-id" id="id_form-{{ forloop.counter0 }}-id" /> 
+                    <input type="hidden" name="form-{{ forloop.counter0 }}-id" id="id_form-{{ forloop.counter0 }}-id" />
                     <a href="#" class="nav-item-label">
                         + <span class="linklabel">{{ form.instance.label }}</span>&nbsp;<span class="helpertext">({% trans 'edit' %})</span>
                     </a>
@@ -72,7 +72,7 @@
                                 {% endif %}
                                 <label class="small-label">{{ form.label.label }}</label>
                                 {{ form.label }}
-                            </div> 
+                            </div>
                         </div>
                         </td>
                         <td>
@@ -96,7 +96,7 @@
                             </div>
                             <div class="nav-item-field-checkbox">
                             {{ form.new_window }}
-                            
+
                             <label>{{ form.new_window.label }}</label>
                             </div>
                         </td>
@@ -112,15 +112,15 @@
                 </div>
             {% endfor %}
             </div>
-            
+
             <input type="submit" id="save-all" value="{% trans 'Save All Navigation Items' %}">
             </form>
-            
+
         </div>
         <div style="clear:both"></div>
         <!-- The next div is a base template for the form in form sets -->
-        <div class="nav-item" id="base"> 
-            <input type="hidden" name="form-0-id" id="id_form-0-id" /> 
+        <div class="nav-item" id="base">
+            <input type="hidden" name="form-0-id" id="id_form-0-id" />
             <a href="#" class="nav-item-label"><b>+ </b></a>
             <a href="#" class="nav-move-right"><img class="nav-move-image" src="{{ STATIC_URL }}images/arrow-right.jpg" /></a>
             <a href="#" class="nav-move-left"><img class="nav-move-image" src="{{ STATIC_URL }}images/arrow-left.jpg" /></a>
@@ -128,24 +128,24 @@
                 <table>
                 <tr>
                 <td>
-                <div class="nav-item-field"> 
+                <div class="nav-item-field">
                     <label class="small-label">{% trans 'URL' %}</label>
-                    <input class="url-field" id="id_form-0-url" type="text" name="form-0-url" maxlength="200" > 
-                </div> 
+                    <input class="url-field" id="id_form-0-url" type="text" name="form-0-url" maxlength="200" >
+                </div>
                 <div class="nav-item-field">
                     <label class="small-label">{% trans 'Label' %}</label>
-                    <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" /> 
-                </div> 
+                    <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" />
+                </div>
                 </td>
                 <td>
                 <div class="nav-item-field">
                     <label>{% trans 'Title Attribute' %}</label>
-                    <input id="id_form-0-title" type="text" name="form-0-title" maxlength="100" /> 
-                </div> 
+                    <input id="id_form-0-title" type="text" name="form-0-title" maxlength="100" />
+                </div>
                 <div class="nav-item-field">
                     <label>{% trans 'CSS Class' %}</label>
-                    <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
-                </div> 
+                    <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" />
+                </div>
                 <div class="nav-item-field-checkbox">
                 <input id="id_form-0-new_window" type="checkbox" name="form-0-new_window"><label>{% trans 'Open in a new window' %}</label>
                 </div>
@@ -153,27 +153,27 @@
                 <td>
                 </td>
                 </tr>
-                
+
                 </table>
                 <div style="display: none;" >
                     <div class="position">
-                        <input type="hidden" name="form-0-position" value="0" id="id_form-0-position" /> 
+                        <input type="hidden" name="form-0-position" value="0" id="id_form-0-position" />
                     </div>
                     <div class="level">
-                        <input type="hidden" name="form-0-level" value="0" id="id_form-0-level" /> 
+                        <input type="hidden" name="form-0-level" value="0" id="id_form-0-level" />
                     </div>
-                    <input type="text" name="form-0-page" id="id_form-0-page" /> 
-                </div> 
-                <a class="item-delete">{% trans 'Remove' %}</a> 
-            </div> 
-        </div> 
+                    <input type="text" name="form-0-page" id="id_form-0-page" />
+                </div>
+                <a class="item-delete">{% trans 'Remove' %}</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock body %}
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.17.custom.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
     <script type="text/javascript" src="{{ LOCAL_STATIC_URL }}js/navs.js"></script>
 {% endblock %}

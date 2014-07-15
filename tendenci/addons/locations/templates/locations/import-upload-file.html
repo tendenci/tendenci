@@ -21,13 +21,13 @@
 <div class="download-csv">
 <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
 <div class="item-right">
-	<p><a href="{% url locations.download_location_upload_template_csv %}">{% trans ".csv Template" %}</a></p>
+    <p><a href="{% url locations.download_location_upload_template_csv %}">{% trans ".csv Template" %}</a></p>
 </div>
 <div class="clear-both"></div>
 </div>
 
 <div id="import-wrap">
-    
+
     <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ now }}</p>
 
     <form method='post' action='{% url locations_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}

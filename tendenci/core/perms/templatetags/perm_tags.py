@@ -157,10 +157,10 @@ def is_developer(parser, token):
         This has been deprecated in favor of request.user.is_superuser
     """
     bits  = token.split_contents()
-   
+
     try: user = bits[1]
     except: user = None
-    
+
     if len(bits) >= 4:
         context_var = bits[3]
     else:

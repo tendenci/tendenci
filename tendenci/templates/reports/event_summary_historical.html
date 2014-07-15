@@ -6,63 +6,63 @@
 <h1>{% trans "Tendenci&reg; Event Log Summary Report" %}</h1>
 
 <div>
-	<a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
-	{{ date_range.0|date:"M Y" }}
-	<a href="./?{% month_url next %}">{% trans "Next" %}</a>
+    <a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
+    {{ date_range.0|date:"M Y" }}
+    <a href="./?{% month_url next %}">{% trans "Next" %}</a>
 </div>
 
 <table class="events-summary-chart">
 <tr>
 {% for day, items in chart_data.items %}
-	<td>
-		{% for item in items %}
+    <td>
+        {% for item in items %}
             {% if item.source %}
-			<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}" title="{{ item.source }} ({{ item.count }})">
-				<div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
-			</a>
+            <a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}" title="{{ item.source }} ({{ item.count }})">
+                <div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
+            </a>
             {% endif %}
-		{% endfor %}
-		{{ day.day }}
-		<div style="font-size: 10px;">{{ day|date:"D" }}</div>
-	</td>
+        {% endfor %}
+        {{ day.day }}
+        <div style="font-size: 10px;">{{ day|date:"D" }}</div>
+    </td>
 {% endfor %}
 </tr>
 </table>
 <ul class="events-summary">
 {% for item in summary_data.0 %}
     {% if item.source %}
-	<li>
-	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
-	&nbsp;
+    <li>
+    <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+    &nbsp;
     {% if item.source %}
-	<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
+    <a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
     {% endif %}
-	</li>
-	{% endif %}
+    </li>
+    {% endif %}
 {% endfor %}
 </ul>
 
 <ul class="events-summary">
 {% for item in summary_data.1 %}
     {% if item.source %}
-	<li>
-	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
-	&nbsp;
-	<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
-	</li>
-	{% endif %}
+    <li>
+    <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+    &nbsp;
+    <a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
+    </li>
+    {% endif %}
 {% endfor %}
 </ul>
 
 <ul class="events-summary">
 {% for item in summary_data.2 %}
     {% if item.source %}
-	<li>
-	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
-	&nbsp;
-	<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
-	</li>
-	{% endif %}
+    <li>
+    <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+    &nbsp;
+    <a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
+    </li>
+    {% endif %}
 {% endfor %}
 </ul>
 

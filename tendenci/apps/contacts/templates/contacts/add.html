@@ -18,11 +18,11 @@
     <h1>{% trans "Add:" %} {% firstof MODULE_CONTACTS_LABEL 'Conacts' %}</h1>
 
     <div class="contact-wrap">
-    	<form action="{% url contact.add %}" method="post">{% csrf_token %}
-    	<div class="forms">
+        <form action="{% url contact.add %}" method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Add {{ {% firstof MODULE_CONTACTS_LABEL 'Contact' %}}}" />
-		</div>
+            <input type="submit" value="Add {{ {% firstof MODULE_CONTACTS_LABEL 'Contact' %}}}" />
+        </div>
         </form>
     </div>
 
@@ -30,5 +30,5 @@
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 {% endblock %}

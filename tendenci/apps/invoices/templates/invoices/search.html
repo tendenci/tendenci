@@ -8,10 +8,10 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/invoices.css">
-    
+
     <style type="text/css">
         .float-left{
             float: left;
@@ -20,8 +20,8 @@
             clear: left;
         }
         #id_start_dt, #id_end_dt, #id_start_amount, #id_end_amount {
-		    width: 18%;	
-		}
+            width: 18%;
+        }
         #id_search_criteria, #id_search_text, #id_last_name{
             width: 150px;
         }
@@ -50,7 +50,7 @@
                                 {% invoices_search_results_line request invoice %}
                             </div>
                         </div>
-                    {% endwith %}   
+                    {% endwith %}
                     {% empty %}
                         <div>{% trans "0 Results Found" %}</div>
                     {% endfor %}
@@ -64,31 +64,31 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
-    
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
+
     <script type="text/javascript">
-		$(document).ready(function() {
-			//Hide advanced options
-			
-		    var event_type = $("select#id_invoice_type").val();
-		    if(event_type != 'events') {
-				$('div.eventFields').hide();
-			}
-		});
-		
+        $(document).ready(function() {
+            //Hide advanced options
+
+            var event_type = $("select#id_invoice_type").val();
+            if(event_type != 'events') {
+                $('div.eventFields').hide();
+            }
+        });
+
         $(".datepicker").live('focus', function() {
             console.log('this', this);
             $(this).datepicker({ dateFormat: 'yy-mm-dd' });
         });
-        
+
         $("select#id_invoice_type").change(function() {
-			if($(this).val() == 'events') {
-			    $('div.eventFields').show();
-			}
-			else {
-				$('div.eventFields').hide();
-			}
-		});
+            if($(this).val() == 'events') {
+                $('div.eventFields').show();
+            }
+            else {
+                $('div.eventFields').hide();
+            }
+        });
     </script>
 {% endblock %}

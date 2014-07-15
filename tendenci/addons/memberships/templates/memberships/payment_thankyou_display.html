@@ -4,12 +4,12 @@
 {% if obj.user and obj.user.username %}
 <h3>{% trans "What would you like to do now?" %}</h3>
 <ul>
-	{% if obj.is_pending and request.user.profile.is_superuser %}
-	<li>
-		<a href="{{ SITE_GLOBAL_SITEURL }}{% url admin:memberships_membershipdefault_change obj.id %}">Admin: Click here to edit and approve this membership</a>
-	</li>
-	{% endif %}
-	
+    {% if obj.is_pending and request.user.profile.is_superuser %}
+    <li>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url admin:memberships_membershipdefault_change obj.id %}">Admin: Click here to edit and approve this membership</a>
+    </li>
+    {% endif %}
+
     {% if obj.corporate_membership_id %}
     {% with obj.corpmembership as corpmembership %}
     {% if corpmembership %}
@@ -19,9 +19,9 @@
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view obj.corporate_membership_id %}">Back to Corporate Membership - {{ corpmembership.corp_profile.name }}</a></li>
     {% endif %}
     {% endwith %}
-    
+
     {% endif %}
-	        
-	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile obj.user.username %}" class="links">{% trans "Go to my profile" %}</a></li>
+
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile obj.user.username %}" class="links">{% trans "Go to my profile" %}</a></li>
 </ul>
 {% endif %}

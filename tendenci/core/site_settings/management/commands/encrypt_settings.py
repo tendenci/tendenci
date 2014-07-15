@@ -12,7 +12,7 @@ class Command(BaseCommand):
     Usage:
         manage.py encrypt_settings
     """
-    help = 'Encrypt all settings if they are not already encrypted'        
+    help = 'Encrypt all settings if they are not already encrypted'
 
     def handle(self, *args, **options):
         """Loop through the settings and use set_value for setting the values.

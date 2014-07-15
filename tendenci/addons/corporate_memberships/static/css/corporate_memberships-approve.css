@@ -1,17 +1,17 @@
 #indiv-entries{
-	margin: 5px 0 1em 2em;
-	display: none;
+    margin: 5px 0 1em 2em;
+    display: none;
 }
 #indiv-entries table{
-	border: 1px dotted #ccc;
+    border: 1px dotted #ccc;
 }
 #indiv-entries table td{
-	padding: 3px;
+    padding: 3px;
 }
 .indiv-header{
-	font-weight: bold;
-	border-bottom: 1px dotted #ccc;
-	background-color: #ecf4fd;
+    font-weight: bold;
+    border-bottom: 1px dotted #ccc;
+    background-color: #ecf4fd;
 }
 
 #disapprove-btn, #approve-btn  {
@@ -34,37 +34,37 @@
     line-height: normal;
     padding: 5px 14px 6px;
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-	}
-	
-	#approve-btn {
-		background-color: #BBE8ED;
-    	background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #BBE8ED);
-    	color: #034580;
-    	font-weight: bold;
-	}
-	#disapprove-btn {
-		background-color: #E6E6E6;
-    	background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #E6E6E6);
-	}
-	#approve-btn:hover, #disapprove-btn:hover{
-		background-position: 0 -15px;
-		color: #333;
-		text-decoration: none;
-	}
-	dl{
-		border-top: 1px dashed #ccc;
-		margin-top: 1em;
-		padding-top: 1em;
-	}
-	dt{
-		font-weight: bold;
-	}
-	dd{
-		padding-left: 2em;
-	}
-	.corp-approv-form{
-		margin-top: 1em;
-	}
-	.corp-approv-form li{
-		list-style: none;
-	}
+    }
+
+    #approve-btn {
+        background-color: #BBE8ED;
+        background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #BBE8ED);
+        color: #034580;
+        font-weight: bold;
+    }
+    #disapprove-btn {
+        background-color: #E6E6E6;
+        background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #E6E6E6);
+    }
+    #approve-btn:hover, #disapprove-btn:hover{
+        background-position: 0 -15px;
+        color: #333;
+        text-decoration: none;
+    }
+    dl{
+        border-top: 1px dashed #ccc;
+        margin-top: 1em;
+        padding-top: 1em;
+    }
+    dt{
+        font-weight: bold;
+    }
+    dd{
+        padding-left: 2em;
+    }
+    .corp-approv-form{
+        margin-top: 1em;
+    }
+    .corp-approv-form li{
+        list-style: none;
+    }

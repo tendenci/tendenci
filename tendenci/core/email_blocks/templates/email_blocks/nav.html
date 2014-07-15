@@ -25,8 +25,8 @@
     <li>
         <span>{% trans "Emails" %}</span>
         <ul id="secondary">
-            <li><a href="{% url email.search %}">{% trans "Emails:" %}</a></li> 
-            <li><a href="{% url email_block.search %}">{% trans "Email Blocks:" %}</a></li> 
+            <li><a href="{% url email.search %}">{% trans "Emails:" %}</a></li>
+            <li><a href="{% url email_block.search %}">{% trans "Email Blocks:" %}</a></li>
             {% if nav_object %}
                 {% if can_view %}
                 <li><a href="{% url email_block.view nav_object.pk %}">{% trans "View" %}</a></li>
@@ -40,7 +40,7 @@
             <li><a href="{% url email_block.add %}">{% trans "Add" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
             {% endif %}
         </ul>
 

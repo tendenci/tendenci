@@ -26,7 +26,7 @@ def prepare_authorizenet_sim_form(request, payment):
     x_amount = "%.2f" % payment.amount
     x_fp_hash = get_fingerprint(str(payment.id), x_fp_timestamp, x_amount)
     x_logo_URL = get_setting("site", "global", "MerchantLogo")
-    
+
     params = {
               'x_fp_sequence':payment.id,
               'x_fp_timestamp':x_fp_timestamp,
@@ -63,7 +63,7 @@ def prepare_authorizenet_sim_form(request, payment):
               'x_logo_URL':x_logo_URL,
         }
     form = SIMPaymentForm(initial=params)
-    
+
     return form
 
 def authorizenet_thankyou_processing(request, response_d, **kwargs):
@@ -74,9 +74,9 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
         x_invoice_num = int(x_invoice_num)
     except:
         x_invoice_num = 0
-    
+
     payment = get_object_or_404(Payment, pk=x_invoice_num)
-    
+
     # authenticate with md5 hash to make sure the response is securely received from authorize.net.
     # client needs to set up the MD5 Hash Value in their account
     # and add this value to the local_settings.py AUTHNET_MD5_HASH_VALUE
@@ -86,26 +86,26 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
     api_login_id = settings.MERCHANT_LOGIN
     t_id = response_d.get('x_trans_id', '')
     amount = response_d.get('x_amount', 0)
-    
+
     s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
     my_md5_hash = hashlib.md5(s).hexdigest()
-    
+
     # commenting it out for now because it's causing some problem on some sites (nadr).
     #if my_md5_hash.lower() <> md5_hash.lower():
     #    raise Http404
-    
+
     if payment.invoice.balance > 0:     # if balance==0, it means already processed
         payment_update_authorizenet(request, response_d, payment)
         payment_processing_object_updates(request, payment)
-        
+
         # log an event
         log_payment(request, payment)
-        
+
         # send payment recipients notification
-        send_payment_notice(request, payment) 
-            
+        send_payment_notice(request, payment)
+
     return payment
-        
+
 def payment_update_authorizenet(request, response_d, payment, **kwargs):
     from decimal import Decimal
     payment.response_code = response_d.get('x_response_code', '')
@@ -139,8 +139,8 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
     payment.ship_to_state = response_d.get('x_ship_to_state', '')
     payment.ship_to_zip = response_d.get('x_ship_to_zip', '')
     payment.ship_to_country = response_d.get('x_ship_to_country', '')
-    
-    
+
+
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
@@ -149,7 +149,7 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
         payment.save()
-            
-    
-    
-    
+
+
+
+

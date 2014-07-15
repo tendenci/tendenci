@@ -13,7 +13,7 @@ class ListPluginsNode(Node):
     def render(self, context):
         plugins = PluginApp.objects.filter(is_enabled=True)
         plugins = plugins.order_by('title')
-        
+
         context[self.context_var] = plugins
         return ""
 
@@ -26,7 +26,7 @@ def list_plugins(parser, token):
     """
     args, kwargs = [], {}
     bits = token.split_contents()
-    
+
     if len(bits) < 3:
         message = "'%s' tag requires more than 2" % bits[0]
         raise TemplateSyntaxError(message)
@@ -34,8 +34,8 @@ def list_plugins(parser, token):
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
         raise TemplateSyntaxError(message)
-        
+
     context_var = bits[2]
-   
+
 
     return ListPluginsNode(context_var)

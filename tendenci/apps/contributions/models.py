@@ -7,7 +7,7 @@ from tendenci.apps.contributions.managers import ContributionManager
 from tendenci.core.perms.models import TendenciBaseModel
 
 class Contribution(TendenciBaseModel):
-    guid = models.CharField(max_length=40) 
+    guid = models.CharField(max_length=40)
     content_type = models.ForeignKey(ContentType, verbose_name=_('content type'))
     object_id = models.PositiveIntegerField(_('object id'), db_index=True)
     title = models.CharField(max_length=500, blank=True)
@@ -25,11 +25,11 @@ class Contribution(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("contribution", [self.pk])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-            
+
         super(Contribution, self).save(*args, **kwargs)
 
     def __unicode__(self):

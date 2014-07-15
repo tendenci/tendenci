@@ -21,7 +21,7 @@
             {% endfor %}
         </div>
         {% endif %}
-        
+
         {% if user.is_authenticated %}
         <div class="submitted">{% blocktrans with event.create_dt|date:"long" as create_date %}Created on {{ create_date }}
             by:{% endblocktrans %} <a href="{{ event.creator.get_absolute_url }}">
@@ -30,7 +30,7 @@
             {{ event.creator }}
             {% endif %}</a>
         </div>
-        
+
         <div class="submitted">{% blocktrans with event.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
             by:{% endblocktrans %} <a href="{{ event.owner.get_absolute_url }}">
             {% if event.owner.first_name %}{{ event.owner.first_name }} {{ event.owner.last_name }}
@@ -39,10 +39,10 @@
             {% endif %}</a>
         </div>
         {% endif %}
-        
+
     </div>
 
-    {% if user.is_authenticated %}    
+    {% if user.is_authenticated %}
         <div class="meta-right">
             <a class="print-link" href="{% url event.print_view event.pk %}">{% trans "Print" %}</a>
         </div>
@@ -73,7 +73,7 @@
             {% if can_delete %}
                 <li>
                     <a class="delete" href="{% url event.delete event.pk %}">{% trans "Delete" %}</a>
-                </li>               
+                </li>
             {% endif %}
             {% if can_delete and event.is_recurring_event %}
                 <li>
@@ -97,5 +97,5 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

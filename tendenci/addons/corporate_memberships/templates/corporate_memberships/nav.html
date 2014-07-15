@@ -51,8 +51,8 @@
             {% endif %}
            <li><a href="{% url corpmembership.add %}">{% trans "Add Corp. Member" %}</a></li>
 
-            <li><a href="{% url corpmembership.search %}">{% trans "Search All" %}</a></li> 
-            <li><a href="{% url corpmembership.mycorps %}">{% trans "My Corp. Members" %}</a></li> 
+            <li><a href="{% url corpmembership.search %}">{% trans "Search All" %}</a></li>
+            <li><a href="{% url corpmembership.mycorps %}">{% trans "My Corp. Members" %}</a></li>
             {% if user.profile.is_superuser %}
             <li><a href="{% url corpmembership.pending_list %}">{% trans "Pending Corp. Members" %}</a></li>
             <li class="divider"></li>
@@ -86,7 +86,7 @@
 			    {% else %}
 			    	{% if nav_object.is_expired and request.user.is_superuser %}
 			    	 <li><a href="{% url corpmembership.renew nav_object.id %}">{% trans "Admin: Renew" %}</a></li>
-			
+
 			    	{% endif %}
 			    {% endif %}
                 {% if can_delete %}

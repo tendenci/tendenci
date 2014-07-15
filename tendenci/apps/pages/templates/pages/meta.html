@@ -13,8 +13,8 @@
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
-    	
-    	{% with page.category_set as page_cat %}
+
+        {% with page.category_set as page_cat %}
         {% if page_cat %}
         <div class="categories">
             <strong>{% trans "Category:" %} </strong><a href="{% url page.search %}?q=category:{{ page_cat }}">{{ page_cat.category }}</a>
@@ -24,14 +24,14 @@
         </div>
         {% endif %}
         {% endwith %}
-        
+
         {% if nonhash_tags or hash_tags %}
                     <div class="tags">
                       {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
                       {% for tag in nonhash_tags %}
                         <a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
                       {% endfor %}
-           
+
                       {% if hash_tags and can_edit %}
                       {% for tag in hash_tags %}
                         {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
@@ -39,13 +39,13 @@
                     {% endif %}
                     </div>
                     {% endif %}
-        
+
         {% if user.is_authenticated %}
             {% if user.profile.is_superuser or user.id == page.creator_id or user.id == page.owner_id %}
                 {% meta_creator_owner page %}
             {% endif %}
         {% endif %}
-        
+
     </div>
     <div class="meta-right">
         {% if page.status %}
@@ -85,6 +85,6 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}
 

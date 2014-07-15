@@ -1,6 +1,6 @@
 
 def payment_update_stripe(request, charge_response, payment):
-    
+
     if not isinstance(charge_response, str) and charge_response.paid:
         payment.status_detail = 'approved'
         payment.response_code = '1'
@@ -12,11 +12,11 @@ def payment_update_stripe(request, charge_response, payment):
         payment.response_code = 0
         payment.response_reason_code = 0
         payment.response_reason_text = charge_response
-        
+
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
-        payment.invoice.make_payment(request.user, payment.amount)            
+        payment.invoice.make_payment(request.user, payment.amount)
     else:
         if payment.status_detail == '':
             payment.status_detail = 'not approved'

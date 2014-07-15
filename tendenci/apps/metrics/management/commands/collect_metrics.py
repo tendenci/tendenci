@@ -70,7 +70,7 @@ class Command(BaseCommand):
         """
         try:
             from tendenci.addons.memberships.models import Membership
-    
+
             return Membership.objects.active()
         except ImportError:
             pass
@@ -84,7 +84,7 @@ class Command(BaseCommand):
         """
         from tendenci.core.event_logs.models import EventLog
         today = date.today()
-        
+
         # if the script runs today, we collect the data from yesterday
         yesterday = today - timedelta(days=1)
 
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         """
         from tendenci.apps.invoices.models import Invoice
         today = date.today()
-        
+
         # if the script runs today, we collect the data from yesterday
         yesterday = today - timedelta(days=1)
 

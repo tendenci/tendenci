@@ -15,22 +15,22 @@ class Command(BaseCommand):
             for sub in GroupSubscription.objects.all():
                 sub_email = sub.email
 
-                if sub_email:        
+                if sub_email:
                     if not User.objects.filter(email=sub_email).exists():
                         print "Creating new user for group subscription %s." % sub.id
                         if len(sub_email) <= 30:
                             username = sub_email
                         else:
                             username = sub_email.split("@")[0]
-            
+
                         user = User(
                             username = username,
                             email = sub_email,
                             is_active = False
                         )
-                        
+
                         if sub.subscriber_id:
-                            user.first_name = sub.subscriber.get_first_name() 
+                            user.first_name = sub.subscriber.get_first_name()
                             user.last_name = sub.subscriber.get_last_name()
                             phone = sub.subscriber.get_phone_number()
                         else:
@@ -42,9 +42,9 @@ class Command(BaseCommand):
                                 phone = SubscriberData.objects.filter(field_label__in=["Phone", "phone", "Phone Number", "phone number", "Home Phone", "Cell Phone"]).filter(subscription_id=sub.id)[0].value
                             else:
                                 phone = ''
-                        
+
                         user.save()
-                        
+
                         profile = Profile(
                             user = user,
                             creator = user,
@@ -54,12 +54,12 @@ class Command(BaseCommand):
                             phone = phone,
                             allow_anonymous_view = False
                         )
-                        
+
                         profile.save()
-            
+
                     else:
                         print "User with matching email found for group subscription %s."  % sub.id
-            
+
                     user = User.objects.filter(email=sub_email).order_by('last_login')[0]
 
                     if not GroupMembership.objects.filter(group_id=sub.group_id).filter(member_id=user.id).exists():

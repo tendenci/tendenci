@@ -41,11 +41,11 @@ def prepare_payflowlink_form(request, payment):
               'ziptoship': payment.ship_to_zip,
               'countrytoship': payment.ship_to_country,
               'comment1': smart_str(payment.description).replace('#', ''),
-              'comment2': '%s %s' % (payment.first_name, payment.last_name), 
-        
+              'comment2': '%s %s' % (payment.first_name, payment.last_name),
+
         }
     form = PayflowLinkPaymentForm(initial=params)
-    
+
     return form
 
 def payflowlink_thankyou_processing(request, response_d, **kwargs):
@@ -59,20 +59,20 @@ def payflowlink_thankyou_processing(request, response_d, **kwargs):
         paymentid = 0
     payment = get_object_or_404(Payment, pk=paymentid)
     processed = False
-    
+
     if payment.invoice.balance > 0:     # if balance==0, it means already processed
         payment_update_payflowlink(request, response_d, payment)
         payment_processing_object_updates(request, payment)
         processed = True
-        
+
         # log an event
         log_payment(request, payment)
-        
+
         # send payment recipients notification
-        send_payment_notice(request, payment) 
-        
+        send_payment_notice(request, payment)
+
     return payment, processed
-        
+
 def payment_update_payflowlink(request, response_d, payment, **kwargs):
     name = response_d.get('name', '')
     if name:
@@ -96,11 +96,11 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
     payment.ship_to_state = response_d.get('statetoship', '')
     payment.ship_to_zip = response_d.get('ziptoship', '')
     payment.ship_to_country = response_d.get('countrytoship', '')
-    
+
     result = response_d.get('result', '')
     respmsg = (response_d.get('respmsg', '')).lower()
     payment.response_reason_text = respmsg
-    
+
     if result=='0' and  respmsg == 'approved':
         payment.response_code = '1'
         payment.response_subcode = '1'
@@ -111,8 +111,8 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
     else:
         payment.response_code = 0
         payment.response_reason_code = 0
-    
-    
+
+
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
@@ -121,7 +121,7 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
         if not payment.status_detail:
             payment.status_detail = 'not approved'
         payment.save()
-            
-    
-    
-    
+
+
+
+

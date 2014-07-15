@@ -30,7 +30,7 @@ class Command(BaseCommand):
             default=None,
             help='Email of the user account being disabled'),
         )
-        
+
 
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import GroupMembership
@@ -55,27 +55,27 @@ class Command(BaseCommand):
             users = User.objects.filter(email=email)
             if not users:
                 print 'User with email=%s could not be found' % email
-            
+
         if not users:
             return
-            
+
         for u in users:
             # Remove the user from all groups
             u.groups.clear()
-    
+
             # Remove all user-level permissions
             u.user_permissions.clear()
-    
+
             # Reset permission bits
             u.is_staff = False
             u.is_superuser = False
             u.is_active = False
             u.save()
-    
+
             # Remove the tendenci group permissions
             group_memberships = GroupMembership.objects.filter(member=u)
             for m in group_memberships:
                 m.delete()
-    
+
             if verbosity >= 2:
                 print 'Done downgrading user (%s).' % u

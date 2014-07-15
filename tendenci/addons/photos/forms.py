@@ -99,7 +99,7 @@ class PhotoBatchEditForm(TendenciBaseForm):
 class PhotoEditForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), 
+        choices=(('active','Active'),('inactive','Inactive'),
                 ('pending','Pending'),))
     license = LicenseField(queryset=License.objects.all(),
                 widget = forms.RadioSelect(), empty_label=None)
@@ -218,9 +218,9 @@ class PhotoSetAddForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status_detail'], 
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
-                    })]     
+                    })]
 
     def __init__(self, *args, **kwargs):
         super(PhotoSetAddForm, self).__init__(*args, **kwargs)
@@ -295,10 +295,10 @@ class PhotoSetEditForm(TendenciBaseForm):
                       'classes': ['permissions'],
                       }),
                      ('Administrator Only', {
-                      'fields': ['status_detail'], 
+                      'fields': ['status_detail'],
                       'classes': ['admin-only'],
-                    })] 
-        
+                    })]
+
     def __init__(self, *args, **kwargs):
         super(PhotoSetEditForm, self).__init__(*args, **kwargs)
         default_groups = Group.objects.filter(status=True, status_detail="active")

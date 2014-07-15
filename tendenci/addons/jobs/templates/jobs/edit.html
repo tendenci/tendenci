@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
@@ -22,22 +22,22 @@
     <h1>{% firstof MODULE_JOBS_LABEL 'Job' %} {% trans "Edit" %}</h1>
 
     <div class="job-wrap">
-		<div class="options">
+        <div class="options">
              <div class="quick-options">
-				{% job_options request.user job %} 	       
+                {% job_options request.user job %}
              </div>
-		</div>
+        </div>
 
     <form action="{% url job.edit job.id %}" method="post">{% csrf_token %}
-    	<div class="forms">
-    		{{ form|styled_form }}
+        <div class="forms">
+            {{ form|styled_form }}
             <fieldset class="boxy-grey" >
                 <legend id="category-title" style="cursor: pointer"><span>+</span> Category</legend>
                 <div id="category-form">
                     {{ categoryform|styled_form }}
                 </div>
             </fieldset>
-			<input type="submit" value="Save changes" />
+            <input type="submit" value="Save changes" />
         </div>
     </form>
 
@@ -48,43 +48,42 @@
 
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 
     <script type="text/javascript" src="/admin/jsi18n/"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_job = confirm('Permenantly delete {% firstof MODULE_JOBS_LABEL 'Job' %}?');	// confirm
-				if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_job = confirm('Permenantly delete {% firstof MODULE_JOBS_LABEL 'Job' %}?');    // confirm
+                if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
 
             $('#add_id_pricing').click(function(){
-                return showAddAnotherPopup(this);   
+                return showAddAnotherPopup(this);
             });
-		});
+        });
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
-	<script type="text/javascript">
-		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
-		$('.timepicker').timePicker({
-		  show24Hours: false,
-		  step: 15
-		});
-	</script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step': 15});
+        });
+    </script>
     {% if request.user.is_superuser %}
         <script type="text/javascript">
             $(document).ready(function(){
@@ -94,7 +93,7 @@
                     var category = prompt('Category Name?','').toLowerCase();
                     category = category.replace('"','')
                     var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
-                    if (category) select_box.append(option_html) 
+                    if (category) select_box.append(option_html)
                     return false;
                 });
                 $('.add-sub-category').click(function(){
@@ -102,7 +101,7 @@
                     var sub_category = prompt('Category Name?','').toLowerCase();
                     sub_category = sub_category.replace('"','')
                     var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
-                    if (sub_category) select_box.append(option_html) 
+                    if (sub_category) select_box.append(option_html)
                     return false;
                 });
             });

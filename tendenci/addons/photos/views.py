@@ -743,7 +743,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     #else:
     #    photos = photo_set.get_images(user=request.user).order_by('pk')
     photos = photo_set.get_images(user=request.user).order_by("position")
-    
+
     EventLog.objects.log(**{
         'event_id': 991500,
         'event_data': '%s (%d) viewed by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),

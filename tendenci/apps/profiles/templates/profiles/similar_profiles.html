@@ -42,7 +42,7 @@
     {% if not users_with_duplicate_name and not users_with_duplicate_email %}
     <h3>{% trans "No similar users found" %}
     {% endif %}
-    
+
     {% if num_pages > 1%}
     <div id="import-paginate">
         {% if prev %}
@@ -50,7 +50,7 @@
         {% else %}
         Prev
          {% endif %}
-         
+
         {% for page in page_range %}
             {% if page = '...' %}
                 {{ page }}
@@ -62,7 +62,7 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
-        
+
         {% if curr_page >= num_pages  %}
         Next
         {% else %}

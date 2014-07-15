@@ -1,7 +1,7 @@
 from tendenci.apps.contacts.models import Contact
 from django import forms
 from captcha.fields import CaptchaField
-from django.utils.translation import ugettext_lazy as _ 
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
 

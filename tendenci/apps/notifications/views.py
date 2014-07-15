@@ -39,12 +39,12 @@ def notices(request):
                 setting.save()
             settings_row.append((form_label, setting.send))
         settings_table.append({"notice_type": notice_type, "cells": settings_row})
-    
+
     notice_settings = {
         "column_headers": [medium_display for medium_id, medium_display in NOTICE_MEDIA],
         "rows": settings_table,
     }
-    
+
     return render_to_response("notification/notices.html", {
         "notices": notices,
         "notice_types": notice_types,

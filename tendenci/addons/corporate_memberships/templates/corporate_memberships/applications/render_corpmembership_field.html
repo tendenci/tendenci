@@ -16,8 +16,8 @@
        <div>
            <b>{{ field_obj.label }}</b>: {{ field_obj.display_content|safe }}
        </div>
-       
-       
+
+
    </div>
    {% else %}
        {% if field %}
@@ -25,22 +25,22 @@
             <div class="{{ field.auto_id }}">
                 {% if field_obj.field_stype == 'checkboxinput' %}
                     <div class="checkbox">
-                        {% if field.errors %}         
+                        {% if field.errors %}
                             <div class="error">
                                 {% for error in field.errors %}
                                 <p>{{ error }}</p>
                                 {% endfor %}
                             </div>
-                        {% endif %}  
+                        {% endif %}
                         <div class="field">
                             {{ field }}
                             <span class="label{% if field.field.required %} required{% endif %}">
                                 {{ field.label_tag }}
-                            </span> 
-                        </div> 
-                        
+                            </span>
+                        </div>
+
                         {% if field.help_text %}
-                            <div class="help-text">{{ field.help_text|safe }}</div>   
+                            <div class="help-text">{{ field.help_text|safe }}</div>
                         {% endif %}
                     </div>
                     <div style="clear: both"><!-- IE7 --></div>
@@ -54,11 +54,11 @@
                              </div>
                             {% endif %}
                         {% endif %}
-                        
+
                         <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
                             {{ field_obj.label }}
                         </div>
-                        
+
                         <div class="field {{ field_obj.field_div_class }}">
                             {{ field }}
                             {% if field_obj.field_stype != 'radioselect' %}
@@ -70,23 +70,23 @@
                              </span>
                             {% endif %}
                             {% endif %}
-                            
+
                             {% if field.help_text %}
                                 <div class="help-text"><small>{{ field.help_text|safe }}</small></div>
                             {% endif %}
-                            
+
                             {% if field_obj.field_type == 'FileField' and field.value %}
                             <div><small>Currently: {{ field.value|basename }}</small></div>
                             {% endif %}
                         </div>
-              
+
                         {# if field_obj.field_stype == 'textarea' #}
                         <div class="clear"></div>
                         {# endif #}
-                        
-                  
+
+
                 {% endif %}
-             </div>       
+             </div>
         </div>
         {% endif %}
     {% endif %}

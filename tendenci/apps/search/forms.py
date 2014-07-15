@@ -50,28 +50,28 @@ def model_choices(site=None):
     for m in site.get_indexed_models():
         if m._meta.module_name.lower() in registered_apps_names:
             if get_setting("module", m._meta.app_label, "enabled") is not False:
-                choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
+                choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name),
                                 capfirst(unicode(m._meta.verbose_name_plural))))
-            
+
     return sorted(choices, key=lambda x: x[1])
 
 
 class SearchForm(forms.Form):
     q = forms.CharField(required=False, label=_('Search'), max_length=255)
-    
+
     def __init__(self, *args, **kwargs):
         self.searchqueryset = kwargs.get('searchqueryset', None)
         self.load_all = kwargs.get('load_all', False)
         self.user = kwargs.get('user', None)
-        
+
         if self.searchqueryset is None:
             self.searchqueryset = SearchQuerySet()
-        
+
         try:
             del(kwargs['searchqueryset'])
         except KeyError:
             pass
-        
+
         try:
             del(kwargs['load_all'])
         except KeyError:
@@ -81,9 +81,9 @@ class SearchForm(forms.Form):
             del(kwargs['user'])
         except KeyError:
             pass
-                
+
         super(SearchForm, self).__init__(*args, **kwargs)
-    
+
     def search(self, order_by='newest'):
         self.clean()
         if not order_by:
@@ -97,12 +97,12 @@ class SearchForm(forms.Form):
         if hasattr(user,'impersonated_user'):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
-                
+
         is_an_admin = user.profile.is_superuser
-        
+
         # making a special case for corp memb because it needs to utilize two settings
         # (anonymoussearchcorporatemembers and membersearchcorporatemembers)
-        if CorpMemb and self.cleaned_data['models'] == ["%s.%s" % (CorpMemb._meta.app_label, 
+        if CorpMemb and self.cleaned_data['models'] == ["%s.%s" % (CorpMemb._meta.app_label,
                                                                    CorpMemb._meta.module_name)]:
             filter_and, filter_or = CorpMemb.get_search_filter(user)
             q_obj = None
@@ -116,18 +116,18 @@ class SearchForm(forms.Form):
                     q_obj = q_obj_or
             if q_obj:
                 sqs = sqs.filter(q_obj)
-            
+
             if query:
-                sqs = sqs.auto_query(sqs.query.clean(query)) 
+                sqs = sqs.auto_query(sqs.query.clean(query))
         else:
-            
+
             if query:
-                sqs = sqs.auto_query(sqs.query.clean(query)) 
+                sqs = sqs.auto_query(sqs.query.clean(query))
                 if user:
                     if not is_an_admin:
                         if not user.is_anonymous():
                         # if b/w admin and anon
-    
+
                             # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
                             anon_query = Q(**{'allow_anonymous_view':True,})
                             user_query = Q(**{'allow_user_view':True,})
@@ -141,7 +141,7 @@ class SearchForm(forms.Form):
                             query = reduce(operator.or_, [anon_query, user_query])
                             query = reduce(operator.and_, [sec1_query, query])
                             query = reduce(operator.or_, [query, sec2_query])
-    
+
                             sqs = sqs.filter(query)
                         else:
                         # if anonymous
@@ -171,12 +171,12 @@ class SearchForm(forms.Form):
                         else:
                             # if anonymous
                             sqs = sqs.filter(status=True).filter(status_detail='active')
-                            sqs = sqs.filter(allow_anonymous_view=True)               
+                            sqs = sqs.filter(allow_anonymous_view=True)
                 else:
                     # if anonymous
                     sqs = sqs.filter(status=True).filter(status_detail='active')
                     sqs = sqs.filter(allow_anonymous_view=True)
-            
+
             # for solr,
             # order_by can only called once so we have to do it here
             if order_by == 'newest':
@@ -185,10 +185,10 @@ class SearchForm(forms.Form):
                 sqs = sqs.order_by('-order')
             else:
                 sqs = sqs.order_by('order')
-            
+
         if self.load_all:
             sqs = sqs.load_all()
-        
+
         return sqs
 
 
@@ -199,13 +199,13 @@ class HighlightedSearchForm(SearchForm):
 
 class FacetedSearchForm(SearchForm):
     selected_facets = forms.CharField(required=False, widget=forms.HiddenInput)
-    
+
     def search(self):
         sqs = super(FacetedSearchForm, self).search()
-        
+
         if self.cleaned_data['selected_facets']:
             sqs = sqs.narrow(self.cleaned_data['selected_facets'])
-        
+
         return sqs
 
 
@@ -216,7 +216,7 @@ class ModelSearchForm(SearchForm):
         #('most_viewed', 'Most Viewed')
     )
     sort_by = forms.ChoiceField(choices=SORT_CHOICES, required=False)
-    
+
     def __init__(self, *args, **kwargs):
         super(ModelSearchForm, self).__init__(*args, **kwargs)
 
@@ -256,7 +256,7 @@ class ModelSearchForm(SearchForm):
                 #if class_model._meta.module_name in INCLUDED_APPS:
                 search_models.append(class_model)
         return search_models
-    
+
     def search(self, order_by=None):
         if not order_by:
             order_by = self.cleaned_data['sort_by']
@@ -285,11 +285,11 @@ class HighlightedModelSearchForm(ModelSearchForm):
 
 class FacetedModelSearchForm(ModelSearchForm):
     selected_facets = forms.CharField(required=False, widget=forms.HiddenInput)
-    
+
     def search(self):
         sqs = super(FacetedModelSearchForm, self).search()
-        
+
         if self.cleaned_data['selected_facets']:
             sqs = sqs.narrow(self.cleaned_data['selected_facets'])
-        
+
         return sqs.models(*self.get_models())

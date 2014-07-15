@@ -25,13 +25,6 @@ ALLOWED_LOGO_EXT = (
     '.png'
 )
 
-ALLOWED_LOGO_EXT = (
-    '.jpg',
-    '.jpeg',
-    '.gif',
-    '.png'
-)
-
 CONTRIBUTOR_CHOICES = (
     (News.CONTRIBUTOR_AUTHOR, mark_safe('Author <i class="gauthor-info fa fa-lg fa-question-circle"></i>')),
     (News.CONTRIBUTOR_PUBLISHER, mark_safe('Publisher <i class="gpub-info fa fa-lg fa-question-circle"></i>'))

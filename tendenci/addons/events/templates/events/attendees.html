@@ -26,7 +26,7 @@
 <div class="t">
     {% event_nav user event %}
     <div class="event-wrap">
-		<div class="info">
+        <div class="info">
             <h1>{{ event.title }}</h1>
             <div class="event-date">
                 {% for span in event.date_spans %}
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            
+
             <div class="attendees-wrap">
                 <div class="attendees-header">
                     <h2>{{ event.registrants|length }} {% trans "Attendee" %}{{ event.registrants.count|pluralize }}</h2>
@@ -75,8 +75,8 @@
                 {% for registrant in event.registrants %}
                 <div class="attendee">
                     <div class="image-wrap">
-			            {% avatar registrant.user 80 %}
-					</div>
+                        {% avatar registrant.user 80 %}
+                    </div>
                     <span class="attendee-name">{% if registrant.first_name or registrant.last_name %}{% if registrant.first_name%}{{ registrant.first_name }}{% endif %} {% if registrant.last_name %}{{ registrant.last_name }}{% endif %}{% else %}{% trans "(Anonymous)" %}{% endif %}</span>
                 </div>
                 {% endfor %}

@@ -15,158 +15,158 @@
 <div class="t">
  <div id="t-newsletters">
    <div id="t-add">
-		<h1>{% trans 'Generate Tendenci Newsletter '%}</h1>
-		<p>{% trans "This form will create a Tendenci newsletter for you with the following information." %}</p>
-		<div class="yellow-highlight" style="margin-bottom: 12px;">{% trans "You will still have the ability to make edits before sending." %}</div> 
-		{% if form.non_field_errors %}
-			{{ form.non_field_errors }}
-		{% endif %}
-		<form name="newsletteraddform" id="newsletteraddform" method="post" action=".">{% csrf_token %}
-			<p class="headers" title="This field is required.">
+        <h1>{% trans 'Generate Tendenci Newsletter '%}</h1>
+        <p>{% trans "This form will create a Tendenci newsletter for you with the following information." %}</p>
+        <div class="yellow-highlight" style="margin-bottom: 12px;">{% trans "You will still have the ability to make edits before sending." %}</div>
+        {% if form.non_field_errors %}
+            {{ form.non_field_errors }}
+        {% endif %}
+        <form name="newsletteraddform" id="newsletteraddform" method="post" action=".">{% csrf_token %}
+            <p class="headers" title="This field is required.">
                 &nbsp;<label>Send To:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
-            </p> 
-		 	<div class="input-wrapper">
+            </p>
+             <div class="input-wrapper">
                 {# commenting it out for now. will add back later when membership is available: <p><strong>{% trans "Send to Members Only?" %}</strong> {{ form.member_only }} {% trans "If checked, skip user group" %}</p>#}
                 <p><strong>{% trans "User group" %}</strong> {{ form.group }}</p>
-			    <p>{% trans "Include email2?" %} {{ form.send_to_email2 }} 
-			    {% trans "Yes, send to user's second email address" %}
+                <p>{% trans "Include email2?" %} {{ form.send_to_email2 }}
+                {% trans "Yes, send to user's second email address" %}
                 </p>
             </div>
-            
+
             {% if form.subject.errors %}
-				{{ form.subject.errors }}
-			{% endif %}
+                {{ form.subject.errors }}
+            {% endif %}
               <p class="headers" title="This field is required.">
                 &nbsp;<label id="title">Subject:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
-            </p>    
+            </p>
 
             <div class="input-wrapper">
                 {{ form.subject }}
                 <p>{% trans "Personalize Subject?" %} {{ form.personalize_subject_first_name }} {% trans "First Name" %}
-                   {{ form.personalize_subject_last_name }}  {% trans "Last Name" %} 
+                   {{ form.personalize_subject_last_name }}  {% trans "Last Name" %}
                 </p>
             </div>
-            
+
           <div id="module-content" class="module-content">
-	            <div style="float:right;"><a href="#" onclick="javascript:clearModuleContent(this);return false;">{% trans "Do not include Module Content" %}</a></div>
-	            <h2>{% trans "Module Content" %}</h2>
-            
-            
-			 <div id="module-options">
-	            <!-- <p>{% trans "Include Login Information?" %}" {{ form.include_login }} </p>-->
-	            <table border="0">
-	                    <tr >
-	                      <td ><strong>{% trans "Include Jump Links" %}</strong></td>
-	                      <td colspan="2" >{{ form.jump_links }}   
-	                       {% trans "Nav at the top or specified location of email" %}</td>
-	                      </tr>
-	                    <tr >
-	                      <td colspan="3">&nbsp;</td>
-	                    </tr>
-	                    <tr >
-	                      <td width="119" nowrap ><strong>{% trans "Calendar Events" %} </strong></td>
-	                      <td width="157" >
-	                        {{ form.events }}                      </td>
-	                      <td width="210">&nbsp;</td>
-	                    </tr>
-	                    <tr >
-	                      <td colspan="3" >{% trans "Include <strong>Calendar Events</strong> for what date range? " %}</td>
-	                    </tr>
-	                    <tr >
-	                      <td > - {% trans "Start Date Time" %} </td>
-	                      <td colspan="2" >{{ form.event_start_dt }}</td>
-	                      </tr>
-	                    
-	                    <tr >
-	                      <td > - {% trans "End Date Time" %}</td>
-	                      <td colspan="2" >{{ form.event_end_dt }}</td>
-	                      </tr>
-	                    <tr >
-	                      <td colspan="3">&nbsp;</td>
-	                    </tr>
-	                    <tr >
-	                      <td>{% trans "Module" %}</td>
-	                      <td>{% trans "Add to Newsletter? " %}</td>
-	                      <td>{% trans "Past ? Days " %}</td>
-	                    </tr>
-	                    <tr >
-	                      <td ><strong>{% trans "Articles" %}</strong></td>
-	                      <td >
-	                        {{ form.articles }}                     </td>
-	                      <td>{{ form.articles_days }}					</td>
-	                    </tr>
-	                    <tr >
-	                      <td ><strong>{% trans "News" %}</strong></td>
-	                      <td >
-	                        {{ form.news }}                     </td>
-	                      <td> {{ form.news_days }}  </td>
-	                    </tr>
-	                   
-	                    <tr >
-	                      <td ><strong>{% trans "Jobs" %}</strong></td>
-	                      <td >
-	                       {{ form.jobs }}                     </td>
-	                      <td>{{ form.jobs_days }} </td>
-	                    </tr>
-	                    
-	                    <tr >
-	                      <td colspan="3" >{% trans "Include links to recently edited pages?" %}</td>
-	                      </tr>
-	                    <tr >
-	                      <td ><strong>{% trans "Pages" %}</strong></td>
-	                      <td >{{ form.pages }} </td>
-	                      <td >{{ form.pages_days }}                                                          </select></td>
-	                    </tr>
-	                  
-	                    
-	                    </table>
-	                  </div>
-	            </div>
-		<p>&nbsp;</p>	
-		<p><strong>{% trans "Template Selection?" %}</strong></p>
-		
-		{% if form.template.errors %}
-				{{ form.template.errors }}
-		{% endif %}
-		
-		{% if templates %}
-			<h2>{% blocktrans %}Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</h2>
-			<div class="template_list">
-				<ul>
-				{% for template in templates %}
-					<li>
-					<input name="template" value="{{ template }}" type="radio"  {% if template = template_selected %}checked="checked" {% endif %} />
-					<a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
-					</li>
-				{% endfor %}
-				</ul>
-			</div>
-		{% endif %}
-		
-		<h2>{% trans "Tendenci Default Templates" %}</h2>
-		<div class="template_list">
-			<ul>
-			{% for template in default_templates %}
-				<li>
-				<input name="template" value="{{ template }}" type="radio" {% if template = template_selected %}checked="checked" {% endif %} />
-				<a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>
-				</li>
-			{% endfor %}
-			</ul>
-		</div>
-		
-		<p><strong>{% trans "Format?" %}</strong></p>
-		<div id="format-list">
-       	 {{ form.format }} 
-        </div>                  
-
-      <div class="yellow-highlight">{% trans "You will still have the ability to make edits before sending." %}</div> 
+                <div style="float:right;"><a href="#" onclick="javascript:clearModuleContent(this);return false;">{% trans "Do not include Module Content" %}</a></div>
+                <h2>{% trans "Module Content" %}</h2>
 
 
-		 	<div class="newsletter-submit">
+             <div id="module-options">
+                <!-- <p>{% trans "Include Login Information?" %}" {{ form.include_login }} </p>-->
+                <table border="0">
+                        <tr >
+                          <td ><strong>{% trans "Include Jump Links" %}</strong></td>
+                          <td colspan="2" >{{ form.jump_links }}
+                           {% trans "Nav at the top or specified location of email" %}</td>
+                          </tr>
+                        <tr >
+                          <td colspan="3">&nbsp;</td>
+                        </tr>
+                        <tr >
+                          <td width="119" nowrap ><strong>{% trans "Calendar Events" %} </strong></td>
+                          <td width="157" >
+                            {{ form.events }}                      </td>
+                          <td width="210">&nbsp;</td>
+                        </tr>
+                        <tr >
+                          <td colspan="3" >{% trans "Include <strong>Calendar Events</strong> for what date range? " %}</td>
+                        </tr>
+                        <tr >
+                          <td > - {% trans "Start Date Time" %} </td>
+                          <td colspan="2" >{{ form.event_start_dt }}</td>
+                          </tr>
+
+                        <tr >
+                          <td > - {% trans "End Date Time" %}</td>
+                          <td colspan="2" >{{ form.event_end_dt }}</td>
+                          </tr>
+                        <tr >
+                          <td colspan="3">&nbsp;</td>
+                        </tr>
+                        <tr >
+                          <td>{% trans "Module" %}</td>
+                          <td>{% trans "Add to Newsletter? " %}</td>
+                          <td>{% trans "Past ? Days " %}</td>
+                        </tr>
+                        <tr >
+                          <td ><strong>{% trans "Articles" %}</strong></td>
+                          <td >
+                            {{ form.articles }}                     </td>
+                          <td>{{ form.articles_days }}                    </td>
+                        </tr>
+                        <tr >
+                          <td ><strong>{% trans "News" %}</strong></td>
+                          <td >
+                            {{ form.news }}                     </td>
+                          <td> {{ form.news_days }}  </td>
+                        </tr>
+
+                        <tr >
+                          <td ><strong>{% trans "Jobs" %}</strong></td>
+                          <td >
+                           {{ form.jobs }}                     </td>
+                          <td>{{ form.jobs_days }} </td>
+                        </tr>
+
+                        <tr >
+                          <td colspan="3" >{% trans "Include links to recently edited pages?" %}</td>
+                          </tr>
+                        <tr >
+                          <td ><strong>{% trans "Pages" %}</strong></td>
+                          <td >{{ form.pages }} </td>
+                          <td >{{ form.pages_days }}                                                          </select></td>
+                        </tr>
+
+
+                        </table>
+                      </div>
+                </div>
+        <p>&nbsp;</p>
+        <p><strong>{% trans "Template Selection?" %}</strong></p>
+
+        {% if form.template.errors %}
+                {{ form.template.errors }}
+        {% endif %}
+
+        {% if templates %}
+            <h2>{% blocktrans %}Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</h2>
+            <div class="template_list">
+                <ul>
+                {% for template in templates %}
+                    <li>
+                    <input name="template" value="{{ template }}" type="radio"  {% if template = template_selected %}checked="checked" {% endif %} />
+                    <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <h2>{% trans "Tendenci Default Templates" %}</h2>
+        <div class="template_list">
+            <ul>
+            {% for template in default_templates %}
+                <li>
+                <input name="template" value="{{ template }}" type="radio" {% if template = template_selected %}checked="checked" {% endif %} />
+                <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+
+        <p><strong>{% trans "Format?" %}</strong></p>
+        <div id="format-list">
+            {{ form.format }}
+        </div>
+
+      <div class="yellow-highlight">{% trans "You will still have the ability to make edits before sending." %}</div>
+
+
+             <div class="newsletter-submit">
              <input name="Submit" type="submit" value="Continue to Step 2">
            </div>
-		</form>
+        </form>
 
    </div>
  </div>

@@ -3,27 +3,27 @@
 {% load i18n %}
 
 <table width="100%">
-   {% invoices_search_line_header request invoice '#66cc00' %}  
-      
-    {# display make payment info #} 
+   {% invoices_search_line_header request invoice '#66cc00' %}
+
+    {# display make payment info #}
     <tr>
-    	<td>{% trans "Make Payment ID" %}</td>
-    	<td>{% trans "First Name" %}</td>
-    	<td>{% trans "Last Name" %}</td>
-    	<td>{% trans "Date" %}</td>
-    	<td>{% trans "Amount" %}</td>
-    	<td>{% trans "Balance" %}</td>
+        <td>{% trans "Make Payment ID" %}</td>
+        <td>{% trans "First Name" %}</td>
+        <td>{% trans "Last Name" %}</td>
+        <td>{% trans "Date" %}</td>
+        <td>{% trans "Amount" %}</td>
+        <td>{% trans "Balance" %}</td>
     </tr>
-    
-    {% if obj %} 
+
+    {% if obj %}
      <tr>
-     	<td><a href="{% url make_payment.view obj.id %}">{{obj.id}}</a></td>
-     	<td>{{obj.first_name}}</td>
-     	<td>{{obj.last_name}}</td>
-     	<td>{{obj.create_dt|date:'long'}}</td>
-     	<td>{{obj.payment_amount|format_currency}}</td>
-     	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
-     </tr>  
-   {% endif %}  
-   
+         <td><a href="{% url make_payment.view obj.id %}">{{obj.id}}</a></td>
+         <td>{{obj.first_name}}</td>
+         <td>{{obj.last_name}}</td>
+         <td>{{obj.create_dt|date:'long'}}</td>
+         <td>{{obj.payment_amount|format_currency}}</td>
+         <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+     </tr>
+   {% endif %}
+
 </table>

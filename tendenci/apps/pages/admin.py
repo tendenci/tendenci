@@ -16,7 +16,7 @@ except:
 
 
 class PageAdmin(admin.ModelAdmin):
-    list_display = ('view_on_site', 'edit_link', 'title', 'link', 'syndicate', 
+    list_display = ('view_on_site', 'edit_link', 'title', 'link', 'syndicate',
                     'allow_anonymous_view','status_detail', 'tags')
     search_fields = ('title','content',)
     fieldsets = (
@@ -103,7 +103,7 @@ class PageAdmin(admin.ModelAdmin):
         super(PageAdmin, self).log_addition(request, object)
         log_defaults = {
             'event_id' : 581000,
-            'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
+            'event_data': '%s (%d) added by %s' % (object._meta.object_name,
                                                    object.pk, request.user),
             'description': '%s added' % object._meta.object_name,
             'user': request.user,
@@ -134,7 +134,7 @@ class PageAdmin(admin.ModelAdmin):
             # send notification to administrators
             recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
             notice_type = 'page_added'
-            if change: notice_type = 'page_edited' 
+            if change: notice_type = 'page_edited'
             if recipients:
                 if notification:
                     extra_context = {

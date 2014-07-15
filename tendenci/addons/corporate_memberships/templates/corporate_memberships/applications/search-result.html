@@ -13,12 +13,12 @@
                 {% if corp_profile.address or corp_profile.address2 %}
                     {{ corp_profile.address }} {{ corp_profile.address2 }} <br />
                 {% endif %}
-                
-                {% if corp_profile.city %}{{ corp_profile.city }}{% endif %} {% if corp_profile.state %}{{ corp_profile.state }}{% endif %} 
-                {% if corp_profile.zip %}{{ corp_profile.zip }}{% endif %} {% if corp_profile.country %}{{ corp_profile.country }}{% endif %}            
+
+                {% if corp_profile.city %}{{ corp_profile.city }}{% endif %} {% if corp_profile.state %}{{ corp_profile.state }}{% endif %}
+                {% if corp_profile.zip %}{{ corp_profile.zip }}{% endif %} {% if corp_profile.country %}{{ corp_profile.country }}{% endif %}
             </div>
             <div class="clear-left"></div>
-            
+
             <div class="corpmember-left float-left">
                 {% if corp_profile.phone %}
                 <div><span class="field-label">{% trans "Phone:" %}</span> {{ corp_profile.phone }}</div>
@@ -43,7 +43,7 @@
                     </div>
                 {% endif %}
             </div>
-            
+
             <div class="corpmember-right float-left">
                 {% if allow_edit or request.user.profile.is_superuser %}
                 <div><span class="field-label">{% trans "Join Date:" %}</span> {{ corporate_membership.join_dt|date:'Y-n-j' }}</div>
@@ -77,11 +77,11 @@
                     </div>
                     {% endif %}
                 {% endif %}
-                
+
             </div>
             <div class="clear-left"></div>
         </div>
-        
+
         <!-- delete-corp_memb form -->
         <form name="corp-memb-delete" method="POST" action="{% url corpmembership.delete corporate_membership.pk %}">{% csrf_token %}
             <input type="hidden" name="action" value="delete">

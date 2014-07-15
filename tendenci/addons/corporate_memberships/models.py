@@ -134,7 +134,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
-    
+
 
     def __unicode__(self):
         return self.name
@@ -215,7 +215,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                         return datetime(expiration_dt.year, join_dt.month,
                                                  mt.rolling_renew_option1_day,
                                                  expiration_dt.hour,
-                                                 expiration_dt.minute, 
+                                                 expiration_dt.minute,
                                                  expiration_dt.second)
                     else:
                         # expires on the ? days at renewal month
@@ -499,11 +499,11 @@ class CorpMembership(TendenciBaseModel):
     @property
     def free_pass_used(self):
         return self.passes_used.count()
-    
+
     @property
     def free_pass_total(self):
         return self.total_passes_allowed
-    
+
     @property
     def free_pass_avail(self):
         total = self.free_pass_total
@@ -1367,7 +1367,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                     ("section_break", _("Section Break")),
                 )
     FIELD_TYPE_CHOICES = FIELD_TYPE_CHOICES1 + FIELD_TYPE_CHOICES2
-    
+
     corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True,
@@ -1620,12 +1620,12 @@ class CorpMembershipImportData(models.Model):
 
 class Creator(models.Model):
     """
-    An anonymous user can create a corporate membership. 
-    This table allows us to collect some contact info for admin 
+    An anonymous user can create a corporate membership.
+    This table allows us to collect some contact info for admin
     to contact them.
-    Once the corporate membership is approved, if not found in db, 
-    a user record will be created based on this info and will be 
-    associated to the corporate membership as creator and dues rep. 
+    Once the corporate membership is approved, if not found in db,
+    a user record will be created based on this info and will be
+    associated to the corporate membership as creator and dues rep.
     """
     first_name = models.CharField(_('Contact first name') , max_length=30, blank=True)
     last_name = models.CharField(_('Contact last name') , max_length=30, blank=True)

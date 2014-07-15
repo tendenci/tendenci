@@ -67,13 +67,13 @@
                             {% if membership.renewal %}
                             <p title="{{ membership.subscribe_dt|timesince }} ago">
                                 Renewed <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
-                            {% endif %}                        
+                            {% endif %}
 
                             {% if membership.is_approved %}
                                 {% if membership.is_forever %}
                                     <p>{% trans "Never expires" %}</p>
                                 {% else %}
-                                    <p>Expires <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>    
+                                    <p>Expires <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>
                                 {% endif %}
 
                             {% else %}
@@ -105,19 +105,19 @@
                                         <li>{{ membership.status_note }}</li>
                                     {% endfor %}
                                 </ul>
-                                
+
                             </div>
                             {% else %}
                             <div class="status-action">
                             {% if membership.user == request.user %}
                             {% if membership.can_renew %}
                                 {% if membership.corporate_membership_id %}
-	                                <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
-	                            {% else %}
-	                                {% if membership.app %}
-	                                <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
-	                                {% endif %}
-	                            {% endif %}
+                                    <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                                {% else %}
+                                    {% if membership.app %}
+                                    <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                                    {% endif %}
+                                {% endif %}
                             {% else %}
                                 {% if membership.app %}
                                     {% if membership.is_expired %}

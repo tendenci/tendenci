@@ -14,22 +14,22 @@
 <div class="t">
  {% forms_nav request.user %}
     <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Search</h1>
-	 
-	{% forms_search %}
+
+    {% forms_search %}
     {% autopaginate forms 10 %}
-	
-	<div class="forms-builder-wrap">
+
+    <div class="forms-builder-wrap">
     {% for form in forms %}
-		<div class="form-builder-wrap">
+        <div class="form-builder-wrap">
             <div class="quick-options">
-			{% forms_options request.user form %}
-		    </div>
-			<h3><a href="{{ form.get_absolute_url }}">{{ form.title }}</a></h3>
-		</div>
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+            {% forms_options request.user form %}
+            </div>
+            <h3><a href="{{ form.get_absolute_url }}">{{ form.title }}</a></h3>
+        </div>
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>

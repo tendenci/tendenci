@@ -50,7 +50,7 @@
 
             return this.each(function () {
                 var $this = $(this),
-                    elementId = $this.attr('id');                    
+                    elementId = $this.attr('id');
 
                 options = options || {};
                 options.elementID = elementId;
@@ -66,9 +66,9 @@
                 //get first onload = true
                 if (_counter == 1 && _onLoad) {
                     _activeId = elementId;
-                    _activeWalkthrough = _globalWalkthrough[_activeId];      
-                    _onLoad = false;              
-                } 
+                    _activeWalkthrough = _globalWalkthrough[_activeId];
+                    _onLoad = false;
+                }
 
                 // when user scroll the page, scroll it back to keep walkthought on user view
                 $(window).scroll(function () {
@@ -92,7 +92,7 @@
             //if each walkthrough has onLoad = true, throw warning message to the console
             if (_counter > 1) {
                 debug('Warning: Only first walkthrough will be shown onLoad as default');
-            }          
+            }
 
             //get cookie load
             _isCookieLoad = getCookie('_walkthrough-' + _activeId);
@@ -104,13 +104,13 @@
                 showCloseButton();
 
                 scrollToTarget();
-                
+
                 setTimeout(function () {
                     //call onAfterShow callback
                     if (_index == 0 && _firstTimeLoad) {
                         if (!onAfterShow()) return;
                     }
-                }, 100);            
+                }, 100);
             } else {//check when user used to close the walkthrough to call the onCookieLoad callback
                 onCookieLoad(_globalWalkthrough);
             }
@@ -125,7 +125,7 @@
             buildWalkthrough();
 
             scrollToTarget();
-            
+
         },
 
         close: function (target) {
@@ -193,7 +193,7 @@
             buildWalkthrough();
 
             scrollToTarget();
-            
+
         },
 
         prev: function (e) {
@@ -250,7 +250,7 @@
             if (opt.steps[_index].wrapper == '' || opt.steps[_index].wrapper == undefined) {
                 alert('Your walkthrough position is: "' + opt.steps[_index].popup.type + '" but wrapper is empty or undefined. Please check your "' + _activeId + '" wrapper parameter.');
                 return;
-            }            
+            }
 
             var topOffset = cleanValue($(opt.steps[_index].wrapper).offset().top);
             var leftOffset = cleanValue($(opt.steps[_index].wrapper).offset().left);
@@ -277,7 +277,7 @@
             }
 
 
-            //check if use overlay      
+            //check if use overlay
             if (opt.steps[_index].overlay == undefined || opt.steps[_index].overlay) {
                 overlayClass = 'overlay';
             } else {
@@ -480,14 +480,14 @@
                             '<div id="tooltipBottom">' +
                                 '<div id="bottomLeft"></div>' +
                                 '<div id="bottomRight"></div>' +
-                            '</div>');       
+                            '</div>');
 
         $jpWalkthrough.html('');
         $jpwTooltip.html('').append(tooltipSlide)
                             .wrapInner('<div id="tooltipWrapper" style="width:'+cleanValue(parseInt(opt.steps[_index].popup.width) + 30)+'"></div>')
                             .append('<div id="bottom-scratch"></div>')
                             .appendTo($jpWalkthrough);
-        
+
         $jpWalkthrough.appendTo('body');
 
         $('#tooltipWrapper').css(textRotation);
@@ -516,7 +516,7 @@
             overlayHoleTop = (isAccessable) ? $('#topAccessable').offset().top : $('#highlightedArea').offset().top,
             overlayHoleLeft = (isAccessable) ? $('#topAccessable').offset().left : $('#highlightedArea').offset().left,
             arrow = 30,
-            draggable = '';  
+            draggable = '';
 
         var textRotation = (opt.steps[_index].popup.contentRotation == undefined || parseInt(opt.steps[_index].popup.contentRotation) == 0) ? clearRotation() : setRotation(parseInt(opt.steps[_index].popup.contentRotation));
 
@@ -546,7 +546,7 @@
 
         if (opt.steps[_index].popup.draggable) {
             $jpwTooltip.append('<div id="drag-area" class="draggable-area"></div>');
-        }        
+        }
 
         $jpWalkthrough.appendTo('body').show();
 
@@ -614,7 +614,7 @@
             wrapperHeight = $(opt.steps[_index].wrapper).height(),
             arrow = 30,
             draggable = '',
-            top, left, arrowTop, arrowLeft; 
+            top, left, arrowTop, arrowLeft;
 
         if (isOverlay) {
             $jpwOverlay.appendTo('body').show();
@@ -641,7 +641,7 @@
                             '<div id="tooltipBottom">' +
                                 '<div id="bottomLeft"></div>' +
                                 '<div id="bottomRight"></div>' +
-                            '</div>');            
+                            '</div>');
 
         $jpWalkthrough.html('');
         $jpwTooltip.html('').append(tooltipSlide)
@@ -651,7 +651,7 @@
         if (opt.steps[_index].popup.draggable) {
             $jpwTooltip.append('<div id="drag-area" class="draggable-area"></div>');
         }
-        
+
         $jpWalkthrough.appendTo('body');
 
         $('#tooltipWrapper').css(textRotation);
@@ -711,8 +711,8 @@
                     targetHeight = $jpwTooltip.height() ||  $jpwTooltip.innerHeight(),
                     overlayTop = $('#overlayTop').height();
 
-                $('html,body').animate({scrollTop: (targetOffsetTop + (targetHeight/2) - (windowHeight/2))}, options.steps[_index].scrollSpeed);    
-                
+                $('html,body').animate({scrollTop: (targetOffsetTop + (targetHeight/2) - (windowHeight/2))}, options.steps[_index].scrollSpeed);
+
             } else {
                 $('html,body').animate({ scrollTop: 0 }, options.steps[_index].scrollSpeed);
             }
@@ -1043,7 +1043,7 @@
 
             $('.draggable').parent().offset({
                 top: e.pageY + pos_y - drg_h,
-                left: e.pageX + pos_x - drg_w 
+                left: e.pageX + pos_x - drg_w
             }).on("mouseup", function () {
                 $(this).children('#tooltipWrapper').removeClass('draggable').css({'z-index':z_idx,'cursor':'default'});
             });
@@ -1098,9 +1098,9 @@
                     draggable: false, // set true to set walkthrough draggable,
                     contentRotation: 0 //content rotation : i.e: 0, 90, 180, 270 or whatever value you add. minus sign (-) will be CCW direction
                },
-               overlay:true,             
+               overlay:true,
                accessable: false, //if true - you can access html element such as form input field, button etc
-               autoScroll: true, //is true - this will autoscroll to the arror/content every step 
+               autoScroll: true, //is true - this will autoscroll to the arror/content every step
                scrollSpeed: 1000, //scroll speed
                stayFocus: false, //if true - when user scroll down/up to the page, it will scroll back the position it belongs
                onLeave: null, // callback when leaving the step

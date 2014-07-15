@@ -47,5 +47,5 @@ def get_subscriber_name_email(field_list):
                 name, domain = email.split('@')
             else:
                 name = email
-        
+
     return (name, email)

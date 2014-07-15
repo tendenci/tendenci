@@ -89,7 +89,7 @@ class Command(BaseCommand):
                                             print "failed to update %s %s" % (model._meta.verbose_name, obj.pk)
                                             print e
 
-                            # Change the field type to be 'timestamp with time zone', 1184 
+                            # Change the field type to be 'timestamp with time zone', 1184
                             cursor = connection.cursor()
                             cursor.execute("UPDATE pg_attribute SET atttypid = '1184' WHERE attrelid = '%s'::regclass AND attname = '%s';" % (model._meta.db_table, field.name))
                             print "Finished %s.%s data\n" % (model._meta.db_table, field.name)

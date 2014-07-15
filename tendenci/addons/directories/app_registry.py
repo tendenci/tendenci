@@ -11,7 +11,7 @@ class DirectoryRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create directories to list businesses'
     icon = '%simages/icons/directories-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'directory':{
             'base':('440000','CCCC33'),

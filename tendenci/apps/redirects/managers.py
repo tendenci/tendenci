@@ -6,7 +6,7 @@ from haystack.query import SearchQuerySet
 class RedirectManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
-            Uses haystack to query news. 
+            Uses haystack to query news.
             Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
@@ -20,7 +20,7 @@ class RedirectManager(Manager):
         is_an_admin = user.profile.is_superuser
 
         if query:
-            sqs = sqs.auto_query(sqs.query.clean(query)) 
+            sqs = sqs.auto_query(sqs.query.clean(query))
             if user:
                 if not is_an_admin:
                     return []

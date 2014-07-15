@@ -65,7 +65,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
 
 @is_enabled('articles')
 def search(request, template_name="articles/search.html"):
-    
+
     filters = get_query_filters(request.user, 'articles.view_article')
     articles = Article.objects.filter(filters).distinct()
     cat = None
@@ -204,7 +204,7 @@ def edit(request, id, form_class=ArticleForm,
             form = form_class(instance=article, user=request.user)
             category = Category.objects.get_for_object(article, 'category')
             sub_category = Category.objects.get_for_object(article, 'sub_category')
-        
+
             initial_category_form_data = {
                 'app_label': 'articles',
                 'model': 'article',
@@ -215,7 +215,7 @@ def edit(request, id, form_class=ArticleForm,
             categoryform = category_form_class(content_type,
                                            initial=initial_category_form_data,
                                            prefix='category')
-    
+
 
         return render_to_response(template_name, {'article': article,
                                                   'form': form,

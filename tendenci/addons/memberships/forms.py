@@ -423,7 +423,7 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES2
             else:
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES1
-        
+
 
     def save(self, *args, **kwargs):
         self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
@@ -487,7 +487,7 @@ def assign_fields(form, app_field_objs):
     field_names = [field.field_name for field in app_field_objs \
                    if field.field_name != '' and \
                    field.field_name in form_field_keys]
-    
+
     for name in form_field_keys:
         if name not in field_names and name != 'discount_code':
             del form.fields[name]

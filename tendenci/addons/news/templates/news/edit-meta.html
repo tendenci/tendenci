@@ -18,18 +18,18 @@
     {{ news_head }}{% endblocktrans %}</h1>
 
     <div class="news-wrap">
-		<div class="options">
+        <div class="options">
              <div class="quick-options">
-				{% news_options request.user news %} 	       
+                {% news_options request.user news %}
              </div>
-		</div>
-    
-    	<form action="{% url news.edit.meta news.pk %}" method="post">{% csrf_token %}
-    	<div class="forms">
+        </div>
+
+        <form action="{% url news.edit.meta news.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
-		</div>
+            <input type="submit" value="Save Changes" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
         </form>
     </div>
 </div>
@@ -38,22 +38,22 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
+        $(document).ready(function(){
 
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_news = confirm("Permenantly delete {% firstof MODULE_NEWS_LABEL 'News' %}?");	// confirm
-				if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_news = confirm("Permenantly delete {% firstof MODULE_NEWS_LABEL 'News' %}?");    // confirm
+                if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% load i18n %}
 
 <div class="meta">
-    <div class="meta-left">    
+    <div class="meta-left">
         {% if help_file.tags %}
         <div class="tags">
             <strong>Tags: </strong>
@@ -18,11 +18,11 @@
             <div class="topics"><strong>Topics: </strong>
             {% for topic in topics %}
                 <a href="{% url help_files.topic topic.pk %}">{{ topic }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}                        
+            {% endfor %}
             </div>
             {% endif %}
         {% endwith %}
-        
+
         {% if user.is_authenticated %}
             {% if not user.profile.is_superuser %}
             {% if user == help_file.creator or user == help_file.owner %}
@@ -36,7 +36,7 @@
                 {% meta_creator_owner help_file %}
             {% endif %}
         {% endif %}
-        
+
     </div>
     <div class="meta-right">
     </div>
@@ -59,11 +59,11 @@
             <ul>
                 <li>
                     <a class="delete" href="{% url admin:help_files_helpfile_change help_file.pk %}">Delete</a>
-                </li>               
+                </li>
             </ul>
         </div>
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

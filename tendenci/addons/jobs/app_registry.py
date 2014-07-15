@@ -12,7 +12,7 @@ class JobRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create and Manage a %s Bank to offer free and paid postings' % get_setting('module', 'jobs', 'label')
     icon = '%simages/icons/jobs-color-64x64.png' % settings.STATIC_URL
-    
+
     # jobs - GREEN base - complement is DEEP RED
     event_logs = {
         'job':{
@@ -25,7 +25,7 @@ class JobRegistry(CoreRegistry):
             'print_view':('255001','336600'),
         }
     }
-    
+
     url = {
         'add': lazy_reverse('job.add'),
         'search': lazy_reverse('jobs'),

@@ -10,11 +10,11 @@
 
 <div class="t-iconrow">
 
-	<a class="option-link print" href="{% url event.print_view opt_object.pk %}">{% trans "Print" %}</a>
-    
-	{% if can_edit %}
-		<a class="option-link edit" href="{% url event.edit opt_object.pk %}">{% trans "Edit" %}</a>
-	{% endif %}
+    <a class="option-link print" href="{% url event.print_view opt_object.pk %}">{% trans "Print" %}</a>
+
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url event.edit opt_object.pk %}">{% trans "Edit" %}</a>
+    {% endif %}
 
     {% if can_edit %}
         <div class="more-options-wrap">
@@ -25,16 +25,16 @@
                 <li><a href="{% url event.registrant.roster opt_object.pk %}">{% trans "Registrant Roster" %}</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url event.edit.meta opt_object.pk %}">{% trans "Edit Meta" %}</a></li>
-                
+
                 <li class="divider"></li>
-                
+
                 <li><a href="{% url event.ics_single opt_object.pk %}">{% trans "Export" %}</a></li>
                 {% if can_add %}
                     <li>
                         <a class="option-link copy" href="{% url event.copy opt_object.pk %}">{% trans "Copy" %}</a>
                     </li>
                 {% endif %}
-                
+
                 {% if can_delete %}
                 <li>
                     <a class="option-link delete" href="{% url event.delete opt_object.pk %}">{% trans "Delete" %}</a>

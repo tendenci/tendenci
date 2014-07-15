@@ -114,7 +114,7 @@ def my_jobs(request, template_name = "jobs/my_jobs.html"):
             jobs = jobs.select_related()
         jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
         jobs = jobs.filter(creator_username=request.user.username)
-        
+
         EventLog.objects.log()
 
         return render_to_response(template_name, {'jobs': jobs},
@@ -232,7 +232,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 category_removed = True
                 Category.objects.remove(job, 'category')
                 Category.objects.remove(job, 'sub_category')
-         
+
             if not category_removed:
                 # update the sub category of the job
                 sub_category = categoryform.cleaned_data['sub_category']
@@ -342,7 +342,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
     else:
         category_form_class = CategoryForm2
     categoryform = category_form_class(
-                        content_type, 
+                        content_type,
                         request.POST or None,
                         initial= initial_category_form_data,
                         prefix='category')
@@ -384,7 +384,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
                     Category.objects.update(job, sub_category, 'sub_category')
                 else:  # remove
                     Category.objects.remove(job, 'sub_category')
-     
+
             #save relationships
             job.save()
 
@@ -640,7 +640,7 @@ def thank_you(request, template_name="jobs/thank-you.html"):
 @login_required
 def export(request, template_name="jobs/export.html"):
     """Export Jobs"""
- 
+
     if not request.user.is_superuser:
         raise Http403
 
@@ -698,6 +698,6 @@ def export(request, template_name="jobs/export.html"):
         export_id = run_export_task('jobs', 'job', fields)
         EventLog.objects.log()
         return redirect('export.status', export_id)
- 
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

@@ -14,14 +14,14 @@
 {% block body %}
     <div class="t">
     {% user_group_nav request.user %}
-    
+
     <h1>{% trans "Import Subscribers to" %} {{ group.name }}</h1>
-    
+
     <form method="post" action="." enctype="multipart/form-data">{% csrf_token %}
         {{ form|styled_form }}
         <input type="submit" value="Submit">
     </form>
-    
+
     </div>
 {% endblock %}
 

@@ -13,7 +13,7 @@ from tendenci.addons.corporate_memberships.notices.forms import NoticeLogSearchF
 @login_required
 def corporate_membership_notice_log_search(request, template_name="corporate_memberships/notices/logs_search.html"):
     if not has_perm(request.user,'corporate_memberships.change_notice'): raise Http403
-    
+
     form = NoticeLogSearchForm(request.GET or None)
     logs = NoticeLog.objects.all()
     if form.is_valid():
@@ -29,9 +29,9 @@ def corporate_membership_notice_log_search(request, template_name="corporate_mem
         if end_dt:
             end_dt = datetime(*(time.strptime(end_dt, '%Y-%m-%d %H:%M')[0:6]))
             logs = logs.filter(notice_sent_dt__lte=end_dt)
-       
+
     logs = logs.order_by('-notice_sent_dt')
-    
+
     return render_to_response(template_name, {'logs': logs, 'form':form},
         context_instance=RequestContext(request))
 

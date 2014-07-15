@@ -11,7 +11,7 @@ class NewsMeta():
     def get_title(self):
         obj = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
@@ -19,7 +19,7 @@ class NewsMeta():
         subcategory = Category.objects.get_for_object(obj, 'subcategory')
 
         contact_name = '%s %s' % (
-            obj.first_name, 
+            obj.first_name,
             obj.last_name
         )
         contact_name = contact_name.strip()
@@ -68,14 +68,14 @@ class NewsMeta():
     def get_description(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
         contact_name = '%s %s' % (
-            object.first_name, 
+            object.first_name,
             object.last_name
         )
         contact_name = contact_name.strip()
@@ -118,7 +118,7 @@ class NewsMeta():
     def get_keywords(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         dynamic_keywords = generate_meta_keywords(object.body)
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         secondary_keywords = get_setting('site','global','sitesecondarykeywords')
@@ -126,7 +126,7 @@ class NewsMeta():
         site_name = get_setting('site','global','sitedisplayname')
 
         contact_name = '%s %s' % (
-            object.first_name, 
+            object.first_name,
             object.last_name
         )
 
@@ -150,7 +150,7 @@ class NewsMeta():
             for item in list:
                 if not item.strip():
                     list.remove(item)
- 
+
             value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
 
         else:
@@ -187,5 +187,5 @@ class NewsMeta():
             if object.meta and object.meta.canonical_url: return object.meta.canonical_url
             else: return self.get_canonical_url()
         return ''
-    
-    
+
+

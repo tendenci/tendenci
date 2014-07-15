@@ -41,7 +41,7 @@ def job_set_inv_payment(user, job, pricing):
     if get_setting('module', 'jobs', 'jobsrequirespayment'):
         if not job.invoice:
             inv = Invoice()
-            inv.object_type = ContentType.objects.get(app_label=job._meta.app_label, 
+            inv.object_type = ContentType.objects.get(app_label=job._meta.app_label,
                                               model=job._meta.module_name)
             inv.object_id = job.id
             inv.title = "Job Add Invoice"
@@ -112,7 +112,7 @@ def job_set_inv_payment(user, job, pricing):
 
             if user.profile.is_superuser:
                 if job.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-                    boo_inv = inv.tender(user) 
+                    boo_inv = inv.tender(user)
 
                     # payment
                     payment = Payment()

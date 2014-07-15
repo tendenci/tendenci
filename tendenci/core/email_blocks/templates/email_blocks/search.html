@@ -19,30 +19,30 @@
     <h1>{% trans "Email Blocks Search" %}</h1>
 
     {% autopaginate email_blocks 10 %}
-	
-	<div class="email_blocks-wrap">
+
+    <div class="email_blocks-wrap">
     {% for email_block in email_blocks %}
-    	{% has_perm user email_blocks.view_email_block email_block as can_view %}
-    	{% if can_view %}
-		<div class="email_block-wrap">
+        {% has_perm user email_blocks.view_email_block email_block as can_view %}
+        {% if can_view %}
+        <div class="email_block-wrap">
                 <div class="quick-options">
- 					{% email_block_options email_block %}
-			    </div>
+                     {% email_block_options email_block %}
+                </div>
 
             <div>
-            	<a href="{% url email_block.view email_block.pk %}">
-            	{% if email_block.email %}
-            		{{ email_block.email|obfuscate_email }}
-            	{% else %}
-            		{{email_block.email_domain }}
-            	{% endif %}
-            	</a>
+                <a href="{% url email_block.view email_block.pk %}">
+                {% if email_block.email %}
+                    {{ email_block.email|obfuscate_email }}
+                {% else %}
+                    {{email_block.email_domain }}
+                {% endif %}
+                </a>
             </div>
             <div class="clear-right"></div>
-           
+
             <div class="content"><b>{% trans "Reason:" %}</b> {{ email_block.reason|striptags|truncatewords:40 }}</div>
-			<div class="meta">
-            	{% blocktrans with email_block.create_dt|date:"long" as create_date %} <div class="submitted">Created on {{ create_date }} by:{% endblocktrans %} <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></div>
+            <div class="meta">
+                {% blocktrans with email_block.create_dt|date:"long" as create_date %} <div class="submitted">Created on {{ create_date }} by:{% endblocktrans %} <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></div>
             </div>
 
             <!-- delete-email form -->
@@ -50,12 +50,12 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 
-		</div>
-		{% endif %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        </div>
+        {% endif %}
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
@@ -64,13 +64,13 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_email_block = confirm('Permenantly delete email block?');	// confirm
-				if(delete_email_block) $(this).parents('.email_block-wrap').find('form[name="email_block-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_email_block = confirm('Permenantly delete email block?');    // confirm
+                if(delete_email_block) $(this).parents('.email_block-wrap').find('form[name="email_block-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
     </script>
 {% endblock %}

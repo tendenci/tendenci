@@ -20,19 +20,19 @@
 
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTACTS_LABEL 'Contacts' %} {% trans "Search" %}</h1>
 
-	{% contact_search %}
+    {% contact_search %}
     {% autopaginate contacts 10 %}
-	
-	<div class="contacts-wrap">
+
+    <div class="contacts-wrap">
     {% for contact in contacts %}
-    	{% has_perm user contacts.view_contact contact as can_view %}
-    	{% if can_view %}
-		<div class="contact-wrap">
+        {% has_perm user contacts.view_contact contact as can_view %}
+        {% if can_view %}
+        <div class="contact-wrap">
 
             <h2><a href="{% url contact contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
             <div class="content">{{ contact.message|linebreaks }}</div>
-			<div class="meta">
-            	<div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>
+            <div class="meta">
+                <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-contact form -->
@@ -41,12 +41,12 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 
-		</div>
-		{% endif %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        </div>
+        {% endif %}
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
@@ -55,14 +55,14 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
+        $(document).ready(function(){
 
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_contact = confirm('Permenantly delete {{ MODULE_CONTACTS_LABEL }}?');	// confirm
-				if(delete_contact) $(this).parents('.contact-wrap').find('form[name="contact-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_contact = confirm('Permenantly delete {{ MODULE_CONTACTS_LABEL }}?');    // confirm
+                if(delete_contact) $(this).parents('.contact-wrap').find('form[name="contact-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
     </script>
 {% endblock %}

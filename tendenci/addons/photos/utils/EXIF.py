@@ -201,9 +201,9 @@ EXIF_TAGS = {
              {1: 'Centered',
               2: 'Co-sited'}),
     0x0214: ('ReferenceBlackWhite', ),
-    
+
     0x4746: ('Rating', ),
-    
+
     0x828D: ('CFARepeatPatternDim', ),
     0x828E: ('CFAPattern', ),
     0x828F: ('BatteryLevel', ),
@@ -292,7 +292,7 @@ EXIF_TAGS = {
     0x9290: ('SubSecTime', ),
     0x9291: ('SubSecTimeOriginal', ),
     0x9292: ('SubSecTimeDigitized', ),
-    
+
     # used by Windows Explorer
     0x9C9B: ('XPTitle', ),
     0x9C9C: ('XPComment', ),
@@ -322,7 +322,7 @@ EXIF_TAGS = {
               4: 'Three-chip color area',
               5: 'Color sequential area',
               7: 'Trilinear',
-              8: 'Color sequential linear'}),             
+              8: 'Color sequential linear'}),
     0xA300: ('FileSource',
              {1: 'Film Scanner',
               2: 'Reflection Print Scanner',
@@ -609,7 +609,7 @@ MAKERNOTE_NIKON_NEWER_TAGS={
     0x0202: ('PreviewImageLength', ),
     0x0213: ('PreviewYCbCrPositioning',
              {1: 'Centered',
-              2: 'Co-sited'}), 
+              2: 'Co-sited'}),
     0x0010: ('DataDump', ),
     }
 
@@ -1312,7 +1312,7 @@ class EXIF_header:
             # ignore certain tags for faster processing
             if not (not detailed and tag in IGNORE_TAGS):
                 field_type = self.s2n(entry + 2, 2)
-                
+
                 # unknown field type
                 if not 0 < field_type < len(FIELD_TYPES):
                     if not self.strict:
@@ -1359,7 +1359,7 @@ class EXIF_header:
                 else:
                     values = []
                     signed = (field_type in [6, 8, 9, 10])
-                    
+
                     # XXX investigate
                     # some entries get too big to handle could be malformed
                     # file or problem with self.s2n
@@ -1373,7 +1373,7 @@ class EXIF_header:
                                 value = self.s2n(offset, typelen, signed)
                             values.append(value)
                             offset = offset + typelen
-                    # The test above causes problems with tags that are 
+                    # The test above causes problems with tags that are
                     # supposed to have long values!  Fix up one important case.
                     elif tag_name == 'MakerNote' :
                         for dummy in range(count):
@@ -1382,7 +1382,7 @@ class EXIF_header:
                             offset = offset + typelen
                     #else :
                     #    print "Warning: dropping large tag:", tag, tag_name
-                
+
                 # now 'values' is either a string or an array
                 if count == 1 and field_type != 2:
                     printable=str(values[0])
@@ -1492,7 +1492,7 @@ class EXIF_header:
     # or from the header at the start of the makernote.)
     def decode_maker_note(self):
         note = self.tags['EXIF MakerNote']
-        
+
         # Some apps use MakerNote tags but do not use a format for which we
         # have a description, so just do a raw dump for these.
         #if self.tags.has_key('Image Make'):

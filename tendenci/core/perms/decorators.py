@@ -20,9 +20,9 @@ class PageSecurityCheck(object):
 
     def __call__(self, f):
         def check_security(request, *args, **kwargs):
-            
+
             user_security_level = 'anonymous'
-            
+
             if request.user.is_authenticated():
                 if request.user.profile.is_superuser:
                     user_security_level = 'superuser'
@@ -30,8 +30,8 @@ class PageSecurityCheck(object):
                     user_security_level = 'staff'
                 else:
                     user_security_level = 'user'
-            
-            boo = False        
+
+            boo = False
             if self.page_security_level == 'anonymous':
                 boo = True
             elif self.page_security_level == 'user':
@@ -43,7 +43,7 @@ class PageSecurityCheck(object):
             elif self.page_security_level == 'staff':
                 if user_security_level == 'staff':
                     boo = True
-                    
+
             if boo:
                 # if request.user.is_authenticated(), log an event here
                 return f(request, *args, **kwargs)
@@ -56,7 +56,7 @@ class PageSecurityCheck(object):
                     login_url = settings.LOGIN_URL
                     path = urlquote(request.get_full_path())
                     tup = login_url, redirect_field_name, path
-                    
+
                     return HttpResponseRedirect('%s?%s=%s' % tup)
                     #return f(request, *args, **kwargs)
         return check_security

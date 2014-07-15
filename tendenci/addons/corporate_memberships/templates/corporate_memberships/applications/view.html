@@ -11,7 +11,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <style>
@@ -64,19 +64,19 @@
 	.fp-usage-tbl{
 		border: 1px solid #CCCCCC;
 	}
-	
+
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="t">
 <div class="application-form-wrap">
-{% corpmemb_nav request.user corporate_membership %} 
+{% corpmemb_nav request.user corporate_membership %}
    <h1>{% trans "View Corporate Membership Information" %}</h1>
-   
+
    <div class="options float-right">
          <div class="quick-options">
-            {% corpmemb_options request.user corporate_membership %}        
+            {% corpmemb_options request.user corporate_membership %}
          </div>
          {% if corporate_membership.is_active %}
         <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a>
@@ -84,8 +84,8 @@
         </div>
         {% endif %}
     </div>
-     
-                    
+
+
    {% for field_obj in app_fields %}
         {% if field_obj.field_name == '' %}
             {% if not forloop.last %}
@@ -95,7 +95,7 @@
             {% endif %}
         {% else %}
                 <div class="field-row{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
-  
+
                         {% if field_obj.field_name == 'reps' %}
                             {% if field_obj.value %}
                                 <table width="70%">
@@ -108,7 +108,7 @@
                                     <tr class="corp-rep">
                                     <td><a href="{% url profile rep.user.username %}">
                                         {{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
-                                        
+
                                     </td>
                                     <td>
                                         {% if rep.is_dues_rep %}
@@ -133,14 +133,14 @@
                                 {% if corporate_membership.status_detail != 'archive' %}
                                 <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add Representatives" %}</a></div>
                                 {% endif %}
-                            {% endif %} 
-                            
+                            {% endif %}
+
                         {% else %}
                             {% if field_obj.value != '' %}
                             <div class="label{% if field_obj.short_label %} short-label{% endif %}{% if field_obj.required %} required{% endif %} {{ field_obj.field_div_class }}">
                                 {{ field_obj.label }}:
                             </div>
-                            
+
                             <div class="field-value {{ field_obj.field_div_class }}">
                             {% if  field_obj.is_date %}
                                 {{ field_obj.value|date:'long' }}
@@ -161,17 +161,17 @@
                                 {% endif %}
                             {% endif %}
                             </div>
-                    
+
                             <div class="clear"></div>
                             {% endif %}
-                        
+
                       {% endif %}
-                                  
-                     </div>       
+
+                     </div>
         {% endif %}
 
     {% endfor %}
-    
+
     {% if user_can_edit and MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
     <div class="section-break">
     	<h2>{% trans "Free Passes" %}</h2>
@@ -186,14 +186,14 @@
     </div>
     <div class="field-row">
     	<div class="label short-label inline-block"><strong>{% trans "# Used:" %}</strong></div>
-    	<div class="field-value inline-block">{{ corporate_membership.free_pass_used }}</div>  	
+    	<div class="field-value inline-block">{{ corporate_membership.free_pass_used }}</div>
     </div>
     <div class="field-row">
     	<div class="label short-label inline-block"><strong>{% trans "# Available:" %}</strong></div>
     	<div class="field-value inline-block">{{ corporate_membership.free_pass_avail }}</div>
-    
+
     </div>
-    
+
     {% if corporate_membership.free_pass_used > 0 %}
     <div class="field-row">
     	<table class="fp-usage-tbl table table-striped" width="99%">
@@ -215,7 +215,7 @@
   					{{ fp.registrant.last_name }}
   					{{ fp.registrant.email }}
   					{% endif %}
-  					
+
   				</td>
   				<td>
   					{% if fp.event %}
@@ -232,23 +232,23 @@
     		{% endfor %}
     	</table>
     </div>
-   {% endif %} 
-    
+   {% endif %}
+
  {% endif %}
-    
+
     {% if all_records|length > 1 %}
     <div class="corp-timeline">
         <h3>Timeline:</h3>
         <ul>
-           {% for corp_memb in all_records %} 
+           {% for corp_memb in all_records %}
            <li>
                {% if not corp_memb.renewal %}
-               <strong>Joined</strong> on {{ corp_memb.join_dt|date:'N d, Y' }}, 
+               <strong>Joined</strong> on {{ corp_memb.join_dt|date:'N d, Y' }},
                {% else %}
-               <strong>Renewed</strong> on {{ corp_memb.renew_dt|date:'N d, Y' }}, 
+               <strong>Renewed</strong> on {{ corp_memb.renew_dt|date:'N d, Y' }},
                {% endif %}
-               
-               {% if corp_memb.is_archive or corp_memb.is_expired %} 
+
+               {% if corp_memb.is_archive or corp_memb.is_expired %}
                <strong>expired</strong> on {{ corp_memb.expiration_dt|date:'N d, Y' }}.
                {% else %}
                <strong>expires</strong> on {{ corp_memb.expiration_dt|date:'N d, Y' }}.
@@ -264,8 +264,8 @@
            </li>
            {% endfor %}
         </ul>
-        
-    </div>      
+
+    </div>
     {% endif %}
 </div>
 <div class="clear"></div>
@@ -275,5 +275,5 @@
 
 {% block extra_body %}
     {{ block.super }}
-     
+
 {% endblock extra_body %}

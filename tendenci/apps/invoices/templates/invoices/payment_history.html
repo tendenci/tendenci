@@ -2,60 +2,60 @@
 {% load i18n %}
 
 {% if payments %}
-	<p class="payment-history-header">Payment History</p>
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr class="payment-table-header">
-		<td>Information</td>
-		<td class="td-right">Line Amount</td>
-	</tr>
+    <p class="payment-history-header">Payment History</p>
+    <table border="0" cellspacing="0" cellpadding="0">
+    <tr class="payment-table-header">
+        <td>Information</td>
+        <td class="td-right">Line Amount</td>
+    </tr>
     {% for payment in payments %}
-		<tr>
-			<td>
-				{% trans "Payment #" %}<a href="{%url payment.view payment.id%}" title="View Payment">{{ payment.id }}</a>
-				{% trans "by:" %} {% if not payment.last_name and not payment.first_name %}Unknown{% else%}{% if payment.first_name %}{{payment.first_name|capfirst }} {% endif %} {% if payment.last_name %}{{ payment.last_name|capfirst }}{% endif %}{% endif %}&nbsp;&ndash;&nbsp;
-				{% if not payment.status_detail %}
-		         	{% if not payment.verified %}
-		         		{% trans "abandoned" %}
-		         	{% else %}
-		         		{% trans "verified, not received" %}
-		         	{% endif %}
-	       		{% else %}
-		            {% if payment.status_detail == 'void' %}
-		            	{% trans "voided" %}
-		            {% else %}
-		            	{{ payment.status_detail }}
-		            {% endif %}
-		         {% endif %}
-				&nbsp;<a href="#" onclick="$(this).next().toggle(); return false;">{% trans "(details)" %}</a>
-				<div class="payment-details">
-					<p><strong>{% trans "Description:" %}</strong> {{ payment.description }}</p>
-					{% if payment.trans_id %}
-						<p><strong>{% trans "Transaction ID:" %}</strong> {{ payment.trans_id }}</p>
-					{% endif %}
-					{% if payment.trans_string %}
-						<p><strong>{% trans "Transaction String:" %}</strong> {{ payment.trans_string }}</p>
-					{% endif %}
-					{% if payment.response_reason_text %}
-						<p><strong>{% trans "Response:" %}</strong> {{ payment.response_reason_text }}</p>
-					{% endif %}
-					<p><strong>{% trans "Payment Status:" %}</strong>
-		         	{% if not payment.status_detail %}
-			         	{% if not payment.verified %}
-			         		{% trans "abandoned" %}
-			         	{% else %}
-			         		{% trans "verified, not received" %}
-			         	{% endif %}
-		       		{% else %}
-			            {% if payment.status_detail == 'void' %}
-			            	{% trans "voided" %}
-			            {% else %}
-			            	{{ payment.status_detail }}
-			            {% endif %}
-		         	{% endif %}</p>
-				<div>
-			</td>
-			<td class="td-right">{{ payment.amount|format_currency }}</td>
-		</tr>
+        <tr>
+            <td>
+                {% trans "Payment #" %}<a href="{%url payment.view payment.id%}" title="View Payment">{{ payment.id }}</a>
+                {% trans "by:" %} {% if not payment.last_name and not payment.first_name %}Unknown{% else%}{% if payment.first_name %}{{payment.first_name|capfirst }} {% endif %} {% if payment.last_name %}{{ payment.last_name|capfirst }}{% endif %}{% endif %}&nbsp;&ndash;&nbsp;
+                {% if not payment.status_detail %}
+                     {% if not payment.verified %}
+                         {% trans "abandoned" %}
+                     {% else %}
+                         {% trans "verified, not received" %}
+                     {% endif %}
+                   {% else %}
+                    {% if payment.status_detail == 'void' %}
+                        {% trans "voided" %}
+                    {% else %}
+                        {{ payment.status_detail }}
+                    {% endif %}
+                 {% endif %}
+                &nbsp;<a href="#" onclick="$(this).next().toggle(); return false;">{% trans "(details)" %}</a>
+                <div class="payment-details">
+                    <p><strong>{% trans "Description:" %}</strong> {{ payment.description }}</p>
+                    {% if payment.trans_id %}
+                        <p><strong>{% trans "Transaction ID:" %}</strong> {{ payment.trans_id }}</p>
+                    {% endif %}
+                    {% if payment.trans_string %}
+                        <p><strong>{% trans "Transaction String:" %}</strong> {{ payment.trans_string }}</p>
+                    {% endif %}
+                    {% if payment.response_reason_text %}
+                        <p><strong>{% trans "Response:" %}</strong> {{ payment.response_reason_text }}</p>
+                    {% endif %}
+                    <p><strong>{% trans "Payment Status:" %}</strong>
+                     {% if not payment.status_detail %}
+                         {% if not payment.verified %}
+                             {% trans "abandoned" %}
+                         {% else %}
+                             {% trans "verified, not received" %}
+                         {% endif %}
+                       {% else %}
+                        {% if payment.status_detail == 'void' %}
+                            {% trans "voided" %}
+                        {% else %}
+                            {{ payment.status_detail }}
+                        {% endif %}
+                     {% endif %}</p>
+                <div>
+            </td>
+            <td class="td-right">{{ payment.amount|format_currency }}</td>
+        </tr>
     {% endfor %}
     </table>
 {% endif %}

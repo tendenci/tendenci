@@ -146,11 +146,11 @@ def mark_as_paid_old(request, id):
 
 
 def void_payment(request, id):
-    
+
     invoice = get_object_or_404(Invoice, pk=id)
-    
-    if not (request.user.profile.is_superuser): raise Http403    
-    
+
+    if not (request.user.profile.is_superuser): raise Http403
+
     amount = invoice.payments_credits
     invoice.void_payment(request.user, amount)
 
@@ -194,7 +194,7 @@ def search(request, template_name="invoices/search.html"):
     event_id = None
 
     form = InvoiceSearchForm(request.GET)
-    
+
     if form.is_valid():
         start_dt = form.cleaned_data.get('start_dt')
         end_dt = form.cleaned_data.get('end_dt')
@@ -235,7 +235,7 @@ def search(request, template_name="invoices/search.html"):
 
     if last_name:
         invoices = invoices.filter(bill_to_last_name__iexact=last_name)
-    
+
     owner = None
     if search_criteria and search_text:
         if search_criteria == 'owner_id':
@@ -261,13 +261,13 @@ def search(request, template_name="invoices/search.html"):
                 search_type = '__iexact'
             else:
                 search_type = '__exact'
-  
+
         if all([search_criteria == 'owner__id',
                 search_method == 'exact',
                 owner]):
             invoices = invoices.filter(Q(bill_to_email__iexact=owner.email)
-                               | Q(owner_id=owner.id))                    
-        else: 
+                               | Q(owner_id=owner.id))
+        else:
             search_filter = {'%s%s' % (search_criteria,
                                        search_type): search_text}
             invoices = invoices.filter(**search_filter)
@@ -284,7 +284,7 @@ def search(request, template_name="invoices/search.html"):
                 event_set.add(event_id)
             if event or event_id:
                 invoices = invoices.filter(registration__event__pk__in=event_set)
-    
+
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
@@ -293,7 +293,7 @@ def search(request, template_name="invoices/search.html"):
                                    Q(bill_to_email__iexact=request.user.email)
                                    ).order_by('-create_dt')
     EventLog.objects.log()
-    return render_to_response(template_name, {'invoices': invoices, 'form':form,}, 
+    return render_to_response(template_name, {'invoices': invoices, 'form':form,},
         context_instance=RequestContext(request))
 
 
@@ -353,24 +353,24 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     original_balance = invoice.balance
 
     if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
-    
+
     if request.method == "POST":
         form = form_class(request.POST, instance=invoice)
         if form.is_valid():
             invoice = form.save()
-            invoice.total += invoice.variance 
-            invoice.balance = invoice.total - invoice.payments_credits 
+            invoice.total += invoice.variance
+            invoice.balance = invoice.total - invoice.payments_credits
             invoice.save()
-            
+
             EventLog.objects.log(instance=invoice)
-            
+
             notif_context = {
                 'request': request,
                 'object': invoice,
             }
             send_notifications('module','invoices','invoicerecipients',
                 'invoice_edited', notif_context)
-            
+
             # make accounting entries
             from tendenci.apps.accountings.models import AcctEntry
             ae = AcctEntry.objects.create_acct_entry(request.user, 'invoice', invoice.id)
@@ -382,24 +382,24 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
                 opt_d['original_invoice_total'] = original_total
                 opt_d['original_invoice_balance'] = original_balance
                 opt_d['discount_account_number'] = 460100
-                
+
                 obj = invoice.get_object()
                 if obj and hasattr(obj, 'get_acct_number'):
                     opt_d['discount_account_number'] = obj.get_acct_number(discount=True)
-                
+
                 make_acct_entries_discount(request.user, invoice, ae, opt_d)
-                
+
             else:
                 from tendenci.apps.accountings.utils import make_acct_entries_initial
                 make_acct_entries_initial(request.user, ae, invoice.variance)
-            
+
             return HttpResponseRedirect(invoice.get_absolute_url())
-            
+
     else:
         form = form_class(initial={'variance':0.00, 'variance_notes':invoice.variance_notes})
-        
+
     return render_to_response(template_name, {'invoice': invoice,
-                                              'form':form}, 
+                                              'form':form},
         context_instance=RequestContext(request))
 
 
@@ -457,7 +457,7 @@ def report_top_spenders(request, template_name="reports/top_spenders.html"):
     """Show dollars per user report"""
     if not request.user.is_superuser:
         raise Http403
-    
+
     entry_list = []
     users = User.objects.all()
     for user in users:

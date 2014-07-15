@@ -10,7 +10,7 @@ class ResumeRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Users can upload resumes to help with their careers'
     icon = '%simages/icons/resumes-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'resume':{
             'base':('350000','0099CC'),
@@ -22,7 +22,7 @@ class ResumeRegistry(CoreRegistry):
             'print_view':('355001', '0099CC'),
         }
     }
-    
+
     url = {
         'add': lazy_reverse('resume.add'),
         'search': lazy_reverse('resumes'),

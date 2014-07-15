@@ -24,7 +24,7 @@
 
         {# show member icon if not allowanonymousview/allowsiteuserview #}
         {% if not article.allow_anonymous_view and article.allow_user_view   %}
-            &nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/static/images/icons/member.gif" height="13" width="15" 
+            &nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/static/images/icons/member.gif" height="13" width="15"
             border="0" alt="Member View Only" title="Member View Only">
         {% endif %}
         </td></tr>
@@ -34,7 +34,7 @@
             <b>{% trans "Author:" %}</b> {{ article.first_name }} {{ article.last_name }} </font></td></tr>
 
             <tr><td align="left"><font face="Arial" size="2" color="#000000">
-            <b>{% trans "Release Date:" %}</b> {{ article.release_dt|date:"l d-M-Y h:i A" }} </font> 
+            <b>{% trans "Release Date:" %}</b> {{ article.release_dt|date:"l d-M-Y h:i A" }} </font>
             </td></tr>
         {% endif %}
 
@@ -48,7 +48,7 @@
         {#  posted by #}
         {% if not simplified  %}
             <font face="Arial" size="2" color="#000000">
-            <br>{% blocktrans with article.owner.first_name as article_first and article.owner.last_name as article_last %}<b>Posted by</b>: 
+            <br>{% blocktrans with article.owner.first_name as article_first and article.owner.last_name as article_last %}<b>Posted by</b>:
             {{ article_first }} {{ article_last }}{% endblocktrans %}
             </font>
         {% endif %}

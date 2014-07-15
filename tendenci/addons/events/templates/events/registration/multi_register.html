@@ -22,7 +22,7 @@
         <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
         <div class="event-price">{{ event_price|format_currency }}</div>
         <div class="event-time">
-            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
         <div class="event-msg">
@@ -68,12 +68,12 @@
     <div class="form-wrap">
         <form action="" method="post">{% csrf_token %}
         <div class="forms">
-        
+
             <div id="reg-form-wrap">
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
 
-				<div id="reg-form-box">	
+				<div id="reg-form-box">
                     <div id="original-price" style="display:none;">0.00</div>
     				<div class="summary-total">
     					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
@@ -174,7 +174,7 @@
 									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
 									<div class="field">{{ field }}</div>
 									{% if field.help_text %}
-				                    <div class="help-text">{{ field.help_text }}</div>   
+				                    <div class="help-text">{{ field.help_text }}</div>
 				                    {% endif %}
 								</div>
 							{% endif %}
@@ -257,7 +257,7 @@
                 <div id="pricing-choices">
                     {% for pricing in pricings %}
                     <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
-                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" 
+                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}"
                         is_public="{{ pricing.allow_anonymous }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>
                         {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
                     </div>

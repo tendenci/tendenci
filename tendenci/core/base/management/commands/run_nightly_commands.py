@@ -12,7 +12,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from tendenci.core.site_settings.utils import get_setting
-        
+
         commands = ('expire_jobs',
                     'expire_resumes',
                     'expire_stories',

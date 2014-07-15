@@ -2,7 +2,7 @@
 
 {% load perm_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd"> 
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>{% trans "Membership Application Approved" %}</title>
@@ -23,9 +23,9 @@
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
         {% trans "View Approved Application" %}
     </a></div>
-    
+
     <div>========================</div>
-    
+
     <div>{% blocktrans %}{{ membership_total }} Total Active Membership(s){% endblocktrans %}</div>
 
 </body>

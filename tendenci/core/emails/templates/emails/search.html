@@ -19,23 +19,23 @@
     <h1>{% trans "Emails Search" %}</h1>
 
     {% autopaginate emails 10 %}
-	
-	<div class="emails-wrap">
+
+    <div class="emails-wrap">
     {% for email in emails %}
-    	{% has_perm user emails.view_email email as can_view %}
-    	{% if can_view %}
-		<div class="email-wrap">
+        {% has_perm user emails.view_email email as can_view %}
+        {% if can_view %}
+        <div class="email-wrap">
                 <div class="quick-options">
- 					{% emails_options email %}
-			    </div>
+                     {% emails_options email %}
+                </div>
 
             <h2><a href="{% url email.view email.pk %}">{{ email.subject }}</a></h2>
             <div class="clear-right"></div>
-            
+
             <div class="content-type">{% blocktrans with email.content_type as emailco %}Content type: {{ emailco }}{% endblocktrans %}</div>
             <div class="content">{{ email.body|striptags|truncatewords:30 }}</div>
-			<div class="meta">
-            	<div class="submitted">{% blocktrans with email.create_dt|date:"long" as emailcr and email.creator as email_creator %}Created on {{ emailcr }} by {{ email_creator }}{% endblocktrans %}</div>
+            <div class="meta">
+                <div class="submitted">{% blocktrans with email.create_dt|date:"long" as emailcr and email.creator as email_creator %}Created on {{ emailcr }} by {{ email_creator }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-email form -->
@@ -43,12 +43,12 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 
-		</div>
-		{% endif %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        </div>
+        {% endif %}
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
@@ -57,13 +57,13 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_email = confirm('Permenantly delete email?');	// confirm
-				if(delete_email) $(this).parents('.email-wrap').find('form[name="email-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_email = confirm('Permenantly delete email?');    // confirm
+                if(delete_email) $(this).parents('.email-wrap').find('form[name="email-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
     </script>
 {% endblock %}

@@ -14,16 +14,16 @@
 {% block body %}
  {% corpmemb_nav request.user %}
 <div id="corp-import-wrap">
-    
+
     <h1>{% trans "Corporate Membership CSV Export" %}</h1>
-   
+
     <div id="corp-export">
-    	
-	    <form method="post" action="">{% csrf_token %}
-	    {{ form.as_p }}
-	    <input type='submit' value='Export'>
-	    </form>
-    
+
+        <form method="post" action="">{% csrf_token %}
+        {{ form.as_p }}
+        <input type='submit' value='Export'>
+        </form>
+
     </div>
 </div>
 {% endblock %}

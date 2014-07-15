@@ -11,16 +11,16 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
-<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
 <link href="{{ STATIC_URL }}css/jquery.tagit.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 <style type="text/css">
     div.forms input[type="button"].previewButton {
-		margin-top: 15px;
-		padding: 5px;
-		cursor: pointer;
-	}
+        margin-top: 15px;
+        padding: 5px;
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
@@ -28,14 +28,14 @@
 
 <div class="t">
 
-	{% page_nav request.user %}
+    {% page_nav request.user %}
 
     <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Add" %}</h1>
 
     <div class="page-wrap">
-    	<form action="{% url page.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">			
-			{{ form|styled_form }}
+        <form action="{% url page.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
             <fieldset class="boxy-grey" >
                 <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
                 <div id="category-form">
@@ -49,9 +49,9 @@
                 </div>
             </fieldset>
             <input type="hidden" id="id_preview_for" name="preview_for"/>
-        	<input type="submit" value="Add {% firstof MODULE_PAGES_LABEL 'Page' %}" />
-        	<input class="previewButton" type="button" value="Preview"/>
-		</div>
+            <input type="submit" value="Add {% firstof MODULE_PAGES_LABEL 'Page' %}" />
+            <input class="previewButton" type="button" value="Preview"/>
+        </div>
         </form>
     </div>
 
@@ -60,44 +60,44 @@
 
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="{{ STATIC_URL }}js/tag-it.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}/js/popover.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}/js/gplus-helptexts.js"></script>
-    
-	<script type="text/javascript">
-		var slugit = new Slugify({
-			input_element : 'input#id_title',
-			slug_element : 'input#id_slug',
-			submit_element : 'input[type="submit"]',
-			help: false,
-			limit : 150
-		});
-        gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
-	</script>
+
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.add-category').click(function(){
-				select_box = $(this).parent().prev().find('select');
-				var category = prompt('Category Name?','').toLowerCase();
-				category = category.replace('"','')
-				var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
-				if (category) select_box.append(option_html) 
-				return false;
-			});
-			$('.add-sub-category').click(function(){
-				select_box = $(this).parent().prev().find('select');
-				var sub_category = prompt('Category Name?','').toLowerCase();
-				sub_category = sub_category.replace('"','')
-				var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
-				if (sub_category) select_box.append(option_html) 
-				return false;
-			});
-		});
+        var slugit = new Slugify({
+            input_element : 'input#id_title',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
+        gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.add-category').click(function(){
+                select_box = $(this).parent().prev().find('select');
+                var category = prompt('Category Name?','').toLowerCase();
+                category = category.replace('"','')
+                var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
+                if (category) select_box.append(option_html)
+                return false;
+            });
+            $('.add-sub-category').click(function(){
+                select_box = $(this).parent().prev().find('select');
+                var sub_category = prompt('Category Name?','').toLowerCase();
+                sub_category = sub_category.replace('"','')
+                var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
+                if (sub_category) select_box.append(option_html)
+                return false;
+            });
+        });
     </script>
     <script type="text/javascript">
         $('#meta-form').hide();
@@ -118,18 +118,18 @@
             availableTags: [{% all_tags_list %}],
             allowSpaces: true
         });
-        
+
         //Set preview button
         $('input.previewButton').click(function() {
             var form = $('div.page-wrap > form');
-		    var url = form.attr('action');
-		    form.attr('action', "{% url page.preview %}");
-		    form.attr('target', '_blank');
-		    form.submit();
-		    
-		    form.attr('action', url);
-		    form.attr('target', '');
-		});
+            var url = form.attr('action');
+            form.attr('action', "{% url page.preview %}");
+            form.attr('target', '_blank');
+            form.submit();
+
+            form.attr('action', url);
+            form.attr('target', '');
+        });
     </script>
     {% include 'tags/autocomplete.html' %}
 {% endblock %}

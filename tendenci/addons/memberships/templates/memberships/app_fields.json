@@ -180,7 +180,7 @@
     "display": "true",
     "required": "false",
     "admin_only": "false"
-    }, 
+    },
     {
     "label": "Home Phone",
     "field_name": "home_phone",
@@ -467,7 +467,7 @@
     "display": "true",
     "required": "false",
     "admin_only": "false"
-    }, 
+    },
     {
     "label": "Hide Email",
     "field_name": "hide_email",

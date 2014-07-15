@@ -55,13 +55,13 @@
                     {% if membership.renewal %}
                     <p title="{{ membership.subscribe_dt|timesince }} ago">
                         Renewed <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
-                    {% endif %}                        
+                    {% endif %}
 
                     {% if membership.is_approved %}
                         {% if membership.is_forever %}
                             <p>{% trans "Never expires" %}</p>
                         {% else %}
-                            <p>Expires <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>    
+                            <p>Expires <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>
                         {% endif %}
 
                     {% else %}
@@ -77,7 +77,7 @@
                     {% endif %}
 
                     <div class="membership-details-status">
-                        
+
                         <p class="status-label {{ membership.get_status }}">
                             {{ membership.get_status|capfirst }} Membership</p>
 
@@ -142,7 +142,7 @@
                 <div class="value">{{ membership.user.profile.get_address }}</div>
             </div>
             {% endif %}
-            
+
             {% if membership.user.profile.company %}
             <div class="field">
                 <div class="label">Company</div>

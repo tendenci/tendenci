@@ -10,7 +10,7 @@ class SettingForm(forms.ModelForm):
     class Meta:
         model = Setting
         fields = ('value',)
-    
+
     def __init__(self, *args, **kwargs):
         """
         Builds the field for the setting's value based on the setting's
@@ -46,7 +46,7 @@ class SettingForm(forms.ModelForm):
                     'required': False
                 }
                 self.fields['value'] = forms.CharField(**options)
-        
+
     def clean(self):
         """
         Clean method is based on clean_settings_form from tendenci.core.site_settings.forms.
@@ -58,7 +58,7 @@ class SettingForm(forms.ModelForm):
                 field_value = cleaned_data['value']
             except KeyError:
                 field_value = None
-                
+
             if setting.data_type == "boolean":
                 if field_value != 'true' and field_value != 'false':
                     raise forms.ValidationError("'%s' must be true or false" % setting.label)
@@ -72,12 +72,12 @@ class SettingForm(forms.ModelForm):
                     #file fields will be considered as id fields for Files
                     if not field_value.isdigit():
                         raise forms.ValidationError("'%s' must be a File pk" % setting.label)
-                    
+
                     #if the value is an int use it as pk to get a File
                     from tendenci.core.files.models import File as TendenciFile
                     try:
                         tfile = TendenciFile.objects.get(pk=field_value)
                     except TendenciFile.DoesNotExist:
                         raise forms.ValidationError("File entry does not exist.")
-                    
+
         return cleaned_data

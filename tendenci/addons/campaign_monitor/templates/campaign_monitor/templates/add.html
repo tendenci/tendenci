@@ -13,16 +13,16 @@
 
 {% block body %}
 <div class="t">
-	{% template_nav request.user %}
-    
+    % template_nav request.user %}
+
     <h1>{% trans "Template Add" %}</h1>
-    
-    <div class="template-wrap">  
-    	<form action="{% url campaign_monitor.template_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">
-			{{ form|styled_form }}
-        	<input type="submit" value="Add Template" />
-		</div>
+
+    <div class="template-wrap">
+        <form action="{% url campaign_monitor.template_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            { form|styled_form }}
+            <input type="submit" value="Add Template" />
+        </div>
         </form>
     </div>
 

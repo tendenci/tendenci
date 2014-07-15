@@ -11,7 +11,7 @@ class EmergencyAnnouncement(TendenciBaseModel):
     title = models.CharField(max_length=250)
     content = tinymce_models.HTMLField()
     enabled = models.BooleanField(default=True)
-    
+
     perms = generic.GenericRelation(ObjectPermission,
                                     object_id_field="object_id",
                                     content_type_field="content_type")

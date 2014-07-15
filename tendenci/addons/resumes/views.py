@@ -40,11 +40,11 @@ def index(request, slug=None, template_name="resumes/view.html"):
 
     if not slug: return HttpResponseRedirect(reverse('resume.search'))
     resume = get_object_or_404(Resume, slug=slug)
-    
+
     if has_view_perm(request.user,'resumes.view_resume',resume):
 
         EventLog.objects.log()
-        return render_to_response(template_name, {'resume': resume}, 
+        return render_to_response(template_name, {'resume': resume},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -56,7 +56,7 @@ def resume_file(request, slug=None, template_name="resumes/view.html"):
 
     if has_view_perm(request.user,'resumes.view_resume',resume):
         if resume.resume_file:
-        
+
             EventLog.objects.log(instance=resume)
             response = HttpResponse(resume.resume_file)
             response['Content-Disposition'] = 'attachment; filename=%s' % (os.path.basename(unicode(resume.resume_file)))
@@ -95,8 +95,8 @@ def search(request, template_name="resumes/search.html"):
         'request': request,
         'source': 'resumes'
     })
-    
-    return render_to_response(template_name, {'resumes':resumes}, 
+
+    return render_to_response(template_name, {'resumes':resumes},
         context_instance=RequestContext(request))
 
 def search_redirect(request):
@@ -109,12 +109,12 @@ def search_redirect(request):
 
 @is_enabled('resumes')
 def print_view(request, slug, template_name="resumes/print-view.html"):
-    resume = get_object_or_404(Resume, slug=slug)    
+    resume = get_object_or_404(Resume, slug=slug)
 
     EventLog.objects.log(instance=resume)
-       
+
     if has_view_perm(request.user,'resumes.view_resume',resume):
-        return render_to_response(template_name, {'resume': resume}, 
+        return render_to_response(template_name, {'resume': resume},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -176,7 +176,7 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
     resume = get_object_or_404(Resume, pk=id)
     print request.FILES
     form = form_class(request.POST or None, request.FILES or None, instance=resume, user=request.user)
-    if has_perm(request.user,'resumes.change_resume',resume):    
+    if has_perm(request.user,'resumes.change_resume',resume):
         if request.method == "POST":
             if form.is_valid():
                 resume = form.save(commit=False)
@@ -185,13 +185,13 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
                     resume.resume_file.file.seek(0)
                 resume = update_perms_and_save(request, form, resume)
 
-                EventLog.objects.log(instance=resume) 
-                
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % resume)
-                                                              
-                return HttpResponseRedirect(reverse('resume', args=[resume.slug]))             
+                EventLog.objects.log(instance=resume)
 
-        return render_to_response(template_name, {'resume': resume, 'form':form}, 
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % resume)
+
+                return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
+
+        return render_to_response(template_name, {'resume': resume, 'form':form},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -221,12 +221,12 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
             resume.save() # save relationship
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % resume)
-            
+
             return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
     else:
         form = form_class(instance=resume.meta)
 
-    return render_to_response(template_name, {'resume': resume, 'form':form}, 
+    return render_to_response(template_name, {'resume': resume, 'form':form},
         context_instance=RequestContext(request))
 
 
@@ -235,12 +235,12 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
 def delete(request, id, template_name="resumes/delete.html"):
     resume = get_object_or_404(Resume, pk=id)
 
-    if has_perm(request.user,'resumes.delete_resume'):   
+    if has_perm(request.user,'resumes.delete_resume'):
         if request.method == "POST":
-            
+
             EventLog.objects.log(instance=resume)
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % resume)
-            
+
             # send notification to administrators
             recipients = get_notice_recipients('module', 'resumes', 'resumerecipients')
             if recipients:
@@ -250,12 +250,12 @@ def delete(request, id, template_name="resumes/delete.html"):
                         'request': request,
                     }
                     notification.send_emails(recipients,'resume_deleted', extra_context)
-            
+
             resume.delete()
-                
+
             return HttpResponseRedirect(reverse('resume.search'))
-    
-        return render_to_response(template_name, {'resume': resume}, 
+
+        return render_to_response(template_name, {'resume': resume},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -310,7 +310,7 @@ def export(request, template_name="resumes/export.html"):
     """Export Resumes"""
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
         file_name = "resumes.csv"
@@ -360,6 +360,6 @@ def export(request, template_name="resumes/export.html"):
         ]
         export_id = run_export_task('resumes', 'resume', fields)
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

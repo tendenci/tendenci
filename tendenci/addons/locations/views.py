@@ -33,10 +33,10 @@ from tendenci.core.imports.utils import render_excel
 def detail(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('locations'))
     location = get_object_or_404(Location, pk=id)
-    
+
     if has_view_perm(request.user,'locations.view_location',location):
         EventLog.objects.log(instance=location)
-        return render_to_response(template_name, {'location': location}, 
+        return render_to_response(template_name, {'location': location},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -62,7 +62,7 @@ def search(request, template_name="locations/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'locations':locations, 'form':form}, 
+    return render_to_response(template_name, {'locations':locations, 'form':form},
         context_instance=RequestContext(request))
 
 
@@ -101,12 +101,12 @@ def nearest(request, template_name="locations/nearest.html"):
 
 @is_enabled('locations')
 def print_view(request, id, template_name="locations/print-view.html"):
-    location = get_object_or_404(Location, pk=id)    
+    location = get_object_or_404(Location, pk=id)
 
     if has_view_perm(request.user,'locations.view_location',location):
         EventLog.objects.log(instance=location)
 
-        return render_to_response(template_name, {'location': location}, 
+        return render_to_response(template_name, {'location': location},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -117,7 +117,7 @@ def print_view(request, id, template_name="locations/print-view.html"):
 def edit(request, id, form_class=LocationForm, template_name="locations/edit.html"):
     location = get_object_or_404(Location, pk=id)
 
-    if has_perm(request.user,'locations.change_location',location):    
+    if has_perm(request.user,'locations.change_location',location):
         if request.method == "POST":
             form = form_class(request.POST, request.FILES, instance=location, user=request.user)
             if form.is_valid():
@@ -132,12 +132,12 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                         location.save(photo=photo)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
-                                                              
-                return HttpResponseRedirect(reverse('location', args=[location.pk]))             
+
+                return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
             form = form_class(instance=location, user=request.user)
 
-        return render_to_response(template_name, {'location': location, 'form':form}, 
+        return render_to_response(template_name, {'location': location, 'form':form},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -149,7 +149,7 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
     if has_perm(request.user,'locations.add_location'):
         if request.method == "POST":
             form = form_class(request.POST, request.FILES, user=request.user)
-            if form.is_valid():           
+            if form.is_valid():
                 location = form.save(commit=False)
 
                 # update all permissions and save the model
@@ -161,12 +161,12 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                         location.save(photo=photo)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
-                
+
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
             form = form_class(user=request.user)
-           
-        return render_to_response(template_name, {'form':form}, 
+
+        return render_to_response(template_name, {'form':form},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -177,14 +177,14 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
 def delete(request, id, template_name="locations/delete.html"):
     location = get_object_or_404(Location, pk=id)
 
-    if has_perm(request.user,'locations.delete_location'):   
+    if has_perm(request.user,'locations.delete_location'):
         if request.method == "POST":
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % location)
             location.delete()
-                
+
             return HttpResponseRedirect(reverse('location.search'))
-    
-        return render_to_response(template_name, {'location': location}, 
+
+        return render_to_response(template_name, {'location': location},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -203,7 +203,7 @@ def locations_import_upload(request, template_name='locations/import-upload-file
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            
+
             locport = LocationImport.objects.create(creator=request.user)
             csv = File.objects.save_files_for_instance(request, locport)[0]
             file_path = str(csv.file.name)
@@ -235,7 +235,7 @@ def locations_import_preview(request, id, template_name='locations/import-map-fi
     A preview will be generated based on the mapping given.
     """
     locport = get_object_or_404(LocationImport, pk=id)
-    
+
     if request.method == 'POST':
         form = ImportMapForm(request.POST, locport=locport)
 
@@ -245,7 +245,7 @@ def locations_import_preview(request, id, template_name='locations/import-map-fi
             #file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
             file_path = locport.get_file().file.name
             locations, stats = parse_locs_from_csv(file_path, cleaned_data)
-            
+
             # return the form to use it for the confirm view
             template_name = 'locations/import-preview.html'
             return render_to_response(template_name, {
@@ -275,7 +275,7 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
     That will hold the original mappings selected by the user.
     """
     locport = get_object_or_404(LocationImport, pk=id)
-    
+
     if request.method == "POST":
         form = ImportMapForm(request.POST, locport=locport)
 
@@ -284,7 +284,7 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
             file_path = str(locport.get_file().file.name)
 
             if not settings.CELERY_IS_ACTIVE:
-                # if celery server is not present 
+                # if celery server is not present
                 # evaluate the result and render the results page
                 result = ImportLocationsTask()
                 locations, stats = result.run(request.user, file_path, cleaned_data)
@@ -312,11 +312,11 @@ def locations_import_status(request, task_id, template_name='locations/import-co
     except TaskMeta.DoesNotExist:
         #tasks database entries are not created at once.
         task = None
-    
+
     if task and task.status == "SUCCESS":
 
         locations, stats = task.result
-        
+
         return render_to_response(template_name, {
             'locations': locations,
             'stats':stats,

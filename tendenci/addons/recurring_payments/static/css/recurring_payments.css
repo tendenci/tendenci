@@ -1,39 +1,39 @@
 .rp-search-box{
-	float: right;
+    float: right;
 }
 .rp-search-box input[type=text]{
-	width: 20em;
+    width: 20em;
 }
 #rp-totals{
-	width: 70%;
-	margin: 1em auto;
-	border: 1px solid #ccc;
-	font-size: small;
+    width: 70%;
+    margin: 1em auto;
+    border: 1px solid #ccc;
+    font-size: small;
 
 }
 #rp-totals td, #rp-totals th{
-	padding: 6px;
-	vertical-align: top;
+    padding: 6px;
+    vertical-align: top;
 }
 #rp-totals th{
-	border-bottom: 1px dotted #ccc;
+    border-bottom: 1px dotted #ccc;
 }
 .not-active{
-	color: #ff0000 !important;
+    color: #ff0000 !important;
 }
 .tablesorter tr th, .tablesorter tr td{
-	font-size: 12px !important;
+    font-size: 12px !important;
 }
 
 .body-bold{
-	font-weight: bold;
+    font-weight: bold;
 }
 #rp-delete div{
-	padding: 0.5em 0;
+    padding: 0.5em 0;
 }
 
 #rpview-tabs{
-	margin-top: 1em;
+    margin-top: 1em;
 }
 
 .l0{
@@ -45,28 +45,28 @@
 }
 
 .section-header{
-	font-size: 1.2em;
-	font-weight: bold;
-	padding: 0.5em 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0.5em 0;
 }
 .rp-body div{
-	padding: 3px 0;
+    padding: 3px 0;
 }
 .body-bold{
-	font-weight: bold;
+    font-weight: bold;
 }
 .transaction-success{
-	color: green;
+    color: green;
 }
 .transaction-failed{
-	color: red;
+    color: red;
 }
 .rp-dname{
-	padding: 5px 0;
+    padding: 5px 0;
 }
 #btn-pm-wrap{
-	float:right; 
-	margin-right: 1em;
+    float:right;
+    margin-right: 1em;
 }
 
 button#btn-pm {
@@ -101,68 +101,68 @@ button#btn-pm:active {
    border-top-color: #1b435e;
    background: #1b435e;
    }
-   
+
 .not-active-alert{
-	border: 1px solid #F4EAA8;
-	padding: 5px;
-	color: #ff0000;
-	background-color: #F6F7E6;
+    border: 1px solid #F4EAA8;
+    padding: 5px;
+    color: #ff0000;
+    background-color: #F6F7E6;
 }
 .last-updated{
-	font-size: 0.8em;
-	color: #777;
-	padding-top: 2px;
+    font-size: 0.8em;
+    color: #777;
+    padding-top: 2px;
 }
 
 .clear-left{
-	clear: left;
+    clear: left;
 }
 .item-left, .item-right{
-	float: left;
+    float: left;
 }
 .item-right{
-	padding-left: 1em;
+    padding-left: 1em;
 }
-.account-header{ 
-	font-size: 1.2em;
-	margin: 1em 0 0.2em;
-	}
+.account-header{
+    font-size: 1.2em;
+    margin: 1em 0 0.2em;
+    }
 #accounts-body{
-	font-size: 12px;
-	
+    font-size: 12px;
+
 }
 #accounts-body div{
-	line-height: 1.5em;
+    line-height: 1.5em;
 }
 .active{
-	color: #0066CC;
+    color: #0066CC;
 }
 .disabled, .deleted{
-	color: red;
+    color: red;
 }
 
 .rp-receipt-label{
-	float: left;
-	width: 9em;
-	font-weight: bold;
+    float: left;
+    width: 9em;
+    font-weight: bold;
 }
 
 .rp-receipt-label, .rp-receipt-field{
-	padding: 3px 0;
+    padding: 3px 0;
 }
 .rp-receipt h1{
-	margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 .rp-receipt{
-	width: 500px;
-	margin: 0 auto;
+    width: 500px;
+    margin: 0 auto;
 }
 
 .rp-total, .rp-total-label{
-	font-weight: bold;
-	border-top: 1px dashed #ccc;
-	padding-top: 3px;
+    font-weight: bold;
+    border-top: 1px dashed #ccc;
+    padding-top: 3px;
 }
 .totals{
-	width: 5em;
+    width: 5em;
 }

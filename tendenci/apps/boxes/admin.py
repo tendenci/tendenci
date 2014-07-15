@@ -28,8 +28,8 @@ class BoxAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
-            '%sjs/jquery-ui-1.8.17.custom.min.js' % settings.STATIC_URL,
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )

@@ -1,69 +1,69 @@
 div.forms .form-field ul{list-style:none;}
 div.column2 ul, div.column3 ul{
-	float: left;
-	width: 90%;
+    float: left;
+    width: 90%;
 }
 div.column2 ul li {
-	float: left;
-	width: 45%;
-	margin: 0;
-	padding: 0;
+    float: left;
+    width: 45%;
+    margin: 0;
+    padding: 0;
 }
 div.column3 ul li {
-	float: left;
-	width: 30%;
-	margin: 0;
-	padding: 0;
+    float: left;
+    width: 30%;
+    margin: 0;
+    padding: 0;
 }
 div.column0 ul li {
-	float: left;
-	margin-right: 1em;
-	padding: 0;
+    float: left;
+    margin-right: 1em;
+    padding: 0;
 }
 .size-s input[type="text"]{width: 20% !important;}
 .size-m input[type="text"]{width: 50% !important;}
 
 /*
 div.section-break h2{
-	font-size: 1.2em;
-	margin: 1.5em 0 1em;
-	padding: 3px 0;
-	background-color: #e5ecf9;
-	border-top: 1px dotted silver;
-	color: #417690;
+    font-size: 1.2em;
+    margin: 1.5em 0 1em;
+    padding: 3px 0;
+    background-color: #e5ecf9;
+    border-top: 1px dotted silver;
+    color: #417690;
 }
-*/ 
+*/
 
 div.admin-only h2{
-	color: #9f2221;
+    color: #9f2221;
 }
 div.forms div.form-field input.datepicker{
-	width: 9em !important;
+    width: 9em !important;
 }
 div.forms div.form-field input.timepicker{
-	width: 8em !important;
+    width: 8em !important;
 }
 .errors{
-	background-color: #ffebeb;
-	border: 2px solid #ff8b78;
-	margin-bottom: 20px;
-	padding: 10px;
-	width: 75%;
+    background-color: #ffebeb;
+    border: 2px solid #ff8b78;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 75%;
 }
 
 /* view */
 .bolded-content{
-	font-weight: bold;
+    font-weight: bold;
 }
 .corpmemb-view .content{
-	line-height: 1.3em;
+    line-height: 1.3em;
 }
 
 .status-pending{
-	background-color: yellow;
+    background-color: yellow;
 }
 .status-expired{
-	color: red;
+    color: red;
 }
 .status-archived{
     background-color: #000;
@@ -81,7 +81,7 @@ div.forms div.form-field input.timepicker{
     color:#C09853;
 }
 .pending-info-box{
-	background-color: #F7FFAF;
+    background-color: #F7FFAF;
 }
 
 /* import */
@@ -97,89 +97,89 @@ div.forms div.form-field input.timepicker{
 }
 #corp-import-wrap .form-field .label {
     float: left;
-   	width: 365px;
+       width: 365px;
 }
 #corp-import-wrap .form-field .field{
-	float: left;
+    float: left;
 }
  .corp-import-step{
- 	padding: 1em 0 0.5em 0;
+     padding: 1em 0 0.5em 0;
  }
  .import-timestamp{
- 	float: right;
+     float: right;
  }
- #corp-import{	
- 	width: 80%;	
+ #corp-import{
+     width: 80%;
  }
  .corp-import-upload{
- 	border-top: 1px dashed #ccc;
+     border-top: 1px dashed #ccc;
  }
 #corp-import em{
-	font-weight: bold;
+    font-weight: bold;
  }
  .opt-link{
- 	padding-left: 6px;
+     padding-left: 6px;
  }
   .opt-link:hover{
- 	color: #03447F;
+     color: #03447F;
  }
  .errorlist{
- 	color: red;
+     color: red;
  }
 .action-invalid{
-	color: red;
-	background-color: yellow
+    color: red;
+    background-color: yellow
 }
 .corp-index h2{
-	margin: 1em 0;
+    margin: 1em 0;
 }
 .corp-index table tr td{
-	padding: 3px;
+    padding: 3px;
 }
 .corp-index table tr td.header{
-	background-color: #e5ecf9;
-	border-bottom: 1px dotted #ccc;
+    background-color: #e5ecf9;
+    border-bottom: 1px dotted #ccc;
 }
 
 .wrap-search-item{
     border: 1px solid #CCC;
 }
 .clear-left{
-	clear: left;
+    clear: left;
 }
 .t-search .corpmember-left{
-	width: 65%;
+    width: 65%;
 }
 .t-search .corpmember-right{
-	width: 35%;
+    width: 35%;
 }
 .t-search .float-left{
     float: left;
 }
 .t-search .corpmember-box-header{
-	font-size: 1.4em;
-	background-color: #f2f2f2;
-	padding: 3px;
+    font-size: 1.4em;
+    background-color: #f2f2f2;
+    padding: 3px;
 }
 .t-search .corpmember-box-body{
-	margin-bottom: 1em;
-	padding: 0 2em;
-	line-height: 1.5em;
+    margin-bottom: 1em;
+    padding: 0 2em;
+    line-height: 1.5em;
 }
 .t-search .label{
-	font-weight: bold;
+    font-weight: bold;
 }
 .t-search .search-form input[type="text"]{
-	width: 500px;
+    width: 500px;
 }
 .t-search .search-form{
     margin-bottom: 10px;
 }
 .disapproved .corpmember-box-header{
-	text-decoration: line-through;
+    text-decoration: line-through;
 }
 .disapproved .meta, .disapproved{
-	background-color: #ccc !important;
+    background-color: #ccc !important;
 }
 
 /* search */
@@ -202,9 +202,9 @@ div.forms div.form-field input.timepicker{
     line-height: 20px;
     }
 #log-records-wrap{
-	border-top: 1px dashed #ccc;
-	margin-top: 2em;
-	padding-top: 1em;
+    border-top: 1px dashed #ccc;
+    margin-top: 2em;
+    padding-top: 1em;
 }
 
 .notice-log-wrap {
@@ -214,11 +214,11 @@ div.forms div.form-field input.timepicker{
     padding: 10px;
     }
 .notice-log{
-	margin-left: 2em;
-	line-height: 20px;
+    margin-left: 2em;
+    line-height: 20px;
 }
 .notice-log-form{
-	margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 .pagination {
@@ -349,11 +349,11 @@ label {
 }
 
 div.form-field{
-	margin-top: 10px !important;
+    margin-top: 10px !important;
 }
 
 .help-text{
-	font-style: italic;
+    font-style: italic;
 }
 
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {

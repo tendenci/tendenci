@@ -35,14 +35,14 @@ class Loader(BaseLoader):
     def __init__(self, *args, **kwargs):
         """
         Hold the theme_root in self.theme_root instead of calling get_theme_root()
-        in get_template_sources(). This significantly reduces the number of queries 
+        in get_template_sources(). This significantly reduces the number of queries
         for get_setting('module', 'theme_editor', 'theme').
         (reduced # of queries from 3316 to 233 when testing on my local for an
         article view. - @jennyq)
         """
         self.theme_root = get_theme_root()
         super(Loader, self).__init__(*args, **kwargs)
-        
+
 
     def get_template_sources(self, template_name, template_dirs=None):
         """Return the absolute paths to "template_name", when appended to the

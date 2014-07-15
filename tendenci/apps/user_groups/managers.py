@@ -66,7 +66,7 @@ class GroupManager(TendenciBaseManager):
 class OldGroupManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
-            Uses haystack to query groups. 
+            Uses haystack to query groups.
             Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
@@ -76,11 +76,11 @@ class OldGroupManager(Manager):
         if hasattr(user,'impersonated_user'):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
-                
+
         is_a_superuser = user.profile.is_superuser
-            
+
         if query:
-            sqs = sqs.auto_query(sqs.query.clean(query)) 
+            sqs = sqs.auto_query(sqs.query.clean(query))
             if user:
                 if not is_a_superuser:
                     if not user.is_anonymous():
@@ -148,7 +148,7 @@ class OldGroupManager(Manager):
                             'status':1,
                             'status_detail':'active',
                         })
-                        sqs = sqs.filter(query)   
+                        sqs = sqs.filter(query)
             else: # anonymous
                 query = Q(**{
                     'allow_anonymous_view': True,
@@ -157,8 +157,8 @@ class OldGroupManager(Manager):
                     'status_detail':'active',
                 })
                 sqs = sqs.filter(query)
-        
+
         sqs = sqs.order_by('-create_dt')
-        
+
         return sqs.models(self.model)
-    
+

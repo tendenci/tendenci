@@ -75,14 +75,14 @@ class RegistrationCustomForm(RegistrationForm):
 
 
     def save(self, profile_callback=None, event=None):
-        # 
+        #
         #new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
         #                                                            password=self.cleaned_data['password1'],
         # create inactive user                                                           email=self.cleaned_data['email'])
         new_user = User.objects.create_user(self.cleaned_data['username'],
                                             self.cleaned_data['email'],
                                             self.cleaned_data['password1'])
-        
+
         new_user.first_name = self.cleaned_data['first_name']
         new_user.last_name = self.cleaned_data['last_name']
         new_user.is_active = False
@@ -90,8 +90,8 @@ class RegistrationCustomForm(RegistrationForm):
         # create registration profile
         registration_profile = RegistrationProfile.objects.create_profile(new_user)
         send_registration_activation_email(new_user, registration_profile, event=event)
-        
-        new_profile = Profile(user=new_user, 
+
+        new_profile = Profile(user=new_user,
                               company=self.cleaned_data['company'],
                               phone=self.cleaned_data['phone'],
                               address=self.cleaned_data['address'],
@@ -105,15 +105,15 @@ class RegistrationCustomForm(RegistrationForm):
             new_profile.hide_in_search = 1
             new_profile.hide_address = 1
             new_profile.hide_email = 1
-            new_profile.hide_phone = 1 
-          
+            new_profile.hide_phone = 1
+
         new_profile.creator = new_user
         new_profile.creator_username = new_user.username
         new_profile.owner = new_user
         new_profile.owner_username = new_user.username
         new_profile.save()
         sf_id = create_salesforce_contact(new_profile)
-                    
+
         return new_user
 
 
@@ -126,7 +126,7 @@ class LoginForm(forms.Form):
 
     user_exists = None
     user = None
-    
+
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         # check if we need to hide the remember me checkbox
@@ -179,7 +179,7 @@ class LoginForm(forms.Form):
                 request.session.set_expiry(0)
             return True
         return False
-    
+
 class PasswordResetForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), max_length=75)
 

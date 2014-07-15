@@ -32,13 +32,13 @@ There were some problems in the formset. Please review. Thanks!
                             <p>{{ error }}</p>
                             {% endfor %}
                         </div>
-                        {% endif %}  
+                        {% endif %}
                         <div class="field">
                             {{ field }}
-                        </div> 
+                        </div>
                         <div class="label{% if field.field.required %} required{% endif %}">
                             {{ field.label_tag }}
-                        </div> 
+                        </div>
                         {% if field.help_text %}
                         <div class="help-text">{{ field.help_text|safe }}</div>
                         {% endif %}

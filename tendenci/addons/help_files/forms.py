@@ -14,14 +14,14 @@ class RequestForm(forms.ModelForm):
 
 class HelpFileAdminForm(TendenciBaseForm):
     answer = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':HelpFile._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':HelpFile._meta.app_label,
         'storme_model':HelpFile._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
-    
+
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
-    
+
     class Meta:
         model = HelpFile
         fields = (
@@ -42,7 +42,7 @@ class HelpFileAdminForm(TendenciBaseForm):
             'status_detail',
         )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(HelpFileAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -53,8 +53,8 @@ class HelpFileAdminForm(TendenciBaseForm):
 
 class HelpFileForm(TendenciBaseForm):
     answer = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':HelpFile._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':HelpFile._meta.app_label,
         'storme_model':HelpFile._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
@@ -107,7 +107,7 @@ class HelpFileForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
 

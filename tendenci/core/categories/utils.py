@@ -4,4 +4,3 @@ def prep_category(value):
     """
     value = value.lower()
     return value
-    

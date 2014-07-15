@@ -21,7 +21,7 @@ def copy_helper(style, app_or_project, app_cap_single, app_low_single, app_cap_p
     # directory -- The directory to which the layout template should be copied.
     # other_name -- When copying an application layout, this should be the name
     #               of the project.
-    
+
     app_or_project = 'plugin'
     directory = 'plugins'
     if not re.search(r'^[_a-zA-Z]\w*$', app_low_plural): # If it's not a valid directory name.

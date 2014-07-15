@@ -11,7 +11,7 @@ class GroupRegistry(PeopleRegistry):
     author_email = 'programmers@schipul.com'
     description = 'User Groups.'
     icon = '%simages/icons/groups-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'group':{
             'base':('160000','339999'),
@@ -30,7 +30,7 @@ class GroupRegistry(PeopleRegistry):
             'view':('225000','00CCFF'),
         }
     }
-    
+
     url = {
         'search': lazy_reverse('groups'),
         'add': lazy_reverse('group.add'),

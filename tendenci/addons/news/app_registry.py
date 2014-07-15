@@ -11,7 +11,7 @@ class NewsRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create news to let your vistors keep current'
     icon = '%simages/icons/news-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'news':{
             'base':('305000', 'FF0033'),

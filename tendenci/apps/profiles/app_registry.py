@@ -11,7 +11,7 @@ class ProfileRegistry(PeopleRegistry):
     author_email = 'programmers@schipul.com'
     description = 'User Profiles.'
     icon = '%simages/icons/users-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'profile':{
             'base':('120000','3300FF'),
@@ -22,7 +22,7 @@ class ProfileRegistry(PeopleRegistry):
             'view':('125000', '3399FF'),
         },
     }
-    
+
     url = {
         'search': lazy_reverse('profile.search'),
         'add': lazy_reverse('profile.add'),

@@ -2,21 +2,21 @@
 {% load i18n %}
 
 {% if object_display %}
-	{{ object_display|safe }}
+    {{ object_display|safe }}
 {% else %}
 <tr>
     <td>
-    	{{ invoice.title }}
-    	{% if obj %}
-    		{% if obj.get_absolute_url %}
-    		&nbsp;<a href="{{ obj.get_absolute_url }}" title="View {{ obj }}">#{{ obj.pk }}</a>
-    		{% else %}
-    		&nbsp;#{{ obj.pk }}
-    		{% endif %}
-    	{% endif %}
-	</td>
-	<td class="td-right">
-	    {{ invoice.total|format_currency }}
-	</td>
+        {{ invoice.title }}
+        {% if obj %}
+            {% if obj.get_absolute_url %}
+            &nbsp;<a href="{{ obj.get_absolute_url }}" title="View {{ obj }}">#{{ obj.pk }}</a>
+            {% else %}
+            &nbsp;#{{ obj.pk }}
+            {% endif %}
+        {% endif %}
+    </td>
+    <td class="td-right">
+        {{ invoice.total|format_currency }}
+    </td>
 </td>
 {% endif %}

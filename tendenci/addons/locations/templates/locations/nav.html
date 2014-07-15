@@ -6,12 +6,12 @@
 {% has_perm user locations.add_location as can_add_location %}
 
 {% if nav_object %}
-	{% has_perm user locations.view_location nav_object as can_view_location %}
-	{% has_perm user locations.change_location nav_object as can_edit_location %}
-	{% has_perm user locations.delete_location nav_object as can_delete_location %}
+    {% has_perm user locations.view_location nav_object as can_view_location %}
+    {% has_perm user locations.change_location nav_object as can_edit_location %}
+    {% has_perm user locations.delete_location nav_object as can_delete_location %}
 {% else %}
-	{% has_perm user locations.view_location as can_view_location %}
-	{% has_perm user locations.change_location as can_edit_location %}
+    {% has_perm user locations.view_location as can_view_location %}
+    {% has_perm user locations.change_location as can_edit_location %}
 {% endif %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}

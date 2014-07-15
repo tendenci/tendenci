@@ -20,9 +20,9 @@
 
 <div class="t">
     <div class="group-view">
-    	{% user_group_nav request.user group %}
+        {% user_group_nav request.user group %}
 
-    	<h1>{{ group.name }}</h1>
+        <h1>{{ group.name }}</h1>
 
         {% if can_edit and group.type == 'system_generated' %}
             <div class="system-generated">System generated groups can not be deleted.</div>
@@ -96,7 +96,7 @@
         {% paginate %}
 
         {% endif %}
-        
+
         {% include "user_groups/meta.html" %}
     </div>
 </div>

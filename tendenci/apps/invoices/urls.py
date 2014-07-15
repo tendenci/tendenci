@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('tendenci.apps.invoices.views',  
+urlpatterns = patterns('tendenci.apps.invoices.views',
     url(r'^$',                                'search', name="invoices"),
     url(r'^export/$',                          'export', name="invoice.export"),
     url(r"^export/status/(?P<identifier>\d+)/$", "export_status", name="invoice.export_status"),

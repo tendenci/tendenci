@@ -6,7 +6,7 @@ from tendenci.apps.redirects.models import Redirect
 from tendenci.core.registry import site
 
 class RedirectForm(forms.ModelForm):
-    
+
     from_app = forms.ChoiceField(choices=[], required=False,
         help_text=_("You may only redirect from a disabled app. You do not need to enter a From URL if you choose an app. All URLs related to this app will be redirected to the URL you enter in the To URL field."))
 
@@ -45,7 +45,7 @@ class RedirectForm(forms.ModelForm):
         value = self.cleaned_data['to_url']
         value = value.strip('/')
         return value
-        
+
     def clean(self):
         cleaned_data = self.cleaned_data
         from_app = cleaned_data.get('from_app')
