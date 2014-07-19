@@ -164,6 +164,11 @@
     overflow: hidden;
 }
 
+.dashboard-stats {
+    position: relative;
+    top: 10px;
+}
+
 /** Dashboard V2 styles **/
 .dashboard-stats .stat {
     border:3px double #999;
