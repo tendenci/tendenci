@@ -45,4 +45,6 @@ def settings(request):
 
     contexts['TENDENCI_VERSION'] = version
 
+    contexts['USE_I18N'] = d_settings.USE_I18N
+
     return contexts

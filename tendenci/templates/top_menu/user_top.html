@@ -119,7 +119,7 @@
                 </div>
             </div>
         </li>
-
+ 
         {% if request.user.is_staff %}
         <li><a href="/admin/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Admin Area" %}</a></li>
         {% endif %}
@@ -127,6 +127,12 @@
         <li class="right"><a href="/accounts/logout/"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
         <li class="right"><a href="/profiles/">{{ user.username }}</a></li>
 
+        {% if USE_I18N %}
+		<li class="right visible-mobile">
+        	{% include 'top_menu/change_lang.html' %}
+        </li>
+        {% endif %}
+        
         <li class="right">
             <form action="/search/" method="get" name="search" id="admin-search-box">
                             <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>

@@ -191,10 +191,19 @@
 
         <li class="right visible-mobile"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
         <li class="right"><a href="/profiles">{{ user.username }}</a></li>
+
+		{% if USE_I18N %}
+		<li class="right visible-mobile">
+        	{% include 'top_menu/change_lang.html' %}
+        </li>
+        {% endif %}
+        
+        {% if not USE_I18N %}
         <li class="right visible-mobile">
             <form action="/search/" method="get" name="search" id="admin-search-box">
-                            <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
-        </li>
+           <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
+        </li> 
+        {% endif %} 
 
         {% if THEME_INFO.SSU.color %}
         <li class="right" id="themecolor">

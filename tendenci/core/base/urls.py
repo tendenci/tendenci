@@ -10,6 +10,8 @@ urlpatterns = patterns('tendenci.core.base.views',
     url(r'^timeout-test/$', 'timeout_test', name="timeout_test"),
 
     url(r'^checklist/$', 'checklist', name="completion_checklist"),
+    
+    url(r'^setlang/$', 'set_language', name="base.set_language"),
 
     url(r'^update-tendenci/$', 'update_tendenci', name="update_tendenci"),
     url(r'^update-tendenci/confirmation/$', 'update_tendenci_confirmation', name="update_tendenci.confirmation"),

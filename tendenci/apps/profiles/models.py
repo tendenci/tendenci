@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
+from django.conf import settings
 
 from tendenci.core.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
@@ -116,6 +117,13 @@ class Profile(Person):
     @property
     def is_superuser(self):
         return all([self._can_login(), self.user.is_superuser])
+    
+    @property
+    def lang(self):
+        if not self.language in [l[0] for l in settings.LANGUAGES]:
+            self.language = 'en'
+            self.save()
+        return self.language
 
     def first_name(self):
         return self.user.first_name

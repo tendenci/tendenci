@@ -22,7 +22,8 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.contrib import messages
-
+from django.views.i18n import set_language as dj_set_language
+from django.utils.translation import check_for_language
 # local
 from tendenci import __version__ as version
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
@@ -40,6 +41,34 @@ BASEFILE_EXTENSIONS = (
     'xml',
     'kml',
 )
+
+@login_required
+def set_language(request):
+    """
+    It does everything in the django set_language, plus assigning language
+    to request.user.profile.
+    
+    Below is the behavior of django set_languate:
+    
+    Redirect to a given url while setting the chosen language in the
+    session or cookie. The url and the language code need to be
+    specified in the request parameters.
+
+    Since this view changes how the user will see the rest of the site, it must
+    only be accessed as a POST request. If called as a GET request, it will
+    redirect to the page in the request (the 'next' parameter) without changing
+    any state.
+    """
+    if not settings.USE_I18N:
+        raise Http404
+    response = dj_set_language(request)
+    if request.method == 'POST':
+        lang_code = request.POST.get('language', None)
+        if lang_code and check_for_language(lang_code):
+            profile = request.user.profile
+            profile.language = lang_code
+            profile.save()
+    return response
 
 
 def image_preview(request, app_label, model, id,  size):

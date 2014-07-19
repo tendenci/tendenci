@@ -1,0 +1,50 @@
+{% load i18n %}
+{% load url from future %}
+
+<style>
+	.lang-scrollable-menu {
+	    height: auto;
+	    max-height: 500px;
+	    max-width: 150px;
+	    overflow-x: hidden;
+	}
+</style>
+
+<div class="dropdown">
+{% with request.user.profile.lang as user_lang %}
+  <a class="dropdown-toggle" data-toggle="dropdown" role="button" href="#">
+	  <i class="fa fa-globe"></i> 
+	  	<span class="hide-sm">
+		    {% get_language_info for user_lang as l %}{{ l.name_local }}
+		    <i class="caret"></i>
+	    </span>
+  </a>
+  
+  <div class="sub">
+	  <form id="lang-form" action="{% url 'base.set_language' %}" method="post" style="display:none;">
+	    {% csrf_token %}
+	    <input name="next" type="hidden" value="{{ redirect_to }}" />
+	    <input id="lang-id_language" name="language" type="hidden" value="{{ user_lang }}" />
+	  </form>
+	  
+	  <ul id="lang-menu" class="dropdown-menu lang-scrollable-menu" role="menu">
+	    {% get_language_info_list for LANGUAGES as languages %}
+	    {% for language in languages %}
+	      <li{% if language.code == user_lang %} class="active"{% endif %}>
+	      <a data-lang="{{ language.code }}"> {{ language.name_local }} ({{ language.code }})</a></li>
+	    {% endfor %}
+	  </ul>
+  </div>
+ {% endwith %}
+ </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+  $(function(){
+    $('#lang-menu a').click(function(e){
+      var lang = $(this).data('lang');
+      $('#lang-form #lang-id_language').attr('value', lang);
+      $('#lang-form').submit();
+    })
+  })
+</script>
