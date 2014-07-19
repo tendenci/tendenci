@@ -12,6 +12,7 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 
 from django.conf import settings
+from django.utils import translation
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 from django.contrib.humanize.templatetags.humanize import intcomma
@@ -48,6 +49,15 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 template_directory = "templates"
 THEME_ROOT = get_theme_root()
+
+def get_languages_with_local_name():
+    """
+    Get a list of tuples of available languages with local name.
+    """
+    return [(ll['code'], '%s (%s)' % (ll['name_local'], ll['code'])) for ll in
+            [translation.get_language_info(l[0])
+             for l in settings.LANGUAGES]] 
+    
 
 def get_deleted_objects(obj, user):
     """

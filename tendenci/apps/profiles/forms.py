@@ -19,6 +19,7 @@ from tendenci.addons.memberships.models import MembershipDefault
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile, UserImport
 from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
+from tendenci.core.base.utils import get_languages_with_local_name
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -144,7 +145,7 @@ class ProfileForm(TendenciBaseForm):
                                widget=forms.Textarea(attrs={'rows':'3'}))
     admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
-    language = forms.ChoiceField(initial="en", choices=settings.LANGUAGES)
+    language = forms.ChoiceField(initial="en", choices=get_languages_with_local_name())
     dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(1920, THIS_YEAR)))
 
     status_detail = forms.ChoiceField(
@@ -344,7 +345,7 @@ class ProfileAdminForm(TendenciBaseForm):
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
                                                           (0,'Not Interactive (no login)'),))
 
-    language = forms.ChoiceField(initial="en", choices=settings.LANGUAGES)
+    language = forms.ChoiceField(initial="en", choices=get_languages_with_local_name())
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
