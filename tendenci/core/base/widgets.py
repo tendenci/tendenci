@@ -1,5 +1,6 @@
 from django.forms.widgets import MultiWidget, DateInput, TextInput
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 from time import strftime
 
 from tendenci.core.site_settings.utils import get_setting
@@ -64,13 +65,13 @@ class EmailVerificationWidget(MultiWidget):
         email0_attrs = attrs.copy()
         email0_attrs['class'] = email_class_0
         email0_attrs['maxlength'] = 75
-        email0_attrs['title'] = 'Email'
-        email0_attrs['placeholder'] = 'Email'
+        email0_attrs['title'] = _('Email')
+        email0_attrs['placeholder'] = _('Email')
         email1_attrs = attrs.copy()
         email1_attrs['class'] = email_class_1
         email1_attrs['maxlength'] = 75
-        email1_attrs['title'] = 'Confirm Email'
-        email1_attrs['placeholder'] = 'Confirm Email'
+        email1_attrs['title'] = _('Confirm Email')
+        email1_attrs['placeholder'] = _('Confirm Email')
 
         widgets = (TextInput(attrs=email0_attrs),
                    TextInput(attrs=email1_attrs))
