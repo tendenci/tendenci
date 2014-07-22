@@ -10,4 +10,7 @@ urlpatterns = patterns('tendenci.apps.navs.views',
     url(r'^delete/(?P<id>\d+)/$', 'delete', name="navs.delete"),
     url(r'^page-select/$', 'page_select', name="navs.page_select"),
     url(r'^export/$', 'export', name="navs.export"),
+
+    # for retrieving nav attributes
+    url(r'^get-item-attrs/$', 'get_item_attrs', name="navs.get_item_attrs"),
 )

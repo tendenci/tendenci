@@ -21,6 +21,7 @@ from tendenci.apps.pages.models import Page
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.navs.models import Nav, NavItem
+from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.forms import NavForm, PageSelectForm, ItemForm
 from tendenci.apps.navs.utils import cache_nav
 
@@ -220,3 +221,25 @@ def export(request, template_name="navs/export.html"):
 
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
+
+
+def get_item_attrs(request):
+    item_id = int(request.GET.get('item_id', 0))
+
+    try:
+        item = Page.objects.get(pk=item_id)
+    except Page.DoesNotExist:
+        item = None
+
+    if item:
+        data = {
+            'status': 'ok',
+            'label': item.title,
+            'title': item.title,
+            'url': '/' + item.slug + '/'
+        }
+
+    else:
+        data = {'status': 'fail'}
+
+    return HttpResponse(json.dumps(data))

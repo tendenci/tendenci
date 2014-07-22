@@ -126,4 +126,4 @@ class NavItem(OrderingBaseModel):
         return prev
 
 # Update page nav items when a page is saved
-models.signals.post_save.connect(update_nav_links, sender=Page)
+models.signals.post_save.connect(update_nav_links, sender=Nav)

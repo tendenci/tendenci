@@ -12,6 +12,7 @@ class ItemAdmin(admin.TabularInline):
     form = ItemAdminForm
     extra = 0
     ordering = ("position",)
+    template = 'admin/navs/edit_inline/tabular.html'
 
 
 class NavAdmin(TendenciBaseModelAdmin):

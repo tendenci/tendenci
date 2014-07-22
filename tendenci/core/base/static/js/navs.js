@@ -63,7 +63,7 @@ apply_move_right = function(thing){
     });
 }
 
-function showResponse(response, status, xhr, $form)  { 
+function showResponse(response, status, xhr, $form)  {
     if (response.error) {
         alert("An error occured");
     } else {
@@ -85,7 +85,7 @@ function showResponse(response, status, xhr, $form)  {
             clone.find('#id_form-0-title').val(pages[i].label);
             clone.find('#id_form-0-position').val(form_number);
             clone.find('.url-field').attr('disabled', 'disabled');
-            
+
             //relace the names and ids of the elements in the form
             //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
             clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
@@ -95,7 +95,7 @@ function showResponse(response, status, xhr, $form)  {
             clone.find('#id_form-0-page').attr('name', 'form-' + form_number + '-page');
             clone.find('#id_form-0-position').attr('name', 'form-' + form_number + '-position');
             clone.find('#id_form-0-level').attr('name', 'form-' + form_number + '-level');
-            
+
             //clone.find('#id_form-0-id').attr('id', 'id_form-' + form_number + '-id');
             clone.find('#id_form-0-id').attr('id', 'form-' + form_number + '-id');
             clone.find('#id_form-0-label').attr('id', 'id_form-' + form_number + '-label');
@@ -104,7 +104,7 @@ function showResponse(response, status, xhr, $form)  {
             clone.find('#id_form-0-page').attr('id', 'id_form-' + form_number + '-page');
             clone.find('#id_form-0-position').attr('id', 'id_form-' + form_number + '-position');
             clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
-            
+
             //apply the click effects
             clone.find('.nav-item-label').html(clone.find('.nav-item-label').html()+"&nbsp;<span class='helpertext'>(edit)</span>");
             apply_toggle(clone.find('.nav-item-label'));
@@ -133,7 +133,7 @@ $(document).ready(function(){
             }
         }
     });
-    
+
     //initialize the formset details and events
     //override and set the initial number of forms to be 0
     //this is to avoid some validation bugs with the dynamic add/delete
@@ -150,12 +150,12 @@ $(document).ready(function(){
 
     $('#base').hide();
     $('.nav-item-detail').hide();
-    
+
     apply_toggle($('.nav-item-label'));
     apply_delete($('.item-delete'));
     apply_move_left($('.nav-move-left'));
     apply_move_right($('.nav-move-right'));
-    
+
     //custom form add
     $('#add-custom').click(function(){
         form_number = parseInt($("#id_form-TOTAL_FORMS").val());
@@ -168,7 +168,7 @@ $(document).ready(function(){
         clone.show();
         clone.find('.nav-item-detail').show();
         clone.find('#id_form-0-position').val(form_number);
-        
+
         //relace the names and ids of the elements in the form
         //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
         clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
@@ -179,7 +179,7 @@ $(document).ready(function(){
         clone.find('#id_form-0-position').attr('name', 'form-' + form_number + '-position');
         clone.find('#id_form-0-level').attr('name', 'form-' + form_number + '-level');
         clone.find('#id_form-0-url').attr('name', 'form-' + form_number + '-url');
-        
+
         //clone.find('#id_form-0-id').attr('id', 'id_form-' + form_number + '-id');
         clone.find('#id_form-0-id').attr('id', 'form-' + form_number + '-id');
         clone.find('#id_form-0-label').attr('id', 'id_form-' + form_number + '-label');
@@ -189,7 +189,7 @@ $(document).ready(function(){
         clone.find('#id_form-0-position').attr('id', 'id_form-' + form_number + '-position');
         clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
         clone.find('#id_form-0-url').attr('id', 'id_form-' + form_number + '-url');
-        
+
         //apply the click effects
         clone.find('.nav-item-label').html("- <span class='linklabel'>Item " + (form_number+1) + "</span>&nbsp;<span class='helpertext'>(collapse)</span>");
         apply_toggle(clone.find('.nav-item-label'));
@@ -202,7 +202,7 @@ $(document).ready(function(){
         form_number++;
         $("#id_form-TOTAL_FORMS").val(form_number);
     });
-    
+
     //when pages are chosen to be included in the nav an ajax call will be triggered
     //the ajax will retrieve info from the chosen pages and then append additional forms
     //into the nav item form set.
@@ -213,9 +213,9 @@ $(document).ready(function(){
         clearForm: true,
         resetForm: true
     };
-    
+
     $('#page-select').ajaxForm(options);
-    
+
     //set the nav items to become sortable
     $("#nav-items").sortable({
         cursor: 'move',
