@@ -1789,6 +1789,10 @@ def register(request, event_id=0,
     # remove captcha for logged in user
     if request.user.is_authenticated():
         del reg_form.fields['captcha']
+    elif request.method == 'POST' and 'addmore' in request.POST:
+        # captcha not required when add another was clicked
+        # fixed captcha error shows when "Submit" was clicked
+        reg_form.fields['captcha'].required = False
     elif request.method == 'POST' and 'commit' in request.POST and \
         'confirmed' in request.POST: #remove the captcha for confirmation
         del reg_form.fields['captcha']
