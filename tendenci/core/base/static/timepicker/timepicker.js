@@ -25,7 +25,7 @@ requires jQuery 1.7+
         step: 30,
         showDuration: false,
         showOnFocus: true,
-        timeFormat: 'g:ia',
+        timeFormat: 'g:i A',
         scrollDefault: null,
         selectOnBlur: false,
         disableTouchKeyboard: false,
