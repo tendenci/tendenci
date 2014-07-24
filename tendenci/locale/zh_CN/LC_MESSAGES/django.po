@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-24 16:24+0000\n"
-"PO-Revision-Date: 2014-07-24 19:01+0000\n"
+"POT-Creation-Date: 2014-07-24 20:36+0000\n"
+"PO-Revision-Date: 2014-07-24 22:31+0000\n"
 "Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -1727,7 +1727,7 @@ msgstr "公司会员申请表"
 #: addons/corporate_memberships/admin.py:376 addons/memberships/admin.py:1030
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
-msgstr ""
+msgstr "%(name)s \"%(obj)s\"修改成功。"
 
 #: addons/corporate_memberships/forms.py:47
 #: addons/corporate_memberships/models.py:106
@@ -1765,7 +1765,7 @@ msgstr "这个秘密代码已被使用。请使用一个不同的。"
 #: addons/corporate_memberships/forms.py:499 apps/profiles/forms.py:36
 #: core/payments/forms.py:65
 msgid "SELECT ONE"
-msgstr ""
+msgstr "选择一项"
 
 #: addons/corporate_memberships/forms.py:500 addons/memberships/forms.py:584
 #: apps/accounts/forms.py:122
@@ -1787,7 +1787,7 @@ msgstr ""
 #: templates/reports/user_activity_table.html:14
 #: templates/reports/user_activity_table.html:16
 msgid "Username"
-msgstr ""
+msgstr "用户名"
 
 #: addons/corporate_memberships/forms.py:501
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:126
@@ -1818,7 +1818,7 @@ msgstr "会员号码"
 #: templates/reports/admin_users.html:54 templates/reports/admin_users.html:56
 #: templates/reports/membership_roster.html:28
 msgid "Phone"
-msgstr ""
+msgstr "电话"
 
 #: addons/corporate_memberships/forms.py:503
 #: addons/corporate_memberships/models.py:287 addons/directories/models.py:51
@@ -1835,7 +1835,7 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:15
 #: templates/reports/renewed_members.html:35
 msgid "City"
-msgstr ""
+msgstr "城市"
 
 #: addons/corporate_memberships/forms.py:504
 #: addons/corporate_memberships/models.py:288 addons/directories/models.py:52
@@ -1849,14 +1849,14 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:16
 #: templates/reports/renewed_members.html:36
 msgid "State"
-msgstr ""
+msgstr "州"
 
 #: addons/corporate_memberships/forms.py:505 addons/directories/models.py:53
 #: addons/events/settings.py:28
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:126
 #: addons/locations/models.py:26 apps/profiles/forms.py:47
 msgid "Zip Code"
-msgstr ""
+msgstr "邮政编码"
 
 #: addons/corporate_memberships/forms.py:506
 #: addons/corporate_memberships/models.py:292 addons/directories/forms.py:130
@@ -1875,28 +1875,28 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:17
 #: templates/reports/renewed_members.html:37
 msgid "Country"
-msgstr ""
+msgstr "国家"
 
 #: addons/corporate_memberships/forms.py:509
 #: addons/corporate_memberships/forms.py:540 addons/events/forms.py:2131
 #: apps/invoices/forms.py:32 apps/profiles/forms.py:51
 #: core/payments/forms.py:76
 msgid "Starts With"
-msgstr ""
+msgstr "开头"
 
 #: addons/corporate_memberships/forms.py:510
 #: addons/corporate_memberships/forms.py:541 addons/events/forms.py:2132
 #: apps/invoices/forms.py:33 apps/profiles/forms.py:52
 #: core/payments/forms.py:77
 msgid "Contains"
-msgstr ""
+msgstr "包含"
 
 #: addons/corporate_memberships/forms.py:511
 #: addons/corporate_memberships/forms.py:542 addons/events/forms.py:2133
 #: apps/invoices/forms.py:34 apps/profiles/forms.py:53
 #: core/payments/forms.py:78
 msgid "Exact"
-msgstr ""
+msgstr "确切"
 
 #: addons/corporate_memberships/forms.py:513
 #: addons/corporate_memberships/forms.py:544
