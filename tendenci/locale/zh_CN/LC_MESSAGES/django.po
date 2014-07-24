@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-24 12:50+0000\n"
-"PO-Revision-Date: 2014-07-24 12:51+0000\n"
-"Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
+"POT-Creation-Date: 2014-07-24 16:24+0000\n"
+"PO-Revision-Date: 2014-07-24 19:01+0000\n"
+"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1640,19 +1640,19 @@ msgstr "截图文件："
 
 #: addons/careers/models.py:12
 msgid "Full Time"
-msgstr ""
+msgstr "全职"
 
 #: addons/careers/models.py:13
 msgid "Part Time"
-msgstr ""
+msgstr "兼职"
 
 #: addons/careers/models.py:14
 msgid "Permanent"
-msgstr ""
+msgstr "永久"
 
 #: addons/careers/models.py:15
 msgid "Contract"
-msgstr ""
+msgstr "合同"
 
 #: addons/careers/models.py:21 addons/events/models.py:1330
 #: addons/events/templates/events/reg8n/multi_register.html:202
@@ -1668,11 +1668,11 @@ msgstr ""
 #: templates/reports/members_by_company.html:24
 #: templates/reports/membership_quick_list.html:14
 msgid "Company"
-msgstr ""
+msgstr "公司"
 
 #: addons/careers/models.py:22
 msgid "Company Description"
-msgstr ""
+msgstr "公司介绍"
 
 #: addons/careers/models.py:25 addons/events/models.py:1329
 #: addons/events/settings.py:32
@@ -1683,15 +1683,15 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit.html:68
 #: apps/profiles/templates/profiles/edit_notice.txt:104
 msgid "Position Title"
-msgstr ""
+msgstr "职位名称"
 
 #: addons/careers/models.py:27
 msgid "Position Description"
-msgstr ""
+msgstr "职位描述"
 
 #: addons/careers/models.py:30 addons/jobs/templates/jobs/print-view.html:39
 msgid "Position Type"
-msgstr ""
+msgstr "位置类型"
 
 #: addons/careers/models.py:35 addons/events/forms.py:96
 #: addons/events/forms.py:575 addons/events/forms.py:1076
@@ -1700,29 +1700,29 @@ msgstr ""
 #: apps/stories/forms.py:160 apps/stories/models.py:43
 #: core/event_logs/forms.py:37
 msgid "Start Date/Time"
-msgstr ""
+msgstr "开始日期/时间"
 
 #: addons/careers/models.py:37 addons/events/forms.py:577
 #: addons/events/forms.py:1077 apps/discounts/forms.py:63
 #: apps/stories/forms.py:30 apps/stories/forms.py:161
 #: apps/stories/models.py:44 core/event_logs/forms.py:42
 msgid "End Date/Time"
-msgstr ""
+msgstr "结束日期/时间"
 
 #: addons/careers/models.py:39 addons/jobs/templates/jobs/print-view.html:89
 #: addons/jobs/templates/jobs/view.html:105
 #: addons/resumes/templates/resumes/print-view.html:40
 #: addons/resumes/templates/resumes/view.html:58
 msgid "Experience"
-msgstr ""
+msgstr "经验"
 
 #: addons/corporate_memberships/admin.py:127
 msgid "status detail"
-msgstr ""
+msgstr "详细情况"
 
 #: addons/corporate_memberships/admin.py:284
 msgid "Corp. Memb. App"
-msgstr ""
+msgstr "公司会员申请表"
 
 #: addons/corporate_memberships/admin.py:376 addons/memberships/admin.py:1030
 #, python-format
