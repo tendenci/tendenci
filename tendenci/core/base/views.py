@@ -47,9 +47,9 @@ def set_language(request):
     """
     It does everything in the django set_language, plus assigning language
     to request.user.profile.
-    
+
     Below is the behavior of django set_languate:
-    
+
     Redirect to a given url while setting the chosen language in the
     session or cookie. The url and the language code need to be
     specified in the request parameters.
@@ -286,7 +286,8 @@ def robots_txt(request):
     if robots_setting in options:
         template_name = robots_setting
 
-    return render_to_response(template_name, {}, context_instance=RequestContext(request), mimetype="text/plain")
+    site_url = get_setting('site', 'global', 'siteurl')
+    return render_to_response(template_name, {'site_url': site_url}, context_instance=RequestContext(request), mimetype="text/plain")
 
 
 def base_file(request, file_name):

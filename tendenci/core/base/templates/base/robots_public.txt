@@ -2,3 +2,5 @@ User-agent: *
 
 Crawl-delay: 2
 Disallow: /admin/
+
+Sitemap: {{ site_url }}/sitemap.xml
