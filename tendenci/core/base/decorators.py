@@ -34,3 +34,25 @@ def password_required(view):
         return redirect(("%s?next=%s") % (reverse("password_again"),
                                           urlquote(request.get_full_path())))
     return decorator
+
+
+def flash_login_required(view_func):
+    def _wrapped_view_func(request, *args, **kwargs):
+        from django.contrib.sessions.models import Session
+        from django.shortcuts import get_object_or_404, redirect
+        from django.contrib.auth.models import User, AnonymousUser
+
+        session = get_object_or_404(Session, session_key=request.COOKIES.get('sessionid'))
+        session_data = session.get_decoded()
+
+        user_id = session_data.get('_auth_user_id')
+        try:
+            request.user = User.objects.get(pk=user_id)
+        except:
+            request.user = AnonymousUser()
+
+        if not request.user.is_authenticated():
+            return redirect(("%s?next=%s") % (reverse("auth_login"),
+                                          urlquote(request.get_full_path())))
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view_func
