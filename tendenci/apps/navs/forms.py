@@ -93,6 +93,7 @@ class ItemForm(forms.ModelForm):
 
 
 class ItemAdminForm(forms.ModelForm):
+    url_field = forms.CharField(label=_('URL'), required=False)
 
     class Meta:
         model = NavItem
@@ -103,7 +104,7 @@ class ItemAdminForm(forms.ModelForm):
             'css',
             'position',
             'page',
-            'url',
+            'url_field',
             'new_window',
             )
 
@@ -112,13 +113,24 @@ class ItemAdminForm(forms.ModelForm):
         self.fields['page'].required = False
         self.fields['level'].widget = forms.HiddenInput()
 
-    def clean_url(self):
+        if self.instance and self.instance.pk:
+            self.fields['url_field'].initial = self.instance.get_url()
+
+    def clean_url_field(self):
         ''' Fix URLs that don't start with / or http '''
+        data = self.cleaned_data.get('url_field')
 
-        if self.cleaned_data['url']:
-            if not self.cleaned_data['url'][:4].lower() == "http" and not self.cleaned_data['url'][:1] == "/":
+        if data:
+            if not data[:4].lower() == "http" and not data[:1] == "/":
                 # Append a beginning forward slash if none and not http
-                self.cleaned_data['url'] = "/%s" % self.cleaned_data['url']
+                data = "/%s" % data
 
-        return self.cleaned_data['url']
+        return data
+
+    def save(self, *args, **kwargs):
+        nav_item = super(ItemAdminForm, self).save(*args, **kwargs)
+        nav_item.url = self.cleaned_data.get('url_field')
+        nav_item.save()
+
+        return nav_item
 
