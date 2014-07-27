@@ -1,6 +1,6 @@
 position_field = 'position'; // Name of inline model field (integer) used for ordering. Defaults to "position".
 
-jQuery(function($) {
+jQuery(document).ready(function($) {
     // This script is applied to all TABULAR inlines
     $('div.inline-group div.tabular').each(function() {
         table = $(this).find('table');
@@ -12,7 +12,7 @@ jQuery(function($) {
             $(this).find('td.field-' + position_field).hide();
             td_pos_field_index = table.find('tbody tr td').index($(this).find('td.field-' + position_field));
             $(this).find('th:eq(' + (td_pos_field_index-1) + ')').hide();
-            
+
             // Hide "original"-field and set any colspan to 1 (why show in the first case?)
             $(this).find('td.original').hide();
             $(this).find('th[colspan]').removeAttr('colspan');
@@ -33,16 +33,26 @@ jQuery(function($) {
             // This is a very simple ordering which only works with correct position number sequences,
             // which the rest of this script (hopefully) guarantees.
             rows = [];
+            var position_vals = [];
             table.find('tbody tr:not(.empty-form):not(.add-row)').each(function() {
-                position = $(this).find('td.field-' + position_field + ' input').val();
+                var pfield = $(this).find('td.field-' + position_field + ' input');
+                position = pfield.val();
+                /* check duplicate position */
+                if(jQuery.inArray(position, position_vals) != -1) { // duplicate exists if != -1
+                    position = parseInt(position_vals[position_vals.length-1]) + 1;
+                    position = position.toString();
+                }
+                position_vals.push(position);
                 rows[position] = $(this);
-                
+                pfield.val(position);
+
+
                 // Add move cursor to table row.
                 table.find('tr:has(td)').css('cursor', 'move');
             });
             empty_field = table.find('tbody tr.empty-form');
             add_field = table.find('tbody tr.add-row');
-            
+
             for (var i in rows) { table.append(rows[i]); } // Move <tr> to its correct position
             table.append(empty_field);
             table.append(add_field);
@@ -114,33 +124,33 @@ function update_positions(table, update_position)
 function update_id_fields(row, new_position)
 {
     // Fix IDs, names etc.
-    
+
     // <select ...>
     row.find('select').each(function() {
         // id=...
         old_id = $(this).attr('id').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('id', new_id);
-        
+
         // name=...
         old_id = $(this).attr('name').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('name', new_id);
     });
-    
+
     // <input ...>
     row.find('input').each(function() {
         // id=...
         old_id = $(this).attr('id').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('id', new_id);
-        
+
         // name=...
         old_id = $(this).attr('name').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('name', new_id);
     });
-    
+
     // <a ...>
     row.find('a').each(function() {
         // id=...
