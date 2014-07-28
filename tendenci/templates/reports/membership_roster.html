@@ -25,13 +25,19 @@
     {{ member.user.profile.company }}<br />
 {% endif %}
 {% if member.user.profile.phone %}
-    {{ member.user.profile.phone }}<br />
+    <strong>{% trans "Phone" %}:</strong> {{ member.user.profile.phone }}<br />
 {% endif %}
 {% if member.user.profile.fax %}
-    {{ member.user.profile.fax }}<br />
+    <strong>{% trans "Fax" %}:</strong> {{ member.user.profile.fax }}<br />
 {% endif %}
 {% if member.user.profile.address %}
     {{ member.user.profile.address }}<br />
+{% endif %}
+{% if member.user.profile.city %}
+    {{ member.user.profile.city }}<br />
+{% endif %}
+{% if member.user.profile.state %}
+    {{ member.user.profile.state }}<br />
 {% endif %}
 </div>
 {% empty %}

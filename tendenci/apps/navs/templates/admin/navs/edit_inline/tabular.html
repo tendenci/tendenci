@@ -121,7 +121,7 @@
                 }
                 that.parent().parent().find('td.field-label input').val('');
                 that.parent().parent().find('td.field-title input').val('');
-                that.parent().parent().find('td.field-url input').val('');
+                that.parent().parent().find('td.field-url_field input').val('');
                 if (item_id != 0) {
                     jQuery.ajax({
                         type: "GET",
@@ -132,7 +132,7 @@
                             if (data.status === 'ok') {
                                 that.parent().parent().find('td.field-label input').val(data.label);
                                 that.parent().parent().find('td.field-title input').val(data.title);
-                                that.parent().parent().find('td.field-url input').val(data.url);
+                                that.parent().parent().find('td.field-url_field input').val(data.url);
                             } else {
                                 alert('Failed to add attributes on selecting a page. Please try again.');
                             }

@@ -24,6 +24,7 @@ from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import flash_login_required
 from tendenci.core.base.utils import checklist_update
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
@@ -510,7 +511,7 @@ def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
 
 
 @is_enabled('photos')
-@login_required
+@flash_login_required
 def photos_batch_add(request, photoset_id=0):
     """
     params: request, photoset_id

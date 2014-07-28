@@ -17,3 +17,7 @@
 	margin-left: 10px;
 	background-image: url('/static/images/arrow-right.jpg');
 }
+
+.field-page select {
+    width: 450px;
+}

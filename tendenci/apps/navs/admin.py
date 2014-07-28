@@ -41,5 +41,4 @@ class NavAdmin(TendenciBaseModelAdmin):
                        '%scss/admin/navitem-inline.css' % settings.STATIC_URL,
                        '%scss/admin/navchangelist.css' % settings.STATIC_URL], }
 
-
 admin.site.register(Nav, NavAdmin)

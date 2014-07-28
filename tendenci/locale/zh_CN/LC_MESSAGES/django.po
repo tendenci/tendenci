@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-06-27 12:38-0500\n"
-"PO-Revision-Date: 2014-07-14 17:11+0000\n"
-"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
+"PO-Revision-Date: 2014-07-25 10:01+0000\n"
+"Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1514,102 +1514,102 @@ msgstr "无活动"
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:21
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:60
 msgid "Campaigns"
-msgstr ""
+msgstr "宣传活动"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:25
 msgid "All Campaigns"
-msgstr ""
+msgstr "所有广告系列"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:31
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:62
 msgid "Search Campaigns"
-msgstr ""
+msgstr "搜索广告"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:33
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:64
 msgid "Add Campaign"
-msgstr ""
+msgstr "添加广告系列"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:34
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:65
 msgid "Sync Campaigns"
-msgstr ""
+msgstr "同步宣传活动"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:37
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:68
 msgid "Go to Campaign Monitor"
-msgstr ""
+msgstr "前往活动监视器"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:59
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:24
 msgid "Templates"
-msgstr ""
+msgstr "模板"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:61
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:34
 msgid "Search Templates"
-msgstr ""
+msgstr "搜索模板"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:63
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:36
 msgid "Add Template"
-msgstr ""
+msgstr "添加模板"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:64
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:37
 msgid "Sync Templates"
-msgstr ""
+msgstr "同步模板"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:30
 msgid "Sent on"
-msgstr ""
+msgstr "在发送"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:31
 msgid "Total Recipients"
-msgstr ""
+msgstr "总收件人"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:32
 msgid "Web Version URL"
-msgstr ""
+msgstr "网络版网址"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:35
 msgid "Date Scheduled"
-msgstr ""
+msgstr "预定日期"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:36
 msgid "Scheduled Time Zone"
-msgstr ""
+msgstr "排定的时区"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:37
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:40
 msgid "Preview URL"
-msgstr ""
+msgstr "预览网址"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/add.html:7
 #: addons/campaign_monitor/templates/campaign_monitor/templates/add.html:18
 msgid "Template Add"
-msgstr ""
+msgstr "模板添加"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/edit.html:7
 #: addons/campaign_monitor/templates/campaign_monitor/templates/edit.html:18
 msgid "Template Edit"
-msgstr ""
+msgstr "模板编辑"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:19
 msgid "Campaign Monitor Templates"
-msgstr ""
+msgstr "活动监视器模板"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:33
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:39
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:29
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:33
 msgid "Screenshot:"
-msgstr ""
+msgstr "截图："
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:39
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:33
 msgid " Not Available"
-msgstr ""
+msgstr "无法使用"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:41
 #: addons/campaign_monitor/templates/campaign_monitor/templates/options.html:10
@@ -1617,43 +1617,43 @@ msgstr ""
 #: addons/memberships/templates/memberships/admin/membershipapp/change_form.html:10
 #: apps/theme_editor/templates/theme_editor/index.html:75
 msgid "Preview"
-msgstr ""
+msgstr "预览"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:44
 msgid "0 Templates Found"
-msgstr ""
+msgstr "找到0模板"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:28
 msgid "All Templates"
-msgstr ""
+msgstr "所有模板"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:36
 msgid "Html File:"
-msgstr ""
+msgstr "HTML文件："
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:39
 msgid "Zip File:"
-msgstr ""
+msgstr "Zip文件："
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:42
 msgid "Screenshot File:"
-msgstr ""
+msgstr "截图文件："
 
 #: addons/careers/models.py:12
 msgid "Full Time"
-msgstr ""
+msgstr "全职"
 
 #: addons/careers/models.py:13
 msgid "Part Time"
-msgstr ""
+msgstr "兼职"
 
 #: addons/careers/models.py:14
 msgid "Permanent"
-msgstr ""
+msgstr "永久"
 
 #: addons/careers/models.py:15
 msgid "Contract"
-msgstr ""
+msgstr "合同"
 
 #: addons/careers/models.py:21 addons/events/models.py:1330
 #: addons/events/templates/events/reg8n/multi_register.html:202
@@ -1669,11 +1669,11 @@ msgstr ""
 #: templates/reports/members_by_company.html:24
 #: templates/reports/membership_quick_list.html:14
 msgid "Company"
-msgstr ""
+msgstr "公司"
 
 #: addons/careers/models.py:22
 msgid "Company Description"
-msgstr ""
+msgstr "公司介绍"
 
 #: addons/careers/models.py:25 addons/events/models.py:1329
 #: addons/events/settings.py:32
@@ -1684,15 +1684,15 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit.html:68
 #: apps/profiles/templates/profiles/edit_notice.txt:104
 msgid "Position Title"
-msgstr ""
+msgstr "职位名称"
 
 #: addons/careers/models.py:27
 msgid "Position Description"
-msgstr ""
+msgstr "职位描述"
 
 #: addons/careers/models.py:30 addons/jobs/templates/jobs/print-view.html:39
 msgid "Position Type"
-msgstr ""
+msgstr "位置类型"
 
 #: addons/careers/models.py:35 addons/events/forms.py:96
 #: addons/events/forms.py:576 addons/events/forms.py:1077
@@ -1701,34 +1701,34 @@ msgstr ""
 #: apps/stories/forms.py:160 apps/stories/models.py:43
 #: core/event_logs/forms.py:37
 msgid "Start Date/Time"
-msgstr ""
+msgstr "开始日期/时间"
 
 #: addons/careers/models.py:37 addons/events/forms.py:578
 #: addons/events/forms.py:1078 apps/discounts/forms.py:59
 #: apps/stories/forms.py:30 apps/stories/forms.py:161
 #: apps/stories/models.py:44 core/event_logs/forms.py:42
 msgid "End Date/Time"
-msgstr ""
+msgstr "结束日期/时间"
 
 #: addons/careers/models.py:39 addons/jobs/templates/jobs/print-view.html:89
 #: addons/jobs/templates/jobs/view.html:105
 #: addons/resumes/templates/resumes/print-view.html:40
 #: addons/resumes/templates/resumes/view.html:58
 msgid "Experience"
-msgstr ""
+msgstr "经验"
 
 #: addons/corporate_memberships/admin.py:127
 msgid "status detail"
-msgstr ""
+msgstr "详细情况"
 
 #: addons/corporate_memberships/admin.py:284
 msgid "Corp. Memb. App"
-msgstr ""
+msgstr "公司会员申请表"
 
 #: addons/corporate_memberships/admin.py:376 addons/memberships/admin.py:1030
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
-msgstr ""
+msgstr "%(name)s \"%(obj)s\"修改成功。"
 
 #: addons/corporate_memberships/forms.py:48
 #: addons/corporate_memberships/models.py:106
@@ -1745,7 +1745,7 @@ msgstr ""
 #: apps/invoices/templates/invoices/detail.html:31
 #: core/payments/templates/payments/search-result.html:20
 msgid "Description"
-msgstr ""
+msgstr "描述"
 
 #: addons/corporate_memberships/forms.py:103
 #: addons/corporate_memberships/models.py:316
@@ -1757,16 +1757,16 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit.html:363
 #: apps/profiles/templates/profiles/edit_notice.txt:598
 msgid "Notes"
-msgstr ""
+msgstr "笔记"
 
 #: addons/corporate_memberships/forms.py:339
 msgid "This secret code is already taken. Please use a different one."
-msgstr ""
+msgstr "这个秘密代码已被使用。请使用一个不同的。"
 
 #: addons/corporate_memberships/forms.py:502 apps/profiles/forms.py:35
 #: core/payments/forms.py:65
 msgid "SELECT ONE"
-msgstr ""
+msgstr "选择一项"
 
 #: addons/corporate_memberships/forms.py:503 addons/memberships/forms.py:586
 #: apps/accounts/forms.py:122
@@ -1788,7 +1788,7 @@ msgstr ""
 #: templates/reports/user_activity_table.html:14
 #: templates/reports/user_activity_table.html:16
 msgid "Username"
-msgstr ""
+msgstr "用户名"
 
 #: addons/corporate_memberships/forms.py:504
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:126
@@ -1798,7 +1798,7 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:13
 #: templates/reports/renewed_members.html:33
 msgid "Member Number"
-msgstr ""
+msgstr "会员号码"
 
 #: addons/corporate_memberships/forms.py:505
 #: addons/corporate_memberships/models.py:294 addons/events/forms.py:2140
@@ -1818,7 +1818,7 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit_notice.txt:147
 #: templates/reports/admin_users.html:54 templates/reports/admin_users.html:56
 msgid "Phone"
-msgstr ""
+msgstr "电话"
 
 #: addons/corporate_memberships/forms.py:506
 #: addons/corporate_memberships/models.py:287 addons/directories/models.py:51
@@ -1835,7 +1835,7 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:15
 #: templates/reports/renewed_members.html:35
 msgid "City"
-msgstr ""
+msgstr "城市"
 
 #: addons/corporate_memberships/forms.py:507
 #: addons/corporate_memberships/models.py:288 addons/directories/models.py:52
@@ -1849,14 +1849,14 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:16
 #: templates/reports/renewed_members.html:36
 msgid "State"
-msgstr ""
+msgstr "州"
 
 #: addons/corporate_memberships/forms.py:508 addons/directories/models.py:53
 #: addons/events/settings.py:28
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:126
 #: addons/locations/models.py:26 apps/profiles/forms.py:46
 msgid "Zip Code"
-msgstr ""
+msgstr "邮政编码"
 
 #: addons/corporate_memberships/forms.py:509
 #: addons/corporate_memberships/models.py:292 addons/directories/forms.py:130
@@ -1875,28 +1875,28 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:17
 #: templates/reports/renewed_members.html:37
 msgid "Country"
-msgstr ""
+msgstr "国家"
 
 #: addons/corporate_memberships/forms.py:512
 #: addons/corporate_memberships/forms.py:543 addons/events/forms.py:2132
 #: apps/invoices/forms.py:32 apps/profiles/forms.py:50
 #: core/payments/forms.py:76
 msgid "Starts With"
-msgstr ""
+msgstr "开头"
 
 #: addons/corporate_memberships/forms.py:513
 #: addons/corporate_memberships/forms.py:544 addons/events/forms.py:2133
 #: apps/invoices/forms.py:33 apps/profiles/forms.py:51
 #: core/payments/forms.py:77
 msgid "Contains"
-msgstr ""
+msgstr "包含"
 
 #: addons/corporate_memberships/forms.py:514
 #: addons/corporate_memberships/forms.py:545 addons/events/forms.py:2134
 #: apps/invoices/forms.py:34 apps/profiles/forms.py:52
 #: core/payments/forms.py:78
 msgid "Exact"
-msgstr ""
+msgstr "确切"
 
 #: addons/corporate_memberships/forms.py:516
 #: addons/corporate_memberships/forms.py:547
@@ -1905,7 +1905,7 @@ msgstr ""
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:91
 #: addons/events/templates/events/registrants/roster.html:53
 msgid "Company Name"
-msgstr ""
+msgstr "公司名称"
 
 #: addons/corporate_memberships/forms.py:530
 msgid "Show Active Only"
@@ -1929,27 +1929,27 @@ msgstr ""
 #: apps/contacts/forms.py:39 apps/forms_builder/forms/forms.py:170
 #: core/base/forms.py:72
 msgid "Type the code below"
-msgstr ""
+msgstr "输入下面的代码"
 
 #: addons/corporate_memberships/forms.py:747
 msgid "This user is already a representative."
-msgstr ""
+msgstr "此用户已经是一个代表。"
 
 #: addons/corporate_memberships/forms.py:783
 msgid "Corp Application"
-msgstr ""
+msgstr "集团公司申请表"
 
 #: addons/corporate_memberships/forms.py:791
 msgid "Select an Option for the Existing Records:"
-msgstr ""
+msgstr "为现有记录选择一个选项："
 
 #: addons/corporate_memberships/forms.py:794
 msgid "CSV File"
-msgstr ""
+msgstr "CSV文件"
 
 #: addons/corporate_memberships/forms.py:862
 msgid "File type is not supported. Please upload a CSV File."
-msgstr ""
+msgstr "不支持的文件类型。请上传CSV文件。"
 
 #: addons/corporate_memberships/forms.py:935 addons/memberships/forms.py:1070
 msgid "Num days must be a numeric number."
@@ -1960,49 +1960,49 @@ msgstr ""
 #: addons/memberships/models.py:54 addons/memberships/models.py:2232
 #: apps/forms_builder/forms/models.py:32
 msgid "Text"
-msgstr ""
+msgstr "文本"
 
 #: addons/corporate_memberships/models.py:61
 #: addons/corporate_memberships/models.py:1351 addons/events/settings.py:10
 #: addons/memberships/models.py:55 addons/memberships/models.py:2233
 #: apps/forms_builder/forms/models.py:33
 msgid "Paragraph Text"
-msgstr ""
+msgstr "段落文本"
 
 #: addons/corporate_memberships/models.py:62
 #: addons/corporate_memberships/models.py:1352 addons/events/settings.py:11
 #: addons/memberships/models.py:56 addons/memberships/models.py:2234
 #: apps/forms_builder/forms/models.py:34
 msgid "Checkbox"
-msgstr ""
+msgstr "复选框"
 
 #: addons/corporate_memberships/models.py:63
 #: addons/corporate_memberships/models.py:1353
 msgid "Select One from a list (Drop Down)"
-msgstr ""
+msgstr "从列表中选择一个（下拉）"
 
 #: addons/corporate_memberships/models.py:65
 #: addons/corporate_memberships/models.py:1355
 msgid "Select One from a list (Radio Buttons)"
-msgstr ""
+msgstr "请选择从列表（单选按钮）"
 
 #: addons/corporate_memberships/models.py:66
 #: addons/corporate_memberships/models.py:1356
 #: addons/memberships/models.py:2237
 msgid "Multi select (Drop Down)"
-msgstr ""
+msgstr "多重选择（下拉）"
 
 #: addons/corporate_memberships/models.py:68
 #: addons/corporate_memberships/models.py:1358
 #: addons/memberships/models.py:2238
 msgid "Multi select (Checkboxes)"
-msgstr ""
+msgstr "多重选择（复选框）"
 
 #: addons/corporate_memberships/models.py:70
 #: addons/corporate_memberships/models.py:1361 addons/memberships/models.py:59
 #: addons/memberships/models.py:2241 apps/forms_builder/forms/models.py:41
 msgid "File upload"
-msgstr ""
+msgstr "文件上传"
 
 #: addons/corporate_memberships/models.py:72
 #: addons/corporate_memberships/models.py:1363
@@ -2018,7 +2018,7 @@ msgstr ""
 #: apps/invoices/templates/invoices/invoice_item.html:18
 #: libs/model_report/utils.py:69
 msgid "Date"
-msgstr ""
+msgstr "日期"
 
 #: addons/corporate_memberships/models.py:73
 #: addons/corporate_memberships/models.py:1364 addons/events/models.py:1423
@@ -2026,58 +2026,58 @@ msgstr ""
 #: addons/memberships/models.py:2243 apps/forms_builder/forms/models.py:44
 #: apps/forms_builder/forms/models.py:284
 msgid "Date/time"
-msgstr ""
+msgstr "日期/时间"
 
 #: addons/corporate_memberships/models.py:74
 #: addons/corporate_memberships/models.py:1367
 #: addons/memberships/models.py:2246
 msgid "Section Break"
-msgstr ""
+msgstr "分节符"
 
 #: addons/corporate_memberships/models.py:75
 msgid "Page Break"
-msgstr ""
+msgstr "分页符"
 
 #: addons/corporate_memberships/models.py:79
 msgid "One Column"
-msgstr ""
+msgstr "一列"
 
 #: addons/corporate_memberships/models.py:80
 msgid "Two Columns"
-msgstr ""
+msgstr "两列"
 
 #: addons/corporate_memberships/models.py:81
 msgid "Three Columns"
-msgstr ""
+msgstr "三栏"
 
 #: addons/corporate_memberships/models.py:82
 msgid "Side by Side"
-msgstr ""
+msgstr "并排"
 
 #: addons/corporate_memberships/models.py:85
 msgid "Admin Approval"
-msgstr ""
+msgstr "管理员批准"
 
 #: addons/corporate_memberships/models.py:86
 msgid "E-mail Domain"
-msgstr ""
+msgstr "电子邮件域"
 
 #: addons/corporate_memberships/models.py:87
 msgid "Secret Code"
-msgstr ""
+msgstr "密码"
 
 #: addons/corporate_memberships/models.py:90
 #: addons/photos/templates/photos/sizes.html:48
 msgid "Small"
-msgstr ""
+msgstr "小"
 
 #: addons/corporate_memberships/models.py:91 addons/photos/models.py:67
 msgid "Medium"
-msgstr ""
+msgstr "中"
 
 #: addons/corporate_memberships/models.py:92
 msgid "Large"
-msgstr ""
+msgstr "大"
 
 #: addons/corporate_memberships/models.py:105
 #: addons/corporate_memberships/models.py:1276
@@ -2096,7 +2096,7 @@ msgstr ""
 #: templates/reports/renewal_period_members.html:14
 #: templates/reports/renewed_members.html:34
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 #: addons/corporate_memberships/models.py:107
 #: addons/directories/templates/directories/pricing-table.html:14
@@ -2110,33 +2110,33 @@ msgstr ""
 #: addons/jobs/templates/jobs/pricing-table.html:30
 #: addons/memberships/models.py:102
 msgid "Price"
-msgstr ""
+msgstr "价格"
 
 #: addons/corporate_memberships/models.py:110 addons/memberships/models.py:109
 msgid "Renewal Price"
-msgstr ""
+msgstr "更新价格"
 
 #: addons/corporate_memberships/models.py:115
 msgid "Bind individual memberships to this membership type."
-msgstr ""
+msgstr "个人会员绑定到该成员的类型。"
 
 #: addons/corporate_memberships/models.py:116
 #: addons/corporate_memberships/models.py:1382
 #: addons/memberships/models.py:127 addons/memberships/models.py:2257
 msgid "Admin Only"
-msgstr ""
+msgstr "只限管理员"
 
 #: addons/corporate_memberships/models.py:118
 msgid "Allow Threshold"
-msgstr ""
+msgstr "允许阈值"
 
 #: addons/corporate_memberships/models.py:119
 msgid "Threshold Limit"
-msgstr ""
+msgstr "阈限值"
 
 #: addons/corporate_memberships/models.py:124
 msgid "Threshold Price"
-msgstr ""
+msgstr "门槛价格"
 
 #: addons/corporate_memberships/models.py:131
 msgid ""
@@ -2198,31 +2198,31 @@ msgstr ""
 
 #: addons/corporate_memberships/models.py:414
 msgid "MembershipType"
-msgstr ""
+msgstr "会员类型"
 
 #: addons/corporate_memberships/models.py:416
 msgid "Renew Date Time"
-msgstr ""
+msgstr "更新日期时间"
 
 #: addons/corporate_memberships/models.py:418
 msgid "Join Date Time"
-msgstr ""
+msgstr "加入日期时间"
 
 #: addons/corporate_memberships/models.py:419
 msgid "Expiration Date Time"
-msgstr ""
+msgstr "过期日期时间"
 
 #: addons/corporate_memberships/models.py:421
 msgid "Approved"
-msgstr ""
+msgstr "批准"
 
 #: addons/corporate_memberships/models.py:423
 msgid "Approved or Denied Date Time"
-msgstr ""
+msgstr "批准或拒绝的日期时间"
 
 #: addons/corporate_memberships/models.py:426
 msgid "Approved or Denied User"
-msgstr ""
+msgstr "批准或拒绝用户"
 
 #: addons/corporate_memberships/models.py:429 addons/directories/models.py:69
 #: addons/events/templates/events/reg8n/multi_register.html:292
@@ -2233,7 +2233,7 @@ msgstr ""
 #: addons/recurring_payments/templates/recurring_payments/nav.html:52
 #: apps/forms_builder/forms/forms.py:155
 msgid "Payment Method"
-msgstr ""
+msgstr "付款方式"
 
 #: addons/corporate_memberships/models.py:435
 msgid "Admin notes"
@@ -2245,42 +2245,42 @@ msgstr ""
 
 #: addons/corporate_memberships/models.py:463
 msgid "Corporate Member"
-msgstr ""
+msgstr "企业会员"
 
 #: addons/corporate_memberships/models.py:464
 #: apps/dashboard/templates/dashboard/stats.html:220
 msgid "Corporate Members"
-msgstr ""
+msgstr "企业会员"
 
 #: addons/corporate_memberships/models.py:1279
 msgid "Corp. Memb. Type"
-msgstr ""
+msgstr "公司会员类型"
 
 #: addons/corporate_memberships/models.py:1280
 msgid "Authentication Method"
-msgstr ""
+msgstr "验证方法"
 
 #: addons/corporate_memberships/models.py:1293
 #: apps/forms_builder/forms/models.py:93
 msgid "Confirmation Text"
-msgstr ""
+msgstr "确认文本"
 
 #: addons/corporate_memberships/models.py:1297
 msgid "App for individual memberships."
-msgstr ""
+msgstr "个人会员申请表。"
 
 #: addons/corporate_memberships/models.py:1299
 #: addons/memberships/templates/memberships/applications/no-renew.html:20
 msgid "Membership Application"
-msgstr ""
+msgstr "会员申请"
 
 #: addons/corporate_memberships/models.py:1310
 msgid "Corporate Membership Application"
-msgstr ""
+msgstr "公司会籍申请"
 
 #: addons/corporate_memberships/models.py:1311
 msgid "Corporate Membership Applications"
-msgstr ""
+msgstr "公司会籍申请"
 
 #: addons/corporate_memberships/models.py:1359
 #: addons/memberships/models.py:2239
@@ -2292,23 +2292,23 @@ msgstr ""
 #: addons/memberships/models.py:2251 apps/forms_builder/forms/models.py:206
 #: apps/navs/templates/navs/nav_items.html:136 apps/subscribers/models.py:73
 msgid "Label"
-msgstr ""
+msgstr "标签"
 
 #: addons/corporate_memberships/models.py:1373
 #: addons/memberships/templates/memberships/admin/stacked.html:24
 msgid "Field Name"
-msgstr ""
+msgstr "字段名称"
 
 #: addons/corporate_memberships/models.py:1375
 #: addons/memberships/models.py:2259
 msgid "Field Type"
-msgstr ""
+msgstr "字段类型"
 
 #: addons/corporate_memberships/models.py:1380 addons/events/models.py:1377
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:51
 #: addons/memberships/models.py:2255 apps/forms_builder/forms/models.py:211
 msgid "Required"
-msgstr ""
+msgstr "需要"
 
 #: addons/corporate_memberships/models.py:1381
 #: addons/memberships/models.py:2256
@@ -2324,15 +2324,15 @@ msgstr ""
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:50
 #: addons/memberships/models.py:2269 apps/forms_builder/forms/models.py:213
 msgid "Choices"
-msgstr ""
+msgstr "选择"
 
 #: addons/corporate_memberships/models.py:1390
 msgid "Choice Field Layout"
-msgstr ""
+msgstr "选择字段布局"
 
 #: addons/corporate_memberships/models.py:1394
 msgid "Field Size"
-msgstr ""
+msgstr "字段大小"
 
 #: addons/corporate_memberships/models.py:1397
 #: addons/memberships/models.py:2271
@@ -2341,35 +2341,35 @@ msgstr ""
 
 #: addons/corporate_memberships/models.py:1399
 msgid "CSS Class Name"
-msgstr ""
+msgstr "CSS类名"
 
 #: addons/corporate_memberships/models.py:1407 addons/events/models.py:1386
 #: addons/memberships/models.py:2281 apps/forms_builder/forms/models.py:221
 #: apps/profiles/templates/profiles/edit_notice.txt:28
 msgid "Field"
-msgstr ""
+msgstr "场"
 
 #: addons/corporate_memberships/models.py:1408 addons/events/models.py:1387
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:45
 #: addons/memberships/models.py:2282 apps/forms_builder/forms/models.py:222
 msgid "Fields"
-msgstr ""
+msgstr "领域"
 
 #: addons/corporate_memberships/models.py:1510
 msgid "Representative"
-msgstr ""
+msgstr "代表"
 
 #: addons/corporate_memberships/models.py:1511
 msgid "is dues rep?"
-msgstr ""
+msgstr "是会费代表？"
 
 #: addons/corporate_memberships/models.py:1513
 msgid "is member rep?"
-msgstr ""
+msgstr "是会员代表？"
 
 #: addons/corporate_memberships/models.py:1526
 msgid "email"
-msgstr ""
+msgstr "电子邮件"
 
 #: addons/corporate_memberships/models.py:1579
 #: addons/memberships/models.py:1803 apps/profiles/models.py:385
@@ -2389,7 +2389,7 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:221
 #: addons/memberships/models.py:1820 core/base/models.py:74
 msgid "Summary"
-msgstr ""
+msgstr "总结"
 
 #: addons/corporate_memberships/models.py:1612
 #: addons/memberships/models.py:1870 core/base/models.py:96
@@ -2408,15 +2408,15 @@ msgstr ""
 
 #: addons/corporate_memberships/models.py:1630
 msgid "Contact first name"
-msgstr ""
+msgstr "联系名字"
 
 #: addons/corporate_memberships/models.py:1631
 msgid "Contact last name"
-msgstr ""
+msgstr "联系人的姓"
 
 #: addons/corporate_memberships/models.py:1632
 msgid "Contact e-mail address"
-msgstr ""
+msgstr "联系方式E-mail地址"
 
 #: addons/corporate_memberships/models.py:1640
 #: addons/memberships/models.py:1891
@@ -2452,15 +2452,15 @@ msgstr ""
 #: addons/corporate_memberships/management/__init__.py:11
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:8
 msgid "Corporate Membership Added"
-msgstr ""
+msgstr "公司会籍已添加"
 
 #: addons/corporate_memberships/management/__init__.py:12
 msgid "A corporate membership has been added."
-msgstr ""
+msgstr "一个企业的成员已添加。"
 
 #: addons/corporate_memberships/management/__init__.py:15
 msgid "Corporate Membership Added User Notice"
-msgstr ""
+msgstr "公司会籍添加用户注意事项"
 
 #: addons/corporate_memberships/management/__init__.py:16
 msgid "A corporate membership has been added - notice to user."
@@ -2469,23 +2469,23 @@ msgstr ""
 #: addons/corporate_memberships/management/__init__.py:20
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:8
 msgid "Corporate Membership Edited"
-msgstr ""
+msgstr "公司会籍编辑"
 
 #: addons/corporate_memberships/management/__init__.py:21
 msgid "A corporate membership  has been edited."
-msgstr ""
+msgstr "一个企业的成员已被编辑。"
 
 #: addons/corporate_memberships/management/__init__.py:24
 msgid "Corporate Membership Renewed"
-msgstr ""
+msgstr "公司会籍更新"
 
 #: addons/corporate_memberships/management/__init__.py:25
 msgid "A corporate membership has been renewed."
-msgstr ""
+msgstr "一个企业会籍已更新。"
 
 #: addons/corporate_memberships/management/__init__.py:28
 msgid "Corporate Membership Renewal User Notice"
-msgstr ""
+msgstr "公司会籍更新用户注意事项"
 
 #: addons/corporate_memberships/management/__init__.py:29
 msgid "A corporate membership has been renewed - notice to user."
@@ -2493,27 +2493,27 @@ msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:33
 msgid "Corporate Membership Approved"
-msgstr ""
+msgstr "公司会籍已批准"
 
 #: addons/corporate_memberships/management/__init__.py:34
 msgid "A new corporate membership has been approved."
-msgstr ""
+msgstr "一个新的公司会籍已获得批准。"
 
 #: addons/corporate_memberships/management/__init__.py:37
 msgid "Corporate Membership Renewal Approved"
-msgstr ""
+msgstr "公司会籍认可续期"
 
 #: addons/corporate_memberships/management/__init__.py:38
 msgid "The corporate membership renewal has been approved."
-msgstr ""
+msgstr "企业会员重建已获批准。"
 
 #: addons/corporate_memberships/management/__init__.py:41
 msgid "Payment Received for Corporate Membership"
-msgstr ""
+msgstr "已收到付款的公司会籍"
 
 #: addons/corporate_memberships/management/__init__.py:42
 msgid "Payment for a corporate membership has been received."
-msgstr ""
+msgstr "已收到付款的公司会籍。"
 
 #: addons/corporate_memberships/management/__init__.py:45
 #: addons/corporate_memberships/migrations/0012_create_notice_type_corp_memb_notice_email.py:20
@@ -2565,7 +2565,7 @@ msgstr ""
 #: apps/user_groups/templates/user_groups/imports/user_groups_process.html:8
 #: core/imports/templates/imports/nav.html:35
 msgid "Import"
-msgstr ""
+msgstr "输入"
 
 #: addons/corporate_memberships/templates/admin/corporate_memberships/app_index.html:28
 #: addons/memberships/templates/admin/memberships/app_index.html:28
@@ -2597,7 +2597,7 @@ msgstr ""
 #: apps/forms_builder/forms/templates/admin/forms/change_form.html:12
 #: core/files/templates/admin/files/file/change_form.html:34
 msgid "History"
-msgstr ""
+msgstr "历史"
 
 #: addons/corporate_memberships/templates/admin/corporate_memberships/corpmembershipapp/change_form.html:12
 #: addons/corporate_memberships/templates/admin/corporate_memberships/notice/change_form.html:11
@@ -2616,7 +2616,7 @@ msgstr ""
 #: apps/forms_builder/forms/templates/admin/forms/edit_inline/stacked.html:9
 #: core/files/templates/admin/files/file/change_form.html:35
 msgid "View on site"
-msgstr ""
+msgstr "在站点上查看"
 
 #: addons/corporate_memberships/templates/admin/corporate_memberships/notice/change_form.html:10
 #: addons/memberships/templates/admin/memberships/notice/change_form.html:10
@@ -2626,30 +2626,30 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/base.html:4
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:16
 msgid "Corporate Memberships"
-msgstr ""
+msgstr "公司成员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:9
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:22
 #: addons/corporate_memberships/templates/corporate_memberships/reps/edit.html:9
 msgid "Corporate Membership Representatives"
-msgstr ""
+msgstr "公司会籍代表"
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:27
 #: addons/corporate_memberships/templates/corporate_memberships/reps/edit.html:26
 msgid "Representative."
-msgstr ""
+msgstr "代表。"
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:28
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:104
 #: addons/corporate_memberships/templates/corporate_memberships/reps/edit.html:27
 msgid "Is Dues Rep."
-msgstr ""
+msgstr "是会费众议员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:29
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:105
 #: addons/corporate_memberships/templates/corporate_memberships/reps/edit.html:28
 msgid "Is Member Rep."
-msgstr ""
+msgstr "是会员众议员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:39
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:46
@@ -2658,16 +2658,16 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/reps/edit.html:38
 #: addons/corporate_memberships/templates/corporate_memberships/reps/edit.html:45
 msgid "True"
-msgstr ""
+msgstr "真"
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:61
 #: addons/corporate_memberships/templates/corporate_memberships/reps/edit.html:60
 msgid "No representative designated yet."
-msgstr ""
+msgstr "还没有指定的代表。"
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:92
 msgid "0 Members"
-msgstr ""
+msgstr "0会员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/export.html:7
 msgid "Export Corporate Memberships"
@@ -2675,7 +2675,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/export.html:18
 msgid "Corporate Membership CSV Export"
-msgstr ""
+msgstr "公司会籍CSV导出"
 
 #: addons/corporate_memberships/templates/corporate_memberships/free_passes_edit.html:9
 #: addons/corporate_memberships/templates/corporate_memberships/free_passes_edit.html:25
@@ -2684,7 +2684,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:11
 msgid "Corp. Memb. ID"
-msgstr ""
+msgstr "企业会员ID"
 
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:14
 #: addons/directories/templates/directories/invoice_search_result_line.html:14
@@ -2693,7 +2693,7 @@ msgstr ""
 #: apps/invoices/templates/invoices/invoice_item.html:19
 #: core/payments/forms.py:68
 msgid "Amount"
-msgstr ""
+msgstr "量"
 
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:15
 #: addons/directories/templates/directories/invoice_search_result_line.html:15
@@ -2705,25 +2705,25 @@ msgstr ""
 #: addons/memberships/templates/memberships/invoice_search_result_line2.html:12
 #: apps/invoices/templates/invoices/invoice_item.html:20
 msgid "Balance"
-msgstr ""
+msgstr "平衡"
 
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:30
 msgid "Individual memberships renewed in this transaction:"
-msgstr ""
+msgstr "在本次交易续期个人会员："
 
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_view_display.html:13
 msgid "Corporate Membership information not available"
-msgstr ""
+msgstr "无公司会籍资料"
 
 #: addons/corporate_memberships/templates/corporate_memberships/meta.html:34
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:45
 #: addons/corporate_memberships/templates/corporate_memberships/applications/meta.html:47
 msgid "Roster"
-msgstr ""
+msgstr "名册"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:40
 msgid "All Corp. Members"
-msgstr ""
+msgstr "所有的公司成员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:52
 msgid "Add Corp. Member"
@@ -2731,7 +2731,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:54
 msgid "Search All"
-msgstr ""
+msgstr "所有的搜索"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:55
 msgid "My Corp. Members"
@@ -2739,7 +2739,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:57
 msgid "Pending Corp. Members"
-msgstr ""
+msgstr "公司正在申请会员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:60
 msgid "Application"
@@ -2758,19 +2758,19 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:75
 msgid "This Corp. Member"
-msgstr ""
+msgstr "该公司会员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:77
 msgid "View Corp. Member"
-msgstr ""
+msgstr "查看公司会员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:80
 msgid "Edit Corp. Member"
-msgstr ""
+msgstr "编辑公司会员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:81
 msgid "View Roster"
-msgstr ""
+msgstr "查看名册"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:82
 msgid "Export Roster"
@@ -2784,13 +2784,13 @@ msgstr ""
 #: addons/memberships/templates/admin/memberships/membershipdefault/change_form.html:15
 #: addons/memberships/templates/admin/memberships/membershipdefault/change_form.html:21
 msgid "Renew"
-msgstr ""
+msgstr "更新"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:88
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:77
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:76
 msgid "Admin: Renew"
-msgstr ""
+msgstr "管理员：更新"
 
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:20
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:33
@@ -2800,24 +2800,24 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:58
 #, python-format
 msgid " Renewed on %(renewal)s "
-msgstr ""
+msgstr "在%(renewal)s更新"
 
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:59
 msgid "Status of Renewal: "
-msgstr ""
+msgstr "更新的状态："
 
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:61
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:68
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:85
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:64
 msgid "Admin"
-msgstr ""
+msgstr "管理员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:61
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:68
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:64
 msgid "Approve / Disapprove"
-msgstr ""
+msgstr "批准/不批准"
 
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:85
 msgid "approve it"
@@ -2830,7 +2830,7 @@ msgstr ""
 #: addons/make_payments/templates/make_payments/add_confirm.html:11
 #: addons/memberships/templates/memberships/payment_thankyou_display.html:3
 msgid "Thank you for your payment!"
-msgstr ""
+msgstr "感谢您付款！"
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_display.html:5
 #: addons/directories/templates/directories/payment_thankyou_display.html:5
@@ -2838,7 +2838,7 @@ msgstr ""
 #: addons/jobs/templates/jobs/payment_thankyou_display.html:4
 #: addons/memberships/templates/memberships/payment_thankyou_display.html:5
 msgid "What would you like to do now?"
-msgstr ""
+msgstr "接下来您想做什么？"
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_display.html:7
 msgid "Add memberships under this corporate membership"
@@ -2846,80 +2846,80 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_display.html:8
 msgid "Designate representatives for this corporate membership"
-msgstr ""
+msgstr "为该公司指定代表"
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_display.html:9
 msgid "View Corporate Membership"
-msgstr ""
+msgstr "查看公司会籍"
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_header.html:3
 msgid "Corporate Membership "
-msgstr ""
+msgstr "公司会籍"
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_header.html:3
 msgid "Renewal"
-msgstr ""
+msgstr "更新"
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_header.html:3
 msgid " Payment Status"
-msgstr ""
+msgstr "付款状态"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:6
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:95
 msgid "Corporate Membership Renewal"
-msgstr ""
+msgstr "公司会籍续期"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:129
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:72
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:29
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:49
 msgid "Join Date:"
-msgstr ""
+msgstr "注册日期："
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:130
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:95
 #: templates/reports/grace_period_members.html:19
 #: templates/reports/renewal_period_members.html:19
 msgid "Expiration Date"
-msgstr ""
+msgstr "截止日期"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:133
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:101
 msgid "(in grace period)"
-msgstr ""
+msgstr "（在宽限期）"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:135
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:103
 msgid "(expired)"
-msgstr ""
+msgstr "（已过期）"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:143
 msgid "Please correct the following errors"
-msgstr ""
+msgstr "请更正以下错误"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:196
 msgid "Renew all individuals"
-msgstr ""
+msgstr "更新所有个人"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:227
 msgid "Qty"
-msgstr ""
+msgstr "数量"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:228
 msgid "Unit Price"
-msgstr ""
+msgstr "单价"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:229
 msgid "Sub-total"
-msgstr ""
+msgstr "小计"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:232
 msgid "Corporate"
-msgstr ""
+msgstr "企业"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:242
 msgid "Individuals"
-msgstr ""
+msgstr "个人"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:254
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:29
@@ -2938,48 +2938,48 @@ msgstr ""
 #: templates/reports/corp_mems_summary.html:14
 #: templates/reports/membership_stats.html:14
 msgid "Total"
-msgstr ""
+msgstr "总"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:6
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:16
 msgid "Corporate Membership Renewal Confirmation"
-msgstr ""
+msgstr "公司会籍续期确认"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:18
 #, python-format
 msgid "Thanks for renewing corporate membership \"%(member)s\"!"
-msgstr ""
+msgstr "谢谢更新公司\"%(member)s\"会籍！"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:19
 #, python-format
 msgid "The status of the renewal: <b>%(status)s"
-msgstr ""
+msgstr "更新的状态：<b>%(status)s"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:22
 msgid ""
 "Your membership renewal will be reviewed by an administrator who will be "
 "contacting you shortly."
-msgstr ""
+msgstr "管理员将会审查您的会员资格并很快与您联系。"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:31
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_conf.html:30
 msgid "View this Corporate Membership"
-msgstr ""
+msgstr "查看该公司会籍"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:34
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_conf.html:33
 msgid "Edit this Corporate Membership"
-msgstr ""
+msgstr "编辑本公司会籍"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:35
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_conf.html:34
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:128
 msgid "Add/Edit Representatives"
-msgstr ""
+msgstr "添加/编辑代表"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:9
 msgid "Corporate Membership Roster Search"
-msgstr ""
+msgstr "团体会员名册搜寻"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:59
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:27
@@ -2988,25 +2988,25 @@ msgstr ""
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:27
 #: addons/make_payments/templates/make_payments/view.html:33
 msgid "Address:"
-msgstr ""
+msgstr "地址："
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:76
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:30
 msgid "Member Type:"
-msgstr ""
+msgstr "会员类型："
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:78
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:30
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:50
 msgid "Expiration Date:"
-msgstr ""
+msgstr "截止日期："
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:82
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:145
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:33
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:53
 msgid "Never Expire"
-msgstr ""
+msgstr "永不过期"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:119
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:25
@@ -3028,19 +3028,19 @@ msgstr ""
 #: core/email_blocks/templates/email_blocks/delete.html:16
 #: core/imports/templates/imports/users_preview.html:99
 msgid "Email: "
-msgstr ""
+msgstr "电子邮件："
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:138
 msgid "Member Type: "
-msgstr ""
+msgstr "会员类型："
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:141
 msgid "Join Date: "
-msgstr ""
+msgstr "注册日期："
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:142
 msgid "Expiration Date: "
-msgstr ""
+msgstr "截止日期："
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:149
 msgid "Status: "
@@ -3063,31 +3063,31 @@ msgstr ""
 #: core/emails/templates/emails/search.html:49
 #: core/event_logs/templates/event_logs/search.html:163
 msgid "0 Results Found"
-msgstr ""
+msgstr "0结果被找到。"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/add_form.html:18
 msgid "Please correct the errors below."
-msgstr ""
+msgstr "请更正下列错误。"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/add_form.html:36
 #: addons/memberships/templates/memberships/admin/add_form.html:36
 msgid "Save and continue editing"
-msgstr ""
+msgstr "保存并继续编辑"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:9
 #: addons/memberships/templates/memberships/admin/stacked.html:11
 msgid "Collapse ALL"
-msgstr ""
+msgstr "关闭全部"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:10
 #: addons/memberships/templates/memberships/admin/stacked.html:12
 msgid "Expand ALL"
-msgstr ""
+msgstr "展开全部"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:14
 #: addons/memberships/templates/memberships/admin/stacked.html:19
 msgid "Section"
-msgstr ""
+msgstr "部分"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:14
 #: addons/memberships/templates/memberships/admin/stacked.html:22
@@ -3096,17 +3096,17 @@ msgstr ""
 #: templates/model_report/export_pdf.html:75
 #: templates/model_report/export_pdf.html:96
 msgid "Page"
-msgstr ""
+msgstr "页面"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:69
 #: addons/memberships/templates/memberships/admin/stacked.html:109
 msgid "Collapse"
-msgstr ""
+msgstr "折叠"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:70
 #: addons/memberships/templates/memberships/admin/stacked.html:110
 msgid "Expand"
-msgstr ""
+msgstr "扩展"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:121
 #: addons/corporate_memberships/templates/corporate_memberships/admin/corpmembershipapp/tabular.html:116
@@ -3115,7 +3115,7 @@ msgstr ""
 #: apps/forms_builder/forms/templates/admin/forms/edit_inline/stacked.html:86
 #, python-format
 msgid "Add another %(verbose_name)s"
-msgstr ""
+msgstr "添加另一个%(verbose_name)s"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/stacked.html:124
 #: addons/corporate_memberships/templates/corporate_memberships/admin/corpmembershipapp/tabular.html:119
@@ -3127,7 +3127,7 @@ msgstr ""
 #: apps/navs/templates/navs/nav_items.html:167
 #: apps/user_groups/templates/user_groups/detail.html:87
 msgid "Remove"
-msgstr ""
+msgstr "清除"
 
 #: addons/corporate_memberships/templates/corporate_memberships/admin/corpmembershipapp/tabular.html:17
 #: addons/events/templates/events/admin/tabular.html:16
@@ -3138,33 +3138,33 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_conf.html:6
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_conf.html:16
 msgid "Corporate Membership Add Confirmation"
-msgstr ""
+msgstr "公司会籍地址确认"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_conf.html:20
 msgid "Thank you for your submitting! "
-msgstr ""
+msgstr "谢谢您的提交！"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_conf.html:22
 msgid ""
 "Your membership will be reviewed by an administrator who will be contacting "
 "you shortly."
-msgstr ""
+msgstr "管理员将会审查您的会员资格并很快与您联系。"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_pre.html:6
 msgid "Corporate Membership Add - Starting"
-msgstr ""
+msgstr "公司会籍地址 - 启动"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:5
 msgid "Corporate Membership Approve / Disapprove"
-msgstr ""
+msgstr "公司会籍批准/不批准"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:23
 msgid "Corporate Membership Submission"
-msgstr ""
+msgstr "公司会籍提交"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:86
 msgid "Join Date"
-msgstr ""
+msgstr "注册日期"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:113
 #, python-format
@@ -3176,59 +3176,59 @@ msgstr ""
 #: apps/invoices/templates/invoices/nav.html:49
 #: core/payments/templates/payments/nav.html:41
 msgid "View Invoice"
-msgstr ""
+msgstr "查看发票"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:117
 msgid "New expiration date upon approval: "
-msgstr ""
+msgstr "新的截止日期后批准："
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:120
 msgid "The number of individual memberships renewed in this transaction: "
-msgstr ""
+msgstr "个人会员的数量在本次交易续期："
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:123
 msgid "Show Details"
-msgstr ""
+msgstr "显示详细信息"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:14
 msgid "Are you sure you want to delete this corporate membership?"
-msgstr ""
+msgstr "您确定要删除这个公司会籍？"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:16
 msgid "Corporate Name: "
-msgstr ""
+msgstr "公司名称："
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:18
 msgid "Corporate Address:"
-msgstr ""
+msgstr "公司地址："
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/edit.html:67
 msgid "Edit Corporate Membership"
-msgstr ""
+msgstr "编辑公司会籍"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:17
 msgid "Applications:"
-msgstr ""
+msgstr "应用范围："
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:25
 msgid "Types:"
-msgstr ""
+msgstr "类型："
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:28
 msgid "Corporate Member Type"
-msgstr ""
+msgstr "企业会员类型"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:29
 msgid "Individual Member Type"
-msgstr ""
+msgstr "个人会员类型"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:45
 msgid "Other links:"
-msgstr ""
+msgstr "其他链接："
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:47
 msgid "Search Corporate Memberships"
-msgstr ""
+msgstr "搜索公司成员"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:50
 msgid "No active applications available. "
@@ -3236,7 +3236,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/index.html:50
 msgid "Add one"
-msgstr ""
+msgstr "新增一个"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/meta.html:9
 #: core/base/templates/base/meta_creator_owner.html:3
@@ -3257,12 +3257,12 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:41
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:82
 msgid "Join under this corporation"
-msgstr ""
+msgstr "加入到该公司下"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search.html:9
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search.html:36
 msgid "Corporate Membership Search"
-msgstr ""
+msgstr "公司会籍搜索"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search.html:34
 msgid "Pending Corporate Membership List"
@@ -3278,15 +3278,15 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:75
 msgid "View Corporate Membership Information"
-msgstr ""
+msgstr "查看公司会员信息"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:131
 msgid "No representatives available"
-msgstr ""
+msgstr "没有可用的代表"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:134
 msgid "Add Representatives"
-msgstr ""
+msgstr "添加代表"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:177
 msgid "Free Passes"
@@ -3347,7 +3347,7 @@ msgstr ""
 #: core/imports/templates/imports/users.html:46
 #: core/imports/templates/imports/users_preview.html:27
 msgid "Update"
-msgstr ""
+msgstr "更新"
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/preview.html:37
 #: addons/corporate_memberships/templates/corporate_memberships/imports/status.html:37
@@ -3429,7 +3429,7 @@ msgstr ""
 #: addons/memberships/templates/memberships/import_default/upload.html:117
 #: apps/profiles/templates/profiles/import/upload.html:94
 msgid "Download Template"
-msgstr ""
+msgstr "下载模板"
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:122
 #: addons/memberships/templates/memberships/import_default/upload.html:127
@@ -3571,7 +3571,7 @@ msgstr ""
 #: templates/reports/membership_list.html:149
 #: templates/reports/membership_list.html:151
 msgid "Type"
-msgstr ""
+msgstr "类型"
 
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:26
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:71
@@ -3613,7 +3613,7 @@ msgstr ""
 msgid ""
 "The following company has applied for corporate membership on "
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s:"
-msgstr ""
+msgstr "下列公司已申请%(SITE_GLOBAL_SITEDISPLAYNAME)s的公司会籍："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:23
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:23
@@ -3627,21 +3627,21 @@ msgstr ""
 #: core/newsletters/templates/newsletters/jobs_list.txt:33
 #: core/payments/templates/payments/view.html:167
 msgid "Company:"
-msgstr ""
+msgstr "公司名称："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:31
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:31
 #: addons/corporate_memberships/templates/notification/corp_memb_paid/full.html:31
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:31
 msgid "City/State/ZIP:"
-msgstr ""
+msgstr "市/州/邮编："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:39
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:39
 #: addons/corporate_memberships/templates/notification/corp_memb_paid/full.html:39
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:39
 msgid "This form was submitted by:"
-msgstr ""
+msgstr "表单提交者："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:42
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:42
@@ -3658,7 +3658,7 @@ msgstr ""
 #: apps/profiles/templates/notification/user_edited/full.html:16
 #: apps/profiles/templates/profiles/edit_notice.txt:15
 msgid "Name:"
-msgstr ""
+msgstr "名称："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:52
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:46
@@ -3671,25 +3671,25 @@ msgstr ""
 #: apps/pages/templates/notification/page_deleted/full.html:18
 #: apps/stories/templates/stories/upload.html:27
 msgid "Title:"
-msgstr ""
+msgstr "标题："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:74
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:62
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:62
 msgid "To view the complete application, go to:"
-msgstr ""
+msgstr "要查看完​​整的应用程序，请访问："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:77
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:64
 msgid "To approve the application, go to:"
-msgstr ""
+msgstr "批准申请，请访问："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:81
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:63
 #: addons/corporate_memberships/templates/notification/corp_memb_paid/full.html:64
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:66
 msgid "For more on the person who submitted the application, go to:"
-msgstr ""
+msgstr "欲了解更多关于申请提交人，请访问："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:83
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:64
@@ -3697,30 +3697,30 @@ msgstr ""
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:67
 msgid ""
 "If you have received this in error, please contact the webmaster below."
-msgstr ""
+msgstr "如果您错误接收了这个，请联系下面的网站管理员。"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/short.txt:2
 #, python-format
 msgid "New Corporate Membership (%(objname)s)"
-msgstr ""
+msgstr "新公司会籍(%(objname)s)"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/short.txt:2
 #, python-format
 msgid "Signed Up on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
-msgstr ""
+msgstr "登录到%(SITE_GLOBAL_SITEDISPLAYNAME)s"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added_user/full.html:3
 #, python-format
 msgid ""
 "Thank you for applying for the corporate membership \"%(bname)s\" on "
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s."
-msgstr ""
+msgstr "感谢您在 %(SITE_GLOBAL_SITEDISPLAYNAME)s申请公司会籍“ \"%(bname)s\" 。"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added_user/full.html:7
 msgid ""
 "For individuals to join under your corporate membership, use the following "
 "<b>secret code</b>:"
-msgstr ""
+msgstr "对于个人会员加入在你的企业，请使用以下<b>密码</b> ："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added_user/full.html:15
 #: addons/corporate_memberships/templates/notification/corp_memb_join_approved/full.html:11
@@ -3729,18 +3729,18 @@ msgstr ""
 #: addons/directories/templates/notification/directory_approved_user_notice/full.html:12
 #: addons/jobs/templates/notification/job_approved_user_notice/full.html:12
 msgid "To view the invoice, go to:"
-msgstr ""
+msgstr "要查看发票，请访问："
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added_user/full.html:20
 msgid ""
 "To make online credit card payment, go to the invoice view page and make "
 "online payment from there."
-msgstr ""
+msgstr "网上信用卡支付，请到发票页面，从那里进行网上支付。"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added_user/full.html:29
 msgid ""
 "You will be notified by email when your corporate membership is approved."
-msgstr ""
+msgstr "您的企业会员资格批准后，我们会通过电子邮件通知您。"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added_user/full.html:30
 msgid ""
@@ -3910,53 +3910,53 @@ msgstr ""
 
 #: addons/directories/management.py:9
 msgid "Directory Added"
-msgstr ""
+msgstr "新增目录"
 
 #: addons/directories/management.py:9
 msgid "A directory has been added."
-msgstr ""
+msgstr "一个目录已添加。"
 
 #: addons/directories/management.py:10
 msgid "Directory Approved User Notice"
-msgstr ""
+msgstr "目录批准的用户通知"
 
 #: addons/directories/management.py:10
 msgid "A directory has been approved - user notice."
-msgstr ""
+msgstr "一个目录已被批准 - 用户通知。"
 
 #: addons/directories/management.py:12
 msgid "Directory Deleted"
-msgstr ""
+msgstr "目录删除"
 
 #: addons/directories/management.py:12
 msgid "A directory has been deleted"
-msgstr ""
+msgstr "一个目录已被删除"
 
 #: addons/directories/management.py:13
 msgid "Directory Renewed"
-msgstr ""
+msgstr "目录更新"
 
 #: addons/directories/management.py:13
 msgid "A directory has been renewed"
-msgstr ""
+msgstr "一个目录已经更新"
 
 #: addons/directories/management.py:14
 #: addons/directories/templates/notification/directory_renewal_eligible/full.html:8
 msgid "Directory Eligible for Renewal"
-msgstr ""
+msgstr "目录合资格续约"
 
 #: addons/directories/management.py:14
 msgid "A directory is eligible for renewal"
-msgstr ""
+msgstr "一个目录可享获续约"
 
 #: addons/directories/models.py:50
 #: addons/locations/templates/locations/import-preview.html:38
 msgid "Address 2"
-msgstr ""
+msgstr "地址2"
 
 #: addons/directories/models.py:56
 msgid "Phone 2"
-msgstr ""
+msgstr "电话2"
 
 #: addons/directories/models.py:57
 #: addons/locations/templates/locations/import-preview.html:44
@@ -3965,30 +3965,30 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit.html:137
 #: apps/profiles/templates/profiles/edit_notice.txt:227
 msgid "Fax"
-msgstr ""
+msgstr "传真"
 
 #: addons/directories/models.py:63
 msgid "List Type"
-msgstr ""
+msgstr "列表类型"
 
 #: addons/directories/models.py:66 addons/jobs/forms.py:65
 #: addons/resumes/forms.py:53
 msgid "Activation Date/Time"
-msgstr ""
+msgstr "激活日期/时间"
 
 #: addons/directories/models.py:67 addons/jobs/forms.py:73
 msgid "Expiration Date/Time"
-msgstr ""
+msgstr "到期日期/时间"
 
 #: addons/directories/models.py:73 apps/entities/models.py:24
 #: apps/profiles/forms.py:145
 msgid "Admin Notes"
-msgstr ""
+msgstr "管理员笔记"
 
 #: addons/directories/templates/directories/add.html:31
 #: addons/jobs/templates/jobs/add.html:31
 msgid "Add pricing options"
-msgstr ""
+msgstr "添加定价选项"
 
 #: addons/directories/templates/directories/approve.html:13
 #: addons/directories/templates/directories/pending.html:29
@@ -4001,12 +4001,12 @@ msgstr ""
 #: addons/memberships/templates/admin/memberships/membershipdefault/change_form.html:33
 #: addons/resumes/templates/resumes/pending.html:23
 msgid "Approve"
-msgstr ""
+msgstr "批准"
 
 #: addons/directories/templates/directories/approve.html:17
 #: addons/jobs/templates/jobs/approve.html:17
 msgid "Are you sure you want to approve this"
-msgstr ""
+msgstr "您确定要批准"
 
 #: addons/directories/templates/directories/delete.html:8
 #: addons/events/templates/events/delete.html:9
@@ -4020,7 +4020,7 @@ msgstr ""
 #: apps/pages/templates/pages/delete.html:5
 #: apps/pages/templates/pages/nav.html:66
 msgid "Delete Page"
-msgstr ""
+msgstr "删除页面"
 
 #: addons/directories/templates/directories/edit-meta.html:17
 #: apps/pages/templates/pages/edit-meta.html:17
@@ -4806,7 +4806,7 @@ msgstr ""
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:52
 #: apps/forms_builder/forms/models.py:212
 msgid "Visible"
-msgstr ""
+msgstr "可见"
 
 #: addons/events/models.py:1381 apps/forms_builder/forms/models.py:215
 msgid "Default"
@@ -8516,7 +8516,7 @@ msgstr ""
 #: core/files/templates/admin/files/file/change_list.html:90
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
-msgstr[0] ""
+msgstr[0] "请更正下列错误。"
 
 #: addons/memberships/templates/admin/memberships/membershipdefault/change_list.html:84
 #: apps/boxes/templates/admin/boxes/change_list.html:87
@@ -11147,7 +11147,7 @@ msgstr ""
 #: apps/invoices/templates/invoices/total_display.html:36
 #: apps/notifications/templates/notification/invoice_edited/full.html:28
 msgid "Total:"
-msgstr ""
+msgstr "总计："
 
 #: apps/invoices/templates/invoices/adjust.html:47
 #: apps/invoices/templates/invoices/total_display.html:40
@@ -15218,7 +15218,7 @@ msgstr ""
 
 #: core/imports/templates/imports/users_preview.html:26
 msgid "Insert"
-msgstr ""
+msgstr "插入"
 
 #: core/imports/templates/imports/users_preview.html:28
 msgid "Invalid Users"
@@ -15852,15 +15852,15 @@ msgstr ""
 
 #: libs/abstracts/models.py:96
 msgid "phone"
-msgstr ""
+msgstr "电话"
 
 #: libs/abstracts/models.py:97
 msgid "address"
-msgstr ""
+msgstr "地址"
 
 #: libs/abstracts/models.py:98
 msgid "address2"
-msgstr ""
+msgstr "地址2"
 
 #: libs/abstracts/models.py:99
 msgid "member number"
@@ -15868,15 +15868,15 @@ msgstr ""
 
 #: libs/abstracts/models.py:100
 msgid "city"
-msgstr ""
+msgstr "城市"
 
 #: libs/abstracts/models.py:101
 msgid "state"
-msgstr ""
+msgstr "州"
 
 #: libs/abstracts/models.py:102
 msgid "zipcode"
-msgstr ""
+msgstr "邮政编码"
 
 #: libs/abstracts/models.py:103
 msgid "county"
@@ -15884,11 +15884,11 @@ msgstr ""
 
 #: libs/abstracts/models.py:104
 msgid "country"
-msgstr ""
+msgstr "国家"
 
 #: libs/abstracts/models.py:106
 msgid "url"
-msgstr ""
+msgstr "网址"
 
 #: libs/abstracts/models.py:108
 msgid "timezone"
