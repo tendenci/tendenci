@@ -21,7 +21,7 @@
 
         <div class="content">
             <form action="." method="POST" >{% csrf_token %}
-                <input type="submit" value="{% trans 'Download' %}" />
+                <input type="submit" name="download" value="{% trans 'Download' %}" />
             </form>
         </div>
 
