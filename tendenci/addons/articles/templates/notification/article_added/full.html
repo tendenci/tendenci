@@ -15,25 +15,25 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Headline:</td>
-    <td width="75%"><b>{{ object.headline }}</b></td>
+    <td width="23%"> {% trans 'Headline:' %}</td>
+    <td width="75%"><b>{% blocktrans %}{{ object.headline }}{% endblocktrans %}</b></td>
   </tr>
   <tr>
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Source:</td>
+    <td width="23%"> {% trans 'Source:' %}</td>
     <td width="75%"><b>{{ object.source }}</b></td>
   </tr>
 </table>
-<p>To view the details of this
-  article, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+<p>{% trans 'To view the details of this
+  article, go to:' %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 
 {% if not request.user.is_superuser %}
   <br>
-<p>To activate this article,
-  go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b> </p>
+<p>{% trans 'To activate this article,
+  go to:' %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b> </p>
 {% endif %}
 
-<P>Time submitted:  {% now "D d M Y P" %}</P>
+<P>{% trans 'Time submitted:' %}  {% now "D d M Y P" %}</P>
 
 </body>
 </html>

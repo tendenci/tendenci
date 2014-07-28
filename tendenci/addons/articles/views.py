@@ -10,6 +10,7 @@ from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.perms.decorators import is_enabled
@@ -38,7 +39,8 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
         version = get_object_or_404(Version, hash=hash)
         current_article = get_object_or_404(Article, pk=version.object_id)
         article = version.get_version_object()
-        messages.add_message(request, messages.WARNING, 'You are viewing a previous version of this article. View the <a href="%s%s">Current Version</a>.' % (get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url()))
+        msg_string = 'You are viewing a previous version of this article. View the <a href="%s%s">Current Version</a>.' % (get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url())
+        messages.add_message(request, messages.WARNING, _(msg_string))
     else:
         article = get_object_or_404(Article, slug=slug)
 
@@ -196,8 +198,8 @@ def edit(request, id, form_class=ArticleForm,
 
                 # update all permissions and save the model
                 update_perms_and_save(request, form, article)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % article)
+                msg_string = 'Successfully updated %s' % article
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
@@ -246,8 +248,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         if form.is_valid():
             article.meta = form.save()  # save meta
             article.save()  # save relationship
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % article)
+            msg_string = 'Successfully updated meta for %s' % article
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('article', args=[article.slug]))
     else:
@@ -280,8 +282,8 @@ def add(request, form_class=ArticleForm,
 
                 # add all permissions and save the model
                 update_perms_and_save(request, form, article)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % article)
+                msg_string = 'Successfully added %s' % article
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
@@ -318,8 +320,8 @@ def delete(request, id, template_name="articles/delete.html"):
 
     if has_perm(request.user, 'articles.delete_article'):
         if request.method == "POST":
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % article)
+            msg_string = 'Successfully deleted %s' % article
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'articles', 'articlerecipients')

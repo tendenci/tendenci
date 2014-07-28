@@ -16,42 +16,42 @@ from tendenci.apps.user_groups.models import Group
 
 
 SEARCH_CATEGORIES_ADMIN = (
-    ('headline__icontains', 'Headline'),
-    ('first_name__icontains', 'Author First Name'),
-    ('last_name__icontains', 'Author Last Name'),
-    ('id', 'Article ID'),
-    ('owner__id', 'Article Parent ID(#)'),
+    ('headline__icontains', _('Headline')),
+    ('first_name__icontains', _('Author First Name')),
+    ('last_name__icontains', _('Author Last Name')),
+    ('id', _('Article ID')),
+    ('owner__id', _('Article Parent ID(#)')),
 
-    ('body__icontains', 'Body'),
-    ('tags__icontains', 'Tags'),
+    ('body__icontains', _('Body')),
+    ('tags__icontains', _('Tags')),
 
-    ('creator__id', 'Creator Userid(#)'),
-    ('creator__username', 'Creator Username'),
+    ('creator__id', _('Creator Userid(#)')),
+    ('creator__username', _('Creator Username')),
 
-    ('featured', 'Featured Article'),
+    ('featured', _('Featured Article')),
 
-    ('owner__id', 'Owner Userid(#)'),
-    ('owner__username', 'Owner Username'),
+    ('owner__id', _('Owner Userid(#)')),
+    ('owner__username', _('Owner Username')),
 
-    ('status_detail__icontains', 'Status Detail'),
-    ('syndicate', 'Syndicate'),
+    ('status_detail__icontains', _('Status Detail')),
+    ('syndicate', _('Syndicate')),
 )
 
 SEARCH_CATEGORIES = (
-    ('headline__icontains', 'Headline'),
-    ('last_name__icontains', 'Author Last Name'),
-    ('first_name__icontains', 'Author First Name'),
-    ('id', 'Article ID'),
+    ('headline__icontains', _('Headline')),
+    ('last_name__icontains', _('Author Last Name')),
+    ('first_name__icontains', _('Author First Name')),
+    ('id', _('Article ID')),
 
-    ('body__icontains', 'Body'),
-    ('tags__icontains', 'Tags'),
+    ('body__icontains', _('Body')),
+    ('tags__icontains', _('Tags')),
 )
 
 CONTRIBUTOR_CHOICES = (
-    (Article.CONTRIBUTOR_AUTHOR, mark_safe('Author <i class="gauthor-info fa fa-lg fa-question-circle"></i>')),
-    (Article.CONTRIBUTOR_PUBLISHER, mark_safe('Publisher <i class="gpub-info fa fa-lg fa-question-circle"></i>'))
+    (Article.CONTRIBUTOR_AUTHOR, mark_safe(_('Author <i class="gauthor-info fa fa-lg fa-question-circle"></i>'))),
+    (Article.CONTRIBUTOR_PUBLISHER, mark_safe(_('Publisher <i class="gpub-info fa fa-lg fa-question-circle"></i>')))
 )
-GOOGLE_PLUS_HELP_TEXT = 'Additional Options for Authorship <i class="gauthor-help fa fa-lg fa-question-circle"></i><br>Additional Options for Publisher <i class="gpub-help fa fa-lg fa-question-circle"></i>'
+GOOGLE_PLUS_HELP_TEXT = _('Additional Options for Authorship <i class="gauthor-help fa fa-lg fa-question-circle"></i><br>Additional Options for Publisher <i class="gpub-help fa fa-lg fa-question-circle"></i>')
 
 
 class ArticleSearchForm(forms.Form):
@@ -76,17 +76,17 @@ class ArticleSearchForm(forms.Form):
 
         if cat is None or cat == "" :
             if not (q is None or q == ""):
-                self._errors['search_category'] =  ErrorList(['Select a category'])
+                self._errors['search_category'] =  ErrorList([_('Select a category')])
 
         if cat in ('id', 'owner__id', 'creator__id') :
             try:
                 x = int(q)
             except ValueError:
-                self._errors['q'] = ErrorList(['Must be an integer'])
+                self._errors['q'] = ErrorList([_('Must be an integer')])
 
         if filter_date:
             if date is None or date == "":
-                self._errors['date'] = ErrorList(['Please select a date'])
+                self._errors['date'] = ErrorList([_('Please select a date')])
 
         return cleaned_data
 
@@ -105,7 +105,7 @@ class ArticleForm(TendenciBaseForm):
                                          widget=forms.RadioSelect())
 
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending'),))
+        choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending')),))
     email = EmailVerificationField(label=_("Email"), required=False)
     group = forms.ChoiceField(required=True, choices=[])
 
@@ -137,7 +137,7 @@ class ArticleForm(TendenciBaseForm):
             'status_detail',
         )
 
-        fieldsets = [('Article Information', {
+        fieldsets = [(_('Article Information'), {
                       'fields': ['headline',
                                  'slug',
                                  'summary',
@@ -151,12 +151,12 @@ class ArticleForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Contributor', {
+                      (_('Contributor'), {
                        'fields': ['contributor_type',
                                   'google_profile'],
                        'classes': ['boxy-grey'],
                       }),
-                      ('Author', {
+                      (_('Author'), {
                       'fields': ['first_name',
                                  'last_name',
                                  'phone',
@@ -165,7 +165,7 @@ class ArticleForm(TendenciBaseForm):
                                  ],
                         'classes': ['contact'],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -173,7 +173,7 @@ class ArticleForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],

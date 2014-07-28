@@ -23,8 +23,8 @@ from tendenci.addons.articles.module_meta import ArticleMeta
 class Article(TendenciBaseModel):
     CONTRIBUTOR_AUTHOR = 1
     CONTRIBUTOR_PUBLISHER = 2
-    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, 'Author'),
-                           (CONTRIBUTOR_PUBLISHER, 'Publisher'))
+    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
+                           (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
@@ -71,9 +71,9 @@ class Article(TendenciBaseModel):
     objects = ArticleManager()
 
     class Meta:
-        permissions = (("view_article", "Can view article"),)
-        verbose_name = "Article"
-        verbose_name_plural = "Articles"
+        permissions = (("view_article", _("Can view article")),)
+        verbose_name = _("Article")
+        verbose_name_plural = _("Articles")
 
     def get_meta(self, name):
         """

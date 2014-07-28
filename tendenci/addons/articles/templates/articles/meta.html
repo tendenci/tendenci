@@ -30,9 +30,9 @@
         {% with article.category_set as article_cat %}
         {% if article_cat.category %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url articles %}?category={{ article_cat.category.pk }}">{{ article_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url articles %}?category={{ article_cat.category.pk }}">{% blocktrans %}{{ article_cat.category }}{% endblocktrans %}</a>
             {% if article_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url articles %}?sub_category={{ article_cat.sub_category.pk }}">{{ article_cat.sub_category }}</a>
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url articles %}?sub_category={{ article_cat.sub_category.pk }}">{% blocktrans %}{{ article_cat.sub_category }}{% endblocktrans %}</a>
             {% endif %}
         </div>
         {% endif %}
@@ -42,7 +42,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in article.tags|tag_split %}
-                <a href="{% url articles %}?q={{ tag }}&search_category=tags__icontains">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url articles %}?q={{ tag }}&search_category=tags__icontains">{% blocktrans %}{{ tag }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
@@ -51,7 +51,7 @@
             {% if not user.profile.is_superuser %}
             {% if user == article.creator or user == article.owner %}
             <div class="categories">
-                <strong>Owned by you</strong>{% if not article.status_detail == "active" %} - status: {{ article.obj_status }}{% endif %}
+                <strong>{% trans 'Owned by you' %}</strong>{% if not article.status_detail == "active" %} - status: {{ article.obj_status }}{% endif %}
             </div>
             {% endif %}
             {% endif %}

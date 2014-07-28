@@ -12,4 +12,4 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:
-    print "Articles - Skipping creation of NoticeTypes as notification app not found"
+    print _("Articles - Skipping creation of NoticeTypes as notification app not found")
