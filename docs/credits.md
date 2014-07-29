@@ -1,6 +1,6 @@
 # Tendenci Credits
 
-We want to recognize some of the developers of the core of Tendenci, from it's beginnings in 2001 as an idealistic side project to the current open source version built on python by an international team. (sorted by date only of when they started working on Tendenci.)
+We want to recognize some of the developers of the core of Tendenci, from its beginnings in 2001 as an idealistic side project to the current open source version built on python by an international team. (sorted by date only of when they started working on Tendenci.)
 
 - Ed Schipul
 - Jennifer Ulmer
@@ -17,6 +17,8 @@ We want to recognize some of the developers of the core of Tendenci, from it's b
 - Alex Ragsdale
 - Felicia Ann Bates (FAB)
 - John-Eddie Ayson (JE)
+- JayJay Montalbo
+- Max Chua
 
 
 Tendenci would not exist without them.
