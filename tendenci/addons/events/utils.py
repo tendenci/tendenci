@@ -1670,11 +1670,11 @@ def add_sf_attendance(registrant, event):
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
                         'MailingPostalCode':registrant.zip,
-                        ## Temporary removal of Company_Name__c due to Ticket #1044
-                        ## @jqian will find a way to include this later.
-                        #'Company_Name__c': registrant.company_name,
                         'Title': registrant.position_title
                         })
+                    # update field Company_Name__c
+                    if registrant.company_name and contact.has_key('Company_Name__c'):
+                        sf.Contact.update(contact['id'], {'Company_Name__c': registrant.company_name})
 
                     contact_id = contact['id']
 
