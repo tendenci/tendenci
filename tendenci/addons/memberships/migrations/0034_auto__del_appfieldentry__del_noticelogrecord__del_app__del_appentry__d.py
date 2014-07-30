@@ -6,6 +6,9 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ('corporate_memberships', '0025_auto__del_indivmembrenewentry__del_corporatemembershiprep__del_unique_'),
+    )
 
     def forwards(self, orm):
         # Deleting model 'AppFieldEntry'

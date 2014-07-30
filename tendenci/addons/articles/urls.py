@@ -20,6 +20,8 @@ urlpatterns = patterns('tendenci.addons.articles.views',
                         % urlpath, 'delete', name="article.delete"),
     url(r'^%s/feed/$'   % urlpath, LatestEntriesFeed(), name='article.feed'),
     url(r'^%s/export/$' % urlpath, 'export', name='article.export'),
+    url(r'^%s/export/status/(?P<identifier>\d+)/$' % urlpath, 'export_status', name='article.export_status'),
+    url(r'^%s/export/download/(?P<identifier>\d+)/$' % urlpath, 'export_download', name='article.export_download'),
     url(r'^%s/reports/rank/$'
                         % urlpath, 'articles_report', name='reports-articles'),
     url(r'^%s/versions/(?P<hash>[\w\-]+)/$'

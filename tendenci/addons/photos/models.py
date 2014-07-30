@@ -566,7 +566,7 @@ class PhotoSet(TendenciBaseModel):
 
     class Meta:
         verbose_name = _('Photo Album')
-        verbose_name_plural = _('Photo Albums')
+        verbose_name_plural = _('Photo Album')
         permissions = (("view_photoset", "Can view photoset"),)
 
     objects = PhotoSetManager()

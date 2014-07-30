@@ -778,6 +778,10 @@ def create_salesforce_contact(profile):
                     'MailingPostalCode':profile.zipcode,
                     })
 
+                # update field Company_Name__c
+                if profile.company and contact.has_key('Company_Name__c'):
+                    sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
+                        
                 profile.sf_contact_id = contact['id']
                 profile.save()
                 return contact['id']

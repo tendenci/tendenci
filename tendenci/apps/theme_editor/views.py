@@ -10,6 +10,7 @@ from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 
+from tendenci.core.base.decorators import flash_login_required
 from tendenci.core.base.http import Http403
 from tendenci.core.base.managers import SubProcessManager
 from tendenci.core.base.models import UpdateTracker
@@ -348,6 +349,7 @@ def delete_file(request):
     return redirect('theme_editor.editor')
 
 
+@flash_login_required
 def upload_file(request):
 
     if not has_perm(request.user, 'theme_editor.add_themefileversion'):

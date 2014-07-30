@@ -61,11 +61,10 @@ def render_csv(filename, title_list, data_list):
     return response
 
 
-def run_export_task(app_label, model_name, fields, memb_app=None):
+def run_export_task(app_label, model_name, fields):
     export = Export.objects.create(
         app_label=app_label,
-        model_name=model_name,
-        memb_app=memb_app,
+        model_name=model_name
     )
 
     if settings.USE_SUBPROCESS:

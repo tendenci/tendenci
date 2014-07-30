@@ -409,8 +409,9 @@ class MultiFileForm(BetterForm):
         if post_data:
             file_cat = post_data.get('file_cat', '0')
             if file_cat and file_cat != '0' and file_cat != u'':
-                file_cat = FilesCategory.objects.get(pk=int(file_cat))
-                self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
+                [file_cat] = FilesCategory.objects.filter(pk=int(file_cat))[:1] or [None]
+                if file_cat:
+                    self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
 
     def clean_files(self):
         files = self.cleaned_data.get('files')

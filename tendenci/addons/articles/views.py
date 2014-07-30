@@ -1,3 +1,6 @@
+import subprocess
+import time
+
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
@@ -7,10 +10,14 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q, Count
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, Http404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
+
 
 from tendenci.core.base.http import Http403
 from tendenci.core.perms.decorators import is_enabled
@@ -388,41 +395,62 @@ def articles_report(request, template_name='reports/articles.html'):
 @is_enabled('articles')
 @login_required
 def export(request, template_name="articles/export.html"):
-    """Export Articles"""
-
-    if not request.user.is_superuser:
+    """Export Profiles"""
+    if not request.user.profile.is_staff:
         raise Http403
 
-    if request.method == 'POST':
-        # initilize initial values
-        fields = [
-            'guid',
-            'slug',
-            'timezone',
-            'headline',
-            'summary',
-            'body',
-            'source',
-            'first_name',
-            'last_name',
-            'phone',
-            'fax',
-            'email',
-            'website',
-            'release_dt',
-            'syndicate',
-            'featured',
-            'design_notes',
-            'tags',
-            'enclosure_url',
-            'enclosure_type',
-            'enclosure_length',
-            'not_official_content',
-            'entity',
-        ]
-        export_id = run_export_task('articles', 'article', fields)
-        EventLog.objects.log()
-        return redirect('export.status', export_id)
+    if request.method == "POST" and "download" in request.POST:
+        identifier = int(time.time())
+        temp_file_path = 'export/articles/%s_temp.csv' % identifier
+        default_storage.save(temp_file_path, ContentFile(''))
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+        # start the process
+        subprocess.Popen(["python", "manage.py",
+                          "articles_export_process",
+                          '--identifier=%s' % identifier,
+                          '--user=%s' % request.user.id])
+        # log an event
+        EventLog.objects.log()
+        return HttpResponseRedirect(reverse('article.export_status', args=[identifier]))
+
+    return render_to_response(template_name, {}, RequestContext(request))
+
+
+@is_enabled('articles')
+@login_required
+def export_status(request, identifier, template_name="articles/export-status.html"):
+    """Display export status"""
+    if not request.user.profile.is_staff:
+        raise Http403
+
+    export_path = 'export/articles/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/articles/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_response(template_name, context, RequestContext(request))
+
+
+@is_enabled('articles')
+@login_required
+def export_download(request, identifier):
+    """Download the profiles export."""
+    if not request.user.profile.is_staff:
+        raise Http403
+
+    file_name = '%s.csv' % identifier
+    file_path = 'export/articles/%s' % file_name
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=articles_export_%s' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response

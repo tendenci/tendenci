@@ -25,6 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import flash_login_required
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import admin_required, is_enabled
 from tendenci.core.perms.object_perms import ObjectPermission
@@ -531,6 +532,7 @@ def tinymce_get_files(request):
     raise Http404
 
 
+@flash_login_required
 def swfupload(request):
     """
     Handles swfupload.
@@ -555,19 +557,18 @@ def swfupload(request):
         if object_id == 'undefined':
             object_id = 0
 
-        try:
-            file = form.save(commit=False)
-            file.name = re.sub(r'[^a-zA-Z0-9._-]+', '_', file.file.name)
-            file.object_id = object_id
-            file.content_type = ContentType.objects.get(app_label=app_label, model=model)
-            file.owner = request.user
-            file.creator = request.user
-            file.is_public = True
-            file.status = True
-            file.allow_anonymous_view = True
-            file.save()
-        except Exception, e:
-            print e
+        file = form.save(commit=False)
+        file.name = re.sub(r'[^a-zA-Z0-9._-]+', '_', file.file.name)
+        file.object_id = object_id
+        file.content_type = ContentType.objects.get(app_label=app_label, model=model)
+        file.is_public = True
+        file.status = True
+        file.allow_anonymous_view = True
+        file.owner = request.user
+        file.owner_username = request.user.username
+        file.creator = request.user
+        file.creator_username = request.user.username
+        file.save()
 
         d = {
             "id": file.id,
