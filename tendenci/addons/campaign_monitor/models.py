@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
+from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.forms_builder.forms.models import FormEntry
 from tendenci.core.files.models import file_directory
@@ -37,7 +38,7 @@ class Template(models.Model):
     This represents a Template in Campaign Monitor.
     """
     class Meta:
-        permissions = (("view_template", "Can view template"),)
+        permissions = (("view_template", _("Can view template")),)
 
     template_id = models.CharField(max_length=100, unique=True, null=True)
     name = models.CharField(max_length=100)
@@ -104,12 +105,12 @@ class Campaign(models.Model):
     """
 
     class Meta:
-        permissions = (("view_campaign", "Can view campaign"),)
+        permissions = (("view_campaign", _("Can view campaign")),)
 
     STATUS_CHOICES = (
-        ('S', 'Sent'),
-        ('C', 'Scheduled'),
-        ('D', 'Draft'),
+        ('S', _('Sent')),
+        ('C', _('Scheduled')),
+        ('D', _('Draft')),
     )
 
     campaign_id = models.CharField(max_length=100, unique=True)

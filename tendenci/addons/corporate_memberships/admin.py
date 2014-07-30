@@ -39,10 +39,10 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'price', 'renewal_price',
                            'membership_type', 'description')}),
-        ('Individual Pricing Options', {'fields':
+        (_('Individual Pricing Options'), {'fields':
                                     ('apply_threshold', 'individual_threshold',
                                     'individual_threshold_price',)}),
-        ('Other Options', {'fields': option_fields}),
+        (_('Other Options'), {'fields': option_fields}),
     )
 
     form = CorporateMembershipTypeForm
@@ -79,7 +79,7 @@ class CorpMembershipAppFieldAdmin(admin.TabularInline):
 #    readonly_fields = ('field_name',)
     extra = 0
     can_delete = False
-    verbose_name = 'Section Break'
+    verbose_name = _('Section Break')
     ordering = ("position",)
     template = "corporate_memberships/admin/corpmembershipapp/tabular.html"
 
@@ -97,8 +97,8 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                            'include_tax', 'tax_rate',
                            'memb_app'
                            )},),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
@@ -209,8 +209,8 @@ class NoticeAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {'fields': ('notice_name', 'notice_time_type', 'corporate_membership_type')}),
-        ('Email Fields', {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
-        ('Other Options', {'fields': ('status_detail',)}),
+        (_('Email Fields'), {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
+        (_('Other Options'), {'fields': ('status_detail',)}),
     )
 
     form = NoticeForm
