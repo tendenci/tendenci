@@ -1,16 +1,17 @@
+{% load i18n %}
 {% block messages %}
     {% if request.impersonation_message %}
-    <div class="alert-message block-message fade in warning" data-alert="alert">
-        <a class="close" href="#">×</a>
-        {{ request.impersonation_message|safe }}
+    <div class="alert alert-warning block-message alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {% blocktrans %}{{ request.impersonation_message|safe }}{% endblocktrans %}
     </div>
     {% endif %}
 
     {% if messages %}
     {% for message in messages %}
-        <div class="alert-message fade in{% if message.tags %} {{ message.tags }}{% endif %}" data-alert="alert">
-            <a class="close" href="#">×</a>
-            <p>{{ message|safe }}</p>
+        <div class="alert alert-dismissible{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <p>{% blocktrans %}{{ message|safe }}{% endblocktrans %}</p>
         </div>
     {% endfor %}
 

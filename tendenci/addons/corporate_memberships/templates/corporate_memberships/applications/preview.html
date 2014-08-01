@@ -50,8 +50,8 @@
 <div class="t">
 <div class="application-form-wrap">
  {% corpmemb_nav request.user %}
-        <div class="alert-message" data-alert="alert">
-            <a class="close" href="#">×</a>
+        <div class="alert alert-info alert-dismissable" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <p>
                 This is the preview{% if current_app.id == app.id%}
                 of the <a href="{% url corpmembership.add current_app.slug %}">current application</a>.
