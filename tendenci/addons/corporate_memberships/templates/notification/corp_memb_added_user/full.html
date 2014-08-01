@@ -19,7 +19,7 @@
 	<p>
         {% trans "To make online credit card payment, go to the invoice view page and make online payment from there." %}
 		<a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
-		
+
 	</p>
 	{% endif %}
 {% endif %}
@@ -37,4 +37,4 @@
 
 <p>{% trans "Thanks!" %}</p>
 <p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
- <p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>
+<p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

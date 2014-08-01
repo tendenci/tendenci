@@ -109,11 +109,11 @@
             {% if form.template.errors %}
                     {{ form.template.errors }}
             {% endif %}
-            <h2>{% blocktrans %}Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</h2>
+            <h2>{% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}Templates for {{ display_name }}{% endblocktrans %}</h2>
             <div>
                 {{ form.template }}
             </div>
-            <input type="submit" value="Continue" />
+            <input type="submit" value="{% trans 'Continue' %}" />
         </div>
         </form>
     </div>

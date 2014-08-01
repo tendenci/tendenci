@@ -15,7 +15,7 @@
 {% corpmemb_nav request.user corporate_membership %}
      <h1>{% trans "Corporate Membership Add Confirmation" %}</h1>
     <p>{% if app.confirmation_text %}
-        {{ app.confirmation_text|safe }}
+        {% blocktrans with conf_text=app.confirmation_text|safe %}{{ conf_text }}{% endblocktrans %}
     {% else %}
         {% trans "Thank you for your submitting! " %}<br /><br />
         {% if not request.user.is_superuser %}

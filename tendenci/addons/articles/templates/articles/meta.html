@@ -30,9 +30,9 @@
         {% with article.category_set as article_cat %}
         {% if article_cat.category %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url articles %}?category={{ article_cat.category.pk }}">{% blocktrans %}{{ article_cat.category }}{% endblocktrans %}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url articles %}?category={{ article_cat.category.pk }}">{% blocktrans with category=article_cat.category %}{{ category }}{% endblocktrans %}</a>
             {% if article_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url articles %}?sub_category={{ article_cat.sub_category.pk }}">{% blocktrans %}{{ article_cat.sub_category }}{% endblocktrans %}</a>
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url articles %}?sub_category={{ article_cat.sub_category.pk }}">{% blocktrans with sub_category=article_cat.subcategory %}{{ sub_category }}{% endblocktrans %}</a>
             {% endif %}
         </div>
         {% endif %}
@@ -42,7 +42,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in article.tags|tag_split %}
-                <a href="{% url articles %}?q={{ tag }}&search_category=tags__icontains">{% blocktrans %}{{ tag }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url articles %}?q={{ tag }}&search_category=tags__icontains">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

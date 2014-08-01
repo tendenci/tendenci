@@ -49,21 +49,21 @@
         border: 1px solid #E1E1E8;
         padding: 8px;
         margin: 2em 0px;
-	}
-	.fp-usage-tbl th{
-		background-color: #73B530;
-		letter-spacing: 1px;
-		text-align: left;
-		text-transform: uppercase;
-		color: #fff;
-		font-weight: normal;
-	}
-	.fp-usage-tbl td, .fp-usage-tbl th{
-		padding: 3px 3px 3px 6px;
-	}
-	.fp-usage-tbl{
-		border: 1px solid #CCCCCC;
-	}
+  }
+  .fp-usage-tbl th{
+    background-color: #73B530;
+    letter-spacing: 1px;
+    text-align: left;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: normal;
+  }
+  .fp-usage-tbl td, .fp-usage-tbl th{
+    padding: 3px 3px 3px 6px;
+  }
+  .fp-usage-tbl{
+    border: 1px solid #CCCCCC;
+  }
 
 </style>
 {% endblock %}
@@ -90,7 +90,7 @@
         {% if field_obj.field_name == '' %}
             {% if not forloop.last %}
                 <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
-                    <h2>{{ field_obj.label  }}</h2>
+                    <h2>{% blocktrans with label=field_obj.label %}{{ label }}{% endblocktrans %}</h2>
                 </div>
             {% endif %}
         {% else %}
@@ -138,7 +138,7 @@
                         {% else %}
                             {% if field_obj.value != '' %}
                             <div class="label{% if field_obj.short_label %} short-label{% endif %}{% if field_obj.required %} required{% endif %} {{ field_obj.field_div_class }}">
-                                {{ field_obj.label }}:
+                                {% blocktrans with label=field_obj.label %}{{ label }}{% endblocktrans %}:
                             </div>
 
                             <div class="field-value {{ field_obj.field_div_class }}">
@@ -174,63 +174,63 @@
 
     {% if user_can_edit and MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
     <div class="section-break">
-    	<h2>{% trans "Free Passes" %}</h2>
+      <h2>{% trans "Free Passes" %}</h2>
     </div>
     <div class="field-row">
-    	<div class="label short-label inline-block"><strong>{% trans "Total Allowed:" %}</strong></div>
-    	<div class="field-value inline-block">{{ corporate_membership.free_pass_total }}
-    		{% if request.user.is_superuser %}
-    		<span style="padding-left: 1.5em;"><a href="{% url corpmembership.free_passes_edit corporate_membership.id %}">Edit</a></span>
-    		{% endif %}
-    	</div>
+      <div class="label short-label inline-block"><strong>{% trans "Total Allowed:" %}</strong></div>
+      <div class="field-value inline-block">{{ corporate_membership.free_pass_total }}
+        {% if request.user.is_superuser %}
+        <span style="padding-left: 1.5em;"><a href="{% url corpmembership.free_passes_edit corporate_membership.id %}">{% trans 'Edit' %}</a></span>
+        {% endif %}
+      </div>
     </div>
     <div class="field-row">
-    	<div class="label short-label inline-block"><strong>{% trans "# Used:" %}</strong></div>
-    	<div class="field-value inline-block">{{ corporate_membership.free_pass_used }}</div>
+      <div class="label short-label inline-block"><strong>{% trans "# Used:" %}</strong></div>
+      <div class="field-value inline-block">{{ corporate_membership.free_pass_used }}</div>
     </div>
     <div class="field-row">
-    	<div class="label short-label inline-block"><strong>{% trans "# Available:" %}</strong></div>
-    	<div class="field-value inline-block">{{ corporate_membership.free_pass_avail }}</div>
+      <div class="label short-label inline-block"><strong>{% trans "# Available:" %}</strong></div>
+      <div class="field-value inline-block">{{ corporate_membership.free_pass_avail }}</div>
 
     </div>
 
     {% if corporate_membership.free_pass_used > 0 %}
     <div class="field-row">
-    	<table class="fp-usage-tbl table table-striped" width="99%">
-    		<tr>
-    			<th width="20%">{% trans "Used By" %}</th>
-    			<th width="35%">{% trans "For Event" %}</th>
-    			<th width="25%">{% trans "Date" %}</th>
-    			<th width="20%">{% trans "Processed By" %}</th>
-    		</tr>
-    		{% for fp in corporate_membership.passes_used.all %}
-    		<tr>
-  				<td>
-  					{% if fp.user %}
-  					<a href="{% url profile fp.user.username %}">
-  						{{ fp.user.username }}
-  						</a>
-  					{% else %}
-  					{{ fp.registrant.first_name }}
-  					{{ fp.registrant.last_name }}
-  					{{ fp.registrant.email }}
-  					{% endif %}
+      <table class="fp-usage-tbl table table-striped" width="99%">
+        <tr>
+          <th width="20%">{% trans "Used By" %}</th>
+          <th width="35%">{% trans "For Event" %}</th>
+          <th width="25%">{% trans "Date" %}</th>
+          <th width="20%">{% trans "Processed By" %}</th>
+        </tr>
+        {% for fp in corporate_membership.passes_used.all %}
+        <tr>
+          <td>
+            {% if fp.user %}
+            <a href="{% url profile fp.user.username %}">
+              {{ fp.user.username }}
+              </a>
+            {% else %}
+            {{ fp.registrant.first_name }}
+            {{ fp.registrant.last_name }}
+            {{ fp.registrant.email }}
+            {% endif %}
 
-  				</td>
-  				<td>
-  					{% if fp.event %}
-  					<a href="{% url event fp.event.id %}">{{ fp.event.title|truncatechars:30 }}</a>
-  					{% endif %}
-  				</td>
-  				<td>{{ fp.create_dt|date:'n/j/Y P' }}</td>
-  				<td>
-  					{% if fp.creator %}
-  					<a href="{% url profile fp.creator.username %}">{{ fp.creator_username }}</a>
-  					{% endif %}
-  					</td>
-    		</tr>
-    		{% endfor %}
-    	</table>
+          </td>
+          <td>
+            {% if fp.event %}
+            <a href="{% url event fp.event.id %}">{% blocktrans with title=fp.event.title|truncatechars:30 %}{{ title }}{% endblocktrans %}</a>
+            {% endif %}
+          </td>
+          <td>{{ fp.create_dt|date:'n/j/Y P' }}</td>
+          <td>
+            {% if fp.creator %}
+            <a href="{% url profile fp.creator.username %}">{{ fp.creator_username }}</a>
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+      </table>
     </div>
    {% endif %}
 
@@ -243,23 +243,34 @@
            {% for corp_memb in all_records %}
            <li>
                {% if not corp_memb.renewal %}
-               <strong>Joined</strong> on {{ corp_memb.join_dt|date:'N d, Y' }},
+               {% blocktrans with join_dt=corp_memb.join_dt|date:'N d, Y' %}
+               <strong>Joined</strong> on {{ join_dt }},
+               {% endblocktrans %}
                {% else %}
-               <strong>Renewed</strong> on {{ corp_memb.renew_dt|date:'N d, Y' }},
+               {% blocktrans with renew_dt=corp_memb.renew_dt|date:'N d, Y' %}
+               <strong>Renewed</strong> on {{ renew_dt }},
+               {% endblocktrans %}
                {% endif %}
 
                {% if corp_memb.is_archive or corp_memb.is_expired %}
-               <strong>expired</strong> on {{ corp_memb.expiration_dt|date:'N d, Y' }}.
+               {% blocktrans with exp_dt=corp_memb.expiration_dt|date:'N d, Y' %}
+               <strong>expired</strong> on {{ exp_dt }}.
+               {% endblocktrans %}
                {% else %}
-               <strong>expires</strong> on {{ corp_memb.expiration_dt|date:'N d, Y' }}.
+               {% blocktrans with exp_dt=corp_memb.expiration_dt|date:'N d, Y' %}
+               <strong>expires</strong> on {{ exp_dt }}.
+               {% endblocktrans %}
                {% endif %}
                {% if corp_memb.status_detail != 'archive' %}
-               status: <span class="status-{{ corp_memb.status_detail }}">{{ corp_memb.real_time_status_detail }}</span>
+               {% trans 'status' %}: <span class="status-{{ corp_memb.status_detail }}">
+               {% blocktrans with stat=corp_memb.real_time_status_detail %}{{ stat }}{% endblocktrans %}</span>
                {% else %}
-               status: <strong>{{ corp_memb.real_time_status_detail }}</strong>
+               {% blocktrans with stat=corp_memb.real_time_status_detail %}
+               status: <strong>{{ stat }}</strong>
+               {% endblocktrans %}
                {% endif %}
                {% if corp_memb.id != corporate_membership.id %}
-               <a href="{% url corpmembership.view corp_memb.id %}">View</a>
+               <a href="{% url corpmembership.view corp_memb.id %}">{% trans 'View' %}</a>
                {% endif %}
            </li>
            {% endfor %}

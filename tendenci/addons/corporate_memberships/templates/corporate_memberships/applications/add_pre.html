@@ -15,10 +15,13 @@
 {% corpmemb_nav request.user  %}
      <h1>{% trans corp_app.name %}</h1>
      <div class="well">
-     <p class="muted">Let's get started... The contact e-mail address will only be used to
+     <p class="muted">
+        {% blocktrans %}
+        Let's get started... The contact e-mail address will only be used to
         send you email notifications
         once your corporate membership gets approved. Please make sure it's correct.
         Thank you!
+        {% endblocktrans %}
      </p>
      </div>
 
@@ -26,7 +29,7 @@
         <form action="" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Continue to add corporate membership" />
+            <input type="submit" value="{% trans 'Continue to add corporate membership' %}" />
         </div>
         </form>
     </div>

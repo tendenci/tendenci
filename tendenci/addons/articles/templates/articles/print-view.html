@@ -3,9 +3,9 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{% blocktrans %}{{ article.get_title }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans %}{{ article.get_description }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans %}{{ article.get_keywords }}{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans with title=article.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with description=article.get_description %}{{ description }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keywords=article.get_keywords %}{{ keywords }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -25,8 +25,8 @@
     </div>
 
     <div class="article-wrap">
-        <h2>{% blocktrans %}{{ article.headline }}{% endblocktrans %}</h2>
-        <div class="content">{% blocktrans %}{{ article.body|safe }}{% endblocktrans %}</div>
+        <h2>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h2>
+        <div class="content">{% blocktrans with body=article.body|safe %}{{ body }}{% endblocktrans %}</div>
         <div class="meta">
             <div class="submitted">{% blocktrans with article.create_dt|date:"long" as date and article.creator as creator %}Submitted on {{ date }} by {{ creator }}{% endblocktrans %}</div>
         </div>

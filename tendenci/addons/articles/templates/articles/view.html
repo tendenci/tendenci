@@ -5,9 +5,9 @@
 {% load i18n %}
 {% load meta_tags %}
 
-{% block title %}{% blocktrans %}{{ trans article.get_title }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans %}{{ article.get_description }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans %}{{ article.get_keywords }}{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans with title=article.title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with description=article.description %}{{ description }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keywords=article.get_keywords %}{{ keywords }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -23,7 +23,7 @@
 
     <div class="article-wrap">
 
-        <h1>{% blocktrans %}{{ article.headline }}{% endblocktrans %}</h1>
+        <h1>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h1>
         {% if article.google_profile %}
         {% if article.has_google_author %}
         <a href="{{ article.google_profile }}?rel=author">{% trans "View author's Google+ profile" %}</a>
@@ -33,7 +33,7 @@
         {% endif %}
 
         <div class="content">
-            {% blocktrans %}{{ article.body|safe }}{% endblocktrans %}
+            {% blocktrans with body=article.body|safe %}{{ body }}{% endblocktrans %}
         </div>
         {% if article.source %}
             <div class="submitted"><strong>{% trans "Source:" %}</strong> {{ article.source|urlize }}</div>

@@ -4,7 +4,7 @@
 <div id="announcement-bar">
     {% for announcement in announcements %}
     <div class="announcement-wrap">
-        {% blocktrans %}{{ announcement.content|safe }}{% endblocktrans %}
+        {% blocktrans with content=announcement.content|safe %}{{ content }}{% endblocktrans %}
     </div>
     {% endfor %}
 </div>

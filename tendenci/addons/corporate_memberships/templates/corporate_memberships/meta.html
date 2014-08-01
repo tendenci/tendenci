@@ -30,12 +30,12 @@
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
-				<li>
-					<a class="option-link roster" href="{% url corp_memb.roster_search %}?name={{corporate_membership.name|urlencode}}">{% trans "Roster" %}</a>
-				</li>
-					<li>
-						<a class="option-link delete" href="{% url corp_memb.delete corporate_membership.pk %}">{% trans "Delete" %}</a>
-					</li>
+                <li>
+                    <a class="option-link roster" href="{% url corp_memb.roster_search %}?name={{corporate_membership.name|urlencode}}">{% trans "Roster" %}</a>
+                </li>
+                    <li>
+                        <a class="option-link delete" href="{% url corp_memb.delete corporate_membership.pk %}">{% trans "Delete" %}</a>
+                    </li>
             </ul>
         </div>
         </li>

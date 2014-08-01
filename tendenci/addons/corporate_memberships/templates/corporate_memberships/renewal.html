@@ -147,7 +147,11 @@ div.forms{
             {% for field in form %}
                 {% if field.errors %}
                       {% for error in field.errors %}
-                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
+                        {% blocktrans with label=field.label err=error %}
+                        {{ label }} - {{ error }}
+                        {% endblocktrans %}
+                        </a></p>
                       {% endfor %}
                 {% endif %}
             {% endfor %}
@@ -162,7 +166,7 @@ div.forms{
               {% if form.corporate_membership_type.errors %}
               <div class="error">
                   {% for error in form.corporate_membership_type.errors %}
-                  <p>{{ error }}</p>
+                  <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
                   {% endfor %}
               </div>
               {% endif %}
@@ -170,7 +174,7 @@ div.forms{
                   {{ form.corporate_membership_type }}
               </div>
               {% if form.corporate_membership_type.help_text %}
-              <div class="help-text">{{ form.corporate_membership_type.help_text }}</div>
+              <div class="help-text">{% blocktrans with help_text=form.corporate_membership_type.help_text %}{{ help_text }}</div>
               {% endif %}
            </div>
         </div>
@@ -179,12 +183,14 @@ div.forms{
      <div class="form-field">
         <div class="{{ form.members.auto_id }}{{ form.members.field.css_classes }}">
             <div class="label{% if form.members.field.required %} required{% endif %}">
-                  {{ form.members.label_tag }}
+                {% blocktrans with label_tag=form.members.label_tag %}
+                  {{ label_tag }}
+                {% endblocktrans %}
               </div>
               {% if form.members.errors %}
               <div class="error">
                   {% for error in form.members.errors %}
-                  <p>{{ error }}</p>
+                  <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
                   {% endfor %}
               </div>
               {% endif %}
@@ -202,7 +208,7 @@ div.forms{
                   {{ form.members }}
               </div>
               {% if form.members.help_text %}
-              <div class="help-text">{{ form.members.help_text }}</div>
+              <div class="help-text">{% blocktrans with help_text=form.members.help_text %}{{ help_text }}</div>
               {% endif %}
            </div>
         <div style="clear: both"></div>
@@ -261,29 +267,29 @@ div.forms{
 
             <noscript>
                 <div>
-                    <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+                    <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="{% trans 'Update Summary' %}" />
                 </div>
             </noscript>
 
             <div class="form-field">
                 <div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
                   <div class="label{% if form.payment_method.field.required %} required{% endif %}">
-                      {{ form.payment_method.label_tag }}
+                      {% blocktrans with label_tag=form.payment_method.label_tag %}{{ label_tag }}{% endblocktrans %}
                   </div>
                   {% if form.payment_method.errors %}
-                  <div class="error">{{ error }}</div>
+                  <div class="error">{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</div>
                   {% endif %}
                   <div class="field">
                       {{ form.payment_method }}
                   </div>
                   {% if form.payment_method.help_text %}
-                  <div class="help-text">{{ form.payment_method.help_text }}</div>
+                  <div class="help-text">{% blocktrans with help_text=form.payment_method.help_text %}{{ help_text }}</div>
                   {% endif %}
                </div>
             </div>
 
             <div id="renew-button-wrap">
-            <input type="submit" value="Renew Now" class="btn" />
+            <input type="submit" value="{% trans 'Renew Now' %}" class="btn" />
             </div>
 
         </div>

@@ -42,17 +42,23 @@
                     <p><b>{% trans "Screenshot File:" %}</b><a href="{{ template.get_screenshot_url }}">{% trans "Download" %}</a></p>
                 {% endif %}
                 <p>
+                    {% blocktrans %}
                     Click <a href="{{ template.cm_preview_url }}">here</a>
                     to view the rendered version on Campaign Monitor.
+                    {% endblocktrans %}
                 </p>
                 {% if template.html_file %}
                 <p>
+                    {% blocktrans %}
                     Click <a href="{% url campaign_monitor.template_render template.template_id %}">here</a>
                     to view a rendered version of the html with the latest data.
+                    {% endblocktrans %}
                 </p>
                 <p>
+                    {% blocktrans %}
                     Click <a href="{% url campaign_monitor.template_update template.template_id %}">here</a>
                     to use the same files to update this template.
+                    {% endblocktrans %}
                 </p>
                 {% endif %}
             </div>

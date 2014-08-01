@@ -56,7 +56,7 @@
             {% if user.profile.is_superuser %}
             <li><a href="{% url corpmembership.pending_list %}">{% trans "Pending Corp. Members" %}</a></li>
             <li class="divider"></li>
-            <li><a href="/admin/corporate_memberships/">Admin Backend</a></li>
+            <li><a href="/admin/corporate_memberships/">{% trans 'Admin Backend' %}</a></li>
             <li><a href="{% url admin:corporate_memberships_corpmembershipapp_changelist %}">{% trans "Application" %}</a></li>
             <li><a href="{% url admin:corporate_memberships_corporatemembershiptype_changelist %}">{% trans "Types" %}</a></li>
             <li><a href="{% url admin:corporate_memberships_notice_changelist %}">{% trans "Notices" %}</a></li>
@@ -65,7 +65,7 @@
             <li><a href="{% url corpmembership.import %}">{% trans "Import" %}</a></li>
             <li><a href="{% url corpmembership.export %}">{% trans "Export" %}</a></li>
             {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
-        	<li><a href="{% url corp_memb.reports.free_passes_list %}">{% trans "Free Passes List" %}</a></li>
+            <li><a href="{% url corp_memb.reports.free_passes_list %}">{% trans "Free Passes List" %}</a></li>
             {% endif %}
             {% endif %}
         </ul>
@@ -82,13 +82,13 @@
                <li><a href="{% url memberships.default_export %}?cp_id={{ nav_object.corp_profile.pk }}">{% trans "Export Roster" %}</a></li>
                 {% endif %}
                 {% if nav_object.can_renew %}
-			        <li><a href="{% url corpmembership.renew nav_object.id %}">{% trans "Renew" %}</a></li>
-			    {% else %}
-			    	{% if nav_object.is_expired and request.user.is_superuser %}
-			    	 <li><a href="{% url corpmembership.renew nav_object.id %}">{% trans "Admin: Renew" %}</a></li>
+                    <li><a href="{% url corpmembership.renew nav_object.id %}">{% trans "Renew" %}</a></li>
+                {% else %}
+                    {% if nav_object.is_expired and request.user.is_superuser %}
+                     <li><a href="{% url corpmembership.renew nav_object.id %}">{% trans "Admin: Renew" %}</a></li>
 
-			    	{% endif %}
-			    {% endif %}
+                    {% endif %}
+                {% endif %}
                 {% if can_delete %}
                 <li class="divider"></li>
                 <li><a class="option-link delete" href="{% url corpmembership.delete nav_object.pk %}">{% trans "Delete" %}</a></li>

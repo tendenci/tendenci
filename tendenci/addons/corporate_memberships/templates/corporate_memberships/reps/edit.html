@@ -64,8 +64,8 @@
     <form action="" method="post">{% csrf_token %}
     <div class="forms">
         {{ form|styled_form }}
-            <input type="submit" name="submit" value="Save and Continue Add Another" />
-            <input type="submit" name="submit" value="Save" />
+            <input type="submit" name="submit" value="{% trans 'Save and Continue Add Another' %}" />
+            <input type="submit" name="submit" value="{% trans 'Save' %}" />
     </div>
 
     </form>
