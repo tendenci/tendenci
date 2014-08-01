@@ -43,23 +43,6 @@
 
         <div class="content">
             {{ news.body|safe }}
-             <div class="contact">
-                 {% if news.first_name and news.last_name %}
-                     <div>{{ news.first_name }} {{ news.last_name }}</div>
-                 {% endif %}
-                 {% if news.phone %}
-                 <div>{% trans "Phone" %}: {{ news.phone|phonenumber }}</div>
-                 {% endif %}
-                 {% if news.fax %}
-                 <div>{% trans "Fax" %}: {{ news.fax }}</div>
-                 {% endif %}
-                 {% if news.email %}
-                 <div>{{ news.email|urlize }}</div>
-                 {% endif %}
-                 {% if news.website %}
-                 <div>{{ news.website|urlize }}</div>
-                 {% endif %}
-             </div>
         </div>
         {% include "news/meta.html" %}
         <br />
