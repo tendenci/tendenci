@@ -1,0 +1,30 @@
+[
+    {"_themename": "Jordy", "_filename": "settings.json"},
+    {
+    "name": "logo",
+    "label": "Logo",
+    "description": "The logo image used for the theme. Supports .jpg, .jpeg, and .png files.",
+    "data_type": "string",
+    "input_type": "file",
+    "value": "5",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+    },
+    {
+    "name": "colorvars",
+    "label": "Color Vars",
+    "description": "These are the colors that are used by the theme.",
+    "value": "@background:Background Color:#fff; @primary:Primary Color:#293778; @secondary:Secondary Color:#28BDFB; @complimentary:Complimentary Color:#166B28; @text:Text Color:#333; @offtext:Offtext Color:#eee;",
+    "input_value": "",
+    "data_type": "string",
+    "input_type": "text",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+    }
+
+]

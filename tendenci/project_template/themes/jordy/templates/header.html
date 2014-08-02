@@ -1,0 +1,33 @@
+{% load nav_tags %}
+{% load base_tags %}
+{% load theme_tags %}
+
+
+<nav id="topnav" class="navbar navbar-default" role="navigation">
+<!-- Utility navbar -->
+  <ul class="nav nav-pills utility-navigation">
+    <li><a href="#"><i class="utilnav fa fa-google-plus-square"></i></a></li>
+    <li><a href="#"><i class="utilnav fa fa-pinterest-square"></i></a></li>
+    <li><a href="#"><i class="utilnav fa fa-linkedin-square"></i></a></li>
+    <li><a href="#"><i class="utilnav fa fa-twitter-square"></i></a></li>
+    <li><a href="#"><i class="utilnav fa fa-facebook-square"></i></a></li>
+    <li><a href="/contact">Contact</a></li>
+    <li><a href="/donate">Donate</a></li>
+    <li><a href="/login">Member Login</a></li>
+  </ul>
+      
+<!-- Fixed navbar -->
+  <div class="container pull-left col-lg-12 col-md-12 col-sm-12">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">
+        <div class="logo" id="logo">
+        <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/60x30/crop/90/{% else %} http://placehold.it/60x30 {% endif %}" />
+        </div>
+      </a>
+      {% theme_include 'theme_includes/logo_edit_form.html' %}
+    </div>
+    <div class="mainnav">
+      {% nav 1 %}
+    </div>
+  </div>
+</nav>
