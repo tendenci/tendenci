@@ -23,20 +23,20 @@
     <div class="event-message-wrap">
         <form action="." method="post" name="form1">{% csrf_token %}
         <div class="message-forms">
-            <h2>{% trans "Event Title: " %}<a href="{% url event event.id %}">{{ event.title }}</a></h2>
+            <h2>{% trans "Event Title: " %}<a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h2>
 
-            <div class="recipient-set">{{ form.payment_status }}</div>
+            <div class="recipient-set">{% blocktrans with payment_status=form.payment_status %}{{ payment_status }}{% endblocktrans %}</div>
 
             <div class="message-item"><a href="{% url event.registrant.roster event.id %}">{% trans "View all registrant(s)" %}</a></div>
 
             <div class="message-item">
-                <p><strong>{{ form.subject.label }}:</strong></p>
-                {{ form.subject }}
+                <p><strong>{% blocktrans with label=form.subject.label %}{{ label }}{% endblocktrans %}:</strong></p>
+                {% blocktrans with subject=form.subject %}{{ subject }}{% endblocktrans %}
             </div>
 
             <div class="message-item">
-                <p><strong>{{ form.body.label }}:</strong></p>
-                {{ form.body }}
+                <p><strong>{% blocktrans with label=form.body.label %}{{ label }}{% endblocktrans %}:</strong></p>
+                {% blocktrans with body=form.body %}{{ body }}{% endblocktrans %}
             </div>
 
             <div class="message-item">
@@ -48,7 +48,7 @@
                 <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>.
             </div>
 
-            <input type="submit" value="Send Email" />
+            <input type="submit" value="{% trans "Send Email" %}" />
         </div>
         </form>
     </div>
