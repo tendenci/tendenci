@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.conf.urls.defaults import patterns, url
 from django.shortcuts import redirect, render
 from django.utils.encoding import iri_to_uri
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.events.models import CustomRegForm, CustomRegField, Type, StandardRegForm
 from tendenci.addons.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
@@ -42,7 +43,7 @@ class EventTypeAdmin(admin.ModelAdmin):
         return """<a href="%s">Reassign all events from this type</a>
             """ % (reverse('event.reassign_type', args=[obj.id]))
     reassign.allow_tags = True
-    reassign.short_description = 'Reassign Link'
+    reassign.short_description = _('Reassign Link')
 
     class Media:
         css = {'all': ['%scss/admin/event-types-color-set.css' % settings.STATIC_URL], }
@@ -81,18 +82,18 @@ class CustomRegFormAdmin(admin.ModelAdmin):
     search_fields = ("name", "notes", "status",)
     fieldsets = (
         (None, {"fields": ("name", "notes", 'status')}),
-        ('Add fields to your form', {'fields': (('first_name', 'last_name', 'email'),
+        (_('Add fields to your form'), {'fields': (('first_name', 'last_name', 'email'),
                                                  ('company_name', 'phone', 'position_title'),
                                                  ('address', 'city', 'state'),
                                                  ('zip', 'country', 'meal_option'),
                                                  ('comments')),
                                      'classes': ('mapped-fields',),
-                                     'description': 'The fields you selected will be automatically added to ' + \
+                                     'description': _('The fields you selected will be automatically added to ' + \
                                      'your form. These fields are mapped to the user fields in ' + \
                                      'the registration. To delete a mapped field, uncheck its corresponding ' + \
                                      'check box here. Please do not add another custom field ' + \
                                      'if you can find a field here. To add a custom field, click Add a ' + \
-                                     'Custom Field in the Fields section below.'})
+                                     'Custom Field in the Fields section below.')})
     )
 
     form = CustomRegFormAdminForm
@@ -113,7 +114,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         return """<a href="%s">preview</a>
             """ % (reverse('event.custom_reg_form_preview', args=[obj.id]))
     preview_link.allow_tags = True
-    preview_link.short_description = 'Preview Link'
+    preview_link.short_description = _('Preview Link')
 
     def for_event(self, obj):
         event = None
@@ -129,7 +130,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         return ''
 
     for_event.allow_tags = True
-    for_event.short_description = 'For Event'
+    for_event.short_description = _('For Event')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         result = super(CustomRegFormAdmin, self).change_view(request,

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
@@ -7,9 +8,9 @@ from tendenci.addons.events.models import Event
 
 class EventRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Manage Your Events Calendar and Event Registrations'
+    description = _('Manage Your Events Calendar and Event Registrations')
     icon = '%simages/icons/events-color-64x64.png' % settings.STATIC_URL
 
     # events

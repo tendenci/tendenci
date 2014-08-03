@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.educations.models import Education
@@ -21,13 +22,13 @@ class EducationAdmin(TendenciBaseModelAdmin):
                         'graduation_dt',
                 )
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        ('Status', {'fields': (
+        (_('Status'), {'fields': (
             'status',
             'status_detail',
             )}),

@@ -100,7 +100,7 @@
 
             // delete confirmation
             $('.delete').click(function(){
-                var delete_directory_pricing = confirm("Permenantly delete this directory price?");    // confirm
+                var delete_directory_pricing = confirm({% trans "Permenantly delete this directory price?" %});    // confirm
                 if(delete_directory_pricing) $(this).parents('.directory-pricing-details').find('form[name="directory-pricing-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

@@ -1,3 +1,5 @@
+from django.utils.translation import ugettext_lazy as _
+
 from tendenci.core.rss.feedsmanager import SubFeed
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
@@ -7,9 +9,11 @@ from tendenci.addons.events.models import Event
 
 
 class LatestEntriesFeed(SubFeed):
-    title = '%s Latest Events' % get_setting('site', 'global', 'sitedisplayname')
+    title = _('%(sitedisplayname)s Latest Events') % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
     link = "/events/"
-    description = "Latest Events by %s" % get_setting('site', 'global', 'sitedisplayname')
+    description = _("Latest Events by %(sitedisplayname)s") % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
 
     def items(self):
         items = Event.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')[:20]

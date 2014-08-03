@@ -33,36 +33,36 @@ ALLOWED_LOGO_EXT = (
 
 request_duration_defaults = {
     'label': _('Requested Duration'),
-    'help_text': mark_safe('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/directories/pricing/add/'),
+    'help_text': mark_safe(_('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/directories/pricing/add/')),
 }
 
 SEARCH_CATEGORIES_ADMIN = (
-    ('', '-- SELECT ONE --' ),
-    ('id', 'Directory ID'),
-    ('body__icontains', 'Body'),
-    ('headline__icontains', 'Headline'),
-    ('city__icontains', 'City'),
-    ('state__iexact', 'State'),
-    ('tags__icontains', 'Tags'),
-    ('tags__contains', 'Tags (case sensitive)'),
+    ('', _('-- SELECT ONE --' )),
+    ('id', _('Directory ID')),
+    ('body__icontains', _('Body')),
+    ('headline__icontains', _('Headline')),
+    ('city__icontains', _('City')),
+    ('state__iexact', _('State')),
+    ('tags__icontains', _('Tags')),
+    ('tags__contains', _('Tags (case sensitive)')),
 
-    ('creator__id', 'Creator Userid(#)'),
-    ('creator__username', 'Creator Username'),
-    ('owner__id', 'Owner Userid(#)'),
-    ('owner__username', 'Owner Username'),
+    ('creator__id', _('Creator Userid(#)')),
+    ('creator__username', _('Creator Username')),
+    ('owner__id', _('Owner Userid(#)')),
+    ('owner__username', _('Owner Username')),
 
-    ('status_detail__icontains', 'Status Detail'),
+    ('status_detail__icontains', _('Status Detail')),
 )
 
 SEARCH_CATEGORIES = (
-    ('', '-- SELECT ONE --' ),
-    ('id', 'Directory ID'),
-    ('body__icontains', 'Body'),
-    ('headline__icontains', 'Headline'),
-    ('city__icontains', 'City'),
-    ('state__iexact', 'State'),
-    ('tags__icontains', 'Tags'),
-    ('tags__contains', 'Tags (case sensitive)'),
+    ('', _('-- SELECT ONE --') ),
+    ('id', _('Directory ID')),
+    ('body__icontains', _('Body')),
+    ('headline__icontains', _('Headline')),
+    ('city__icontains', _('City')),
+    ('state__iexact', _('State')),
+    ('tags__icontains', _('Tags')),
+    ('tags__contains', _('Tags (case sensitive)')),
 )
 
 class DirectorySearchForm(forms.Form):
@@ -116,11 +116,11 @@ class DirectoryForm(TendenciBaseForm):
       help_text=_('Company logo. Only jpg, gif, or png images.'))
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
-    list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
-                                                              ('premium', 'Premium'),))
-    payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
+    list_type = forms.ChoiceField(initial='regular', choices=(('regular',_('Regular')),
+                                                              ('premium', _('Premium')),))
+    payment_method = forms.CharField(error_messages={'required': _('Please select a payment method.')})
 
     activation_dt = SplitDateTimeField(initial=datetime.now())
     expiration_dt = SplitDateTimeField(initial=datetime.now())
@@ -172,7 +172,7 @@ class DirectoryForm(TendenciBaseForm):
             'status_detail',
         )
 
-        fieldsets = [('Directory Information', {
+        fieldsets = [(_('Directory Information'), {
                       'fields': ['headline',
                                  'slug',
                                  'summary',
@@ -187,13 +187,13 @@ class DirectoryForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Payment', {
+                      (_('Payment'), {
                       'fields': ['list_type',
                                  'payment_method'
                                  ],
                         'classes': ['payment_method'],
                       }),
-                      ('Contact', {
+                      (_('Contact'), {
                       'fields': ['first_name',
                                  'last_name',
                                   'address',
@@ -211,7 +211,7 @@ class DirectoryForm(TendenciBaseForm):
                                  ],
                         'classes': ['contact'],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -219,7 +219,7 @@ class DirectoryForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
@@ -233,12 +233,12 @@ class DirectoryForm(TendenciBaseForm):
 
                 # check the extension
                 if extension.lower() not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
+                    raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
 
                 # check the image header
                 image_type = '.%s' % imghdr.what('', logo.read())
                 if image_type not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+                    raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
 
                 max_upload_size = get_max_file_upload_size()
                 if logo.size > max_upload_size:
@@ -255,10 +255,10 @@ class DirectoryForm(TendenciBaseForm):
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if self.user.profile.is_superuser:
-                self.fields['status_detail'].choices = (('active','Active'),
-                                                        ('inactive','Inactive'),
-                                                        ('pending','Pending'),
-                                                        ('paid - pending approval', 'Paid - Pending Approval'),)
+                self.fields['status_detail'].choices = (('active',_('Active')),
+                                                        ('inactive',_('Inactive')),
+                                                        ('pending',_('Pending')),
+                                                        ('paid - pending approval', _('Paid - Pending Approval')),)
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
@@ -358,9 +358,9 @@ class DirectoryPricingForm(forms.ModelForm):
 
 
 class DirectoryRenewForm(TendenciBaseForm):
-    list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
-                                                              ('premium', 'Premium'),))
-    payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
+    list_type = forms.ChoiceField(initial='regular', choices=(('regular',_('Regular')),
+                                                              ('premium', _('Premium')),))
+    payment_method = forms.CharField(error_messages={'required': _('Please select a payment method.')})
 
     pricing = forms.ModelChoiceField(label=_('Requested Duration'),
                     queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
@@ -373,7 +373,7 @@ class DirectoryRenewForm(TendenciBaseForm):
             'payment_method',
         )
 
-        fieldsets = [('Payment', {
+        fieldsets = [(_('Payment'), {
                       'fields': ['list_type',
                                  'pricing',
                                  'payment_method'
@@ -399,15 +399,15 @@ class DirectoryRenewForm(TendenciBaseForm):
 class DirectoryExportForm(forms.Form):
 
     STATUS_DETAIL_CHOICES = (
-        ('', 'Export All Directories'),
-        ('active', ' Export Active Directories'),
-        ('pending', 'Export Pending Directories'),
-        ('inactive', 'Export Inactive Directories'),
+        ('', _('Export All Directories')),
+        ('active', _(' Export Active Directories')),
+        ('pending', _('Export Pending Directories')),
+        ('inactive', _('Export Inactive Directories')),
     )
 
     EXPORT_FIELD_CHOICES = (
-        ('main_fields', 'Export Main Fields (fastest)'),
-        ('all_fields', 'Export All Fields'),
+        ('main_fields', _('Export Main Fields (fastest)')),
+        ('all_fields', _('Export All Fields')),
     )
 
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')

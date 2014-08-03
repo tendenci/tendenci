@@ -16,12 +16,12 @@
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Headline:" %}</td>
-    <td width="75%"><b>{{ directory.headline }}</b></td>
+    <td width="75%"><b>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</b></td>
   </tr>
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Body:" %}</td>
-    <td width="75%"><b>{{ directory.body|relative_to_absolute_urls|safe }}</b></td>
+    <td width="75%"><b>{% blocktrans with body=directory.body|relative_to_absolute_urls|safe %}{{ body }}{% endblock %}</b></td>
   </tr>
 </table>
 <p>

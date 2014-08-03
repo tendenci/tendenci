@@ -25,9 +25,9 @@ class Education(TendenciBaseModel):
     objects = EducationManager()
 
     class Meta:
-        permissions = (("view_education", "Can view education"),)
-        verbose_name = "Education"
-        verbose_name_plural = "Educations"
+        permissions = (("view_education", _("Can view education")),)
+        verbose_name = _("Education")
+        verbose_name_plural = _("Educations")
 
     def __unicode__(self):
         return '%s - %s' %  (self.school, self.user)

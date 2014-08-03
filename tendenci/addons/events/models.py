@@ -44,9 +44,9 @@ EMAIL_DEFAULT_ONLY = 'default'
 EMAIL_CUSTOM_ONLY = 'custom'
 EMAIL_BOTH = 'both'
 REGEMAIL_TYPE_CHOICES = (
-    (EMAIL_DEFAULT_ONLY, 'Default Email Only'),
-    (EMAIL_CUSTOM_ONLY, 'Custom Email Only'),
-    (EMAIL_BOTH, 'Default and Custom Email'),
+    (EMAIL_DEFAULT_ONLY, _('Default Email Only')),
+    (EMAIL_CUSTOM_ONLY, _('Custom Email Only')),
+    (EMAIL_BOTH, _('Default and Custom Email')),
 )
 
 
@@ -141,13 +141,14 @@ class RegistrationConfiguration(models.Model):
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
-    payment_required = models.BooleanField(help_text='A payment required before registration is accepted.', default=True)
+    payment_required = models.BooleanField(
+        help_text=_('A payment required before registration is accepted.'), default=True)
 
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
-    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text="If checked, " + \
-                        "the required fields in registration form are also required for guests.  ",
+    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " + \
+                        "the required fields in registration form are also required for guests.  "),
                         default=False)
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
@@ -160,11 +161,11 @@ class RegistrationConfiguration(models.Model):
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfs',
-                                 help_text="You'll have the chance to edit the selected form")
+                                 help_text=_("You'll have the chance to edit the selected form"))
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
     bind_reg_form_to_conf_only = models.BooleanField(_(' '),
-                                 choices=((True, 'Use one form for all pricings'),
-                                          (False, 'Use separate form for each pricing')),
+                                 choices=((True, _('Use one form for all pricings')),
+                                          (False, _('Use separate form for each pricing'))),
                                  default=True)
 
     # base email for reminder email
@@ -174,7 +175,7 @@ class RegistrationConfiguration(models.Model):
                                        'starts) the reminder should be sent '),
                                      max_length=20,
                                      null=True, blank=True,
-                                     help_text='Comma delimited. Ex: 7,1')
+                                     help_text=_('Comma delimited. Ex: 7,1'))
 
     registration_email_type = models.CharField(_('Registration Email'),
                                             max_length=20,
@@ -247,13 +248,14 @@ class RegConfPricing(OrderingBaseModel):
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
-                                   help_text='Example: 0.0825 for 8.25%.')
-    payment_required = models.NullBooleanField(help_text='A payment required before registration is accepted.')
+                                   help_text=_('Example: 0.0825 for 8.25%.'))
+    payment_required = models.NullBooleanField(
+        help_text=_('A payment required before registration is accepted.'))
 
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfpricings',
-                                 help_text="You'll have the chance to edit the selected form")
+                                 help_text=_("You'll have the chance to edit the selected form"))
 
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
     end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
@@ -413,7 +415,7 @@ class Registration(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
 
     class Meta:
-        permissions = (("view_registration","Can view registration"),)
+        permissions = (("view_registration",_("Can view registration")),)
 
     def __unicode__(self):
         return 'Registration - %s' % self.event.title
@@ -440,7 +442,7 @@ class Registration(models.Model):
             inv.object_id,
         )
 
-        return description
+        return _(description)
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
@@ -719,7 +721,7 @@ class Registrant(models.Model):
     objects = RegistrantManager()
 
     class Meta:
-        permissions = (("view_registrant", "Can view registrant"),)
+        permissions = (("view_registrant", _("Can view registrant")),)
 
     def __unicode__(self):
         if self.custom_reg_form_entry:
@@ -963,10 +965,10 @@ class RecurringEvent(models.Model):
     RECUR_MONTHLY = 3
     RECUR_YEARLY = 4
     RECURRENCE_CHOICES = (
-        (RECUR_DAILY, 'Day(s)'),
-        (RECUR_WEEKLY, 'Week(s)'),
-        (RECUR_MONTHLY, 'Month(s)'),
-        (RECUR_YEARLY, 'Year(s)')
+        (RECUR_DAILY, _('Day(s)')),
+        (RECUR_WEEKLY, _('Week(s)')),
+        (RECUR_MONTHLY, _('Month(s)')),
+        (RECUR_YEARLY, _('Year(s)'))
     )
     repeat_type = models.IntegerField(_("Repeats"), choices=RECURRENCE_CHOICES)
     frequency = models.IntegerField(_("Repeats every"))
@@ -1025,10 +1027,10 @@ class Event(TendenciBaseModel):
 
     # additional permissions
     display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)
-    DISPLAY_REGISTRANTS_TO_CHOICES=(("public","Everyone"),
-                                    ("user","Users Only"),
-                                    ("member","Members Only"),
-                                    ("admin","Admin Only"),)
+    DISPLAY_REGISTRANTS_TO_CHOICES=(("public",_("Everyone")),
+                                    ("user",_("Users Only")),
+                                    ("member",_("Members Only")),
+                                    ("admin",_("Admin Only")),)
     display_registrants_to = models.CharField(max_length=6, choices=DISPLAY_REGISTRANTS_TO_CHOICES, default="admin")
 
     # html-meta tags
@@ -1041,7 +1043,7 @@ class Event(TendenciBaseModel):
     objects = EventManager()
 
     class Meta:
-        permissions = (("view_event","Can view event"),)
+        permissions = (("view_event",_("Can view event")),)
 
     def __init__(self, *args, **kwargs):
         super(Event, self).__init__(*args, **kwargs)
@@ -1377,9 +1379,9 @@ class CustomRegField(OrderingBaseModel):
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
-        help_text="Comma separated options where applicable")
+        help_text=_("Comma separated options where applicable"))
     default = models.CharField(_("Default"), max_length=1000, blank=True,
-        help_text="Default value of the field")
+        help_text=_("Default value of the field"))
     display_on_roster = models.BooleanField(_("Show on Roster"), default=False)
 
     class Meta:
