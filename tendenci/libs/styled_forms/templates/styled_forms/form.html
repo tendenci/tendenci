@@ -120,7 +120,7 @@ There were some problems in the form. Please review. Thanks!
                 {% else %}
                     {% if field|is_header or field|is_description %}
                         {% if field|is_header %}
-                            <div class="section-header">{{ field.label }}</div>
+                            <h2 class="section-header">{{ field.label }}</h2>
                         {% else %}
                             <div class="section-description">{{ field.label }}</div>
                         {% endif %}
