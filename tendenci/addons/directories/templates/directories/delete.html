@@ -20,7 +20,7 @@
                 {{ summary }}
                 {% endblocktrans %}
             {% else %}
-                {% blocktrans summary=directory.body|striptags|truncatewords:20|safe %}
+                {% blocktrans with summary=directory.body|striptags|truncatewords:20|safe %}
                 {{ summary }}
                 {% endblocktrans %}
             {% endif %}

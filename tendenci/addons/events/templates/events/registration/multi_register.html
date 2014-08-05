@@ -5,7 +5,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Registration {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with title=event.title dt=event.start_dt|date:"M j, Y" %}Registration {{ title }} {{ dt }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,7 +19,7 @@
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
     <div class="event-info">
-        <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
+        <div class="event-title"><a href="{% url event event.id %}">{% blocktrans with title= %}{{ title }}{% endblocktrans %}</a></div>
         <div class="event-price">{{ event_price|format_currency }}</div>
         <div class="event-time">
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
@@ -83,7 +83,7 @@
                     <div class="summary-payment">
                         <noscript>
                         <div>
-                            <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+                            <input title="{% trans 'Update Summary' %}" type="submit" id="update_summary" name="update_summary" value="{% trans 'Update Summary' %}" />
                         </div>
                         </noscript>
                         {% if reg_form.amount_for_admin %}
@@ -174,7 +174,7 @@
 									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
 									<div class="field">{{ field }}</div>
 									{% if field.help_text %}
-				                    <div class="help-text">{{ field.help_text }}</div>
+				                    <div class="help-text">{% blocktrans with help_text=field.help_text %}{{ help_text }}{% endblocktrans %}</div>
 				                    {% endif %}
 								</div>
 							{% endif %}
@@ -262,11 +262,11 @@
                         {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
                     </div>
                     {% empty %}
-                        No pricings available.<br />
+                        {% trans 'No pricings available.' %}<br />
                     {% endfor %}
                 </div>
                 <div>
-                    {% trans 'How many?' %}<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="Add"/>
+                    {% trans 'How many?' %}<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="{% trans 'Add' %}"/>
                 </div>
             </div>
             {% if addons %}
@@ -281,7 +281,7 @@
                     <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="" />
                 {% endif %}
                 <br/>
-                <input id="pricing-check" type="button" value="Get More">
+                <input id="pricing-check" type="button" value="{% trans 'Get More' %}">
             </div>
 
             <div class="clear"></div>

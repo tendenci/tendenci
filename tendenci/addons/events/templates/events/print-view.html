@@ -3,9 +3,9 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Print - {{ event.get_title }}{% endblock %}
-{% block meta_description %}{{ event.get_description }}{% endblock %}
-{% block meta_keywords %}{{ event.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}Print - {{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -25,8 +25,8 @@
   </div>
 
     <div class="event-wrap">
-        <h2>{{ event.title }}</h2>
-      <div class="content"><p>{{ event.description|safe }}</p>
+        <h2>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</h2>
+      <div class="content"><p>{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</p>
         {% if event.place.name or event.place.address %}
           <p><strong>Location:</strong>
           {% if event.place.name %}

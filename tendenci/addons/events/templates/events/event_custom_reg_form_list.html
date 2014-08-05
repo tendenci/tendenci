@@ -2,8 +2,9 @@
 {% load event_tags %}
 {% load base_filters %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}{{ event.title }} - custom registration form(s){% endblock %}
+{% block title %}{% blocktrans with title=event.title %}{{ title }} - custom registration form(s){% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,8 +16,8 @@
 <div class="t">
     {% event_nav user event %}
     <div id="reg-form-list">
-        <h1>Manage Custom Registration Form(s)</h1>
-        <h3>Event: <a href="{% url event event.id %}">{{ event.title }}</a></h3>
+        <h1>{% trans 'Manage Custom Registration Form(s)' %}</h1>
+        <h3>{% trans 'Event' %}: <a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
         <div id="reg-form-list-body">
 
             {% if reg_conf.use_custom_reg_form %}
@@ -32,7 +33,7 @@
                             <div class="form-builder-wrap">
                                 <div class="forms">
                                     {{ reg_conf.reg_form.form_for_form|styled_form }}
-                                    <input type="submit" value="Submit" disabled="true" />
+                                    <input type="submit" value="{% trans 'Submit' %}" disabled="true" />
                                 </div>
                             </div>
                         </div>
@@ -41,10 +42,10 @@
                         </div>
                 {% else %}
                     <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
-                        This event uses a separate custom registrations form for each pricing.
+                        {% trans 'This event uses a separate custom registrations form for each pricing. %}
                         <div class="alert-actions">
-                            <a class="btn small" href="{% url event event.id %}">View Event</a>
-                            <a class="btn small" href="{% url event.edit event.id %}">Edit Event</a>
+                            <a class="btn small" href="{% url event event.id %}">{% trans 'View Event' %}</a>
+                            <a class="btn small" href="{% url event.edit event.id %}">{% trans 'Edit Event' %}</a>
                         </div>
                         </div>
                     {% for price in regconfpricings %}
@@ -59,7 +60,7 @@
                             <div class="form-builder-wrap">
                                 <div class="forms">
                                     {{ price.reg_form.form_for_form|styled_form }}
-                                    <input type="submit" value="Submit" disabled="true" />
+                                    <input type="submit" value="{% trans 'Submit' %}" disabled="true" />
                                 </div>
                             </div>
                         </div>
@@ -69,7 +70,7 @@
                 {% endif %}
 
             {% else %}
-                <p class="reg-form-list-notes">This event doesn't use custom registration forms. </p>
+                <p class="reg-form-list-notes">{% trans 'This event doesn't use custom registration forms.' %} </p>
             {% endif %}
 
 

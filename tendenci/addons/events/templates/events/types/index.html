@@ -15,7 +15,7 @@
 <div class="t">
     {% event_nav request.user %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Types" %}</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Types" %}</h1>
 
     <div class="event-wrap">
 
@@ -58,7 +58,7 @@
 
             {% endfor %}
 
-            <input type="Submit" value="Save Changes" />
+            <input type="Submit" value="{% trans 'Save Changes' %}" />
 
         </form>
         </div>
