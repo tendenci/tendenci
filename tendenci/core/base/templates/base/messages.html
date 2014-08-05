@@ -3,7 +3,7 @@
     {% if request.impersonation_message %}
     <div class="alert alert-warning block-message alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        {% blocktrans %}{{ request.impersonation_message|safe }}{% endblocktrans %}
+        {% blocktrans with msg=request.impersonation_message|safe %}{{ msg }}{% endblocktrans %}
     </div>
     {% endif %}
 
@@ -11,7 +11,7 @@
     {% for message in messages %}
         <div class="alert alert-dismissible{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <p>{% blocktrans %}{{ message|safe }}{% endblocktrans %}</p>
+            <p>{% blocktrans with msg=message|safe %}{{ msg }}{% endblocktrans %}</p>
         </div>
     {% endfor %}
 
