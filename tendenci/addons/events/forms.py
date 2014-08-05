@@ -986,7 +986,7 @@ class SpeakerForm(BetterModelForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Speaker._meta.app_label,
         'storme_model':Speaker._meta.module_name.lower()}))
-    label = _('Speaker)'
+    label = _('Speaker')
     file = forms.FileField(required=False)
 
     class Meta:
@@ -2188,7 +2188,7 @@ class EventExportForm(forms.Form):
     by_type = forms.ModelChoiceField(
                 label=_("Export by Type"),
                 queryset=Type.objects.all().order_by('name'),
-                empty_label=_("Don't filter by type",)
+                empty_label=_("Don't filter by type"),
                 required=False)
 
     def clean_start_dt(self):

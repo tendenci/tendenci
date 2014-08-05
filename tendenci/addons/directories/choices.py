@@ -19,5 +19,5 @@ ADMIN_DURATION_CHOICES = (
 
 STATUS_CHOICES = (
     (1, _('Active')),
-    (0, '_(Inactive')),
+    (0, _('Inactive')),
 )

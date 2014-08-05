@@ -9,7 +9,7 @@
         <div class="categories">
             <strong>{% trans "Category:" %} </strong><a href="{% url directories %}?q=category:{{ directory_cat.category }}">{% blocktrans with cat=directory_cat.category %}{{ cat }}{% endblocktrans %}</a>
             {% if directory_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url directories %}?q=sub_category:{{ directory_cat.sub_category }}">{% blocktrans with subcat=directory_cat.sub_category %}{{ subcat }}</a>
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url directories %}?q=sub_category:{{ directory_cat.sub_category }}">{% blocktrans with subcat=directory_cat.sub_category %}{{ subcat }}{% endblocktrans %}</a>
             {% endif %}
         </div>
         {% endif %}
