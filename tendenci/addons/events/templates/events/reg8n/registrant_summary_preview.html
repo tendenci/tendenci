@@ -8,8 +8,10 @@
             {% elif field.name in flat_ignore_fields %}
 
             {% elif field.name == "pricing" %}
-                {% if not registrant.cleaned_data.override %}
-                    <li>Price:  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}</li>
+                {% if not event.free_event %}
+                    {% if not registrant.cleaned_data.override %}
+                        <li>Price:  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}</li>
+                    {% endif %}
                 {% endif %}
             {% elif field.name == "override_price" %}
                 {% if registrant.cleaned_data.override %}

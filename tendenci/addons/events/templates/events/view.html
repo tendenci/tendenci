@@ -206,7 +206,13 @@
 
             {% if event.registration_configuration.enabled %}
             <div class="pricing">
-                <h4 class="vital-header">How Much?</h4>
+                <h4 class="vital-header">
+                {% if free_event %}
+                    {% trans 'Free Event' %}
+                {% else %}
+                    {% trans 'How Much?' %}
+                {% endif %}
+                </h4>
                 {% registration_pricing_and_button event request.user %}
             </div>
             {% endif %}

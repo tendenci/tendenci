@@ -97,7 +97,7 @@
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
 
-                <div id="reg-form-box">
+                <div id="reg-form-box" {% if event.free_event %}style="display:none;"{% endif %}>
                     <div style="background:#3E83C9;color:#fff; padding: 3px; font-weight: bold; font-size:1.2em; text-align: center;">
                         <div >Summary</div>
                     </div>
@@ -356,7 +356,7 @@
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
-            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="Register" />
+            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'RSVP' %}{% else %}{% trans 'Register'%}{% endif %}" />
 
             <div class="clear"></div>
         </div>
@@ -371,7 +371,7 @@
             <input type="hidden" name="confirmed" />
             <input type="submit" name="addmore" id="add-another-btn" value="Add Another Registrant" />
             <div class="clear"></div>
-            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="Register" />
+            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'RSVP' %}{% else %}{% trans 'Register'%}{% endif %}" />
             <div class="clear"></div>
         </div>
         {% endif %}
@@ -400,6 +400,11 @@
         $('.add-another-registrant').trigger('click');
     });
     {% endif %}
+    {% if event.free_event %}
+       $('input[type=radio].registrant-pricing').each(function() {
+           $(this).parent().parent().parent().parent().parent().hide();
+       });
+   {% endif %}
 </script>
 
 {% if not event.is_table and event.registration_configuration.allow_free_pass %}

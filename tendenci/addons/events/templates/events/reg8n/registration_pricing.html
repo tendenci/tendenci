@@ -1,4 +1,4 @@
-{% load i18n %} 
+{% load i18n %}
 {% load base_filters %}
 {% load perm_tags %}
 
@@ -29,8 +29,8 @@
                 <div class="pricing-list-wrap">
                     <form action="{% url event.register event.pk %}" method="get">
 
-                    {% if pricing|length == 1 and pricing.0.amount == 0 %}
-                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register for Free' %}" />
+                    {% if pricing|length == 1 and pricing.0.price == 0 %}
+                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'RSVP' %}" />
                     {% else %}
                     <ul>
                         {% for price in pricing %}
