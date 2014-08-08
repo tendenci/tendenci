@@ -49,6 +49,9 @@
             $('.custom-price').click(function() {
                 $(this).prev('input[type="radio"]').prop('checked', true);
             });
+            $('.custom-price').focus(function() {
+                $(this).prev('input[type="radio"]').prop('checked', true);
+            });
             $('.pricing-field').focus(function() {
                 $(this).next('.custom-price').focus();
             });

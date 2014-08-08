@@ -77,9 +77,8 @@
             }
         });
 
-        $(".datepicker").live('focus', function() {
-            console.log('this', this);
-            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+        $(document).ready(function () {
+            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
         });
 
         $("select#id_invoice_type").change(function() {

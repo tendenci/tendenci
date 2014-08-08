@@ -1,0 +1,240 @@
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load event_tags %}
+{% load box_tags %}
+{% load nav_tags %}
+{% load news_tags %}
+{% load case_study_tags %}
+{% theme_extends "base.html" %}
+
+
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+=========================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load story_tags %}
+
+
+<!-- Meta Tags (for optimal SEO)
+=========================================================== -->
+{% block title %}{{ SITE_GLOBAL_SITENAME }} {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+
+
+<!-- Starts Tendenci Head Tag
+=========================================================== -->
+{% block extra_head %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+
+    <!-- Bootstrap core CSS
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/bootstrap-theme.min.css" rel="stylesheet">
+
+
+
+    <!-- navigation dropdowns
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
+    <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
+
+    <!-- Custom styles for this template
+=========================================================== -->
+  <link href="{{ THEME_URL }}media/css/jordy.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and
+    media queries
+=========================================================== -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+{% endblock extra_head %}
+
+
+    <!-- Start of the Body
+=========================================================== -->
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+{% block html_body %}
+<a class="sr-only" href="#content">Skip to main content</a>
+
+
+
+      <!-- Header Starts
+=========================================================== -->
+<header>
+{% theme_include "header.html" %}<!-- Pulls in Header Include -->
+</header>
+      <!-- Header Ends -->
+
+<div id="content" role="main">
+
+<!-- Rotator for Jordy -->
+<div id="homepage-carousel" class="carousel slide">
+  {% list_stories as stories_list limit=6 tags="rotator" quality="90" %}
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    {% for story in stories_list %}
+    <li data-target="#homepage-carousel"
+    data-slide-to="{{ forloop.counter0 }}"
+    {% if forloop.first %}class="active"{% endif %}>
+    </li>
+    {% endfor %}
+  </ol>
+  <div class="carousel-inner">
+    {% for story in stories_list %}
+    <div class="item {% if forloop.first %}active{% endif %}">
+      {% if story.image %}
+      <img src="{% image_url story.image size=960x300 crop=true quality=90 %}" alt="image for {{ story.title }}" class="image-wide"/>
+      {% endif %}
+      <div class="carousel-caption">
+        <h1>{% blocktrans with title=story.title %}{{ title }}{% endblocktrans %}</h1>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <!-- Controls -->
+  <a class="left carousel-control" href="#homepage-carousel" data-slide="prev"><span class="icon-prev"></span></a>
+  <a class="right carousel-control" href="#homepage-carousel" data-slide="next"><span class="icon-next"></span></a>
+</div><!-- carousel items-->
+<!-- End Rotator -->
+
+
+<!-- Box Examples
+=========================================================== -->
+<div class="container">
+  <div class="page-header">
+    <div class="col-lg-3 col-md-3">
+      <h3><i class="fa fa-money" style=" color:#00a3d8"></i> {% trans 'Donate' %}</h3>
+      {% box 12 %}
+    </div>
+    <div class="col-lg-3 col-md-3">
+      <h3><i class="fa fa-users" style=" color:#00a3d8"></i> {% trans 'Membership' %}</h3>
+      {% box 13 %}
+    </div>
+    <div class="col-lg-3 col-md-3">
+      <h3><i class="fa fa-user" style=" color:#00a3d8"></i> {% trans 'Directory' %}</h3>
+      {% box 14 %}
+    </div>
+    <div class="col-lg-3 col-md-3">
+      <h3><i class="fa fa-calendar" style=" color:#00a3d8"></i> {% trans 'Events' %}</h3>
+      {% list_events as events_list limit=3 %}
+      <ul class="list-unstyled">
+      {% for event in events_list %}
+        <li><a href="{{ event.get_absolute_url }}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></li>
+      {% empty %}
+        {% trans 'Events will be shown here. Start adding events now!' %}
+      {% endfor %}
+      </ul>
+      {% if event_list %}
+      <a href="{% url event.search %}">{% trans 'View more events' %} »</a>W
+      {% endif %}
+    </div>
+  </div>
+</div>
+         <!-- Quote
+=========================================================== -->
+<div class="section-colored text-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-xs-3">
+        <h2><i class="fa fa-quote-left"  style="color:#ffffff"></i></h2>
+      </div>
+      <div class="col-lg-6 col-xs-6">
+        <h2><i class="fa fa-bullhorn" style=" color:#95cb03"></i> {% trans 'Testimonials' %}</h2>
+        {% list_case_studies as case_studies_list limit=1 tags="home" %}
+        {% for cs in case_studies_list %}
+          {% blocktrans with overview=cs.overview|safe %}{{ overview }}{% endblocktrans %}
+          <hr>
+          {{ cs.client }}
+        {% endfor %}
+        <p><a href="/">{% trans 'More testimonials' %} <i class="fa fa-plus-circle"></i></a></p>
+      </div>
+      <div class="col-lg-3 col-xs-3">
+        <h2><i class="fa fa-quote-right" style="color:#ffffff"></i></h2>
+      </div>
+    </div><!-- /.row -->
+  </div><!-- /.container -->
+</div>
+         <!-- About and News
+=========================================================== -->
+
+<div class="container about-and-news">
+  <div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-4">
+      {% box 15 %}
+      <h4><i class="fa fa-globe" style=" color:#95cb03"></i> {% trans 'About the Organization' %}</h4>
+      {% box 16 %}
+    </div>
+    <div class="col-lg-8 col-md-8 col-sm-8">  <!-- /news container -->
+      <h2><i class="fa fa-compass" style=" color:#95cb03"></i>  {% trans 'Latest News' %}</h2>
+      {% list_news as news_list limit=4 %}
+      {% for news_item in news_list|slice:":4" %}
+      <div class="col-lg-3 col-md-3 col-sm-12">
+        <h4><a href="{{ news_item.get_absolute_url }}">
+          {% blocktrans with headline=news_item.headline|truncatewords:6 %}{{ headline }}{% endblocktrans %}
+        </a></h4>
+        <p>{% blocktrans with summary=news_item.summary|striptags|truncatewords:"20" %}{{ summary }}{% endblocktrans %}</p>
+        <div class="more"><a href="{{ news_item.get_absolute_url }}">{% trans 'Read More' %} »</a></div>
+      </div>
+      {% empty %}
+        No news to show now. Start adding news now!
+      {% endfor %}
+     </div><!-- /news container -->
+  </div> <!-- /row -->
+</div><!-- /.container -->
+
+<div class="container">
+    {% box 17 %}
+</div><!-- /.container -->
+
+<!-- Footer starts
+=========================================================== -->
+<footer>
+{% theme_include 'footer.html' %}
+</footer>
+<!-- Footer Ends -->
+
+<!-- /container -->
+{% endblock %} <!-- Ends the Body -->
+
+{% block extra_body %}
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- bootstrap 3 and latest jquery 2 are already loaded -->
+
+
+
+ <!-- Theme Specific Javascript files
+ ================================================== -->
+    <!-- Respond JS for IE8 -->
+    <script src="{{ THEME_URL }}media/js/respond.min.js"></script>
+    <!-- HTML5 Support for IE -->
+    <script src="{{ THEME_URL }}media/js/html5shiv.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
+    <script src="{{ THEME_URL }}media/js/jordy.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $('.mainnav nav').meanmenu();
+    });
+    </script>
+
+{% endblock extra_body %}
+
+

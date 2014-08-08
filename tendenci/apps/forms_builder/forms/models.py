@@ -132,7 +132,7 @@ class Form(TendenciBaseModel):
     fields_name = models.CharField(_("Fields Name"), max_length=50,
                                    default=FIELDS_DEFAULT_NAME, blank=True)
     pricing_name = models.CharField(_("Pricing Name"), max_length=50,
-                                    default=PRICING_DEFAULT_NAME)
+                                    default=PRICING_DEFAULT_NAME, blank=True)
 
     objects = FormManager()
 

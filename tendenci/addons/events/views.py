@@ -245,6 +245,14 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
     else:
         speakers = speakers[:1]
 
+    registration = event.registration_configuration
+
+    pricing = registration.get_available_pricings(request.user, is_strict=False)
+    free_event = True
+    if pricing:
+        pricing = pricing.order_by('position', '-price')
+        free_event = not bool([p for p in pricing if p.price > 0])
+
     return render_to_response(template_name, {
         'days': days,
         'event': event,
@@ -257,6 +265,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'speaker_files': speaker_files,
         'organizer_files': organizer_files,
         'place_files': place_files,
+        'free_event': free_event
     }, context_instance=RequestContext(request))
 
 

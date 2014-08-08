@@ -1,0 +1,9 @@
+{% load theme_tags %}
+
+<section id="box-{{ box.pk }}" class="boxes">
+{{ box.content|safe }}
+{% if user.profile.is_superuser %}
+<a href="{% url admin:boxes_box_change box.pk %}?next={{ request.path }}" title="Edit Box" class="edit-box">Admin: Edit {{ box.title|title }} Box</a>
+{% endif %}
+</section>
+{% theme_setting setting_name %}

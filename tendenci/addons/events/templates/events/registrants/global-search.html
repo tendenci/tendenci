@@ -119,9 +119,8 @@
     {{ block.super }}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script type="text/javascript">
-       $(".datepicker").live('focus', function() {
-            console.log('this', this);
-            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
-       });
+       $(document).ready(function () {
+            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+        });
     </script>
 {% endblock %}

@@ -115,7 +115,12 @@ def template_html(request, template_id):
         end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
         event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
         if events:
-            events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+            #events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+            events_list = Event.objects.filter(start_dt__gte=event_start_dt,
+                                               start_dt__lt=event_end_dt,
+                                               status_detail='active',
+                                               status=True,
+                                               allow_anonymous_view=True)
             if events_type:
                 events_list = events_list.filter(type__pk=events_type)
                 events_type = Type.objects.filter(pk=events_type)[0]
@@ -200,7 +205,12 @@ def template_render(request, template_id):
         end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
         event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
         if events:
-            events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+            #events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+            events_list = Event.objects.filter(start_dt__gte=event_start_dt,
+                                               start_dt__lt=event_end_dt,
+                                               status_detail='active',
+                                               status=True,
+                                               allow_anonymous_view=True)
             if events_type:
                 events_list = events_list.filter(type__pk=events_type)
                 events_type = Type.objects.filter(pk=events_type)[0]
