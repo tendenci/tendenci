@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.industries.models import Industry
@@ -13,19 +14,19 @@ class IndustryAdmin(TendenciBaseModelAdmin):
     search_fields = ['industry_name', 'industry_code']
     list_editable = ['position']
     fieldsets = (
-        ('Industry Information', {
+        (_('Industry Information'), {
             'fields': ('industry_name',
                        'industry_code',
                        'description',
                 )
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        ('Status', {'fields': (
+        (_('Status'), {'fields': (
             'status_detail',
             )}),
         )

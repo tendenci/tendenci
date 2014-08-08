@@ -6,9 +6,9 @@ from tendenci.core.sitemaps import TendenciSitemap
 from tendenci.addons.help_files.models import HelpFile
 
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Helpfiles' % get_setting('site','global','sitedisplayname')
+    title = _('%(hp)s Latest Helpfiles' % {'hp': get_setting('site','global','sitedisplayname')})
     link =  "/help-files/"
-    description =  "Latest Helpfiles by %s" % get_setting('site','global','sitedisplayname')
+    description =  _("Latest Helpfiles by %(hp)s" % {'hp': get_setting('site','global','sitedisplayname')})
 
     def items(self):
         items = HelpFile.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]

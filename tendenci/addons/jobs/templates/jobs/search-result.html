@@ -7,7 +7,7 @@
     <div class="job-search-item">
         <div class="job-info {{ job.list_type }}">
             <h2><a href="{{ job.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h2>
-            <div class="content">{{ job.description|striptags|truncatewords:20|safe }}</div>
+            <div class="content">{% blocktrans with d=job.description|striptags|truncatewords:20|safe %}{{ d }}{% endblocktrans %}</div>
         </div>
         {% include 'jobs/meta.html' %}
     </div>

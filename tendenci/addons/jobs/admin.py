@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.jobs.models import Job, JobPricing
@@ -11,7 +12,7 @@ class JobAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['title', 'description']
     fieldsets = (
-        ('Job Information', {
+        (_('Job Information'), {
             'fields': (
                 'title',
                 'slug',
@@ -52,13 +53,13 @@ class JobAdmin(TendenciBaseModelAdmin):
                 'list_type',
             )
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
         )}),
-        ('Status', {'fields': (
+        (_('Status'), {'fields': (
             'status_detail',
         )}),
     )

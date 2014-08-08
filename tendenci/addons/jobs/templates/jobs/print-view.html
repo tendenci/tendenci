@@ -3,9 +3,9 @@
 {% load job_tags %}
 {% load i18n %}
 
-{% block title %}{{ jobs.get_title }}{% endblock %}
-{% block meta_description %}{{ jobs.get_description }}{% endblock %}
-{% block meta_keywords %}{{ jobs.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with t=jobs.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=jobs.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=jobs.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ job.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -30,7 +30,7 @@
 {% if job.description %}
         <div class="section-block">
             <div class="label">{% trans "Description" %}</div>
-            <div class="value">{{ job.description|safe }}</div>
+            <div class="value">{% blocktrans with d=job.description|safe %}{{ d }}{% endblocktrans %}</div>
         </div>
 {% endif %}
 
@@ -87,21 +87,21 @@
 {% if job.experience %}
         <div class="section-block">
             <div class="label">{% trans "Experience" %}</div>
-            <div class="value">{{ job.experience|safe }}</div>
+            <div class="value">{% blocktrans with exp=job.experience|safe %}{{ exp }}{% endblocktrans %}</div>
         </div>
 {% endif %}
 
 {% if job.skills %}
         <div class="section-block">
             <div class="label">{% trans "Skills" %}</div>
-            <div class="value">{{ job.skills|safe }}</div>
+            <div class="value">{% blocktrans with s=job.skills|safe %}{{ s }}{% endblocktrans %}</div>
         </div>
 {% endif %}
 
 {% if job.education %}
         <div class="section-line">
             <div class="label">{% trans "Education Required" %}</div>
-            <div class="value">{{ job.education|safe }}</div>
+            <div class="value">{% blocktrans with e=job.education|safe %}{{ e }}{% endblocktrans %}</div>
             <div class="clear"></div>
         </div>
 {% endif %}

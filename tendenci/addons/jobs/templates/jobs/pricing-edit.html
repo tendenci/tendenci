@@ -3,7 +3,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% block title %}{% blocktrans %}Edit Price:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL 'Job' %} {% endblock %}
+{% block title %}{% blocktrans %}Edit Price:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,7 +15,7 @@
 
     {% job_pricing_nav request.user %}
 
-    <h1>{% blocktrans %}Edit Price:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL 'Job' %} </h1>
+    <h1>{% blocktrans %}Edit Price:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans'Job' %} </h1>
 
     <p>{% trans "To edit the job price, complete the fields below and press Submit." %}</p>
 
@@ -122,7 +122,7 @@
         </div>
 
         <div id="pricing-submit">
-            <input type="submit" value="Submit" />
+            <input type="submit" value="{% trans 'Submit' %}" />
         </div>
         <div class="clear"></div>
     </form>

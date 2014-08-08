@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_JOBS_LABEL 'Job' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'Edit' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,7 +19,7 @@
 
     {% job_nav request.user job %}
 
-    <h1>{% firstof MODULE_JOBS_LABEL 'Job' %} {% trans "Edit" %}</h1>
+    <h1>{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans "Edit" %}</h1>
 
     <div class="job-wrap">
         <div class="options">
@@ -32,12 +32,12 @@
         <div class="forms">
             {{ form|styled_form }}
             <fieldset class="boxy-grey" >
-                <legend id="category-title" style="cursor: pointer"><span>+</span> Category</legend>
+                <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans 'Category' %}</legend>
                 <div id="category-form">
                     {{ categoryform|styled_form }}
                 </div>
             </fieldset>
-            <input type="submit" value="Save changes" />
+            <input type="submit" value="{% trans 'Save changes' %}" />
         </div>
     </form>
 
@@ -60,7 +60,7 @@
         $(document).ready(function(){
             // delete confirmation
             $('.delete').click(function(){
-                var delete_job = confirm('Permenantly delete {% firstof MODULE_JOBS_LABEL 'Job' %}?');    // confirm
+                var delete_job = confirm('{% trans "Permenantly delete" %} {% firstof MODULE_JOBS_LABEL 'Job' %}?');    // confirm
                 if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

@@ -10,6 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
+from django.utils.translation import ugettext_lazy as _
+
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
@@ -244,9 +246,8 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             #save relationships
             job.save()
-
-            messages.add_message(request, messages.SUCCESS,
-                                    'Successfully added %s' % job)
+            msg_string = 'Successfully added %s' % job
+            messages.add_message(request, messages.SUCCESS,_(msg_string))
 
             # send notification to administrators
             recipients = get_notice_recipients(
@@ -279,7 +280,8 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
         # Redirect user w/perms to create pricing if none exist
         pricings = JobPricing.objects.all()
         if not pricings and has_perm(request.user, 'jobs.add_jobpricing'):
-            messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label')))
+            msg_string = 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label'))
+            messages.add_message(request, messages.WARNING, _(msg_string))
             return HttpResponseRedirect(reverse('job_pricing.add'))
 
         initial_category_form_data = {
@@ -387,9 +389,8 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
 
             #save relationships
             job.save()
-
-            messages.add_message(request, messages.SUCCESS,
-                            'Successfully updated %s' % job)
+            msg_string = 'Successfully updated %s' % job
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(
                 reverse(success_redirect, args=[job.slug]))
@@ -424,9 +425,8 @@ def edit_meta(request, id, form_class=MetaForm,
         if form.is_valid():
             job.meta = form.save()  # save meta
             job.save()  # save relationship
-
-            messages.add_message(request, messages.SUCCESS,
-                            'Successfully updated meta for %s' % job)
+            msg_string = 'Successfully updated meta for %s' % job
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
     else:
@@ -443,7 +443,8 @@ def delete(request, id, template_name="jobs/delete.html"):
 
     if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job)
+            msg_string = 'Successfully deleted %s' % job
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
             recipients = get_notice_recipients(
@@ -622,9 +623,8 @@ def approve(request, id, template_name="jobs/approve.html"):
                 'job_approved_user_notice', recipients, extra_context)
             #except:
             #    pass
-
-        messages.add_message(request, messages.SUCCESS,
-                                'Successfully approved %s' % job)
+        msg_string = 'Successfully approved %s' % job
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))
 

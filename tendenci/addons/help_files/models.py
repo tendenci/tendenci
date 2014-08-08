@@ -49,7 +49,7 @@ class HelpFile(TendenciBaseModel):
     objects = HelpFileManager()
 
     class Meta:
-        permissions = (("view_helpfile","Can view help file"),)
+        permissions = (("view_helpfile",_("Can view help file")),)
 
     @models.permalink
     def get_absolute_url(self):

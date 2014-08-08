@@ -176,9 +176,9 @@ class BaseJob(TendenciBaseModel):
 class Job(BaseJob):
 
     class Meta:
-        permissions = (("view_job", "Can view job"),)
-        verbose_name = "Job"
-        verbose_name_plural = "Jobs"
+        permissions = (("view_job", _("Can view job")),)
+        verbose_name = _("Job")
+        verbose_name_plural = _("Jobs")
 
     def get_meta(self, name):
         """
@@ -208,7 +208,7 @@ class JobPricing(models.Model):
     show_member_pricing = models.BooleanField()
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
-                                   help_text='Example: 0.0825 for 8.25%.')
+                                   help_text=_('Example: 0.0825 for 8.25%.')
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="job_pricing_creator",  null=True, on_delete=models.SET_NULL)
@@ -218,9 +218,9 @@ class JobPricing(models.Model):
     status = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (("view_jobpricing", "Can view job pricing"),)
-        verbose_name = "Job Pricing"
-        verbose_name_plural = "Job Pricings"
+        permissions = (("view_jobpricing", _("Can view job pricing")),)
+        verbose_name = _("Job Pricing")
+        verbose_name_plural = _("Job Pricings")
 
     def __unicode__(self):
         price = "%s/%s" % (self.regular_price, self.premium_price)

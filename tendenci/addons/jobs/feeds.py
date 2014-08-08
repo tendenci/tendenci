@@ -6,9 +6,9 @@ from tendenci.core.sitemaps import TendenciSitemap
 from tendenci.addons.jobs.models import Job
 
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Jobs' % get_setting('site','global','sitedisplayname')
+    title = _('%(dname)s Latest Jobs' % {'dname': get_setting('site','global','sitedisplayname')})
     link =  "/jobs/"
-    description =  "Latest Jobs by %s" % get_setting('site','global','sitedisplayname')
+    description = _("Latest Jobs by %(dname)s" % {'dname' : get_setting('site','global','sitedisplayname')})
 
     def items(self):
         items = Job.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-update_dt')[:20]

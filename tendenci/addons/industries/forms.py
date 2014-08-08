@@ -1,14 +1,14 @@
 from tendenci.addons.industries.models import Industry
 from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
-
+from django.utils.translation import ugettext_lazy as _
 
 class IndustryForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'),
-                 ('inactive', 'Inactive'),
-                 ('pending', 'Pending'),))
+        choices=(('active', _('Active')),
+                 ('inactive', _('Inactive')),
+                 ('pending', _('Pending')),))
 
     class Meta:
         model = Industry
@@ -23,13 +23,13 @@ class IndustryForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('Industry Information', {
+        fieldsets = [(_('Industry Information'), {
                       'fields': ['industry_name',
                                  'industry_code',
                                  'description',
                                  ],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -37,7 +37,7 @@ class IndustryForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]

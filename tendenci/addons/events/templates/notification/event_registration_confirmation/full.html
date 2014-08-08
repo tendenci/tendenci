@@ -145,7 +145,7 @@
 {% endif %}
 
 {% if event.description %}
-<div>{{ event.description|relative_to_absolute_urls|safe }}</div>
+<div>{% blocktrans with desc=event.description|relative_to_absolute_urls|safe %}{{ desc }}{% endblocktrans %}</div>
 {% endif %}
 
 {% if event.registration_configuration.registration_email_type and event.registration_configuration.registration_email_type != 'default' %}
