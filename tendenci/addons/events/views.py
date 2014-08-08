@@ -248,6 +248,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(request.user, is_strict=False)
+    free_event = True
     if pricing:
         pricing = pricing.order_by('position', '-price')
         free_event = not bool([p for p in pricing if p.price > 0])
