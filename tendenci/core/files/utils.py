@@ -49,7 +49,7 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         binary = build_image(file, size, pre_key, **kwargs)
 
     try:
-        return Image.open(StringIO(binary))
+        return Image.open(StringIO(binary)).convert('RGB')
     except:
         return ''
 
