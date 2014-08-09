@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Import Locations from CSV file{% endblock %}
+{% block title %}{% trans 'Import Locations from CSV file' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,7 +19,7 @@
 
     <form method='post' action='{% url locations_import_preview locport.id %}' enctype="multipart/form-data">{% csrf_token %}
         {{ form|styled_form }}
-        <input type='submit' value='Submit'>
+        <input type='submit' value='{% trans "Submit" %}'>
     </form>
 </div>
 {% endblock %}

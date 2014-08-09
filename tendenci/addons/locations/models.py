@@ -43,7 +43,7 @@ class Location(TendenciBaseModel):
     objects = LocationManager()
 
     class Meta:
-        permissions = (("view_location","Can view location"),)
+        permissions = (("view_location",_("Can view location")),)
 
     def __unicode__(self):
         return self.location_name

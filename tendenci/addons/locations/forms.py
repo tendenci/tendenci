@@ -26,7 +26,7 @@ class LocationForm(TendenciBaseForm):
     remove_photo = forms.BooleanField(label=_('Remove the current logo'), required=False)
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     email = EmailVerificationField(label=_("Email"), required=False)
     country = CountrySelectField(label=_("Country"), required=False)
@@ -58,7 +58,7 @@ class LocationForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('Location Information', {
+        fieldsets = [(_('Location Information'), {
                       'fields': ['location_name',
                                  'description',
                                  'latitude',
@@ -68,7 +68,7 @@ class LocationForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Contact', {
+                      (_('Contact'), {
                       'fields': ['contact',
                                  'address',
                                  'address2',
@@ -83,7 +83,7 @@ class LocationForm(TendenciBaseForm):
                                  ],
                         'classes': ['contact'],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -91,7 +91,7 @@ class LocationForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -115,12 +115,12 @@ class LocationForm(TendenciBaseForm):
 
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
+                raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
 
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+                raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
 
             max_upload_size = get_max_file_upload_size()
             if photo_upload.size > max_upload_size:

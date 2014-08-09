@@ -15,7 +15,7 @@
 
     <div class="locations-wrap">
 
-        <h1>{% firstof MODULE_LOCATIONS_LABEL 'Locations' %} {% trans "Export" %}</h1>
+        <h1>{% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %} {% trans "Export" %}</h1>
 
         <div class="content">
             <form action="." method="POST" >{% csrf_token %}

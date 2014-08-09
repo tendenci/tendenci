@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
@@ -130,8 +131,8 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                     photo = form.cleaned_data['photo_upload']
                     if photo:
                         location.save(photo=photo)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
+                msg_string = 'Successfully updated %s' % location
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
@@ -159,8 +160,8 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                     photo = form.cleaned_data['photo_upload']
                     if photo:
                         location.save(photo=photo)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
+                msg_string = 'Successfully added %s' % location
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
@@ -179,7 +180,8 @@ def delete(request, id, template_name="locations/delete.html"):
 
     if has_perm(request.user,'locations.delete_location'):
         if request.method == "POST":
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % location)
+            msg_string = 'Successfully deleted %s' % location
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
             location.delete()
 
             return HttpResponseRedirect(reverse('location.search'))

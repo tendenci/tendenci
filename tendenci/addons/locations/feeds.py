@@ -1,3 +1,5 @@
+from django.utils.translation import ugettext_lazy as _
+
 from tendenci.core.rss.feedsmanager import SubFeed
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
@@ -6,9 +8,9 @@ from tendenci.core.sitemaps import TendenciSitemap
 from tendenci.addons.locations.models import Location
 
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Locations' % get_setting('site','global','sitedisplayname')
+    title = _('%(dname)s Latest Locations' % { 'dname':get_setting('site','global','sitedisplayname')})
     link =  "/locations/"
-    description =  "Latest Locations by %s" % get_setting('site','global','sitedisplayname')
+    description = _("Latest Locations by %(dname)s" %  {'dname':get_setting('site','global','sitedisplayname')})
 
     def items(self):
         items = Location.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')[:20]

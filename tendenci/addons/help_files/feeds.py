@@ -1,3 +1,5 @@
+from django.utils.translation import ugettext_lazy as _
+
 from tendenci.core.rss.feedsmanager import SubFeed
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER

@@ -1,6 +1,7 @@
 {% extends "locations/base.html" %}
 {% load locations_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ location.location_name }}{% endblock %}
 
@@ -14,9 +15,9 @@
 
     <div class="location-wrap">
         <h2>{{ location.location_name }}</h2>
-        <div class="content">{{ location.description|safe }}</div>
+        <div class="content">{% blocktrans with l=location.description|safe %}{{ l }}{% endblocktrans %}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ location.create_dt|date:"long" }} by {{ location.creator }}</div>
+            <div class="submitted">{% blocktrans with dt=location.create_dt|date:"long" creator=location.creator %}Submitted on {{ dt }} by {{ creator }}{% endblocktrans %}</div>
         </div>
     </div>
 
