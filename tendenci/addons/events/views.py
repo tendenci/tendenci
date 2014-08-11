@@ -374,8 +374,9 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     else:
         filter_op = 'gte'
 
-    date_filter = {'start_dt__%s' %filter_op: start_dt}
-    events = events.filter(**date_filter)
+    start_date_filter = {'start_dt__%s' %filter_op: start_dt}
+    end_date_filter = {'end_dt__%s' % filter_op: start_dt }
+    events = events.filter(Q(**start_date_filter)|Q(**end_date_filter))
 
     if past:
         events = events.order_by('-start_dt', '-priority')
