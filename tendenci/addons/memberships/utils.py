@@ -23,6 +23,7 @@ from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
@@ -564,11 +565,11 @@ def is_import_valid(file_path):
     ext = os.path.splitext(file_path)[1]
 
     if ext != '.csv':
-        errs.append("Pleaes make sure you're importing a .csv file.")
+        errs.append(_("Pleaes make sure you're importing a .csv file."))
         return False, errs
 
     if has_null_byte(file_path):
-        errs.append('This .csv file has null characters, try re-saving it.')
+        errs.append(_('This .csv file has null characters, try re-saving it.'))
         return False, errs
 
     # get header column
@@ -584,7 +585,7 @@ def is_import_valid(file_path):
     if all(requirements_met):
         return True, []
     else:
-        return False, ['Please make sure there is a membership type column.']
+        return False, [_('Please make sure there is a membership type column.')]
 
 
 def count_active_memberships(date):
@@ -1154,7 +1155,7 @@ class ImportMembDefault(object):
                     is_valid = False
                     error_msg = 'No membership type. Please add one to the site.'
 
-        return is_valid, error_msg
+        return is_valid, _(error_msg)
 
     def clean_app(self, memb_data):
         """
@@ -1208,7 +1209,7 @@ class ImportMembDefault(object):
                     is_valid = False
                     error_msg = 'No membership app. Please add one to the site.'
 
-        return is_valid, error_msg
+        return is_valid, _(error_msg)
 
     def clean_corporate_membership(self, memb_data):
         if 'corporate_membership_id' in memb_data:

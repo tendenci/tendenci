@@ -18,7 +18,7 @@
 {% block body %}
 <div class="t">
     <h2>{{ app.name }}</h2>
-    <p>{{ app.description|safe|urlize }}</p>
+    <p>{% blocktrans with d=app.description|safe|urlize %}{{ d }}{% endblocktrans %}</p>
 
     <div>{{ form.non_field_errors }}</div>
 
@@ -36,17 +36,17 @@
 
             <input type="hidden" name="user_addres_id" value="">
             <input type="hidden" name="user_id" value="">
-            <table border="0" width="100%"><tr><td colspan="4"><h1>All Fields</h1></td></tr><table border=0><tr><td colspan="4">&nbsp;</td></tr><tr bgcolor="#f2f2f2"><td colspan="4"><span class="subtitles">Section 1: User Information</span></td></tr><tr><td align="left" nowrap valign="top" width="125"><div style="margin-left: 2em;">Salutation</div></td><td align="left">
+            <table border="0" width="100%"><tr><td colspan="4"><h1>{% trans 'All Fields' %}</h1></td></tr><table border=0><tr><td colspan="4">&nbsp;</td></tr><tr bgcolor="#f2f2f2"><td colspan="4"><span class="subtitles">Section 1: User Information</span></td></tr><tr><td align="left" nowrap valign="top" width="125"><div style="margin-left: 2em;">Salutation</div></td><td align="left">
 
             <select size="1"  name="salutation" class="body_copy">
             <option value="{{ form.salutation.value }}" SELECTED>SELECT ONE</option>
-            <option value="Mr.">Mr.</option>
-            <option value="Mrs.">Mrs.</option>
-            <option value="Ms.">Ms.</option>
-            <option value="Miss">Miss</option>
-            <option value="Dr.">Dr.</option>
-            <option value="Prof.">Prof.</option>
-            <option value="Hon.">Hon.</option>
+            <option value="{% trans 'Mr.' %}">{% trans 'Mr.' %}</option>
+            <option value="{% trans 'Mrs.' %}">{% trans 'Mrs.' %}</option>
+            <option value="{% trans 'Ms.' %}">{% trans 'Ms.' %}</option>
+            <option value="{% trans 'Miss' %}">{% trans 'Miss.' %}</option>
+            <option value="{% trans 'Dr.' %}">{% trans 'Dr.' %}</option>
+            <option value="{% trans 'Prof.' %}">{% trans 'Prof.' %}</option>
+            <option value="{% trans 'Hon.' %}">{% trans 'Hon.' %}</option>
             </select>
 
             </td><td>&nbsp;</td></tr></table><table border=0><tr><td align="left" nowrap valign="top" width="125"><div style="margin-left: 2em;">First Name<span class="body_copy_alerts">*</span></div></td><td align="left"><input type="text" name="{{ form.first_name.html_name }}" value="{{ form.first_name.value }}" size="28">

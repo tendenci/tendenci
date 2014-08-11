@@ -57,7 +57,7 @@
           {% block object-tools-items %}
 
             <li><a href="{% url 'profile.search' %}?members=on">
-                Search Members {{ profile }}</a></li>
+                {% trans 'Search Members' %} {{ profile }}</a></li>
 
             <li>
               <a href="{% url cl.opts|admin_urlname:'add' %}{% if is_popup %}?_popup=1{% endif %}" class="addlink">

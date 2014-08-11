@@ -27,6 +27,7 @@ from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext_lazy as _
 
 from johnny.cache import invalidate
 from geraldo.generators import PDFGenerator
@@ -98,15 +99,15 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         if 'approve' in GET_KEYS:
             membership.approve(request_user=request.user)
             membership.send_email(request, 'approve')
-            messages.add_message(request, messages.SUCCESS, 'Successfully Approved')
+            messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in GET_KEYS:
             membership.disapprove(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, 'Successfully Disapproved')
+            messages.add_message(request, messages.SUCCESS, _('Successfully Disapproved'))
 
         if 'expire' in GET_KEYS:
             membership.expire(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, 'Successfully Expired')
+            messages.add_message(request, messages.SUCCESS, _('Successfully Expired'))
 
         if 'print' in GET_KEYS:
             template_name = 'memberships/details_print.html'
@@ -1323,7 +1324,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
             EventLog.objects.log(instance=membership)
 
             # redirect: membership edit page
-            messages.success(request, 'Successfully updated Membership Information.')
+            messages.success(request, _('Successfully updated Membership Information.'))
             return redirect(reverse('membership.details', kwargs={'id': membership.id}))
 
     context = {

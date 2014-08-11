@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.invoices.models import Invoice
@@ -6,7 +7,7 @@ from tendenci.apps.invoices.models import Invoice
 def make_payment_inv_add(user, make_payment, **kwargs):
     inv = Invoice()
     # field to be populated to invoice
-    inv.title = "Make Payment Invoice"
+    inv.title = _("Make Payment Invoice")
     inv.bill_to =  make_payment.first_name + ' ' + make_payment.last_name
     inv.bill_to_first_name = make_payment.first_name
     inv.bill_to_last_name = make_payment.last_name
@@ -76,7 +77,3 @@ def make_payment_email_user(request, make_payment, invoice, **kwargs):
         msg.send()
     except:
         pass
-
-
-
-

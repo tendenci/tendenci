@@ -253,13 +253,13 @@ class MakePaymentForm(forms.ModelForm):
     captcha = CaptchaField(label=_('Type the code below'))
     # TODO: Make check-paid an admin only option
     payment_amount = PriceField(max_digits=10, decimal_places=2)
-    payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('cc', 'Make Online Payment'),)), initial='cc',)
+    payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('cc', _('Make Online Payment')),)), initial='cc',)
     company = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'size':'30'}))
     address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'size':'35'}))
     state = forms.CharField(max_length=50, required=False,  widget=forms.TextInput(attrs={'size':'5'}))
     zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
-    email = EmailVerificationField(label=_("Email"), help_text='A valid e-mail address, please.')
+    email = EmailVerificationField(label=_("Email"), help_text=_('A valid e-mail address, please.'))
     email_receipt = forms.BooleanField(initial=True)
     country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES, required=False)
 

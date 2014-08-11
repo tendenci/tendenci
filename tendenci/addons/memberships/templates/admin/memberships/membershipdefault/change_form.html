@@ -44,7 +44,7 @@
 {% block submit_buttons_bottom %}
 {% if original.get_status == 'archive' %}
     <div class="submit-row"><strong>
-        Editing archived memberships is not allowed</strong></div>
+        {% trans 'Editing archived memberships is not allowed' %}</strong></div>
 {% else %}
     {% submit_row %}
 {% endif %}

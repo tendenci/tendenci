@@ -50,7 +50,7 @@
     <fieldset class="module aligned {{ fieldset.classes }}">
         {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
         {% if fieldset.description %}
-            <div class="description">{{ fieldset.description|safe }}</div>
+            <div class="description">{% blocktrans with d=fieldset.description|safe %}{{ d }}{% endblocktrans %}</div>
         {% endif %}
         {% for line in fieldset %}
 
@@ -82,7 +82,7 @@
                                     {% endif %}
                                 {% endif %}
                                 {% if field.field.field.help_text %}
-                                    <p class="help">{{ field.field.field.help_text|safe }}</p>
+                                    <p class="help">{% blocktrans with h=field.field.field.help_text|safe %}{{ h }}{% endblocktrans %}</p>
                                 {% endif %}
                                 {% if field.field.name == "field_function" %}</div>{% endif %}
                                 {% if field.field.name == "function_params" %}</div>{% endif %}
