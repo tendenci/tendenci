@@ -20,6 +20,7 @@ class Command(BaseCommand):
                     'clean_corporate_memberships',
                     'send_membership_notices',
                     'clean_memberships',
+                    'memberships_set_statud_detail',
                     'refresh_membership_groups',
                     'send_corp_membership_notices',
                     'clean_old_exports',

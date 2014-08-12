@@ -11,6 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from datetime import datetime
         from dateutil.relativedelta import relativedelta
+        from tendenci.apps.profiles.models import Profile
         from tendenci.addons.memberships.models import MembershipDefault, MembershipType
         from tendenci.apps.user_groups.models import GroupMembership
 
@@ -27,9 +28,14 @@ class Command(BaseCommand):
 
             for membership in memberships:
                 # update profile
-                membership.user.profile.refresh_member_number()
-                membership.status_detail = 'expired'
-                membership.save()
+                # added try-except block due to error encountered
+                # on a site that might also be replicated tendenci wide
+                try:
+                    membership.user.profile.refresh_member_number()
+                    membership.status_detail = 'expired'
+                    membership.save()
+                except Profile.DoesNotExist:
+                    pass
 
                 # remove from group
                 GroupMembership.objects.filter(
