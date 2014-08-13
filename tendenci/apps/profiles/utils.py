@@ -229,8 +229,9 @@ def get_member_reminders(user):
         if hasattr(membership, 'app') and membership.app:
             renew_link = '%s%s?username=%s&membership_type_id=%s' % (
                 get_setting('site', 'global', 'siteurl'),
-                reverse('membership_default.add',
-                        kwargs={'slug': membership.app.slug}),
+                reverse('membership_default.renew',
+                        kwargs={'slug': membership.app.slug,
+                                'membership_id': membership.id}),
                 membership.user.username,
                 membership.membership_type.pk)
 
