@@ -347,6 +347,10 @@ label {
     display: block;
     margin-bottom: 5px;
 }
+.label{
+	font-weight: normal;
+	font-size: 100%;
+}
 
 div.form-field{
     margin-top: 10px !important;
@@ -361,8 +365,6 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     color: #555555;
     display: inline-block;
     font-size: 14px;
-    height: 20px;
-    line-height: 20px;
     /*margin-bottom: 10px;*/
     padding: 4px 6px;
     vertical-align: middle;
