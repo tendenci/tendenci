@@ -81,6 +81,8 @@ class Profile(Person):
     def __unicode__(self):
         if hasattr(self, 'user'):
             return self.user.username
+        else:
+            return u''
 
     @models.permalink
     def get_absolute_url(self):
@@ -117,7 +119,7 @@ class Profile(Person):
     @property
     def is_superuser(self):
         return all([self._can_login(), self.user.is_superuser])
-    
+
     @property
     def lang(self):
         if not self.language in [l[0] for l in settings.LANGUAGES]:

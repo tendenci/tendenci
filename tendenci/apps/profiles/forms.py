@@ -45,7 +45,8 @@ class ProfileSearchForm(forms.Form):
                         ('city', _('City')),
                         ('state', _('State')),
                         ('zipcode', _('Zip Code')),
-                        ('country', _('Country'))
+                        ('country', _('Country'),
+                          ('spouse', _('Spouse')))
                                )
     SEARCH_METHOD_CHOICES = (
                              ('starts_with', _('Starts With')),
