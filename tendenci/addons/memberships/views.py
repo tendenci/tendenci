@@ -794,15 +794,25 @@ def membership_default_add_legacy(request):
     return redirect(redirect_url)
 
 
-def membership_default_add(request, slug='', template='memberships/applications/add.html', **kwargs):
+def membership_default_add(request, slug='', membership_id=None,
+                           template='memberships/applications/add.html', **kwargs):
     """
     Default membership application form.
     """
     from tendenci.addons.memberships.models import Notice
-
+    
     user = None
     membership = None
     username = request.GET.get('username', u'')
+    is_renewal = False
+    
+    if membership_id:
+        # it's renewal - make sure they are logged in
+        membership = get_object_or_404(MembershipDefault, id=membership_id)
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
+                                request.get_full_path()))
+        is_renewal = True
 
     if not request.user.is_superuser:
         if request.user.is_authenticated():
@@ -819,8 +829,11 @@ def membership_default_add(request, slug='', template='memberships/applications/
         username == request.user.username,
     )
 
-    if any(allowed_users) and username:
-        [user] = User.objects.filter(username=username)[:1] or [None]
+    if is_renewal:
+        user = membership.user
+    else:
+        if any(allowed_users) and username:
+            [user] = User.objects.filter(username=username)[:1] or [None]
 
     join_under_corporate = kwargs.get('join_under_corporate', False)
     corp_membership = None
@@ -847,37 +860,39 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
         # check if they have verified their email or entered the secret code
         corp_membership = get_object_or_404(CorpMembership, id=cm_id)
-
-        # imv = individual membership verification
-        imv_id = kwargs.get('imv_id', 0)
-        imv_guid = kwargs.get('imv_guid')
-
-        secret_hash = kwargs.get('secret_hash', '')
-
-        is_verified = False
+        
         authentication_method = corp_app.authentication_method
 
-        if request.user.profile.is_superuser or authentication_method == 'admin':
-            is_verified = True
-        elif authentication_method == 'email':
-            try:
-                indiv_veri = IndivEmailVerification.objects.get(
-                    pk=imv_id, guid=imv_guid)
-                is_verified = indiv_veri.verified
+        if not is_renewal:
+            # imv = individual membership verification
+            imv_id = kwargs.get('imv_id', 0)
+            imv_guid = kwargs.get('imv_guid')
+    
+            secret_hash = kwargs.get('secret_hash', '')
+    
+            is_verified = False
 
-            except IndivEmailVerification.DoesNotExist:
-                pass
-
-        elif authentication_method == 'secret_code':
-            tmp_secret_hash = md5('%s%s' % (corp_membership.corp_profile.secret_code,
-                        request.session.get('corp_hash_random_string', ''))
-                                  ).hexdigest()
-            if secret_hash == tmp_secret_hash:
+            if request.user.profile.is_superuser or authentication_method == 'admin':
                 is_verified = True
-
-        if not is_verified:
-            return redirect(reverse('membership_default.corp_pre_add',
-                                    args=[cm_id]))
+            elif authentication_method == 'email':
+                try:
+                    indiv_veri = IndivEmailVerification.objects.get(
+                        pk=imv_id, guid=imv_guid)
+                    is_verified = indiv_veri.verified
+    
+                except IndivEmailVerification.DoesNotExist:
+                    pass
+    
+            elif authentication_method == 'secret_code':
+                tmp_secret_hash = md5('%s%s' % (corp_membership.corp_profile.secret_code,
+                            request.session.get('corp_hash_random_string', ''))
+                                      ).hexdigest()
+                if secret_hash == tmp_secret_hash:
+                    is_verified = True
+    
+            if not is_verified:
+                return redirect(reverse('membership_default.corp_pre_add',
+                                        args=[cm_id]))
 
     else:  # regular membership
 
@@ -970,6 +985,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
         'membership_app': app,
         'join_under_corporate': join_under_corporate,
         'corp_membership': corp_membership,
+        'is_renewal': is_renewal,
     }
 
     if join_under_corporate:
@@ -977,7 +993,7 @@ def membership_default_add(request, slug='', template='memberships/applications/
 
     demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None)
 
-    if user:
+    if user and (not is_renewal):
         [membership] = user.membershipdefault_set.filter(
             membership_type=membership_type_id).order_by('-pk')[:1] or [None]
 

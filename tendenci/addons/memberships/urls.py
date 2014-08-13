@@ -80,6 +80,10 @@ urlpatterns = patterns(
         "membership_default_add", {'join_under_corporate': True},
         name="membership.add_via_corp_secret_code"),
 
+    url(r"^%s/applications/renew/(?P<cm_id>\d+)/(?P<membership_id>\d+)/$" % urlpath,
+        "membership_default_add", {'join_under_corporate': True},
+        name="membership_default.renew_under_corp"),
+
     # membership default application preview
     url(r"^%s/applications/(?P<slug>[\w\-]+)/preview/$" % urlpath,
         "membership_default_preview",
@@ -94,6 +98,11 @@ urlpatterns = patterns(
     url(r"^%s/applications/(?P<slug>[\w\-]+)/$" % urlpath,
         "membership_default_add",
         name="membership_default.add"),
+                       
+    # membership default renew
+    url(r"^%s/applications/(?P<slug>[\w\-]+)/(?P<membership_id>\d+)/$" % urlpath,
+        "membership_default_add",
+        name="membership_default.renew"),
 
     # membership default edit
     url(r"^%s/applications/(?P<id>\d+)/edit/$" % urlpath,
