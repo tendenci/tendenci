@@ -32,10 +32,11 @@ class Command(BaseCommand):
                 # on a site that might also be replicated tendenci wide
                 try:
                     membership.user.profile.refresh_member_number()
-                    membership.status_detail = 'expired'
-                    membership.save()
                 except Profile.DoesNotExist:
                     pass
+
+                    membership.status_detail = 'expired'
+                    membership.save()
 
                 # remove from group
                 GroupMembership.objects.filter(
