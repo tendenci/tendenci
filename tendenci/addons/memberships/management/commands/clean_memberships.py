@@ -35,8 +35,8 @@ class Command(BaseCommand):
                 except Profile.DoesNotExist:
                     pass
 
-                    membership.status_detail = 'expired'
-                    membership.save()
+                membership.status_detail = 'expired'
+                membership.save()
 
                 # remove from group
                 GroupMembership.objects.filter(
