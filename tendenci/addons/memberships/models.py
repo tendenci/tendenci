@@ -296,7 +296,15 @@ class MembershipSet(models.Model):
 
     @property
     def group(self):
-        return self.memberships[0].group
+        return self.memberships()[0].group
+
+    @property
+    def membership_type(self):
+        return ', '.join(self.memberships().values_list('membership_type__name', flat=True))
+
+    @property
+    def payment_method(self):
+        return ', '.join(self.memberships().values_list('payment_method__human_name', flat=True))
 
     def memberships(self):
         return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')

@@ -477,6 +477,10 @@ class CorpMembership(TendenciBaseModel):
     def group(self):
         return self.corporate_membership_type.membership_type.group
 
+    @property
+    def membership_type(self):
+        return self.corporate_membership_type.membership_type
+
     @models.permalink
     def get_renewal_url(self):
         """

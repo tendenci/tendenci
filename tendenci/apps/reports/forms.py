@@ -4,6 +4,7 @@ from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import simplejson as json
 
+from tendenci.addons.memberships.models import MembershipType
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.apps.reports.utils import get_ct_nice_name
@@ -32,6 +33,11 @@ class ReportForm(forms.ModelForm):
 
         if 'invoice_status' in self.fields:
             self.fields['invoice_status'].initial = 'has-balance'
+
+        self.fields['invoice_membership_filter'] = forms.ChoiceField(
+            label="Filter results based on membership type (if membership is selected)",
+            choices=[('', '--- Membership type filter ---')] + sorted([(i['pk'], i['name']) for i in MembershipType.objects.values('pk', 'name')], key=lambda t: t[0]),
+            required=False)
 
         self.fields['invoice_object_type'] = forms.MultipleChoiceField(
             label="Which apps to include?",
