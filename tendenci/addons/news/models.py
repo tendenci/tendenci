@@ -25,8 +25,8 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 class News(TendenciBaseModel):
     CONTRIBUTOR_AUTHOR = 1
     CONTRIBUTOR_PUBLISHER = 2
-    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, 'Author'),
-                           (CONTRIBUTOR_PUBLISHER, 'Publisher'))
+    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
+                           (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
@@ -74,8 +74,8 @@ class News(TendenciBaseModel):
     objects = NewsManager()
 
     class Meta:
-        permissions = (("view_news","Can view news"),)
-        verbose_name_plural = "News"
+        permissions = (("view_news",_("Can view news")),)
+        verbose_name_plural = _("News")
 
     def get_meta(self, name):
         """

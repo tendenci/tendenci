@@ -13,7 +13,7 @@
 <div class="t">
     {% news_nav request.user %}
     <div class="news-wrap">
-        <h1>{% firstof MODULE_NEWS_LABEL 'News' %} {% trans "Export" %}</h1>
+        <h1>{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Export" %}</h1>
         <div class="content">
             <form action="." method="POST" >{% csrf_token %}
                 <input type="submit" value="{% trans 'Download' %}" />

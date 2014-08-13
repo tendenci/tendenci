@@ -584,7 +584,7 @@ class UserForm(forms.ModelForm):
                                 label=_(u'Username'),
                                 help_text = _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
                                 error_messages = {
-                                    'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).)"
+                                    'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
 
         self.field_names = [name for name in self.fields.keys()]

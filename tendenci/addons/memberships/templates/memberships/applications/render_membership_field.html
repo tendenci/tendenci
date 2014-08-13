@@ -1,11 +1,12 @@
 {% load styled_forms %}
+{% load i18n %}
 
 {% if field_obj.field_name == '' %}
     {% if field_obj.field_name == '' %}
         <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
             <h2>{{ field_obj.label  }}</h2>
             {% if field_obj.description %}
-            <div>{{ field_obj.description }}</div>
+            <div>{% blocktrans with d=field_obj.description %}{{ d }}{% endblocktrans %}</div>
             {% endif %}
         </div>
     {% endif %}
@@ -18,7 +19,7 @@
                     {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
-                            <p>{{ error }}</p>
+                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                             {% endfor %}
                         </div>
                     {% endif %}
@@ -30,7 +31,7 @@
                     </div>
 
                     {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text }}</div>
+                        <div class="help-text">{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</div>
                     {% endif %}
                 </div>
                 <div style="clear: both"><!-- IE7 --></div>
@@ -46,14 +47,14 @@
                             {% if field.errors %}
                              <div class="error">
                                  {% for error in field.errors %}
-                                    <p>{{ error }}</p>
+                                    <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                                  {% endfor %}
                              </div>
                             {% endif %}
 
                             {{ field }}
                             {% if field.help_text %}
-                                <span class="help-text"><small>{{ field.help_text }}</small></span>
+                                <span class="help-text"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
                             {% endif %}
                         </div>
 
@@ -73,13 +74,13 @@
                         </div>
                         {% if field|is_checkboxselectmultiple %}
                             {% if field.help_text %}
-                            <span class="help-text checkmultiple"><small>{{ field.help_text }}</small></span>
+                            <span class="help-text checkmultiple"><small>{% blocktrans wiht h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
                             {% endif %}
                         {% endif %}
 
                         {% if field|is_fileinput %}
                             {% if field.help_text %}
-                            <span class="help-text"><small>{{ field.help_text }}</small></span>
+                            <span class="help-text"><small>{% blocktrans wiht h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
                             {% endif %}
                         {% endif %}
 
@@ -87,14 +88,14 @@
                             {% if field.errors %}
                              <div class="error">
                                  {% for error in field.errors %}
-                                    <p>{{ error }}</p>
+                                    <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                                  {% endfor %}
                              </div>
                             {% endif %}
                             {{ field }}
                             {% if not field|is_checkboxselectmultiple and not field|is_fileinput %}
                             {% if field.help_text %}
-                            <span class="help-text"><small>{{ field.help_text }}</small></span>
+                            <span class="help-text"><small>{% blocktrans wiht h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
                             {% endif %}
                         {% endif %}
 

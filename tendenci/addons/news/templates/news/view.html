@@ -7,9 +7,9 @@
 {% load i18n %}
 {% load meta_tags %}
 
-{% block title %}{{ news.get_title }}{% endblock %}
-{% block meta_description %}{{ news.get_description }}{% endblock %}
-{% block meta_keywords %}{{ news.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with t=news.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=news.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=news.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -32,17 +32,17 @@
              </div>
         </div>
 
-        <h1>{{ news.headline }}</h1>
+        <h1>{% blocktrans with h=news.headline %}{{ h }}{% endblocktrans %}</h1>
         {% if news.google_profile %}
         {% if news.has_google_author %}
-        <a href="{{ news.google_profile }}?rel=author">View author's Google+ profile</a>
+        <a href="{{ news.google_profile }}?rel=author">{% trans "View author's Google+ profile" %}</a>
         {% elif news.has_google_publisher %}
-        <a href="{{ news.google_profile }}" rel="publisher">View publisher's Google+ page</a>
+        <a href="{{ news.google_profile }}" rel="publisher">{% trans "View publisher's Google+ page" %}</a>
         {% endif %}
         {% endif %}
 
         <div class="content">
-            {{ news.body|safe }}
+            {% blocktrans with b=news.body|safe %}{{ b }}{% endblocktrans %}
         </div>
         {% include "news/meta.html" %}
         <br />

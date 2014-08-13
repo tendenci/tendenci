@@ -127,7 +127,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
 
     never_expires = models.BooleanField(_("Never Expires"), default=0,
-                                        help_text=_('If selected, skip the Renewal Options.')
+                                        help_text=_('If selected, skip the Renewal Options.'))
     period = models.IntegerField(_('Period'), default=0)
     period_unit = models.CharField(choices=PERIOD_UNIT_CHOICES, max_length=10)
     period_type = models.CharField(_("Period Type"), default='rolling', choices=PERIOD_CHOICES, max_length=10)

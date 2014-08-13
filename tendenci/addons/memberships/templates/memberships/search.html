@@ -6,7 +6,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% block title %}Membership Search{% endblock %}
+{% block title %}{% trans 'Membership Search' %}{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
@@ -21,7 +21,7 @@
 <div class="t">
     {% membership_nav request.user %}
 
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Membership Search</h1>
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% trans 'Membership Search' %}</h1>
 
     {% membership_search %}
 
