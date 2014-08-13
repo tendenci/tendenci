@@ -26,12 +26,22 @@ class Command(BaseCommand):
         invalidate('reports_run')
 
     def report_output_invoices(self, run):
+        from tendenci.addons.corporate_memberships.models import CorpMembership
+        try:
+            from donations.models import Donation
+        except:
+            Donation = None
+        from tendenci.addons.memberships.models import (MembershipType,
+            MembershipSet, MembershipDefault)
         from tendenci.apps.invoices.models import Invoice
         from tendenci.apps.reports.models import CONFIG_OPTIONS
+        is_summary_mode = (run.output_type == 'html-summary')
         results = []
         totals = {'total': 0, 'payments_credits': 0, 'balance': 0, 'count': 0}
         filters = Q()
         filters = (filters & Q(create_dt__gte=run.range_start_dt) & Q(create_dt__lte=run.range_end_dt))
+
+        membership_filter = None
 
         if run.report.config:
             for k, v in run.report.config_options_dict().items():
@@ -45,6 +55,12 @@ class Command(BaseCommand):
                         filters = (filters & (Q(object_type__in=v) | Q(object_type__isnull=True)))
                     else:
                         filters = (filters & Q(object_type__in=v))
+                elif k == "invoice_membership_filter":
+                    try:
+                        item = MembershipType.objects.get(pk=v)
+                        membership_filter = item
+                    except:
+                        pass
 
         distinct_object_types = Invoice.objects.filter(filters).values('object_type').distinct()
 
@@ -52,10 +68,59 @@ class Command(BaseCommand):
             ot_dict = {}
             invoices = Invoice.objects.filter(filters).filter(
                 object_type=ot['object_type'])
+
+            try:
+                if membership_filter:
+                    invoice_object = invoices[0].get_object()
+
+                    if isinstance(invoice_object, MembershipDefault):
+                        members_pk = MembershipDefault.objects.filter(membership_type=membership_filter) \
+                            .values_list('pk', flat=True)
+                        invoices = invoices.filter(object_id__in=set(members_pk))
+                    elif isinstance(invoice_object, MembershipSet):
+                        members_pk = MembershipSet.objects.filter(membershipdefault__membership_type=membership_filter) \
+                            .values_list('pk', flat=True)
+                        invoices = invoices.filter(object_id__in=set(members_pk))
+                    elif isinstance(invoice_object, CorpMembership):
+                        members_pk = CorpMembership.objects.filter(corporate_membership_type__membership_type=membership_filter) \
+                            .values_list('pk', flat=True)
+                        invoices = invoices.filter(object_id__in=set(members_pk))
+            except:
+                pass
+
+            # generate summary mode data
+            if is_summary_mode:
+                sm_dict = {}
+                for invoice in invoices:
+                    key = str(invoice.get_object())
+                    if key not in sm_dict:
+                        sm_dict[key] = {
+                            'invoices': [],
+                            'count': 0,
+                            'total': 0,
+                            'payments_credits': 0,
+                            'balance': 0,
+                        }
+                    invoice_dict = sm_dict[key]
+                    invoice_dict['count'] += 1
+                    invoice_dict['invoices'].append(invoice)
+                    invoice_dict['total'] += invoice.total
+                    invoice_dict['payments_credits'] += invoice.payments_credits
+                    invoice_dict['balance'] += invoice.balance
+                ot_dict['summary'] = [v for k,v in sm_dict.items()]
+
             ot_dict['invoices'] = invoices.order_by('create_dt')
             ot_dict['object_type'] = get_ct_nice_name(ot['object_type'])
             ot_dict['count'] = invoices.count()
+            ot_dict.update({
+                'is_membership': 'membership' in ot_dict['object_type'].lower(),
+                'is_donation': 'donation' in ot_dict['object_type'].lower(),
+                })
+
             aggregates = invoices.aggregate(Sum('total'), Sum('payments_credits'), Sum('balance'))
+            for k, v in aggregates.items():
+                if not v: aggregates[k] = v or 0
+
             ot_dict.update(aggregates)
             results.append(ot_dict)
             totals['count'] = totals['count'] + ot_dict['count']
@@ -68,6 +133,8 @@ class Command(BaseCommand):
         try:
             if run.output_type == 'html-extended':
                 t = get_template("reports/invoices/results-extended.html")
+            elif is_summary_mode:
+                t = get_template("reports/invoices/results-summary.html")
             else:
                 t = get_template("reports/invoices/results.html")
         except TemplateDoesNotExist:
@@ -87,7 +154,7 @@ class Command(BaseCommand):
 
         try:
             run = Run.objects.get(pk=run_id)
-        except (Run.DoesNotExist, Run.MultipleObjectsFound):
+        except (Run.DoesNotExist, Run.MultipleObjectsReturned):
             raise CommandError('The Run %s could not be found in the database.' % run_id)
 
         if run.status == "unstarted":

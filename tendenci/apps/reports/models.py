@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.utils import simplejson as json
 
+from tendenci.addons.memberships.models import MembershipType
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.reports.utils import get_ct_nice_name
@@ -103,6 +104,16 @@ class Report(TendenciBaseModel):
                     }
                     output.append(config_dict)
 
+                elif opt_key == "invoice_membership_filter":
+                    try:
+                        item = MembershipType.objects.get(pk=opt_val)
+                        output.append({
+                            'label': 'Membership Filter',
+                            'value': '%s members only' % item.name
+                        })
+                    except:
+                        pass
+
             return output
         return u''
 
@@ -121,7 +132,8 @@ RUN_STATUS_CHOICES = (
 
 RUN_TYPE_CHOICES = (
     ('html', 'HTML'),
-    ('html-extended', 'HTML Extended')
+    ('html-extended', 'HTML Extended'),
+    ('html-summary', 'HTML Summary')
 )
 
 
