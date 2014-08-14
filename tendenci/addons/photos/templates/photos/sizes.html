@@ -1,8 +1,8 @@
 {% extends "photos/base-wide.html" %}
 {% load i18n %}
 
-{% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
-{% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
+{% block meta_description %}{% blocktrans with d=photo.title|striptags|truncatewords:20 %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=photo.meta_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ photo.get_canonical_url }}" />{% endblock %}
 
 {% block title %}{% firstof photo.title "Untitled" %} - {% blocktrans %}All Photo Sizes{% endblocktrans %}{% endblock %}
@@ -77,7 +77,7 @@
 
     <div id="embed-photo">
     <div>{% trans "Copy &amp; paste HTML into your webpage" %}</div>
-    <textarea><a href="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_absolute_url }}"><img src="{{ SITE_GLOBAL_SITEURL }}{{ source_url }}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}"></a></textarea>
+    <textarea><a href="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_absolute_url }}"><img src="{{ SITE_GLOBAL_SITEURL }}{{ source_url }}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"></a></textarea>
     </div><!-- #embed-photo -->
 
 </div> <!-- #photo-sizes -->

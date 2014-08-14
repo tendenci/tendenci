@@ -7,7 +7,7 @@
 {% load photo_tags %}
 {% load base_tags %}
 
-{% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with n=photo_set.name %}{{ n }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -38,9 +38,9 @@
         <tr><td class="set-info">
             <div class="cover-photo">
             {% if photo_set.get_cover_photo %}
-                <a href="{% url photo photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" /></a>
+                <a href="{% url photo photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" /></a>
             {% else %}
-                <img src="{{ photo_set.get_default_cover_photo_small }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
+                <img src="{{ photo_set.get_default_cover_photo_small }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" />
             {% endif %}
             </div>
 
@@ -52,7 +52,9 @@
             {% endif %}
             </div>
 
-            <div class="set-description">{{ photo_set.description|safe|urlize|linebreaks }}</div>
+            <div class="set-description">
+            {% blocktrans with d=photo_set.description|safe|urlize|linebreaks %}{{ d }}{% endblocktrans %}
+            </div>
 
             <div class="actions">
                 {% photo_set_options request.user photo_set %}
@@ -67,7 +69,7 @@
                 <div class="thumb-row clearfix">
                     {% for photo in photos %}
                     <div class="gallery-photo-thumb">
-                        <a href="{% url photo photo.pk photo_set.pk %}"><img src="{% photo_image_url photo size=102x78 crop=True %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}"/></a>
+                        <a href="{% url photo photo.pk photo_set.pk %}"><img src="{% photo_image_url photo size=102x78 crop=True %}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"/></a>
                     </div>
                     {% endfor %}
                 </div>
@@ -96,7 +98,7 @@
 
             // delete confirmation
             $('.delete-set').click(function(){
-                var delete_item = confirm('Permenantly delete photo set?');    // confirm
+                var delete_item = confirm('{% trans "Permenantly delete photo set?" %}');    // confirm
                 if(delete_item) $('form[name="delete-photo-set"]').submit() // delete: if OK
                 return false;    // cancel
             });

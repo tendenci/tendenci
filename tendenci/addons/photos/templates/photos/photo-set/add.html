@@ -7,7 +7,7 @@
 
 {% block body %}
     {% photo_set_nav user %}
-    <h1>{{ MODULE_PHOTOS_LABEL }} Set Add</h1>
+    <h1>{{ MODULE_PHOTOS_LABEL }} {% trans 'Set Add' %}</h1>
     <div class="forms">
     <form method="POST" action="">{% csrf_token %}
         {{ photoset_form|styled_form }}

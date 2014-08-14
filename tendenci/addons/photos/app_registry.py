@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
@@ -6,9 +7,9 @@ from tendenci.addons.photos.models import PhotoSet, Image
 
 class PhotoRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Upload photos for the world to see!'
+    description = _('Upload photos for the world to see!')
     icon = '%simages/icons/photo-albums-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {
@@ -29,9 +30,9 @@ class PhotoRegistry(CoreRegistry):
 
 class PhotoSetRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Upload photos for the world to see!'
+    description = _('Upload photos for the world to see!')
     icon = '%simages/icons/photo-albums-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {

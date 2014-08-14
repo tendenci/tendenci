@@ -1,6 +1,7 @@
 import re
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.photos.models import Image, Pool
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
@@ -36,7 +37,7 @@ def do_print_exif(parser, token):
         tag_name, exif = token.contents.split()
     except ValueError:
         msg = '%r tag requires a single argument' % token.contents[0]
-        raise TemplateSyntaxError(msg)
+        raise TemplateSyntaxError(_(msg))
 
     exif = parser.compile_filter(exif)
     return PrintExifNode(exif)
@@ -79,12 +80,12 @@ def public_photos(parser, token, use_pool=False):
 
     if len(bits) != 3 and len(bits) != 5:
         message = "'%s' tag requires three or five arguments" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
     else:
         if len(bits) == 3:
             if bits[1] != 'as':
                 message = "'%s' second argument must be 'as'" % bits[0]
-                raise TemplateSyntaxError(message)
+                raise TemplateSyntaxError(_(message))
 
             return PublicPhotosNode(bits[2], use_pool=use_pool)
 
@@ -94,7 +95,7 @@ def public_photos(parser, token, use_pool=False):
                 raise TemplateSyntaxError(message)
             if bits[3] != 'as':
                 message = "'%s' forth argument must be 'as'" % bits[0]
-                raise TemplateSyntaxError(message)
+                raise TemplateSyntaxError(_(message))
 
             return PublicPhotosNode(bits[4], bits[2], use_pool=use_pool)
 
@@ -194,11 +195,11 @@ def list_photos(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 3" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 

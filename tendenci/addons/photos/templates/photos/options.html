@@ -8,7 +8,7 @@
 {% has_perm user photos.delete_image as can_delete %}
 
 <ul>
-    <li class="photo-view"><a href="{% url photo_medium_640 opt_object.pk %}">View all sizes</a></li>
+    <li class="photo-view"><a href="{% url photo_medium_640 opt_object.pk %}">{% trans 'View all sizes' %}</a></li>
 
     {% if can_change %}
         {% if photo_set_id %}

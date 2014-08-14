@@ -47,7 +47,7 @@
 
     // photo: delete confirmation
     $('.photo-set .info .actions .delete-set').click(function(){
-        var delete_photo = confirm('Permenantly delete photo set?'); // confirm
+        var delete_photo = confirm({'{% trans "Permenantly delete photo set?" %}'); // confirm
         if(!delete_photo) return false; // do not delete
     });
 </script>
