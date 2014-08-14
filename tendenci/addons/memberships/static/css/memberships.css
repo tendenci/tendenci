@@ -112,6 +112,14 @@
     text-align: right;
 }
 
+.t form .label, .t form label{
+	font-weight: normal;
+	font-size: 100%;
+}
+.t form .required{
+	font-weight: bold;
+}
+
 /* Membership details
  ------------------------- */
  .t .memberships-wrap .membership-wrap-search {

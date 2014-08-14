@@ -1311,7 +1311,7 @@ class MembershipDefault(TendenciBaseModel):
         form_link = u''
         if self.app:
             form_link = '%s?username=%s&amp;membership_type=%s' % (
-                reverse('membership_default.add', kwargs={'slug': self.app.slug}),
+                reverse('membership_default.renew', kwargs={'slug': self.app.slug, 'membership_id': self.id}),
                 self.user.username,
                 self.membership_type.pk)
 

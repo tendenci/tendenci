@@ -31,7 +31,7 @@
     {% endif %}
     {% if can_edit %}
     <p><a href="{% url corpmembership.edit corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
-    <p><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
+    <p><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
     {% endif %}
 </div>
 {% endblock %}

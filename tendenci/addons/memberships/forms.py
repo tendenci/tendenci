@@ -844,6 +844,7 @@ class MembershipDefault2Form(forms.ModelForm):
         customer = kwargs.pop('customer', request_user)
         self.membership_app = kwargs.pop('membership_app')
         multiple_membership = kwargs.pop('multiple_membership', False)
+        self.is_renewal = kwargs.pop('is_renewal', False)
 
         if 'join_under_corporate' in kwargs.keys():
             self.join_under_corporate = kwargs.pop('join_under_corporate')
@@ -950,12 +951,12 @@ class MembershipDefault2Form(forms.ModelForm):
         kwargs['commit'] = False
         membership = super(MembershipDefault2Form, self).save(*args, **kwargs)
 
-        is_renewal = False
-        if request_user:
-            m_list = MembershipDefault.objects.filter(
-                user=request_user, membership_type=membership.membership_type
-            )
-            is_renewal = any([m.can_renew() for m in m_list])
+#         is_renewal = False
+#         if request_user:
+#             m_list = MembershipDefault.objects.filter(
+#                 user=request_user, membership_type=membership.membership_type
+#             )
+#             is_renewal = any([m.can_renew() for m in m_list])
 
         # assign corp_profile_id
         if membership.corporate_membership_id:
@@ -978,7 +979,7 @@ class MembershipDefault2Form(forms.ModelForm):
         membership.user = user
 
         # adding membership record
-        membership.renewal = is_renewal
+        membership.renewal = self.is_renewal
 
         # set app
         membership.app = self.membership_app
