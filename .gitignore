@@ -7,6 +7,9 @@ django
 cache/
 index/
 
+# Ignore en_US message file
+tendenci/locale/en_US/
+
 # Ignore OS files
 _notes/
 
