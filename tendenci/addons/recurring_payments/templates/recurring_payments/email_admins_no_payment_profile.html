@@ -3,11 +3,13 @@
 {% trans "Greetings:" %} <br /><br />
 
 <div>
+{% blocktrans %}
 The recurring payment account for {{ rp }} doesn't have a valid payment method set up yet. A notification is also sent to the customer {{ rp.user.get_full_name  }} ({{ rp.user.email }}) to add/update their payment method on the payment gateway.
+{% endblocktrans %}
 </div>
 <br /><br />
 
-To add or update the payment method for this recurring payment account, go to:
+{% trans 'To add or update the payment method for this recurring payment account, go to' %}:
 <br />
 <a href="{{ site_url }}{% url recurring_payment.authnet.update_payment_info rp.id %}">{{ site_url }}{% url recurring_payment.authnet.update_payment_info rp.id %}</a>
 

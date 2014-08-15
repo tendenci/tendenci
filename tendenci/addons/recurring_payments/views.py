@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.http import HttpResponse, Http404
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.recurring_payments.models import (RecurringPayment,
                                        PaymentProfile,
@@ -312,7 +313,7 @@ def disable_account(request, rp_id,
             # log an event
             EventLog.objects.log(instance=rp)
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully disabled %s' % rp)
+            messages.add_message(request, messages.SUCCESS, _('Successfully disabled %(rp)s' % {'rp': rp}))
 
             return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
 

@@ -1,14 +1,15 @@
 from tendenci.addons.regions.models import Region
 from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 
 class RegionForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'),
-                 ('inactive', 'Inactive'),
-                 ('pending', 'Pending'),))
+        choices=(('active', _('Active')),
+                 ('inactive', _('Inactive')),
+                 ('pending', _('Pending')),))
 
     class Meta:
         model = Region
@@ -23,13 +24,13 @@ class RegionForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('Region Information', {
+        fieldsets = [(_('Region Information'), {
                       'fields': ['region_name',
                                  'region_code',
                                  'description',
                                  ],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -37,7 +38,7 @@ class RegionForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]

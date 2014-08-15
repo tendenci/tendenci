@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_RESUMES_LABEL 'Resumes' %} Add{% endblock %}
+{% block title %}{% firstof MODULE_RESUMES_LABEL trans 'Resumes' %} Add{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -25,7 +25,7 @@
         <div class="forms">
         <form enctype="multipart/form-data" action="{% url resume.add %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
-            <input type="submit" value="Add {% firstof MODULE_RESUMES_LABEL 'Resume' %}" />
+            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_RESUMES_LABEL trans 'Resume' %}" />
         </form>
         </div>
     </div>

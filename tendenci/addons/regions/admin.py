@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.regions.models import Region
@@ -12,14 +13,14 @@ class RegionAdmin(TendenciBaseModelAdmin):
     list_filter = ['status_detail', 'owner_username']
     search_fields = ['region_name', 'region_code']
     fieldsets = (
-        ('Region Information', {
+        (_('Region Information'), {
             'fields': ('region_name',
                        'region_code',
                        'description',
                 )
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',

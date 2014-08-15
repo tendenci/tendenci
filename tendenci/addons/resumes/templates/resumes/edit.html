@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_RESUMES_LABEL 'Resume' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_RESUMES_LABEL trans 'Resume' %} {% trans 'Edit' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,7 +19,7 @@
 
     {% resume_nav request.user resume %}
 
-    <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} {% trans "Edit" %}</h1>
+    <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resume' %} {% trans "Edit" %}</h1>
 
     <div class="resume-wrap">
         <div class="options">
@@ -32,7 +32,7 @@
         <div class="forms">
         <form enctype="multipart/form-data" action="{% url resume.edit resume.id %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
-            <input type="submit" value="Save changes" />
+            <input type="submit" value="{% trans 'Save changes' %}" />
         </form>
         </div>
 
