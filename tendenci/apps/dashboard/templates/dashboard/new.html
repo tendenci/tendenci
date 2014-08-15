@@ -70,6 +70,8 @@
 
     {% if user.is_superuser %}
         <p style="text-align:left;"><a href="#" class="dashboard-icons-toggle readmorelarge">Toggle Dashboard Icons</a></p>
+ 	{% endif %}
+ 
         <div class="modules">
         <ul>
 
@@ -157,6 +159,9 @@
             <div style="clear: both"><!-- IE7 --></div>
         </ul>
         </div> <!-- modules -->
+        
+        
+    {% if user.is_superuser %}
         <div class="dashboard-stats">
         <a href="{% url dashboard_customize %}" class="readmorelarge">Customize Dashboard Statistics</a>
         {% for stat_type in statistics %}
