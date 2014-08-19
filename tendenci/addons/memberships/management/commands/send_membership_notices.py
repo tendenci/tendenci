@@ -267,7 +267,7 @@ class Command(BaseCommand):
                 'content':body})
             if notice.sender:
                 email_context.update({
-                    'sender':notice.sender,
+                    #'sender':notice.sender,
                     'reply_to':notice.sender})
             if notice.sender_display:
                 email_context.update({'sender_display':notice.sender_display})
