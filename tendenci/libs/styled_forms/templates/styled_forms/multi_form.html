@@ -50,6 +50,7 @@
 {% endfor %}
 
 {% for form in forms %}
+<div class="form-{{ form.label|slugify|default:forloop.counter }}">
     {% if form.forms %} {# form sets #}
         {% if form.label %}
             <div class="form-label">{{ form.label }}</div>
@@ -301,4 +302,5 @@
             {% endfor %}
         {% endif %}
     {% endif %}
+</div>
 {% endfor %}

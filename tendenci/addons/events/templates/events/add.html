@@ -97,6 +97,30 @@
             });
 
             $('.regconfpricing_formset .section-description').addClass('well');
+
+            var hide_forms_on_enabled_fn = function() {
+                var $elem = $('input#id_regconf-enabled')
+                    $price = $('input[id$="-price"]'),
+                    forms = [];
+
+                // display attendees
+                forms.push($('.form-display-attendees'));
+
+                // pricing
+                forms.push($('.form-pricings'));
+
+                // other registration fields
+                $('.form-registration .form-field').each(function(k, v) {
+                    if(!$(v).find($elem).length) forms.push($(v));
+                });
+
+                // set price value to 0 if blank
+                $.each($price, function(k, v) { if ($(v).val()=='') { $(v).val(0); } })
+
+                $.each(forms, function(index, form) { if($elem.prop('checked')) form.show(); else form.hide(); });
+            }
+            $('input#id_regconf-enabled').change(hide_forms_on_enabled_fn);
+            hide_forms_on_enabled_fn();
         });
     </script>
 
