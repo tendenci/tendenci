@@ -41,12 +41,14 @@
  </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>var jq211 = jQuery.noConflict( true );</script>
 <script>
-  $(function(){
+  (function(jQuery){
+  	var $ = jQuery;
     $('#lang-menu a').click(function(e){
       var lang = $(this).data('lang');
       $('#lang-form #lang-id_language').attr('value', lang);
       $('#lang-form').submit();
-    })
-  })
+    });
+  })(jq211);
 </script>
