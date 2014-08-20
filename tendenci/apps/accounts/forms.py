@@ -59,7 +59,7 @@ class RegistrationCustomForm(RegistrationForm):
         password_requirements = get_setting('module', 'users', 'password_text')
         if password_regex:
             if not re.match(password_regex, password1):
-                raise forms.ValidationError(mark_safe("The password does not meet the requirements </li><li>%s" % password_requirements))
+                raise forms.ValidationError(mark_safe(_("The password does not meet the requirements </li><li>%(p)s" % {'p': password_requirements })))
 
         return password1
 
@@ -169,9 +169,9 @@ class LoginForm(forms.Form):
 
             messages.add_message(
                 request, messages.SUCCESS,
-                u"Woohoo %s %s, you've successfully logged in." % \
-                    (self.user.first_name or self.user.username, self.user.last_name)
-            )
+                _(u"Woohoo %(first_name)s %(last_name)s, you've successfully logged in." % {
+                    'first_name' : self.user.first_name or self.user.username,
+                    'last_name' : self.user.last_name }))
 
             if self.cleaned_data['remember']:
                 request.session.set_expiry(60 * 60 * 24 * 7 * 3)

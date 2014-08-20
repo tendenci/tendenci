@@ -14,7 +14,7 @@
     <div class="accounting-wrap">
     <p>A = Asset &nbsp; L = Liabilities &nbsp; I = Income &nbsp; E = Expense &nbsp; Q = Owners Equity</p>
     {% for acct in accts %}
-        {{acct.account_number}} = {{acct.description}} ({{acct.type}}) {{2|add:-1}}<br />
+        {{acct.account_number}} = {% blocktrans with d=acct.description %}{{ d }}{% endblocktrans %} ({{acct.type}}) {{2|add:-1}}<br />
     {% endfor %}
 
     </div>

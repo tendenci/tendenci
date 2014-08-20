@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.models import TendenciBaseModel
@@ -85,7 +86,7 @@ class Contact(TendenciBaseModel):
     objects = ContactManager()
 
     class Meta:
-        permissions = (("view_contact", "Can view contact"),)
+        permissions = (("view_contact", _("Can view contact")),)
 
     @models.permalink
     def get_absolute_url(self):
