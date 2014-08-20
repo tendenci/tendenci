@@ -17,6 +17,8 @@ class Group(TendenciBaseModel):
     slug = SlugField(_('URL Path'), unique=True)
     guid = models.CharField(max_length=40)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
+    dashboard_url = models.CharField(_('Dashboard URL'), max_length=255, default='', blank=True,
+                                     help_text=_('Enable Group Dashboard Redirect in site settings to use this feature.'))
     type = models.CharField(max_length=75, blank=True, choices=(
                                          ('distribution', 'Distribution'),
                                          ('security', 'Security'),

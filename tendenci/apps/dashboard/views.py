@@ -73,6 +73,13 @@ def new(request, template_name="dashboard/new.html"):
             profile_redirect = profile_redirect.replace("<username>", request.user.username)
         return redirect(profile_redirect)
 
+    if get_setting('site', 'global', 'groupdashboard'):
+        group_dashboard_urls = filter(None, request.user.group_member \
+                                                    .values_list('group__dashboard_url', flat=True))
+        if group_dashboard_urls:
+            url = group_dashboard_urls[0]
+            return redirect(url)
+
     # self signup  free trial version
     has_paid = True
     activate_url = ''
