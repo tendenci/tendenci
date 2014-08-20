@@ -3676,6 +3676,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('country', 'country'),
         ('date', 'create_dt'),
         ('registration_id', 'registration__pk'),
+        ('addons', 'registration__addons_added'),
         ('is_primary', 'is_primary'),
         ('amount', 'amount'),
         ('price type', 'pricing__title'),

@@ -61,9 +61,9 @@ EMAIL_AVAILABLE_TOKENS = ['event_title',
 
 
 SEARCH_CATEGORIES_ADMIN = (
+    ('description__icontains', _('Event Description')),
     ('title__icontains', _('Event Title')),
     ('id', 'Event ID'),
-    ('description__icontains', _('Event Description')),
     ('place__name__icontains', _('Event Location - Name')),
     ('place__address__icontains', _('Event Location - Address')),
     ('place__city__icontains', _('Event Location - City')),
@@ -79,9 +79,9 @@ SEARCH_CATEGORIES_ADMIN = (
 )
 
 SEARCH_CATEGORIES = (
+    ('description__icontains', _('Event Description')),
     ('title__icontains', _('Event Title')),
     ('id', _('Event ID')),
-    ('description__icontains', _('Event Description')),
     ('place__name__icontains', _('Event Location - Name')),
     ('place__address__icontains', _('Event Location - Address')),
     ('place__city__icontains', _('Event Location - City')),

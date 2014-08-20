@@ -414,6 +414,11 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    # addons text holder
+    # will contain addons added in 'text format' by a user on event registration
+    # will be added when creating the registration
+    addons_added = models.TextField(null=True, blank=True)
+
     class Meta:
         permissions = (("view_registration",_("Can view registration")),)
 
@@ -651,6 +656,26 @@ class Registration(models.Model):
             return self.override_table
 
         return self.registrant_set.filter(override=True).exists()
+
+    @property
+    def addons_included(self):
+        addons_text = u''
+        if not self.event.has_addons:
+            return u''
+
+        reg8n_to_addons_list = RegAddonOption.objects.filter(
+            regaddon__registration=self).values_list(
+                'regaddon__registration__id',
+                'regaddon__addon__title',
+                'option__title',
+                'regaddon__amount')
+
+        if reg8n_to_addons_list:
+            for addon_item in reg8n_to_addons_list:
+                if addon_item[0] == self.registrant.registration_id:
+                    addons_text += u'%s(%s) ' % (addon_item[1], addon_item[2])
+
+        return addons_text
 
 
 class Registrant(models.Model):

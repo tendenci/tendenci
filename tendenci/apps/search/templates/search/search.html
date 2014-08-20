@@ -48,9 +48,17 @@
     <div class="search-results">
         {% if page.object_list %}
             {% for result in page.object_list %}
+            	{% if result.object.release_dt and user.is_anonymous  %}
+	            	{% if result.object.is_released %}
+	            		<div class="wrap-search-result clearfix">
+                    	{% search_result result %}
+                		</div>
+	            	{% endif %}
+            	{% else %}
                 <div class="wrap-search-result clearfix">
                     {% search_result result %}
                 </div>
+                {% endif %}
             {% endfor %}
         {% else %}
             <p>{% trans "No results found." %}</p>

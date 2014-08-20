@@ -875,6 +875,10 @@ def add_registration(*args, **kwargs):
     addons_price = addon_formset.get_total_price()
     total_amount += addons_price
 
+    # retrieved the addons text
+    reg8n.addons_added = reg8n.addons_included
+    reg8n.save()
+
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
     created = True
