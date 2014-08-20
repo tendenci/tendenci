@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-18 16:22+0000\n"
-"PO-Revision-Date: 2014-08-18 13:42+0000\n"
+"POT-Creation-Date: 2014-08-19 22:46+0000\n"
+"PO-Revision-Date: 2014-08-19 17:13+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/tendenci/language/en_GB/)\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr ""
 #: addons/corporate_memberships/models.py:1364 addons/directories/forms.py:128
 #: addons/directories/models.py:58 addons/events/forms.py:1431
 #: addons/events/forms.py:1583 addons/events/forms.py:2140
-#: addons/events/models.py:1328 addons/events/settings.py:14
+#: addons/events/models.py:1353 addons/events/settings.py:14
 #: addons/events/settings.py:31
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:77
 #: addons/events/templates/events/reg8n/multi_register.html:218
@@ -99,7 +99,7 @@ msgid "URL Path"
 msgstr ""
 
 #: addons/articles/models.py:31 addons/directories/models.py:36
-#: addons/events/models.py:1007 addons/news/models.py:33
+#: addons/events/models.py:1032 addons/news/models.py:33
 #: apps/profiles/templates/notification/user_edited/full.html:599
 #: apps/profiles/templates/profiles/add.html:390
 #: apps/profiles/templates/profiles/edit.html:380
@@ -109,7 +109,7 @@ msgstr ""
 
 #: addons/articles/models.py:36 addons/corporate_memberships/forms.py:515
 #: addons/directories/models.py:47 addons/events/forms.py:2136
-#: addons/events/models.py:1319 addons/events/settings.py:22
+#: addons/events/models.py:1344 addons/events/settings.py:22
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:56
 #: addons/events/templates/events/reg8n/multi_register.html:186
 #: addons/events/templates/events/reg8n/register-free.html:37
@@ -139,7 +139,7 @@ msgstr ""
 
 #: addons/articles/models.py:37 addons/corporate_memberships/forms.py:518
 #: addons/directories/models.py:48 addons/events/forms.py:2137
-#: addons/events/models.py:1320 addons/events/settings.py:23
+#: addons/events/models.py:1345 addons/events/settings.py:23
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:63
 #: addons/events/templates/events/reg8n/multi_register.html:194
 #: addons/events/templates/events/reg8n/register-free.html:45
@@ -1668,7 +1668,7 @@ msgstr ""
 msgid "Contract"
 msgstr ""
 
-#: addons/careers/models.py:21 addons/events/models.py:1330
+#: addons/careers/models.py:21 addons/events/models.py:1355
 #: addons/events/templates/events/reg8n/multi_register.html:202
 #: addons/events/templates/events/reg8n/register-free.html:53
 #: addons/events/templates/events/reg8n/register-priced.html:53
@@ -1688,7 +1688,7 @@ msgstr ""
 msgid "Company Description"
 msgstr ""
 
-#: addons/careers/models.py:25 addons/events/models.py:1329
+#: addons/careers/models.py:25 addons/events/models.py:1354
 #: addons/events/settings.py:32
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:84
 #: apps/profiles/forms.py:43
@@ -1762,7 +1762,7 @@ msgstr ""
 
 #: addons/corporate_memberships/forms.py:100
 #: addons/corporate_memberships/models.py:316
-#: addons/corporate_memberships/models.py:1294 addons/events/models.py:1308
+#: addons/corporate_memberships/models.py:1294 addons/events/models.py:1333
 #: addons/memberships/forms.py:131 apps/profiles/admin.py:51
 #: apps/profiles/forms.py:145
 #: apps/profiles/templates/notification/user_edited/full.html:579
@@ -1815,7 +1815,7 @@ msgstr ""
 
 #: addons/corporate_memberships/forms.py:502
 #: addons/corporate_memberships/models.py:294 addons/events/forms.py:2139
-#: addons/events/models.py:1327 addons/events/settings.py:30
+#: addons/events/models.py:1352 addons/events/settings.py:30
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:98
 #: addons/events/templates/events/reg8n/multi_register.html:210
 #: addons/events/templates/events/reg8n/register-free.html:61
@@ -1835,7 +1835,7 @@ msgstr ""
 
 #: addons/corporate_memberships/forms.py:503
 #: addons/corporate_memberships/models.py:287 addons/directories/models.py:51
-#: addons/events/models.py:1323 addons/events/settings.py:26
+#: addons/events/models.py:1348 addons/events/settings.py:26
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:112
 #: addons/locations/templates/locations/import-preview.html:39
 #: apps/profiles/forms.py:45 apps/profiles/forms.py:113
@@ -1852,7 +1852,7 @@ msgstr ""
 
 #: addons/corporate_memberships/forms.py:504
 #: addons/corporate_memberships/models.py:288 addons/directories/models.py:52
-#: addons/events/models.py:1324 addons/events/settings.py:27
+#: addons/events/models.py:1349 addons/events/settings.py:27
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:119
 #: addons/locations/templates/locations/import-preview.html:40
 #: apps/profiles/forms.py:46 apps/profiles/forms.py:116
@@ -1874,7 +1874,7 @@ msgstr ""
 #: addons/corporate_memberships/forms.py:506
 #: addons/corporate_memberships/models.py:292 addons/directories/forms.py:130
 #: addons/directories/models.py:54 addons/events/forms.py:878
-#: addons/events/models.py:1326 addons/events/settings.py:29
+#: addons/events/models.py:1351 addons/events/settings.py:29
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:133
 #: addons/locations/forms.py:32
 #: addons/locations/templates/locations/import-preview.html:42
@@ -2034,7 +2034,7 @@ msgid "Date"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:73
-#: addons/corporate_memberships/models.py:1368 addons/events/models.py:1423
+#: addons/corporate_memberships/models.py:1368 addons/events/models.py:1448
 #: addons/events/settings.py:16 addons/memberships/models.py:61
 #: addons/memberships/models.py:2251 apps/forms_builder/forms/models.py:44
 #: apps/forms_builder/forms/models.py:284
@@ -2098,7 +2098,7 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:126
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:103
 #: addons/directories/templates/directories/invoice_search_result_line.html:11
-#: addons/events/models.py:1307 addons/industries/models.py:14
+#: addons/events/models.py:1332 addons/industries/models.py:14
 #: addons/locations/models.py:17 addons/memberships/models.py:99
 #: addons/memberships/models.py:1897 addons/memberships/models.py:2174
 #: addons/memberships/templates/memberships/invoice_search_result_line2.html:10
@@ -2115,7 +2115,7 @@ msgstr ""
 #: addons/directories/templates/directories/pricing-table.html:14
 #: addons/directories/templates/directories/pricing-table.html:21
 #: addons/events/forms.py:1078 addons/events/models.py:247
-#: addons/events/models.py:1514
+#: addons/events/models.py:1539
 #: addons/events/templates/events/invoice_search_result_line.html:13
 #: addons/events/templates/events/reg8n/register_pre2.html:44
 #: addons/events/templates/events/reg8n/register_pre2.html:67
@@ -2161,7 +2161,7 @@ msgid "Number Passes"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:283 addons/directories/models.py:49
-#: addons/events/models.py:1322 addons/events/settings.py:25
+#: addons/events/models.py:1347 addons/events/settings.py:25
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:105
 #: addons/locations/templates/locations/import-preview.html:37
 #: apps/contacts/templates/contacts/view.html:54 apps/profiles/forms.py:108
@@ -2300,7 +2300,7 @@ msgstr ""
 msgid "Countries Drop Down"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1376 addons/events/models.py:1370
+#: addons/corporate_memberships/models.py:1376 addons/events/models.py:1395
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:48
 #: addons/memberships/models.py:2259 apps/forms_builder/forms/models.py:206
 #: apps/navs/templates/navs/nav_items.html:136 apps/subscribers/models.py:73
@@ -2317,7 +2317,7 @@ msgstr ""
 msgid "Field Type"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1384 addons/events/models.py:1377
+#: addons/corporate_memberships/models.py:1384 addons/events/models.py:1402
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:51
 #: addons/memberships/models.py:2263 apps/forms_builder/forms/models.py:211
 msgid "Required"
@@ -2333,7 +2333,7 @@ msgstr ""
 msgid "Help Text"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1390 addons/events/models.py:1379
+#: addons/corporate_memberships/models.py:1390 addons/events/models.py:1404
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:50
 #: addons/memberships/models.py:2277 apps/forms_builder/forms/models.py:213
 msgid "Choices"
@@ -2356,13 +2356,13 @@ msgstr ""
 msgid "CSS Class Name"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1411 addons/events/models.py:1386
+#: addons/corporate_memberships/models.py:1411 addons/events/models.py:1411
 #: addons/memberships/models.py:2289 apps/forms_builder/forms/models.py:221
 #: apps/profiles/templates/profiles/edit_notice.txt:28
 msgid "Field"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1412 addons/events/models.py:1387
+#: addons/corporate_memberships/models.py:1412 addons/events/models.py:1412
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:45
 #: addons/memberships/models.py:2290 apps/forms_builder/forms/models.py:222
 msgid "Fields"
@@ -2702,7 +2702,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:14
 #: addons/directories/templates/directories/invoice_search_result_line.html:14
-#: addons/events/models.py:665 addons/events/models.py:1571
+#: addons/events/models.py:690 addons/events/models.py:1596
 #: addons/make_payments/templates/make_payments/invoice_search_result_line.html:14
 #: apps/invoices/templates/invoices/invoice_item.html:19
 #: core/payments/forms.py:68
@@ -3576,7 +3576,7 @@ msgid "Corporate Membership Summary"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:24
-#: addons/events/models.py:1373
+#: addons/events/models.py:1398
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:49
 #: apps/entities/models.py:13 apps/forms_builder/forms/models.py:207
 #: apps/reports/templates/reports/report_list.html:18
@@ -4445,7 +4445,7 @@ msgid "Graduation Date/Time"
 msgstr ""
 
 #: addons/events/forms.py:300 addons/events/forms.py:1639
-#: addons/events/models.py:714
+#: addons/events/models.py:739
 msgid "Receive event reminders"
 msgstr ""
 
@@ -4463,7 +4463,7 @@ msgstr ""
 msgid "Is Recurring?"
 msgstr ""
 
-#: addons/events/forms.py:597 addons/events/models.py:971
+#: addons/events/forms.py:597 addons/events/models.py:996
 msgid "Repeats"
 msgstr ""
 
@@ -4619,7 +4619,7 @@ msgid "Use Custom Registration Form"
 msgstr ""
 
 #: addons/events/models.py:161 addons/events/models.py:254
-#: addons/events/models.py:1335
+#: addons/events/models.py:1360
 msgid "Custom Registration Form"
 msgstr ""
 
@@ -4680,11 +4680,11 @@ msgstr ""
 msgid "Number of registrants for a table"
 msgstr ""
 
-#: addons/events/models.py:403 addons/events/models.py:692
+#: addons/events/models.py:403 addons/events/models.py:717
 msgid "Admin Price Override?"
 msgstr ""
 
-#: addons/events/models.py:404 addons/events/models.py:694
+#: addons/events/models.py:404 addons/events/models.py:719
 msgid "Override Price"
 msgstr ""
 
@@ -4692,148 +4692,148 @@ msgstr ""
 msgid "Canceled"
 msgstr ""
 
-#: addons/events/models.py:691
+#: addons/events/models.py:716
 msgid "Is primary registrant"
 msgstr ""
 
-#: addons/events/models.py:701 apps/invoices/models.py:44
+#: addons/events/models.py:726 apps/invoices/models.py:44
 msgid "Discount Amount"
 msgstr ""
 
-#: addons/events/models.py:708 addons/events/registration/forms.py:89
+#: addons/events/models.py:733 addons/events/registration/forms.py:89
 #: addons/events/templates/events/registration/base_forms.html:79
 #: addons/events/templates/events/registration/multi_register.html:223
 #: addons/events/templates/events/registration/multi_register.html:281
 msgid "Member ID"
 msgstr ""
 
-#: addons/events/models.py:711
+#: addons/events/models.py:736
 msgid "Is Checked In?"
 msgstr ""
 
-#: addons/events/models.py:928
+#: addons/events/models.py:953
 msgid "Speaker Name"
 msgstr ""
 
-#: addons/events/models.py:932
+#: addons/events/models.py:957
 msgid ""
 "All speakers marked as featured will be displayed when viewing the event."
 msgstr ""
 
-#: addons/events/models.py:972
+#: addons/events/models.py:997
 msgid "Repeats every"
 msgstr ""
 
-#: addons/events/models.py:977
+#: addons/events/models.py:1002
 msgid "Recurring Event"
 msgstr ""
 
-#: addons/events/models.py:978
+#: addons/events/models.py:1003
 msgid "Recurring Events"
 msgstr ""
 
-#: addons/events/models.py:990
+#: addons/events/models.py:1015
 #, python-format
 msgid "Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s"
 msgstr ""
 
-#: addons/events/models.py:1010
+#: addons/events/models.py:1035
 msgid "Registration Ended"
 msgstr ""
 
-#: addons/events/models.py:1011
+#: addons/events/models.py:1036
 msgid "Enable Private URL"
 msgstr ""
 
-#: addons/events/models.py:1014
+#: addons/events/models.py:1039
 msgid "This event occurs on weekends"
 msgstr ""
 
-#: addons/events/models.py:1015
+#: addons/events/models.py:1040
 msgid "External URL"
 msgstr ""
 
-#: addons/events/models.py:1017
+#: addons/events/models.py:1042
 msgid "Photo that represents this event."
 msgstr ""
 
-#: addons/events/models.py:1020
+#: addons/events/models.py:1045
 msgid ""
 "Priority events will show up at the top of the event calendar day list and "
 "single day list. They will be featured with a star icon on the monthly "
 "calendar and the list view."
 msgstr ""
 
-#: addons/events/models.py:1023
+#: addons/events/models.py:1048
 msgid "Is Recurring Event"
 msgstr ""
 
-#: addons/events/models.py:1027
+#: addons/events/models.py:1052
 msgid "Display Attendees"
 msgstr ""
 
-#: addons/events/models.py:1302 addons/events/models.py:1303
+#: addons/events/models.py:1327 addons/events/models.py:1328
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:29
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:34
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:40
 msgid "Standard Registration Form"
 msgstr ""
 
-#: addons/events/models.py:1321
+#: addons/events/models.py:1346
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:70
 msgid "Mail Name"
 msgstr ""
 
-#: addons/events/models.py:1325
+#: addons/events/models.py:1350
 msgid "Zip"
 msgstr ""
 
-#: addons/events/models.py:1331 addons/events/settings.py:34
+#: addons/events/models.py:1356 addons/events/settings.py:34
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:140
 msgid "Meal Option"
 msgstr ""
 
-#: addons/events/models.py:1332 addons/events/settings.py:35
+#: addons/events/models.py:1357 addons/events/settings.py:35
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:147
 #: addons/events/templates/events/reg8n/multi_register.html:226
 msgid "Comments"
 msgstr ""
 
-#: addons/events/models.py:1336
+#: addons/events/models.py:1361
 msgid "Custom Registration Forms"
 msgstr ""
 
-#: addons/events/models.py:1371
+#: addons/events/models.py:1396
 msgid "Map to User Field"
 msgstr ""
 
-#: addons/events/models.py:1375 apps/forms_builder/forms/models.py:209
+#: addons/events/models.py:1400 apps/forms_builder/forms/models.py:209
 msgid "Special Functionality"
 msgstr ""
 
-#: addons/events/models.py:1378
+#: addons/events/models.py:1403
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:52
 #: apps/forms_builder/forms/models.py:212
 msgid "Visible"
 msgstr ""
 
-#: addons/events/models.py:1381 apps/forms_builder/forms/models.py:215
+#: addons/events/models.py:1406 apps/forms_builder/forms/models.py:215
 msgid "Default"
 msgstr ""
 
-#: addons/events/models.py:1383
+#: addons/events/models.py:1408
 msgid "Show on Roster"
 msgstr ""
 
-#: addons/events/models.py:1517
+#: addons/events/models.py:1542
 msgid "Public can use"
 msgstr ""
 
-#: addons/events/models.py:1518
+#: addons/events/models.py:1543
 msgid "Signed in user can use"
 msgstr ""
 
-#: addons/events/models.py:1519
+#: addons/events/models.py:1544
 msgid "All members can use"
 msgstr ""
 
