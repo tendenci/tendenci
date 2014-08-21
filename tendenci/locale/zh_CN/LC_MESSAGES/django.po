@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-19 22:46+0000\n"
-"PO-Revision-Date: 2014-08-19 17:13+0000\n"
+"POT-Creation-Date: 2014-08-20 21:10+0000\n"
+"PO-Revision-Date: 2014-08-20 20:20+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -14058,35 +14058,43 @@ msgstr ""
 msgid "Group Label"
 msgstr ""
 
-#: apps/user_groups/models.py:25
-msgid "Recipient Email"
+#: apps/user_groups/models.py:20
+msgid "Dashboard URL"
 msgstr ""
 
-#: apps/user_groups/models.py:26
-msgid "Display Option"
+#: apps/user_groups/models.py:21
+msgid "Enable Group Dashboard Redirect in site settings to use this feature."
 msgstr ""
 
 #: apps/user_groups/models.py:27
-msgid "Allow Self Add"
+msgid "Recipient Email"
 msgstr ""
 
 #: apps/user_groups/models.py:28
-msgid "Allow Self Remove"
+msgid "Display Option"
 msgstr ""
 
 #: apps/user_groups/models.py:29
-msgid "Sync for newsletters"
+msgid "Allow Self Add"
+msgstr ""
+
+#: apps/user_groups/models.py:30
+msgid "Allow Self Remove"
 msgstr ""
 
 #: apps/user_groups/models.py:31
+msgid "Sync for newsletters"
+msgstr ""
+
+#: apps/user_groups/models.py:33
 msgid "Auto Responder"
 msgstr ""
 
-#: apps/user_groups/models.py:32
+#: apps/user_groups/models.py:34
 msgid "Priority"
 msgstr ""
 
-#: apps/user_groups/models.py:139
+#: apps/user_groups/models.py:141
 msgid "Sort Order"
 msgstr ""
 
