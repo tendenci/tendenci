@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
@@ -33,7 +33,17 @@ from tendenci.core.imports.utils import render_excel
 @is_enabled('locations')
 def detail(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('locations'))
-    location = get_object_or_404(Location, pk=id)
+
+    try:
+        int_id = int(id)
+    except:
+        int_id = 0
+
+    try:
+        location = get_object_or_404(Location, slug=id)
+    except Http404:
+        location = get_object_or_404(Location, pk=int_id)
+        return HttpResponseRedirect(location.get_absolute_url())
 
     if has_view_perm(request.user,'locations.view_location',location):
         EventLog.objects.log(instance=location)
@@ -134,7 +144,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                 msg_string = 'Successfully updated %s' % location
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-                return HttpResponseRedirect(reverse('location', args=[location.pk]))
+                return HttpResponseRedirect(reverse('location', args=[location.slug]))
         else:
             form = form_class(instance=location, user=request.user)
 
@@ -163,7 +173,7 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                 msg_string = 'Successfully added %s' % location
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-                return HttpResponseRedirect(reverse('location', args=[location.pk]))
+                return HttpResponseRedirect(reverse('location', args=[location.slug]))
         else:
             form = form_class(user=request.user)
 

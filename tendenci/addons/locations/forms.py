@@ -35,6 +35,7 @@ class LocationForm(TendenciBaseForm):
         model = Location
         fields = (
         'location_name',
+        'slug',
         'description',
         'contact',
         'address',
@@ -60,6 +61,7 @@ class LocationForm(TendenciBaseForm):
 
         fieldsets = [(_('Location Information'), {
                       'fields': ['location_name',
+                                 'slug',
                                  'description',
                                  'latitude',
                                  'longitude',
