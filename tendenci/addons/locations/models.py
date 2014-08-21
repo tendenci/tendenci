@@ -5,6 +5,7 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
+from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.locations.managers import LocationManager
@@ -15,6 +16,7 @@ from tendenci.core.files.models import File
 class Location(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     location_name = models.CharField(_('Name'), max_length=200, blank=True)
+    slug = SlugField(_('URL Path'), unique=True)
     description = models.TextField(blank=True)
 
     # contact/location information
@@ -50,7 +52,7 @@ class Location(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("location", [self.pk])
+        return ("location", [self.slug])
 
     def get_address(self):
         return "%s %s %s, %s %s" % (
