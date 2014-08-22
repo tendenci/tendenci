@@ -18,12 +18,12 @@
                 {% trans "EST" %}
              {% endif %}
         {% else %}
-            <a href="{% url invoice.view invoice.pk %}" class="links"><img src="{{ STATIC_URL }}images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}" title="Tendered"></a>&nbsp;
+            <a href="{% url invoice.view invoice.pk %}" class="links"><img src="{{ STATIC_URL }}images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="{% trans 'Tendered' %} {{ invoice.tender_date|date:'N j, Y h:i a'}}" title="{% trans 'Tendered' %}"></a>&nbsp;
         {% endif %}
         {% if request.user.is_superuser %}
             <a href="{% url invoice.detail invoice.pk %}" class="links">
             <img src="{{ STATIC_URL }}images/icons/accounting12x12.gif"
-                   border="0" width="12" height="12" alt="View Accounting Entries" title="View Accounting Entries"></a>
+                   border="0" width="12" height="12" alt="{% trans 'View Accounting Entries' %}" title="{% trans 'View Accounting Entries' %}"></a>
          {% endif %}
     </td>
 

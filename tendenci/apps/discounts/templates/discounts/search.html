@@ -17,7 +17,7 @@
 {% block body %}
 <div class="t">
     {% discount_nav request.user %}
-    <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %}  {% trans "Search" %}</h1>
+    <h1>{% firstof MODULE_DISCOUNTS_LABEL trans "Discount" %}  {% trans "Search" %}</h1>
 
     {% discount_search %}
     {% autopaginate discounts 50 %}
@@ -25,7 +25,7 @@
     <div class="discounts-wrap">
         <table id="discounts">
             <tr>
-                <th>Code</th><th>Value</th><th>Uses</th><th>Cap</th><th>Status</th><th>Edit</th>
+                <th>{% trans 'Code' %}</th><th>{% trans 'Value' %}</th><th>{% trans 'Uses' %}</th><th>{% trans 'Cap' %}</th><th>{% trans 'Status' %}</th><th>{% trans 'Edit' %}</th>
             </tr>
     {% for discount in discounts %}
         <tr>

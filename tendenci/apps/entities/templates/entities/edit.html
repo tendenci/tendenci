@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Edit{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Edit' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,7 +15,7 @@
 
     {% entity_nav request.user entity %}
 
-    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} {% trans "Edit" %}</h1>
+    <h1>{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %} {% trans "Edit" %}</h1>
 
     <div class="entities-wrap">
         <div class="options">
@@ -27,7 +27,7 @@
         <form action="{% url entity.edit entity.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Save Changes" />
+            <input type="submit" value="{% trans 'Save Changes' %}" />
         </div>
         </form>
     </div>
@@ -40,7 +40,7 @@
         $(document).ready(function(){
             // delete confirmation
             $('.delete').click(function(){
-                var delete_entity = confirm("Permenantly delete {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
+                var delete_entity = confirm("{% trans 'Permenantly delete' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
                 if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

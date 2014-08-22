@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.apps.entities.models import Entity
@@ -56,7 +57,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                 # update all permissions and save the model
                 entity = update_perms_and_save(request, form, entity)
 
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % entity)
+                messages.add_message(request, messages.SUCCESS, _('Successfully added %(e)s' % { 'e': entity }))
 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:
@@ -95,7 +96,7 @@ def delete(request, id, template_name="entities/delete.html"):
 
     if has_perm(request.user,'entities.delete_entity'):
         if request.method == "POST":
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % entity)
+            messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(e)s' % { 'e' : entity }))
             entity.delete()
 
             return HttpResponseRedirect(reverse('entity.search'))

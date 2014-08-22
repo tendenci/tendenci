@@ -19,12 +19,12 @@
      <div class="invoices-wrap">
         <h1>{% trans "Invoices Export" %}</h1>
         <div class="content">
-            <p>Pick your start and end dates (the default is the last 30 days) for your invoices export. An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.</p>
+            <p>{% blocktrans %}Pick your start and end dates (the default is the last 30 days) for your invoices export. An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.{% endblocktrans %}</p>
             <form action="." method="POST" >{% csrf_token %}
                 <div class="form-field clearfix">
                     <div class="id_start_dt" style="float: left; margin-right: 20px;">
                             <div class="label">
-                                <label for="start_dt">Start Date</label>
+                                <label for="start_dt">{% trans 'Start Date' %}</label>
                             </div>
                             <div class="field">
                                 <input style="width: 100px;" type="text" class="datepicker" name="start_dt" value="{{ start_dt|date:"Y-m-d" }}" />
@@ -32,7 +32,7 @@
                      </div>
                      <div class="id_end_dt">
                             <div class="label">
-                                <label for="end_dt">End Date</label>
+                                <label for="end_dt">{% trans 'End Date' %}</label>
                             </div>
                             <div class="field">
                                 <input style="width: 100px;" type="text" class="datepicker" name="end_dt" value="{{ end_dt|date:"Y-m-d" }}" />

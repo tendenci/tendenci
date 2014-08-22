@@ -96,7 +96,7 @@ class Invoice(models.Model):
     objects = InvoiceManager()
 
     class Meta:
-        permissions = (("view_invoice", "Can view invoice"), )
+        permissions = (("view_invoice", _("Can view invoice")), )
 
     def __unicode__(self):
         return "Invoice %s" % self.pk
@@ -366,4 +366,3 @@ class Invoice(models.Model):
         """
         [payment] = self.payment_set.filter(status_detail='approved')[:1] or [None]
         return payment
-

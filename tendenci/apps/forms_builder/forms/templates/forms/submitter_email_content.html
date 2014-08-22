@@ -1,4 +1,6 @@
-<p>{{ form.email_text|linebreaks|safe }}</p>
+{% load i18n %}
+
+<p>{% blocktrans with t=form.email_text|linebreaks|safe %}{{ t }}{% endblocktrans %}</p>
 
 
 {% comment %}
@@ -6,7 +8,7 @@
 
 {% for field in fields %}
     {% if field.include_in_email %}
-        <p><strong>{{ field.field.label }}</strong>: {{ field.value }}</p>
+        <p><strong>{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</strong>: {% blocktrans with v=field.value %}{{ v }}{% endblocktrans %}</p>
     {% endif %}
 {% endfor %}
 

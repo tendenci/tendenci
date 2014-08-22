@@ -47,7 +47,7 @@ def latest_contributions(parser, token):
     """
     bits = token.contents.split()
     if len(bits) != 4 and len(bits) != 5:
-        raise TemplateSyntaxError(_('%s tag requires 4 or 5 arguments') % bits[0])
+        raise TemplateSyntaxError(_('%(b)s tag requires 4 or 5 arguments') % {'b' : bits[0]})
 
     if len(bits) == 4:
         return LatestContributionsNode(user=bits[1], context_var=bits[3])
