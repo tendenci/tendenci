@@ -930,6 +930,9 @@ def check_missing_fields(memb_data, key, **kwargs):
     elif key == 'member_number':
         if not memb_data['member_number']:
             missing_field_msg = "Missing key 'member_number'"
+    elif key == 'username':
+        if not memb_data['username']:
+            missing_field_msg = "Missing key 'username'"
     else:  # email
         if not memb_data['email']:
             missing_field_msg = "Missing key 'email'"
@@ -951,6 +954,16 @@ def get_user_by_email(email):
                     '-is_active', '-is_superuser', '-is_staff'
                         )
     return users
+
+
+def get_user_by_username(username):
+    """
+    Get user by username.
+    """
+    if not username:
+        return None
+
+    return User.objects.filter(username=username)
 
 
 def get_user_by_member_number(member_number):
@@ -1121,7 +1134,7 @@ class ImportMembDefault(object):
         if 'membership_type' in memb_data and memb_data['membership_type']:
             value = memb_data['membership_type']
 
-            if value.isdigit():
+            if str(value).isdigit():
                 value = int(value)
                 if not value in self.all_membership_type_ids:
                     is_valid = False
@@ -1166,7 +1179,7 @@ class ImportMembDefault(object):
         if 'app' in memb_data and memb_data['app'] and memb_data['app']:
             value = memb_data['app']
 
-            if value.isdigit():
+            if str(value).isdigit():
                 value = int(value)
                 if not value in self.membership_app_ids_dict:
                     is_valid = False
@@ -1302,6 +1315,8 @@ class ImportMembDefault(object):
             elif self.key == 'member_number':
                 users = get_user_by_member_number(
                                 self.memb_data['member_number'])
+            elif self.key == 'username':
+                users = get_user_by_username(self.memb_data['username'])
             else:  # email
                 users = get_user_by_email(self.memb_data['email'])
 
