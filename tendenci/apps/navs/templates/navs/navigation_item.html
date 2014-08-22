@@ -1,7 +1,8 @@
 {% load nav_tags %}
+{% load i18n %}
 
 <li>
-    <a {% if item.css %}class="{{ item.css }}"{% endif %}{% if item.new_window %} target="_blank" {% endif %}href="{{ item.get_url }}">{{ item.label|removetags:"a"|safe }}</a>
+    <a {% if item.css %}class="{{ item.css }}"{% endif %}{% if item.new_window %} target="_blank" {% endif %}href="{{ item.get_url }}">{% blocktrans with l=item.label|removetags:"a"|safe %}{{ l }}{% endblocktrans %}</a>
     {% if item.children %}
         <ul>
         {% for child in item.children %}

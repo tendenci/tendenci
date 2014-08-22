@@ -1,13 +1,14 @@
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.navs.models import Nav
+from django.utils.translation import ugettext_lazy as _
 
 
 class NavRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Create navs for navigation'
+    description = _('Create navs for navigation')
 
     url = {
         'add': lazy_reverse('navs.add'),

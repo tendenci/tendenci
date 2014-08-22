@@ -1,4 +1,5 @@
 from django.template import Library, TemplateSyntaxError, Variable, Node
+from django.utils.translation import ugettext_lazy as _
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.core.perms.utils import get_query_filters
 from django.contrib.auth.models import AnonymousUser, User
@@ -175,11 +176,11 @@ def list_navs(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires at least 2 parameters" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 
@@ -237,10 +238,10 @@ def nav_object(parser, token):
 
     if len(bits) < 4:
         message = "'%s' tag requires at least 3 parameters" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[2] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     return GetNavNode(pk, context_var)

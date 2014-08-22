@@ -169,7 +169,7 @@ def delete(request, id, template_name="navs/delete.html"):
 
     if has_perm(request.user,'navs.delete_nav'):
         if request.method == "POST":
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % nav)
+            messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(nav)s' % {'nav': nav}))
 
             nav.delete()
             return HttpResponseRedirect(reverse('navs.search'))

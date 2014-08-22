@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.notifications.models import (NoticeType, NoticeSetting, Notice,
     ObservedItem, NoticeEmail)
@@ -41,12 +42,12 @@ class NoticeEmailAdmin(admin.ModelAdmin):
         return '<a href="%s">%s</a>' % \
             (reverse('notification_email', args=[obj.guid]), obj.title)
     preview_email.allow_tags = True
-    preview_email.short_description = 'Preview Email'
+    preview_email.short_description = _('Preview Email')
 
     def resend(self, request, queryset):
         for q in queryset:
             print q.resend()
-    resend.short_description = "Resend the selected emails"
+    resend.short_description = _("Resend the selected emails")
 
     def has_change_permission(self, request, obj=None):
         return obj is None
