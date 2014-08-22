@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-20 21:10+0000\n"
-"PO-Revision-Date: 2014-08-20 20:20+0000\n"
+"POT-Creation-Date: 2014-08-21 20:26+0000\n"
+"PO-Revision-Date: 2014-08-21 20:28+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/tendenci/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -98,9 +98,9 @@ msgstr "Un artículo ha sido eliminado."
 
 #: addons/articles/models.py:30 addons/corporate_memberships/models.py:1281
 #: addons/directories/models.py:35 addons/help_files/models.py:33
-#: addons/jobs/models.py:28 addons/news/models.py:32
-#: addons/resumes/models.py:26 apps/pages/models.py:26
-#: apps/user_groups/models.py:17
+#: addons/jobs/models.py:28 addons/locations/models.py:19
+#: addons/news/models.py:32 addons/resumes/models.py:26
+#: apps/pages/models.py:26 apps/user_groups/models.py:17
 msgid "URL Path"
 msgstr "Camino URL"
 
@@ -1873,7 +1873,7 @@ msgstr "State"
 #: addons/corporate_memberships/forms.py:505 addons/directories/models.py:53
 #: addons/events/settings.py:28
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:126
-#: addons/locations/models.py:26 apps/profiles/forms.py:47
+#: addons/locations/models.py:28 apps/profiles/forms.py:47
 msgid "Zip Code"
 msgstr "Zip Code"
 
@@ -2105,7 +2105,7 @@ msgstr "Large"
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:103
 #: addons/directories/templates/directories/invoice_search_result_line.html:11
 #: addons/events/models.py:1332 addons/industries/models.py:14
-#: addons/locations/models.py:17 addons/memberships/models.py:99
+#: addons/locations/models.py:18 addons/memberships/models.py:99
 #: addons/memberships/models.py:1897 addons/memberships/models.py:2174
 #: addons/memberships/templates/memberships/invoice_search_result_line2.html:10
 #: addons/regions/models.py:13 apps/dashboard/templates/dashboard/stats.html:9
@@ -4485,7 +4485,7 @@ msgstr ""
 msgid "Recurs On"
 msgstr ""
 
-#: addons/events/forms.py:755 addons/locations/forms.py:127
+#: addons/events/forms.py:755 addons/locations/forms.py:129
 #: addons/news/forms.py:143 apps/stories/forms.py:111
 #: apps/stories/forms.py:239
 #, python-format
@@ -6979,11 +6979,11 @@ msgstr ""
 msgid "Remove the current logo"
 msgstr ""
 
-#: addons/locations/models.py:36
+#: addons/locations/models.py:38
 msgid "Only jpg, gif, or png images."
 msgstr ""
 
-#: addons/locations/models.py:37
+#: addons/locations/models.py:39
 #: addons/locations/templates/locations/import-preview.html:49
 msgid "Headquarters"
 msgstr "Headquarters"
