@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <div class="wrap-search-item">
     <div class="search-item page-search-item">
         <h2><a href="{{ page.get_absolute_url }}">{% firstof page.title 'Untitled'%}</a>
@@ -8,7 +10,7 @@
                 {% if not page.is_public %}<i class="fa fa-lock red"></i>{% endif %}
             {% endif %}
         </h2>
-        <div class="item-content">{{ page.content|striptags|truncatewords:20|safe }}</div>
+        <div class="item-content">{% blocktrans with c=page.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}</div>
     </div>
       {% include "pages/meta.html" %}
 </div>

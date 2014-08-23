@@ -1,9 +1,10 @@
 {% extends page.template %}
 {% load meta_tags %}
+{% load i18n %}
 
-{% block title %}{{ page.get_title }}{% endblock %}
-{% block meta_description %}{{ page.get_description }}{% endblock %}
-{% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with t=page.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=page.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=page.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
 {% block extra_head %}
 {% meta_og_image page "header_image" %}
@@ -21,7 +22,7 @@
         </div>{% endif %}
 
         {% if page.title %}
-        <h1>{{ page.title }}
+        <h1>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
             {% if request.user.is_authenticated %}
                 {% if request.user.is_superuser %}
                     {% if page.is_public %}<i class="fa fa-unlock-alt green"></i>{% endif %}
@@ -33,13 +34,13 @@
 
         {% if page.google_profile %}
         {% if page.has_google_author %}
-        <a href="{{ page.google_profile }}?rel=author">View author's Google+ profile</a>
+        <a href="{{ page.google_profile }}?rel=author">{% trans "View author's Google+ profile" %}</a>
         {% elif page.has_google_publisher %}
-        <a href="{{ page.google_profile }}" rel="publisher">View publisher's Google+ page</a>
+        <a href="{{ page.google_profile }}" rel="publisher">{% trans "View publisher's Google+ page" %}</a>
         {% endif %}
         {% endif %}
 
-        <div class="content">{{ page.content|safe }}</div>
+        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
         {% include "pages/meta.html" %}
     </div>
 </div>

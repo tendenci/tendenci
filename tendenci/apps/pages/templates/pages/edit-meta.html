@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Edit Meta Information{% endblock %}
+{% block title %}{% firstof MODULE_PAGE_LABEL trans 'Page' %} {% trans 'Edit Meta Information' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,8 +14,8 @@
 <div class="t">
 
     {% page_nav user page %}
-    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Meta Information for" %}<br />
-    {{ page.title }}</h1>
+    <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Meta Information for" %}<br />
+    {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h1>
 
     <div class="page-wrap">
         <div class="options">
@@ -27,8 +27,8 @@
         <form action="{% url page.edit.meta page.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Save Changes" />
-             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+            <input type="submit" value="{% trans 'Save Changes' %}" />
+             {% trans 'or' %} <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
         </div>
         </form>
     </div>
@@ -42,7 +42,7 @@
 
             // delete confirmation
             $('.delete').click(function(){
-                var delete_page = confirm("Permenantly delete {% firstof MODULE_PAGES_LABEL 'Page' %}?");   // confirm
+                var delete_page = confirm("{% trans 'Permenantly delete' %} {% firstof MODULE_PAGES_LABEL 'Page' %}?");   // confirm
                 if(delete_page) $(this).parents('.page-wrap').find('form[name="page-delete"]').submit() // delete: if OK
                 return false;   // cancel
             });

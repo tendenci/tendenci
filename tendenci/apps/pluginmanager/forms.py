@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.pluginmanager.models import PluginApp
 from tendenci.apps.pluginmanager.utils import plugin_options
 
@@ -28,6 +29,6 @@ class PluginAppForm(forms.ModelForm):
         try:
             __import__(package)
         except:
-            raise forms.ValidationError('This plugin does not exist. Please add the name of a valid plugin.')
+            raise forms.ValidationError(_('This plugin does not exist. Please add the name of a valid plugin.'))
 
         return package

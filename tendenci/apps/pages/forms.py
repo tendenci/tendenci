@@ -13,7 +13,7 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.base.utils import get_template_list
 from tendenci.core.files.utils import get_max_file_upload_size
 
-template_choices = [('default.html','Default')]
+template_choices = [('default.html',_('Default'))]
 template_choices += get_template_list()
 
 ALLOWED_IMG_EXT = (
@@ -35,7 +35,7 @@ class PageAdminForm(TendenciBaseForm):
         'storme_model':Page._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     template = forms.ChoiceField(choices=template_choices)
 
@@ -78,7 +78,7 @@ class PageAdminForm(TendenciBaseForm):
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
 
-        template_choices = [('default.html','Default')]
+        template_choices = [('default.html',_('Default'))]
         template_choices += get_template_list()
         self.fields['template'].choices = template_choices
 
@@ -91,12 +91,12 @@ class PageAdminForm(TendenciBaseForm):
         if self.instance:
             guid = self.instance.guid
             if Page.objects.filter(slug=slug).exclude(guid=guid).exists():
-                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                self._errors['slug'] = self.error_class([_('Duplicate value for slug.')])
                 del cleaned_data['slug']
         # Case 2: Add new Page
         else:
             if Page.objects.filter(slug=slug).exists():
-                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                self._errors['slug'] = self.error_class([_('Duplicate value for slug.')])
                 del cleaned_data['slug']
 
         return cleaned_data
@@ -114,9 +114,9 @@ class PageForm(TendenciBaseForm):
                                          initial=Page.CONTRIBUTOR_AUTHOR,
                                          widget=forms.RadioSelect())
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending')))
+        choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))
 
-    tags = forms.CharField(required=False, help_text=mark_safe('<a href="/tags/" target="_blank">Open All Tags list in a new window</a>'))
+    tags = forms.CharField(required=False, help_text=mark_safe('<a href="/tags/" target="_blank">%s</a>' % _('Open All Tags list in a new window')))
 
     template = forms.ChoiceField(choices=template_choices)
 
@@ -138,7 +138,7 @@ class PageForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('Page Information', {
+        fieldsets = [(_('Page Information'), {
                       'fields': ['title',
                                  'slug',
                                  'content',
@@ -148,12 +148,12 @@ class PageForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Contributor', {
+                      (_('Contributor'), {
                        'fields': ['contributor_type',
                                   'google_profile'],
                        'classes': ['boxy-grey'],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -161,7 +161,7 @@ class PageForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
@@ -176,12 +176,12 @@ class PageForm(TendenciBaseForm):
         if self.instance:
             guid = self.instance.guid
             if Page.objects.filter(slug=slug).exclude(guid=guid).exists():
-                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                self._errors['slug'] = self.error_class([_('Duplicate value for slug.')])
                 del cleaned_data['slug']
         # Case 2: Add new Page
         else:
             if Page.objects.filter(slug=slug).exists():
-                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                self._errors['slug'] = self.error_class([_('Duplicate value for slug.')])
                 del cleaned_data['slug']
 
         return cleaned_data
@@ -193,12 +193,12 @@ class PageForm(TendenciBaseForm):
 
             # check the extension
             if extension.lower() not in ALLOWED_IMG_EXT:
-                raise forms.ValidationError('The header image must be of jpg, gif, or png image type.')
+                raise forms.ValidationError(_('The header image must be of jpg, gif, or png image type.'))
 
             # check the image header_image
             image_type = '.%s' % imghdr.what('', header_image.read())
             if image_type not in ALLOWED_IMG_EXT:
-                raise forms.ValidationError('The header image is an invalid image. Try uploading another image.')
+                raise forms.ValidationError(_('The header image is an invalid image. Try uploading another image.'))
 
             max_upload_size = get_max_file_upload_size()
             if header_image.size > max_upload_size:
@@ -211,7 +211,7 @@ class PageForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(PageForm, self).__init__(*args, **kwargs)
         if self.instance.header_image:
-            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.header_image.pk, basename(self.instance.header_image.file.name))
+            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.pk, basename(self.instance.header_image.file.name))
         else:
             self.fields.pop('remove_photo')
 
@@ -220,7 +220,7 @@ class PageForm(TendenciBaseForm):
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
 
-        template_choices = [('default.html','Default')]
+        template_choices = [('default.html',_('Default'))]
         template_choices += get_template_list()
         self.fields['template'].choices = template_choices
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)

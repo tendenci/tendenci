@@ -1,4 +1,5 @@
 from django.template import Library, Node, TemplateSyntaxError, Variable
+from django.utils.translation import ugettext_lazy as _
 #from django.template.loader import get_template
 
 from tendenci.apps.pluginmanager.models import PluginApp
@@ -29,11 +30,11 @@ def list_plugins(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 2" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     context_var = bits[2]
 
