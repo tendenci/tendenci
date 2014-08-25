@@ -2,7 +2,7 @@
 {% load profile_tags %}
 {% load i18n %}
 
-{% block title %}Add/Remove User Groups{% endblock %}
+{% block title %}{% trans 'Add/Remove User Groups' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -47,7 +47,7 @@
   </div>
 <div style="clear:left;"></div>
         <div style="display:block">
-        <input type="submit" name="submit" value="Save" />
+        <input type="submit" name="submit" value="{% trans 'Save' %}" />
         </div>
     </form>
 

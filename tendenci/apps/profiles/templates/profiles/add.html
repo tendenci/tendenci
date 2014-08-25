@@ -147,7 +147,7 @@
                               </td>
                             </tr>
                             <tr >
-                              <td colspan="3"><label for="id_hide_phone">{% trans 'Hide phone numbers?'%}</label> &nbsp;&nbsp;&nbsp; {{ form.hide_phone }} Yes </td>
+                              <td colspan="3"><label for="id_hide_phone">{% trans 'Hide phone numbers?'%}</label> &nbsp;&nbsp;&nbsp; {{ form.hide_phone }} {% trans 'Yes' %} </td>
 
                               <td>&nbsp;</td>
                             </tr>
@@ -324,7 +324,7 @@
 
                           <tr>
                             <td>&nbsp;</td>
-                            <td><input type="checkbox" value="1" name="auto_pwd" id="auto-generate-pwd" {% if auto_pwd %}checked{% endif %} /> Use auto generated password</td>
+                            <td><input type="checkbox" value="1" name="auto_pwd" id="auto-generate-pwd" {% if auto_pwd %}checked{% endif %} /> {% trans 'Use auto generated password' %}</td>
                           </tr>
 
                            <tr id="tr-password1">
@@ -481,7 +481,7 @@
                         <td width="100">&nbsp;</td>
                         <td width="100"><span > </span></td>
                         <td colspan="3">
-                          <input type="submit" name="Submit" value="Add User" >
+                          <input type="submit" name="Submit" value="{% trans 'Add User' %}" >
                         </td>
                         <td>&nbsp;</td>
                       </tr>

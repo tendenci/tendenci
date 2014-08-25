@@ -21,7 +21,7 @@
         {% endfor %}
     </table>
     {% if request.user.is_superuser %}
-    <input class="merge_button" type="submit" value="Merge these users" />
+    <input class="merge_button" type="submit" value="{% trans 'Merge these users' %}" />
     {% endif %}
 </form>
 </div>

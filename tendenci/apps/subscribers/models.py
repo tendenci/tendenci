@@ -19,8 +19,8 @@ class GroupSubscription(models.Model):
 
     class Meta:
         unique_together = ('group', 'subscriber',)
-        verbose_name = "Group Subscription"
-        verbose_name_plural = "Group Subscriptions"
+        verbose_name = _("Group Subscription")
+        verbose_name_plural = _("Group Subscriptions")
 
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.email)

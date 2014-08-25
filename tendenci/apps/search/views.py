@@ -3,6 +3,7 @@ from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.search.forms import ModelSearchForm
 from tendenci.core.event_logs.models import EventLog
@@ -178,7 +179,7 @@ def basic_search(request, template='search/search.html', load_all=True, form_cla
     try:
         page = paginator.page(int(request.GET.get('page', 1)))
     except InvalidPage:
-        raise Http404("No such page of results!")
+        raise Http404(_("No such page of results!"))
 
     context = {
         'form': form,

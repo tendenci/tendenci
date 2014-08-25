@@ -35,7 +35,7 @@ class StoryForm(TendenciBaseForm):
         initial=False,
     )
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
     group = forms.ChoiceField(required=True, choices=[])
@@ -63,7 +63,7 @@ class StoryForm(TendenciBaseForm):
             'status_detail',
         )
 
-        fieldsets = [('Story Information', {
+        fieldsets = [(_('Story Information'), {
                       'fields': ['title',
                                  'content',
                                  'photo_upload',
@@ -78,7 +78,7 @@ class StoryForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -86,7 +86,7 @@ class StoryForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
@@ -99,12 +99,12 @@ class StoryForm(TendenciBaseForm):
 
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
+                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
 
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
+                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
 
             max_upload_size = get_max_file_upload_size()
             if photo_upload.size > max_upload_size:
@@ -166,7 +166,7 @@ class StoryAdminForm(TendenciBaseForm):
         initial=False,
     )
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
@@ -192,7 +192,7 @@ class StoryAdminForm(TendenciBaseForm):
             'status_detail',
         )
 
-        fieldsets = [('Story Information', {
+        fieldsets = [(_('Story Information'), {
                       'fields': ['title',
                                  'content',
                                  'photo_upload',
@@ -206,7 +206,7 @@ class StoryAdminForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -214,7 +214,7 @@ class StoryAdminForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
@@ -227,12 +227,12 @@ class StoryAdminForm(TendenciBaseForm):
 
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
+                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
 
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
+                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
 
             max_upload_size = get_max_file_upload_size()
             if photo_upload.size > max_upload_size:

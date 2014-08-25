@@ -1,3 +1,4 @@
 {% extends "site_base.html" %}
+{% load i18n %}
 
-{% block title %}{% firstof MODULE_STORIES_LABEL "Story" %} - {% endblock %}
+{% block title %}{% firstof MODULE_STORIES_LABEL trans "Story" %} - {% endblock %}

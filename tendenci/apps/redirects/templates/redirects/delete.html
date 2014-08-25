@@ -2,7 +2,7 @@
 {% load redirect_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Delete{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Delete' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -23,7 +23,7 @@
 
         <div class="delete-form">
             <form action="{% url redirect.delete redirect.pk %}" method="post">{% csrf_token %}
-                <input type="submit" value="Delete Redirect" />
+                <input type="submit" value="{% trans 'Delete Redirect' %}" />
             </form>
         </div>
     </div>

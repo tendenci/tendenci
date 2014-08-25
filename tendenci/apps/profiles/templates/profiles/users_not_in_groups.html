@@ -5,7 +5,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% block title %}Users not in Groups{% endblock %}
+{% block title %}{% trans 'Users not in Groups' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -23,16 +23,16 @@
         <table class="table condensed-table table-hover">
         <thead>
             <td>
-                <strong>ID</strong>
+                <strong>{% trans 'ID' %}</strong>
             </td>
             <td>
-                Name
+                {% trans 'Name' %}
             </td>
             <td>
-                Username
+                {% trans 'Username' %}
             </td>
             <td>
-                Email
+                {% trans 'Email' %}
             </td>
         </thead>
             {% for user in users %}

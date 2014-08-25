@@ -1,6 +1,7 @@
 {% extends "base-wide.html" %}
+{% load i18n %}
 
-{% block title %}{% firstof 
-MODULE_USERS_LABEL 'Profile' %} - {% endblock %}
+{% block title %}{% firstof
+MODULE_USERS_LABEL trans 'Profile' %} - {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

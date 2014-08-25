@@ -7,12 +7,12 @@
         <div class="item-content">
             {% if story.image %}
             <div class="search-image">
-                <img src="{% image_url story.image size=80x80 crop=True quality=88 %}" alt="{{ story.title|truncatechars:123 }}" title="{{ story.title|truncatechars:123 }}" />
+                <img src="{% image_url story.image size=80x80 crop=True quality=88 %}" alt="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" />
             </div>
             {% endif %}
             <div class="search-text">
                 <h2><a href="{% if can_edit %}{% url story story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title 'Untitled'%}</a></h2>
-                {{ story.content|striptags|truncatewords:20|safe }}
+                {% blocktrans with c=story.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}
 
                 {% if can_edit %}
                     {% if story.full_story_link %}

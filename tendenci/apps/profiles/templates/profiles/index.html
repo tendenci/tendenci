@@ -10,7 +10,7 @@
 {% load humanize %}
 {% load i18n %}
 
-{% block title %}Profile {% endblock %}
+{% block title %}{% trans 'Profile' %} {% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -56,7 +56,7 @@
             {% if profile.member_number %}
             {% if profile|allow_edit_by:user %}
             <div style="padding-bottom: 1em;">
-            <span class="member-icon">Member ID: {{ profile.member_number}}</span>
+            <span class="member-icon">{% trans 'Member ID' %}: {{ profile.member_number}}</span>
             </div>
             {% endif %}
             {% endif %}
@@ -85,32 +85,32 @@
 
     <div class="contact info">
 
-        <h2>Contact Information</h2>
+        <h2>{% trans 'Contact Information' %}</h2>
 
         <table>
 
             {% if can_edit or not profile.hide_email %}
             <tr>
-                <td>Email</td>
+                <td>{% trans 'Email' %}</td>
                 <td>{{ user_this.email }}</td>
             </tr>
             {% endif %}
 
             {% if can_edit or not profile.hide_phone %}
             <tr>
-                <td>Phone</td>
+                <td>{% trans 'Phone' %}</td>
                 <td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
             </tr>
             {% endif %}
 
             <tr>
-                <td>Website</td>
+                <td>{% trans 'Website' %}</td>
                 <td>{{ profile.url }}</td>
             </tr>
 
             {% if can_edit or not profile.hide_address %}
             <tr>
-                <td>Address</td>
+                <td>{% trans 'Address' %}</td>
                 <td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
             </tr>
             {% endif %}
@@ -121,12 +121,12 @@
 
     {% if request.user.profile.is_superuser %}
     <div class="admin_notes info">
-        <h2> Admin Notes </h2>
+        <h2> {% trans 'Admin Notes' %} </h2>
         <p>
             {% if profile.admin_notes %}
                 {{ profile.admin_notes }}
             {% else %}
-                No admin notes.
+                {% trans 'No admin notes' %}.
             {% endif %}
         </p>
     </div>
@@ -136,11 +136,11 @@
     {% if MODULE_MEMBERSHIPS_ENABLED %}
     <div class="membership info">
 
-        <h2>Memberships
+        <h2>{% trans 'Memberships' %}
         {% if membership_apps %}
-            <a title="Join membership" href="{% url membership_default.add membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+            <a title="{% trans 'Join membership' %}" href="{% url membership_default.add membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
         {% else %}
-            <a title="Create a membership application" href="{% url admin:memberships_membershipapp_add %}" class="glyph plus">+</a>
+            <a title="{% trans 'Create a membership application' %}" href="{% url admin:memberships_membershipapp_add %}" class="glyph plus">+</a>
         {% endif %}
         </h2>
 
@@ -148,7 +148,7 @@
           <div class="app-links">
           {% for app in membership_apps %}
               <div>
-                  <a title="Join membership" href="{% url membership_default.add app.slug %}?username={{ user_this.username }}">Join</a>
+                  <a title="{% trans 'Join membership' %}" href="{% url membership_default.add app.slug %}?username={{ user_this.username }}">{% trans 'Join' %}</a>
                   {{ app.name }}
               </div>
           {% endfor %}
@@ -181,20 +181,20 @@
 
                         {% if membership.can_renew %}
                             {% if membership.corporate_membership_id %}
-                                <a href="{% url membership_default.renew_under_corp membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                                <a href="{% url membership_default.renew_under_corp membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
                             {% else %}
                                 {% if membership.app %}
-                                <a href="{% url membership_default.renew membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                                <a href="{% url membership_default.renew membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
 
                         {% if user.is_superuser and membership.past_renewal %}
                             {% if membership.corporate_membership_id %}
-                                <a href="{% url membership_default.renew_under_corp membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Admin Renew</a>
+                                <a href="{% url membership_default.renew_under_corp membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
                             {% else %}
                                 {% if membership.app %}
-                                <a href="{% url membership_default.renew membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Admin Renew</a>
+                                <a href="{% url membership_default.renew membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
@@ -204,7 +204,7 @@
                         {% with membership.get_invoice as invoice %}
                         {% if invoice %}
                         <a href="{% url invoice.view invoice.pk %}">
-                            Balance {{ invoice.balance|format_currency }}
+                            {% trans 'Balance' %} {{ invoice.balance|format_currency }}
                         </a>
                         {% endif %}
                         {% endwith %}
@@ -213,7 +213,7 @@
         {% endfor %}
         </table>
         {% else %}
-        <p>Not a member.</p>
+        <p>{% trans 'Not a member.' %}</p>
         {% endif %}
 
     </div>
@@ -223,9 +223,9 @@
 
     <div class="group info">
 
-        <h2>Groups
+        <h2>{% trans 'Groups' %}
         {% if request.user = user_this or admin %}
-        <a title="Join or leave group" href="{% url profile.edit_groups user_this.username %}" class="glyph gears">S</a>
+        <a title="{% trans 'Join or leave group' %}" href="{% url profile.edit_groups user_this.username %}" class="glyph gears">S</a>
         {% endif %}
         </h2>
 
@@ -250,7 +250,7 @@
             {% endfor %}
             </table>
         {% else %}
-            <p>Not in any groups.</p>
+            <p>{% trans 'Not in any groups.' %}</p>
         {% endif %}
 
     </div>
@@ -290,7 +290,7 @@
         <div class="contribution info">
 
         <h2>{% trans "Contributions" %}</h2>
-        <span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">more &raquo;</a></span>
+        <span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">{% trans 'more' %} &raquo;</a></span>
         <div class="clear"></div>
 
         {% for contribution in contributions|slice:":5" %}
@@ -309,7 +309,7 @@
 
         {% if user.profile.is_superuser %}
         <div class="contribution info no-contribs">
-            {% firstof request.user.first_name request.user.username %}, this person has not made any contributions yet.
+            {% firstof request.user.first_name request.user.username %}, {% trans 'this person has not made any contributions yet.' %}
         </div>
         {% endif %}
 

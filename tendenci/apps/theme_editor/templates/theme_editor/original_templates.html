@@ -4,7 +4,7 @@
 {% load humanize %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}Theme Editor{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Theme Editor' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -24,7 +24,7 @@
         {% if prev_dir %}
            <p class="prev_dir">
                <a href="{% if app %}{% url theme_editor.original_templates app %}{% else %}{% url theme_editor.original_templates %}{% endif %}?dir={{ prev_dir }}">
-               &laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}
+               &laquo;&nbsp;{% blocktrans %}{% trans 'back to' %} {{ prev_dir_name }}{% endblocktrans %}
                </a>
            </p>
         {% endif %}
@@ -59,7 +59,7 @@
     $(document).ready(function(){
         //bind the modified one
         $('.copy').click(function(){
-            if(window.confirm("Do you want to override this template file?")){
+            if(window.confirm("{% trans 'Do you want to override this template file?' %}")){
                 return true;
             } else {
                 return false;

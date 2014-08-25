@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.perms.utils import has_perm, get_query_filters
@@ -56,7 +57,7 @@ def add(request, form_class=RedirectForm, template_name="redirects/add.html"):
             redirect = form.save(commit=False)
             redirect.save()  # get pk
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % redirect)
+            messages.add_message(request, messages.SUCCESS, _('Successfully added %(r)s' % {'r':redirect}))
 
             # reload the urls
             reload(dynamic_urls)
@@ -83,7 +84,7 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
             redirect = form.save(commit=False)
             redirect.save() # get pk
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % redirect)
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited %(r)s' % {'r':redirect}))
 
             # reload the urls
             reload(dynamic_urls)
@@ -101,7 +102,7 @@ def delete(request, id, template_name="redirects/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % redirect)
+        messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(r)s' % {'r':redirect}))
         redirect.delete()
         return HttpResponseRedirect(reverse('redirects'))
 

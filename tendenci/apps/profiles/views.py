@@ -924,7 +924,7 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
         form = form_class(user, request.user, request, request.POST)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.SUCCESS, 'Successfully edited groups for %s' % user.get_full_name())
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited groups for %(full_name)s' % { 'full_name' : user.get_full_name()}))
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(user, request.user, request)
@@ -954,7 +954,7 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
         form = form_class(request.POST, instance=membership)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.SUCCESS, 'Successfully edited membership for %s' % membership.group)
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited membership for %(g)s' % {'g':membership.group}))
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(instance=membership)
@@ -988,7 +988,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
             membership = form.save(commit=False)
             membership.user = user
             membership = update_perms_and_save(request, form, membership)
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated memberships for %s' % user.get_full_name())
+            messages.add_message(request, messages.SUCCESS, _('Successfully updated memberships for %s' % { 'full_name': user.get_full_name()}))
             membership.populate_or_clear_member_id()
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
 
@@ -1250,7 +1250,7 @@ def merge_process(request, sid):
         # log an event
         EventLog.objects.log(description=description[:120])
         invalidate('profiles_profile')
-        messages.add_message(request, messages.SUCCESS, 'Successfully merged users. %s' % description)
+        messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
 
     return redirect("profile.search")
 

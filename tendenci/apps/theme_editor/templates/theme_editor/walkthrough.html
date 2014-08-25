@@ -153,15 +153,15 @@
             }
         });
 
-        $('.prev-step').live('click', function(e){
+        $('.prev-step').on('click', function(e){
             $.pagewalkthrough('prev',e);
         });
 
-        $('.next-step').live('click', function(e){
+        $('.next-step').on('click', function(e){
             $.pagewalkthrough('next',e);
         });
 
-        $('.close-step').live('click', function(e){
+        $('.close-step').on('click', function(e){
             $.pagewalkthrough('close');
             window.location = "{% url completion_checklist %}";
         });
