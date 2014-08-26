@@ -8,7 +8,7 @@ from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
 from captcha.fields import CaptchaField
 SIMPLE_ANSWER = 22
-SIMPLE_QUESTION = 'What is 9 + 13? (security question -just so we know you\'re not a bot)'
+SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re not a bot)')
 
 slug_re = compile(r'^[-\w\/]+$')
 validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
@@ -20,7 +20,7 @@ class SlugField(CharField):
     """
     default_error_messages = {
         'invalid': _(u"Enter a valid 'slug' consisting of letters, numbers,"
-                     u" underscores (_), front-slashes (/) or hyphens."),
+                    u" underscores (_), front-slashes (/) or hyphens."),
     }
     default_validators = [validate_slug]
 
@@ -49,7 +49,7 @@ class SimpleMathField(forms.IntegerField):
         except:
             value = 0
         if value != SIMPLE_ANSWER:
-            raise forms.ValidationError("Incorrect. Please try again.")
+            raise forms.ValidationError(_("Incorrect. Please try again."))
 
         return value
 
@@ -74,17 +74,17 @@ class CaptchaForm(forms.Form):
 
 class AddonUploadForm(forms.Form):
     addon = forms.FileField(label=_(u'File'),
-                           help_text="Enter the zip file of the module.")
+                           help_text=_("Enter the zip file of the module."))
 
     def clean_addon(self):
         addon = self.cleaned_data['addon']
         try:
             zip_file = zipfile.ZipFile(addon)
         except:
-            raise forms.ValidationError("Could not unzip file.")
+            raise forms.ValidationError(_("Could not unzip file."))
         bad_file = zip_file.testzip()
         zip_file.close()
         del zip_file
         if bad_file:
-            raise forms.ValidationError('Bad file/s found in ZIP archive.')
+            raise forms.ValidationError(_('Bad file/s found in ZIP archive.'))
         return addon

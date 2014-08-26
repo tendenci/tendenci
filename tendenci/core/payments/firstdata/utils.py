@@ -146,7 +146,3 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
         payment.save()
-
-
-
-

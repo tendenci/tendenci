@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.files.models import file_directory
 from tendenci.core.newsletters.utils import extract_files
@@ -20,7 +21,7 @@ class NewsletterTemplate(models.Model):
     zip_file = models.FileField(upload_to=file_directory, null=True)
 
     class Meta:
-        permissions = (("view_newslettertemplate", "Can view newsletter template"),)
+        permissions = (("view_newslettertemplate", _("Can view newsletter template")),)
 
     def __unicode__(self):
         return self.name

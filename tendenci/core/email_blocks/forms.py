@@ -1,8 +1,9 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from tendenci.core.email_blocks.models import EmailBlock
 
 class EmailBlockForm(forms.ModelForm):
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
+    STATUS_CHOICES = (('active',_('Active')),('inactive',_('Inactive')),)
     email = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'45'}))
     email_domain = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'45'}))
     reason =forms.CharField(max_length=255, required=False, widget=forms.Textarea(attrs={'rows':'3'}))

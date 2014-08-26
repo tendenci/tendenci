@@ -17,16 +17,16 @@ class FileAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = {}
     search_fields = ['file', 'tags']
     fieldsets = (
-        ('File Information', {
+        (_('File Information'), {
             'fields': ('file',
                        'name',
                        'tags',
                        'group',
                        )
         }),
-        ('Category', {'fields': ('file_cat', 'file_sub_cat')}),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Category'), {'fields': ('file_cat', 'file_sub_cat')}),
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
@@ -63,11 +63,11 @@ class FileAdmin(TendenciBaseModelAdmin):
         else:
             return obj.type()
     file_preview.allow_tags = True
-    file_preview.short_description = 'Preview'
+    file_preview.short_description = _('Preview')
 
     def file_path(self, obj):
         return obj.file
-    file_path.short_description = "File Path"
+    file_path.short_description = _("File Path")
 
     def add_to_category_and_subcategory(self, request, queryset):
         count = queryset.count()
@@ -78,11 +78,11 @@ class FileAdmin(TendenciBaseModelAdmin):
                 filecategory_form.update_file_cat_and_sub_cat(file)
 
         if count > 1:
-            messages.success(request, "Successfully updated Category/Sub Category of %s files." % count)
+            messages.success(request, _("Successfully updated Category/Sub Category of %(c)s files." % {'c':count}))
         elif count == 1:
-            messages.success(request, "Successfully updated Category/Sub Category of a file.")
+            messages.success(request, _("Successfully updated Category/Sub Category of a file."))
 
-    add_to_category_and_subcategory.short_description = 'Add to category'
+    add_to_category_and_subcategory.short_description = _('Add to category')
 
 admin.site.register(File, FileAdmin)
 
@@ -130,8 +130,8 @@ class CategoryAdminInline(admin.TabularInline):
     fieldsets = ((None, {'fields': ('name',)}),)
     model = FilesCategory
     extra = 0
-    verbose_name = "File Sub-Category"
-    verbose_name_plural = "File Sub-Categories"
+    verbose_name = _("File Sub-Category")
+    verbose_name_plural = _("File Sub-Categories")
 
 
 class CategoryAdmin(admin.ModelAdmin):

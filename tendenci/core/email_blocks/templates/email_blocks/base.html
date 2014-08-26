@@ -1,5 +1,6 @@
 {% extends "site_base.html" %}
+{% load i18n %}
 
-{% block title %}Email Blocks - {% endblock %}
+{% block title %}{% trans 'Email Blocks' %} - {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

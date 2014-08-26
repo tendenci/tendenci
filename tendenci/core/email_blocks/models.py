@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.models import TendenciBaseModel
 
@@ -10,7 +11,7 @@ class EmailBlock(TendenciBaseModel):
     email_domain = models.CharField(max_length=255)
 
     class Meta:
-        permissions = (("view_email_block","Can view email block"),)
+        permissions = (("view_email_block",_("Can view email block")),)
 
     @models.permalink
     def get_absolute_url(self):

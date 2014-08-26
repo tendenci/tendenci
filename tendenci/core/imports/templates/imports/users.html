@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load dashboard_tags %}
 
-{% block title %}Import Users{% endblock %}
+{% block title %}{% trans 'Import Users' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -73,7 +73,7 @@
 <div class="clear-both"></div>
 
 <div>
-    <input type="submit" class="submit-btn"  name="submit" value="Preview Import">
+    <input type="submit" class="submit-btn"  name="submit" value="{% trans 'Preview Import' %}">
 </div>
 <div class="clear-both"></div>
 </div>

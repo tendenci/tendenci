@@ -41,4 +41,3 @@ def autocomplete(request):
         tag_list = [{'id':tag.pk, 'label':tag.name, 'value':tag.name} for tag in tags]
         return HttpResponse(simplejson.dumps(tag_list),mimetype='application/json')
     raise Http404
-

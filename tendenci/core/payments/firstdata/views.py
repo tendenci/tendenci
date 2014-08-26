@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.payments.firstdata.utils import firstdata_thankyou_processing
 from tendenci.core.event_logs.models import EventLog
@@ -14,9 +15,9 @@ def thank_you(request, payment_id, template_name='payments/receipt.html'):
 
     if payment:
         if payment.is_approved:
-            payment.response_reason_text = "Your transaction has been approved."
+            payment.response_reason_text = _("Your transaction has been approved.")
         else:
-            payment.response_reason_text = "Your transaction has been declined."
+            payment.response_reason_text = _("Your transaction has been declined.")
 
     return render_to_response(template_name,{'payment':payment},
                               context_instance=RequestContext(request))

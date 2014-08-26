@@ -19,13 +19,13 @@
         <tr><td>&nbsp;</td></tr>
         <tr><td align="left" valign="top">
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url event event.pk %}" >
-        <font face="Arial" size="2"><b> {{ event.title }}
+        <font face="Arial" size="2"><b> {% blocktrans with t=event.title %}{{ t }}{% endblocktrans %}
         </b></font></a>
 
         {# show member icon if not allowanonymousview/allowsiteuserview #}
         {% if not event.allow_anonymous_view and event.allow_user_view   %}
             &nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/static/images/icons/member.gif" height="13" width="15"
-            border="0" alt="Member View Only" title="Member View Only">
+            border="0" alt="{% trans 'Member View Only' %}" title="{% trans 'Member View Only' %}">
         {% endif %}
         </td></tr>
 
@@ -38,7 +38,7 @@
         <tr><td align="left" valign="top"><div>
         <font face="Arial" size="2" color="#000000">
 
-        {{ event.description|striptags|truncatewords:60 }}
+        {% blocktrans with d=event.description|striptags|truncatewords:60 %}{{ d }}{% endblocktrans %}
          <a href="{{ SITE_GLOBAL_SITEURL }}{% url event event.pk %}">[More Info]</a>
         </font>
 

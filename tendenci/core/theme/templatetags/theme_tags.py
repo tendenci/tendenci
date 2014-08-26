@@ -5,6 +5,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode, BlockNode
 from django.contrib.auth.models import AnonymousUser, User
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.boxes.models import Box
 from tendenci.core.perms.utils import get_query_filters
@@ -35,7 +36,7 @@ class ThemeExtendsNode(ExtendsNode):
             error_msg = "Invalid template name in 'extends' tag: %r." % parent
             if self.parent_name_expr:
                 error_msg += " Got this from the '%s' variable." % self.parent_name_expr.token
-            raise TemplateSyntaxError(error_msg)
+            raise TemplateSyntaxError(_(error_msg))
         if hasattr(parent, 'render'):
             return parent  # parent is a Template object
         theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
@@ -193,7 +194,7 @@ def theme_extends(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 2:
-        raise TemplateSyntaxError("'%s' takes one argument" % bits[0])
+        raise TemplateSyntaxError(_("'%s' takes one argument" % bits[0]))
     parent_name, parent_name_expr = None, None
     if bits[1][0] in ('"', "'") and bits[1][-1] == bits[1][0]:
         parent_name = bits[1][1:-1]
@@ -201,7 +202,7 @@ def theme_extends(parser, token):
         parent_name_expr = parser.compile_filter(bits[1])
     nodelist = parser.parse()
     if nodelist.get_nodes_by_type(ExtendsNode):
-        raise TemplateSyntaxError("'%s' cannot appear more than once in the same template" % bits[0])
+        raise TemplateSyntaxError(_("'%s' cannot appear more than once in the same template" % bits[0]))
 
     return ThemeExtendsNode(nodelist, parent_name, parent_name_expr)
 
@@ -217,7 +218,7 @@ def theme_include(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 2:
-        raise TemplateSyntaxError("%r tag takes one argument: the name of the template to be included" % bits[0])
+        raise TemplateSyntaxError(_("%r tag takes one argument: the name of the template to be included" % bits[0]))
     path = bits[1]
     if path[0] in ('"', "'") and path[-1] == path[0]:
         return ThemeConstantIncludeNode(path[1:-1])
@@ -235,7 +236,7 @@ def space_include(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 2:
-        raise TemplateSyntaxError("%r tag takes one argument: the setting to be included" % bits[0])
+        raise TemplateSyntaxError(_("%r tag takes one argument: the setting to be included" % bits[0]))
     path = bits[1]
     return SpaceIncludeNode(path)
 
@@ -251,7 +252,7 @@ def theme_setting(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 2:
-        raise TemplateSyntaxError("%r tag takes one argument: the setting to be included" % bits[0])
+        raise TemplateSyntaxError(_("%r tag takes one argument: the setting to be included" % bits[0]))
     path = bits[1]
     return ThemeSettingNode(bits[1])
 

@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.event_logs.managers import EventLogManager
 from tendenci.apps.entities.models import Entity
@@ -34,7 +35,7 @@ class EventLog(models.Model):
     query_string = models.TextField(null=True)
     robot = models.ForeignKey(Robot, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
-    
+
     uuid = models.CharField(max_length=40)
     application = models.CharField(max_length=50, db_index=True)
     action = models.CharField(max_length=50, db_index=True)
@@ -43,7 +44,7 @@ class EventLog(models.Model):
     objects = EventLogManager()
 
     class Meta:
-        permissions = (("view_eventlog", "Can view eventlog"),)
+        permissions = (("view_eventlog", _("Can view eventlog")),)
 
     def save(self, *args, **kwargs):
         if not self.uuid:

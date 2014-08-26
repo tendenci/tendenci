@@ -1,9 +1,10 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.robots.managers import RobotManager
 
 
-STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
+STATUS_CHOICES = (('active',_('Active')),('inactive',_('Inactive')),)
 
 class Robot(models.Model):
     name = models.CharField(max_length=150)

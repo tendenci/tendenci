@@ -67,7 +67,7 @@
         $(document).ready(function(){
             // delete confirmation
             $('.delete').click(function(){
-                var delete_email_block = confirm('Permenantly delete email block?');    // confirm
+                var delete_email_block = confirm('{% trans "Permenantly delete email block?" %}');    // confirm
                 if(delete_email_block) $(this).parents('.email_block-wrap').find('form[name="email_block-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

@@ -1,8 +1,9 @@
 {% load styled_forms %}
+{% load i18n %}
 
 {% if file_formset.total_form_count > 0 %}
-    <input type="submit" value="Update Files" />
-    <h2>Files</h2>
+    <input type="submit" value="{% trans 'Update Files' %}" />
+    <h2>{% trans 'Files' %}</h2>
 {% endif %}
 {{ file_formset.management_form }}
 {% for file_form in file_formset.forms %}

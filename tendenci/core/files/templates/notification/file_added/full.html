@@ -13,14 +13,14 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="2%">&nbsp;</td>
-    <td width="23%"> File:</td>
+    <td width="23%"> {% trans 'File' %}:</td>
     <td width="75%"><b>{{ object.basename }}</b></td>
   </tr>
 </table>
 <p>To view the details of this
   file, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 
-<P>Time submitted:  {% now "D d M Y P" %}</P>
+<P>{% trans 'Time submitted' %}:  {% now "D d M Y P" %}</P>
 
 </body>
 </html>

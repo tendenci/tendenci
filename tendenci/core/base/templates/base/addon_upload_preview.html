@@ -5,10 +5,12 @@
 {% block body %}
 <div class="t">
     <h1>{% trans "Module Upload" %}</h1>
+    {% blocktrans %}
     <p>Module named <strong>{{ addon_name }}</strong> already exists in <strong>SITE ADDONS PATH</strong></p>
-    <p>Would you like to overwrite this module?</p>
+    {% endblocktrans %}
+    <p>{% trans 'Would you like to overwrite this module?' %}</p>
     <form method='post' action="{% url addon.upload.preview sid %}" >{% csrf_token %}
-    <input type='submit' value="Overwrite Module">
+    <input type='submit' value="{% trans 'Overwrite Module' %}">
     </form>
 </div>
 {% endblock %}

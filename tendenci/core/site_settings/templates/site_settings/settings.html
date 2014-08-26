@@ -1,9 +1,9 @@
 {% extends "site_settings/base.html" %}
-
+{% load i18n %}
 {% load site_setting_tags %}
 {% load base_filters %}
 
-{% block title %}Settings{% endblock %}
+{% block title %}{% trans 'Settings' %}{% endblock %}
 
 {% block body %}
 {% settings_nav request.user %}
@@ -24,7 +24,7 @@
         {% endfor %}
     </ul>
     {% empty %}
-    <p>No settings are currently available</p>
+    <p>{% trans 'No settings are currently available' %}</p>
 {% endfor %}
 
 {% endblock %}

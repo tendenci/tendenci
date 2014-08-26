@@ -16,14 +16,14 @@ from tendenci.core.site_settings.utils import get_setting
 site_url = get_setting('site', 'global', 'siteurl')
 site_display_name = get_setting('site', 'global', 'sitedisplayname')
 site_description = get_setting('site', 'global', 'sitedescription')
-if site_description == '': site_description = 'All syndicated rss feeds on %s' % site_display_name
+if site_description == '': site_description = _('All syndicated rss feeds on %(dname)s' % {'dname':site_display_name})
 
 max_items = settings.MAX_RSS_ITEMS
 if not max_items: max_items = 100
 
 
 class GlobalFeed(Feed):
-    title =  '%s RSS Feed' % site_display_name
+    title =  _('%(dname)s RSS Feed' % {'dname':site_display_name})
     link = '%s/rss' % (site_url)
     description = site_description
 

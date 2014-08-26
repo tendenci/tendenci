@@ -13,6 +13,7 @@ from tendenci.core.site_settings.utils import (get_form_list,
                                                get_box_list,
                                                get_group_list)
 from tendenci.core.base.utils import get_languages_with_local_name
+from django.utils.translation import ugettext_lazy as _
 
 
 def clean_settings_form(self):
@@ -24,15 +25,15 @@ def clean_settings_form(self):
             field_value = self.cleaned_data[setting.name]
             if setting.data_type == "boolean":
                 if field_value != 'true' and field_value != 'false':
-                    raise forms.ValidationError("'%s' must be true or false" % setting.label)
+                    raise forms.ValidationError(_("'%(l)s' must be true or false" % {'l':setting.label}))
             if setting.data_type == "int":
                 if field_value != ' ':
                     if not field_value.isdigit():
-                        raise forms.ValidationError("'%s' must be a whole number" % setting.label)
+                        raise forms.ValidationError(_("'%(l)s' must be a whole number" % {'l':setting.label}))
             if setting.data_type == "file":
                 if field_value:
                     if not isinstance(field_value, File):
-                        raise forms.ValidationError("'%s' must be a file" % setting.label)
+                        raise forms.ValidationError(_("'%(l)s' must be a file" % {'l':setting.label}))
 
             if setting.name == "siteurl" and setting.scope == "site":
                 field_value = self.cleaned_data["siteurl"]

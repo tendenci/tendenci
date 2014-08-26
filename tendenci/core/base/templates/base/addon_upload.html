@@ -8,7 +8,7 @@
     <form method='post' action="{% url addon.upload %}" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type='submit' value='Upload'>
+            <input type='submit' value='{% trans "Upload" %}'>
         </div>
     </form>
 </div>

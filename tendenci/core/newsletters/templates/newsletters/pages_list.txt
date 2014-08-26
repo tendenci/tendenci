@@ -20,13 +20,13 @@
         <tr><td>&nbsp;</td></tr>
         <tr><td align="left" valign="top">
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url page page.slug %}" >
-        <font face="Arial" size="2"><b> {{page.title}}
+        <font face="Arial" size="2"><b> {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
         </b></font></a>
 
         {# show member icon if not allowanonymousview/allowsiteuserview #}
         {% if not page.allow_anonymous_view and page.allow_user_view   %}
             &nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/static/images/icons/member.gif" height="13" width="15"
-            border="0" alt="Member View Only" title="Member View Only">
+            border="0" alt="{% trans 'Member View Only' %}" title="{% trans 'Member View Only' %}">
         {% endif %}
         </td></tr>
 
@@ -39,8 +39,9 @@
         <tr><td align="left" valign="top"><div>
         <font face="Arial" size="2" color="#000000">
 
-        {{page.content|striptags|truncatewords:60 }}
+        {% blocktrans with b=page.content|striptags|truncatewords:60 %}{{ b }}{% endblocktrans %}
          <a href="{{ SITE_GLOBAL_SITEURL }}{% url page page.slug %}">[More Info]</a>
+        }
         </font>
 
         {#  posted by #}
