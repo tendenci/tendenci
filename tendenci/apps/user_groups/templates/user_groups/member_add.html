@@ -2,7 +2,7 @@
 {% load user_group_tags %}
 {% load i18n %}
 
-{% block title %}Groups{% endblock %}
+{% block title %}{% trans 'Groups' %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -37,10 +37,10 @@
                 {% endif %}
                 <label for="id_members" style="float:left; padding-right: 1em;">
                     <b>{{ form.members.label }}:</b>
-                    view by
-                    <a href="?member_label=full_name">name</a>,
-                    <a href="?member_label=email">email</a>,
-                    <a href="?member_label=username">username</a>.
+                    {% trans 'view by' %}
+                    <a href="?member_label=full_name">{% trans 'name' %}</a>,
+                    <a href="?member_label=email">{% trans 'email' %}</a>,
+                    <a href="?member_label=username">{% trans 'username' %}</a>.
                 </label>
                 <br>
                 {{ form.members }}
@@ -70,7 +70,7 @@
         </div>
 
         <div class="submit-row">
-            <input id='add_members_submit' type="submit" value="Save" class="default" />
+            <input id='add_members_submit' type="submit" value="{% trans 'Save' %}" class="default" />
         </div>
     </form>
 

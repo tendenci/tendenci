@@ -6,7 +6,7 @@
 {% load pagination_tags %}
 {% load i18n %}
 
-{% block title %}{{ group.name }} - Group{% endblock %}
+{% block title %}{% blocktrans with g=group.name %}{{ g }} - Group{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -51,7 +51,7 @@
             <div>{{ form.body.label_tag }}</div>
             <div>{{ form.body }}</div>
 
-            <input type="submit" value="Send Message" class="submit-btn">
+            <input type="submit" value="{% trans 'Send Message' %}" class="submit-btn">
         </form>
 
     </div>
@@ -120,7 +120,7 @@
         $(document).ready(function(){
             var options = {
                 'html': true,
-                'content': 'You may change your no-reply email address in <a href="/settings/site/global" target="_blank">Site Settings.</a>',
+                'content': '{% blocktrans %}You may change your no-reply email address in <a href="/settings/site/global" target="_blank">Site Settings.</a>{% endblocktrans %}',
             };
             $('#from-addr-help').popover(options);
         })

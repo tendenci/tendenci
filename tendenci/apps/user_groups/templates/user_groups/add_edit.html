@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Groups Add{% endblock %}
+{% block title %}{% trans 'Groups Add' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -28,10 +28,8 @@
     <form action="." method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Save" />
+            <input type="submit" value="{% trans 'Save' %}" />
         </div>
     </form>
 </div>
 {% endblock %}
-
-

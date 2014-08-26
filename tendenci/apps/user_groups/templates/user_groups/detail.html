@@ -6,7 +6,7 @@
 {% load pagination_tags %}
 {% load i18n %}
 
-{% block title %}{{ group.name }} - Group{% endblock %}
+{% block title %}{% blocktrans with g=group.name %}{{ g }} - Group{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -25,7 +25,7 @@
         <h1>{{ group.name }}</h1>
 
         {% if can_edit and group.type == 'system_generated' %}
-            <div class="system-generated">System generated groups can not be deleted.</div>
+            <div class="system-generated">{% trans 'System generated groups can not be deleted.' %}</div>
         {% endif %}
 
         {% if can_edit %}
@@ -108,7 +108,7 @@
         $(document).ready(function(){
             // delete confirmation for members
             $('.delete-member').click(function(){
-                var delete_member = confirm('Remove this member from the group?');  // confirm
+                var delete_member = confirm('{% trans "Remove this member from the group?" %}');  // confirm
                 if(delete_member) $(this).parent().find('form[name="member-delete"]').submit() // delete: if OK
                 return false;   // cancel
             });

@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL 'User Groups' %} {% trans "Import" %}{% endblock %}
+{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL trans 'User Groups' %} {% trans "Import" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -51,9 +51,9 @@
             {% endif %}
             </div>
             <div class="details">
-                Label: {{ group.label }}<br/>
-                Type: {{ group.type }}<br/>
-                Description: {{ group.description }}<br/>
+                {% trans 'Label' %}: {{ group.label }}<br/>
+                {% trans 'Type' %}: {{ group.type }}<br/>
+                {% trans 'Description' %}: {{ group.description }}<br/>
             </div>
         </div>
     {% endfor %}
@@ -61,7 +61,7 @@
 
     <div align="right">
     <form class="import" method="post" action="{% url group.import_process import_i.pk %}">{% csrf_token %}
-    <input type="submit" class="submit-btn" name="submit" value="Import Now" >
+    <input type="submit" class="submit-btn" name="submit" value="{% trans 'Import Now' %}" >
     </form>
     </div>
 

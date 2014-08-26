@@ -3,7 +3,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}Import Subscribers{% endblock %}
+{% block title %}{% trans 'Import Subscribers' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,10 +14,10 @@
 <div id="import-wrap" class="finished">
     {% if task.status == "FAILED" or task.status == "REVOKED" %}
     <h1>{% trans "Subscriber Import Failed!" %}</h1>
-    <p class="msg">Please try again. If the problem continues to persist please contact us <a href="">here</a>.</p>
+    <p class="msg">{% blocktrans %}Please try again. If the problem continues to persist please contact us <a href="">here</a>.</p>{% endblocktrans %}
     {% else %}
     <h1>{% trans "Processing Subscriber Import!" %}</h1>
-    <p class="msg">We're not done yet! Come back and check on us again later. Thanks!</p>
+    <p class="msg">{% trans 'We're not done yet! Come back and check on us again later. Thanks!' %}</p>
     {% endif %}
 
     <p class="link"><a href="{% url group.detail group.slug %}">{% trans "Back to" %} {{ group.name }}</a></p>

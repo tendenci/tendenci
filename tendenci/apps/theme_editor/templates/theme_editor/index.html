@@ -67,7 +67,7 @@
         <td width="20%" valign="top">
             {# if theme_count > 1 #}
             <div class="theme-selection well well-small">
-                <h4>{% trans 'Currently editing:' %}</h4>
+                <h4>{% trans 'Currently editing' %}:</h4>
                 <form method="GET" action="">
                     {{ theme_form.theme_edit }}<input class="btn btn-mini" type="submit" value="Change"/>
                 </form>
@@ -147,15 +147,15 @@
                 {% endcomment %}
                 </div>
                                <div class="well well-small">
-                               <h4>{% trans 'Customize more templates:' %}</h4>
-                               {% trans 'Copy down one of Tendenci's built-in app templates and customize it.' %}'
+                               <h4>{% trans 'Customize more templates' %}:</h4>
+                               {% trans "Copy down one of Tendenci's built-in app templates and customize it." %}
                                <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
 
                                </div>
 
                                <div class="well well-small">
-                                 <h4>{% trans 'Create a new template:' %}</h4>
-                                   {% blocktrans 'Click the button below to add a new template.' %}'
+                                 <h4>{% trans 'Create a new template' %}:</h4>
+                                   {% trans 'Click the button below to add a new template.' %}
                                    <button class="btn btn-mini new-template-btn">{% trans 'New Template' %}</button>
                                </div>
 

@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Groups{% endblock %}
+{% block title %}{% trans 'Groups' %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -19,7 +19,7 @@
 
     <form method="post" action="." enctype="multipart/form-data">{% csrf_token %}
         {{ form|styled_form }}
-        <input type="submit" value="Submit">
+        <input type="submit" value="{% trans 'Submit' %}">
     </form>
 
     </div>
