@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-27 12:38-0500\n"
-"PO-Revision-Date: 2014-08-22 09:57+0000\n"
+"POT-Creation-Date: 2014-08-26 19:17+0000\n"
+"PO-Revision-Date: 2014-08-26 17:37+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/tendenci/language/en_GB/)\n"
 "MIME-Version: 1.0\n"
@@ -18,17 +18,17 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: addons/articles/forms.py:100 addons/articles/models.py:45
-#: addons/news/forms.py:47 addons/news/models.py:48
+#: addons/news/forms.py:40 addons/news/models.py:48
 msgid "Release Date/Time"
 msgstr ""
 
-#: addons/articles/forms.py:109 addons/corporate_memberships/forms.py:523
+#: addons/articles/forms.py:109 addons/corporate_memberships/forms.py:520
 #: addons/corporate_memberships/models.py:69
 #: addons/corporate_memberships/models.py:296
-#: addons/corporate_memberships/models.py:1360 addons/directories/forms.py:128
-#: addons/directories/models.py:58 addons/events/forms.py:1432
-#: addons/events/forms.py:1584 addons/events/forms.py:2141
-#: addons/events/models.py:1328 addons/events/settings.py:14
+#: addons/corporate_memberships/models.py:1364 addons/directories/forms.py:128
+#: addons/directories/models.py:58 addons/events/forms.py:1431
+#: addons/events/forms.py:1583 addons/events/forms.py:2140
+#: addons/events/models.py:1353 addons/events/settings.py:14
 #: addons/events/settings.py:31
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:77
 #: addons/events/templates/events/reg8n/multi_register.html:218
@@ -39,18 +39,19 @@ msgstr ""
 #: addons/events/templates/events/registration/multi_register.html:279
 #: addons/locations/forms.py:31
 #: addons/locations/templates/locations/import-preview.html:45
-#: addons/make_payments/forms.py:261 addons/memberships/models.py:64
-#: addons/memberships/models.py:2240
+#: addons/make_payments/forms.py:262 addons/memberships/models.py:64
+#: addons/memberships/models.py:2248
 #: addons/memberships/templates/memberships/invoice_search_result_line2.html:11
-#: addons/news/forms.py:50 apps/contacts/forms.py:35
+#: addons/news/forms.py:43 apps/contacts/forms.py:35
 #: apps/contacts/templates/contacts/view.html:37
 #: apps/forms_builder/forms/admin.py:80 apps/forms_builder/forms/models.py:38
-#: apps/notifications/models.py:58 apps/profiles/forms.py:38
-#: apps/profiles/forms.py:90 apps/profiles/forms.py:328
+#: apps/notifications/models.py:58 apps/profiles/forms.py:39
+#: apps/profiles/forms.py:92 apps/profiles/forms.py:330
 #: apps/profiles/templates/profiles/add.html:166
 #: apps/profiles/templates/profiles/edit.html:169
 #: apps/profiles/templates/profiles/edit_notice.txt:268
 #: apps/profiles/templates/profiles/similar_profile_items.html:10
+#: core/base/widgets.py:68 core/base/widgets.py:69
 #: core/email_blocks/templates/email_blocks/edit.html:23
 #: templates/reports/admin_users.html:47 templates/reports/admin_users.html:49
 #: templates/reports/mem_join_table.html:8
@@ -65,11 +66,11 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: addons/articles/forms.py:218 addons/events/forms.py:769
-#: addons/events/forms.py:1131 addons/news/forms.py:163
+#: addons/articles/forms.py:218 addons/events/forms.py:768
+#: addons/events/forms.py:1130 addons/news/forms.py:156
 #: addons/photos/forms.py:180 addons/photos/forms.py:257
 #: addons/photos/forms.py:330 apps/stories/forms.py:124
-#: core/files/forms.py:130 core/files/forms.py:305 core/files/forms.py:479
+#: core/files/forms.py:130 core/files/forms.py:305 core/files/forms.py:480
 msgid "Invalid group selected."
 msgstr ""
 
@@ -89,16 +90,16 @@ msgstr ""
 msgid "An article has been deleted"
 msgstr ""
 
-#: addons/articles/models.py:30 addons/corporate_memberships/models.py:1277
+#: addons/articles/models.py:30 addons/corporate_memberships/models.py:1281
 #: addons/directories/models.py:35 addons/help_files/models.py:33
-#: addons/jobs/models.py:28 addons/news/models.py:32
-#: addons/resumes/models.py:26 apps/pages/models.py:26
-#: apps/user_groups/models.py:17
+#: addons/jobs/models.py:28 addons/locations/models.py:19
+#: addons/news/models.py:32 addons/resumes/models.py:26
+#: apps/pages/models.py:26 apps/user_groups/models.py:17
 msgid "URL Path"
 msgstr ""
 
 #: addons/articles/models.py:31 addons/directories/models.py:36
-#: addons/events/models.py:1007 addons/news/models.py:33
+#: addons/events/models.py:1032 addons/news/models.py:33
 #: apps/profiles/templates/notification/user_edited/full.html:599
 #: apps/profiles/templates/profiles/add.html:390
 #: apps/profiles/templates/profiles/edit.html:380
@@ -106,9 +107,9 @@ msgstr ""
 msgid "Time Zone"
 msgstr ""
 
-#: addons/articles/models.py:36 addons/corporate_memberships/forms.py:518
-#: addons/directories/models.py:47 addons/events/forms.py:2137
-#: addons/events/models.py:1319 addons/events/settings.py:22
+#: addons/articles/models.py:36 addons/corporate_memberships/forms.py:515
+#: addons/directories/models.py:47 addons/events/forms.py:2136
+#: addons/events/models.py:1344 addons/events/settings.py:22
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:56
 #: addons/events/templates/events/reg8n/multi_register.html:186
 #: addons/events/templates/events/reg8n/register-free.html:37
@@ -121,8 +122,8 @@ msgstr ""
 #: addons/memberships/templates/memberships/invoice_search_result_line.html:10
 #: addons/news/models.py:38 apps/forms_builder/forms/models.py:51
 #: apps/invoices/templates/invoices/invoice_item.html:16
-#: apps/profiles/forms.py:36 apps/profiles/forms.py:86
-#: apps/profiles/forms.py:324
+#: apps/profiles/forms.py:37 apps/profiles/forms.py:88
+#: apps/profiles/forms.py:326
 #: apps/profiles/templates/notification/user_edited/full.html:42
 #: apps/profiles/templates/profiles/add.html:42
 #: apps/profiles/templates/profiles/edit.html:45
@@ -136,9 +137,9 @@ msgstr ""
 msgid "First Name"
 msgstr ""
 
-#: addons/articles/models.py:37 addons/corporate_memberships/forms.py:521
-#: addons/directories/models.py:48 addons/events/forms.py:2138
-#: addons/events/models.py:1320 addons/events/settings.py:23
+#: addons/articles/models.py:37 addons/corporate_memberships/forms.py:518
+#: addons/directories/models.py:48 addons/events/forms.py:2137
+#: addons/events/models.py:1345 addons/events/settings.py:23
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:63
 #: addons/events/templates/events/reg8n/multi_register.html:194
 #: addons/events/templates/events/reg8n/register-free.html:45
@@ -151,8 +152,8 @@ msgstr ""
 #: addons/memberships/templates/memberships/invoice_search_result_line.html:11
 #: addons/news/models.py:39 apps/forms_builder/forms/models.py:52
 #: apps/invoices/templates/invoices/invoice_item.html:17
-#: apps/profiles/forms.py:37 apps/profiles/forms.py:88
-#: apps/profiles/forms.py:326
+#: apps/profiles/forms.py:38 apps/profiles/forms.py:90
+#: apps/profiles/forms.py:328
 #: apps/profiles/templates/notification/user_edited/full.html:84
 #: apps/profiles/templates/profiles/add.html:56
 #: apps/profiles/templates/profiles/edit.html:59
@@ -263,7 +264,7 @@ msgstr ""
 #: addons/directories/forms.py:70 apps/pages/templates/pages/add.html:40
 #: apps/pages/templates/pages/edit.html:39 core/categories/forms.py:16
 #: core/categories/forms.py:91 core/files/forms.py:26 core/files/forms.py:183
-#: core/files/forms.py:230 core/files/forms.py:347 core/files/forms.py:541
+#: core/files/forms.py:230 core/files/forms.py:347 core/files/forms.py:542
 msgid "Category"
 msgstr ""
 
@@ -419,6 +420,7 @@ msgstr ""
 #: addons/resumes/templates/resumes/delete.html:15
 #: addons/resumes/templates/resumes/edit-meta.html:26
 #: apps/pages/templates/pages/edit-meta.html:31
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:23
 #: templates/theme_includes/image_edit_form.html:25
 #: templates/theme_includes/logo_edit_form.html:19
 msgid "Cancel"
@@ -522,6 +524,10 @@ msgstr ""
 msgid "Link to delete confirmation page"
 msgstr ""
 
+#: addons/articles/templates/articles/export-status.html:20
+msgid "Articles Export - Status"
+msgstr ""
+
 #: addons/articles/templates/articles/export.html:20
 msgid "Articles Export"
 msgstr ""
@@ -572,7 +578,7 @@ msgstr ""
 #: addons/events/templates/events/index.html:6
 #: addons/help_files/templates/help_files/search.html:7
 #: addons/help_files/templates/help_files/search.html:18
-#: addons/jobs/forms.py:316 addons/jobs/templates/jobs/index.html:6
+#: addons/jobs/forms.py:320 addons/jobs/templates/jobs/index.html:6
 #: addons/locations/templates/locations/index.html:6
 #: addons/memberships/templates/memberships/nav.html:41
 #: addons/news/templates/news/index.html:6
@@ -585,8 +591,8 @@ msgstr ""
 #: apps/contacts/templates/contacts/search.html:21
 #: apps/contributions/templates/contributions/index.html:5
 #: apps/contributions/templates/contributions/search.html:8
-#: apps/discounts/templates/discounts/search.html:9
-#: apps/discounts/templates/discounts/search.html:19
+#: apps/discounts/templates/discounts/search.html:10
+#: apps/discounts/templates/discounts/search.html:20
 #: apps/entities/templates/entities/index.html:6
 #: apps/entities/templates/entities/nav.html:41
 #: apps/entities/templates/entities/search.html:21
@@ -1019,7 +1025,7 @@ msgstr ""
 #: addons/resumes/templates/resumes/nav.html:41
 #: apps/dashboard/templates/dashboard/index.html:148
 #: apps/dashboard/templates/dashboard/nav.html:27
-#: apps/dashboard/templates/dashboard/new.html:159
+#: apps/dashboard/templates/dashboard/new.html:154
 #: apps/forms_builder/forms/templates/forms/nav.html:42
 #: apps/invoices/templates/invoices/nav.html:35
 #: apps/navs/templates/navs/nav.html:41 apps/pages/templates/pages/nav.html:41
@@ -1168,6 +1174,16 @@ msgstr ""
 msgid "Source:"
 msgstr ""
 
+#: addons/articles/templates/articles/notices/export_ready_body.html:7
+#: addons/directories/templates/directories/notices/export_ready_body.html:7
+#: addons/events/templates/events/notices/export_ready_body.html:7
+#: addons/memberships/templates/memberships/notices/export_ready_body.html:7
+#: apps/invoices/templates/invoices/notices/export_ready_body.html:7
+#: apps/profiles/templates/profiles/notices/export_ready_body.html:7
+#: apps/user_groups/templates/user_groups/exports/export_ready_body.html:7
+msgid "Export is Ready"
+msgstr ""
+
 #: addons/articles/templates/notification/article_added/full.html:7
 msgid "Article Add Notice"
 msgstr ""
@@ -1175,7 +1191,7 @@ msgstr ""
 #: addons/articles/templates/notification/article_added/full.html:11
 #, python-format
 msgid ""
-"The following article was \n"
+"The following article was\n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Articles module by %(author)s"
 msgstr ""
 
@@ -1199,7 +1215,7 @@ msgstr ""
 #: apps/pages/templates/notification/page_deleted/full.html:12
 #, python-format
 msgid ""
-"A record has been deleted \n"
+"A record has been deleted\n"
 "  from the %(SITE_GLOBAL_SITEDISPLAYNAME)s module"
 msgstr ""
 
@@ -1226,10 +1242,9 @@ msgstr ""
 
 #: addons/articles/templates/notification/article_deleted/full.html:23
 #: addons/directories/templates/notification/directory_deleted/full.html:23
-#: addons/jobs/templates/notification/job_deleted/full.html:23
 #, python-format
 msgid ""
-"Deleted \n"
+"Deleted\n"
 "      by:</td>\n"
 "    <td width=\"75%%\"><b>%(requser)s"
 msgstr ""
@@ -1387,7 +1402,7 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:73
 #: apps/dashboard/templates/dashboard/index.html:81
-#: apps/dashboard/templates/dashboard/new.html:92 apps/wp_exporter/forms.py:27
+#: apps/dashboard/templates/dashboard/new.html:87 apps/wp_exporter/forms.py:27
 #: core/newsletters/templates/newsletters/add.html:93
 #: core/newsletters/templates/newsletters/generate.html:74
 #: core/newsletters/templates/newsletters/jumplinks.txt:15
@@ -1397,7 +1412,7 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:82
 #: apps/dashboard/templates/dashboard/index.html:85
-#: apps/dashboard/templates/dashboard/new.html:96 apps/wp_exporter/forms.py:31
+#: apps/dashboard/templates/dashboard/new.html:91 apps/wp_exporter/forms.py:31
 #: core/newsletters/templates/newsletters/add.html:99
 #: core/newsletters/templates/newsletters/generate.html:83
 #: core/newsletters/templates/newsletters/jumplinks.txt:22
@@ -1407,8 +1422,7 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:91
 #: apps/dashboard/templates/dashboard/index.html:93
-#: apps/dashboard/templates/dashboard/new.html:104
-#: apps/wp_exporter/forms.py:30
+#: apps/dashboard/templates/dashboard/new.html:99 apps/wp_exporter/forms.py:30
 #: core/newsletters/templates/newsletters/add.html:106
 #: core/newsletters/templates/newsletters/generate.html:92
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
@@ -1424,7 +1438,7 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:101
 #: apps/dashboard/templates/dashboard/index.html:122
-#: apps/dashboard/templates/dashboard/new.html:133
+#: apps/dashboard/templates/dashboard/new.html:128
 #: apps/dashboard/templates/dashboard/stats.html:182 apps/navs/forms.py:46
 #: apps/wp_exporter/forms.py:32
 #: core/newsletters/templates/newsletters/add.html:116
@@ -1654,13 +1668,13 @@ msgstr ""
 msgid "Contract"
 msgstr ""
 
-#: addons/careers/models.py:21 addons/events/models.py:1330
+#: addons/careers/models.py:21 addons/events/models.py:1355
 #: addons/events/templates/events/reg8n/multi_register.html:202
 #: addons/events/templates/events/reg8n/register-free.html:53
 #: addons/events/templates/events/reg8n/register-priced.html:53
 #: addons/events/templates/events/registration/base_forms.html:57
 #: addons/events/templates/events/registration/multi_register.html:202
-#: apps/profiles/forms.py:41 apps/profiles/forms.py:101
+#: apps/profiles/forms.py:42 apps/profiles/forms.py:103
 #: apps/profiles/templates/notification/user_edited/full.html:333
 #: apps/profiles/templates/profiles/add.html:213
 #: apps/profiles/templates/profiles/edit.html:216
@@ -1674,10 +1688,10 @@ msgstr ""
 msgid "Company Description"
 msgstr ""
 
-#: addons/careers/models.py:25 addons/events/models.py:1329
+#: addons/careers/models.py:25 addons/events/models.py:1354
 #: addons/events/settings.py:32
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:84
-#: apps/profiles/forms.py:42
+#: apps/profiles/forms.py:43
 #: apps/profiles/templates/notification/user_edited/full.html:105
 #: apps/profiles/templates/profiles/add.html:65
 #: apps/profiles/templates/profiles/edit.html:68
@@ -1694,16 +1708,16 @@ msgid "Position Type"
 msgstr ""
 
 #: addons/careers/models.py:35 addons/events/forms.py:96
-#: addons/events/forms.py:576 addons/events/forms.py:1077
-#: apps/discounts/forms.py:58 apps/discounts/models.py:18
+#: addons/events/forms.py:575 addons/events/forms.py:1076
+#: apps/discounts/forms.py:62 apps/discounts/models.py:18
 #: apps/discounts/models.py:19 apps/stories/forms.py:29
 #: apps/stories/forms.py:160 apps/stories/models.py:43
 #: core/event_logs/forms.py:37
 msgid "Start Date/Time"
 msgstr ""
 
-#: addons/careers/models.py:37 addons/events/forms.py:578
-#: addons/events/forms.py:1078 apps/discounts/forms.py:59
+#: addons/careers/models.py:37 addons/events/forms.py:577
+#: addons/events/forms.py:1077 apps/discounts/forms.py:63
 #: apps/stories/forms.py:30 apps/stories/forms.py:161
 #: apps/stories/models.py:44 core/event_logs/forms.py:42
 msgid "End Date/Time"
@@ -1729,14 +1743,14 @@ msgstr ""
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:48
+#: addons/corporate_memberships/forms.py:47
 #: addons/corporate_memberships/models.py:106
-#: addons/corporate_memberships/models.py:1286
-#: addons/corporate_memberships/models.py:1401 addons/events/settings.py:17
+#: addons/corporate_memberships/models.py:1290
+#: addons/corporate_memberships/models.py:1405 addons/events/settings.py:17
 #: addons/jobs/templates/jobs/print-view.html:32
 #: addons/jobs/templates/jobs/view.html:29
 #: addons/locations/templates/locations/import-preview.html:35
-#: addons/memberships/models.py:100 addons/memberships/models.py:2261
+#: addons/memberships/models.py:100 addons/memberships/models.py:2269
 #: addons/recurring_payments/models.py:47
 #: addons/resumes/templates/resumes/print-view.html:25
 #: addons/resumes/templates/resumes/view.html:42
@@ -1746,11 +1760,11 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:103
+#: addons/corporate_memberships/forms.py:100
 #: addons/corporate_memberships/models.py:316
-#: addons/corporate_memberships/models.py:1290 addons/events/models.py:1308
+#: addons/corporate_memberships/models.py:1294 addons/events/models.py:1333
 #: addons/memberships/forms.py:131 apps/profiles/admin.py:51
-#: apps/profiles/forms.py:143
+#: apps/profiles/forms.py:145
 #: apps/profiles/templates/notification/user_edited/full.html:579
 #: apps/profiles/templates/profiles/add.html:373
 #: apps/profiles/templates/profiles/edit.html:363
@@ -1758,20 +1772,20 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:339
+#: addons/corporate_memberships/forms.py:336
 msgid "This secret code is already taken. Please use a different one."
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:502 apps/profiles/forms.py:35
+#: addons/corporate_memberships/forms.py:499 apps/profiles/forms.py:36
 #: core/payments/forms.py:65
 msgid "SELECT ONE"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:503 addons/memberships/forms.py:586
+#: addons/corporate_memberships/forms.py:500 addons/memberships/forms.py:585
 #: apps/accounts/forms.py:122
 #: apps/accounts/templates/accounts/registration_form.html:28
-#: apps/discounts/templates/discounts/detail.html:54 apps/profiles/forms.py:39
-#: apps/profiles/forms.py:128 apps/profiles/forms.py:335
+#: apps/discounts/templates/discounts/detail.html:54 apps/profiles/forms.py:40
+#: apps/profiles/forms.py:130 apps/profiles/forms.py:337
 #: apps/profiles/templates/notification/user_edited/full.html:515
 #: apps/profiles/templates/profiles/add.html:316
 #: apps/profiles/templates/profiles/edit.html:319
@@ -1789,9 +1803,9 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:504
+#: addons/corporate_memberships/forms.py:501
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:126
-#: addons/events/forms.py:2153 apps/profiles/forms.py:40
+#: addons/events/forms.py:2152 apps/profiles/forms.py:41
 #: templates/reports/grace_period_members.html:13
 #: templates/reports/membership_roster.html:18
 #: templates/reports/renewal_period_members.html:13
@@ -1799,9 +1813,9 @@ msgstr ""
 msgid "Member Number"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:505
-#: addons/corporate_memberships/models.py:294 addons/events/forms.py:2140
-#: addons/events/models.py:1327 addons/events/settings.py:30
+#: addons/corporate_memberships/forms.py:502
+#: addons/corporate_memberships/models.py:294 addons/events/forms.py:2139
+#: addons/events/models.py:1352 addons/events/settings.py:30
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:98
 #: addons/events/templates/events/reg8n/multi_register.html:210
 #: addons/events/templates/events/reg8n/register-free.html:61
@@ -1809,22 +1823,22 @@ msgstr ""
 #: addons/events/templates/events/registration/base_forms.html:64
 #: addons/events/templates/events/registration/multi_register.html:209
 #: addons/locations/templates/locations/import-preview.html:43
-#: addons/news/templates/news/view.html:51
-#: apps/contacts/templates/contacts/view.html:31 apps/profiles/forms.py:43
+#: apps/contacts/templates/contacts/view.html:31 apps/profiles/forms.py:44
 #: apps/profiles/templates/notification/user_edited/full.html:148
 #: apps/profiles/templates/profiles/add.html:102
 #: apps/profiles/templates/profiles/edit.html:105
 #: apps/profiles/templates/profiles/edit_notice.txt:147
 #: templates/reports/admin_users.html:54 templates/reports/admin_users.html:56
+#: templates/reports/membership_roster.html:28
 msgid "Phone"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:506
+#: addons/corporate_memberships/forms.py:503
 #: addons/corporate_memberships/models.py:287 addons/directories/models.py:51
-#: addons/events/models.py:1323 addons/events/settings.py:26
+#: addons/events/models.py:1348 addons/events/settings.py:26
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:112
 #: addons/locations/templates/locations/import-preview.html:39
-#: apps/profiles/forms.py:44 apps/profiles/forms.py:111
+#: apps/profiles/forms.py:45 apps/profiles/forms.py:113
 #: apps/profiles/templates/notification/user_edited/full.html:433
 #: apps/profiles/templates/notification/user_edited/full.html:454
 #: apps/profiles/templates/profiles/add.html:274
@@ -1836,12 +1850,12 @@ msgstr ""
 msgid "City"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:507
+#: addons/corporate_memberships/forms.py:504
 #: addons/corporate_memberships/models.py:288 addons/directories/models.py:52
-#: addons/events/models.py:1324 addons/events/settings.py:27
+#: addons/events/models.py:1349 addons/events/settings.py:27
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:119
 #: addons/locations/templates/locations/import-preview.html:40
-#: apps/profiles/forms.py:45 apps/profiles/forms.py:114
+#: apps/profiles/forms.py:46 apps/profiles/forms.py:116
 #: apps/profiles/templates/profiles/add.html:275
 #: apps/profiles/templates/profiles/edit.html:278
 #: templates/reports/grace_period_members.html:16
@@ -1850,22 +1864,22 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:508 addons/directories/models.py:53
+#: addons/corporate_memberships/forms.py:505 addons/directories/models.py:53
 #: addons/events/settings.py:28
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:126
-#: addons/locations/models.py:26 apps/profiles/forms.py:46
+#: addons/locations/models.py:28 apps/profiles/forms.py:47
 msgid "Zip Code"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:509
+#: addons/corporate_memberships/forms.py:506
 #: addons/corporate_memberships/models.py:292 addons/directories/forms.py:130
-#: addons/directories/models.py:54 addons/events/forms.py:879
-#: addons/events/models.py:1326 addons/events/settings.py:29
+#: addons/directories/models.py:54 addons/events/forms.py:878
+#: addons/events/models.py:1351 addons/events/settings.py:29
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:133
 #: addons/locations/forms.py:32
 #: addons/locations/templates/locations/import-preview.html:42
-#: addons/make_payments/forms.py:263 apps/profiles/forms.py:47
-#: apps/profiles/forms.py:120
+#: addons/make_payments/forms.py:264 apps/profiles/forms.py:48
+#: apps/profiles/forms.py:122
 #: apps/profiles/templates/notification/user_edited/full.html:494
 #: apps/profiles/templates/profiles/add.html:292
 #: apps/profiles/templates/profiles/edit.html:295
@@ -1876,53 +1890,53 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:512
-#: addons/corporate_memberships/forms.py:543 addons/events/forms.py:2132
-#: apps/invoices/forms.py:32 apps/profiles/forms.py:50
+#: addons/corporate_memberships/forms.py:509
+#: addons/corporate_memberships/forms.py:540 addons/events/forms.py:2131
+#: apps/invoices/forms.py:32 apps/profiles/forms.py:52
 #: core/payments/forms.py:76
 msgid "Starts With"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:513
-#: addons/corporate_memberships/forms.py:544 addons/events/forms.py:2133
-#: apps/invoices/forms.py:33 apps/profiles/forms.py:51
+#: addons/corporate_memberships/forms.py:510
+#: addons/corporate_memberships/forms.py:541 addons/events/forms.py:2132
+#: apps/invoices/forms.py:33 apps/profiles/forms.py:53
 #: core/payments/forms.py:77
 msgid "Contains"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:514
-#: addons/corporate_memberships/forms.py:545 addons/events/forms.py:2134
-#: apps/invoices/forms.py:34 apps/profiles/forms.py:52
+#: addons/corporate_memberships/forms.py:511
+#: addons/corporate_memberships/forms.py:542 addons/events/forms.py:2133
+#: apps/invoices/forms.py:34 apps/profiles/forms.py:54
 #: core/payments/forms.py:78
 msgid "Exact"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:516
-#: addons/corporate_memberships/forms.py:547
+#: addons/corporate_memberships/forms.py:513
+#: addons/corporate_memberships/forms.py:544
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:12
-#: addons/events/forms.py:2139 addons/events/settings.py:33
+#: addons/events/forms.py:2138 addons/events/settings.py:33
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:91
 #: addons/events/templates/events/registrants/roster.html:53
 msgid "Company Name"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:530
+#: addons/corporate_memberships/forms.py:527
 msgid "Show Active Only"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:567
-#: addons/corporate_memberships/models.py:633
-#: addons/corporate_memberships/utils.py:131
+#: addons/corporate_memberships/forms.py:564
+#: addons/corporate_memberships/models.py:637
+#: addons/corporate_memberships/utils.py:130
 #: addons/corporate_memberships/views.py:635
 msgid "Select One"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:634
+#: addons/corporate_memberships/forms.py:631
 msgid "Export Format"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:647 addons/events/forms.py:1433
-#: addons/events/forms.py:1516 addons/events/registration/forms.py:24
+#: addons/corporate_memberships/forms.py:644 addons/events/forms.py:1432
+#: addons/events/forms.py:1515 addons/events/registration/forms.py:24
 #: addons/jobs/forms.py:57 addons/make_payments/forms.py:253
 #: addons/resumes/forms.py:48 apps/accounts/forms.py:47
 #: apps/contacts/forms.py:39 apps/forms_builder/forms/forms.py:170
@@ -1930,81 +1944,81 @@ msgstr ""
 msgid "Type the code below"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:747
+#: addons/corporate_memberships/forms.py:744
 msgid "This user is already a representative."
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:783
+#: addons/corporate_memberships/forms.py:780
 msgid "Corp Application"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:791
+#: addons/corporate_memberships/forms.py:788
 msgid "Select an Option for the Existing Records:"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:794
+#: addons/corporate_memberships/forms.py:791
 msgid "CSV File"
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:862
+#: addons/corporate_memberships/forms.py:859
 msgid "File type is not supported. Please upload a CSV File."
 msgstr ""
 
-#: addons/corporate_memberships/forms.py:935 addons/memberships/forms.py:1070
+#: addons/corporate_memberships/forms.py:932 addons/memberships/forms.py:1070
 msgid "Num days must be a numeric number."
 msgstr ""
 
 #: addons/corporate_memberships/models.py:60
-#: addons/corporate_memberships/models.py:1350 addons/events/settings.py:8
-#: addons/memberships/models.py:54 addons/memberships/models.py:2232
+#: addons/corporate_memberships/models.py:1354 addons/events/settings.py:8
+#: addons/memberships/models.py:54 addons/memberships/models.py:2240
 #: apps/forms_builder/forms/models.py:32
 msgid "Text"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:61
-#: addons/corporate_memberships/models.py:1351 addons/events/settings.py:10
-#: addons/memberships/models.py:55 addons/memberships/models.py:2233
+#: addons/corporate_memberships/models.py:1355 addons/events/settings.py:10
+#: addons/memberships/models.py:55 addons/memberships/models.py:2241
 #: apps/forms_builder/forms/models.py:33
 msgid "Paragraph Text"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:62
-#: addons/corporate_memberships/models.py:1352 addons/events/settings.py:11
-#: addons/memberships/models.py:56 addons/memberships/models.py:2234
+#: addons/corporate_memberships/models.py:1356 addons/events/settings.py:11
+#: addons/memberships/models.py:56 addons/memberships/models.py:2242
 #: apps/forms_builder/forms/models.py:34
 msgid "Checkbox"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:63
-#: addons/corporate_memberships/models.py:1353
+#: addons/corporate_memberships/models.py:1357
 msgid "Select One from a list (Drop Down)"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:65
-#: addons/corporate_memberships/models.py:1355
+#: addons/corporate_memberships/models.py:1359
 msgid "Select One from a list (Radio Buttons)"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:66
-#: addons/corporate_memberships/models.py:1356
-#: addons/memberships/models.py:2237
+#: addons/corporate_memberships/models.py:1360
+#: addons/memberships/models.py:2245
 msgid "Multi select (Drop Down)"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:68
-#: addons/corporate_memberships/models.py:1358
-#: addons/memberships/models.py:2238
+#: addons/corporate_memberships/models.py:1362
+#: addons/memberships/models.py:2246
 msgid "Multi select (Checkboxes)"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:70
-#: addons/corporate_memberships/models.py:1361 addons/memberships/models.py:59
-#: addons/memberships/models.py:2241 apps/forms_builder/forms/models.py:41
+#: addons/corporate_memberships/models.py:1365 addons/memberships/models.py:59
+#: addons/memberships/models.py:2249 apps/forms_builder/forms/models.py:41
 msgid "File upload"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:72
-#: addons/corporate_memberships/models.py:1363
+#: addons/corporate_memberships/models.py:1367
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:13
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:203
 #: addons/directories/templates/directories/invoice_search_result_line.html:13
@@ -2012,7 +2026,7 @@ msgstr ""
 #: addons/events/templates/events/invoice_search_result_line.html:12
 #: addons/jobs/templates/jobs/invoice_search_result_line.html:13
 #: addons/make_payments/templates/make_payments/invoice_search_result_line.html:13
-#: addons/memberships/models.py:60 addons/memberships/models.py:2242
+#: addons/memberships/models.py:60 addons/memberships/models.py:2250
 #: apps/dashboard/templates/dashboard/stats.html:8
 #: apps/invoices/templates/invoices/invoice_item.html:18
 #: libs/model_report/utils.py:69
@@ -2020,16 +2034,16 @@ msgid "Date"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:73
-#: addons/corporate_memberships/models.py:1364 addons/events/models.py:1423
+#: addons/corporate_memberships/models.py:1368 addons/events/models.py:1448
 #: addons/events/settings.py:16 addons/memberships/models.py:61
-#: addons/memberships/models.py:2243 apps/forms_builder/forms/models.py:44
+#: addons/memberships/models.py:2251 apps/forms_builder/forms/models.py:44
 #: apps/forms_builder/forms/models.py:284
 msgid "Date/time"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:74
-#: addons/corporate_memberships/models.py:1367
-#: addons/memberships/models.py:2246
+#: addons/corporate_memberships/models.py:1371
+#: addons/memberships/models.py:2254
 msgid "Section Break"
 msgstr ""
 
@@ -2079,14 +2093,14 @@ msgid "Large"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:105
-#: addons/corporate_memberships/models.py:1276
-#: addons/corporate_memberships/models.py:1638
+#: addons/corporate_memberships/models.py:1280
+#: addons/corporate_memberships/models.py:1642
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:126
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:103
 #: addons/directories/templates/directories/invoice_search_result_line.html:11
-#: addons/events/models.py:1307 addons/industries/models.py:14
-#: addons/locations/models.py:17 addons/memberships/models.py:99
-#: addons/memberships/models.py:1889 addons/memberships/models.py:2166
+#: addons/events/models.py:1332 addons/industries/models.py:14
+#: addons/locations/models.py:18 addons/memberships/models.py:99
+#: addons/memberships/models.py:1897 addons/memberships/models.py:2174
 #: addons/memberships/templates/memberships/invoice_search_result_line2.html:10
 #: addons/regions/models.py:13 apps/dashboard/templates/dashboard/stats.html:9
 #: apps/dashboard/templates/dashboard/stats.html:162
@@ -2100,10 +2114,11 @@ msgstr ""
 #: addons/corporate_memberships/models.py:107
 #: addons/directories/templates/directories/pricing-table.html:14
 #: addons/directories/templates/directories/pricing-table.html:21
-#: addons/events/models.py:247 addons/events/models.py:1514
+#: addons/events/forms.py:1078 addons/events/models.py:247
+#: addons/events/models.py:1539
 #: addons/events/templates/events/invoice_search_result_line.html:13
 #: addons/events/templates/events/reg8n/register_pre2.html:44
-#: addons/events/templates/events/reg8n/register_pre2.html:68
+#: addons/events/templates/events/reg8n/register_pre2.html:67
 #: addons/jobs/templates/jobs/invoice_search_result_line.html:14
 #: addons/jobs/templates/jobs/pricing-table.html:23
 #: addons/jobs/templates/jobs/pricing-table.html:30
@@ -2120,8 +2135,8 @@ msgid "Bind individual memberships to this membership type."
 msgstr ""
 
 #: addons/corporate_memberships/models.py:116
-#: addons/corporate_memberships/models.py:1382
-#: addons/memberships/models.py:127 addons/memberships/models.py:2257
+#: addons/corporate_memberships/models.py:1386
+#: addons/memberships/models.py:127 addons/memberships/models.py:2265
 msgid "Admin Only"
 msgstr ""
 
@@ -2138,9 +2153,7 @@ msgid "Threshold Price"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:131
-msgid ""
-"All individual members applying under or equal to the threashold limit "
-"receive the threshold prices."
+msgid "All individual members applying "
 msgstr ""
 
 #: addons/corporate_memberships/models.py:134
@@ -2148,10 +2161,10 @@ msgid "Number Passes"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:283 addons/directories/models.py:49
-#: addons/events/models.py:1322 addons/events/settings.py:25
+#: addons/events/models.py:1347 addons/events/settings.py:25
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:105
 #: addons/locations/templates/locations/import-preview.html:37
-#: apps/contacts/templates/contacts/view.html:54 apps/profiles/forms.py:106
+#: apps/contacts/templates/contacts/view.html:54 apps/profiles/forms.py:108
 #: apps/profiles/templates/notification/user_edited/full.html:393
 #: apps/profiles/templates/profiles/add.html:256
 #: apps/profiles/templates/profiles/edit.html:259
@@ -2159,7 +2172,7 @@ msgstr ""
 msgid "Address"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:285 apps/profiles/forms.py:109
+#: addons/corporate_memberships/models.py:285 apps/profiles/forms.py:111
 #: apps/profiles/templates/notification/user_edited/full.html:413
 #: apps/profiles/templates/profiles/edit_notice.txt:432
 msgid "Address2"
@@ -2167,7 +2180,7 @@ msgstr ""
 
 #: addons/corporate_memberships/models.py:290
 #: addons/locations/templates/locations/import-preview.html:41
-#: apps/profiles/forms.py:117
+#: apps/profiles/forms.py:119
 #: apps/profiles/templates/notification/user_edited/full.html:474
 #: apps/profiles/templates/profiles/add.html:276
 #: apps/profiles/templates/profiles/edit.html:279
@@ -2177,7 +2190,8 @@ msgstr ""
 
 #: addons/corporate_memberships/models.py:298
 #: addons/jobs/templates/jobs/view.html:36 apps/contacts/forms.py:36
-#: apps/navs/models.py:48 apps/navs/templates/navs/nav_items.html:61
+#: apps/navs/forms.py:96 apps/navs/models.py:48
+#: apps/navs/templates/navs/nav_items.html:61
 #: apps/navs/templates/navs/nav_items.html:132
 #: templates/reports/404_report.html:12
 msgid "URL"
@@ -2251,200 +2265,200 @@ msgstr ""
 msgid "Corporate Members"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1279
+#: addons/corporate_memberships/models.py:1283
 msgid "Corp. Memb. Type"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1280
+#: addons/corporate_memberships/models.py:1284
 msgid "Authentication Method"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1293
+#: addons/corporate_memberships/models.py:1297
 #: apps/forms_builder/forms/models.py:93
 msgid "Confirmation Text"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1297
+#: addons/corporate_memberships/models.py:1301
 msgid "App for individual memberships."
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1299
+#: addons/corporate_memberships/models.py:1303
 #: addons/memberships/templates/memberships/applications/no-renew.html:20
 msgid "Membership Application"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1310
+#: addons/corporate_memberships/models.py:1314
 msgid "Corporate Membership Application"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1311
+#: addons/corporate_memberships/models.py:1315
 msgid "Corporate Membership Applications"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1359
-#: addons/memberships/models.py:2239
+#: addons/corporate_memberships/models.py:1363
+#: addons/memberships/models.py:2247
 msgid "Countries Drop Down"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1372 addons/events/models.py:1370
+#: addons/corporate_memberships/models.py:1376 addons/events/models.py:1395
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:48
-#: addons/memberships/models.py:2251 apps/forms_builder/forms/models.py:206
+#: addons/memberships/models.py:2259 apps/forms_builder/forms/models.py:206
 #: apps/navs/templates/navs/nav_items.html:136 apps/subscribers/models.py:73
 msgid "Label"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1373
+#: addons/corporate_memberships/models.py:1377
 #: addons/memberships/templates/memberships/admin/stacked.html:24
 msgid "Field Name"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1375
-#: addons/memberships/models.py:2259
+#: addons/corporate_memberships/models.py:1379
+#: addons/memberships/models.py:2267
 msgid "Field Type"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1380 addons/events/models.py:1377
+#: addons/corporate_memberships/models.py:1384 addons/events/models.py:1402
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:51
-#: addons/memberships/models.py:2255 apps/forms_builder/forms/models.py:211
+#: addons/memberships/models.py:2263 apps/forms_builder/forms/models.py:211
 msgid "Required"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1381
-#: addons/memberships/models.py:2256
+#: addons/corporate_memberships/models.py:1385
+#: addons/memberships/models.py:2264
 msgid "Show"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1384
-#: addons/memberships/models.py:2265
+#: addons/corporate_memberships/models.py:1388
+#: addons/memberships/models.py:2273
 msgid "Help Text"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1386 addons/events/models.py:1379
+#: addons/corporate_memberships/models.py:1390 addons/events/models.py:1404
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:50
-#: addons/memberships/models.py:2269 apps/forms_builder/forms/models.py:213
+#: addons/memberships/models.py:2277 apps/forms_builder/forms/models.py:213
 msgid "Choices"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1390
+#: addons/corporate_memberships/models.py:1394
 msgid "Choice Field Layout"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1394
+#: addons/corporate_memberships/models.py:1398
 msgid "Field Size"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1397
-#: addons/memberships/models.py:2271
+#: addons/corporate_memberships/models.py:1401
+#: addons/memberships/models.py:2279
 msgid "Default Value"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1399
+#: addons/corporate_memberships/models.py:1403
 msgid "CSS Class Name"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1407 addons/events/models.py:1386
-#: addons/memberships/models.py:2281 apps/forms_builder/forms/models.py:221
+#: addons/corporate_memberships/models.py:1411 addons/events/models.py:1411
+#: addons/memberships/models.py:2289 apps/forms_builder/forms/models.py:221
 #: apps/profiles/templates/profiles/edit_notice.txt:28
 msgid "Field"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1408 addons/events/models.py:1387
+#: addons/corporate_memberships/models.py:1412 addons/events/models.py:1412
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:45
-#: addons/memberships/models.py:2282 apps/forms_builder/forms/models.py:222
+#: addons/memberships/models.py:2290 apps/forms_builder/forms/models.py:222
 msgid "Fields"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1510
+#: addons/corporate_memberships/models.py:1514
 msgid "Representative"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1511
+#: addons/corporate_memberships/models.py:1515
 msgid "is dues rep?"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1513
+#: addons/corporate_memberships/models.py:1517
 msgid "is member rep?"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1526
+#: addons/corporate_memberships/models.py:1530
 msgid "email"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1579
-#: addons/memberships/models.py:1803 apps/profiles/models.py:385
+#: addons/corporate_memberships/models.py:1583
+#: addons/memberships/models.py:1811 apps/profiles/models.py:395
 msgid "Upload File"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1584
-#: addons/memberships/models.py:1815 core/base/models.py:70
+#: addons/corporate_memberships/models.py:1588
+#: addons/memberships/models.py:1823 core/base/models.py:70
 msgid "Key"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1587
+#: addons/corporate_memberships/models.py:1591
 msgid "Bind members to corporations by their company names"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1591
+#: addons/corporate_memberships/models.py:1595
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:221
-#: addons/memberships/models.py:1820 core/base/models.py:74
+#: addons/memberships/models.py:1828 core/base/models.py:74
 msgid "Summary"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1612
-#: addons/memberships/models.py:1870 core/base/models.py:96
+#: addons/corporate_memberships/models.py:1616
+#: addons/memberships/models.py:1878 core/base/models.py:96
 msgid "Row Data"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1614
-#: addons/memberships/models.py:1872 core/base/models.py:98
+#: addons/corporate_memberships/models.py:1618
+#: addons/memberships/models.py:1880 core/base/models.py:98
 msgid "Row #"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1616
-#: addons/memberships/models.py:1874 core/base/models.py:100
+#: addons/corporate_memberships/models.py:1620
+#: addons/memberships/models.py:1882 core/base/models.py:100
 msgid "Action Taken"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1630
+#: addons/corporate_memberships/models.py:1634
 msgid "Contact first name"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1631
+#: addons/corporate_memberships/models.py:1635
 msgid "Contact last name"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1632
+#: addons/corporate_memberships/models.py:1636
 msgid "Contact e-mail address"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1640
-#: addons/memberships/models.py:1891
+#: addons/corporate_memberships/models.py:1644
+#: addons/memberships/models.py:1899
 msgid "Notice Time"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1644
-#: addons/memberships/models.py:1895
+#: addons/corporate_memberships/models.py:1648
+#: addons/memberships/models.py:1903
 msgid "For Notice Type"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1645
-#: addons/memberships/models.py:1896
+#: addons/corporate_memberships/models.py:1649
+#: addons/memberships/models.py:1904
 msgid "System Generated"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1650
+#: addons/corporate_memberships/models.py:1654
 msgid ""
 "Note that if you             don't select a corporate membership type,"
 "             the notice will go out to all members."
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1656
-#: addons/memberships/models.py:1907 core/emails/templates/emails/edit.html:24
+#: addons/corporate_memberships/models.py:1660
+#: addons/memberships/models.py:1915 core/emails/templates/emails/edit.html:24
 msgid "Content Type"
 msgstr ""
 
-#: addons/corporate_memberships/models.py:1662 addons/events/forms.py:1961
-#: addons/memberships/models.py:1913
+#: addons/corporate_memberships/models.py:1666 addons/events/forms.py:1960
+#: addons/memberships/models.py:1921
 msgid "Email Content"
 msgstr ""
 
@@ -2462,7 +2476,7 @@ msgid "Corporate Membership Added User Notice"
 msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:16
-msgid "A corporate membership has been added - notice to user."
+msgid "A corporate membership has been added "
 msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:20
@@ -2487,7 +2501,7 @@ msgid "Corporate Membership Renewal User Notice"
 msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:29
-msgid "A corporate membership has been renewed - notice to user."
+msgid "A corporate membership has been renewed "
 msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:33
@@ -2613,6 +2627,7 @@ msgstr ""
 #: apps/forms_builder/forms/models.py:167
 #: apps/forms_builder/forms/templates/admin/forms/change_form.html:13
 #: apps/forms_builder/forms/templates/admin/forms/edit_inline/stacked.html:9
+#: apps/navs/templates/admin/navs/edit_inline/tabular.html:30
 #: core/files/templates/admin/files/file/change_form.html:35
 msgid "View on site"
 msgstr ""
@@ -2687,7 +2702,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:14
 #: addons/directories/templates/directories/invoice_search_result_line.html:14
-#: addons/events/models.py:665 addons/events/models.py:1571
+#: addons/events/models.py:690 addons/events/models.py:1596
 #: addons/make_payments/templates/make_payments/invoice_search_result_line.html:14
 #: apps/invoices/templates/invoices/invoice_item.html:19
 #: core/payments/forms.py:68
@@ -2697,6 +2712,7 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:15
 #: addons/directories/templates/directories/invoice_search_result_line.html:15
 #: addons/events/templates/events/invoice_search_result_line.html:14
+#: addons/events/templates/events/reg8n/register-confirm.html:246
 #: addons/events/templates/events/registrants/roster.html:86
 #: addons/jobs/templates/jobs/invoice_search_result_line.html:15
 #: addons/make_payments/templates/make_payments/invoice_search_result_line.html:15
@@ -2924,6 +2940,7 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:29
 #: addons/events/templates/events/reg8n/multi_register.html:131
 #: addons/events/templates/events/reg8n/multi_register.html:145
+#: addons/events/templates/events/reg8n/register-confirm.html:245
 #: addons/events/templates/events/reg8n/register.html:156
 #: addons/events/templates/events/reg8n/register.html:170
 #: addons/events/templates/events/registrants/roster.html:259
@@ -3054,7 +3071,7 @@ msgstr ""
 #: addons/locations/templates/locations/nearest.html:35
 #: apps/contacts/templates/contacts/search.html:47
 #: apps/contributions/templates/contributions/search.html:41
-#: apps/discounts/templates/discounts/search.html:39
+#: apps/discounts/templates/discounts/search.html:40
 #: apps/entities/templates/entities/search.html:64
 #: apps/forms_builder/forms/templates/forms/search.html:30
 #: apps/invoices/templates/invoices/search.html:55
@@ -3112,6 +3129,7 @@ msgstr ""
 #: addons/memberships/templates/memberships/admin/stacked.html:161
 #: addons/memberships/templates/memberships/admin/membershipapp/tabular.html:115
 #: apps/forms_builder/forms/templates/admin/forms/edit_inline/stacked.html:86
+#: apps/navs/templates/admin/navs/edit_inline/tabular.html:148
 #, python-format
 msgid "Add another %(verbose_name)s"
 msgstr ""
@@ -3122,6 +3140,7 @@ msgstr ""
 #: addons/memberships/templates/memberships/admin/stacked.html:164
 #: addons/memberships/templates/memberships/admin/membershipapp/tabular.html:118
 #: apps/forms_builder/forms/templates/admin/forms/edit_inline/stacked.html:89
+#: apps/navs/templates/admin/navs/edit_inline/tabular.html:151
 #: apps/navs/templates/navs/nav_items.html:110
 #: apps/navs/templates/navs/nav_items.html:167
 #: apps/user_groups/templates/user_groups/detail.html:87
@@ -3131,6 +3150,7 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/admin/corpmembershipapp/tabular.html:17
 #: addons/events/templates/events/admin/tabular.html:16
 #: addons/memberships/templates/memberships/admin/membershipapp/tabular.html:17
+#: apps/navs/templates/admin/navs/edit_inline/tabular.html:17
 msgid "Delete?"
 msgstr ""
 
@@ -3556,7 +3576,7 @@ msgid "Corporate Membership Summary"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:24
-#: addons/events/models.py:1373
+#: addons/events/models.py:1398
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:49
 #: apps/entities/models.py:13 apps/forms_builder/forms/models.py:207
 #: apps/reports/templates/reports/report_list.html:18
@@ -3882,7 +3902,7 @@ msgstr ""
 msgid "Model.objects does not have a search method"
 msgstr ""
 
-#: addons/directories/forms.py:35 addons/directories/forms.py:360
+#: addons/directories/forms.py:35 addons/directories/forms.py:365
 #: addons/directories/models.py:64 addons/jobs/forms.py:20
 msgid "Requested Duration"
 msgstr ""
@@ -3959,10 +3979,10 @@ msgstr ""
 
 #: addons/directories/models.py:57
 #: addons/locations/templates/locations/import-preview.html:44
-#: addons/news/templates/news/view.html:54
 #: apps/profiles/templates/profiles/add.html:134
 #: apps/profiles/templates/profiles/edit.html:137
 #: apps/profiles/templates/profiles/edit_notice.txt:227
+#: templates/reports/membership_roster.html:31
 msgid "Fax"
 msgstr ""
 
@@ -3980,7 +4000,7 @@ msgid "Expiration Date/Time"
 msgstr ""
 
 #: addons/directories/models.py:73 apps/entities/models.py:24
-#: apps/profiles/forms.py:145
+#: apps/profiles/forms.py:147
 msgid "Admin Notes"
 msgstr ""
 
@@ -4273,15 +4293,6 @@ msgstr ""
 msgid "Source: "
 msgstr ""
 
-#: addons/directories/templates/directories/notices/export_ready_body.html:7
-#: addons/events/templates/events/notices/export_ready_body.html:7
-#: addons/memberships/templates/memberships/notices/export_ready_body.html:7
-#: apps/invoices/templates/invoices/notices/export_ready_body.html:7
-#: apps/profiles/templates/profiles/notices/export_ready_body.html:7
-#: apps/user_groups/templates/user_groups/exports/export_ready_body.html:7
-msgid "Export is Ready"
-msgstr ""
-
 #: addons/directories/templates/notification/directory_added/full.html:8
 msgid "Directory Add Notice"
 msgstr ""
@@ -4289,14 +4300,14 @@ msgstr ""
 #: addons/directories/templates/notification/directory_added/full.html:13
 #, python-format
 msgid ""
-"The following directory was \n"
+"The following directory was\n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Directories module by %(requser)s"
 msgstr ""
 
 #: addons/directories/templates/notification/directory_added/full.html:14
 #, python-format
 msgid ""
-"The following directory was \n"
+"The following directory was\n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Directories module by %(requser)s and needs to be activated."
 msgstr ""
 
@@ -4349,13 +4360,13 @@ msgstr ""
 #: addons/news/templates/notification/news_deleted/full.html:12
 #, python-format
 msgid ""
-"A record has been deleted \n"
+"A record has been deleted\n"
 "  from the %(SITE_GLOBAL_SITEDISPLAYNAME)s module "
 msgstr ""
 
 #: addons/directories/templates/notification/directory_deleted/full.html:28
 msgid ""
-"If you would like view all \n"
+"If you would like view all\n"
 "  recently deleted directories, go to:"
 msgstr ""
 
@@ -4400,14 +4411,14 @@ msgstr ""
 #: addons/directories/templates/notification/directory_renewed/full.html:13
 #, python-format
 msgid ""
-"The following directory on your site <strong>%(SITE_GLOBAL_SITEDISPLAYNAME)s</strong> was \n"
+"The following directory on your site <strong>%(SITE_GLOBAL_SITEDISPLAYNAME)s</strong> was\n"
 "  renewed by %(requser)s"
 msgstr ""
 
 #: addons/directories/templates/notification/directory_renewed/full.html:14
 #, python-format
 msgid ""
-"The following directory on your site <strong>%(SITE_GLOBAL_SITEDISPLAYNAME)s</strong> was \n"
+"The following directory on your site <strong>%(SITE_GLOBAL_SITEDISPLAYNAME)s</strong> was\n"
 "  renewed by %(requser)s."
 msgstr ""
 
@@ -4433,43 +4444,43 @@ msgstr ""
 msgid "Graduation Date/Time"
 msgstr ""
 
-#: addons/events/forms.py:300 addons/events/forms.py:1640
-#: addons/events/models.py:714
+#: addons/events/forms.py:300 addons/events/forms.py:1639
+#: addons/events/models.py:739
 msgid "Receive event reminders"
 msgstr ""
 
-#: addons/events/forms.py:581 addons/photos/templates/photos/details.html:16
+#: addons/events/forms.py:580 addons/photos/templates/photos/details.html:16
 #: apps/stories/forms.py:39 apps/stories/forms.py:170
 msgid "Photo"
 msgstr ""
 
-#: addons/events/forms.py:582 addons/news/forms.py:57 apps/stories/forms.py:40
+#: addons/events/forms.py:581 addons/news/forms.py:50 apps/stories/forms.py:40
 #: apps/stories/forms.py:171
 msgid "Remove the current photo"
 msgstr ""
 
-#: addons/events/forms.py:597
+#: addons/events/forms.py:596
 msgid "Is Recurring?"
 msgstr ""
 
-#: addons/events/forms.py:598 addons/events/models.py:971
+#: addons/events/forms.py:597 addons/events/models.py:996
 msgid "Repeats"
 msgstr ""
 
-#: addons/events/forms.py:599
+#: addons/events/forms.py:598
 msgid "Repeats Every"
 msgstr ""
 
-#: addons/events/forms.py:601
+#: addons/events/forms.py:600
 msgid "Ends On"
 msgstr ""
 
-#: addons/events/forms.py:603
+#: addons/events/forms.py:602
 msgid "Recurs On"
 msgstr ""
 
-#: addons/events/forms.py:756 addons/locations/forms.py:127
-#: addons/news/forms.py:150 apps/stories/forms.py:111
+#: addons/events/forms.py:755 addons/locations/forms.py:129
+#: addons/news/forms.py:143 apps/stories/forms.py:111
 #: apps/stories/forms.py:239
 #, python-format
 msgid ""
@@ -4477,32 +4488,32 @@ msgid ""
 "%(upload_size)s"
 msgstr ""
 
-#: addons/events/forms.py:862
+#: addons/events/forms.py:861
 msgid "Reassign To"
 msgstr ""
 
-#: addons/events/forms.py:874
+#: addons/events/forms.py:873
 msgid "Place"
 msgstr ""
 
-#: addons/events/forms.py:958
+#: addons/events/forms.py:957
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
 msgstr ""
 
-#: addons/events/forms.py:1026 core/files/forms.py:117 core/files/forms.py:292
-#: core/files/forms.py:420
+#: addons/events/forms.py:1025 core/files/forms.py:117 core/files/forms.py:292
+#: core/files/forms.py:421
 #, python-format
 msgid ""
 "Please keep filesize under %(max_upload_size)s. Current filesize "
 "%(data_size)s"
 msgstr ""
 
-#: addons/events/forms.py:1038
+#: addons/events/forms.py:1037
 msgid "Speaker name is required if a speaker file is given."
 msgstr ""
 
-#: addons/events/forms.py:1042
+#: addons/events/forms.py:1041
 msgid ""
 "Speaker details missing. Please add speaker name or delete the speaker."
 msgstr ""
@@ -4515,75 +4526,75 @@ msgstr ""
 msgid "Inherit from event"
 msgstr ""
 
-#: addons/events/forms.py:1219 addons/events/models.py:146
+#: addons/events/forms.py:1218 addons/events/models.py:146
 msgid "Registration Limit"
 msgstr ""
 
-#: addons/events/forms.py:1221
+#: addons/events/forms.py:1220
 msgid ""
 "Enter the maximum number of registrants. Use 0 for unlimited registrants"
 msgstr ""
 
-#: addons/events/forms.py:1353
+#: addons/events/forms.py:1352
 msgid "Please choose a custom registration form"
 msgstr ""
 
-#: addons/events/forms.py:1361
+#: addons/events/forms.py:1360
 msgid "Please specify when to send email reminders"
 msgstr ""
 
-#: addons/events/forms.py:1372
+#: addons/events/forms.py:1371
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
 msgstr ""
 
-#: addons/events/forms.py:1515 addons/events/registration/forms.py:23
+#: addons/events/forms.py:1514 addons/events/registration/forms.py:23
 #: addons/events/templates/events/reg8n/multi_register.html:98
 #: addons/events/templates/events/reg8n/register.html:334
 #: addons/events/templates/events/registration/multi_register.html:100
-#: addons/memberships/forms.py:839
+#: addons/memberships/forms.py:838
 #: addons/memberships/templates/memberships/applications/add.html:161
 #: apps/discounts/templates/discounts/detail.html:27
 #: apps/invoices/models.py:43
 msgid "Discount Code"
 msgstr ""
 
-#: addons/events/forms.py:1988 apps/contacts/templates/contacts/view.html:68
+#: addons/events/forms.py:1987 apps/contacts/templates/contacts/view.html:68
 msgid "Message"
 msgstr ""
 
-#: addons/events/forms.py:1988
-msgid "Available tokens: <br />, "
+#: addons/events/forms.py:1987
+msgid "Available tokens: <br />"
 msgstr ""
 
-#: addons/events/forms.py:2105
+#: addons/events/forms.py:2104
 #: addons/events/templates/notification/event_registration_end_recap/full.html:8
 msgid "Event"
 msgstr ""
 
-#: addons/events/forms.py:2108 addons/events/models.py:258
+#: addons/events/forms.py:2107 addons/events/models.py:258
 #: templates/reports/mem_join_table.html:12
 #: templates/reports/membership_joins.html:28
 msgid "Start Date"
 msgstr ""
 
-#: addons/events/forms.py:2109 addons/events/models.py:259
+#: addons/events/forms.py:2108 addons/events/models.py:259
 msgid "End Date"
 msgstr ""
 
-#: addons/events/forms.py:2111
+#: addons/events/forms.py:2110
 msgid "User ID"
 msgstr ""
 
-#: addons/events/forms.py:2178
+#: addons/events/forms.py:2177
 msgid "Export by Date Range"
 msgstr ""
 
-#: addons/events/forms.py:2182 apps/invoices/forms.py:52
+#: addons/events/forms.py:2181 apps/invoices/forms.py:52
 msgid "From"
 msgstr ""
 
-#: addons/events/forms.py:2186 apps/invoices/forms.py:53
+#: addons/events/forms.py:2185 apps/invoices/forms.py:53
 msgid "To"
 msgstr ""
 
@@ -4608,11 +4619,11 @@ msgid "Use Custom Registration Form"
 msgstr ""
 
 #: addons/events/models.py:161 addons/events/models.py:254
-#: addons/events/models.py:1335
+#: addons/events/models.py:1360
 msgid "Custom Registration Form"
 msgstr ""
 
-#: addons/events/models.py:165 core/base/utils.py:249 core/meta/utils.py:33
+#: addons/events/models.py:165 core/base/utils.py:263 core/meta/utils.py:33
 #: libs/model_report/highcharts/base.py:43
 msgid " "
 msgstr ""
@@ -4622,8 +4633,7 @@ msgid "Send Email Reminder to attendees"
 msgstr ""
 
 #: addons/events/models.py:173
-msgid ""
-"Specify when (? days before the event starts) the reminder should be sent "
+msgid "Specify when (? days before the event "
 msgstr ""
 
 #: addons/events/models.py:179
@@ -4670,11 +4680,11 @@ msgstr ""
 msgid "Number of registrants for a table"
 msgstr ""
 
-#: addons/events/models.py:403 addons/events/models.py:692
+#: addons/events/models.py:403 addons/events/models.py:717
 msgid "Admin Price Override?"
 msgstr ""
 
-#: addons/events/models.py:404 addons/events/models.py:694
+#: addons/events/models.py:404 addons/events/models.py:719
 msgid "Override Price"
 msgstr ""
 
@@ -4682,148 +4692,148 @@ msgstr ""
 msgid "Canceled"
 msgstr ""
 
-#: addons/events/models.py:691
+#: addons/events/models.py:716
 msgid "Is primary registrant"
 msgstr ""
 
-#: addons/events/models.py:701 apps/invoices/models.py:44
+#: addons/events/models.py:726 apps/invoices/models.py:44
 msgid "Discount Amount"
 msgstr ""
 
-#: addons/events/models.py:708 addons/events/registration/forms.py:89
+#: addons/events/models.py:733 addons/events/registration/forms.py:89
 #: addons/events/templates/events/registration/base_forms.html:79
 #: addons/events/templates/events/registration/multi_register.html:223
 #: addons/events/templates/events/registration/multi_register.html:281
 msgid "Member ID"
 msgstr ""
 
-#: addons/events/models.py:711
+#: addons/events/models.py:736
 msgid "Is Checked In?"
 msgstr ""
 
-#: addons/events/models.py:928
+#: addons/events/models.py:953
 msgid "Speaker Name"
 msgstr ""
 
-#: addons/events/models.py:932
+#: addons/events/models.py:957
 msgid ""
 "All speakers marked as featured will be displayed when viewing the event."
 msgstr ""
 
-#: addons/events/models.py:972
+#: addons/events/models.py:997
 msgid "Repeats every"
 msgstr ""
 
-#: addons/events/models.py:977
+#: addons/events/models.py:1002
 msgid "Recurring Event"
 msgstr ""
 
-#: addons/events/models.py:978
+#: addons/events/models.py:1003
 msgid "Recurring Events"
 msgstr ""
 
-#: addons/events/models.py:990
+#: addons/events/models.py:1015
 #, python-format
 msgid "Repeats every %(frequency)s %(repeat_type)s until %(ends_on)s"
 msgstr ""
 
-#: addons/events/models.py:1010
+#: addons/events/models.py:1035
 msgid "Registration Ended"
 msgstr ""
 
-#: addons/events/models.py:1011
+#: addons/events/models.py:1036
 msgid "Enable Private URL"
 msgstr ""
 
-#: addons/events/models.py:1014
+#: addons/events/models.py:1039
 msgid "This event occurs on weekends"
 msgstr ""
 
-#: addons/events/models.py:1015
+#: addons/events/models.py:1040
 msgid "External URL"
 msgstr ""
 
-#: addons/events/models.py:1017
+#: addons/events/models.py:1042
 msgid "Photo that represents this event."
 msgstr ""
 
-#: addons/events/models.py:1020
+#: addons/events/models.py:1045
 msgid ""
 "Priority events will show up at the top of the event calendar day list and "
 "single day list. They will be featured with a star icon on the monthly "
 "calendar and the list view."
 msgstr ""
 
-#: addons/events/models.py:1023
+#: addons/events/models.py:1048
 msgid "Is Recurring Event"
 msgstr ""
 
-#: addons/events/models.py:1027
+#: addons/events/models.py:1052
 msgid "Display Attendees"
 msgstr ""
 
-#: addons/events/models.py:1302 addons/events/models.py:1303
+#: addons/events/models.py:1327 addons/events/models.py:1328
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:29
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:34
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:40
 msgid "Standard Registration Form"
 msgstr ""
 
-#: addons/events/models.py:1321
+#: addons/events/models.py:1346
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:70
 msgid "Mail Name"
 msgstr ""
 
-#: addons/events/models.py:1325
+#: addons/events/models.py:1350
 msgid "Zip"
 msgstr ""
 
-#: addons/events/models.py:1331 addons/events/settings.py:34
+#: addons/events/models.py:1356 addons/events/settings.py:34
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:140
 msgid "Meal Option"
 msgstr ""
 
-#: addons/events/models.py:1332 addons/events/settings.py:35
+#: addons/events/models.py:1357 addons/events/settings.py:35
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:147
 #: addons/events/templates/events/reg8n/multi_register.html:226
 msgid "Comments"
 msgstr ""
 
-#: addons/events/models.py:1336
+#: addons/events/models.py:1361
 msgid "Custom Registration Forms"
 msgstr ""
 
-#: addons/events/models.py:1371
+#: addons/events/models.py:1396
 msgid "Map to User Field"
 msgstr ""
 
-#: addons/events/models.py:1375 apps/forms_builder/forms/models.py:209
+#: addons/events/models.py:1400 apps/forms_builder/forms/models.py:209
 msgid "Special Functionality"
 msgstr ""
 
-#: addons/events/models.py:1378
+#: addons/events/models.py:1403
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:52
 #: apps/forms_builder/forms/models.py:212
 msgid "Visible"
 msgstr ""
 
-#: addons/events/models.py:1381 apps/forms_builder/forms/models.py:215
+#: addons/events/models.py:1406 apps/forms_builder/forms/models.py:215
 msgid "Default"
 msgstr ""
 
-#: addons/events/models.py:1383
+#: addons/events/models.py:1408
 msgid "Show on Roster"
 msgstr ""
 
-#: addons/events/models.py:1517
+#: addons/events/models.py:1542
 msgid "Public can use"
 msgstr ""
 
-#: addons/events/models.py:1518
+#: addons/events/models.py:1543
 msgid "Signed in user can use"
 msgstr ""
 
-#: addons/events/models.py:1519
+#: addons/events/models.py:1544
 msgid "All members can use"
 msgstr ""
 
@@ -4844,7 +4854,7 @@ msgstr ""
 msgid "Section Heading"
 msgstr ""
 
-#: addons/events/settings.py:24 apps/profiles/forms.py:121
+#: addons/events/settings.py:24 apps/profiles/forms.py:123
 #: apps/profiles/templates/notification/user_edited/full.html:373
 #: apps/profiles/templates/profiles/add.html:246
 #: apps/profiles/templates/profiles/edit.html:249
@@ -4857,16 +4867,16 @@ msgstr ""
 msgid "Subscribe to Group"
 msgstr ""
 
-#: addons/events/views.py:1513 addons/events/views.py:1618
-#: addons/events/views.py:2047 addons/events/registration/views.py:207
+#: addons/events/views.py:1523 addons/events/views.py:1630
+#: addons/events/views.py:2098 addons/events/registration/views.py:207
 msgid "Registration is full."
 msgstr ""
 
-#: addons/events/views.py:1993 addons/events/views.py:2017
+#: addons/events/views.py:2044 addons/events/views.py:2068
 msgid "Please choose a price."
 msgstr ""
 
-#: addons/events/views.py:2039
+#: addons/events/views.py:2090
 msgid "Registration has been closed."
 msgstr ""
 
@@ -5016,6 +5026,8 @@ msgid "Event registration is currently ongoing"
 msgstr ""
 
 #: addons/events/templates/events/attendees.html:57
+#: addons/events/templates/events/reg8n/register.html:359
+#: addons/events/templates/events/reg8n/register.html:374
 #: addons/events/templates/events/reg8n/registration_pricing.html:43
 #: templates/default.html:69
 msgid "Register"
@@ -5396,7 +5408,7 @@ msgstr ""
 
 #: addons/events/templates/events/nav.html:150
 msgid ""
-"You can export all the upcoming events \n"
+"You can export all the upcoming events\n"
 " to any calendar application such as MS Outlook, Google calendar, Apple iCal with the following link."
 msgstr ""
 
@@ -5461,7 +5473,7 @@ msgstr ""
 #: addons/events/templates/events/speakers.html:53
 #: addons/events/templates/events/view.html:93
 #: addons/events/templates/events/view.html:120
-#: addons/events/templates/events/view.html:233
+#: addons/events/templates/events/view.html:237
 #: addons/events/templates/events/reg8n/register-confirm.html:80
 msgid "Full Description"
 msgstr ""
@@ -5486,7 +5498,6 @@ msgstr ""
 #: addons/events/templates/events/addons/list.html:7
 #: addons/events/templates/events/addons/list.html:21
 #: addons/events/templates/events/reg8n/register-confirm.html:208
-#: templates/top_menu/admin_top.html:36
 msgid "Addons"
 msgstr ""
 
@@ -5506,7 +5517,11 @@ msgstr ""
 msgid "When?"
 msgstr ""
 
-#: addons/events/templates/events/view.html:215
+#: addons/events/templates/events/view.html:211
+msgid "How Much?"
+msgstr ""
+
+#: addons/events/templates/events/view.html:219
 msgid "Where?"
 msgstr ""
 
@@ -5684,9 +5699,9 @@ msgstr ""
 #: addons/events/templates/events/message/opening-text.txt:25
 #, python-format
 msgid ""
-" Start: \n"
-"\t\t\t<abbr class=\"dtstart\" title=\"%(event_start)s\"><b>%(event_starts)s%(event_tz)s</b></abbr> \n"
-"\t\t\tto <abbr class=\"dtend\" title=\"%(event_end)s\"><b>%(event_ends)s%(event_tz)s</b></abbr><br />"
+" Start:\n"
+"            <abbr class=\"dtstart\" title=\"%(event_start)s\"><b>%(event_starts)s%(event_tz)s</b></abbr>\n"
+"            to <abbr class=\"dtend\" title=\"%(event_end)s\"><b>%(event_ends)s%(event_tz)s</b></abbr><br />"
 msgstr ""
 
 #: addons/events/templates/events/message/opening-text.txt:29
@@ -5797,6 +5812,7 @@ msgid "addon"
 msgstr ""
 
 #: addons/events/templates/events/reg8n/multi_register.html:138
+#: addons/events/templates/events/reg8n/register-confirm.html:243
 #: addons/events/templates/events/reg8n/register.html:163
 #: addons/events/templates/events/registration/multi_register.html:139
 msgid "Discount"
@@ -5816,8 +5832,8 @@ msgstr ""
 #: addons/events/templates/events/reg8n/multi_register.html:267
 msgid ""
 "\n"
-"                    Add <input class=\"extra-registrants\" type=\"text\" name=\"extra-registrant-amount\" value=\"1\" /> \n"
-"                    additional registrant(s). Click to \n"
+"                    Add <input class=\"extra-registrants\" type=\"text\" name=\"extra-registrant-amount\" value=\"1\" />\n"
+"                    additional registrant(s). Click to\n"
 "                    <a class=\"add-registrants-link\" title='Add registrant(s)' onClick=\"add_registrants(this, 'registrant'); return false;\">\n"
 "                    Add More registrants</a>.\n"
 "                "
@@ -5919,21 +5935,6 @@ msgstr ""
 msgid "Pay online"
 msgstr ""
 
-#: addons/events/templates/events/reg8n/register-confirm.html:243
-#, python-format
-msgid "Discount Applied $%(discount)s"
-msgstr ""
-
-#: addons/events/templates/events/reg8n/register-confirm.html:245
-#, python-format
-msgid "Total $%(total)s"
-msgstr ""
-
-#: addons/events/templates/events/reg8n/register-confirm.html:246
-#, python-format
-msgid "Balance $%(balance)s"
-msgstr ""
-
 #: addons/events/templates/events/reg8n/register-free.html:18
 #, python-format
 msgid ""
@@ -5966,17 +5967,23 @@ msgstr ""
 msgid "Table of "
 msgstr ""
 
+#: addons/events/templates/events/reg8n/register.html:359
+#: addons/events/templates/events/reg8n/register.html:374
+#: addons/events/templates/events/reg8n/registration_pricing.html:33
+msgid "RSVP"
+msgstr ""
+
 #: addons/events/templates/events/reg8n/register_pre.html:68
 msgid "Please select a price:"
 msgstr ""
 
 #: addons/events/templates/events/reg8n/register_pre2.html:41
-#: addons/events/templates/events/reg8n/register_pre2.html:65
+#: addons/events/templates/events/reg8n/register_pre2.html:64
 msgid "Available Before"
 msgstr ""
 
-#: addons/events/templates/events/reg8n/register_pre2.html:48
-#: addons/events/templates/events/reg8n/register_pre2.html:72
+#: addons/events/templates/events/reg8n/register_pre2.html:47
+#: addons/events/templates/events/reg8n/register_pre2.html:70
 #: apps/accounts/templates/accounts/login.html:34
 msgid "Register Now"
 msgstr ""
@@ -5991,10 +5998,6 @@ msgstr ""
 
 #: addons/events/templates/events/reg8n/registration_pricing.html:19
 msgid "Registration has ended"
-msgstr ""
-
-#: addons/events/templates/events/reg8n/registration_pricing.html:33
-msgid "Register for Free"
 msgstr ""
 
 #: addons/events/templates/events/reg8n/registration_pricing.html:39
@@ -6776,14 +6779,14 @@ msgstr ""
 #, python-format
 msgid ""
 "<div class=\"label\">Position Reports To</div>\n"
-"\t\t\t<div class=\"value\">%(repto)s</div>"
+"            <div class=\"value\">%(repto)s</div>"
 msgstr ""
 
 #: addons/jobs/templates/jobs/print-view.html:63
 #, python-format
 msgid ""
 "<div class=\"label\">Starts On</div>\n"
-"\t\t\t<div class=\"value\">%(start_date)s</div>"
+"            <div class=\"value\">%(start_date)s</div>"
 msgstr ""
 
 #: addons/jobs/templates/jobs/print-view.html:71
@@ -6850,22 +6853,22 @@ msgstr ""
 #, python-format
 msgid ""
 "<div class=\"label\">Position Reports To</div>\n"
-"\t\t\t<div class=\"value\">%(job_report)s</div>"
+"            <div class=\"value\">%(job_report)s</div>"
 msgstr ""
 
 #: addons/jobs/templates/jobs/view.html:76
 #, python-format
 msgid ""
 "<div class=\"label\">Starts On</div>\n"
-"\t\t\t<div class=\"value\">%(jobstart)s</div>"
+"            <div class=\"value\">%(jobstart)s</div>"
 msgstr ""
 
 #: addons/jobs/templates/jobs/view.html:84
 #, python-format
 msgid ""
 " <div class=\"label\">Salary</div>\n"
-"\t\t\t<div class=\"value\">%(salfrom)s to %(salto)s</div>\n"
-"\t\t\t<div class=\"clear\"></div>"
+"            <div class=\"value\">%(salfrom)s to %(salto)s</div>\n"
+"            <div class=\"clear\"></div>"
 msgstr ""
 
 #: addons/jobs/templates/jobs/view.html:117
@@ -6941,6 +6944,14 @@ msgid ""
 "  from module:"
 msgstr ""
 
+#: addons/jobs/templates/notification/job_deleted/full.html:23
+#, python-format
+msgid ""
+"Deleted \n"
+"      by:</td>\n"
+"    <td width=\"75%%\"><b>%(requser)s"
+msgstr ""
+
 #: addons/jobs/templates/notification/job_deleted/full.html:28
 msgid ""
 "If you would like view all \n"
@@ -6953,6 +6964,7 @@ msgid "Job deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
 #: addons/locations/forms.py:25
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:18
 #: templates/theme_includes/logo_edit_form.html:14
 msgid "Logo"
 msgstr ""
@@ -6961,11 +6973,11 @@ msgstr ""
 msgid "Remove the current logo"
 msgstr ""
 
-#: addons/locations/models.py:36
+#: addons/locations/models.py:38
 msgid "Only jpg, gif, or png images."
 msgstr ""
 
-#: addons/locations/models.py:37
+#: addons/locations/models.py:39
 #: addons/locations/templates/locations/import-preview.html:49
 msgid "Headquarters"
 msgstr ""
@@ -7217,7 +7229,7 @@ msgid "Belize"
 msgstr ""
 
 #: addons/make_payments/forms.py:45 apps/forms_builder/forms/models.py:247
-#: core/base/fields.py:148
+#: core/base/fields.py:150
 msgid "Canada"
 msgstr ""
 
@@ -8074,8 +8086,8 @@ msgstr ""
 #: addons/make_payments/templates/make_payments/email_user.txt:19
 #, python-format
 msgid ""
-"%(SITE_GLOBAL_SITEDISPLAYNAME)s Thank you for your payment of \n"
-"\t%(makepay)s."
+"%(SITE_GLOBAL_SITEDISPLAYNAME)s Thank you for your payment of\n"
+"    %(makepay)s."
 msgstr ""
 
 #: addons/make_payments/templates/make_payments/email_user.txt:21
@@ -8089,7 +8101,7 @@ msgstr ""
 #: addons/make_payments/templates/make_payments/email_user.txt:30
 msgid ""
 "*** Important Note: This is a private link. Please DO NOT share it with "
-"anybody publicly.\t"
+"anybody publicly.    "
 msgstr ""
 
 #: addons/make_payments/templates/make_payments/email_user_subject.txt:3
@@ -8189,69 +8201,69 @@ msgstr ""
 msgid "Membership App"
 msgstr ""
 
-#: addons/memberships/forms.py:217
+#: addons/memberships/forms.py:215
 msgid "Period must be a numeric number."
 msgstr ""
 
-#: addons/memberships/forms.py:219
+#: addons/memberships/forms.py:217
 msgid "Period is a required field."
 msgstr ""
 
-#: addons/memberships/forms.py:223 addons/memberships/forms.py:225
+#: addons/memberships/forms.py:221 addons/memberships/forms.py:223
 msgid "Please select a expiration option for join."
 msgstr ""
 
-#: addons/memberships/forms.py:230
+#: addons/memberships/forms.py:228
 msgid "The day(s) field in option 2 of Expires On must be a numeric number."
 msgstr ""
 
-#: addons/memberships/forms.py:235 addons/memberships/forms.py:237
+#: addons/memberships/forms.py:233 addons/memberships/forms.py:235
 msgid "Please select a expiration option for renewal."
 msgstr ""
 
-#: addons/memberships/forms.py:242
+#: addons/memberships/forms.py:240
 msgid ""
 "The day(s) field in option 2 of Renew Expires On must be a numeric number."
 msgstr ""
 
-#: addons/memberships/forms.py:247
+#: addons/memberships/forms.py:245
 msgid ""
 "The day(s) field in option 3 of Renew Expires On must be a numeric number."
 msgstr ""
 
-#: addons/memberships/forms.py:253 addons/memberships/forms.py:255
+#: addons/memberships/forms.py:251 addons/memberships/forms.py:253
 msgid "Please select an option for fixed period."
 msgstr ""
 
-#: addons/memberships/forms.py:260
+#: addons/memberships/forms.py:258
 msgid ""
 "The day(s) field in the option 1 of Expires On must be a numeric number."
 msgstr ""
 
-#: addons/memberships/forms.py:265
+#: addons/memberships/forms.py:263
 msgid ""
 "The day(s) field in the option 2 of Expires On must be a numeric number."
 msgstr ""
 
-#: addons/memberships/forms.py:271
+#: addons/memberships/forms.py:269
 msgid "The grace period day(s) for optoin 2 must be a numeric number."
 msgstr ""
 
-#: addons/memberships/forms.py:587
+#: addons/memberships/forms.py:586
 msgid ""
 "Allowed characters are letters, digits, at sign (@), period (.), plus sign "
 "(+), dash (-), and underscore (_)."
 msgstr ""
 
-#: addons/memberships/forms.py:620 addons/memberships/forms.py:1458
+#: addons/memberships/forms.py:619 addons/memberships/forms.py:1458
 msgid "Passwords do not match."
 msgstr ""
 
-#: addons/memberships/forms.py:629 addons/memberships/forms.py:1467
+#: addons/memberships/forms.py:628 addons/memberships/forms.py:1467
 msgid "Username and password did not match."
 msgstr ""
 
-#: addons/memberships/forms.py:641 addons/memberships/forms.py:1479
+#: addons/memberships/forms.py:640 addons/memberships/forms.py:1479
 msgid "This username exists. If it's yours, please provide your password."
 msgstr ""
 
@@ -8306,10 +8318,12 @@ msgstr ""
 #: addons/memberships/models.py:75 addons/memberships/models.py:294
 #: addons/memberships/templates/memberships/invoice_search_result_line.html:9
 #: addons/memberships/templates/memberships/invoice_search_result_line2.html:9
+#: project_template/themes/jordy/templates/homepage.html:124
 msgid "Membership"
 msgstr ""
 
 #: addons/memberships/models.py:76
+#: project_template/themes/jordy/templates/homepage.html:128
 msgid "Directory"
 msgstr ""
 
@@ -8409,59 +8423,59 @@ msgstr ""
 
 #: addons/memberships/models.py:295
 #: apps/dashboard/templates/dashboard/index.html:102
-#: apps/dashboard/templates/dashboard/new.html:113
+#: apps/dashboard/templates/dashboard/new.html:108
 #: templates/top_menu/user_top.html:79
 msgid "Memberships"
 msgstr ""
 
-#: addons/memberships/models.py:458
+#: addons/memberships/models.py:466
 msgid "Corporate Membership"
 msgstr ""
 
-#: addons/memberships/models.py:1806 apps/profiles/models.py:388
+#: addons/memberships/models.py:1814 apps/profiles/models.py:398
 msgid "Recap File"
 msgstr ""
 
-#: addons/memberships/models.py:1809 core/base/models.py:65
+#: addons/memberships/models.py:1817 core/base/models.py:65
 msgid "Header Line"
 msgstr ""
 
-#: addons/memberships/models.py:1875 core/base/models.py:101
+#: addons/memberships/models.py:1883 core/base/models.py:101
 msgid "Error"
 msgstr ""
 
-#: addons/memberships/models.py:1901
+#: addons/memberships/models.py:1909
 msgid ""
 "Note that if you             don't select a membership type,             the"
 " notice will go out to all members."
 msgstr ""
 
-#: addons/memberships/models.py:2173
+#: addons/memberships/models.py:2181
 msgid "Use Captcha"
 msgstr ""
 
-#: addons/memberships/models.py:2174
+#: addons/memberships/models.py:2182
 msgid "Allow Multiple Membership Types"
 msgstr ""
 
-#: addons/memberships/models.py:2184
+#: addons/memberships/models.py:2192
 msgid "Use for Corporate Individuals"
 msgstr ""
 
-#: addons/memberships/models.py:2235
+#: addons/memberships/models.py:2243
 msgid "Select One (Drop Down)"
 msgstr ""
 
-#: addons/memberships/models.py:2236
+#: addons/memberships/models.py:2244
 msgid "Select One (Radio Buttons)"
 msgstr ""
 
-#: addons/memberships/models.py:2275 apps/navs/models.py:45
+#: addons/memberships/models.py:2283 apps/navs/models.py:45
 #: apps/navs/templates/navs/nav_items.html:146
 msgid "CSS Class"
 msgstr ""
 
-#: addons/memberships/models.py:2382 apps/notifications/models.py:73
+#: addons/memberships/models.py:2390 apps/notifications/models.py:73
 #: apps/notifications/models.py:134 apps/notifications/models.py:613
 #: apps/registration/models.py:213 libs/abstracts/models.py:95
 msgid "user"
@@ -8907,11 +8921,11 @@ msgstr ""
 msgid "Membership application renewal"
 msgstr ""
 
-#: addons/news/forms.py:56
+#: addons/news/forms.py:49
 msgid "Thumbnail Image"
 msgstr ""
 
-#: addons/news/forms.py:56
+#: addons/news/forms.py:49
 msgid ""
 "The thumbnail image can be used on your homepage or sidebar if it is setup "
 "in your theme. It will not display on the news page."
@@ -8976,7 +8990,7 @@ msgstr ""
 #: addons/news/templates/notification/news_added/full.html:16
 #, python-format
 msgid ""
-"The following news was \n"
+"The following news was\n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s module "
 msgstr ""
 
@@ -8996,13 +9010,13 @@ msgstr ""
 
 #: addons/news/templates/notification/news_added/full.html:32
 msgid ""
-"To view the details of this \n"
+"To view the details of this\n"
 "  news, go to:"
 msgstr ""
 
 #: addons/news/templates/notification/news_added/full.html:37
 msgid ""
-"To activate this news, \n"
+"To activate this news,\n"
 "\t  go to:"
 msgstr ""
 
@@ -9018,14 +9032,14 @@ msgstr ""
 #: addons/news/templates/notification/news_deleted/full.html:23
 #, python-format
 msgid ""
-" Deleted \n"
+" Deleted\n"
 "      by:</td>\n"
 "    <td width=\"75%%\"><b>%(requser)s</b>"
 msgstr ""
 
 #: addons/news/templates/notification/news_deleted/full.html:28
 msgid ""
-"If you would like view all \n"
+"If you would like view all\n"
 "  recently deleted news, go to:"
 msgstr ""
 
@@ -9343,15 +9357,8 @@ msgstr ""
 msgid "publish_type"
 msgstr ""
 
-#: addons/photos/models.py:568
+#: addons/photos/models.py:568 addons/photos/models.py:569
 msgid "Photo Album"
-msgstr ""
-
-#: addons/photos/models.py:569
-#: apps/dashboard/templates/dashboard/index.html:114
-#: apps/dashboard/templates/dashboard/new.html:125
-#: templates/top_menu/user_top.html:45
-msgid "Photo Albums"
 msgstr ""
 
 #: addons/photos/models.py:678
@@ -9430,17 +9437,17 @@ msgstr ""
 msgid "pools"
 msgstr ""
 
-#: addons/photos/views.py:333
+#: addons/photos/views.py:334
 #, python-format
 msgid "Successfully updated photo '%s'"
 msgstr ""
 
-#: addons/photos/views.py:361
+#: addons/photos/views.py:362
 #, python-format
 msgid "Successfully deleted photo '%s'"
 msgstr ""
 
-#: addons/photos/views.py:440
+#: addons/photos/views.py:441
 msgid "Successfully updated photo set! "
 msgstr ""
 
@@ -9481,9 +9488,9 @@ msgid "Bulk edit photos"
 msgstr ""
 
 #: addons/photos/templates/photos/batch-edit.html:26
-#: addons/photos/templates/photos/batch-edit.html:205
-#: addons/photos/templates/photos/batch-edit.html:250
-#: addons/photos/templates/photos/batch-edit.html:290
+#: addons/photos/templates/photos/batch-edit.html:204
+#: addons/photos/templates/photos/batch-edit.html:249
+#: addons/photos/templates/photos/batch-edit.html:289
 msgid "Enable Photo Drag/Drop Reordering"
 msgstr ""
 
@@ -9523,19 +9530,19 @@ msgstr ""
 msgid "All photos have been approved, nothing to see here."
 msgstr ""
 
-#: addons/photos/templates/photos/batch-edit.html:183
-#: addons/photos/templates/photos/batch-edit.html:185
-#: addons/photos/templates/photos/batch-edit.html:197
+#: addons/photos/templates/photos/batch-edit.html:182
+#: addons/photos/templates/photos/batch-edit.html:184
+#: addons/photos/templates/photos/batch-edit.html:196
 msgid "Hide Photo Details"
 msgstr ""
 
-#: addons/photos/templates/photos/batch-edit.html:183
-#: addons/photos/templates/photos/batch-edit.html:186
+#: addons/photos/templates/photos/batch-edit.html:182
+#: addons/photos/templates/photos/batch-edit.html:185
 msgid "Show Photo Details"
 msgstr ""
 
-#: addons/photos/templates/photos/batch-edit.html:194
-#: addons/photos/templates/photos/batch-edit.html:274
+#: addons/photos/templates/photos/batch-edit.html:193
+#: addons/photos/templates/photos/batch-edit.html:273
 msgid "Show all photo details for editing"
 msgstr ""
 
@@ -9578,7 +9585,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Licensed under\n"
-"                        <a rel=\"license\" href=\"%(photo_deed)s\"> \n"
+"                        <a rel=\"license\" href=\"%(photo_deed)s\">\n"
 "                            %(photo_name)s</a>."
 msgstr ""
 
@@ -9813,9 +9820,7 @@ msgid "Initial billing cycle start date"
 msgstr ""
 
 #: addons/recurring_payments/models.py:57
-msgid ""
-"The initial start date for the recurring payments.That is, the start date of"
-" the first billing cycle."
+msgid "The initial start date for the recurring payments."
 msgstr ""
 
 #: addons/recurring_payments/models.py:63
@@ -9896,7 +9901,7 @@ msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/index.html:81
 #: apps/dashboard/templates/dashboard/index.html:138
-#: apps/dashboard/templates/dashboard/new.html:149
+#: apps/dashboard/templates/dashboard/new.html:144
 #: apps/invoices/templates/invoices/nav.html:24
 #: apps/profiles/templates/profiles/index.html:79
 #: apps/profiles/templates/profiles/meta.html:49
@@ -10082,8 +10087,8 @@ msgstr ""
 msgid "Similar emails found"
 msgstr ""
 
-#: apps/accounts/forms.py:123 apps/profiles/forms.py:134
-#: apps/profiles/forms.py:337 apps/profiles/templates/profiles/add.html:331
+#: apps/accounts/forms.py:123 apps/profiles/forms.py:136
+#: apps/profiles/forms.py:339 apps/profiles/templates/profiles/add.html:331
 #: core/base/forms.py:57
 msgid "Password"
 msgstr ""
@@ -10348,26 +10353,26 @@ msgid ""
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:73
-#: apps/dashboard/templates/dashboard/new.html:84
+#: apps/dashboard/templates/dashboard/new.html:79
 msgid "Users"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:77
 #: apps/dashboard/templates/dashboard/nav.html:41
-#: apps/dashboard/templates/dashboard/new.html:88
+#: apps/dashboard/templates/dashboard/new.html:83
 #: core/imports/templates/imports/nav.html:41
 msgid "Groups"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:89
-#: apps/dashboard/templates/dashboard/new.html:100
+#: apps/dashboard/templates/dashboard/new.html:95
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
 #: Sidebar.html:263 Right Sidebar.html:276 templates/top_menu/user_top.html:27
 msgid "Directories"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:97
-#: apps/dashboard/templates/dashboard/new.html:108
+#: apps/dashboard/templates/dashboard/new.html:103
 #: apps/wp_exporter/forms.py:33
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
 #: Sidebar.html:278 Right Sidebar.html:291 templates/top_menu/user_top.html:48
@@ -10375,26 +10380,34 @@ msgid "Resumes"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:106
-#: apps/dashboard/templates/dashboard/new.html:117
+#: apps/dashboard/templates/dashboard/new.html:112
 msgid "Corp. Memb."
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:110
-#: apps/dashboard/templates/dashboard/new.html:121
+#: apps/dashboard/templates/dashboard/new.html:116
 #: apps/dashboard/templates/dashboard/stats.html:201
-#: apps/wp_exporter/forms.py:29 templates/reports/user_activity_table.html:42
+#: apps/wp_exporter/forms.py:29
+#: project_template/themes/jordy/templates/homepage.html:132
+#: templates/reports/user_activity_table.html:42
 #: templates/reports/user_activity_table.html:44
 #: templates/top_menu/user_top.html:30
 msgid "Events"
 msgstr ""
 
+#: apps/dashboard/templates/dashboard/index.html:114
+#: apps/dashboard/templates/dashboard/new.html:120
+#: templates/top_menu/user_top.html:45
+msgid "Photo Albums"
+msgstr ""
+
 #: apps/dashboard/templates/dashboard/index.html:118
-#: apps/dashboard/templates/dashboard/new.html:129
+#: apps/dashboard/templates/dashboard/new.html:124
 msgid "Stories"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:126
-#: apps/dashboard/templates/dashboard/new.html:137
+#: apps/dashboard/templates/dashboard/new.html:132
 #: apps/pages/templates/pages/nav.html:74
 #: core/files/templates/files/nav.html:21
 #: core/files/templates/files/templates/tinymce.html:51
@@ -10403,67 +10416,67 @@ msgid "Files"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:130
-#: apps/dashboard/templates/dashboard/new.html:141
+#: apps/dashboard/templates/dashboard/new.html:136
 #: templates/top_menu/user_top.html:39
 msgid "Locations"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:134
-#: apps/dashboard/templates/dashboard/new.html:145
+#: apps/dashboard/templates/dashboard/new.html:140
 #: apps/profiles/templates/profiles/index.html:292
 msgid "Contributions"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:142
-#: apps/dashboard/templates/dashboard/new.html:153
+#: apps/dashboard/templates/dashboard/new.html:148
 #: apps/forms_builder/forms/models.py:141
 msgid "Forms"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:146
-#: apps/dashboard/templates/dashboard/new.html:157
+#: apps/dashboard/templates/dashboard/new.html:152
 #: apps/redirects/templates/redirects/nav.html:30
 msgid "Redirects"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:147
-#: apps/dashboard/templates/dashboard/new.html:158
+#: apps/dashboard/templates/dashboard/new.html:153
 msgid "Contacts"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:149
-#: apps/dashboard/templates/dashboard/new.html:160
+#: apps/dashboard/templates/dashboard/new.html:155
 #: templates/top_menu/admin_top.html:152
 msgid "Event Logs"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:160
-#: apps/dashboard/templates/dashboard/new.html:214
+#: apps/dashboard/templates/dashboard/new.html:219
 msgid "Tendenci Blog"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:175
+#: apps/dashboard/templates/dashboard/index.html:169
 #: apps/dashboard/templates/dashboard/new.html:229
 msgid "Tendenci Help"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:196
-#: apps/dashboard/templates/dashboard/new.html:174
+#: apps/dashboard/templates/dashboard/index.html:190
+#: apps/dashboard/templates/dashboard/new.html:179
 msgid "Admin Quick Links"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:199
-#: apps/dashboard/templates/dashboard/new.html:177
+#: apps/dashboard/templates/dashboard/index.html:193
+#: apps/dashboard/templates/dashboard/new.html:182
 msgid "Add a page"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:202
-#: apps/dashboard/templates/dashboard/new.html:180
+#: apps/dashboard/templates/dashboard/index.html:196
+#: apps/dashboard/templates/dashboard/new.html:185
 msgid "Search All Modules"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:208
-#: apps/dashboard/templates/dashboard/new.html:186
+#: apps/dashboard/templates/dashboard/index.html:202
+#: apps/dashboard/templates/dashboard/new.html:191
 #: apps/profiles/templates/profiles/import/preview.html:20
 #: apps/profiles/templates/profiles/import/status.html:25
 #: apps/profiles/templates/profiles/import/upload.html:69
@@ -10471,67 +10484,67 @@ msgstr ""
 msgid "Import Users"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:210
-#: apps/dashboard/templates/dashboard/new.html:188
+#: apps/dashboard/templates/dashboard/index.html:204
+#: apps/dashboard/templates/dashboard/new.html:193
 msgid "Enable/Disable modules"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:212
-#: apps/dashboard/templates/dashboard/new.html:190
+#: apps/dashboard/templates/dashboard/index.html:206
+#: apps/dashboard/templates/dashboard/new.html:195
 #: templates/top_menu/admin_top.html:153
 msgid "Clear Cache"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:213
-#: apps/dashboard/templates/dashboard/new.html:191
+#: apps/dashboard/templates/dashboard/index.html:207
+#: apps/dashboard/templates/dashboard/new.html:196
 #: apps/theme_editor/templates/theme_editor/index.html:22
 #: apps/theme_editor/templates/theme_editor/walkthrough.html:70
 #: templates/top_menu/admin_top.html:106 templates/top_menu/admin_top.html:143
 msgid "Theme Editor"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:214
-#: apps/dashboard/templates/dashboard/new.html:192
+#: apps/dashboard/templates/dashboard/index.html:208
+#: apps/dashboard/templates/dashboard/new.html:197
 msgid "Admin Panel"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:216
-#: apps/dashboard/templates/dashboard/new.html:194
+#: apps/dashboard/templates/dashboard/index.html:210
+#: apps/dashboard/templates/dashboard/new.html:199
 msgid "Recurring Payments"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:222
-#: apps/dashboard/templates/dashboard/new.html:200
+#: apps/dashboard/templates/dashboard/index.html:216
+#: apps/dashboard/templates/dashboard/new.html:205
 msgid "Update Theme"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:224
-#: apps/dashboard/templates/dashboard/new.html:202
+#: apps/dashboard/templates/dashboard/index.html:218
+#: apps/dashboard/templates/dashboard/new.html:207
 msgid "Update Styles"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:225
-#: apps/dashboard/templates/dashboard/new.html:203
+#: apps/dashboard/templates/dashboard/index.html:219
+#: apps/dashboard/templates/dashboard/new.html:208
 msgid "Update Template"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:226
-#: apps/dashboard/templates/dashboard/new.html:204
+#: apps/dashboard/templates/dashboard/index.html:220
+#: apps/dashboard/templates/dashboard/new.html:209
 msgid "Update Navigation"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:227
-#: apps/dashboard/templates/dashboard/new.html:205
+#: apps/dashboard/templates/dashboard/index.html:221
+#: apps/dashboard/templates/dashboard/new.html:210
 msgid "Update Footer"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:228
-#: apps/dashboard/templates/dashboard/new.html:206
+#: apps/dashboard/templates/dashboard/index.html:222
+#: apps/dashboard/templates/dashboard/new.html:211
 msgid "Change Themes"
 msgstr ""
 
-#: apps/dashboard/templates/dashboard/index.html:229
-#: apps/dashboard/templates/dashboard/new.html:207
+#: apps/dashboard/templates/dashboard/index.html:223
+#: apps/dashboard/templates/dashboard/new.html:212
 #: templates/top_menu/admin_top.html:104
 msgid "Theme Settings"
 msgstr ""
@@ -10562,6 +10575,15 @@ msgstr ""
 msgid "Day Traffic"
 msgstr ""
 
+#: apps/discounts/forms.py:18 apps/discounts/models.py:22
+#: apps/discounts/templates/discounts/detail.html:31
+msgid "Discount Value"
+msgstr ""
+
+#: apps/discounts/forms.py:19 apps/discounts/models.py:22
+msgid "Enter discount value as a positive number."
+msgstr ""
+
 #: apps/discounts/models.py:17
 msgid "Discount codes must be unique."
 msgstr ""
@@ -10576,15 +10598,6 @@ msgstr ""
 
 #: apps/discounts/models.py:21
 msgid "Check this box to make the discount code never expire."
-msgstr ""
-
-#: apps/discounts/models.py:22
-#: apps/discounts/templates/discounts/detail.html:31
-msgid "Discount Value"
-msgstr ""
-
-#: apps/discounts/models.py:22
-msgid "Enter discount value as a positive number."
 msgstr ""
 
 #: apps/discounts/models.py:23
@@ -10738,8 +10751,8 @@ msgstr ""
 #: apps/entities/templates/entities/view.html:51
 #, python-format
 msgid ""
-"Submitted on %(encreate)s \n"
-"\t\t\tby:"
+"Submitted on %(encreate)s\n"
+"            by:"
 msgstr ""
 
 #: apps/forms_builder/forms/admin.py:90
@@ -10927,11 +10940,11 @@ msgstr ""
 msgid "Export entries"
 msgstr ""
 
-#: apps/forms_builder/forms/models.py:246 core/base/fields.py:147
+#: apps/forms_builder/forms/models.py:246 core/base/fields.py:149
 msgid "United States"
 msgstr ""
 
-#: apps/forms_builder/forms/models.py:248 core/base/fields.py:149
+#: apps/forms_builder/forms/models.py:248 core/base/fields.py:151
 msgid "United Kingdom"
 msgstr ""
 
@@ -11765,8 +11778,8 @@ msgstr ""
 #: apps/notifications/templates/notification/donation_added/full.html:4
 #, python-format
 msgid ""
-"A donation has been made for \n"
-"\t%(SITE_GLOBAL_SITEDISPLAYNAME)s "
+"A donation has been made for\n"
+"    %(SITE_GLOBAL_SITEDISPLAYNAME)s "
 msgstr ""
 
 #: apps/notifications/templates/notification/donation_added/full.html:27
@@ -11802,14 +11815,14 @@ msgstr ""
 #: apps/notifications/templates/notification/group_added/full.html:13
 #, python-format
 msgid ""
-"The following group was \n"
+"The following group was\n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s by %(requser)s(superuser)"
 msgstr ""
 
 #: apps/notifications/templates/notification/group_added/full.html:14
 #, python-format
 msgid ""
-"The following group was \n"
+"The following group was\n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s by %(requser)s and needs to be activated"
 msgstr ""
 
@@ -11819,13 +11832,13 @@ msgstr ""
 
 #: apps/notifications/templates/notification/group_added/full.html:29
 msgid ""
-"To view the details of this \n"
+"To view the details of this\n"
 "  group, go to:"
 msgstr ""
 
 #: apps/notifications/templates/notification/group_added/full.html:34
 msgid ""
-"To activate this group, \n"
+"To activate this group,\n"
 "  go to:"
 msgstr ""
 
@@ -11837,21 +11850,21 @@ msgstr ""
 #: apps/notifications/templates/notification/group_deleted/full.html:12
 #, python-format
 msgid ""
-"A group has been deleted \n"
+"A group has been deleted\n"
 "  from the %(SITE_GLOBAL_SITEDISPLAYNAME)s. The details are given below:"
 msgstr ""
 
 #: apps/notifications/templates/notification/group_deleted/full.html:23
 #, python-format
 msgid ""
-"Deleted \n"
+"Deleted\n"
 "      by:</td>\n"
 "    <td width=\"75%%\"><b>%(requser)s (%(requsername)s)"
 msgstr ""
 
 #: apps/notifications/templates/notification/group_deleted/full.html:29
 msgid ""
-"If you would like view all \n"
+"If you would like view all\n"
 "  recently deleted groups, go to:"
 msgstr ""
 
@@ -11889,8 +11902,8 @@ msgstr ""
 #: apps/notifications/templates/notification/make_payment_added/full.html:4
 #, python-format
 msgid ""
-"A payment attempt has been made for \n"
-"\t%(SITE_GLOBAL_SITEDISPLAYNAME)s "
+"A payment attempt has been made for\n"
+"    %(SITE_GLOBAL_SITEDISPLAYNAME)s "
 msgstr ""
 
 #: apps/notifications/templates/notification/make_payment_added/full.html:27
@@ -11948,8 +11961,8 @@ msgstr ""
 #: apps/notifications/templates/notification/payment_added/full.html:13
 #, python-format
 msgid ""
-"The following payment was \n"
-"    added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s \n"
+"The following payment was\n"
+"    added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s\n"
 "    Payments module by %(requser)s:"
 msgstr ""
 
@@ -11982,7 +11995,7 @@ msgstr ""
 #: apps/notifications/templates/notification/resume_added/full.html:13
 #, python-format
 msgid ""
-"The following resume was added \n"
+"The following resume was added\n"
 "  to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Online Resume Bank by:"
 msgstr ""
 
@@ -11992,7 +12005,7 @@ msgstr ""
 
 #: apps/notifications/templates/notification/resume_added/full.html:31
 msgid ""
-"To activate this resume, go \n"
+"To activate this resume, go\n"
 "  to:"
 msgstr ""
 
@@ -12011,7 +12024,7 @@ msgstr ""
 
 #: apps/notifications/templates/notification/resume_deleted/full.html:26
 msgid ""
-"If you would like view all \n"
+"If you would like view all\n"
 "  recently deleted resumes, go to:"
 msgstr ""
 
@@ -12083,7 +12096,7 @@ msgstr ""
 #: apps/pages/templates/notification/page_added/full.html:13
 #, python-format
 msgid ""
-"A new page has been added on the \n"
+"A new page has been added on the\n"
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s - <b>%(objtitle)s</b>"
 msgstr ""
 
@@ -12108,14 +12121,14 @@ msgstr ""
 #: apps/pages/templates/notification/page_deleted/full.html:23
 #, python-format
 msgid ""
-"Deleted \n"
+"Deleted\n"
 "      by:</td>\n"
 "    <td width=\"75%%\"><b>%(requser)s</b>"
 msgstr ""
 
 #: apps/pages/templates/notification/page_deleted/full.html:28
 msgid ""
-"If you would like view all \n"
+"If you would like view all\n"
 "  recently deleted pages, go to:"
 msgstr ""
 
@@ -12127,7 +12140,7 @@ msgstr ""
 #: apps/pages/templates/notification/page_edited/full.html:13
 #, python-format
 msgid ""
-"A page has been edited on the \n"
+"A page has been edited on the\n"
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s - <b>%(objtitle)s</b>"
 msgstr ""
 
@@ -12270,17 +12283,25 @@ msgstr ""
 msgid "Important dates"
 msgstr ""
 
-#: apps/profiles/forms.py:57
+#: apps/profiles/forms.py:49
+#: apps/profiles/templates/notification/user_edited/full.html:659
+#: apps/profiles/templates/profiles/add.html:415
+#: apps/profiles/templates/profiles/edit.html:405
+#: apps/profiles/templates/profiles/edit_notice.txt:678
+msgid "Spouse"
+msgstr ""
+
+#: apps/profiles/forms.py:59
 msgid "Show Member Only"
 msgstr ""
 
-#: apps/profiles/forms.py:92 apps/profiles/forms.py:330
+#: apps/profiles/forms.py:94 apps/profiles/forms.py:332
 #: apps/profiles/templates/profiles/add.html:178
 #: apps/profiles/templates/profiles/edit.html:181
 msgid "Secondary Email"
 msgstr ""
 
-#: apps/profiles/forms.py:94
+#: apps/profiles/forms.py:96
 #: apps/profiles/templates/notification/user_edited/full.html:63
 #: apps/profiles/templates/profiles/add.html:51
 #: apps/profiles/templates/profiles/edit.html:54
@@ -12288,16 +12309,16 @@ msgstr ""
 msgid "Initial"
 msgstr ""
 
-#: apps/profiles/forms.py:96
+#: apps/profiles/forms.py:98
 msgid "Display name"
 msgstr ""
 
-#: apps/profiles/forms.py:99 apps/profiles/templates/profiles/add.html:187
+#: apps/profiles/forms.py:101 apps/profiles/templates/profiles/add.html:187
 #: apps/profiles/templates/profiles/edit.html:190
 msgid "Web Site"
 msgstr ""
 
-#: apps/profiles/forms.py:104
+#: apps/profiles/forms.py:106
 #: apps/profiles/templates/notification/user_edited/full.html:353
 #: apps/profiles/templates/profiles/add.html:223
 #: apps/profiles/templates/profiles/edit.html:226
@@ -12305,182 +12326,182 @@ msgstr ""
 msgid "Department"
 msgstr ""
 
-#: apps/profiles/forms.py:129
+#: apps/profiles/forms.py:131
 msgid ""
 "Required. Allowed characters are letters, digits, at sign (@), period (.), "
 "plus sign (+), dash (-), and underscore (_)."
 msgstr ""
 
-#: apps/profiles/forms.py:135 apps/profiles/forms.py:338
+#: apps/profiles/forms.py:137 apps/profiles/forms.py:340
 #: apps/registration/templates/registration/password_change_form.html:58
 msgid "Password (again)"
 msgstr ""
 
-#: apps/profiles/forms.py:136 apps/profiles/forms.py:339
+#: apps/profiles/forms.py:138 apps/profiles/forms.py:341
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
-#: apps/profiles/forms.py:275 apps/profiles/forms.py:441
+#: apps/profiles/forms.py:277 apps/profiles/forms.py:443
 #: apps/registration/forms.py:56
 msgid "This username is already taken. Please choose another."
 msgstr ""
 
-#: apps/profiles/forms.py:288 apps/profiles/forms.py:454
+#: apps/profiles/forms.py:290 apps/profiles/forms.py:456
 #: apps/registration/forms.py:68
 msgid "You must type the same password each time"
 msgstr ""
 
-#: apps/profiles/forms.py:336
+#: apps/profiles/forms.py:338
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 
-#: apps/profiles/forms.py:511
+#: apps/profiles/forms.py:513
 msgid "Is Admin"
 msgstr ""
 
-#: apps/profiles/forms.py:512
+#: apps/profiles/forms.py:514
 msgid ""
 "If selected, this user has all permissions without explicitly assigning "
 "them."
 msgstr ""
 
-#: apps/profiles/forms.py:605
+#: apps/profiles/forms.py:607
 msgid "Subscribe Date/Time"
 msgstr ""
 
-#: apps/profiles/forms.py:607
+#: apps/profiles/forms.py:609
 msgid "Expire Date/Time"
 msgstr ""
 
-#: apps/profiles/forms.py:658
+#: apps/profiles/forms.py:660
 msgid "Choose the users to merge"
 msgstr ""
 
-#: apps/profiles/forms.py:663
+#: apps/profiles/forms.py:665
 msgid "Choose the master record of the users you are merging above"
 msgstr ""
 
-#: apps/profiles/models.py:28
+#: apps/profiles/models.py:29
 msgid "historical member number"
 msgstr ""
 
-#: apps/profiles/models.py:31
+#: apps/profiles/models.py:32
 msgid "salutation"
 msgstr ""
 
-#: apps/profiles/models.py:34
+#: apps/profiles/models.py:35
 msgid "initials"
 msgstr ""
 
-#: apps/profiles/models.py:35
+#: apps/profiles/models.py:36
 msgid "display name"
 msgstr ""
 
-#: apps/profiles/models.py:36
+#: apps/profiles/models.py:37
 msgid "mailing name"
 msgstr ""
 
-#: apps/profiles/models.py:37
+#: apps/profiles/models.py:38
 msgid "company"
 msgstr ""
 
-#: apps/profiles/models.py:38
+#: apps/profiles/models.py:39
 msgid "position title"
 msgstr ""
 
-#: apps/profiles/models.py:39
+#: apps/profiles/models.py:40
 msgid "position assignment"
 msgstr ""
 
-#: apps/profiles/models.py:40
+#: apps/profiles/models.py:41
 msgid "sex"
 msgstr ""
 
-#: apps/profiles/models.py:41
+#: apps/profiles/models.py:42
 msgid "address type"
 msgstr ""
 
-#: apps/profiles/models.py:42
+#: apps/profiles/models.py:43
 msgid "phone2"
 msgstr ""
 
-#: apps/profiles/models.py:43
+#: apps/profiles/models.py:44
 msgid "fax"
 msgstr ""
 
-#: apps/profiles/models.py:44
+#: apps/profiles/models.py:45
 msgid "work phone"
 msgstr ""
 
-#: apps/profiles/models.py:45
+#: apps/profiles/models.py:46
 msgid "home phone"
 msgstr ""
 
-#: apps/profiles/models.py:46
+#: apps/profiles/models.py:47
 msgid "mobile phone"
 msgstr ""
 
-#: apps/profiles/models.py:48
+#: apps/profiles/models.py:49
 msgid "email2"
 msgstr ""
 
-#: apps/profiles/models.py:49
+#: apps/profiles/models.py:50
 msgid "url2"
 msgstr ""
 
-#: apps/profiles/models.py:50
+#: apps/profiles/models.py:51
 msgid "date of birth"
 msgstr ""
 
-#: apps/profiles/models.py:51
+#: apps/profiles/models.py:52
 msgid "social security number"
 msgstr ""
 
-#: apps/profiles/models.py:52
+#: apps/profiles/models.py:53
 msgid "spouse"
 msgstr ""
 
-#: apps/profiles/models.py:53
+#: apps/profiles/models.py:54
 msgid "department"
 msgstr ""
 
-#: apps/profiles/models.py:54
+#: apps/profiles/models.py:55
 msgid "education"
 msgstr ""
 
-#: apps/profiles/models.py:55
+#: apps/profiles/models.py:56
 msgid "student"
 msgstr ""
 
-#: apps/profiles/models.py:56
+#: apps/profiles/models.py:57
 msgid "remember login"
 msgstr ""
 
-#: apps/profiles/models.py:57
+#: apps/profiles/models.py:58
 msgid "exported"
 msgstr ""
 
-#: apps/profiles/models.py:58
+#: apps/profiles/models.py:59
 msgid "direct mail"
 msgstr ""
 
-#: apps/profiles/models.py:59
+#: apps/profiles/models.py:60
 msgid "notes"
 msgstr ""
 
-#: apps/profiles/models.py:60
+#: apps/profiles/models.py:61
 msgid "admin notes"
 msgstr ""
 
-#: apps/profiles/models.py:61
+#: apps/profiles/models.py:62
 msgid "referral source"
 msgstr ""
 
-#: apps/profiles/models.py:66
+#: apps/profiles/models.py:67
 msgid "first responder"
 msgstr ""
 
-#: apps/profiles/models.py:67
+#: apps/profiles/models.py:68
 msgid "agrees to tos"
 msgstr ""
 
@@ -12532,7 +12553,7 @@ msgstr ""
 #: apps/profiles/templates/notification/user_added/full.html:13
 #, python-format
 msgid ""
-"The following user was \n"
+"The following user was\n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s:"
 msgstr ""
 
@@ -12546,7 +12567,7 @@ msgstr ""
 
 #: apps/profiles/templates/notification/user_added/full.html:38
 msgid ""
-"To view the details of this \n"
+"To view the details of this\n"
 "  user, go to:"
 msgstr ""
 
@@ -12558,8 +12579,8 @@ msgstr ""
 #: apps/profiles/templates/notification/user_deleted/full.html:3
 #, python-format
 msgid ""
-"A following user was deleted \n"
-"\t\t  from the %(SITE_GLOBAL_SITEDISPLAYNAME)s. The details are given below:"
+"A following user was deleted\n"
+"          from the %(SITE_GLOBAL_SITEDISPLAYNAME)s. The details are given below:"
 msgstr ""
 
 #: apps/profiles/templates/notification/user_deleted/full.html:8
@@ -12729,13 +12750,6 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit.html:395
 #: apps/profiles/templates/profiles/edit_notice.txt:658
 msgid "Gender"
-msgstr ""
-
-#: apps/profiles/templates/notification/user_edited/full.html:659
-#: apps/profiles/templates/profiles/add.html:415
-#: apps/profiles/templates/profiles/edit.html:405
-#: apps/profiles/templates/profiles/edit_notice.txt:678
-msgid "Spouse"
 msgstr ""
 
 #: apps/profiles/templates/notification/user_edited/full.html:679
@@ -13413,7 +13427,7 @@ msgstr ""
 msgid "Reset my password"
 msgstr ""
 
-#: apps/reports/models.py:65
+#: apps/reports/models.py:66
 #: apps/reports/templates/reports/report_detail.html:4
 #: apps/reports/templates/reports/report_detail.html:7
 #: apps/reports/templates/reports/report_run_detail.html:4
@@ -13427,18 +13441,18 @@ msgstr ""
 msgid "Report"
 msgstr ""
 
-#: apps/reports/models.py:66 apps/reports/templates/reports/report_list.html:7
+#: apps/reports/models.py:67 apps/reports/templates/reports/report_list.html:7
 #: templates/top_menu/admin_top.html:112
 msgid "Reports"
 msgstr ""
 
-#: apps/reports/models.py:150
+#: apps/reports/models.py:162
 #: apps/reports/templates/reports/report_run_detail.html:4
 #: apps/reports/templates/reports/report_run_detail.html:7
 msgid "Run"
 msgstr ""
 
-#: apps/reports/models.py:151
+#: apps/reports/models.py:163
 msgid "Runs"
 msgstr ""
 
@@ -13555,12 +13569,12 @@ msgid "Report Options"
 msgstr ""
 
 #: apps/reports/templates/reports/invoices/results-extended.html:86
-#: apps/reports/templates/reports/invoices/results.html:83
+#: apps/reports/templates/reports/invoices/results.html:92
 msgid "tendered"
 msgstr ""
 
 #: apps/reports/templates/reports/invoices/results-extended.html:86
-#: apps/reports/templates/reports/invoices/results.html:83
+#: apps/reports/templates/reports/invoices/results.html:92
 msgid "estimate"
 msgstr ""
 
@@ -13584,7 +13598,7 @@ msgstr ""
 msgid "Sort by:"
 msgstr ""
 
-#: apps/search/templates/search/search.html:56
+#: apps/search/templates/search/search.html:64
 msgid "No results found."
 msgstr ""
 
@@ -14050,35 +14064,43 @@ msgstr ""
 msgid "Group Label"
 msgstr ""
 
-#: apps/user_groups/models.py:25
-msgid "Recipient Email"
+#: apps/user_groups/models.py:20
+msgid "Dashboard URL"
 msgstr ""
 
-#: apps/user_groups/models.py:26
-msgid "Display Option"
+#: apps/user_groups/models.py:21
+msgid "Enable Group Dashboard Redirect in site settings to use this feature."
 msgstr ""
 
 #: apps/user_groups/models.py:27
-msgid "Allow Self Add"
+msgid "Recipient Email"
 msgstr ""
 
 #: apps/user_groups/models.py:28
-msgid "Allow Self Remove"
+msgid "Display Option"
 msgstr ""
 
 #: apps/user_groups/models.py:29
-msgid "Sync for newsletters"
+msgid "Allow Self Add"
+msgstr ""
+
+#: apps/user_groups/models.py:30
+msgid "Allow Self Remove"
 msgstr ""
 
 #: apps/user_groups/models.py:31
+msgid "Sync for newsletters"
+msgstr ""
+
+#: apps/user_groups/models.py:33
 msgid "Auto Responder"
 msgstr ""
 
-#: apps/user_groups/models.py:32
+#: apps/user_groups/models.py:34
 msgid "Priority"
 msgstr ""
 
-#: apps/user_groups/models.py:139
+#: apps/user_groups/models.py:141
 msgid "Sort Order"
 msgstr ""
 
@@ -14425,12 +14447,12 @@ msgstr ""
 msgid "3. enjoy your posts!"
 msgstr ""
 
-#: core/base/fields.py:26
+#: core/base/fields.py:28
 #, python-format
 msgid "String (up to %(max_length)s)"
 msgstr ""
 
-#: core/base/fields.py:120
+#: core/base/fields.py:122
 msgid "Verfiy Email Address"
 msgstr ""
 
@@ -14447,6 +14469,10 @@ msgstr ""
 
 #: core/base/forms.py:67
 msgid "Incorrect Password"
+msgstr ""
+
+#: core/base/widgets.py:73 core/base/widgets.py:74
+msgid "Confirm Email"
 msgstr ""
 
 #: core/base/management/commands/createuser.py:27
@@ -14519,6 +14545,12 @@ msgstr ""
 
 #: core/base/templates/base/feedback.html:4
 msgid "Provide Feedback for Tendenci!"
+msgstr ""
+
+#: core/base/templates/base/messages.html:6
+#: core/base/templates/base/messages.html:14
+#, python-format
+msgid "%(msg)s"
 msgstr ""
 
 #: core/base/templates/base/meta_creator_owner.html:8
@@ -14984,7 +15016,7 @@ msgid "Successfully uploaded a file."
 msgstr ""
 
 #: core/files/forms.py:30 core/files/forms.py:187 core/files/forms.py:234
-#: core/files/forms.py:351 core/files/forms.py:545
+#: core/files/forms.py:351 core/files/forms.py:546
 msgid "Sub-Category"
 msgstr ""
 
@@ -15207,9 +15239,9 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"\t\t<h2>Identify Duplicates by</h2>\n"
-"\t\t%(form_key)s\n"
-"\t"
+"        <h2>Identify Duplicates by</h2>\n"
+"        %(form_key)s\n"
+"    "
 msgstr ""
 
 #: core/imports/templates/imports/users_preview.html:18
@@ -15374,7 +15406,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/articles_list.txt:51
 #, python-format
 msgid ""
-"<b>Posted by</b>: \n"
+"<b>Posted by</b>:\n"
 "            %(article_first)s %(article_last)s"
 msgstr ""
 
@@ -15399,7 +15431,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/events_list.txt:48
 #, python-format
 msgid ""
-"Posted by</b>: \n"
+"Posted by</b>:\n"
 "            %(eventfirst)s %(eventlast)s"
 msgstr ""
 
@@ -15441,8 +15473,8 @@ msgstr ""
 #: core/newsletters/templates/newsletters/jobs_list.txt:51
 #, python-format
 msgid ""
-"Posted by</b>: \n"
-"\t\t\t%(ownfirst)s %(ownlast)s"
+"Posted by</b>:\n"
+"            %(ownfirst)s %(ownlast)s"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/jumplinks.txt:29
@@ -15456,7 +15488,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/login.txt:4
 #, python-format
 msgid ""
-"Your login information is listed below. \n"
+"Your login information is listed below.\n"
 "    To log into the site, visit <a href=\"%(SITE_GLOBAL_SITEURL)s\">%(SITE_GLOBAL_SITEURL)s</a>\n"
 "     and enter your Username and Password. "
 msgstr ""
@@ -15489,7 +15521,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/opening_text.txt:5
 #, python-format
 msgid ""
-"Welcome to the %(SITE_GLOBAL_SITEDISPLAYNAME)s newsletter of upcoming \n"
+"Welcome to the %(SITE_GLOBAL_SITEDISPLAYNAME)s newsletter of upcoming\n"
 "events, articles, jobs and more from our membership."
 msgstr ""
 
@@ -15501,7 +15533,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/pages_list.txt:49
 #, python-format
 msgid ""
-"Posted by</b>: \n"
+"Posted by</b>:\n"
 "            %(pagefirst)s %(pagelast)s"
 msgstr ""
 
@@ -16289,6 +16321,71 @@ msgstr ""
 msgid "End date"
 msgstr ""
 
+#: project_template/themes/jordy/templates/homepage.html:103
+#: project_template/themes/jordy/templates/homepage.html:136
+#, python-format
+msgid "%(title)s"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:120
+msgid "Donate"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:138
+msgid "Events will be shown here. Start adding events now!"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:142
+msgid "View more events"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:156
+msgid "Testimonials"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:159
+#, python-format
+msgid "%(overview)s"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:163
+msgid "More testimonials"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:178
+msgid "About the Organization"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:182
+msgid "Latest News"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:187
+#, python-format
+msgid "%(headline)s"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:189
+#, python-format
+msgid "%(summary)s"
+msgstr ""
+
+#: project_template/themes/jordy/templates/homepage.html:190
+msgid "Read More"
+msgstr ""
+
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:7
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:22
+#: templates/theme_includes/logo_edit_form.html:5
+#: templates/theme_includes/logo_edit_form.html:18
+msgid "Upload Logo"
+msgstr ""
+
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:14
+#: templates/theme_includes/logo_edit_form.html:10
+msgid "Upload a Logo"
+msgstr ""
+
 #: templates/403.html:11
 msgid ""
 "You can't go to this page right now because you do not have the correct "
@@ -16860,7 +16957,7 @@ msgid "Current Members Quick List"
 msgstr ""
 
 #: templates/reports/membership_quick_list.html:25
-#: templates/reports/membership_roster.html:39
+#: templates/reports/membership_roster.html:45
 msgid "No active members."
 msgstr ""
 
@@ -17106,15 +17203,6 @@ msgstr ""
 msgid "Houston: A new job opening is available..."
 msgstr ""
 
-#: templates/theme_includes/logo_edit_form.html:5
-#: templates/theme_includes/logo_edit_form.html:18
-msgid "Upload Logo"
-msgstr ""
-
-#: templates/theme_includes/logo_edit_form.html:10
-msgid "Upload a Logo"
-msgstr ""
-
 #: templates/theme_includes/rss_feed_list.html:20
 #: templates/theme_includes/single_event.html:19
 #: templates/theme_includes/single_event.html:29
@@ -17134,7 +17222,6 @@ msgid "Who We Are"
 msgstr ""
 
 #: templates/top_menu/admin_bottom.html:5
-#: templates/top_menu/admin_top.html:164
 msgid "Search Helpfiles"
 msgstr ""
 
@@ -17152,6 +17239,10 @@ msgstr ""
 
 #: templates/top_menu/admin_top.html:12
 msgid "Apps"
+msgstr ""
+
+#: templates/top_menu/admin_top.html:36
+msgid "Add-ons"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:59 templates/top_menu/user_top.html:75
@@ -17211,8 +17302,12 @@ msgstr ""
 msgid "Tendenci Guide"
 msgstr ""
 
+#: templates/top_menu/admin_top.html:164
+msgid "Search Help Files"
+msgstr ""
+
 #: templates/top_menu/admin_top.html:165
-msgid "Contact Schipul Support"
+msgid "Contact Tendenci Support"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:170
@@ -17235,7 +17330,7 @@ msgstr ""
 msgid "View using My Template"
 msgstr ""
 
-#: templates/top_menu/admin_top.html:201
+#: templates/top_menu/admin_top.html:210
 msgid "Colors"
 msgstr ""
 

@@ -276,6 +276,7 @@ class MembershipTypeForm(TendenciBaseForm):
 
 class MembershipDefaultUploadForm(forms.ModelForm):
     KEY_CHOICES = (
+        ('username', 'username'),
         ('email', 'email'),
         ('member_number', 'member_number'),
         ('email/member_number', 'email then member_number'),
