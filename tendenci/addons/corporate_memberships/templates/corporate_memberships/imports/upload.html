@@ -66,8 +66,9 @@
 
     {% if not corp_memb_type_exists %}
     <div class="alert">
+        {% url admin:corporate_memberships_corporatemembershiptype_add  as corp_add %}
         {% blocktrans %}
-        Please <a href="{% url admin:corporate_memberships_corporatemembershiptype_add %}">set up corporate membership types</a> before proceeding.
+        Please <a href="{{ corp_add }}">set up corporate membership types</a> before proceeding.
         {% endblocktrans %}
     </div>
     {% endif %}

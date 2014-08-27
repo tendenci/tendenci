@@ -1,6 +1,7 @@
 import datetime
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
+from django.utils.translation import ugettext_lazy as _
 from tendenci.addons.campaign_monitor.models import Template
 from tendenci.core.newsletters.models import NewsletterTemplate
 

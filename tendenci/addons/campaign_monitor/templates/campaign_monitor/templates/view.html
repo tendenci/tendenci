@@ -49,14 +49,16 @@
                 </p>
                 {% if template.html_file %}
                 <p>
+                    {% url campaign_monitor.template_render template.template_id as rendered_url %}
                     {% blocktrans %}
-                    Click <a href="{% url campaign_monitor.template_render template.template_id %}">here</a>
+                    Click <a href="{{ rendered_url }}">here</a>
                     to view a rendered version of the html with the latest data.
                     {% endblocktrans %}
                 </p>
                 <p>
+                    {% url campaign_monitor.template_update template.template_id as update_url %}
                     {% blocktrans %}
-                    Click <a href="{% url campaign_monitor.template_update template.template_id %}">here</a>
+                    Click <a href="{{ update_url }}">here</a>
                     to use the same files to update this template.
                     {% endblocktrans %}
                 </p>

@@ -46,7 +46,7 @@
         </tr>
         {% endfor %}
         <tr>
-            <td>Total</td>
+            <td>{% trans 'Total' %}</td>
 
             {% if total.active %}
                 <td><a href="{% url admin:memberships_membershipdefault_changelist %}?status_detail=active">{{ total.active }}</a></td>

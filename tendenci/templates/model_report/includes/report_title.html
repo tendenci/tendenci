@@ -1,1 +1,1 @@
-{% load i18n %}<h1><a href="{% url model_report_list %}">{% trans "Report list" %}</a> &raquo; {{ report.get_title }}</h1>
+{% load i18n %}<h1><a href="{% url model_report_list %}">{% trans "Report list" %}</a> &raquo; {% blocktrans with t=report.get_title %}{{ t }}{% endblocktrans %}</h1>

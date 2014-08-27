@@ -1,10 +1,11 @@
 {% load styled_forms %}
+{% load i18n %}
 
 {% if form_set.errors %}
 <div class="errors">
-There were some problems in the formset. Please review. Thanks!
+{% trans 'There were some problems in the formset. Please review. Thanks!' %}
 {% for error in form_set.non_form_errors %}
-    <p>{{ error }}</p>
+    <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
 {% endfor %}
 </div>
 {% endif %}
@@ -14,7 +15,7 @@ There were some problems in the formset. Please review. Thanks!
     {% if form.non_field_errors %}
         <div class ="errors">
             {% for error in form.non_field_errors %}
-                <p>{{ error }}</p>
+                <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
             {% endfor %}
         </div>
     {% endif %}
@@ -29,7 +30,7 @@ There were some problems in the formset. Please review. Thanks!
                            {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
-                            <p>{{ error }}</p>
+                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                             {% endfor %}
                         </div>
                         {% endif %}
@@ -37,21 +38,21 @@ There were some problems in the formset. Please review. Thanks!
                             {{ field }}
                         </div>
                         <div class="label{% if field.field.required %} required{% endif %}">
-                            {{ field.label_tag }}
+                            {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
                         </div>
                         {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text|safe }}</div>
+                        <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
                         {% endif %}
                     </div>
                     <div style="clear: both"><!-- IE7 --></div>
                 {% else %}
                     <div class="label{% if field.field.required %} required{% endif %}">
-                        {{ field.label_tag }}
+                        {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
                     </div>
                     {% if field.errors %}
                     <div class="error">
                         {% for error in field.errors %}
-                        <p>{{ error }}</p>
+                        <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -59,7 +60,7 @@ There were some problems in the formset. Please review. Thanks!
                         {{ field }}
                     </div>
                     {% if field.help_text %}
-                    <div class="help-text">{{ field.help_text|safe }}</div>
+                    <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
                     {% endif %}
                 {% endif %}
              </div>

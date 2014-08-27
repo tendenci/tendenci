@@ -147,7 +147,7 @@ class CountrySelectField(fields.ChoiceField):
 
         exclude_list = ['GB', 'US', 'CA']
         countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
-        initial_choices = ('United States', _('United States')),
+        initial_choices = (('United States', _('United States')),
                            ('Canada', _('Canada')),
                            ('United Kingdom', _('United Kingdom')),
                            ('','-----------'))

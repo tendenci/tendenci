@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 
 
 register = template.Library()
@@ -27,5 +28,5 @@ def model_report_render_inline(parser, token):
     try:
         tag_name, inline, row = token.split_contents()
     except ValueError:
-        raise template.TemplateSyntaxError("%r tag requires arguments" % token.contents.split()[0])
+        raise template.TemplateSyntaxError(_("%(b)r tag requires arguments" % {'b': token.contents.split()[0]}))
     return ModelReportInlineNode(inline, row)

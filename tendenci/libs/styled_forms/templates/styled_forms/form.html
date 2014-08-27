@@ -1,18 +1,19 @@
 {% load styled_forms %}
 {% load base_filters %}
+{% load i18n %}
 
 {% if form.errors.values %}
 <div class="errors">
-There were some problems in the form. Please review. Thanks!
+{% trans 'There were some problems in the form. Please review. Thanks!' %}
 {% for error in form.non_field_errors %}
-    <p><a href="#">{{ error }}</a></p>
+    <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
 {% endfor %}
 {% if form.fieldsets.fieldsets %}
     {% for fieldset in form.fieldsets %}
         {% for field in fieldset %}
             {% if field.errors %}
             {% for error in field.errors %}
-                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
             {% endfor %}
             {% endif %}
         {% endfor %}
@@ -21,7 +22,7 @@ There were some problems in the form. Please review. Thanks!
     {% for field in form %}
         {% if field.errors %}
               {% for error in field.errors %}
-                  <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                  <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
               {% endfor %}
         {% endif %}
     {% endfor %}
@@ -34,10 +35,10 @@ There were some problems in the form. Please review. Thanks!
       {% if fieldset.boundfields %}
       <fieldset class="{{ fieldset.classes }}">
         {% if fieldset.legend %}
-          <legend>{{ fieldset.legend }}</legend>
+          <legend>{% blocktrans with l=fieldset.legend %}{{ l }}{% endblocktrans %}</legend>
         {% endif %}
         {% if fieldset.description %}
-          <p class="section-description">{{ fieldset.description }}</p>
+          <p class="section-description">{% blocktrans with d=fieldset.description %}{{ d }}{% endblocktrans %}</p>
         {% endif %}
         {% for field in fieldset %}
         {% if field.is_hidden %}
@@ -50,7 +51,7 @@ There were some problems in the form. Please review. Thanks!
                                {% if field.errors %}
                             <div class="error">
                                 {% for error in field.errors %}
-                                <p>{{ error }}</p>
+                                <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                                 {% endfor %}
                             </div>
                             {% endif %}
@@ -58,21 +59,21 @@ There were some problems in the form. Please review. Thanks!
                                 {{ field }}
                             </div>
                             <div class="label{% if field.field.required %} required{% endif %}">
-                                {{ field.label_tag }}
+                                {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
                             </div>
                             {% if field.help_text %}
-                            <div class="help-text">{{ field.help_text|safe }}</div>
+                            <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
                             {% endif %}
                         </div>
                         <div style="clear: both"><!-- IE7 --></div>
                     {% else %}
                         <div class="label{% if field.field.required %} required{% endif %}">
-                            {{ field.label_tag }}
+                            {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
                         </div>
                         {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
-                            <p>{{ error }}</p>
+                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                             {% endfor %}
                         </div>
                         {% endif %}
@@ -80,7 +81,7 @@ There were some problems in the form. Please review. Thanks!
                             {{ field }}
                         </div>
                         {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text|safe }}</div>
+                        <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
                         {% endif %}
                     {% endif %}
                  </div>
@@ -102,7 +103,7 @@ There were some problems in the form. Please review. Thanks!
                            {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
-                            <p>{{ error }}</p>
+                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                             {% endfor %}
                         </div>
                         {% endif %}
@@ -110,28 +111,28 @@ There were some problems in the form. Please review. Thanks!
                             {{ field }}
                         </div>
                         <div class="label{% if field.field.required %} required{% endif %}">
-                            {{ field.label_tag }}
+                            {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
                         </div>
                         {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text|safe }}</div>
+                        <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
                         {% endif %}
                     </div>
                     <div style="clear: both"><!-- IE7 --></div>
                 {% else %}
                     {% if field|is_header or field|is_description %}
                         {% if field|is_header %}
-                            <h2 class="section-header">{{ field.label }}</h2>
+                            <h2 class="section-header">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</h2>
                         {% else %}
-                            <div class="section-description">{{ field.label }}</div>
+                            <div class="section-description">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</div>
                         {% endif %}
                     {% else %}
                         <div class="label{% if field.field.required %} required{% endif %}">
-                            {{ field.label_tag }}
+                            {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
                         </div>
                         {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
-                            <p>{{ error }}</p>
+                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                             {% endfor %}
                         </div>
                         {% endif %}
@@ -139,7 +140,7 @@ There were some problems in the form. Please review. Thanks!
                             {{ field }}
                         </div>
                         {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text|safe }}</div>
+                        <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
                         {% endif %}
                     {% endif %}
                 {% endif %}

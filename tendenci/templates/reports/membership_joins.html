@@ -11,7 +11,7 @@
         {{ form.membership_status }}
         {{ form.start_date }}
         {{ form.end_date }}
-        <button type="submit" class="btn">Filter Memberships</button>
+        <button type="submit" class="btn">{% trans 'Filter Memberships' %}</button>
     </form>
 
     <a class="download-pdf-version" href="{% url reports-memberships-joins-pdf %}?start_date={{ start_date|date:"Y-m-d" }}&amp;end_date={{ end_date|date:"Y-m-d" }}&amp;mem_type={{ membership_type.pk }}&amp;mem_stat={{ membership_status }}">{% trans "Download PDF version" %}</a>
@@ -63,7 +63,7 @@
     <script type="text/javascript">
         var nowTemp = new Date();
         var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-         
+
         var checkin = $('#id_start_date').datepicker(
         ).on('changeDate', function(ev) {
           if (ev.date.valueOf() > checkout.date.valueOf()) {

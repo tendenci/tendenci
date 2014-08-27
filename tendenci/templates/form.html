@@ -3,7 +3,7 @@
 {% load forms_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} Contact Us{% endblock %}
+{% block title %}{{ block.super }} {% trans 'Contact Us' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +18,7 @@
     <h1>{% trans "Contact Us" %}</h1>
 
     <div class="contact-form-wrap">
-    
+
         {% blocktrans %}
         <p>Please fill out the form below.</p>
         {% endblocktrans %}
@@ -26,7 +26,7 @@
         <form action="{% url form %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Contact {{ SITE_GLOBAL_SITEDISPLAYNAME|capfirst }}" />
+            <input type="submit" value="{% trans 'Contact' %} {{ SITE_GLOBAL_SITEDISPLAYNAME|capfirst }}" />
         </div>
         </form>
     </div>

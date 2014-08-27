@@ -16,18 +16,18 @@
 <form class="search-form" action="{% url reports-renewed-members %}" method="get">
 <label for="id_days">{% trans "Filter by renew date" %}:</label><select name="days" id="id_days" onchange="this.form.submit();">
 <option value="" selected="selected">-----------</option>
-<option value="30">Last 30 days</option>
-<option value="60">Last 60 days</option>
-<option value="90">Last 90 days</option>
-<option value="180">Last 180 days</option>
-<option value="365">Last 365 days</option>
-<option value="1826">Last 5 years</option>
+<option value="30">{% trans 'Last 30 days' %}</option>
+<option value="60">{% trans 'Last 60 days' %}</option>
+<option value="90">{% trans 'Last 90 days' %}</option>
+<option value="180">{% trans 'Last 180 days' %}</option>
+<option value="365">{% trans 'Last 365 days' %}</option>
+<option value="1826">{% trans 'Last 5 years' %}</option>
 </select>
 </form>
 
 {% if members %}
 <p><a href="{% url reports-renewed-members %}?output=csv">
-    Download CSV File</a></p>
+    {% trans 'Download CSV File' %}</a></p>
     <table>
         <tr>
             <th>{% trans 'Member Number' %}</th>

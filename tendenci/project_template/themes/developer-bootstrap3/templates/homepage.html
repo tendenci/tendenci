@@ -13,6 +13,7 @@
 {% load directory_tags %}
 {% load job_tags %}
 {% theme_extends "base.html" %}
+{% load i18n %}
 
 
 <!-- Tendenci Specific Load Tags (Delete as Needed)
@@ -23,12 +24,12 @@
 
 
 <!-- Meta Tags (for optimal SEO)
-=========================================================== -->    
+=========================================================== -->
 {% block title %}{{ SITE_GLOBAL_SITENAME }} {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
 
 
 <!-- Starts Tendenci Head Tag
-=========================================================== --> 
+=========================================================== -->
 {% block extra_head %}
 
     <meta charset="utf-8">
@@ -39,29 +40,29 @@
     <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
     <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
 
-    <title>Theme Template for Bootstrap</title>
+    <title>{% trans 'Theme Template for Bootstrap' %}</title>
 
     <!-- Bootstrap core CSS
-=========================================================== --> 
+=========================================================== -->
     <link href="{{ THEME_URL }}media/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap theme
-=========================================================== --> 
+=========================================================== -->
     <link href="{{ THEME_URL }}media/css/bootstrap-theme.min.css" rel="stylesheet">
 
 
 
     <!-- navigation dropdowns
-=========================================================== --> 
+=========================================================== -->
     <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
     <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
 
     <!-- Custom styles for this template
-=========================================================== --> 
+=========================================================== -->
   <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and
     media queries
-=========================================================== --> 
+=========================================================== -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -70,16 +71,16 @@
 
 
     <!-- Start of the Body
-=========================================================== --> 
+=========================================================== -->
 {% block body_ids %}home{% endblock body_ids %}
 {% block body_classes %}home{% endblock body_classes %}
 {% block html_body %}
-    <a class="sr-only" href="#content">Skip to main content</a>
+    <a class="sr-only" href="#content">{% trans 'Skip to main content' %}</a>
 
 
 
       <!-- Header Starts
-=========================================================== --> 
+=========================================================== -->
       <header>
       {% theme_include "header.html" %}<!-- Pulls in Header Include -->
       </header>
@@ -89,7 +90,7 @@
  <div id="content" class="container theme-showcase" role="main">
 
       <!-- Main jumbotron for a primary marketing message or call to action. Jumbotron uses Responsive Carousel JS for rotation.
-=========================================================== --> 
+=========================================================== -->
         <div class="jumbotron">
           <div class="crsl-items">
           <div class="crsl-wrap">
@@ -97,9 +98,9 @@
           {% for story in stories_list %}
           <div class="crsl-item">
           <div class="col-sm-6">
-        <h1><a href="{{ story.full_story_link }}">{{ story.title }}</a></h1>
-        <p>{{ story.content|striptags|truncatewords_html:"32" }}</p>
-        <p><a href="{{ story.full_story_link }}" class="download">Read More</a></p>
+        <h1><a href="{{ story.full_story_link }}">{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a></h1>
+        <p>{% blocktrans with c=story.content|striptags|truncatewords_html:"32" %}{{ c }}{% endblocktrans %}</p>
+        <p><a href="{{ story.full_story_link }}" class="download">{% trans 'Read More' %}</a></p>
           </div>
         {% if story.image %}
             <div class="col-sm-6">
@@ -107,78 +108,78 @@
             </div>
         {% endif %}
         </div>
-        {% endfor %}    
+        {% endfor %}
   </div>
   </div><!-- Jumbotron Ends -->
   </div>
 
 
-   
+
 
       <!-- Button Examples
-=========================================================== --> 
+=========================================================== -->
       <div class="page-header">
-        <h1>Buttons</h1>
+        <h1>{% trans 'Buttons' %}</h1>
       </div>
       <p>
-        <button type="button" class="btn btn-lg btn-default">Default</button>
-        <button type="button" class="btn btn-lg btn-primary">Primary</button>
-        <button type="button" class="btn btn-lg btn-success">Success</button>
-        <button type="button" class="btn btn-lg btn-info">Info</button>
-        <button type="button" class="btn btn-lg btn-warning">Warning</button>
-        <button type="button" class="btn btn-lg btn-danger">Danger</button>
-        <button type="button" class="btn btn-lg btn-link">Link</button>
+        <button type="button" class="btn btn-lg btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-lg btn-primary">{% trans 'Primary' %}</button>
+        <button type="button" class="btn btn-lg btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-lg btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-lg btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-lg btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-lg btn-link">{% trans 'Link' %}</button>
       </p>
       <p>
-        <button type="button" class="btn btn-default">Default</button>
-        <button type="button" class="btn btn-primary">Primary</button>
-        <button type="button" class="btn btn-success">Success</button>
-        <button type="button" class="btn btn-info">Info</button>
-        <button type="button" class="btn btn-warning">Warning</button>
-        <button type="button" class="btn btn-danger">Danger</button>
-        <button type="button" class="btn btn-link">Link</button>
+        <button type="button" class="btn btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-primary">{% trans 'Primary' %}</button>
+        <button type="button" class="btn btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-link">{% trans 'Link' %}</button>
       </p>
       <p>
-        <button type="button" class="btn btn-sm btn-default">Default</button>
-        <button type="button" class="btn btn-sm btn-primary">Primary</button>
-        <button type="button" class="btn btn-sm btn-success">Success</button>
-        <button type="button" class="btn btn-sm btn-info">Info</button>
-        <button type="button" class="btn btn-sm btn-warning">Warning</button>
-        <button type="button" class="btn btn-sm btn-danger">Danger</button>
-        <button type="button" class="btn btn-sm btn-link">Link</button>
+        <button type="button" class="btn btn-sm btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-sm btn-primary">{% trans 'Primary' %}</button>
+        <button type="button" class="btn btn-sm btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-sm btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-sm btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-sm btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-sm btn-link">{% trans 'Link' %}</button>
       </p>
       <p>
-        <button type="button" class="btn btn-xs btn-default">Default</button>
-        <button type="button" class="btn btn-xs btn-primary">Primary</button>
-        <button type="button" class="btn btn-xs btn-success">Success</button>
-        <button type="button" class="btn btn-xs btn-info">Info</button>
-        <button type="button" class="btn btn-xs btn-warning">Warning</button>
-        <button type="button" class="btn btn-xs btn-danger">Danger</button>
-        <button type="button" class="btn btn-xs btn-link">Link</button>
+        <button type="button" class="btn btn-xs btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-xs btn-primary">{% trans 'Primary' %]</button>
+        <button type="button" class="btn btn-xs btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-xs btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-xs btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-xs btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-xs btn-link">{% trans 'Link' %}</button>
       </p>
 
 
          <!-- Thumbnails Examples
-=========================================================== --> 
+=========================================================== -->
       <div class="page-header">
-        <h1>Thumbnails</h1>
+        <h1>{% trans 'Thumbnails' %}</h1>
       </div>
-      <img src="{{ THEME_URL }}media/img/index.svg" class="img-thumbnail" alt="A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera">
+      <img src="{{ THEME_URL }}media/img/index.svg" class="img-thumbnail" alt="{% trans 'A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera' %}">
 
 
          <!-- Navigation Examples
-=========================================================== --> 
+=========================================================== -->
       <div class="page-header">
-        <h1>Dropdown menus</h1>
+        <h1>{% trans 'Dropdown menus' %}</h1>
       </div>
       <div class="dropdown theme-dropdown clearfix">
-        <a id="dropdownMenu1" href="#" role="button" class="sr-only dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+        <a id="dropdownMenu1" href="#" role="button" class="sr-only dropdown-toggle" data-toggle="dropdown">{% trans 'Dropdown' %} <b class="caret"></b></a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-          <li class="active" role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
-          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
-          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
+          <li class="active" role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Action' %}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Another action' %}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Something else here' %}</a></li>
           <li role="presentation" class="divider"></li>
-          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Separated link' %}</a></li>
         </ul>
       </div>
 
@@ -186,35 +187,35 @@
 
 
       <div class="page-header">
-        <h1>Navbars</h1>
+        <h1>{% trans 'Navbars' %}</h1>
       </div>
 
       <div class="navbar navbar-default">
         <div class="container">
           <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
+              <span class="sr-only">{% trans 'Toggle navigation' %}</span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Project name</a>
+            <a class="navbar-brand" href="#">{% trans 'Project name' %}</a>
           </div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li class="active"><a href="#">{% trans 'Home' %}</a></li>
+              <li><a href="#about">{% trans 'About' %}</a></li>
+              <li><a href="#contact">{% trans 'Contact' %}</a></li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Dropdown' %} <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
+                  <li><a href="#">{% trans 'Action' %}</a></li>
+                  <li><a href="#">{% trans 'Another action' %}</a></li>
+                  <li><a href="#">{% trans 'Something else here' %}</a></li>
                   <li class="divider"></li>
-                  <li class="dropdown-header">Nav header</li>
-                  <li><a href="#">Separated link</a></li>
-                  <li><a href="#">One more separated link</a></li>
+                  <li class="dropdown-header">{% trans 'Nav header' %}</li>
+                  <li><a href="#">{% trans 'Separated link' %}</a></li>
+                  <li><a href="#">{% trans 'One more separated link' %}</a></li>
                 </ul>
               </li>
             </ul>
@@ -226,28 +227,28 @@
         <div class="container">
           <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
+              <span class="sr-only">{% trans 'Toggle navigation' %}</span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Project name</a>
+            <a class="navbar-brand" href="#">{% trans 'Project name' %}</a>
           </div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li class="active"><a href="#">{% trans 'Home' %}</a></li>
+              <li><a href="#about">{% trans 'About' %}</a></li>
+              <li><a href="#contact">{% trans 'Contact' %}</a></li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Dropdown' %} <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
+                  <li><a href="#">{% trans 'Action' %}</a></li>
+                  <li><a href="#">{% trans 'Another action' %}</a></li>
+                  <li><a href="#">{% trans 'Something else here' %}</a></li>
                   <li class="divider"></li>
-                  <li class="dropdown-header">Nav header</li>
-                  <li><a href="#">Separated link</a></li>
-                  <li><a href="#">One more separated link</a></li>
+                  <li class="dropdown-header">{% trans 'Nav header' %}</li>
+                  <li><a href="#">{% trans 'Separated link' %}</a></li>
+                  <li><a href="#">{% trans 'One more separated link' %}</a></li>
                 </ul>
               </li>
             </ul>
@@ -257,7 +258,8 @@
 
 
          <!-- Alerts Examples
-=========================================================== --> 
+=========================================================== -->
+      {% blocktrans %}
       <div class="page-header">
         <h1>Alerts</h1>
       </div>
@@ -273,16 +275,17 @@
       <div class="alert alert-danger">
         <strong>Oh snap!</strong> Change a few things up and try submitting again.
       </div>
+      {% endblocktrans %}
 
 
             <!-- Progress Bar Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
-        <h1>Progress bars</h1>
+        <h1>{% trans 'Progress bars' %}</h1>
       </div>
       <div class="progress">
-        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"><span class="sr-only">60% Complete</span></div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"><span class="sr-only">{% trans '60% Complete' %}</span></div>
       </div>
       <div class="progress">
         <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"><span class="sr-only">40% Complete (success)</span></div>
@@ -303,7 +306,7 @@
       </div>
 
          <!-- List Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>List groups</h1>
@@ -348,7 +351,7 @@
       </div>
 
          <!-- Panels Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Panels</h1>
@@ -411,7 +414,7 @@
       </div>
 
          <!-- Wells Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Wells</h1>
@@ -419,25 +422,25 @@
       <div class="well">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Cras mattis consectetur purus sit amet fermentum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Aenean lacinia bibendum nulla sed consectetur.</p>
       </div>
-   
+
     <!-- Box Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Box Example</h1>
       </div>
       {% box 6 %}
-   
+
 
 
 
          <!-- Events Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Events</h1>
       </div>
-   
+
    {% list_events as events_list limit=1 %}
              <h3><a href="/events">Featured Event<span>Dynamically add new events to your homepage from your event calendar!</span></a></h3>
              {% if events_list %}
@@ -452,10 +455,10 @@
                {% endfor %}
                <p>{{ event.description|striptags|truncatewords:"30"|safe }}</p>
                <p><span><a class="readmore" href="{{ event.get_absolute_url }}">Read More &raquo;</a></span></p>
- 
+
              {% endfor %}
              {% else %}
-             
+
               <img src="{%  if  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE  %}/files/{{  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE   }}/310x154/crop/90/{%  else  %}http://schipul.com/files/2369/310x154/crop/90/{%  endif %}"/>
               <h4>Add an Event Today to See Something Here</h4>
               <p class="event-date">{% now "F d, Y" %}</p>
@@ -465,9 +468,9 @@
 
              {% endif %}
 
-      
+
        <!-- Directories Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Directories Example</h1>
@@ -480,9 +483,9 @@
          </li>
         {% endfor %}
       </ul>
-   
+
        <!-- Jobs Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Jobs Example</h1>
@@ -495,27 +498,27 @@
            <h4>{% if user.profile.is_superuser %}<a href="/jobs/add/">{Add your first job</a>{% else %}<a href="#">Great New Job</a>{% endif %}</h4>
              <p>Houston: A new job opening is available...</p>
              {% endfor %}
-   
+
        <!-- Photos Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Photos Example</h1>
       </div>
-   
+
    {% list_photos as photos_list limit=6 random=True %}
            <ul>
              {% for photo in photos_list %}
              <li><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=72x66 crop=True %}" /></a></li>
              {% endfor %}
            </ul>
-   
+
         <!-- Videos Examples
-=========================================================== --> 
+=========================================================== -->
 
       <div class="page-header">
         <h1>Video Example</h1>
-      </div>  
+      </div>
             <ul>
              {% list_videos as videos_list limit=1 tags="featured"  %}
              {% for video in videos_list %}
@@ -524,8 +527,8 @@
              </li>
              {% endfor %}
            </ul>
-   
-   
+
+
           <!-- Footer starts
       =========================================================== -->
     <footer>
@@ -535,7 +538,7 @@
 
     </div> <!-- /container -->
 
-          
+
 {% endblock %} <!-- Ends the Body -->
 
 {% block extra_body %}
@@ -557,7 +560,7 @@
     <script src="{{ THEME_URL }}media/js/html5shiv.js"></script>
     <!-- Custom JS -->
     <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
-    <script src="{{ THEME_URL }}media/js/responsiveCarousel.js"></script> 
+    <script src="{{ THEME_URL }}media/js/responsiveCarousel.js"></script>
 
     <script type="text/javascript">
     $(document).ready(function() {

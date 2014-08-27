@@ -287,7 +287,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
          'member_number/email/first_name,last_name,phone'),
         )
     interactive = forms.HiddenInput()
-    key = forms.ChoiceField(label="Key",
+    key = forms.ChoiceField(label=_("Key"),
                             choices=KEY_CHOICES)
 
     class Meta:
