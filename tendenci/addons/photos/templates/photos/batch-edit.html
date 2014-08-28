@@ -226,7 +226,7 @@
             // send an ajax request for an individual form
             $.ajax({
                 type: 'POST',
-                url: '',
+                url: '{% url photos_batch_edit photo_set.id %}',
                 async: true,
                 data: string,
                 success: function(xmlRequestObject, successString){
