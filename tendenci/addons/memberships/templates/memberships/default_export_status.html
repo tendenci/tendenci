@@ -24,13 +24,11 @@
     {% endif %}
 
     <div id="membership-export">
-      {% blocktrans %}
        <div id="display-content"{% if not download_ready %} class="display-hide"{% endif %}>
-       <p>The export file is ready, click the download link below to download.</p>
+       <p>{% trans 'The export file is ready, click the download link below to download.' %}</p>
        <div>
-           <a href="{% url memberships.default_export_download identifier %}{% if corp_profile %}?cp_id={{ corp_profile.id }}{% endif %}">Download Now</a>
+           <a href="{% url memberships.default_export_download identifier %}{% if corp_profile %}?cp_id={{ corp_profile.id }}{% endif %}">{% trans 'Download Now' %}</a>
        </div>
-       {% endblocktrans %}
        <div>&nbsp;</div>
        <div>&nbsp;</div>
        {% if corp_profile %}

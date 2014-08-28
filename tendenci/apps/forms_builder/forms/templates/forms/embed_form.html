@@ -10,7 +10,7 @@
 }
 </style>
     <h4>{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}</h4>
-    <p>{% blocktrans with i=i %}{{ form.intro|safe }}{% endblocktrans %}</p>
+    <p>{% blocktrans with i=form.intro|safe %}{{ i }}{% endblocktrans %}</p>
 
     <div class="form-builder-wrap">
         <form method="post" enctype="multipart/form-data" action="{{ form.get_absolute_url }}">{% csrf_token %}

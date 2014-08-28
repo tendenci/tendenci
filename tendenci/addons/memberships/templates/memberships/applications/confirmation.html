@@ -35,21 +35,21 @@
             <div class="pending">{% trans "Pending" %}</div>
         {% endif %}
 
-    	{% for field in entry.fields.all %}
-    		{% if field.field.field_type == 'FileField' %}
+        {% for field in entry.fields.all %}
+            {% if field.field.field_type == 'FileField' %}
             <div class="field">
                 <div class="label">{{ field.field.label }}</div>
-    			<div class="value">
+                <div class="value">
                     <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
-    			</div>
+                </div>
             </div>
-    		{% else %}
+            {% else %}
             <div class="field">
                 <div class="label">{{ field.field.label }}</div>
-    			<div class="value">{{ field.value }}</div>
+                <div class="value">{{ field.value }}</div>
             </div>
-    		{% endif %}
-    	{% endfor %}
+            {% endif %}
+        {% endfor %}
 
     </div>
 

@@ -19,20 +19,20 @@ We attempted a payment for the {{ d }} but was failed. The failed reason is list
 <div>
 <table border="0" width="90%">
 
-	<tr>
-		<td>{% trans 'Payment amount' %}:</td><td>{{ pt.amount|format_currency }}</td>
-	</tr>
-	<tr>
-		<td>{% trans 'Billing cycle' %}: </td><td>From {{ pt.recurring_payment_invoice.billing_cycle_start_dt|date:'N j Y' }} To {{ pt.recurring_payment_invoice.billing_cycle_end_dt|date:'N j Y' }}</td>
-	</tr>
-	<tr>
-		<td>{% trans 'Date processed' %}:</td><td>{{ pt.create_dt|date }}</td>
-	</tr>
-	{% if not pt.status %}
-	<tr>
-		<td>{% trans 'Reason failed' %}:</td><td>{{ pt.message_text }}</td>
-	</tr>
-	{% endif %}
+    <tr>
+        <td>{% trans 'Payment amount' %}:</td><td>{{ pt.amount|format_currency }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Billing cycle' %}: </td><td>From {{ pt.recurring_payment_invoice.billing_cycle_start_dt|date:'N j Y' }} To {{ pt.recurring_payment_invoice.billing_cycle_end_dt|date:'N j Y' }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Date processed' %}:</td><td>{{ pt.create_dt|date }}</td>
+    </tr>
+    {% if not pt.status %}
+    <tr>
+        <td>{% trans 'Reason failed' %}:</td><td>{{ pt.message_text }}</td>
+    </tr>
+    {% endif %}
 
 </table>
 

@@ -52,8 +52,9 @@
     <div class="alert-message" data-alert="alert">
         <a class="close" href="#">×</a>
         <p>
+            {% url admin:memberships_membershipapp_change app.id  as app_url %}
             {% blocktrans with n=app.name  %}
-            This is the preview of "{{ n }}". Back to <a href="{% url admin:memberships_membershipapp_change app.id %}">App Edit</a>.
+            This is the preview of "{{ n }}". Back to <a href="{{ app_url }}">App Edit</a>.
             {% endblocktrans %}
         </p>
     </div>

@@ -33,7 +33,8 @@
     <div>{% trans 'The number of billing cycle completed' %}: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span></div>
     <div>{% trans 'The number of billing cycle failed' %}: <span class="body-bold">{{ rp.num_billing_cycle_failed }}</span></div>
 
-     <h2 style="color: red;">{% blocktrans %}Are you sure you want to disable <a href="{% url recurring_payment.view_account rp.id %}">this account</a>?{% endblocktrans %}</h2>
+    {% url recurring_payment.view_account rp.id as acc_url %}
+     <h2 style="color: red;">{% blocktrans %}Are you sure you want to disable <a href="{{ acc_url }}">this account</a>?{% endblocktrans %}</h2>
      <div>
     <form action="{% url recurring_payment.disable_account rp.id %}" method="post">{% csrf_token %}
     <input type="hidden" name="id" value="{{rp.id}}" />

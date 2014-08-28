@@ -19,11 +19,13 @@
         {% trans 'the membership under your corporation' %}
         "{{ corp_membership }}" on <a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEURL }}</a>.
         <br /><br />
+        {% url profile membership.user.username as profile_url %}
+        {% url corpmembership.view corp_membership.id as corp_mem_url %}
         {% blocktrans %}
-        To view the profile of this member, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile membership.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile membership.user.username %}</a>.
+        To view the profile of this member, go to <a href="{{ SITE_GLOBAL_SITEURL }}{{ profile_url }}">{{ SITE_GLOBAL_SITEURL }}{% url profile membership.user.username %}</a>.
         <br /> <br />
 
-         To view and manage the corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view corp_membership.id %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view corp_membership.id %}</a>.
+         To view and manage the corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{{ corp_mem_url }}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view corp_membership.id %}</a>.
         <br /> <br />
 
         Thanks,<br />

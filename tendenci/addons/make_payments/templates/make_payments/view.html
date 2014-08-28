@@ -40,7 +40,7 @@
 <br />
 <div class="label">{% blocktrans with mp.referral_source as mpref %}Referred By:</div><div>{{ mpref }}{% endblocktrans %}</div>
 <div class="clear-left"></div>
-<div class="label">{% trans "Comments:" %}</div><div>{{ mp.comments|safe }}</div>
+<div class="label">{% trans "Comments:" %}</div><div>{% blocktrans with c=mp.comments|safe %}{{ c }}{% endblocktrans %}</div>
 <div class="clear-left"></div>
 <br />
 <div class="label">{% trans "Create Date:" %}</div><div>{{ mp.create_dt|date:'long' }}</div>

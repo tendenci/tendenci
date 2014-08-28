@@ -72,9 +72,10 @@
         {% blocktrans with d=app.description|safe %}{{ d }}{% endblocktrans %}
 
         {% if is_edit %}
+        {% url membership.details membership.pk as mem_url %}
         {% blocktrans %}
         <p>Update your membership information.</p>
-        <span> Go back to your <a href="{% url membership.details membership.pk %}">Membership Info</a></span>
+        <span> Go back to your <a href="{{ mem_url }}">Membership Info</a></span>
         {% endblocktrans %}
         {% endif %}
 

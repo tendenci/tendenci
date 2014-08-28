@@ -3,8 +3,9 @@
 {% trans "Greetings:" %} <br /><br />
 
 <div>
+{% url profile user_by.username as profile_url %}
 {% blocktrans %}
-The recurring payment account for {{ rp }} has been disabled by <a href="{% url profile user_by.username%}">{{ user_by.get_full_name }}</a>{% endblocktrans %}.
+The recurring payment account for {{ rp }} has been disabled by <a href="{{ profile_url }}">{{ user_by.get_full_name }}</a>{% endblocktrans %}.
 
 </div>
 <br /><br />
