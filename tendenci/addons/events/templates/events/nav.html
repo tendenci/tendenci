@@ -73,6 +73,7 @@
                 <li class="divider"></li>
                 <li><a href="{% url event.export %}">{% trans "Export" %}</a></li>
                 <li><a href="{% url event.import_add %}">{% trans "Import" %}</a></li>
+                <li><a href="{% url event.reports.financial %}">{% trans "Events Financial Report" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

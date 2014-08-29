@@ -109,7 +109,8 @@ from tendenci.addons.events.forms import (
     ApplyRecurringChangesForm,
     EventSearchForm,
     EventExportForm,
-     EventSimpleSearchForm)
+     EventSimpleSearchForm,
+     EventReportFilterForm)
 from tendenci.addons.events.utils import (
     email_registrants,
     render_event_email,
@@ -4371,3 +4372,18 @@ def export_download(request, identifier):
     response.content = default_storage.open(file_path).read()
     return response
 
+
+@login_required
+def reports_financial(request, template_name="events/financial_reports.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    events = Event.objects.all().order_by('start_dt')
+    form = EventReportFilterForm(request.GET or None)
+    if form.is_valid():
+        events = form.filter(queryset=events)
+
+    context = {'events' : events,
+                'form' : form}
+
+    return render_to_response(template_name, context, RequestContext(request))

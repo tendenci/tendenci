@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from django import forms
+from django.db.models import Q
 from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import BaseFormSet
@@ -2267,3 +2268,32 @@ class StandardRegAdminForm(forms.Form):
                     setting.set_value(value)
                     setting.save()
 
+
+class EventReportFilterForm(forms.Form):
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'),
+                                  initial=datetime.now(), required=False)
+    end_dt = SplitDateTimeField(label=_('End Date/Time'),
+                                initial=datetime.now(), required=False)
+
+    def clean(self):
+        data = self.cleaned_data
+        start_dt = data.get('start_dt')
+        end_dt = data.get('end_dt')
+
+        if end_dt < start_dt:
+            raise forms.ValidationError(_('End Date/Time should be greater than Start Date/Time.'))
+
+        return data
+
+    def filter(self, queryset=None):
+        data = self.cleaned_data
+        start_dt = data.get('start_dt')
+        end_dt = data.get('end_dt')
+
+        if queryset:
+            if start_dt and end_dt:
+                return queryset.filter(Q(start_dt__gte=start_dt)&Q(start_dt__lte=end_dt))
+            else:
+                return queryset
+
+        return None
