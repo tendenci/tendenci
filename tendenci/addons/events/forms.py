@@ -1,8 +1,9 @@
 import re
 import imghdr
+import calendar
 from ast import literal_eval
 from os.path import splitext, basename
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from decimal import Decimal
 
 from django import forms
@@ -2269,11 +2270,28 @@ class StandardRegAdminForm(forms.Form):
                     setting.save()
 
 
+def add_months(sourcedate, months):
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month / 12
+    month = month % 12 + 1
+    day = min(sourcedate.day, calendar.monthrange(year,month)[1])
+    return date(year,month,day)
+
+
 class EventReportFilterForm(forms.Form):
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'),
-                                  initial=datetime.now(), required=False)
-    end_dt = SplitDateTimeField(label=_('End Date/Time'),
-                                initial=datetime.now(), required=False)
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), required=False)
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(EventReportFilterForm, self).__init__(*args, **kwargs)
+        start_dt = datetime.now()
+        end_dt = date.today()
+        end_tm = start_dt.time()
+        temp_end = add_months(end_dt, 1)
+        end_dt = datetime.combine(temp_end, end_tm)
+
+        self.fields['start_dt'].initial = start_dt
+        self.fields['end_dt'].initial = end_dt
 
     def clean(self):
         data = self.cleaned_data
