@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-06-27 12:38-0500\n"
-"PO-Revision-Date: 2014-08-30 10:10+0000\n"
+"PO-Revision-Date: 2014-09-01 20:10+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/tendenci/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -5214,7 +5214,7 @@ msgstr "Tags:"
 msgid ""
 "Created on %(create_date)s\n"
 "            by:"
-msgstr ""
+msgstr "creado en %(create_date)s\npor:"
 
 #: addons/events/templates/events/meta.html:34
 #: addons/resumes/templates/resumes/meta.html:39
@@ -5224,7 +5224,7 @@ msgstr ""
 msgid ""
 "Last updated %(update_date)s\n"
 "            by:"
-msgstr ""
+msgstr "Última actualización %(update_date)s\npor:"
 
 #: addons/events/templates/events/meta.html:80
 #: addons/events/templates/events/nav.html:126

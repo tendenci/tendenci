@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Ed Schipul <eschipul@tendenci.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-06-27 12:38-0500\n"
-"PO-Revision-Date: 2014-08-30 09:55+0000\n"
-"Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
+"PO-Revision-Date: 2014-09-01 23:30+0000\n"
+"Last-Translator: Ed Schipul <eschipul@tendenci.com>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/tendenci/language/en_GB/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,7 +21,7 @@ msgstr ""
 #: addons/articles/forms.py:100 addons/articles/models.py:45
 #: addons/news/forms.py:47 addons/news/models.py:48
 msgid "Release Date/Time"
-msgstr ""
+msgstr "Release Date/Time"
 
 #: addons/articles/forms.py:109 addons/corporate_memberships/forms.py:523
 #: addons/corporate_memberships/models.py:69
@@ -63,7 +64,7 @@ msgstr ""
 #: templates/reports/user_activity_table.html:35
 #: templates/reports/user_activity_table.html:37
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: addons/articles/forms.py:218 addons/events/forms.py:769
 #: addons/events/forms.py:1131 addons/news/forms.py:163
@@ -71,7 +72,7 @@ msgstr ""
 #: addons/photos/forms.py:330 apps/stories/forms.py:124
 #: core/files/forms.py:130 core/files/forms.py:305 core/files/forms.py:479
 msgid "Invalid group selected."
-msgstr ""
+msgstr "Invalid group selected."
 
 #: addons/articles/management.py:9
 msgid "Article Added"
@@ -79,15 +80,15 @@ msgstr ""
 
 #: addons/articles/management.py:9
 msgid "An article has been added."
-msgstr ""
+msgstr "An article has been added."
 
 #: addons/articles/management.py:11
 msgid "Article Deleted"
-msgstr ""
+msgstr "Article Deleted"
 
 #: addons/articles/management.py:11
 msgid "An article has been deleted"
-msgstr ""
+msgstr "An article has been deleted"
 
 #: addons/articles/models.py:30 addons/corporate_memberships/models.py:1277
 #: addons/directories/models.py:35 addons/help_files/models.py:33
@@ -95,7 +96,7 @@ msgstr ""
 #: addons/resumes/models.py:26 apps/pages/models.py:26
 #: apps/user_groups/models.py:17
 msgid "URL Path"
-msgstr ""
+msgstr "URL Path"
 
 #: addons/articles/models.py:31 addons/directories/models.py:36
 #: addons/events/models.py:1007 addons/news/models.py:33
@@ -104,7 +105,7 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit.html:380
 #: apps/profiles/templates/profiles/edit_notice.txt:618
 msgid "Time Zone"
-msgstr ""
+msgstr "Time Zone"
 
 #: addons/articles/models.py:36 addons/corporate_memberships/forms.py:518
 #: addons/directories/models.py:47 addons/events/forms.py:2137
@@ -134,7 +135,7 @@ msgstr ""
 #: templates/reports/membership_quick_list.html:13
 #: templates/reports/top_spenders.html:14
 msgid "First Name"
-msgstr ""
+msgstr "First Name"
 
 #: addons/articles/models.py:37 addons/corporate_memberships/forms.py:521
 #: addons/directories/models.py:48 addons/events/forms.py:2138
@@ -164,48 +165,48 @@ msgstr ""
 #: templates/reports/membership_quick_list.html:12
 #: templates/reports/top_spenders.html:13
 msgid "Last Name"
-msgstr ""
+msgstr "Surname"
 
 #: addons/articles/models.py:40 addons/news/models.py:42
 #: apps/pages/models.py:95
 msgid "Google+ URL"
-msgstr ""
+msgstr "Google+ URL"
 
 #: addons/articles/models.py:48 addons/directories/models.py:71
 #: addons/help_files/models.py:41 addons/jobs/models.py:56
 #: addons/news/models.py:51 addons/resumes/models.py:57
 #: apps/pages/models.py:31 apps/stories/models.py:40
 msgid "Include in RSS feed"
-msgstr ""
+msgstr "Include in RSS feed"
 
 #: addons/articles/models.py:50 addons/directories/models.py:72
 #: addons/news/models.py:52 apps/pages/models.py:30
 msgid "Design Notes"
-msgstr ""
+msgstr "Design Notes"
 
 #: addons/articles/models.py:55 addons/directories/models.py:77
 #: addons/news/models.py:57
 msgid "Enclosure URL"
-msgstr ""
+msgstr "Enclosure URL"
 
 #: addons/articles/models.py:56 addons/directories/models.py:78
 #: addons/news/models.py:58
 msgid "Enclosure Type"
-msgstr ""
+msgstr "Enclosure Type"
 
 #: addons/articles/models.py:57 addons/directories/models.py:79
 #: addons/news/models.py:59
 msgid "Enclosure Length"
-msgstr ""
+msgstr "Enclosure Length"
 
 #: addons/articles/models.py:59
 msgid "Official Content"
-msgstr ""
+msgstr "Official Content"
 
 #: addons/articles/templates/admin/articles/article/change_list.html:11
 #, python-format
 msgid "Export All %(name_plural)s"
-msgstr ""
+msgstr "Export All %(name_plural)s"
 
 #: addons/articles/templates/admin/articles/article/change_list.html:18
 #: addons/memberships/templates/admin/memberships/membershipdefault/change_list.html:64
@@ -213,7 +214,7 @@ msgstr ""
 #: core/files/templates/admin/files/file/change_list.html:81
 #, python-format
 msgid "Add %(name)s"
-msgstr ""
+msgstr "Add %(name)s"
 
 #: addons/articles/templates/articles/add.html:7
 #: addons/articles/templates/articles/add.html:23
@@ -256,7 +257,7 @@ msgstr ""
 #: core/files/templates/admin/files/file/change_form.html:24
 #: templates/admin/index.html:36
 msgid "Add"
-msgstr ""
+msgstr "Add"
 
 #: addons/articles/templates/articles/add.html:30
 #: addons/articles/templates/articles/edit.html:29
@@ -265,7 +266,7 @@ msgstr ""
 #: core/categories/forms.py:91 core/files/forms.py:26 core/files/forms.py:183
 #: core/files/forms.py:230 core/files/forms.py:347 core/files/forms.py:541
 msgid "Category"
-msgstr ""
+msgstr "Category"
 
 #: addons/articles/templates/articles/delete.html:5
 #: addons/articles/templates/articles/delete.html:16
@@ -351,7 +352,7 @@ msgstr ""
 #: core/files/templates/files/reports/most-viewed-result.html:10
 #: core/files/templates/files/templates/tinymce_upload.html:24
 msgid "Delete"
-msgstr ""
+msgstr "Delete"
 
 #: addons/articles/templates/articles/delete.html:20
 #: addons/directories/templates/directories/delete.html:10
@@ -375,14 +376,14 @@ msgstr ""
 #: apps/pages/templates/pages/delete.html:25
 #: apps/stories/templates/stories/delete.html:31
 msgid "Confirm Delete"
-msgstr ""
+msgstr "Confirm Delete"
 
 #: addons/articles/templates/articles/delete.html:28
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:41
 #: addons/locations/templates/locations/delete.html:27
 #: apps/user_groups/templates/user_groups/import_status.html:23
 msgid "Back to"
-msgstr ""
+msgstr "Back to"
 
 #: addons/articles/templates/articles/delete.html:29
 #: addons/jobs/templates/jobs/delete.html:34
@@ -392,19 +393,19 @@ msgstr ""
 #: apps/pages/templates/pages/delete.html:29
 #: apps/stories/templates/stories/delete.html:34
 msgid "Back to all"
-msgstr ""
+msgstr "Back to all"
 
 #: addons/articles/templates/articles/edit-meta.html:6
 #: addons/directories/templates/directories/edit-meta.html:6
 msgid "Edit Meta Information"
-msgstr ""
+msgstr "Edit Meta Information"
 
 #: addons/articles/templates/articles/edit-meta.html:17
 #, python-format
 msgid ""
 "Meta Information for<br />\n"
 "    %(article_headline)s"
-msgstr ""
+msgstr "Meta Information for<br />\n    %(article_headline)s"
 
 #: addons/articles/templates/articles/edit-meta.html:25
 #: addons/directories/templates/directories/approve.html:20
@@ -422,7 +423,7 @@ msgstr ""
 #: templates/theme_includes/image_edit_form.html:25
 #: templates/theme_includes/logo_edit_form.html:19
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel"
 
 #: addons/articles/templates/articles/edit.html:7
 #: addons/articles/templates/articles/edit.html:22
@@ -510,21 +511,21 @@ msgstr ""
 #: core/files/templates/files/reports/most-viewed-result.html:9
 #: templates/theme_includes/setting_edit_form.html:10
 msgid "Edit"
-msgstr ""
+msgstr "Edit"
 
 #: addons/articles/templates/articles/edit.html:34
 msgid "Save Article Changes"
-msgstr ""
+msgstr "Save Article Changes"
 
 #: addons/articles/templates/articles/edit.html:35
 #: apps/pages/templates/pages/edit.html:55
 #: apps/stories/templates/stories/edit.html:27
 msgid "Link to delete confirmation page"
-msgstr ""
+msgstr "Link to delete confirmation page"
 
 #: addons/articles/templates/articles/export.html:20
 msgid "Articles Export"
-msgstr ""
+msgstr "Articles Export"
 
 #: addons/articles/templates/articles/export.html:24
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:36
@@ -550,7 +551,7 @@ msgstr ""
 #: core/exports/templates/exports/export_status.html:22
 #: core/files/templates/files/search-result.html:19
 msgid "Download"
-msgstr ""
+msgstr "Download"
 
 #: addons/articles/templates/articles/index.html:3
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:50
@@ -563,7 +564,7 @@ msgstr ""
 #: apps/entities/templates/entities/index.html:3
 #: core/event_logs/templates/event_logs/index.html:3
 msgid "Index Page"
-msgstr ""
+msgstr "Index Page"
 
 #: addons/articles/templates/articles/index.html:6
 #: addons/corporate_memberships/templates/admin/corporate_memberships/app_index.html:34
@@ -607,7 +608,7 @@ msgstr ""
 #: core/event_logs/templates/event_logs/search.html:27 core/files/forms.py:182
 #: core/files/templates/files/index.html:6 templates/default.html:41
 msgid "Search"
-msgstr ""
+msgstr "Search"
 
 #: addons/articles/templates/articles/index.html:7
 #: addons/articles/templates/articles/nav.html:57
@@ -638,7 +639,7 @@ msgstr ""
 #: core/emails/templates/emails/nav.html:31
 #: core/files/templates/files/index.html:7
 msgid "View"
-msgstr ""
+msgstr "View"
 
 #: addons/articles/templates/articles/index.html:8
 #: addons/articles/templates/articles/print-view.html:20
@@ -658,19 +659,19 @@ msgstr ""
 #: apps/pages/templates/pages/print-view.html:19
 #: apps/stories/templates/stories/print_details.html:20
 msgid "Print View"
-msgstr ""
+msgstr "Print View"
 
 #: addons/articles/templates/articles/meta.html:7
 #: addons/news/templates/news/meta.html:8
 msgid "Released:"
-msgstr ""
+msgstr "Released:"
 
 #: addons/articles/templates/articles/meta.html:13
 #: addons/news/templates/news/meta.html:18
 #: core/newsletters/templates/newsletters/articles_list.txt:34
 #: core/newsletters/templates/newsletters/news_list.txt:34
 msgid "Author:"
-msgstr ""
+msgstr "Author:"
 
 #: addons/articles/templates/articles/meta.html:16
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:70
@@ -692,7 +693,7 @@ msgstr ""
 #: apps/profiles/templates/profiles/search-result.html:35
 #: core/payments/templates/payments/view.html:193
 msgid "Phone:"
-msgstr ""
+msgstr "Phone:"
 
 #: addons/articles/templates/articles/meta.html:19
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:60
@@ -702,7 +703,7 @@ msgstr ""
 #: addons/jobs/templates/jobs/view.html:144
 #: addons/news/templates/news/meta.html:24
 msgid "Fax:"
-msgstr ""
+msgstr "Fax:"
 
 #: addons/articles/templates/articles/meta.html:22
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:64
@@ -719,13 +720,13 @@ msgstr ""
 #: apps/profiles/templates/profiles/search-result.html:30
 #: core/payments/templates/payments/view.html:200
 msgid "Email:"
-msgstr ""
+msgstr "Email:"
 
 #: addons/articles/templates/articles/meta.html:25
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:27
 #: addons/news/templates/news/meta.html:30
 msgid "Website:"
-msgstr ""
+msgstr "Website:"
 
 #: addons/articles/templates/articles/meta.html:33
 #: addons/directories/templates/directories/meta.html:10
@@ -736,7 +737,7 @@ msgstr ""
 #: core/files/templates/files/details.html:48
 #: core/files/templates/files/search-result.html:26
 msgid "Category:"
-msgstr ""
+msgstr "Category:"
 
 #: addons/articles/templates/articles/meta.html:35
 #: addons/directories/templates/directories/meta.html:12
@@ -747,7 +748,7 @@ msgstr ""
 #: core/files/templates/files/details.html:50
 #: core/files/templates/files/search-result.html:28
 msgid "Sub Category:"
-msgstr ""
+msgstr "Sub Category:"
 
 #: addons/articles/templates/articles/meta.html:75
 #: addons/corporate_memberships/templates/corporate_memberships/meta.html:28
@@ -766,12 +767,12 @@ msgstr ""
 #: apps/stories/templates/stories/meta.html:59
 #: apps/user_groups/templates/user_groups/meta.html:45
 msgid "Eventlogs"
-msgstr ""
+msgstr "Eventlogs"
 
 #: addons/articles/templates/articles/meta.html:76
 #: apps/pages/templates/pages/meta.html:73
 msgid "Versions"
-msgstr ""
+msgstr "Versions"
 
 #: addons/articles/templates/articles/meta.html:78
 #: addons/corporate_memberships/templates/corporate_memberships/meta.html:30
@@ -790,7 +791,7 @@ msgstr ""
 #: apps/stories/templates/stories/meta.html:61
 #: apps/user_groups/templates/user_groups/meta.html:47
 msgid "Options"
-msgstr ""
+msgstr "Options"
 
 #: addons/articles/templates/articles/meta.html:84
 #: addons/articles/templates/articles/nav.html:61
@@ -814,7 +815,7 @@ msgstr ""
 #: apps/pages/templates/pages/nav.html:61
 #: apps/pages/templates/pages/options.html:26
 msgid "Edit Meta"
-msgstr ""
+msgstr "Edit Meta"
 
 #: addons/articles/templates/articles/meta.html:85
 #: addons/articles/templates/articles/nav.html:62
@@ -841,7 +842,7 @@ msgstr ""
 #: apps/stories/templates/stories/options.html:19
 #: apps/stories/templates/stories/options.html:21
 msgid "Edit Categories"
-msgstr ""
+msgstr "Edit Categories"
 
 #: addons/articles/templates/articles/nav.html:21
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:12
@@ -876,7 +877,7 @@ msgstr ""
 #: core/payments/templates/payments/nav.html:14
 #: core/site_settings/templates/site_settings/nav.html:9
 msgid "Tendenci"
-msgstr ""
+msgstr "Tendenci"
 
 #: addons/articles/templates/articles/nav.html:23
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:14
@@ -913,7 +914,7 @@ msgstr ""
 #: templates/default.html:65 templates/top_menu/admin_top.html:141
 #: templates/top_menu/user_top.html:11
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: addons/articles/templates/articles/nav.html:24
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:15
@@ -948,7 +949,7 @@ msgstr ""
 #: core/payments/templates/payments/nav.html:17
 #: core/site_settings/templates/site_settings/nav.html:12
 msgid "My Profile"
-msgstr ""
+msgstr "My Profile"
 
 #: addons/articles/templates/articles/nav.html:25
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:16
@@ -988,7 +989,7 @@ msgstr ""
 #: core/payments/templates/payments/nav.html:18
 #: core/site_settings/templates/site_settings/nav.html:13
 msgid "Log Off"
-msgstr ""
+msgstr "Log Off"
 
 #: addons/articles/templates/articles/nav.html:34
 #: addons/directories/templates/directories/nav.html:34
@@ -1002,7 +1003,7 @@ msgstr ""
 #: addons/locations/templates/locations/nav.html:34
 #: libs/model_report/report.py:551
 msgid "All"
-msgstr ""
+msgstr "All"
 
 #: addons/articles/templates/articles/nav.html:41
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:47
@@ -1034,7 +1035,7 @@ msgstr ""
 #: core/site_settings/templates/site_settings/list.html:15
 #: core/site_settings/templates/site_settings/nav.html:18
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #: addons/articles/templates/articles/nav.html:43
 #: addons/articles/templates/articles/search.html:16
@@ -1042,7 +1043,7 @@ msgstr ""
 #: addons/jobs/templates/jobs/nav.html:45
 #: addons/jobs/templates/jobs/search.html:16
 msgid "Latest"
-msgstr ""
+msgstr "Latest"
 
 #: addons/articles/templates/articles/nav.html:48
 #: addons/corporate_memberships/templates/admin/corporate_memberships/app_index.html:30
@@ -1066,7 +1067,7 @@ msgstr ""
 #: apps/navs/templates/navs/export.html:16
 #: apps/profiles/templates/profiles/nav.html:57
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 #: addons/articles/templates/articles/nav.html:54
 #: addons/directories/templates/directories/nav.html:55
@@ -1075,7 +1076,7 @@ msgstr ""
 #: addons/locations/templates/locations/nav.html:57
 #: addons/news/templates/news/nav.html:54
 msgid "This"
-msgstr ""
+msgstr "This"
 
 #: addons/articles/templates/articles/options.html:14
 #: addons/directories/templates/directories/meta.html:42
@@ -1101,22 +1102,22 @@ msgstr ""
 #: libs/model_report/templates/model_report/includes/form_report.html:13
 #: templates/model_report/includes/form_report.html:13
 msgid "Print"
-msgstr ""
+msgstr "Print"
 
 #: addons/articles/templates/articles/options.html:22
 #: addons/directories/templates/directories/options.html:22
 #: apps/contributions/templates/contributions/options.html:16
 msgid "More options "
-msgstr ""
+msgstr "More options "
 
 #: addons/articles/templates/articles/print-view.html:23
 msgid "Back to the"
-msgstr ""
+msgstr "Back to the"
 
 #: addons/articles/templates/articles/print-view.html:31
 #, python-format
 msgid "Submitted on %(date)s by %(creator)s"
-msgstr ""
+msgstr "Submitted on %(date)s by %(creator)s"
 
 #: addons/articles/templates/articles/search.html:8
 #: addons/directories/templates/directories/search.html:8
@@ -1129,7 +1130,7 @@ msgstr ""
 #: addons/locations/templates/locations/search.html:8
 #: addons/locations/templates/locations/search.html:20
 msgid "List"
-msgstr ""
+msgstr "List"
 
 #: addons/articles/templates/articles/search.html:32
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:119
@@ -1151,7 +1152,7 @@ msgstr ""
 #: apps/user_groups/templates/user_groups/search.html:27
 #: core/files/templates/files/search.html:24
 msgid "Found"
-msgstr ""
+msgstr "Found"
 
 #: addons/articles/templates/articles/search.html:39
 #: addons/directories/templates/directories/search.html:32
@@ -1160,39 +1161,39 @@ msgstr ""
 #: addons/jobs/templates/jobs/my_pending_jobs.html:33
 #: addons/jobs/templates/jobs/search.html:34
 msgid "Add a new"
-msgstr ""
+msgstr "Add a new"
 
 #: addons/articles/templates/articles/view.html:39
 #: addons/news/templates/news/meta.html:12
 #: addons/news/templates/notification/news_added/full.html:28
 msgid "Source:"
-msgstr ""
+msgstr "Source:"
 
 #: addons/articles/templates/notification/article_added/full.html:7
 msgid "Article Add Notice"
-msgstr ""
+msgstr "Article Add Notice"
 
 #: addons/articles/templates/notification/article_added/full.html:11
 #, python-format
 msgid ""
 "The following article was \n"
 "  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Articles module by %(author)s"
-msgstr ""
+msgstr "The following article was \n  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Articles module by %(author)s"
 
 #: addons/articles/templates/notification/article_added/full.html:13
 #: addons/jobs/templates/notification/job_added/full.html:15
 msgid "It needs to be activated"
-msgstr ""
+msgstr "It needs to be activated"
 
 #: addons/articles/templates/notification/article_added/short.txt:3
 #, python-format
 msgid "New article (%(article)s) posting for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
-msgstr ""
+msgstr "New article (%(article)s) posting for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 
 #: addons/articles/templates/notification/article_deleted/full.html:7
 #: apps/notifications/templates/notification/group_deleted/full.html:7
 msgid "Article Delete Notice"
-msgstr ""
+msgstr "Article Delete Notice"
 
 #: addons/articles/templates/notification/article_deleted/full.html:12
 #: apps/notifications/templates/notification/resume_deleted/full.html:11
@@ -1201,7 +1202,7 @@ msgstr ""
 msgid ""
 "A record has been deleted \n"
 "  from the %(SITE_GLOBAL_SITEDISPLAYNAME)s module"
-msgstr ""
+msgstr "A record has been deleted \n  from the %(SITE_GLOBAL_SITEDISPLAYNAME)s module"
 
 #: addons/articles/templates/notification/article_deleted/full.html:13
 #: addons/directories/templates/notification/directory_deleted/full.html:13
@@ -1211,7 +1212,7 @@ msgstr ""
 #: apps/pages/templates/notification/page_deleted/full.html:13
 #: core/files/templates/notification/file_deleted/full.html:12
 msgid "The details are given below:"
-msgstr ""
+msgstr "The details are given below:"
 
 #: addons/articles/templates/notification/article_deleted/full.html:18
 #: addons/directories/templates/notification/directory_added/full.html:20
@@ -1222,7 +1223,7 @@ msgstr ""
 #: addons/news/templates/notification/news_added/full.html:23
 #: addons/news/templates/notification/news_deleted/full.html:18
 msgid "Headline:"
-msgstr ""
+msgstr "Headline:"
 
 #: addons/articles/templates/notification/article_deleted/full.html:23
 #: addons/directories/templates/notification/directory_deleted/full.html:23
@@ -1232,11 +1233,11 @@ msgid ""
 "Deleted \n"
 "      by:</td>\n"
 "    <td width=\"75%%\"><b>%(requser)s"
-msgstr ""
+msgstr "Deleted \n      by:</td>\n    <td width=\"75%%\"><b>%(requser)s"
 
 #: addons/articles/templates/notification/article_deleted/full.html:28
 msgid "If you would like view all recently deleted articles, go to:"
-msgstr ""
+msgstr "If you would like view all recently deleted articles, go to:"
 
 #: addons/articles/templates/notification/article_deleted/full.html:32
 #: addons/corporate_memberships/templates/corporate_memberships/notices/email_recap.html:38
@@ -1276,20 +1277,20 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit_notice.txt:700
 #: core/files/templates/notification/file_deleted/full.html:22
 msgid "Time submitted:"
-msgstr ""
+msgstr "Time submitted:"
 
 #: addons/articles/templates/notification/article_deleted/short.txt:3
 #, python-format
 msgid "Article (%(article)s) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
-msgstr ""
+msgstr "Article (%(article)s) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 
 #: addons/articles/templates/notification/article_edited/full.html:7
 msgid "Headline: {{ object.headline }}"
-msgstr ""
+msgstr "Headline: {{ object.headline }}"
 
 #: addons/articles/templates/notification/article_edited/full.html:8
 msgid "To view this article go to:"
-msgstr ""
+msgstr "To view this article go to:"
 
 #: addons/articles/templates/notification/article_edited/full.html:10
 #: addons/corporate_memberships/templates/corporate_memberships/notices/email_recap.html:35
@@ -1317,73 +1318,73 @@ msgstr ""
 #: apps/pages/templates/notification/page_edited/full.html:21
 #: templates/form-confirmation.html:16
 msgid "Thanks!"
-msgstr ""
+msgstr "Thanks!"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:27
 #: core/newsletters/templates/newsletters/add.html:52
 #: core/newsletters/templates/newsletters/generate.html:28
 msgid "Module Content"
-msgstr ""
+msgstr "Module Content"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:31
 #: core/newsletters/templates/newsletters/add.html:59
 #: core/newsletters/templates/newsletters/generate.html:32
 msgid "Include Jump Links"
-msgstr ""
+msgstr "Include Jump Links"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:33
 #: core/newsletters/templates/newsletters/add.html:61
 #: core/newsletters/templates/newsletters/generate.html:34
 msgid "Nav at the top or specified location of email"
-msgstr ""
+msgstr "Nav at the top or specified location of email"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:40
 #: core/newsletters/templates/newsletters/add.html:67
 #: core/newsletters/templates/newsletters/generate.html:41
 #: core/newsletters/templates/newsletters/jumplinks.txt:8
 msgid "Calendar Events"
-msgstr ""
+msgstr "Calendar Events"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:47
 #: core/newsletters/templates/newsletters/generate.html:48
 msgid "Event Type"
-msgstr ""
+msgstr "Event Type"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:54
 #: core/newsletters/templates/newsletters/add.html:73
 #: core/newsletters/templates/newsletters/generate.html:55
 msgid "Include <strong>Calendar Events</strong> for what date range? "
-msgstr ""
+msgstr "Include <strong>Calendar Events</strong> for what date range? "
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:57
 #: core/newsletters/templates/newsletters/add.html:76
 #: core/newsletters/templates/newsletters/generate.html:58
 msgid "Start Date Time"
-msgstr ""
+msgstr "Start Date Time"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:61
 #: core/newsletters/templates/newsletters/add.html:81
 #: core/newsletters/templates/newsletters/generate.html:62
 msgid "End Date Time"
-msgstr ""
+msgstr "End Date Time"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:68
 #: core/newsletters/templates/newsletters/add.html:88
 #: core/newsletters/templates/newsletters/generate.html:69
 msgid "Module"
-msgstr ""
+msgstr "Module"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:69
 #: core/newsletters/templates/newsletters/add.html:89
 #: core/newsletters/templates/newsletters/generate.html:70
 msgid "Add to Newsletter? "
-msgstr ""
+msgstr "Add to Newsletter? "
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:70
 #: core/newsletters/templates/newsletters/add.html:90
 #: core/newsletters/templates/newsletters/generate.html:71
 msgid "Past ? Days "
-msgstr ""
+msgstr "Past ? Days "
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:73
 #: apps/dashboard/templates/dashboard/index.html:81
@@ -1393,7 +1394,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/jumplinks.txt:15
 #: templates/top_menu/user_top.html:24
 msgid "Articles"
-msgstr ""
+msgstr "Articles"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:82
 #: apps/dashboard/templates/dashboard/index.html:85
@@ -1403,7 +1404,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/jumplinks.txt:22
 #: templates/top_menu/user_top.html:42
 msgid "News"
-msgstr ""
+msgstr "News"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:91
 #: apps/dashboard/templates/dashboard/index.html:93
@@ -1414,13 +1415,13 @@ msgstr ""
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
 #: Sidebar.html:271 Right Sidebar.html:284 templates/top_menu/user_top.html:36
 msgid "Jobs"
-msgstr ""
+msgstr "Jobs"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:98
 #: core/newsletters/templates/newsletters/add.html:113
 #: core/newsletters/templates/newsletters/generate.html:99
 msgid "Include links to recently edited pages?"
-msgstr ""
+msgstr "Include links to recently edited pages?"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:101
 #: apps/dashboard/templates/dashboard/index.html:122
@@ -1430,32 +1431,32 @@ msgstr ""
 #: core/newsletters/templates/newsletters/add.html:116
 #: core/newsletters/templates/newsletters/generate.html:102
 msgid "Pages"
-msgstr ""
+msgstr "Pages"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:112
 #: core/newsletters/templates/newsletters/add.html:133
 #: core/newsletters/templates/newsletters/generate.html:113
 #, python-format
 msgid "Templates for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
-msgstr ""
+msgstr "Templates for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:7
 msgid "Delete Campaign"
-msgstr ""
+msgstr "Delete Campaign"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:19
 msgid "Delete a Campaign"
-msgstr ""
+msgstr "Delete a Campaign"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:23
 msgid ""
 "This campaign has already been sent. Deleting it will remove it from your "
 "account."
-msgstr ""
+msgstr "This campaign has already been sent. Deleting it will remove it from your account."
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:26
 msgid "This campaign is scheduled for"
-msgstr ""
+msgstr "This campaign is scheduled for"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:26
 msgid ""
@@ -1466,7 +1467,7 @@ msgstr ""
 msgid ""
 "This campaign is a draft. Deleting it will remove it from your account and "
 "prevent it from sending."
-msgstr ""
+msgstr "This campaign is a draft. Deleting it will remove it from your account and prevent it from sending."
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:33
 msgid "Are you sure you want to permanently delete this campaign?"
@@ -1474,22 +1475,22 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:42
 msgid "Back to all campaigns"
-msgstr ""
+msgstr "Back to all campaigns"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:8
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:8
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:19
 msgid "Campaign Monitor Campaigns"
-msgstr ""
+msgstr "Campaign Monitor Campaigns"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:31
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:27
 #: core/emails/templates/emails/edit.html:33
 msgid "Subject"
-msgstr ""
+msgstr "Subject"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:32
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:28
@@ -1504,7 +1505,7 @@ msgstr ""
 #: templates/reports/mem_join_table.html:14
 #: templates/reports/membership_joins.html:30
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:35
 msgid "0 Campaigns Found"
