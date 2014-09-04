@@ -167,7 +167,7 @@
     {% endif %}
 
      {% if registrant.comments %}
-    <div>{{ registrant.comments }}</div>
+    <div>{ trans 'Comments' %}:{% blocktrans with c=registrant.comments %} {{ c }}{% endblocktrans %}</div>
     {% endif %}
 
     {% if request.user.is_superuser %}

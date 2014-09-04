@@ -1412,6 +1412,20 @@ class CustomRegForm(models.Model):
 
         return cloned_obj
 
+    @property
+    def has_regconf(self):
+        return self.regconfs.all().exists() or None
+
+    @property
+    def for_event(self):
+        event = None
+        regconf = self.regconfs.all()[:1]
+        if regconf:
+            event = regconf[0].event
+            return event.title
+
+        return ''
+
 
 class CustomRegField(OrderingBaseModel):
     form = models.ForeignKey("CustomRegForm", related_name="fields")

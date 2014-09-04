@@ -3095,8 +3095,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
             'email',
             'phone',
             'position_title',
-            'company_name',
-            'comments'
+            'company_name'
         ]).select_related().values_list(
             'entry__id',
             'field__label',
