@@ -403,6 +403,8 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
         profile = Profile.objects.get(user=user_edit)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
+    if profile.language == 'en-us':
+        profile.language = 'en'
 
     if not profile.allow_edit_by(request.user): raise Http403
 
