@@ -1,0 +1,92 @@
+{% extends "events/base-wide.html" %}
+{% load pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Events Financial Report' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>{% trans 'Events Financial Report' %}</h1>
+   <form action='' method="GET">
+        <div class="form">
+        {{ form|styled_form }}
+        <input type="submit" value="{% trans 'Filter' %}" />
+        </div>
+   </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{% trans 'Event Date' %}</th>
+                <th>{% trans 'Event ID' %}</th>
+                <th>{% trans 'Event Title' %}</th>
+                <th>{% trans '# of Registrants' %}</th>
+                <th>{% trans 'Registration Total' %}</th>
+                <th>{% trans 'Add-On Total' %}</th>
+                <th>{% trans 'Complete Event Total' %}</th>
+                <th>{% trans 'Amount Collected' %}</th>
+                <th>{% trans 'Amount Due' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ event.start_dt }}</td>
+                <td><a href="{% url event event.id %}">{{ event.id }}</a></td>
+                <td><a href="{% url event event.id %}">{{ event.title }}</a></td>
+                <td>{{ event.registrants_count }}</td>
+                <td>{{ event.registration_total }}</td>
+                <td>{{ event.addons_total }}</td>
+                <td>{{ event.money_total }}</td>
+                <td>{{ event.money_collected }}</td>
+                <td>{{ event.money_outstanding }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step': 1});
+
+            $( "#id_start_dt_0" ).datepicker({
+              defaultDate: "+1m",
+              changeMonth: true,
+              numberOfMonths: 1,
+              dateFormat: 'yy-mm-dd',
+              onClose: function( selectedDate ) {
+                $( "#id_end_dt_0" ).datepicker( "option", "minDate", selectedDate );
+              }
+            });
+            $( "#id_end_dt_0" ).datepicker({
+              defaultDate: "+1m",
+              changeMonth: true,
+              numberOfMonths: 1,
+              dateFormat: 'yy-mm-dd',
+              onClose: function( selectedDate ) {
+                $( "#id_start_dt_0" ).datepicker( "option", "maxDate", selectedDate );
+              }
+            });
+        });
+    </script>
+{% endblock %}

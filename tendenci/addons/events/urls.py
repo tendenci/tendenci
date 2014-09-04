@@ -28,6 +28,9 @@ urlpatterns = patterns(
     url(r'^%s/myevents/$' % urlpath, 'views.myevents', name="event.myevents"),
     url(r'^%s/get_place$' % urlpath, 'views.get_place', name="event.get_place"),
 
+    # events reports
+    url(r'^%s/reports/financial/$' % urlpath, 'views.reports_financial', name='event.reports.financial'),
+
     url(r'^%s/add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.add', name="event.add"),
 
     url(r'^%s/overview/edit/(?P<id>\d+)/$' % urlpath, 'views.edit', name="event.edit"),

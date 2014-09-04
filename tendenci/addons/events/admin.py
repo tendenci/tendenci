@@ -1,12 +1,18 @@
+from csv import writer
+from datetime import datetime
+
 from django.contrib import admin, messages
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.conf.urls.defaults import patterns, url
-from django.shortcuts import redirect, render
+from django.http import HttpResponse, Http404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.encoding import iri_to_uri
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.addons.events.models import CustomRegForm, CustomRegField, Type, StandardRegForm
+from tendenci.addons.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
+    CustomRegFormEntry, CustomRegFieldEntry)
 from tendenci.addons.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import delete_settings_cache
@@ -133,6 +139,10 @@ class CustomRegFormAdmin(admin.ModelAdmin):
     for_event.short_description = _('For Event')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
+        obj = get_object_or_404(CustomRegForm, id=object_id)
+        has_regconf = obj.has_regconf
+        extra_context = extra_context or {}
+        extra_context.update({'has_regconf': has_regconf})
         result = super(CustomRegFormAdmin, self).change_view(request,
                         object_id, form_url=form_url, extra_context=extra_context)
 
@@ -185,6 +195,58 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             'instance': object,
         }
         EventLog.objects.log(**log_defaults)
+
+    def export_view(self, request, regform_id):
+        """
+        Output a CSV file to the browser containing the entries for the form.
+        """
+        form = get_object_or_404(CustomRegForm, id=regform_id)
+        if not form.has_regconf:
+            raise Http404
+        response = HttpResponse(mimetype="text/csv")
+        csvname = "%s-%s.csv" % (form.for_event, slugify(datetime.now().ctime()))
+        response["Content-Disposition"] = "attachment; filename=%s" % csvname
+        csv = writer(response)
+        # Write out the column names and store the index of each field
+        # against its ID for building each entry row. Also store the IDs of
+        # fields with a type of FileField for converting their field values
+        # into download URLs.
+        columns = []
+        field_indexes = {}
+        for field in form.fields.all().order_by('position', 'id'):
+            columns.append(field.label.encode("utf-8"))
+            field_indexes[field.id] = len(field_indexes)
+
+        csv.writerow(columns)
+        # # Loop through each field value order by entry, building up each
+        # # entry as a row.
+        entries = CustomRegFormEntry.objects.filter(form=form).order_by('pk')
+        for entry in entries:
+            values = CustomRegFieldEntry.objects.filter(entry=entry)
+            row = [""] * len(columns)
+
+            for field_entry in values:
+                value = field_entry.value.encode("utf-8")
+                # Only use values for fields that currently exist for the form.
+                try:
+                    row[field_indexes[field_entry.field_id]] = value
+                except KeyError:
+                    pass
+            # Write out the row.
+            csv.writerow(row)
+        return response
+
+    def get_urls(self):
+        """
+        Add the export view to urls.
+        """
+        urls = super(CustomRegFormAdmin, self).get_urls()
+        extra_urls = patterns("",
+            url("^export/(?P<regform_id>\d+)/$",
+                self.admin_site.admin_view(self.export_view),
+                name="customregform_export"),
+        )
+        return extra_urls + urls
 
 admin.site.register(CustomRegForm, CustomRegFormAdmin)
 

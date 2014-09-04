@@ -1,11 +1,13 @@
 import re
 import imghdr
+import calendar
 from ast import literal_eval
 from os.path import splitext, basename
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from decimal import Decimal
 
 from django import forms
+from django.db.models import Q
 from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import BaseFormSet
@@ -2267,3 +2269,49 @@ class StandardRegAdminForm(forms.Form):
                     setting.set_value(value)
                     setting.save()
 
+
+def add_months(sourcedate, months):
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month / 12
+    month = month % 12 + 1
+    day = min(sourcedate.day, calendar.monthrange(year,month)[1])
+    return date(year,month,day)
+
+
+class EventReportFilterForm(forms.Form):
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), required=False)
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(EventReportFilterForm, self).__init__(*args, **kwargs)
+        start_dt = datetime.now()
+        end_dt = date.today()
+        end_tm = start_dt.time()
+        temp_end = add_months(end_dt, 1)
+        end_dt = datetime.combine(temp_end, end_tm)
+
+        self.fields['start_dt'].initial = start_dt
+        self.fields['end_dt'].initial = end_dt
+
+    def clean(self):
+        data = self.cleaned_data
+        start_dt = data.get('start_dt')
+        end_dt = data.get('end_dt')
+
+        if end_dt < start_dt:
+            raise forms.ValidationError(_('End Date/Time should be greater than Start Date/Time.'))
+
+        return data
+
+    def filter(self, queryset=None):
+        data = self.cleaned_data
+        start_dt = data.get('start_dt')
+        end_dt = data.get('end_dt')
+
+        if queryset:
+            if start_dt and end_dt:
+                return queryset.filter(Q(start_dt__gte=start_dt)&Q(start_dt__lte=end_dt))
+            else:
+                return queryset
+
+        return None

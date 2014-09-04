@@ -1153,6 +1153,26 @@ class Event(TendenciBaseModel):
         else:
             return 0
 
+    @property
+    def money_total(self):
+        return self.money_collected + self.money_outstanding
+
+    @property
+    def registration_total(self):
+        if not self.has_addons:
+            return self.money_total
+        else:
+            return self.money_total - self.addons_total
+
+    @property
+    def addons_total(self):
+        total_addons = 0
+        if self.has_addons:
+            registrations = Registration.objects.filter(event=self, canceled=False)
+            for reg in registrations:
+                total_addons += reg.regaddon_set.all().aggregate(Sum('amount'))['amount__sum']
+        return total_addons
+
     def registrants(self, **kwargs):
         """
         This method can return 3 different values.
@@ -1171,6 +1191,9 @@ class Event(TendenciBaseModel):
                 registrants = registrants.filter(registration__invoice__balance__lte=0)
 
         return registrants
+
+    def registrants_count(self, **kwargs):
+        return self.registrants(**kwargs).count()
 
     def can_view_registrants(self, user):
         if self.display_event_registrants:
@@ -1390,6 +1413,20 @@ class CustomRegForm(models.Model):
             field.clone(form=cloned_obj)
 
         return cloned_obj
+
+    @property
+    def has_regconf(self):
+        return self.regconfs.all().exists() or None
+
+    @property
+    def for_event(self):
+        event = None
+        regconf = self.regconfs.all()[:1]
+        if regconf:
+            event = regconf[0].event
+            return event.title
+
+        return ''
 
 
 class CustomRegField(OrderingBaseModel):
