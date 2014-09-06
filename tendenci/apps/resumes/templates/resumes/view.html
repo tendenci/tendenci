@@ -95,7 +95,7 @@
 
         {% include "resumes/meta.html" %}
 
-        {% url resume resume.pk as the_url %}
+        {% url 'resume' resume.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
     </div>
 

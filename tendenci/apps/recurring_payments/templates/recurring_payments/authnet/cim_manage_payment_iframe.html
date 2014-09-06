@@ -20,7 +20,7 @@ name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
 
 
 <div class="t">
-    <h1>{% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></h1>
+    <h1>{% trans "Manage Payment Info for " %} <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></h1>
 
     {% if gateway_error  %}
 

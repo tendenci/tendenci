@@ -106,7 +106,7 @@
                                 </tr>
                                 {% for rep in field_obj.value.all %}
                                     <tr class="corp-rep">
-                                    <td><a href="{% url profile rep.user.username %}">
+                                    <td><a href="{% url 'profile' rep.user.username %}">
                                         {{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
 
                                     </td>
@@ -207,7 +207,7 @@
     		<tr>
   				<td>
   					{% if fp.user %}
-  					<a href="{% url profile fp.user.username %}">
+  					<a href="{% url 'profile' fp.user.username %}">
   						{{ fp.user.username }}
   						</a>
   					{% else %}
@@ -219,13 +219,13 @@
   				</td>
   				<td>
   					{% if fp.event %}
-  					<a href="{% url event fp.event.id %}">{{ fp.event.title|truncatechars:30 }}</a>
+  					<a href="{% url 'event' fp.event.id %}">{{ fp.event.title|truncatechars:30 }}</a>
   					{% endif %}
   				</td>
   				<td>{{ fp.create_dt|date:'n/j/Y P' }}</td>
   				<td>
   					{% if fp.creator %}
-  					<a href="{% url profile fp.creator.username %}">{{ fp.creator_username }}</a>
+  					<a href="{% url 'profile' fp.creator.username %}">{{ fp.creator_username }}</a>
   					{% endif %}
   					</td>
     		</tr>

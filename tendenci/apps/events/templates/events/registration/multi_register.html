@@ -19,7 +19,7 @@
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
     <div class="event-info">
-        <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
+        <div class="event-title"><a href="{% url 'event' event.id %}">{{ event.title }}</a></div>
         <div class="event-price">{{ event_price|format_currency }}</div>
         <div class="event-time">
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>

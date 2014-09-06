@@ -4,7 +4,7 @@
 </p>
 
 <p>
-{% blocktrans %}To view this directory, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url directory object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url directory object.slug  %}</a>
+{% blocktrans %}To view this directory, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'directory' object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url 'directory' object.slug  %}</a>
 </p>
 
 {% if object.invoice %}

@@ -31,7 +31,7 @@
              </tr>
              {% for rep in reps %}
                  <tr class="corp-rep">
-                 <td><a href="{% url profile rep.user.username %}">{{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
+                 <td><a href="{% url 'profile' rep.user.username %}">{{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
 
                 </td>
                  <td>

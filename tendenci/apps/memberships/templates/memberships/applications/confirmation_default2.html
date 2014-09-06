@@ -31,7 +31,7 @@
             </span></p>
         {% else %}
             {% if membership.referer_url %}
-            <p><a href="{% url auth_login %}?next={{ membership.referer_url }}">Please continue registering for your event as a member.</a></p>
+            <p><a href="{% url 'auth_login' %}?next={{ membership.referer_url }}">Please continue registering for your event as a member.</a></p>
             {% endif %}
         {% endif %}
 
@@ -65,7 +65,7 @@
 	        {% endif %}
 
 	        {% if membership.user.profile.is_active %}
-	        <li><a href="{% url profile membership.user.username %}">View Profile</a></li>
+	        <li><a href="{% url 'profile' membership.user.username %}">View Profile</a></li>
 	        {% endif %}
 
         </ul>

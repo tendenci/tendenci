@@ -11,7 +11,7 @@
         <td>
             <a href="{{ image.get_absolute_url }}">
                 {% if image.file_exists %}
-                    <a href="{% url photo image.pk %}"><img class="photo-search-photo" src="{{ image.get_small_crop_url }}" alt="{{ image.title|truncatechars:123 }}" title="{{ image.title|truncatechars:123 }}"/></a>
+                    <a href="{% url 'photo' image.pk %}"><img class="photo-search-photo" src="{{ image.get_small_crop_url }}" alt="{{ image.title|truncatechars:123 }}" title="{{ image.title|truncatechars:123 }}"/></a>
                 {% else %}
                     <img class="photo-search-photo" src="{{ image.default_thumbnail }}" alt="search photo" title="search photo" />
                 {% endif %}

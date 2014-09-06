@@ -20,7 +20,7 @@
         <h1>{% trans "Print View" %}</h1>
 
         <div class="guide">
-            <div><a href="{% url story story.pk %}">&laquo; {% trans "Back to regular story view" %}</a></div>
+            <div><a href="{% url 'story' story.pk %}">&laquo; {% trans "Back to regular story view" %}</a></div>
             <div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
         </div>
     </div>

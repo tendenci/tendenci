@@ -20,9 +20,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -40,7 +40,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "resumes" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url resumes %}">{% trans "Resume List" %}</a></li>
+            <li><a href="{% url 'resumes' %}">{% trans "Resume List" %}</a></li>
             {% if user.is_authenticated %}
                 <li><a href="{% url resume.add %}">{% trans "Add Resume" %}</a></li>
             {% endif %}
@@ -71,7 +71,7 @@
         </div>
     </li>
     {% if MODULE_JOBS_ENABLED %}
-    <li><a href="{% url jobs %}">{% firstof MODULE_JOBS_LABEL trans 'Jobs' %}</a></li>
+    <li><a href="{% url 'jobs' %}">{% firstof MODULE_JOBS_LABEL trans 'Jobs' %}</a></li>
     {% endif %}
 </ul>
 {% endif %}

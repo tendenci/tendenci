@@ -13,7 +13,7 @@
     <p>{% trans "An update is available for Tendenci." %}</p>
     <p>Current Version: {{ TENDENCI_VERSION }}</p>
     <p>Latest Version: {{ latest_version }}</p>
-    <form method='post' action="{% url update_tendenci %}" >{% csrf_token %}
+    <form method='post' action="{% url 'update_tendenci' %}" >{% csrf_token %}
     <input type='submit' value='Update'>
     </form>
 {% else %}

@@ -85,7 +85,7 @@ table tr.even td:before {
 
             <h1 id="top">{% trans "Invoices Financial Report" %} <small> {% trans "for" %} {{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans "to" %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}</small></h1>
 
-            <p class="no-print"><a href="{% url report_detail run.report.pk %}">{% trans "Back to Report page" %}</a></p>
+            <p class="no-print"><a href="{% url 'report_detail' run.report.pk %}">{% trans "Back to Report page" %}</a></p>
 
             <p class="print-only">{{ SITE_GLOBAL_SITEURL }}{{ request.get_full_path }}</p>
 

@@ -19,13 +19,13 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
-    <li><a href="{% url jobs %}">{% firstof MODULE_JOBS_LABEL trans 'JOBS' %}</a></li>
+    <li><a href="{% url 'jobs' %}">{% firstof MODULE_JOBS_LABEL trans 'JOBS' %}</a></li>
     <li class="dropdown active" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Pricing" %}</a>
         {% if nav_object %}
@@ -63,7 +63,7 @@
         </div>
     </li>
     {% if MODULE_RESUMES_ENABLED %}
-    <li><a href="{% url resumes %}">{% firstof MODULE_RESUME_LABEL trans 'Resumes' %}</a></li>
+    <li><a href="{% url 'resumes' %}">{% firstof MODULE_RESUME_LABEL trans 'Resumes' %}</a></li>
     {% endif %}
 </ul>
 {% endif %}

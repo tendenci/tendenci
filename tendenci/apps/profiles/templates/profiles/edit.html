@@ -322,7 +322,7 @@
                   {{ form.username.errors }}
                 {% endif %}
                               <div>{{ form.username }}</div>
-            <a href="{% url auth_password_change user_this.pk %}">{% trans "change password" %}</a>
+            <a href="{% url 'auth_password_change' user_this.pk %}">{% trans "change password" %}</a>
                </td>
                            </tr>
 

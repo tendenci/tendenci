@@ -34,7 +34,7 @@
 <div class="content"><b>{% trans "Reason:" %}</b> {{ email_block.reason }}</div>
 <br />
 <div class="meta">
-{% blocktrans with email_block.create_dt|date:"long" as emails_create %}<small>Created on {{ emails_create }} by: {% endblocktrans %} <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></small>
+{% blocktrans with email_block.create_dt|date:"long" as emails_create %}<small>Created on {{ emails_create }} by: {% endblocktrans %} <a href="{% url 'profile' email_block.creator.id %}">{{ email_block.creator }}</a></small>
  </div></p>
 
 

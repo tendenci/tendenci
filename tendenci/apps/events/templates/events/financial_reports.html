@@ -45,8 +45,8 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ event.start_dt }}</td>
-                <td><a href="{% url event event.id %}">{{ event.id }}</a></td>
-                <td><a href="{% url event event.id %}">{{ event.title }}</a></td>
+                <td><a href="{% url 'event' event.id %}">{{ event.id }}</a></td>
+                <td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
                 <td>{{ event.registrants_count }}</td>
                 <td>{{ event.registration_total }}</td>
                 <td>{{ event.addons_total }}</td>

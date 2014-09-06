@@ -7,7 +7,7 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link rel="alternate" type="application/atom+xml" title="Notices Feed" href="{% url notification_feed_for_user %}" />
+    <link rel="alternate" type="application/atom+xml" title="Notices Feed" href="{% url 'notification_feed_for_user' %}" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/notification.css" />
 {% endblock %}
 
@@ -16,7 +16,7 @@
     <h2>{% trans "Notifications" %}</h2>
 
     <div class="notice_settings">
-        {% url acct_email as email_url %}
+        {% url 'acct_email' as email_url %}
         {% if user.email %}
             <p>
                 {% trans "Primary email" %}:

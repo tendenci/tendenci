@@ -65,8 +65,8 @@
         <h3>{{ event.title }}</h3>
 
         <div class="event-url">
-            <a href="{% url event event.pk %}">
-                {{ SITE_GLOBAL_SITEURL }}{% url event event.pk %}
+            <a href="{% url 'event' event.pk %}">
+                {{ SITE_GLOBAL_SITEURL }}{% url 'event' event.pk %}
             </a>
         </div>
 
@@ -202,7 +202,7 @@
         </table>
 
         <div class="register-more">
-            <a href="{% url event event.pk %}">{% trans "Register More People" %}</a>
+            <a href="{% url 'event' event.pk %}">{% trans "Register More People" %}</a>
         </div>
 
         <div style="font-weight: bold;">{% trans "Addons" %} ... ({{ addons.count }})</div>

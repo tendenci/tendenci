@@ -51,7 +51,7 @@
         <div class="registrant-details">
             {% if reg.get_name %}
                 {% if reg.user %}
-                <div><h2><a href="{% url profile reg.user.username %}">
+                <div><h2><a href="{% url 'profile' reg.user.username %}">
                     {{ reg.get_name }}</a></h2></div>
                 {% else %}
                 <div><h2>{{ reg.get_name }} {{ reg.user.pk }}</h2></div>
@@ -93,7 +93,7 @@
             <div>{% trans "Registration Date: "%}{{ reg.registration.create_dt }}</div>
 
             <div>{% trans "Event: " %}
-                <a href="{% url event reg.registration.event.pk %}">{{ reg.registration.event }}</a>
+                <a href="{% url 'event' reg.registration.event.pk %}">{{ reg.registration.event }}</a>
             </div>
             <div>{% trans "Event Start: "%}{{ reg.registration.event.start_dt }}</div>
         </div>

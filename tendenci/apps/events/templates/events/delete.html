@@ -13,7 +13,7 @@
     </div>
     <div class="event-info" style="margin-top:10px;">
 
-        <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+        <h3><a href="{% url 'event' event.pk %}">{{ event.title }}</a></h3>
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">

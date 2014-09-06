@@ -23,9 +23,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -43,7 +43,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "groups" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url groups %}">{% trans "Group List" %}</a></li>
+            <li><a href="{% url 'groups' %}">{% trans "Group List" %}</a></li>
             {% if can_add_group %}
                 <li><a href="{% url group.add %}">{% trans "Add Group" %}</a></li>
             {% endif %}

@@ -96,7 +96,7 @@
                 <td>{{ invoice.bill_to_email }}</td>
                 {% with invoice.get_object as invoice_object %}
                     {% if invoice_object.event.pk %}
-                    <td><a href="{% url event invoice_object.event.pk %}">{{ invoice_object.event.pk }}</a> - {{ invoice_object.event.title|truncatewords:"3" }}</td>
+                    <td><a href="{% url 'event' invoice_object.event.pk %}">{{ invoice_object.event.pk }}</a> - {{ invoice_object.event.title|truncatewords:"3" }}</td>
 
                     {% elif item.is_membership %}
                     <td>{{ invoice_object.membership_type }}</td>

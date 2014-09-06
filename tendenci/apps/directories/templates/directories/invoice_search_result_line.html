@@ -17,9 +17,9 @@
 
    {% if obj %}
    <tr>
-       <td><a href="{% url directory obj.slug %}">{{obj.id}}</a></td>
+       <td><a href="{% url 'directory' obj.slug %}">{{obj.id}}</a></td>
        <td>{{obj.first_name}} {{obj.last_name}}</td>
-       <td><a href="{% url directory obj.slug %}">{{obj.headline|truncatewords:5}}</a></td>
+       <td><a href="{% url 'directory' obj.slug %}">{{obj.headline|truncatewords:5}}</a></td>
        <td>{{obj.activation_dt|date:'long'}}</td>
        <td>{{invoice.total|format_currency}}</td>
        <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>

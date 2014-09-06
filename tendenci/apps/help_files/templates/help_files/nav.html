@@ -21,9 +21,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -41,7 +41,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "help_files" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url help_files %}">{% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans 'Topics' %}</a></li>
+            <li><a href="{% url 'help_files' %}">{% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans 'Topics' %}</a></li>
             {% if user.profile.is_staff and can_add_helpfile %}
                 <li><a href="{% url admin:help_files_helpfile_add %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</a></li>
             {% elif can_add_helpfile %}
@@ -75,10 +75,10 @@
         </div>
     </li>
     {% if MODULE_NEWS_ENABLED %}
-    <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    <li><a href="{% url 'news' %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
     {% endif %}
     {% if MODULE_ARTICLES_ENABLED %}
-    <li><a href="{% url news %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
+    <li><a href="{% url 'news' %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
     {% endif %}
 </ul>
 {% endif %}

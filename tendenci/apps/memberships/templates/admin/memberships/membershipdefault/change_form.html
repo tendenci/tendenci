@@ -7,7 +7,7 @@
   <ul class="object-tools">
     {% block object-tools-items %}
 
-    <li><a href="{% url profile original.user.username %}">
+    <li><a href="{% url 'profile' original.user.username %}">
         {% trans "Go to profile" %}</a></li>
 
     {% if original.can_renew %}

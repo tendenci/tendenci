@@ -117,7 +117,7 @@
             {% endif %}
 
             {% if MODULE_PHOTOS_ENABLED %}
-            <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% trans "Photo Albums" %}</span></a></li>
+            <li class="photo-albums"><a href="{% url 'photoset_latest' %}"><span>{% trans "Photo Albums" %}</span></a></li>
             {% endif %}
 
             {% if MODULE_STORIES_ENABLED %}
@@ -145,14 +145,14 @@
             {% endif %}
 
             {% if MODULE_FORMS_ENABLED %}
-             <li class="forms"><a href="{% url forms %}"><span>{%  trans "Forms" %}</span></a></li>
+             <li class="forms"><a href="{% url 'forms' %}"><span>{%  trans "Forms" %}</span></a></li>
             {% endif %}
 
             {% if user.is_superuser %}
-             <li class="redirects"><a href="{% url redirects %}"><span>{% trans "Redirects" %}</span></a></li>
+             <li class="redirects"><a href="{% url 'redirects' %}"><span>{% trans "Redirects" %}</span></a></li>
             <li class="contacts"><a href="{% url contact.search %}"><span>{%  trans "Contacts" %}</span></a></li>
-            <li class="settings"><a href="{% url settings %}"><span>{% trans "Settings" %}</span></a></li>
-            <li class="event-logs"><a href="{% url event_logs %}"><span>{% trans "Event Logs" %}</span></a></li>
+            <li class="settings"><a href="{% url 'settings' %}"><span>{% trans "Settings" %}</span></a></li>
+            <li class="event-logs"><a href="{% url 'event_logs' %}"><span>{% trans "Event Logs" %}</span></a></li>
             <li class="rss"><a href="/rss/"><span>RSS</span></a></li>
             {% endif %}
 
@@ -163,7 +163,7 @@
         
     {% if user.is_superuser %}
         <div class="dashboard-stats">
-        <a href="{% url dashboard_customize %}" class="readmorelarge">Customize Dashboard Statistics</a>
+        <a href="{% url 'dashboard_customize' %}" class="readmorelarge">Customize Dashboard Statistics</a>
         {% for stat_type in statistics %}
             {% dashboard_stat stat_type %}
         {% endfor %}
@@ -182,17 +182,17 @@
         <li><a href="{% url page.add %}">{% trans "Add a page" %}</a></li>
         {% endif %}
 
-        <li><a href="{% url haystack_search %}">{% trans "Search All Modules" %}</a></li>
+        <li><a href="{% url 'haystack_search' %}">{% trans "Search All Modules" %}</a></li>
 
         <!--<li><a href="{% url entity.search %}">Search entities</a></li>
         <li><a href="javascript:;">Edit navigation</a></li>
         <li><a href="{% url event_log.search %}">Search event logs</a></li>
         <li><a href="{% url profile.search %}">Search users</a></li>-->
         <li><a href="{% url profiles.user_import %}">{% trans "Import Users" %}</a></li>
-        <!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
-        <li><a href="{% url settings %}">{% trans "Enable/Disable modules" %}</a></li>
+        <!-- <li><a href="{% url 'settings' %}">Change website settings</a></li> -->
+        <li><a href="{% url 'settings' %}">{% trans "Enable/Disable modules" %}</a></li>
         <!-- <li><a href="javascript:;">Update SEM</a></li> -->
-        <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
+        <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache" %}</a></li>
        <li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
         {% if MODULE_RECURRING_PAYMENTS_ENABLED %}

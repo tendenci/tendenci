@@ -181,7 +181,7 @@
 {% else %}
     {% if self_reg8n and not reg8n.registrant.user %}
         <div style="margin-bottom:5px;">
-            <a href="{{ SITE_GLOBAL_SITEURL }}{% url registration_register %}">
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'registration_register' %}">
                 {% trans "You should register for an account!" %}
             </a>
         </div>

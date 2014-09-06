@@ -72,7 +72,7 @@
                     {{ theme_form.theme_edit }}<input class="btn btn-mini" type="submit" value="Change"/>
                 </form>
                 {% ifnotequal ACTIVE_THEME current_theme %}
-                <p><a href="{% url home %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
+                <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
                 {% endifnotequal %}
                 <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}. <a href="{% url theme_editor.picker %}">{% trans "Change?" %}</a></p>
                 </div>

@@ -30,7 +30,7 @@
 
     <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ now }}</p>
 
-    <form method='post' action='{% url locations_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
+    <form method='post' action='{% url 'locations_import_upload_file' %}' enctype="multipart/form-data">{% csrf_token %}
     {{ form.as_p }}
     <input type='submit' value='Import .csv File'>
     </form>

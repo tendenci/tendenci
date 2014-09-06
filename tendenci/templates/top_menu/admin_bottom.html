@@ -7,7 +7,7 @@
         <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
         <li class="noClick">{% trans "Call Schipul: " %}281-497-6567 ext. 411</li>
         {% with "How Are We Doing?,Suggestions?,Questions?" as feedback_text %}
-        <li id="feedback-menu"><a id="feedback" href="{% url tendenci_feedback %}">{{ feedback_text|split:","|random }}</a></li>
+        <li id="feedback-menu"><a id="feedback" href="{% url 'tendenci_feedback' %}">{{ feedback_text|split:","|random }}</a></li>
         {% endwith %}
     </ul>
 </div>

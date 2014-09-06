@@ -62,7 +62,7 @@
         {% if not payment_profile %}
         <div class="rp-warning-wrap"><span class="bs-callout-warning">NOT complete yet! <br />Please click the button at right to add a payment method.</span></div>
         {% endif %}
-        <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+        <div class="rp-dname">Name: <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
         {% if rp.url %}
         <div class="rp-dname">URL: {{ rp.url|urlize }}</div>
         {% endif %}

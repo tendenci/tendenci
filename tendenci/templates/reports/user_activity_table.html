@@ -52,7 +52,7 @@
     {% else %}
     <td>{{ forloop.counter }}</td>
     {% endif %}
-    <td><a href="{% url profile user.username %}">{{ user.username }}</a></td>
+    <td><a href="{% url 'profile' user.username %}">{{ user.username }}</a></td>
     <td>{{ user.last_name }}</td>
     <td>{{ user.first_name }}</td>
     <td>{{ user.email }}</td>

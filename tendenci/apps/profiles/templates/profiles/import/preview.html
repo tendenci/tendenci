@@ -88,7 +88,7 @@
                 {% if 'first_name' in fieldnames or 'last_name' in fieldnames %}
                 <td>
                     {% if u.user and u.user.username %}
-                    <a href="{% url profile u.user.username %}" target="_blank">{{ u.first_name }} {{ u.last_name }}</a>
+                    <a href="{% url 'profile' u.user.username %}" target="_blank">{{ u.first_name }} {{ u.last_name }}</a>
                     {% else %}
                     {{ u.first_name }} {{ u.last_name }}
                     {% endif %}

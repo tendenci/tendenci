@@ -36,7 +36,7 @@
   </tr>
 </table>
 <p>{% blocktrans %}To view the details of this
-  user, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile object.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile object.user.username %}</b><br>
+  user, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' object.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url 'profile' object.user.username %}</b><br>
 
   <P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
 

@@ -3,7 +3,7 @@
 {% trans "Greetings:" %} <br /><br />
 
 <div>
-The recurring payment account for {{ rp }} has been disabled by <a href="{% url profile user_by.username%}">{{ user_by.get_full_name }}</a>.
+The recurring payment account for {{ rp }} has been disabled by <a href="{% url 'profile' user_by.username%}">{{ user_by.get_full_name }}</a>.
 
 </div>
 <br /><br />

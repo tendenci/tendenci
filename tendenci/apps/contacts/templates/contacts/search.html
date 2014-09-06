@@ -29,7 +29,7 @@
         {% if can_view %}
         <div class="contact-wrap">
 
-            <h2><a href="{% url contact contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
+            <h2><a href="{% url 'contact' contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
             <div class="content">{{ contact.message|linebreaks }}</div>
             <div class="meta">
                 <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>

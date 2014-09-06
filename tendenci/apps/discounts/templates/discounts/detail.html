@@ -59,7 +59,7 @@
                 <tr>
                     <td>
                     {% if reg.user %}
-                        <a href="{% url profile reg.user.username %}">{{ reg.user.username }}</a>
+                        <a href="{% url 'profile' reg.user.username %}">{{ reg.user.username }}</a>
                     {% elif reg.get_name %}
                         {{ reg.get_name }}
                     {% else %}
@@ -72,7 +72,7 @@
                 {% endfor %}
                 {% for mem in membership_list %}
                 <tr>
-                    <td><a href="{% url profile mem.user.username %}">{{ mem.user.username }}</a></td>
+                    <td><a href="{% url 'profile' mem.user.username %}">{{ mem.user.username }}</a></td>
                     <td><a href="{{ mem.get_absolute_url }}">{% trans "Membership URL" %}</a></td>
                     <td><a href="{{ mem.get_invoice.get_absolute_url }}">{% trans "Invoice URL" %}</a></td>
                 </tr>

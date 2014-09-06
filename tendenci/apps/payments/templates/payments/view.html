@@ -65,9 +65,9 @@ the payment entries in the general ledger for accounting purposes.
 
 <tr>
 <td width="30%"><div class="label">{% trans "Creator:" %}</div></td>
-<td width="20%">{% if payment.creator%}<a href="{% url profile payment.creator.username %}">{{ payment.creator.username }}</a>{%endif%}</td>
+<td width="20%">{% if payment.creator%}<a href="{% url 'profile' payment.creator.username %}">{{ payment.creator.username }}</a>{%endif%}</td>
 <td class="label" width="30%">{% trans "Owner:" %}</td>
-<td width="20%">{% if payment.owner%}<a href="{% url profile payment.owner.username %}">{{ payment.owner.username }}</a>{%endif%}</td>
+<td width="20%">{% if payment.owner%}<a href="{% url 'profile' payment.owner.username %}">{{ payment.owner.username }}</a>{%endif%}</td>
 </tr>
 </table>
 </div>

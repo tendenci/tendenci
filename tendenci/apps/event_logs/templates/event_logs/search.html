@@ -63,7 +63,7 @@
                     <tr>
                         {% if event_log.user %}
                             <td class="el-sh-user">
-                                {% trans "User: " %}<a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
+                                {% trans "User: " %}<a href="{% url 'profile' event_log.username %}">{{ event_log.username }}</a>
                                 <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}#advanced">
                                     <img border="0" src="{{ STATIC_URL }}images/icons/crosscheck12x12.gif" alt="crosscheck 12x12" title="crosscheck 12x12" />
                                 </a>
@@ -103,7 +103,7 @@
                         <tr>
                             {% if event_log.user %}
                                 <td colspan="2">
-                                    {% trans "Creator: " %}<a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
+                                    {% trans "Creator: " %}<a href="{% url 'profile' event_log.username %}">{{ event_log.username }}</a>
                                     <a href="{% url event_log.search %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
                                 </td>
                             {% else %}
@@ -114,7 +114,7 @@
                             {% endif %}
                             <td>
                                 {% if event_log.entity %}
-                                    {% trans "Entity: " %}<a href="{% url entity event_log.entity.pk %}">{{ event_log.entity.pk }}</a>
+                                    {% trans "Entity: " %}<a href="{% url 'entity' event_log.entity.pk %}">{{ event_log.entity.pk }}</a>
                                 {% else %}
                                     {% trans "Entity: N/A" %}
                                 {% endif %}

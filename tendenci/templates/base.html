@@ -16,7 +16,7 @@
     {% block meta_canonical_url %}{% endblock %}
     <link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/required.css" />
-    <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
+    <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
     <link href="{{ STATIC_URL }}css/announcements.css" rel="stylesheet" type="text/css" />
     {% block extra_head %}{% endblock %}
     <link href="{{ STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />

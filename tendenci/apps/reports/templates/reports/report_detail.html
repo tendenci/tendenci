@@ -15,7 +15,7 @@
 </ul>
 {% endif %}
 
-<p><a class="btn" href="{% url report_run_create report.pk %}">{% trans 'Run this report with a new date range' %}</a></p>
+<p><a class="btn" href="{% url 'report_run_create' report.pk %}">{% trans 'Run this report with a new date range' %}</a></p>
 
 {% if report.runs %}
     <h3>{% trans "Previous report runs" %}</h3>
@@ -39,6 +39,6 @@
     </table>
 {% endif %}
 
-<p><a href="{% url report_list %}">&larr; {% trans "Back to All Reports page" %}</a></p>
+<p><a href="{% url 'report_list' %}">&larr; {% trans "Back to All Reports page" %}</a></p>
 
 {% endblock body %}

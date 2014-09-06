@@ -42,7 +42,7 @@
                  <a href="{% url profile.edit_groups user_this.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
                 </li>
                 <li>
-                 <a href="{% url auth_password_change user_this.id %}" class="changepassword" title=="Change Password">{% trans "Change Password" %}</a>
+                 <a href="{% url 'auth_password_change' user_this.id %}" class="changepassword" title=="Change Password">{% trans "Change Password" %}</a>
                 </li>
                 {% if request.user.is_superuser %}
                 <li>

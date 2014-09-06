@@ -22,7 +22,7 @@
                     <ul class="associated-events">
                     {% for event in type.event_set.all %}
                         <li>
-                        <a href="{% url event event.pk %}">{{ event }}</a>
+                        <a href="{% url 'event' event.pk %}">{{ event }}</a>
                         ({{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }})
                         </li>
                     {% endfor %}

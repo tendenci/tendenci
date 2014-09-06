@@ -45,7 +45,7 @@
         {% if event.is_recurring_event %}
             <div class="event-recurring"></div>
         {% endif %}
-        <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
+        <a href="{% url 'event' event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
         </h3>
         {% if event.place %}
         <div class="place" itemprop="location">{{ event.place }}</div>
@@ -82,7 +82,7 @@
             {% else %}
             <div class="attend-wrap">
                 {% include "events/include/search-result-spots-taken.html" %}
-                <div class="attend"><a href="{% url event event.pk %}">{% trans "Attend this event" %}</a></div>
+                <div class="attend"><a href="{% url 'event' event.pk %}">{% trans "Attend this event" %}</a></div>
                 <div style="clear:both;"></div>
             </div>
             {% endif %}

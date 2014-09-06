@@ -30,12 +30,12 @@
 <script type="text/javascript">
 function refresh(){
     $.ajax({
-        url: "{% url form_entries_export_check task_id %}",
+        url: "{% url 'form_entries_export_check' task_id %}",
         success: function(data){
             if (data != "DNE"){
                 $("#done").show();
                 $("#wait").hide();
-                window.location = "{% url form_entries_export_download task_id %}"
+                window.location = "{% url 'form_entries_export_download' task_id %}"
             } else {
                 setTimeout(refresh, 2000);
             }

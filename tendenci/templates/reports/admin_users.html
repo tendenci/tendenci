@@ -60,7 +60,7 @@
 {% for profile in profiles %}
 <tr class="{% cycle 'odd' '' %}">
     <td>{{ forloop.counter }}</td>
-    <td><a href="{% url profile profile.user.username %}">{{ profile.user.username }}</a></td>
+    <td><a href="{% url 'profile' profile.user.username %}">{{ profile.user.username }}</a></td>
     <td>{{ profile.user.pk }}</td>
     <td>{{ profile.user.last_name }}</td>
     <td>{{ profile.user.first_name }}</td>

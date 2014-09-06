@@ -33,7 +33,7 @@
         {% for event in events %}
             {% search_result event %}
         {% empty %}
-            {% trans "You're not registered for any upcoming events." %}<a href="{% url events %}">{% trans "View our upcoming events!" %}</a>
+            {% trans "You're not registered for any upcoming events." %}<a href="{% url 'events' %}">{% trans "View our upcoming events!" %}</a>
         {% endfor %}
     </div>
 

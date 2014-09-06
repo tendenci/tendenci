@@ -695,7 +695,7 @@
 
 </p>
 <p><br>
-  {% blocktrans %}To view this user's record, click here:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}</a>
+  {% blocktrans %}To view this user's record, click here:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' profile.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url 'profile' profile.user.username %}</a>
 
 <P>{% blocktrans %}Time submitted:{% endblocktrans %}  {% now "D d M Y P" %}</P>
 

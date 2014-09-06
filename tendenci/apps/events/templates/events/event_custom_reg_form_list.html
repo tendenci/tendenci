@@ -16,7 +16,7 @@
     {% event_nav user event %}
     <div id="reg-form-list">
         <h1>Manage Custom Registration Form(s)</h1>
-        <h3>Event: <a href="{% url event event.id %}">{{ event.title }}</a></h3>
+        <h3>Event: <a href="{% url 'event' event.id %}">{{ event.title }}</a></h3>
         <div id="reg-form-list-body">
 
             {% if reg_conf.use_custom_reg_form %}
@@ -43,7 +43,7 @@
                     <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
                         This event uses a separate custom registrations form for each pricing.
                         <div class="alert-actions">
-                            <a class="btn small" href="{% url event event.id %}">View Event</a>
+                            <a class="btn small" href="{% url 'event' event.id %}">View Event</a>
                             <a class="btn small" href="{% url event.edit event.id %}">Edit Event</a>
                         </div>
                         </div>

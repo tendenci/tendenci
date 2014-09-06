@@ -22,6 +22,6 @@
 
     {% endif %}
 
-    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile obj.user.username %}" class="links">{% trans "Go to my profile" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' obj.user.username %}" class="links">{% trans "Go to my profile" %}</a></li>
 </ul>
 {% endif %}

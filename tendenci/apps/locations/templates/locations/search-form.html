@@ -1,4 +1,4 @@
-<form class="search-form" action="{% url locations %}" method="post">{% csrf_token %}
+<form class="search-form" action="{% url 'locations' %}" method="post">{% csrf_token %}
     <div>
         {{ form.query }}
         <input style="vertical-align:top;" class="btn" type="submit" value="Search {% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %}" />

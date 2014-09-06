@@ -14,7 +14,7 @@
 {% if user.is_authenticated %}
     <p>
        {% blocktrans %} You are already logged in as {{ user }}. {% endblocktrans %}
-        <a href="{% url auth_logout %}">{% trans "Logout?" %}</a>
+        <a href="{% url 'auth_logout' %}">{% trans "Logout?" %}</a>
     </p>
 {% else %}
 
@@ -27,13 +27,13 @@
 </form>
 
 <h3>{% trans "Forgot your password?" %}</h3>
-<p><a href="{% url auth_password_reset %}">{% trans "Click here to reset your password." %}</a></p>
+<p><a href="{% url 'auth_password_reset' %}">{% trans "Click here to reset your password." %}</a></p>
 
 {% if MODULE_USERS_SELFREGISTRATION %}
 <h3>{% trans "Don't have an account?" %}</h3>
-<p><a href="{% url registration_register %}">{% trans "Register Now" %}</a></p>
+<p><a href="{% url 'registration_register' %}">{% trans "Register Now" %}</a></p>
 {% comment %}
-<p><a href="{% url social_begin 'facebook' %}">{% trans "Log in with Facebook" %}</a></p>
+<p><a href="{% url 'social_begin' 'facebook' %}">{% trans "Log in with Facebook" %}</a></p>
 {% endcomment %}
 {% endif %}
 

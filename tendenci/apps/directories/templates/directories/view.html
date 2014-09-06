@@ -76,7 +76,7 @@
 
         {% include "directories/meta.html" %}
 
-        <div>{% url directory directory.pk as the_url %}</div>
+        <div>{% url 'directory' directory.pk as the_url %}</div>
         <div class="fb-connect">{% fb_like_button_iframe the_url %}</div>
 
     </div>

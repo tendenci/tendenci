@@ -28,7 +28,7 @@
 
                     <div class="membership-detail-nav">
                         {% if request.user.is_authenticated %}
-                        <a href="{% url profile membership.user.username %}">
+                        <a href="{% url 'profile' membership.user.username %}">
                             {% trans "Profile" %}</a>
                         {% endif %}
 

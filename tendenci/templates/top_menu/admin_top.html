@@ -5,11 +5,11 @@
 {% spaceless %}
 <div id="admin-bar">
     <ul>
-       <li class="visible-mobile"><a class="admin-logo" href="{% url dashboard %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a></li>
+       <li class="visible-mobile"><a class="admin-logo" href="{% url 'dashboard' %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a></li>
         <li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
             <div class="sub">
                 <div class="column">
-                <h4><a href="{% url dashboard %}">{% trans "Apps" %}</a></h4>
+                <h4><a href="{% url 'dashboard' %}">{% trans "Apps" %}</a></h4>
                     <div class="column app-list">
                         {% for app in registered_apps.core %}
                             {% if app.enabled %}
@@ -33,7 +33,7 @@
                 </div>
                 {% if registered_apps.addons %}
                 <div class="column app-list">
-                    <h4><a href="{% url dashboard %}">{% trans "Add-ons" %}</a></h4>
+                    <h4><a href="{% url 'dashboard' %}">{% trans "Add-ons" %}</a></h4>
                     {% for app in registered_apps.addons %}
                         {% if app.enabled %}
                         <ul>
@@ -93,7 +93,7 @@
             </div>
         </li>
         {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
-        <li><a href="{% url settings %}"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
+        <li><a href="{% url 'settings' %}"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
             <div class="sub">
                 <div class="column">
                     <ul>
@@ -113,7 +113,7 @@
             <div class="sub">
                 <div class="column">
                     <ul>
-                        <li><a href="{% url report_list %}">{% trans "Invoice Reports" %}</a></li>
+                        <li><a href="{% url 'report_list' %}">{% trans "Invoice Reports" %}</a></li>
                         <li><a href="{% url reports-events-summary %}">{% trans "Event logs Summary" %}</a></li>
                         <li><a href="{% url reports-admin-users %}">{% trans "Administrators" %}</a></li>
                         <li><a href="{% url reports-user-added %}">{% trans "Site Users Added" %}</a></li>
@@ -138,19 +138,19 @@
                     <ul>
                         <li><a href="/settings/site/global/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Site Settings" %}</a></li>
                         <li><a href="/settings/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Full Settings List" %}</a></li>
-                        <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
+                        <li><a href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url admin:index %}">{% trans "Admin Backend" %}</a></li>
                         <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
                         {% if THEME_INFO.SSU.walkthrough %}
                         <li><a id="walkthrough-quicklink" href="/">{% trans "Homepage Walkthrough" %}</a></li>
                         {% endif %}
                         {% if THEME_INFO.SSU.checklist %}
-                        <li><a href="{% url completion_checklist %}">{% trans "Completion Status" %}</a></li>
+                        <li><a href="{% url 'completion_checklist' %}">{% trans "Completion Status" %}</a></li>
                         {% endif %}
                         <li><a href="{% url addon.upload %}">{% trans "Module Upload" %}</a></li>
                         <li><a href="/newsletter_generator/">{% trans "Newsletter Generator" %}</a></li>
                         <li><a href="{% url event_log.search %}">{% trans "Event Logs" %}</a></li>
-                        <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
+                        <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache" %}</a></li>
                         <li><a href="/">{% trans "Home" %}</a></li>
                     </ul>
                 </div>
@@ -167,7 +167,7 @@
                             <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
                         {% endif %}
                         <li><a href="https://github.com/tendenci/tendenci" target="_blank">Version: {{ TENDENCI_VERSION }}</a></li>
-                        <li><a href="{% url update_tendenci %}">{% trans "Update Tendenci" %}</a></li>
+                        <li><a href="{% url 'update_tendenci' %}">{% trans "Update Tendenci" %}</a></li>
                     </ul>
                 </div>
             </div>

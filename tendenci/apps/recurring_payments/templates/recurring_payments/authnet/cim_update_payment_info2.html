@@ -28,12 +28,12 @@
     {% if request.user.id == rp.user.id %}
        Manage my Payment Info
     {% else %}
-    {% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% trans "Manage Payment Info for " %} <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
     {% endif %}
     </h1>
 
  <div>
-      <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+      <div class="rp-dname">Name: <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
       <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
        <p id="dnotes" style="display:none;"></p>
   </div>

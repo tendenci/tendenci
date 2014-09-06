@@ -74,7 +74,7 @@
             <tr class="{% cycle "even" "odd" %} {% if invoice.payments_credits > invoice.total %} pay-extra{% endif %} {% if invoice.payments_credits == invoice.total and invoice.balance == invoice.total and invoice.total > 0 %} all-match{% endif %}">
                 <td><a href="{{ invoice.get_absolute_url }}">
                     {% if invoice.get_object.event.pk %}
-                    <a href="{% url event invoice.get_object.event.pk %}">{{ invoice.get_object.event.pk }}</a> - {{ invoice.get_object.event.title|truncatewords:"3" }}
+                    <a href="{% url 'event' invoice.get_object.event.pk %}">{{ invoice.get_object.event.pk }}</a> - {{ invoice.get_object.event.title|truncatewords:"3" }}
 
                     {% elif invoice.get_object.membership_type %}
                     {{ invoice.get_object.membership_type }}

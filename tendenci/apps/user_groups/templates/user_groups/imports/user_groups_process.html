@@ -24,7 +24,7 @@
     <p><strong>{% trans "File" %}:</strong> {{ import_i.file.name }}</p>
     <p><strong>{% trans "Status" %}:</strong> {{ import_i.status }}</p>
     {% if import_i.status == "completed" %}
-    <p><strong>{% trans "Import complete!" %}</strong> <a href="{% url groups %}">{% trans "View groups list." %}</a>
+    <p><strong>{% trans "Import complete!" %}</strong> <a href="{% url 'groups' %}">{% trans "View groups list." %}</a>
     {% endif %}
     {% if import_i.status == "failed" %}
     <p><strong>{% trans "Failure Reason" %}</strong> {{ import_i.failure_reason }}</p>

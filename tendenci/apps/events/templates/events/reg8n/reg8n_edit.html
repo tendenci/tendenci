@@ -16,7 +16,7 @@
     {% event_nav user reg8n.event %}
 
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Registration Edit" %}</h1>
-    <div class="event-title">Event: <a href="{% url event reg8n.event.id%}">{{ reg8n.event.title }}</a></div>
+    <div class="event-title">Event: <a href="{% url 'event' reg8n.event.id%}">{{ reg8n.event.title }}</a></div>
 
     <div class="event-wrap">
     {% if formset_errors %}

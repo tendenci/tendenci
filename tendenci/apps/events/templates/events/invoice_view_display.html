@@ -9,7 +9,7 @@
             <tr>
                 <td>
                     {% if reg.user %}
-                        <a href="{% url profile reg.user.username %}">
+                        <a href="{% url 'profile' reg.user.username %}">
                     {% endif %}
                     {% if reg.get_name %}
                         {{ reg.get_name }}

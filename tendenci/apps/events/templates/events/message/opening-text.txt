@@ -13,7 +13,7 @@
     <h3>
         <font color="#000000" face="Arial">
               <span class="vevent">
-                      <a class="url" href="{{ SITE_GLOBAL_SITEURL }}{% url event event.id %}">
+                      <a class="url" href="{{ SITE_GLOBAL_SITEURL }}{% url 'event' event.id %}">
                         <span class="summary">{{ event.title }}</span>
                     </a>
               </span>

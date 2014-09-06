@@ -42,7 +42,7 @@
 
             <div class="content"><b>{% trans "Reason:" %}</b> {{ email_block.reason|striptags|truncatewords:40 }}</div>
             <div class="meta">
-                {% blocktrans with email_block.create_dt|date:"long" as create_date %} <div class="submitted">Created on {{ create_date }} by:{% endblocktrans %} <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></div>
+                {% blocktrans with email_block.create_dt|date:"long" as create_date %} <div class="submitted">Created on {{ create_date }} by:{% endblocktrans %} <a href="{% url 'profile' email_block.creator.id %}">{{ email_block.creator }}</a></div>
             </div>
 
             <!-- delete-email form -->

@@ -22,7 +22,7 @@
     {% for renew_entry in obj.indivmembershiprenewentry_set.all %}
         <tr>
             <td>
-                <a href="{% url profile renew_entry.membership.user.username %}">{{ renew_entry.membership.user.get_full_name }} #{{ renew_entry.membership.member_number }}</a>
+                <a href="{% url 'profile' renew_entry.membership.user.username %}">{{ renew_entry.membership.user.get_full_name }} #{{ renew_entry.membership.member_number }}</a>
             </td>
             <td class="td-right">---</td>
         </tr>

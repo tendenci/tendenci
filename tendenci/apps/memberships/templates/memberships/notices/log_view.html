@@ -30,7 +30,7 @@
        <h2>{% trans "Sent to the following member(s):" %}</h2>
        <ol>
        {% for record in log_records %}
-           <li><a href="{% url profile record.membership.user.username %}">{{ record.membership.user.get_full_name }}</a></li>
+           <li><a href="{% url 'profile' record.membership.user.username %}">{{ record.membership.user.get_full_name }}</a></li>
        {% endfor %}
        </ol>
        </div>

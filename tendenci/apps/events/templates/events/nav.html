@@ -24,9 +24,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -134,14 +134,14 @@
     </li>
     {% if request.user.is_superuser %}
     {% if MODULE_DISCOUNTS_ENABLED %}
-    <li><a href="{% url discounts %}">{% firstof MODULE_DISCOUNTS_LABEL 'Discounts' %}</a></li>
+    <li><a href="{% url 'discounts' %}">{% firstof MODULE_DISCOUNTS_LABEL 'Discounts' %}</a></li>
     {% endif %}
     {% else %}
     {% if MODULE_NEWS_ENABLED and MODULE_EVENTS_SHOW_NEWS_TAB %}
-    <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+    <li><a href="{% url 'news' %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
     {% endif %}
     {% if MODULE_ARTICLES_ENABLED and MODULE_EVENTS_SHOW_ARTICLE_TAB %}
-    <li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL 'Articles' %}</a></li>
+    <li><a href="{% url 'articles' %}">{% firstof MODULE_ARTICLES_LABEL 'Articles' %}</a></li>
     {% endif %}
     {% endif %}
 </ul>

@@ -20,9 +20,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -73,7 +73,7 @@
                 {% if user.profile.is_staff %}
                     <li class="divider"></li>
                     <li><a href="{% url profile.edit_perms user_this.id %}">{% trans "Edit Permissions" %}</a></li>
-                    <li><a href="{% url auth_password_change user_this.id %}">{% trans "Change Password" %}</a></li>
+                    <li><a href="{% url 'auth_password_change' user_this.id %}">{% trans "Change Password" %}</a></li>
                 {% endif %}
                 {% if can_delete_profile %}
                     <li class="divider"></li>
@@ -84,7 +84,7 @@
         {% endif %}
         </div>
     </li>
-    <li><a href="{% url groups %}">{% firstof MODULE_GROUPS_LABEL trans "Groups" %}</a></li>
+    <li><a href="{% url 'groups' %}">{% firstof MODULE_GROUPS_LABEL trans "Groups" %}</a></li>
     {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED and MODULE_USERS_SHOWCORPMEMTAB %}<li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
 </ul>
 {% endif %}

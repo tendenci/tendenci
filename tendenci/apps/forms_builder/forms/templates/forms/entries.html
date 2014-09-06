@@ -18,7 +18,7 @@
     <h2>{{ form.title }}</h2>
     <p><a href="{% url admin:forms_form_export form.pk %}">{% trans "Export All Entries" %}</a></p>
     {% if form.has_files %}
-    <p><a href="{% url form_entries_export_full form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a></p>
+    <p><a href="{% url 'form_entries_export_full' form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a></p>
     {% endif %}
     {% autopaginate entries 10 %}
 
@@ -40,7 +40,7 @@
                 </a>
             </h3>
             <!-- delete form -->
-            <form name="entry-delete" method="POST" action="{% url form_entry_delete entry.pk %}">{% csrf_token %}
+            <form name="entry-delete" method="POST" action="{% url 'form_entry_delete' entry.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
         </div>

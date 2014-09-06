@@ -19,7 +19,7 @@
   <div id="rp-delete">
     <h1>Disabling Recurring Payment</h1>
 
-    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+    <div class="rp-dname">Name: <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
     <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
     <div >Payment Amount: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
 

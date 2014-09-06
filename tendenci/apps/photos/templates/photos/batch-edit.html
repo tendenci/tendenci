@@ -61,7 +61,7 @@
                         </select>
                     </div>
                     <div class="save-wrap">
-                        <input type="submit" value="Save all changes to these photos" onclick="event.preventDefault(); save_changes('{% url photoset_details photo_set.id %}');"/>
+                        <input type="submit" value="Save all changes to these photos" onclick="event.preventDefault(); save_changes('{% url 'photoset_details' photo_set.id %}');"/>
                     </div>
                 </div>
             </div>
@@ -226,7 +226,7 @@
             // send an ajax request for an individual form
             $.ajax({
                 type: 'POST',
-                url: '{% url photos_batch_edit photo_set.id %}',
+                url: '{% url 'photos_batch_edit' photo_set.id %}',
                 async: true,
                 data: string,
                 success: function(xmlRequestObject, successString){

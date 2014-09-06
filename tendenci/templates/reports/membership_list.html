@@ -177,7 +177,7 @@
         {% for mem in mems %}
             <tr class="{% cycle 'odd' '' %}">
                 <td>{{ forloop.counter }}</td>
-                <td><a href="{% url profile mem.user.username %}">{{ mem.user.username }}</a></td>
+                <td><a href="{% url 'profile' mem.user.username %}">{{ mem.user.username }}</a></td>
                 <td>{{ mem.user.get_full_name }}</td>
                 <td><a href="mailto:{{ mem.user.email }}">{{ mem.user.email }}</td>
                 <td>{{ mem.membership_type }}</td>

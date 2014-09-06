@@ -6,5 +6,5 @@
 {% block body %}
 <p>{% trans "You're logged out. Thanks for spending some quality time with the Web site today." %}</p>
 
-<p><a href="{% url auth_login %}">{% trans 'Log in again' %}</a></p>
+<p><a href="{% url 'auth_login' %}">{% trans 'Log in again' %}</a></p>
 {% endblock %}

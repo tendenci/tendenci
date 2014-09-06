@@ -23,7 +23,7 @@
       <div id="walkthrough-rotator" class="walkthrough-item" style="display:none;">
         <p class="tooltipTitle">{% trans 'This is Your Rotator' %}</p>
             <p>{% blocktrans %}You can add and change this content in the{% endblocktrans %}
-            <a href="{% url stories %}" target="_blank">{{ MODULE_STORIES_LABEL }}</a>
+            <a href="{% url 'stories' %}" target="_blank">{{ MODULE_STORIES_LABEL }}</a>
             {% blocktrans %}module. You can even assign dates to a story to ensure it's only shown during a specific period. For more information on how to use the Rotator and Stories, check out this{% endblocktrans %}
             <a href="http://tendenci.com/help-files/how-do-i-use-the-stories-module/" target="_blank">{% trans 'help file.' %}</a></p>
             <br>
@@ -148,7 +148,7 @@
                     alert("{% trans 'You can not close before you finish all the walkthrough steps.' %}");
                     return false;
                 }
-                window.location = "{% url completion_checklist %}";
+                window.location = "{% url 'completion_checklist' %}";
                 return true;
             }
         });
@@ -163,7 +163,7 @@
 
         $('.close-step').live('click', function(e){
             $.pagewalkthrough('close');
-            window.location = "{% url completion_checklist %}";
+            window.location = "{% url 'completion_checklist' %}";
         });
     });
   </script>

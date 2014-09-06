@@ -20,9 +20,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -40,7 +40,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "articles" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url articles %}">{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</a></li>
+            <li><a href="{% url 'articles' %}">{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</a></li>
             {% if can_add_article %}
                 <li><a href="{% url article.add %}">{% trans "Add" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></li>
             {% endif %}
@@ -71,7 +71,7 @@
         </div>
     </li>
     {% if MODULE_NEWS_ENABLED and MODULE_ARTICLES_SHOW_NEWS_TAB %}
-    <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    <li><a href="{% url 'news' %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
     {% endif %}
 </ul>
 {% endif %}

@@ -10,7 +10,7 @@
         <h2>{% firstof photo.title "Untitled" %}</h2>
     </div>
     <div class="photo-nav">
-        <div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
+        <div class="photo-back"><a href="{% url 'photoset_details' set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
     </div>
     <div class="photo-traverse">
         <ul>
