@@ -1,0 +1,86 @@
+/********************************************
+* New styles for the new admin bar
+*********************************************/
+
+
+.t-top-nav {
+    min-height: 30px;
+}
+
+.t-top-nav .navbar-header {
+    min-height: 30px;
+    height: 30px;
+}
+
+.t-top-nav .dropdown:not(.lang-dropdown):hover .dropdown-menu {
+    display: block;
+}
+
+
+.t-top-nav .dropdown-menu {
+    max-width: 1170px;
+}
+
+.t-top-nav .yamm-content > .row > ul {
+    margin: 0 !important;
+}
+
+.t-top-nav a {
+    text-transform: none !important;
+    font-size: 12px;
+}
+
+.t-top-nav .nav > li > a {
+    padding: 5px 15px !important;
+}
+
+.t-top-nav .app-name {
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.t-top-nav .app-name a {
+    padding: 4px 0;
+}
+
+.t-top-nav .strong {
+    font-weight: bold;
+}
+
+.t-top-nav .app-button {
+    padding: 4px 5px;
+}
+
+.t-top-nav .app-list li {
+    padding: 0;
+}
+.t-top-nav .custom-yamm-content {
+    padding:0 20px;
+}
+
+.t-top-nav .navbar-nav {
+    margin: 0;
+}
+
+.t-top-nav .nav-logo {
+    position: relative;
+    bottom: 12px;
+}
+
+.t-top-nav .classic {
+    padding: 5px 15px;
+}
+
+.t-top-nav .lang-scrollable-menu {
+    height: auto;
+    max-height: 500px;
+    overflow-x: hidden;
+}
+
+.t-top-nav .navbar-form {
+    margin:2px 0;
+}
+
+.t-top-nav .navbar-form input.form-control {
+    height: 26px;
+}
