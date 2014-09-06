@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from tendenci.apps.registration.models import RegistrationProfile
-from tendenci.core.base.fields import EmailVerificationField
+from tendenci.apps.base.fields import EmailVerificationField
 
 
 # I put this on all required fields, because it's easier to pick up

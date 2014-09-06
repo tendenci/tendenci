@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
-from tendenci.core.perms.utils import has_perm
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.accountings.utils import (make_acct_entries,
                                     make_acct_entries_reversing)

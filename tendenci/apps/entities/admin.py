@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.utils import update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.entities.models import Entity
 
 

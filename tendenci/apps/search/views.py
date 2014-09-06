@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from tendenci.apps.search.forms import ModelSearchForm
-from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.event_logs.models import EventLog
 
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 

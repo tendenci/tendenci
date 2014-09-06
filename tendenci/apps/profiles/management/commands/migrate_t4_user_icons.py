@@ -14,7 +14,7 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        from tendenci.core.files.models import File as tFile
+        from tendenci.apps.files.models import File as tFile
 
         ct_user = ContentType.objects.get_for_model(User)
         tfiles = tFile.objects.filter(content_type=ct_user,

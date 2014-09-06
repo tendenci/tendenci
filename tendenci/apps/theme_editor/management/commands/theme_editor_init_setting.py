@@ -7,7 +7,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from django.conf import settings
-        from tendenci.core.site_settings.models import Setting
+        from tendenci.apps.site_settings.models import Setting
         from django.core.cache import cache
 
         setting = Setting.objects.get(scope='module', scope_category='theme_editor')

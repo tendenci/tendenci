@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = "Runs an import task for the specified model."
 
     def handle(self, *args, **options):
-        from tendenci.core.imports.models import Import
+        from tendenci.apps.imports.models import Import
         from tendenci.apps.user_groups.importer.utils import user_groups_import_process
 
         if args:

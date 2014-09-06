@@ -3,7 +3,7 @@ from django.db.models.fields import CharField, DecimalField
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.invoices.models import Invoice
-from tendenci.addons.events.models import Event
+from tendenci.apps.events.models import Event
 
 
 class AdminNotesForm(forms.ModelForm):

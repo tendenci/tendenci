@@ -10,8 +10,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import Group
-        from tendenci.addons.memberships.models import MembershipType
-        from tendenci.core.site_settings.utils import get_setting
+        from tendenci.apps.memberships.models import MembershipType
+        from tendenci.apps.site_settings.utils import get_setting
 
         # membership group ids
         groups_list = list(MembershipType.objects.values_list('group', flat=True))

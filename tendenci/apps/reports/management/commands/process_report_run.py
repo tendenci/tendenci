@@ -26,12 +26,12 @@ class Command(BaseCommand):
         invalidate('reports_run')
 
     def report_output_invoices(self, run):
-        from tendenci.addons.corporate_memberships.models import CorpMembership
+        from tendenci.apps.corporate_memberships.models import CorpMembership
         try:
             from donations.models import Donation
         except:
             Donation = None
-        from tendenci.addons.memberships.models import (MembershipType,
+        from tendenci.apps.memberships.models import (MembershipType,
             MembershipSet, MembershipDefault)
         from tendenci.apps.invoices.models import Invoice
         from tendenci.apps.reports.models import CONFIG_OPTIONS

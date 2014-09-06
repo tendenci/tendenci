@@ -9,9 +9,9 @@ from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 
 from tendenci.apps.invoices.models import Invoice
-from tendenci.core.base.utils import UnicodeWriter
-from tendenci.core.emails.models import Email
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base.utils import UnicodeWriter
+from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def process_invoice_export(start_dt=None, end_dt=None,

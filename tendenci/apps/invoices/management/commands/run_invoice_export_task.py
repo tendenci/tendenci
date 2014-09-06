@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = "Runs an export task for invoices."
 
     def handle(self, *args, **options):
-        from tendenci.core.exports.models import Export
+        from tendenci.apps.exports.models import Export
         from tendenci.apps.invoices.tasks import InvoiceExportTask
         if args:
 

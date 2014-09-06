@@ -12,12 +12,12 @@ from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from tendenci.apps.forms_builder.forms.managers import FormManager
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.base.fields import EmailVerificationField
-from tendenci.core.base.utils import checklist_update
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.fields import EmailVerificationField
+from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.redirects.models import Redirect
 from tendenci.libs.abstracts.models import OrderingBaseModel
 

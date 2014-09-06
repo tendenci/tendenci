@@ -6,9 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
-from tendenci.core.base.fields import SplitDateTimeField, PriceField
+from tendenci.apps.base.fields import SplitDateTimeField, PriceField
 from tendenci.apps.discounts.utils import assign_discount
 
 END_DT_INITIAL = datetime.now() + timedelta(weeks=4)

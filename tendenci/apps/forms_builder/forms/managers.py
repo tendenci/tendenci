@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from tendenci.core.perms.managers import TendenciBaseManager
+from tendenci.apps.perms.managers import TendenciBaseManager
 
 from haystack.query import SearchQuerySet
 

@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.contributions.managers import ContributionManager
-from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.perms.models import TendenciBaseModel
 
 class Contribution(TendenciBaseModel):
     guid = models.CharField(max_length=40)

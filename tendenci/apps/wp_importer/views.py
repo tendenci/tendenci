@@ -12,17 +12,17 @@ from django.db import models
 from tendenci.apps.wp_importer.forms import BlogImportForm
 from tendenci.apps.wp_importer.models import BlogImport
 from tendenci.apps.wp_importer.tasks import WPImportTask
-from tendenci.core.base.http import MissingApp
+from tendenci.apps.base.http import MissingApp
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from parse_uri import ParseUri
 from djcelery.models import TaskMeta
 
-from tendenci.core.base.http import Http403
-from tendenci.core.perms.utils import has_perm, update_perms_and_save
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.base.utils import send_email_notification
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.utils import send_email_notification
 
 @login_required
 def index(request, template_name="wp_importer/index.html"):

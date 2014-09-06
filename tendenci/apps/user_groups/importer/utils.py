@@ -1,6 +1,6 @@
 from django.db.models import FloatField
 
-from tendenci.core.imports.utils import extract_from_excel
+from tendenci.apps.imports.utils import extract_from_excel
 from tendenci.apps.user_groups.models import Group
 
 

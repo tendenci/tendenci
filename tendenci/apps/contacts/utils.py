@@ -1,5 +1,5 @@
 from django.db.models import Q
-from tendenci.core.email_blocks.models import EmailBlock
+from tendenci.apps.email_blocks.models import EmailBlock
 
 # check if this email is listed in the email blocks
 def listed_in_email_block(email_this):

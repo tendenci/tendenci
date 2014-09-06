@@ -1,7 +1,7 @@
 from django import forms
 
 from tendenci.apps.entities.models import Entity
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 
 
 class EntityForm(TendenciBaseForm):

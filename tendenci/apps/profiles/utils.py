@@ -20,10 +20,10 @@ from django.core import exceptions
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.user_groups.models import GroupMembership, Group
-from tendenci.core.base.utils import UnicodeWriter, normalize_newline
-from tendenci.core.emails.models import Email
-from tendenci.core.perms.utils import get_query_filters
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base.utils import UnicodeWriter, normalize_newline
+from tendenci.apps.emails.models import Email
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
@@ -274,7 +274,7 @@ def clean_username(username):
 
 
 def process_export(export_fields='all_fields', identifier=u'', user_id=0):
-    from tendenci.core.perms.models import TendenciBaseModel
+    from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
         user_field_list = [

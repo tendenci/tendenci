@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.stories.models import Story, Rotator
 from tendenci.apps.stories.forms import StoryAdminForm
 from tendenci.apps.stories.utils import copy_story
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.utils import update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class StoryAdmin(TendenciBaseModelAdmin):

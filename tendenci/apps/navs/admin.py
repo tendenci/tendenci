@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 from tendenci.apps.navs.forms import NavForm, ItemAdminForm
 from tendenci.apps.navs.models import Nav, NavItem

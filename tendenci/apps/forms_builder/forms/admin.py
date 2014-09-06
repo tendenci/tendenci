@@ -16,8 +16,8 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.site_settings.utils import get_setting
 
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm

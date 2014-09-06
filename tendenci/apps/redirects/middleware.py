@@ -10,7 +10,7 @@ class RedirectMiddleware(object):
             return response  # No need to check for a redirect for non-404 responses.
         # use urlquote so we can support '?' in the redirect
         path = urlquote(request.get_full_path())
-        from tendenci.core.handler404.models import Report404
+        from tendenci.apps.handler404.models import Report404
         try:
             redirect, args, kwargs = resolve(path, urlconf='tendenci.apps.redirects.dynamic_urls')
             args = [value for value in kwargs.values()]

@@ -1,7 +1,7 @@
 #from haystack import indexes
 #from haystack import site
 #from tendenci.apps.entities.models import Entity
-#from tendenci.core.perms.indexes import TendenciBaseSearchIndex
+#from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 #
 #
 #class EntityIndex(TendenciBaseSearchIndex):

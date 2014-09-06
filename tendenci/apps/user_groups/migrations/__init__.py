@@ -2,9 +2,9 @@ from south.signals import post_migrate
 from django.db import connection
 from django.core.management import call_command
 
-from tendenci.core.site_settings.models import Setting
+from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.user_groups.models import Group
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def create_default_group(sender, app, **kwargs):

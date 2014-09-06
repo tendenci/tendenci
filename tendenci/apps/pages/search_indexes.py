@@ -4,8 +4,8 @@ from haystack import site
 from django.utils.html import strip_tags, strip_entities
 
 from tendenci.apps.pages.models import Page
-from tendenci.core.perms.indexes import TendenciBaseSearchIndex
-from tendenci.core.categories.models import Category
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.categories.models import Category
 
 
 class PageIndex(TendenciBaseSearchIndex):

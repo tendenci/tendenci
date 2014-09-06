@@ -3,7 +3,7 @@ from django.forms.util import ErrorList
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.redirects.models import Redirect
-from tendenci.core.registry import site
+from tendenci.apps.registry import site
 
 class RedirectForm(forms.ModelForm):
 

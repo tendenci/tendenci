@@ -5,7 +5,7 @@ from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
 from tendenci.libs.model_report import report
 
-from tendenci.core.registry import autodiscover as reg_autodiscover
+from tendenci.apps.registry import autodiscover as reg_autodiscover
 
 # load the apps that are in Django Admin
 admin.autodiscover()
@@ -171,7 +171,7 @@ except ImportError:
     pass
 
 #PLUGINS:
-from tendenci.core.registry.utils import get_url_patterns
+from tendenci.apps.registry.utils import get_url_patterns
 urlpatterns += get_url_patterns()
 
 urlpatterns += patterns('', url(r'^en/$', redirect_to, {'url': '/accounts/login/'}),)

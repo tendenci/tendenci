@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from tendenci.apps.pages.models import Page
-        from tendenci.core.site_settings.utils import get_setting
+        from tendenci.apps.site_settings.utils import get_setting
 
         self.SITE_URL = get_setting('site', 'global', 'siteurl')
 

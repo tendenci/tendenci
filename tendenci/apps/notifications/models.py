@@ -27,7 +27,7 @@ from django.utils.translation import ugettext, get_language, activate
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 QUEUE_ALL = getattr(settings, "NOTIFICATION_QUEUE_ALL", False)
 

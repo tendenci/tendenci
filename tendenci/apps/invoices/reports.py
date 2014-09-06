@@ -8,7 +8,7 @@ from tendenci.libs.model_report.utils import (sum_column, us_date_format, date_l
                                               entity_format)
 
 from tendenci.apps.invoices.models import Invoice
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 CURRENCY_SYMBOL = get_setting("site", "global", "currencysymbol")
 

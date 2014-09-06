@@ -422,7 +422,7 @@ if os.path.exists(os.path.join(PROJECT_ROOT, 'addons/impersonation/')):
 # -------------------------------------- #
 
 DEFAULT_INSTALLED_APPS = INSTALLED_APPS
-from tendenci.core.registry.utils import update_addons
+from tendenci.apps.registry.utils import update_addons
 INSTALLED_APPS = update_addons(INSTALLED_APPS, SITE_ADDONS_PATH)
 
 # Salesforce Integration

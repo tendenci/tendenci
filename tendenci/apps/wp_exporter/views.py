@@ -9,9 +9,9 @@ from django.utils.translation import ugettext as _
 from django.template import Template
 from djcelery.models import TaskMeta
 
-from tendenci.core.base.http import Http403
-from tendenci.core.perms.utils import has_perm
-from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.wp_exporter.utils import gen_xml
 from tendenci.apps.wp_exporter.forms import ExportForm
 from tendenci.apps.wp_exporter.tasks import WPExportTask

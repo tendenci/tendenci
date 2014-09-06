@@ -12,7 +12,7 @@ class EntityManager(models.Manager):
         return instance
 
     def get_or_create_default(self, user=AnonymousUser()):
-        from tendenci.core.site_settings.utils import get_global_setting
+        from tendenci.apps.site_settings.utils import get_global_setting
         entity = self.first()
         if not entity:
             params = {'id': 1,

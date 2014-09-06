@@ -10,9 +10,9 @@ from django.contrib.auth.views import password_reset as auth_password_reset
 from django.contrib.auth.models import User
 from tendenci.apps.registration.forms import RegistrationForm
 from forms import LoginForm
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.base.decorators import ssl_required
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.decorators import ssl_required
 from tendenci.apps.accounts.forms import PasswordResetForm
 
 
@@ -140,7 +140,7 @@ def register(request, success_url=None,
             # This is for including a link in the reg email back to the event viewed
             event = None
             if event_id: # the user signed up via an event
-                from tendenci.addons.events.models import Event
+                from tendenci.apps.events.models import Event
                 event = get_object_or_404(Event, pk=event_id)
 
             new_user = form.save(profile_callback=profile_callback, event=event)

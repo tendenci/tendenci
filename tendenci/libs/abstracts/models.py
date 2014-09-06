@@ -6,8 +6,8 @@ from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
 from timezones.fields import TimeZoneField
 
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.object_perms import ObjectPermission
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
@@ -40,7 +40,7 @@ class TendenciBaseModel(models.Model):
 
     @property
     def obj_perms(self):
-        from tendenci.core.perms.fields import has_groups_perms
+        from tendenci.apps.perms.fields import has_groups_perms
         t = '<span class="perm-%s">%s</span>'
 
         if self.allow_anonymous_view:

@@ -2,10 +2,10 @@ from datetime import datetime
 
 from django.db.models import Q
 
-from tendenci.core.rss.feedsmanager import SubFeed
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.utils import PUBLIC_FILTER
-from tendenci.core.sitemaps import TendenciSitemap
+from tendenci.apps.rss.feedsmanager import SubFeed
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import PUBLIC_FILTER
+from tendenci.apps.sitemaps import TendenciSitemap
 
 from tendenci.apps.stories.models import Story
 

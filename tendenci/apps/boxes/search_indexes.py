@@ -4,7 +4,7 @@ from haystack import site
 from django.utils.html import strip_tags, strip_entities
 
 from tendenci.apps.boxes.models import Box
-from tendenci.core.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
 class BoxIndex(TendenciBaseSearchIndex):

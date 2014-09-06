@@ -1,6 +1,6 @@
 from celery.task import Task
 from celery.registry import tasks
-from tendenci.core.imports.utils import render_excel
+from tendenci.apps.imports.utils import render_excel
 from tendenci.apps.profiles.models import Profile
 
 

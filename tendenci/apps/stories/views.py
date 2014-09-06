@@ -8,19 +8,19 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
 
-from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import checklist_update
-from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import checklist_update
+from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.stories.forms import StoryForm
-from tendenci.core.perms.utils import assign_files_perms
+from tendenci.apps.perms.utils import assign_files_perms
 
 
 @is_enabled('stories')

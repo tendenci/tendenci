@@ -17,18 +17,18 @@ from django.core.files.storage import default_storage
 from django.contrib.auth.models import User
 from djcelery.models import TaskMeta
 
-from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import template_exists
-from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
+from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import template_exists
+from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
-from tendenci.addons.recurring_payments.models import RecurringPayment
-from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.recurring_payments.models import RecurringPayment
+from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)
@@ -38,7 +38,7 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     make_invoice_for_entry, update_invoice_for_entry)
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 from tendenci.apps.forms_builder.forms.tasks import FormEntriesExportTask
-from tendenci.core.emails.models import Email
+from tendenci.apps.emails.models import Email
 
 
 @is_enabled('forms')
@@ -645,7 +645,7 @@ def files(request, id):
     from django.http import Http404
     from django.core.files.base import ContentFile
     from django.core.files.storage import default_storage
-    from tendenci.core.perms.utils import has_view_perm
+    from tendenci.apps.perms.utils import has_view_perm
     from tendenci.apps.forms_builder.forms.models import FieldEntry
 
     field = get_object_or_404(FieldEntry, pk=id)

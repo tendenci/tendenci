@@ -8,10 +8,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
 from tendenci.apps.stories.models import Story
-from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.base.fields import SplitDateTimeField
-from tendenci.core.files.utils import get_max_file_upload_size
-from tendenci.core.perms.utils import get_query_filters
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (

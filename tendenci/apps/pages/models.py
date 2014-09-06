@@ -7,13 +7,13 @@ from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from tinymce import models as tinymce_models
-from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.core.categories.models import CategoryItem
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.categories.models import CategoryItem
 
-from tendenci.core.base.fields import SlugField
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.files.models import File
+from tendenci.apps.base.fields import SlugField
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.files.models import File
 
 from tendenci.apps.pages.managers import PageManager
 from tendenci.apps.pages.module_meta import PageMeta

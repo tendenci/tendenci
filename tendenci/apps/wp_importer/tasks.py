@@ -7,7 +7,7 @@ from tendenci.apps.wp_importer.utils import get_media, get_posts, get_pages
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 class WPImportTask(Task):
 

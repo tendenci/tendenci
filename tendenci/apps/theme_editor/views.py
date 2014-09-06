@@ -10,16 +10,16 @@ from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 
-from tendenci.core.base.decorators import flash_login_required
-from tendenci.core.base.http import Http403
-from tendenci.core.base.managers import SubProcessManager
-from tendenci.core.base.models import UpdateTracker
-from tendenci.core.base.utils import get_template_list, checklist_update
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.site_settings.models import Setting
-from tendenci.core.perms.utils import has_perm
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.theme.utils import get_theme, theme_choices as theme_choice_list
+from tendenci.apps.base.decorators import flash_login_required
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.managers import SubProcessManager
+from tendenci.apps.base.models import UpdateTracker
+from tendenci.apps.base.utils import get_template_list, checklist_update
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.theme.utils import get_theme, theme_choices as theme_choice_list
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.apps.theme_editor.forms import (FileForm,

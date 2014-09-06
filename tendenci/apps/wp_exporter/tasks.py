@@ -6,7 +6,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
 
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.wp_exporter.models import XMLExport
 from tendenci.apps.wp_exporter.utils import gen_xml
 

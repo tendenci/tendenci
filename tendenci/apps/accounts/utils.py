@@ -8,7 +8,7 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
     from django.core.mail import send_mail
     from django.template.loader import render_to_string
     from django.conf import settings
-    from tendenci.core.site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
 
     event = kwargs.pop('event', None)
     event_url = None

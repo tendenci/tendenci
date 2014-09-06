@@ -4,9 +4,9 @@ from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import simplejson as json
 
-from tendenci.addons.memberships.models import MembershipType
+from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.invoices.models import Invoice
-from tendenci.core.perms.utils import update_perms_and_save
+from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.reports.utils import get_ct_nice_name
 from tendenci.apps.reports.models import Report, Run, REPORT_TYPE_CHOICES, CONFIG_OPTIONS
 

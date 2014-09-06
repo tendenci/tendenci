@@ -2,8 +2,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.managers import NavManager
 from tendenci.apps.navs.signals import update_nav_links

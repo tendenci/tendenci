@@ -1,7 +1,7 @@
 from django.conf import settings
 
-from tendenci.core.registry import site
-from tendenci.core.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.invoices.models import Invoice
 
 

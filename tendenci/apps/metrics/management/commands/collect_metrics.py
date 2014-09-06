@@ -69,7 +69,7 @@ class Command(BaseCommand):
         Get all members from the memberships_membership table
         """
         try:
-            from tendenci.addons.memberships.models import Membership
+            from tendenci.apps.memberships.models import Membership
 
             return Membership.objects.active()
         except ImportError:
@@ -82,7 +82,7 @@ class Command(BaseCommand):
         1. Filter the visits by this month only
         2. Filter the visits by non-bots
         """
-        from tendenci.core.event_logs.models import EventLog
+        from tendenci.apps.event_logs.models import EventLog
         today = date.today()
 
         # if the script runs today, we collect the data from yesterday

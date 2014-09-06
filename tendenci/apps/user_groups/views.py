@@ -22,17 +22,17 @@ from django.http import Http404
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.base.http import Http403
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.decorators import superuser_required
-from tendenci.core.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
-from tendenci.core.imports.forms import ImportForm
-from tendenci.core.imports.models import Import
-from tendenci.core.imports.utils import extract_from_excel, render_excel
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.decorators import superuser_required
+from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
+from tendenci.apps.imports.forms import ImportForm
+from tendenci.apps.imports.models import Import
+from tendenci.apps.imports.utils import extract_from_excel, render_excel
 from tendenci.apps.entities.models import Entity
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.event_logs.utils import request_month_range, day_bars
-from tendenci.core.event_logs.views import event_colors
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.event_logs.utils import request_month_range, day_bars
+from tendenci.apps.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, GroupSearchForm
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, MessageForm
@@ -41,7 +41,7 @@ from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembership
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
 from tendenci.apps.user_groups.importer.utils import user_groups_import_process
 from tendenci.apps.notifications import models as notification
-from tendenci.core.base.utils import get_deleted_objects
+from tendenci.apps.base.utils import get_deleted_objects
 
 
 def search(request, template_name="user_groups/search.html"):
@@ -105,7 +105,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
     """
     Send a message to the group
     """
-    from tendenci.core.emails.models import Email
+    from tendenci.apps.emails.models import Email
 
     group = get_object_or_404(Group, slug=group_slug)
     EventLog.objects.log(instance=group)

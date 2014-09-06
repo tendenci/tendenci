@@ -1,7 +1,7 @@
 from haystack import site
 
 from tendenci.apps.contributions.models import Contribution
-from tendenci.core.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
 class ContributionIndex(TendenciBaseSearchIndex):

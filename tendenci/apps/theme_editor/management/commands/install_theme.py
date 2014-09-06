@@ -25,7 +25,7 @@ class Command(BaseCommand):
         Downloads a theme to be installed on the site and sets
         it as the active theme.
         """
-        from tendenci.core.base.models import UpdateTracker
+        from tendenci.apps.base.models import UpdateTracker
 
         UpdateTracker.start()
         all_themes = options.get('all', False)

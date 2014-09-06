@@ -13,17 +13,17 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.core.validators import email_re
 
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.payments.models import PaymentMethod
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
-from tendenci.core.base.utils import get_template_list, tcurrency
-from tendenci.core.base.fields import EmailVerificationField, PriceField
+from tendenci.apps.base.utils import get_template_list, tcurrency
+from tendenci.apps.base.fields import EmailVerificationField, PriceField
 
-from tendenci.addons.recurring_payments.fields import BillingCycleField
-from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
+from tendenci.apps.recurring_payments.fields import BillingCycleField
+from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 

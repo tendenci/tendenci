@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.cache import cache
 
 # local
-from tendenci.core.theme.utils import get_theme_root, get_theme, theme_choices
+from tendenci.apps.theme.utils import get_theme_root, get_theme, theme_choices
 from tendenci.apps.theme_editor.utils import archive_file
 from tendenci.libs.boto_s3.utils import save_file_to_s3
 

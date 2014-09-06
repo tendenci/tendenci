@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from tendenci.core.files.models import File
+from tendenci.apps.files.models import File
 from datetime import datetime
 
 class BlogImport(models.Model):

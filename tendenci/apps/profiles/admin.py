@@ -3,9 +3,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.core.perms.utils import update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 

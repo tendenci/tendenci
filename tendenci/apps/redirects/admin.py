@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.redirects.models import Redirect
 from tendenci.apps.redirects.forms import RedirectForm
 

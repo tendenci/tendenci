@@ -8,9 +8,9 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
 from tendenci.apps.user_groups.models import Group
-from tendenci.core.base.utils import UnicodeWriter
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.emails.models import Email
+from tendenci.apps.base.utils import UnicodeWriter
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.emails.models import Email
 
 def member_choices(group, member_label):
     """

@@ -16,14 +16,14 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.conf import settings
 
-from tendenci.core.base.decorators import password_required
-from tendenci.core.base.http import Http403
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.perms.decorators import is_enabled, superuser_required
-from tendenci.core.perms.utils import has_perm, update_perms_and_save
-from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.base.decorators import password_required
+from tendenci.apps.base.http import Http403
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.perms.decorators import is_enabled, superuser_required
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
-from tendenci.core.payments.forms import MarkAsPaidForm
+from tendenci.apps.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 

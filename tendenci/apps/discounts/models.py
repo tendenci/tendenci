@@ -5,8 +5,8 @@ from django.contrib.contenttypes import generic
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.discounts.managers import DiscountManager
 

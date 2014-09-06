@@ -19,8 +19,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.apps.entities.models import Entity
         from tendenci.apps.user_groups.models import Group
-        from tendenci.core.site_settings.utils import get_setting
-        from tendenci.core.perms.models import TendenciBaseModel
+        from tendenci.apps.site_settings.utils import get_setting
+        from tendenci.apps.perms.models import TendenciBaseModel
 
         verbosity = int(options['verbosity'])
 

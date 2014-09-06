@@ -5,7 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 from tendenci.apps.contributions.models import Contribution
 from tendenci.apps.pages.models import Page
 from tendenci.apps.stories.models import Story
-from tendenci.core.files.models import File
+from tendenci.apps.files.models import File
 
 
 def save_contribution(sender, **kwargs):

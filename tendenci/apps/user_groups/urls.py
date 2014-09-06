@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 from tendenci.apps.user_groups.signals import init_signals
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 init_signals()
 

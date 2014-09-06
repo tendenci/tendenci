@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.discounts.forms import DiscountForm
 

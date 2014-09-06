@@ -10,16 +10,16 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 
-from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import create_salesforce_contact
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import create_salesforce_contact
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.contacts.models import Contact, Address, Phone, Email, URL
 from tendenci.apps.contacts.forms import ContactForm, SubmitContactForm
 from tendenci.apps.contacts.utils import listed_in_email_block
 from tendenci.apps.profiles.models import Profile
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
-from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
+from tendenci.apps.event_logs.models import EventLog
 
 
 try: from tendenci.apps.notifications import models as notification

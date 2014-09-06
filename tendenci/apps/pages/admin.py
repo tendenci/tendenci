@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.utils import get_notice_recipients
-from tendenci.core.perms.utils import update_perms_and_save
-from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.perms.utils import update_perms_and_save
+from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.pages.models import Page
 from tendenci.apps.pages.forms import PageAdminForm
 

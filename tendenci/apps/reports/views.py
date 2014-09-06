@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 
 from johnny.cache import invalidate
 
-from tendenci.core.perms.decorators import superuser_required
+from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.reports.models import Report, Run
 from tendenci.apps.reports.forms import ReportForm, RunForm
 

@@ -9,11 +9,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.registry import site as registry_site
-from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.registry import site as registry_site
+from tendenci.apps.event_logs.models import EventLog
 try:
-    from tendenci.addons.corporate_memberships.models import CorporateMembership as CorpMemb
+    from tendenci.apps.corporate_memberships.models import CorporateMembership as CorpMemb
 except:
     CorpMemb = None
 

@@ -3,7 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from tendenci.apps.forms_builder.forms.models import Form
-from tendenci.core.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 class FormsIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')

@@ -17,7 +17,7 @@ from django.core.files.storage import default_storage
 from celery.task import Task
 from celery.registry import tasks
 
-from tendenci.core.exports.utils import full_model_to_dict, render_csv
+from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.forms_builder.forms.models import Form
 
 

@@ -2,7 +2,7 @@ import imghdr
 from os.path import splitext, basename
 
 from tendenci.apps.pages.models import Page
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 
 from django.utils.safestring import mark_safe
 from django import forms
@@ -10,8 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.utils import get_template_list
-from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.apps.base.utils import get_template_list
+from tendenci.apps.files.utils import get_max_file_upload_size
 
 template_choices = [('default.html','Default')]
 template_choices += get_template_list()

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.conf import settings
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class ProfileMiddleware(object):

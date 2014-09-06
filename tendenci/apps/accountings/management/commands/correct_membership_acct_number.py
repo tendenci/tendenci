@@ -11,7 +11,7 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        from tendenci.addons.memberships.models import MembershipDefault
+        from tendenci.apps.memberships.models import MembershipDefault
         from tendenci.apps.invoices.models import Invoice
         from tendenci.apps.accountings.models import Acct, AcctEntry
 

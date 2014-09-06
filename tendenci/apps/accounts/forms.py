@@ -17,9 +17,9 @@ from captcha.fields import CaptchaField
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.registration.models import RegistrationProfile
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.accounts.utils import send_registration_activation_email
-from tendenci.core.base.utils import create_salesforce_contact
+from tendenci.apps.base.utils import create_salesforce_contact
 
 
 class SetPasswordCustomForm(SetPasswordForm):

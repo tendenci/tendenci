@@ -11,9 +11,9 @@ from BeautifulSoup import BeautifulStoneSoup
 from parse_uri import ParseUri
 
 from tendenci.apps.pages.models import Page
-from tendenci.addons.articles.models import Article
+from tendenci.apps.articles.models import Article
 from tendenci.apps.redirects.models import Redirect
-from tendenci.core.files.models import File
+from tendenci.apps.files.models import File
 from tendenci.apps.wp_importer.models import AssociatedFile
 
 from django.contrib.auth.models import User
