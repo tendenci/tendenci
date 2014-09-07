@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url, include
 
-urlpatterns = patterns('tendenci.core.emails.views',
+urlpatterns = patterns('tendenci.apps.emails.views',
     url(r'^$', 'search', name="emails"),
     url(r'^search/$', 'search', name="email.search"),
     url(r'^(?P<id>\d+)/$', 'view', name="email.view"),
@@ -18,5 +18,5 @@ urlpatterns = patterns('tendenci.core.emails.views',
         name="email.amazon_ses_list_verified_emails"),
     url(r'^amazon_ses/send_quota/$', 'amazon_ses_send_quota',
         name="email.amazon_ses_send_quota"),
-    (r'^blocks/', include('tendenci.core.email_blocks.urls')),
+    (r'^blocks/', include('tendenci.apps.email_blocks.urls')),
 )

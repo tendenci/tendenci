@@ -7,13 +7,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Changing field 'Form.completion_url'
         db.alter_column('forms_form', 'completion_url', self.gf('django.db.models.fields.CharField')(max_length=1000, null=True))
 
 
     def backwards(self, orm):
-        
+
         # Changing field 'Form.completion_url'
         db.alter_column('forms_form', 'completion_url', self.gf('django.db.models.fields.URLField')(max_length=200, null=True))
 
@@ -211,7 +211,7 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'sync_newsletters': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),

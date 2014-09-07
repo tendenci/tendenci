@@ -7,13 +7,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Resume'
         db.create_table('resumes_resume', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('guid', self.gf('django.db.models.fields.CharField')(max_length=40)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=250)),
-            ('slug', self.gf('tendenci.core.base.fields.SlugField')(unique=True, max_length=100, db_index=True)),
+            ('slug', self.gf('tendenci.apps.base.fields.SlugField')(unique=True, max_length=100, db_index=True)),
             ('description', self.gf('tinymce.models.HTMLField')()),
             ('location', self.gf('django.db.models.fields.CharField')(max_length=500, blank=True)),
             ('skills', self.gf('django.db.models.fields.TextField')(blank=True)),
@@ -59,7 +59,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'Resume'
         db.delete_table('resumes_resume')
 
@@ -190,7 +190,7 @@ class Migration(SchemaMigration):
             'requested_duration': ('django.db.models.fields.IntegerField', [], {'default': '30'}),
             'resume_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
             'skills': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'syndicate': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -227,7 +227,7 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),

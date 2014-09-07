@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Topic'
         db.create_table('help_files_topic', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -33,7 +33,7 @@ class Migration(SchemaMigration):
             ('owner_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('status', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('status_detail', self.gf('django.db.models.fields.CharField')(default='active', max_length=50)),
-            ('slug', self.gf('tendenci.core.base.fields.SlugField')(unique=True, max_length=100, db_index=True)),
+            ('slug', self.gf('tendenci.apps.base.fields.SlugField')(unique=True, max_length=100, db_index=True)),
             ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['entities.Entity'], null=True, blank=True)),
             ('question', self.gf('django.db.models.fields.CharField')(max_length=500)),
             ('answer', self.gf('tinymce.models.HTMLField')()),
@@ -63,7 +63,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'Topic'
         db.delete_table('help_files_topic')
 
@@ -165,7 +165,7 @@ class Migration(SchemaMigration):
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'help_files_helpfile_owner'", 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'question': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'syndicate': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -229,7 +229,7 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),

@@ -42,7 +42,7 @@
   <!--[if lt IE 9]>
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
-  <!--[if lt IE 9]>   
+  <!--[if lt IE 9]>
   <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
   <![endif]-->
 {% endblock extra_head %}
@@ -82,23 +82,23 @@
 
   <div class="container">
     <section id="home-content" class="clearfix">
-      {% theme_include "base/messages.html" %} <!--Pulls in the Alert Messages within Tendenci Core-->
-           
+      {% theme_include "base/messages.html" %} <!--Pulls in the Alert Messages within tendenci.apps-->
+
       <div id="home-body" class="eleven columns omega">
-       <div class="home-row" class="clearfix">  
+       <div class="home-row" class="clearfix">
          <div class="col five columns">
            {% box 4 %}
-         </div><!--/.col -->         
+         </div><!--/.col -->
          <div class="col five columns">
            {% box 5 %}
-         </div><!--/.col -->   
+         </div><!--/.col -->
        </div><!--/.home-row -->
-                         
-       <div class="home-row" class="clearfix">  
+
+       <div class="home-row" class="clearfix">
          <div class="col five columns">
            {% box 6 %}
-         </div><!--/.col -->         
-         
+         </div><!--/.col -->
+
          <div class="col five columns">
            {% list_events as events_list limit=1 %}
            <section id="single-event">
@@ -128,10 +128,10 @@
              </div>
              {% endif %}
            </section><!-- /#single-event -->
-         </div><!--/.col --> 
+         </div><!--/.col -->
        </div><!--/.home-row -->
-               
-       <div id="directories" class="clearfix">   
+
+       <div id="directories" class="clearfix">
          <div class="col eleven columns alpha omega">
            <div id="carousel-container">
              <h3>Business Directories</h3>
@@ -149,18 +149,18 @@
                </div><!--/.carousel-items-->
              </div><!--/#carousel-wrap-->
              <div class="next" id="port-right"></div>
-           </div><!--/#carousel-container--> 
-         </div><!--/.col -->   
+           </div><!--/#carousel-container-->
+         </div><!--/.col -->
       </div><!--/ #directories -->
-        
+
     <div id="home-body-shadow" class="eleven columns omega"></div><!-- /#home-body-shadow -->
-    </div><!-- /#home-body -->             
-        
+    </div><!-- /#home-body -->
+
      <div id="home-sidebar" class="four columns alpha omega">
       {% theme_include "homepage-sidebar.html" %} <!-- Pulls in the Homepage Sidebar Document -->
-     </div><!--/#home-sidebar-->   
+     </div><!--/#home-sidebar-->
     </section><!--/#home-content -->
-    
+
     <section id="home-feed-content" class="container sixteen columns">
          <div id="feed-col-1" class="feed-col four columns alpha omega">
            <h3>Latest Job Listings</h3>
@@ -173,7 +173,7 @@
              <p>Houston: A new job opening is available...</p>
              {% endfor %}
          </div><!--/#feed-col-1--><!--/jobs-list-->
-         
+
          <div id="feed-col-2" class="feed-col five columns alpha omega">
            <h3>Our Photos</h3>
            {% list_photos as photos_list limit=6 random=True %}
@@ -183,7 +183,7 @@
              {% endfor %}
            </ul>
          </div><!--/#feed-col-2--><!--/photos-feed-->
-         
+
          <div id="feed-col-3" class="feed-col five columns alpha omega">
            <h3>Featured Video</h3>
            <ul id="video-urls">
@@ -197,9 +197,9 @@
          </div><!--/#feed-col-3--><!--/video-feed-->
          <div id="home-feed-shadow"></div><!--/#home-feed-shadow-->
        </section><!--/#home-feed-content-->
-    
+
   </div><!-- /.container -->
-  
+
     <section id="footer">
     {% theme_include "footer.html" %} <!-- Pulls in the Footer Document -->
     </section><!-- /#footer -->
@@ -217,7 +217,7 @@
     <script src="{{ THEME_URL }}media/js/jquery.hint.js" type="text/javascript"></script>
     <script src="{{ THEME_URL }}media/js/jcarousellite_1.0.1.pack.js" type="text/javascript"></script>
 
-    <script type="text/javascript"> 
+    <script type="text/javascript">
     $('input[title!=""]').hint();
     $(document).ready(function() {
         $("#rotator").cycle({              // Controls the Rotator

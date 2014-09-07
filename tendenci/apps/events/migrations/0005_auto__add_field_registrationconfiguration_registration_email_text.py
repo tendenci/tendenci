@@ -7,13 +7,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'RegistrationConfiguration.registration_email_text'
         db.add_column('events_registrationconfiguration', 'registration_email_text', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
 
 
     def backwards(self, orm):
-        
+
         # Deleting field 'RegistrationConfiguration.registration_email_text'
         db.delete_column('events_registrationconfiguration', 'registration_email_text')
 
@@ -574,7 +574,7 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),

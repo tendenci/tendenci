@@ -34,7 +34,7 @@ DATABASES = env('DATABASES', {'default': dj_database_url.config(default='postgre
 
 UNACCENT = env('UNACCENT', False)
 if UNACCENT:
-    DATABASES['default']['ENGINE'] = 'tendenci.core.base.database'
+    DATABASES['default']['ENGINE'] = 'tendenci.apps.base.database'
     SOUTH_DATABASE_ADAPTERS = {'default':'south.db.postgresql_psycopg2'}
 
 # -------------------------------------- #
@@ -156,7 +156,7 @@ STOCK_STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-90/'
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.static',
-    'tendenci.core.base.context_processors.newrelic',)
+    'tendenci.apps.base.context_processors.newrelic',)
 
 # ----------------------------------------- #
 # s3 storeage example

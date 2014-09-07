@@ -11,7 +11,7 @@ if not urlpath:
     urlpath = "files"
 
 
-urlpatterns = patterns('tendenci.core.files.views',
+urlpatterns = patterns('tendenci.apps.files.views',
     url(r'^%s/$' % urlpath, 'search', name="files"),
     url(r'^%s/(?P<id>\d+)/$' % urlpath, 'details', name="file"),
     url(r'^%s/(?P<id>\d+)/(?P<download>(download)?)/$' % urlpath, 'details', name="file"),

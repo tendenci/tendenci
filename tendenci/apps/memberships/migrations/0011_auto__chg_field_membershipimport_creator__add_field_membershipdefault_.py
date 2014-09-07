@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Changing field 'MembershipImport.creator'
         db.alter_column('memberships_membershipimport', 'creator_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True))
 
@@ -16,7 +16,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # User chose to not deal with backwards NULL issues for 'MembershipImport.creator'
         raise RuntimeError("Cannot reverse this migration. 'MembershipImport.creator' and its values cannot be restored.")
 
@@ -117,7 +117,7 @@ class Migration(SchemaMigration):
             'pricing': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['directories.DirectoryPricing']", 'null': 'True'}),
             'renewal_notice_sent': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'requested_duration': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'source': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -539,7 +539,7 @@ class Migration(SchemaMigration):
             'action_taken': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mimport': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'membership_import_data'", 'to': "orm['memberships.MembershipImport']"}),
-            'row_data': ('tendenci.core.base.fields.DictField', [], {}),
+            'row_data': ('tendenci.apps.base.fields.DictField', [], {}),
             'row_num': ('django.db.models.fields.IntegerField', [], {})
         },
         'memberships.membershiptype': {
@@ -714,7 +714,7 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'sync_newsletters': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),

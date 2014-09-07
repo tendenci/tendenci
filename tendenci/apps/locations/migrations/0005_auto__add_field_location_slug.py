@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Location.slug'
         db.add_column('locations_location', 'slug',
-                      self.gf('tendenci.core.base.fields.SlugField')(default='', max_length=100, db_index=True, blank=True),
+                      self.gf('tendenci.apps.base.fields.SlugField')(default='', max_length=100, db_index=True, blank=True),
                       keep_default=False)
 
 
@@ -170,7 +170,7 @@ class Migration(SchemaMigration):
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'locations_location_owner'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'default': "''", 'max_length': '100', 'db_index': 'True', 'blank': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'default': "''", 'max_length': '100', 'db_index': 'True', 'blank': 'True'}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
@@ -223,7 +223,7 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'sync_newsletters': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),

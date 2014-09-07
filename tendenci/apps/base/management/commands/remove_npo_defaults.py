@@ -55,7 +55,7 @@ class Command(BaseCommand):
 
         for core in cores_list:
             if module is None or module == core:
-                modules_list.append( "tendenci.core.%s.models" % core )
+                modules_list.append( "tendenci.apps.%s.models" % core )
 
 
         contenttypes = ContentType.objects.all()

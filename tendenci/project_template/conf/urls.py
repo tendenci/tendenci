@@ -3,7 +3,7 @@ from django.conf.urls import *
 
 from tendenci.urls import urlpatterns as tendenci_urls
 
-handler500 = 'tendenci.core.base.views.custom_error'
+handler500 = 'tendenci.apps.base.views.custom_error'
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = staticfiles_urlpatterns()

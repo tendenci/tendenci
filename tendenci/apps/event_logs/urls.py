@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-urlpatterns = patterns('tendenci.core.event_logs.views',
+urlpatterns = patterns('tendenci.apps.event_logs.views',
     url(r'^$', 'index', name="event_logs"),
     url(r'^reports/summary-historical/$', 'event_summary_historical_report', name='reports-events-summary-historical'),
     url(r'^reports/summary/$', 'event_summary_report', name='reports-events-summary'),

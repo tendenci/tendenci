@@ -29,7 +29,7 @@ urlpatterns += patterns('',
 
 # Tendenci Patterns
 urlpatterns += patterns('',
-    url(r'^$', 'tendenci.core.base.views.homepage', name="home"),
+    url(r'^$', 'tendenci.apps.base.views.homepage', name="home"),
 
     #Reports:
     (r'^metrics/', include('tendenci.apps.metrics.urls')),
@@ -41,52 +41,52 @@ urlpatterns += patterns('',
     url(r'^users/reports/contacts-referral/$', 'tendenci.apps.user_groups.views.users_added_report', {'kind': 'referral'}, name='reports-contacts-referral'),
 
     (r'^notifications/', include('tendenci.apps.notifications.urls')),
-    (r'^base/', include('tendenci.core.base.urls')),
-    (r'^tags/', include('tendenci.core.tags.urls')),
+    (r'^base/', include('tendenci.apps.base.urls')),
+    (r'^tags/', include('tendenci.apps.tags.urls')),
     (r'^avatar/', include('avatar.urls')),
     (r'^dashboard/', include('tendenci.apps.dashboard.urls')),
-    (r'^categories/', include('tendenci.core.categories.urls')),
+    (r'^categories/', include('tendenci.apps.categories.urls')),
     (r'^invoices/', include('tendenci.apps.invoices.urls')),
     (r'^py/', include('tendenci.apps.make_payments.urls')),
-    (r'^payments/', include('tendenci.core.payments.urls')),
+    (r'^payments/', include('tendenci.apps.payments.urls')),
     (r'^rp/', include('tendenci.apps.recurring_payments.urls')),
     (r'^accountings/', include('tendenci.apps.accountings.urls')),
-    (r'^emails/', include('tendenci.core.emails.urls')),
-    (r'^rss/', include('tendenci.core.rss.urls')),
-    (r'^imports/', include('tendenci.core.imports.urls')),
+    (r'^emails/', include('tendenci.apps.emails.urls')),
+    (r'^rss/', include('tendenci.apps.rss.urls')),
+    (r'^imports/', include('tendenci.apps.imports.urls')),
     #(r'^donations/', include('donations.urls')),
-    (r'^settings/', include('tendenci.core.site_settings.urls')),
+    (r'^settings/', include('tendenci.apps.site_settings.urls')),
     (r'^accounts/', include('tendenci.apps.accounts.urls')),
     (r'^search/', include('tendenci.apps.search.urls')),
-    (r'^event-logs/', include('tendenci.core.event_logs.urls')),
+    (r'^event-logs/', include('tendenci.apps.event_logs.urls')),
     (r'^theme-editor/', include('tendenci.apps.theme_editor.urls')),
-    (r'^exports/', include('tendenci.core.exports.urls')),
+    (r'^exports/', include('tendenci.apps.exports.urls')),
     (r'^ics/', include('tendenci.apps.events.ics.urls')),
     (r'^boxes/', include('tendenci.apps.boxes.urls')),
-    (r'^sitemap.xml', include('tendenci.core.sitemaps.urls')),
-    (r'^404/', include('tendenci.core.handler404.urls')),
+    (r'^sitemap.xml', include('tendenci.apps.sitemaps.urls')),
+    (r'^404/', include('tendenci.apps.handler404.urls')),
 
     (r'^subscribers/', include('tendenci.apps.subscribers.urls')),
     (r'^redirects/', include('tendenci.apps.redirects.urls')),
-    (r'^mobile/', include('tendenci.core.mobile.urls')),
+    (r'^mobile/', include('tendenci.apps.mobile.urls')),
     (r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
     (r'^wp_importer/', include('tendenci.apps.wp_importer.urls')),
     (r'^wp_exporter/', include('tendenci.apps.wp_exporter.urls')),
     (r'^discounts/', include('tendenci.apps.discounts.urls')),
-    (r'^versions/', include('tendenci.core.versions.urls')),
+    (r'^versions/', include('tendenci.apps.versions.urls')),
     (r'^reports/', include('tendenci.apps.reports.urls')),
     url(r'social_auth/', include('tendenci.apps.social_auth.urls')),
     url(r'navs/', include('tendenci.apps.navs.urls')),
     url(r'tendenci/', include('tendenci.apps.tendenci_guide.urls')),
-    url(r'^api_tasty/', include('tendenci.core.api_tasty.urls')),
+    url(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
-    url(r'^robots.txt', 'tendenci.core.base.views.robots_txt', name="robots"),
-    url(r'^(?P<file_name>[\w-]+\.[\w]{2,4})$', 'tendenci.core.base.views.base_file'),
+    url(r'^robots.txt', 'tendenci.apps.base.views.robots_txt', name="robots"),
+    url(r'^(?P<file_name>[\w-]+\.[\w]{2,4})$', 'tendenci.apps.base.views.base_file'),
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
@@ -110,25 +110,25 @@ urlpatterns += patterns('',
     url(r'^', include('tendenci.apps.profiles.urls')),
     url(r'^', include('tendenci.apps.stories.urls')),
     url(r'^', include('tendenci.apps.user_groups.urls')),
-    url(r'^', include('tendenci.core.files.urls')),
-    url(r'^', include('tendenci.core.newsletters.urls')),
+    url(r'^', include('tendenci.apps.files.urls')),
+    url(r'^', include('tendenci.apps.newsletters.urls')),
 )
 
-handler500 = 'tendenci.core.base.views.custom_error'
+handler500 = 'tendenci.apps.base.views.custom_error'
 
 
 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     urlpatterns += patterns('',
     # serve .less files - this is to resolve the cross domain issue for less js
     url(r'^(?P<path>.*)\.less$',
-        'tendenci.core.files.views.display_less',  name='less_file'),
+        'tendenci.apps.files.views.display_less',  name='less_file'),
     url(r'^static/(?P<path>.*)$',
-            'tendenci.core.files.views.redirect_to_s3',
+            'tendenci.apps.files.views.redirect_to_s3',
              {'file_type': 'static'},
                 name='redirect_to_s3'),
     # this is basically for those images with relative urls in the theme .css files.
     url(r'^themes/(?P<path>.*)$',
-            'tendenci.core.files.views.redirect_to_s3',
+            'tendenci.apps.files.views.redirect_to_s3',
             {'file_type': 'themes'},
                 name='redirect_to_s3'),
 )
@@ -142,7 +142,7 @@ if settings.DEBUG:
                 {'document_root': join(settings.TENDENCI_ROOT, 'static')}),
 
             (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
-                'tendenci.core.base.views.plugin_static_serve'),
+                'tendenci.apps.base.views.plugin_static_serve'),
         )
         urlpatterns += patterns('',
             (r'^themes/(?P<path>.*)$',

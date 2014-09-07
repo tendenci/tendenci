@@ -5,19 +5,19 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
-    
+
     depends_on = (
         ('user_groups', '0001_initial'),
     )
 
     def forwards(self, orm):
-        
+
         # Changing field 'File.group'
         db.alter_column('files_file', 'group_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['user_groups.Group'], null=True))
 
 
     def backwards(self, orm):
-        
+
         # Changing field 'File.group'
         db.alter_column('files_file', 'group_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.Group'], null=True))
 
@@ -158,7 +158,7 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),

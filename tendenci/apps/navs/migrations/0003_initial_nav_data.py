@@ -12,7 +12,7 @@ class Migration(DataMigration):
         ''' Insert default nav information '''
         from django.core.management import call_command
         call_command("loaddata", "nav.json")
-        
+
         # call_command("loaddata", "navitem.json")
         # Doesn't call loaddata command because the schema changed when newwindow was added
         path = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
@@ -200,7 +200,7 @@ class Migration(DataMigration):
             'meta': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['meta.Meta']", 'unique': 'True', 'null': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'pages_page_owner'", 'null': 'True', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'syndicate': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -249,7 +249,7 @@ class Migration(DataMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),
