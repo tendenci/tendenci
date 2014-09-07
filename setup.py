@@ -147,7 +147,7 @@ setup(
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     install_requires=[
-        "Django==1.7",
+        "Django==1.6",
         "pisa",
         "Reportlab==2.5",
         "html5lib",
@@ -180,8 +180,8 @@ setup(
         "python_openid>=2.2",
         "ordereddict==1.1",
         "createsend==3.1.0",
-        "celery==2.2.7",
-        "django-celery==2.2.7",
+        "celery==3.1.13",
+        "django-celery==3.1.10",
         "django-kombu>=0.9.4",
         "mimeparse>=0.1.3",
         "python-dateutil==2.1",
