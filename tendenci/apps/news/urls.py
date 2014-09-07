@@ -9,7 +9,7 @@ urlpath = get_setting('module', 'news', 'url')
 if not urlpath:
     urlpath = "news"
 
-urlpatterns = patterns('tendenci.addons.news.views',
+urlpatterns = patterns('tendenci.apps.news.views',
     url(r'^%s/$' % urlpath, 'search', name="news"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="news.search"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="news.print_view"),

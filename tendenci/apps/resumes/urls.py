@@ -9,7 +9,7 @@ urlpath = get_setting('module', 'resumes', 'url')
 if not urlpath:
     urlpath = "resumes"
 
-urlpatterns = patterns('tendenci.addons.resumes.views',
+urlpatterns = patterns('tendenci.apps.resumes.views',
     url(r'^%s/$' % urlpath, 'search', name="resumes"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="resume.search"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="resume.print_view"),

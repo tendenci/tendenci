@@ -9,7 +9,7 @@ urlpath = get_setting('module', 'jobs', 'url')
 if not urlpath:
     urlpath = "jobs"
 
-urlpatterns = patterns('tendenci.addons.jobs.views',
+urlpatterns = patterns('tendenci.apps.jobs.views',
     url(r'^%s/$' % urlpath, 'search', name="jobs"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="job.search"),
     url(r'^%s/my-jobs/$' % urlpath, 'my_jobs', name="myjobs"),

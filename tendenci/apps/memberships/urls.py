@@ -6,7 +6,7 @@ if not urlpath:
     urlpath = "memberships"
 
 urlpatterns = patterns(
-    "tendenci.addons.memberships.views",
+    "tendenci.apps.memberships.views",
 
     # memberships
     url(r"^%s/$" % urlpath, "membership_index", name="membership.index"),
@@ -133,7 +133,7 @@ urlpatterns = patterns(
      url(r"^%s/entries/search/$" % urlpath, "application_entries_search", name="membership.application_entries_search"),
 
     # notice
-    (r'^%s/notices/' % urlpath, include('tendenci.addons.memberships.notices.urls')),
+    (r'^%s/notices/' % urlpath, include('tendenci.apps.memberships.notices.urls')),
     url(r"^%s/notices/(?P<id>\d+)/email_content/$" % urlpath, "notice_email_content", name="membership.notice_email_content"),
 
 

@@ -80,9 +80,9 @@ CLASS_AND_WIDGET = {
     'first-name': ('CharField', None),
     'last-name': ('CharField', None),
     'email': ('EmailField', None),
-    'header': ('CharField', 'tendenci.addons.memberships.widgets.Header'),
-    'description': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
-    'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
+    'header': ('CharField', 'tendenci.apps.memberships.widgets.Header'),
+    'description': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
+    'horizontal-rule': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
 

@@ -3,7 +3,7 @@ from tendenci.apps.campaign_monitor.signals import init_signals
 
 init_signals()
 
-urlpatterns = patterns('tendenci.addons.campaign_monitor.views',
+urlpatterns = patterns('tendenci.apps.campaign_monitor.views',
     url(r'^$', 'template_index'),
     url(r'^templates/$', 'template_index', name="campaign_monitor.template_index"),
     url(r'^templates/add/$', 'template_add', name="campaign_monitor.template_add"),

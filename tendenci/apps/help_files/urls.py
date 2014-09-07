@@ -9,7 +9,7 @@ urlpath = get_setting('module', 'help_files', 'url')
 if not urlpath:
     urlpath = "help-files"
 
-urlpatterns = patterns('tendenci.addons.help_files.views',
+urlpatterns = patterns('tendenci.apps.help_files.views',
     url(r'^%s/$' % urlpath, 'index', name='help_files'),
     url(r'^%s/search/$' % urlpath, 'search', name='help_files.search'),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='help_files.feed'),

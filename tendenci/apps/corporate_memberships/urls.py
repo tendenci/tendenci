@@ -8,7 +8,7 @@ urlpath = get_setting('module', 'corporate_memberships', 'url')
 if not urlpath:
     urlpath = "corporatememberships"
 
-urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
+urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
     url(r'^%s/$' % urlpath, 'search', name="corp_memb"),
     url(r'^%s/$' % urlpath, 'search', name="corp_memb.search"),
     url(r"^%s/get_app_fields/$" % urlpath,
@@ -104,7 +104,7 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         name="corpmembership.free_passes_edit"),
 
     # notice
-    (r'^%s/notices/' % urlpath, include('tendenci.addons.corporate_memberships.notices.urls')),
+    (r'^%s/notices/' % urlpath, include('tendenci.apps.corporate_memberships.notices.urls')),
 
     # report
     url(r"^%s/reports/summary/$" % urlpath, "summary_report",

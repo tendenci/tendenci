@@ -6,7 +6,7 @@ from tendenci.apps.articles.signals import init_signals
 init_signals()
 
 urlpath = get_setting('module', 'articles', 'url') or 'articles'
-urlpatterns = patterns('tendenci.addons.articles.views',
+urlpatterns = patterns('tendenci.apps.articles.views',
     url(r'^%s/$'        % urlpath, 'search', name="articles"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="article.search"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$'

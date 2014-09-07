@@ -3,10 +3,10 @@ from tendenci.apps.recurring_payments.signals import init_signals
 
 init_signals()
 
-urlpatterns = patterns('tendenci.addons.recurring_payments',
+urlpatterns = patterns('tendenci.apps.recurring_payments',
     url(r'^$', 'views.my_accounts',
          name="recurring_payment.my_accounts"),
-    (r'^authnet/', include('tendenci.addons.recurring_payments.authnet.urls')),
+    (r'^authnet/', include('tendenci.apps.recurring_payments.authnet.urls')),
     url(r'^(?P<recurring_payment_id>\d+)/(?P<guid>[\d\w-]+)?$', 'views.view_account',
          name="recurring_payment.view_account"),
     url(r'^disable/(?P<rp_id>\d+)/$', 'views.disable_account',

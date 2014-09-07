@@ -10,7 +10,7 @@ if not urlpath:
     urlpath = "events"
 
 urlpatterns = patterns(
-    'tendenci.addons.events',
+    'tendenci.apps.events',
     url(r'^%s/$' % urlpath, 'views.month_redirect', name="events"),
     url(r'^%s/week/$' % urlpath, 'views.week_view', name="event.week"),
     url(r'^%s/month/$' % urlpath, 'views.month_view', name="event.month"),

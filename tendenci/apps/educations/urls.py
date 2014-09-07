@@ -5,7 +5,7 @@ urlpath = get_setting('module', 'educations', 'url')
 if not urlpath:
     urlpath = "educations"
 
-urlpatterns = patterns('tendenci.addons.educations.views',
+urlpatterns = patterns('tendenci.apps.educations.views',
 #    url(r'^%s/$' % urlpath, 'search', name="industries"),
 #    url(r'^%s/(?P<id>\d+)/$' % urlpath, 'detail', name="industry"),
 #    url(r'^%s/search/$' % urlpath, 'search_redirect', name="industry.search"),

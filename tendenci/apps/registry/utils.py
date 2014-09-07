@@ -57,7 +57,7 @@ class RegisteredApps(object):
                     })
 
                 if registry.fields['app_type'] == 'addon':
-                    self.addons.append(registry.fields)
+                    self.apps.append(registry.fields)
 
                 if registry.fields['app_type'] == 'people':
                     self.people.append(registry.fields)
@@ -95,7 +95,7 @@ class RegisteredApps(object):
                     })
 
                 if app['app_type'] == 'addon':
-                    self.addons.append(app)
+                    self.apps.append(app)
 
                 if app['app_type'] == 'people':
                     self.people.append(app)

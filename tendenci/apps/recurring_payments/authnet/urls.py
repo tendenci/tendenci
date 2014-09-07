@@ -1,7 +1,7 @@
 from django.conf.urls import *
 from django.views.generic.simple import direct_to_template
 
-urlpatterns = patterns('tendenci.addons.recurring_payments.authnet.views',
+urlpatterns = patterns('tendenci.apps.recurring_payments.authnet.views',
      url(r'^manage_payment_info/(?P<recurring_payment_id>\d+)/$', 'manage_payment_info',
          name="recurring_payment.authnet.manage_payment_info"),
      url(r'^update_payment_info/(?P<recurring_payment_id>\d+)/$', 'update_payment_info',

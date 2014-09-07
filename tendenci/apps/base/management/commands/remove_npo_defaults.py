@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
         for addon in addons_list:
             if module is None or module == addon:
-                modules_list.append( "tendenci.addons.%s.models" % addon )
+                modules_list.append( "tendenci.apps.%s.models" % addon )
 
         for app in apps_list:
             if module is None or module == app:

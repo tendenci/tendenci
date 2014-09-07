@@ -24,14 +24,14 @@ from tendenci.apps.events.models import Event, RegConfPricing, Registrant, Addon
 from tendenci.apps.events.utils import email_admins
 from tendenci.apps.events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from tendenci.apps.events.registration.utils import get_available_pricings, reg_status
-from tendenci.apps.events.registration.utils import can_use_pricing, get_active_pricings 
+from tendenci.apps.events.registration.utils import can_use_pricing, get_active_pricings
 from tendenci.apps.events.registration.utils import process_registration, send_registrant_email
 from tendenci.apps.events.registration.utils import get_pricings_for_list
 from tendenci.apps.events.registration.forms import RegistrantForm, RegistrationForm
 from tendenci.apps.events.registration.formsets import RegistrantBaseFormSet
-from tendenci.apps.events.addons.forms import RegAddonForm
-from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
-from tendenci.apps.events.addons.utils import get_active_addons, get_available_addons, get_addons_for_list
+from tendenci.apps.events.apps.forms import RegAddonForm
+from tendenci.apps.events.apps.formsets import RegAddonBaseFormSet
+from tendenci.apps.events.apps.utils import get_active_addons, get_available_addons, get_addons_for_list
 from tendenci.apps.events.forms import FormForCustomRegForm
 
 def ajax_user(request, event_id):
@@ -41,18 +41,18 @@ def ajax_user(request, event_id):
     if he/she can still register in the event with the given pricing.
     """
     event = get_object_or_404(Event, pk=event_id)
-    
+
     if not get_setting('module', 'events', 'anonymousmemberpricing'):
         raise Http404
-    
+
     memberid = request.GET.get('memberid', None)
     email = request.GET.get('email', None)
     pricingid = request.GET.get('pricingid', None)
-    
+
     pricing = get_object_or_404(RegConfPricing, pk=pricingid)
-    
+
     user = AnonymousUser()
-    
+
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
     if memberid and allow_memberid:# memberid takes priority over email
         membership = Membership.objects.first(member_number=memberid)
@@ -62,7 +62,7 @@ def ajax_user(request, event_id):
         users = User.objects.filter(email=email)
         if users:
             user = users[0]
-    
+
     data = json.dumps(None)
     #check if already registered
     if not (user.is_anonymous() or pricing.allow_anonymous):
@@ -72,7 +72,7 @@ def ajax_user(request, event_id):
                 data = json.dumps({"error":"REG"})
             else:
                 data = json.dumps({"message":"REG"})
-    
+
     #check if can use
     can_use = can_use_pricing(event, user, pricing)
     if not can_use:
@@ -80,9 +80,9 @@ def ajax_user(request, event_id):
             data = json.dumps({"error":"INVALID"})
         else:
             data = json.dumps({"error":"SHARED"})
-    
+
     return HttpResponse(data, mimetype="text/plain")
-        
+
 
 @csrf_exempt
 def ajax_pricing(request, event_id, template_name="events/registration/pricing.html"):
@@ -96,17 +96,17 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     ** This now also returns ADDON info in the same format.
     """
     event = get_object_or_404(Event, pk=event_id)
-    
+
     if not get_setting('module', 'events', 'anonymousmemberpricing'):
         raise Http404
-    
+
     memberid = request.GET.get('memberid', None)
     email = request.GET.get('email', None)
-    
+
     user = AnonymousUser()
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
     shared_pricing = get_setting('module', 'events', 'sharedpricing')
-    
+
     if memberid and allow_memberid:  # memberid takes priority over email
         membership = Membership.objects.first(member_number=memberid)
         if hasattr(membership, 'user'):
@@ -115,7 +115,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
         users = User.objects.filter(email=email)
         if users:
             user = users[0]
-    
+
     # register user in user list
     user_pks = request.session.get('user_list', [])
     if not user.is_anonymous():
@@ -141,18 +141,18 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
             'enabled':True,
             'is_public':pricing.allow_anonymous,
         }
-        
+
         if pricing not in available_pricings:
             p_dict['enabled'] = False
-        
+
         pricing_list.append(p_dict)
-        
+
     all_addons = get_active_addons(event)
     if shared_pricing:
         available_addons = get_addons_for_list(event, shareable_users)
     else:
         available_addons = get_available_addons(event, user)
-    
+
     a_list = []
     for addon in all_addons:
         d = model_to_dict(addon)
@@ -161,11 +161,11 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
             # temporarily allow anon viewing for this email
             d['allow_anonymous'] = True
         a_list.append(d)
-    
+
     form = render_to_string('events/addons/addon-add-box.html',
         {'addons':a_list, 'anon_pricing':True},
         RequestContext(request))
-            
+
     data = json.dumps({
         'pricings':pricing_list,
         'add-addons-form':form,
@@ -178,28 +178,28 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     A registration set is a set of registrants (one or many) that comply with a specific pricing.
     A pricing defines the maximum number of registrants in a registration set.
     A user can avail multiple registration sets.
-    
+
     If the site setting anonymousmemberpricing is enabled,
     anonymous users can select non public pricings in their registration sets,
     provided that the first registrant of every registration set's email is validated to be an existing user.
-    
+
     If the site setting anonymousmemberpricing is disabled,
     anonymous users will not be able to see non public prices.
     """
-    
+
     # redirect to default registration if anonymousmemberpricing not enabled
     if not get_setting('module', 'events', 'anonymousmemberpricing'):
         return redirect('event.multi_register', event_id)
-        
+
     # clear user list session
     request.session['user_list'] = []
-    
+
     event = get_object_or_404(Event, pk=event_id)
-    
+
     # check if event allows registration
     if (event.registration_configuration is None or not event.registration_configuration.enabled):
         raise Http404
-    
+
     # check if it is still open, always open for admin users
     if not request.user.profile.is_superuser:
         status = reg_status(event, request.user)
@@ -209,12 +209,12 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         elif status == REG_CLOSED:
             messages.add_message(request, messages.ERROR, _('Registration is closed.'))
             return redirect('event', event.pk)
-    
+
     user = AnonymousUser()
     # get available pricings
     active_pricings = get_active_pricings(event)
     event_pricings = event.registration_configuration.regconfpricing_set.all()
-    
+
     # get available addons
     active_addons = get_active_addons(event)
 
@@ -224,28 +224,28 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
-            
+
     #custom_reg_form = None
-                               
+
     if custom_reg_form:
         RF = FormForCustomRegForm
     else:
         RF = RegistrantForm
-    
-    # start the form set factory    
+
+    # start the form set factory
     RegistrantFormSet = formset_factory(
         RF,
         formset=RegistrantBaseFormSet,
         can_delete=True,
         extra=0,
     )
-    
+
     RegAddonFormSet = formset_factory(
         RegAddonForm,
         formset=RegAddonBaseFormSet,
         extra=0,
     )
-    
+
     if request.method == "POST":
         # process the submitted forms
         params = {'prefix': 'registrant',
@@ -256,13 +256,13 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                   }
         if custom_reg_form:
             params['extra_params'].update({"custom_reg_form": custom_reg_form,
-                                           'event': event}) 
+                                           'event': event})
         reg_formset = RegistrantFormSet(request.POST,
                             **params)
-        
+
         reg_form = RegistrationForm(event, request.user, request.POST,
                     reg_count = len(reg_formset.forms))
-        
+
         # This form is just here to preserve the data in case of invalid registrants
         # The real validation of addons is after validation of registrants
         addon_formset = RegAddonFormSet(request.POST,
@@ -273,7 +273,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                                 'valid_addons':active_addons,
                             })
         addon_formset.is_valid()
-        
+
         # validate the form and formset
         if False not in (reg_form.is_valid(), reg_formset.is_valid()):
             valid_addons = get_addons_for_list(event, reg_formset.get_user_list())
@@ -289,9 +289,9 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                 # process the registration
                 # this will create the registrants and apply the discount
                 reg8n = process_registration(reg_form, reg_formset,  addon_formset, custom_reg_form=custom_reg_form)
-                
+
                 self_reg8n = get_setting('module', 'users', 'selfregistration')
-                is_credit_card_payment = (reg8n.payment_method and 
+                is_credit_card_payment = (reg8n.payment_method and
                     (reg8n.payment_method.machine_name).lower() == 'credit-card'
                     and reg8n.amount_paid > 0)
                 registrants = reg8n.registrant_set.all().order_by('id')
@@ -301,7 +301,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                         registrant.name = registrant.custom_reg_form_entry.__unicode__()
                     else:
                         registrant.name = ' '.join([registrant.first_name, registrant.last_name])
-                
+
                 if is_credit_card_payment: # online payment
                     # email the admins as well
                     email_admins(event, reg8n.amount_paid, self_reg8n, reg8n, registrants)
@@ -316,7 +316,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                     email_admins(event, reg8n.amount_paid, self_reg8n, reg8n, registrants)
 
                 EventLog.objects.log(instance=event)
-                
+
                 # redirect to confirmation
                 return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
     else:
@@ -328,7 +328,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                   }
         if custom_reg_form:
             params['extra_params'].update({"custom_reg_form": custom_reg_form,
-                                           'event': event}) 
+                                           'event': event})
         # intialize empty forms
         reg_formset = RegistrantFormSet(**params)
         reg_form = RegistrationForm(event, request.user)
@@ -338,9 +338,9 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                             extra_params={
                                 'addons':active_addons,
                             })
-    
+
     sets = reg_formset.get_sets()
-    
+
     # build our hidden form dynamically
     hidden_form = None
     if custom_reg_form:
@@ -360,8 +360,8 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         )
         formset = FormSet(**params)
         hidden_form = formset.forms[0]
-        
-    
+
+
     return render_to_response(template_name, {
             'event':event,
             'reg_form':reg_form,

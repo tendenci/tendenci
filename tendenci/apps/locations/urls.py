@@ -9,7 +9,7 @@ urlpath = get_setting('module', 'locations', 'url')
 if not urlpath:
     urlpath = "locations"
 
-urlpatterns = patterns('tendenci.addons.locations.views',
+urlpatterns = patterns('tendenci.apps.locations.views',
     url(r'^%s/$' % urlpath, 'search', name="locations"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="location.search"),
     url(r'^%s/nearest/$' % urlpath, 'nearest', name="location.nearest"),

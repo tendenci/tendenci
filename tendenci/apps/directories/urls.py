@@ -9,7 +9,7 @@ urlpath = get_setting('module', 'directories', 'url')
 if not urlpath:
     urlpath = "directories"
 
-urlpatterns = patterns('tendenci.addons.directories.views',
+urlpatterns = patterns('tendenci.apps.directories.views',
     url(r'^%s/$' % urlpath, 'search', name="directories"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="directory.search"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="directory.print_view"),
