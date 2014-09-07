@@ -332,10 +332,10 @@ if cm_api_key and cm_client_id:
     def delete_cm_subscriber(sender, instance=None, **kwargs):
         """Delete the subscriber from the campaign monitor list
         """
-        from django.core.validators import email_re
+        from tendenci.apps.base.utils import validate_email
 
         (name, email) = get_name_email(instance)
-        if email and email_re.match(email):
+        if email and validate_email(email):
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id

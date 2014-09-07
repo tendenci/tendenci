@@ -15,6 +15,7 @@ from django.conf import settings
 from django.utils import translation
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
+from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
@@ -852,3 +853,13 @@ def truncate_words(s, num, end_text='...'):
     truncate = end_text and ' %s' % end_text or ''
     return Truncator(s).words(num, truncate=truncate)
 truncate_words = allow_lazy(truncate_words, unicode)
+
+
+def validate_email(s, quiet=True):
+    try:
+        _validate_email(s)
+        return True
+    except Exception, e:
+        if not quiet:
+            raise e
+    return False

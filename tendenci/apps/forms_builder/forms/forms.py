@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
-from django.core.validators import email_re
+from tendenci.apps.base.utils import validate_email
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
@@ -441,7 +441,7 @@ class FormForField(forms.ModelForm):
                     raise forms.ValidationError("The \"Email to Recipients\" function requires at least 1 email specified.")
                 else:
                     for val in choices.split(','):
-                        if not email_re.match(val.strip()):
+                        if not validate_email(val.strip()):
                             raise forms.ValidationError("\"%s\" is not a valid email address" % (val))
             else:
                 if not choices:
@@ -451,7 +451,7 @@ class FormForField(forms.ModelForm):
                         val = val.split(':')
                         if len(val) < 2:
                             raise forms.ValidationError("The \"Email to Recipients\" function requires choices to be in the following format: <choice_label>:<email_address>.")
-                        if not email_re.match(val[1].strip()):
+                        if not validate_email(val[1].strip()):
                             raise forms.ValidationError("\"%s\" is not a valid email address" % (val[1]))
 
         if field_function != None and field_function.startswith("Email"):

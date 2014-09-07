@@ -7,7 +7,7 @@ from django.db import models
 from django.http import HttpResponse
 from django.db.models.fields import AutoField, FieldDoesNotExist
 from django.utils.encoding import smart_str
-from django.core.validators import email_re
+from tendenci.apps.base.utils import validate_email
 from django.core.files.storage import default_storage
 
 import xlrd
@@ -344,7 +344,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
 
     user.is_active = bool(setting_dict['interactive'])
 
-    if not bool(email_re.match(user.email)):
+    if not bool(validate_email(user.email)):
         user.email = ''  # if not valid; empty it out
 
     # loop through user properties; truncate at max_length

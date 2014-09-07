@@ -277,7 +277,7 @@ def get_administrators():
 # get a list of the admin notice recipients
 def get_notice_recipients(scope, scope_category, setting_name):
     from tendenci.apps.site_settings.utils import get_setting
-    from django.core.validators import email_re
+    from tendenci.apps.base.utils import validate_email
 
     recipients = []
     # global recipients
@@ -290,7 +290,7 @@ def get_notice_recipients(scope, scope_category, setting_name):
 
     # consolidate [remove duplicate email address]
     for recipient in list(set(g_recipients + m_recipients)):
-        if email_re.match(recipient):
+        if validate_email(recipient):
             recipients.append(recipient)
 
     # if the settings for notice recipients are not set up, return admin contact email

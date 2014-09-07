@@ -349,7 +349,7 @@ def api_rp_setup(data):
         result_code
     """
     from decimal import Decimal
-    from django.core.validators import email_re
+    from tendenci.apps.base.utils import validate_email
     import dateutil.parser as dparser
     from tendenci.apps.imports.utils import get_unique_username
 
@@ -387,7 +387,7 @@ def api_rp_setup(data):
 
     direct_response_str = data.get('response_str')
 
-    if not all([email_re.match(email),
+    if not all([validate_email(email),
                 description,
                 payment_amount>0,
                 cp_id,
@@ -551,7 +551,7 @@ def api_add_rp(data):
                       'trial_amount',
                       )
     from decimal import Decimal
-    from django.core.validators import email_re
+    from tendenci.apps.base.utils import validate_email
     import dateutil.parser as dparser
     from tendenci.apps.imports.utils import get_unique_username
 
@@ -563,7 +563,7 @@ def api_add_rp(data):
         payment_amount = 0
 
 
-    if not all([email_re.match(email),
+    if not all([validate_email(email),
                 data.has_key('description'),
                 payment_amount>0]):
         return False, {}
