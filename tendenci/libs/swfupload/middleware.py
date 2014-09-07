@@ -5,7 +5,7 @@ added to the form that gets POST-ed back to us.
 """
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import HttpResponsePermanentRedirect, get_host
+from django.http import HttpResponsePermanentRedirect
 
 
 class SWFUploadMiddleware(object):
@@ -66,6 +66,6 @@ class SSLRedirectMiddleware(object):
 
     def _redirect(self, request, secure):
         protocol = secure and "https" or "http"
-        newurl = "%s://%s%s" % (protocol, get_host(request), request.get_full_path())
+        newurl = "%s://%s%s" % (protocol, request.get_host(), request.get_full_path())
 
         return HttpResponsePermanentRedirect(newurl)
