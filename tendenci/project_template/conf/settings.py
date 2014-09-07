@@ -97,7 +97,7 @@ if env('SENTRY_DSN', None):
 
 if env('INTERNAL_IPS', None):
     INTERNAL_IPS = [env('INTERNAL_IPS', '127.0.0.1')]
-    
+
 DEBUG_TOOLBAR = env('DEBUG_TOOLBAR', False)
 if DEBUG_TOOLBAR:
     INSTALLED_APPS += ('debug_toolbar',)
@@ -234,14 +234,21 @@ CELERY_IS_ACTIVE = env('CELERY_IS_ACTIVE', False)
 # HAYSTACK SEARCH INDEX
 # -------------------------------------- #
 
-HAYSTACK_SEARCH_ENGINE = env('HAYSTACK_SEARCH_ENGINE', 'solr')
-HAYSTACK_URL = env('WEBSOLR_URL', 'http://localhost')
-
-if HAYSTACK_SEARCH_ENGINE == "solr":
-    HAYSTACK_SOLR_URL = HAYSTACK_URL
-
-if HAYSTACK_SEARCH_ENGINE == 'whoosh':
-    HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, 'index.whoosh')
+__engine = env('HAYSTACK_SEARCH_ENGINE', 'solr')
+if __engine == "solr":
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+            'URL': env('WEBSOLR_URL', 'http://localhost'),
+        }
+    }
+elif __engine == "whoosh":
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+            'PATH': os.path.join(PROJECT_ROOT, 'index.whoosh'),
+        }
+    }
 
 INDEX_FILE_CONTENT = env('INDEX_FILE_CONTENT', False)
 

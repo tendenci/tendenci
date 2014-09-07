@@ -369,10 +369,13 @@ USE_SUBPROCESS = True
 # --------------------------------------#
 # Hackstack Search
 # --------------------------------------#
-HAYSTACK_SITECONF = 'tendenci.apps.search'
-HAYSTACK_SEARCH_ENGINE = 'simple'
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    }
+}
+
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
-HAYSTACK_SOLR_TIMEOUT = 20
 
 # HAYSTACK_INDEX_LIMITS - row amount to index per core application
 # Override for rebuild_index command exists in base core app
