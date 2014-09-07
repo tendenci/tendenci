@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 from tendenci.apps.api_tasty.api import SafeApi
 from tendenci.apps.api_tasty.settings.resources import SettingResource

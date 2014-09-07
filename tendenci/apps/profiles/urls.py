@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from tendenci.apps.site_settings.utils import get_setting
 
 urlpath = get_setting('module', 'users', 'url')

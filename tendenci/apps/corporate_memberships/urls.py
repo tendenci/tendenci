@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url, include
+from django.conf.urls import patterns, url, include
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.corporate_memberships.signals import init_signals
 

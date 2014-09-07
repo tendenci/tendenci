@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from tendenci.apps.jobs.feeds import LatestEntriesFeed
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.jobs.signals import init_signals

@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('tendenci.addons.recurring_payments.authnet.views',

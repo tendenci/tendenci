@@ -3,7 +3,7 @@ import os
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.conf import settings
-from django.conf.urls.defaults import patterns, include
+from django.conf.urls import patterns, include
 
 from tendenci.apps.site_settings.utils import check_setting, get_setting
 

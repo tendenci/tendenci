@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('tendenci.apps.redirects.views',
     url(r'^$', 'search', name="redirects"),

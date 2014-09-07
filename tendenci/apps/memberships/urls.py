@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url, include
+from django.conf.urls import patterns, url, include
 from tendenci.apps.site_settings.utils import get_setting
 
 urlpath = get_setting('module', 'memberships', 'url')
@@ -98,7 +98,7 @@ urlpatterns = patterns(
     url(r"^%s/applications/(?P<slug>[\w\-]+)/$" % urlpath,
         "membership_default_add",
         name="membership_default.add"),
-                       
+
     # membership default renew
     url(r"^%s/applications/(?P<slug>[\w\-]+)/(?P<membership_id>\d+)/$" % urlpath,
         "membership_default_add",

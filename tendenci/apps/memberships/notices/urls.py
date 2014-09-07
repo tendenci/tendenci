@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns("tendenci.addons.memberships.notices.views",
     url(r"^logs/search/$", "membership_notice_log_search", name="membership.notice.log.search"),

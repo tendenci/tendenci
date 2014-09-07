@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url, include
+from django.conf.urls import patterns, url, include
 
 urlpatterns = patterns('tendenci.core.payments.views',
     url(r'^payonline/(?P<invoice_id>\d+)/(?P<guid>[\d\w-]+)?$', 'pay_online', name="payment.pay_online"),

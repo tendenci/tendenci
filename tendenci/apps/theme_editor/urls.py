@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import url, patterns
 
 urlpatterns = patterns('tendenci.apps.theme_editor.views',
     url(r'^apps/$', 'app_list', name="theme_editor.app_list"),

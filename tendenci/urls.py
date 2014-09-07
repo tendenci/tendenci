@@ -1,5 +1,5 @@
 from os.path import join
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
@@ -120,7 +120,7 @@ handler500 = 'tendenci.core.base.views.custom_error'
 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     urlpatterns += patterns('',
     # serve .less files - this is to resolve the cross domain issue for less js
-    url(r'^(?P<path>.*)\.less$', 
+    url(r'^(?P<path>.*)\.less$',
         'tendenci.core.files.views.display_less',  name='less_file'),
     url(r'^static/(?P<path>.*)$',
             'tendenci.core.files.views.redirect_to_s3',
@@ -180,6 +180,6 @@ urlpatterns += patterns('', url(r'^en/$', redirect_to, {'url': '/accounts/login/
 # happen first
 pattern_pages = patterns('',
     # page view
-    url(r'^(?P<slug>[\w\-\/]+)/$', 'tendenci.apps.pages.views.index', name="page"),  
+    url(r'^(?P<slug>[\w\-\/]+)/$', 'tendenci.apps.pages.views.index', name="page"),
 )
 urlpatterns += pattern_pages

@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 from tendenci.apps.files.signals import init_signals
 from tendenci.apps.site_settings.utils import get_setting

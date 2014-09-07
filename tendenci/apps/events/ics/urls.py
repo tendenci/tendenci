@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('tendenci.addons.events.ics',
     url(r'^(?P<ics_id>\d+)/$', 'views.status', name="ics.status"),

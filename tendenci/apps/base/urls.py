@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('tendenci.core.base.views',
     url(r'^image-preview/(?P<app_label>\w+)/(?P<model>\w+)/(?P<id>\d+)/(?P<size>(\d+|\d+x\d+))/$', 'image_preview', name="image_preview"),
@@ -10,7 +10,7 @@ urlpatterns = patterns('tendenci.core.base.views',
     url(r'^timeout-test/$', 'timeout_test', name="timeout_test"),
 
     url(r'^checklist/$', 'checklist', name="completion_checklist"),
-    
+
     url(r'^setlang/$', 'set_language', name="base.set_language"),
 
     url(r'^update-tendenci/$', 'update_tendenci', name="update_tendenci"),

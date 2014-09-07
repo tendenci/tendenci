@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('tendenci.core.tags.views',
     url(r'^$', 'tags_list', name="tags_list"),

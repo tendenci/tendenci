@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('tendenci.core.event_logs.views',
     url(r'^$', 'index', name="event_logs"),

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 from tendenci.urls import urlpatterns as tendenci_urls
 

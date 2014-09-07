@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('tendenci.core.payments.firstdata.views',
      url(r'^thankyou/(?P<payment_id>\d+)/$', 'thank_you', name="firstdata.thank_you"),

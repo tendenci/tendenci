@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('tendenci.core.payments.payflowlink.views',
      url(r'^thankyou/$', 'thank_you', name="payflowlink.thank_you"),

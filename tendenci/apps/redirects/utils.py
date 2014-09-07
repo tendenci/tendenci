@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import url, patterns
 from django.utils.http import urlquote
 from tendenci.apps.redirects.models import Redirect
 

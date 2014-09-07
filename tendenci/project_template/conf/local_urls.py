@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import include, patterns
+from django.conf.urls import include, patterns
 
 # Add additional url patterns for additional apps
 # here and they will be included in the main urls.py

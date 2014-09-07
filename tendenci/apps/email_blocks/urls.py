@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('tendenci.core.email_blocks.views',
     url(r'^$', 'search', name="email_blocks"),

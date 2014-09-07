@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('tendenci.apps.accountings.views',
     url(r'^account_numbers/$', 'account_numbers',

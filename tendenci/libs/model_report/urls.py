@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from tendenci.libs.model_report.views import report, report_list
 
 urlpatterns = patterns('',
