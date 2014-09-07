@@ -2,7 +2,7 @@ from django.utils.html import strip_tags
 from django.utils.text import unescape_entities
 from tendenci.apps.meta.utils import generate_meta_keywords
 from tendenci.apps.site_settings.utils import get_setting
-from django.utils.text import truncate_words
+from tendenci.apps.base.utils import truncate_words
 from django.utils.html import strip_tags, strip_entities
 
 from tendenci.apps.categories.models import Category

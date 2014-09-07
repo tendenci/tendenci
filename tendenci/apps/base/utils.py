@@ -19,9 +19,10 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 from django.contrib.admin.util import NestedObjects
+from django.utils.functional import allow_lazy
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.text import capfirst
+from django.utils.text import capfirst, Truncator
 from django.utils.encoding import force_unicode
 from django.db import router
 
@@ -56,8 +57,8 @@ def get_languages_with_local_name():
     """
     return [(ll['code'], '%s (%s)' % (ll['name_local'], ll['code'])) for ll in
             [translation.get_language_info(l[0])
-             for l in settings.LANGUAGES]] 
-    
+             for l in settings.LANGUAGES]]
+
 
 def get_deleted_objects(obj, user):
     """
@@ -781,7 +782,7 @@ def create_salesforce_contact(profile):
                 # update field Company_Name__c
                 if profile.company and contact.has_key('Company_Name__c'):
                     sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
-                        
+
                 profile.sf_contact_id = contact['id']
                 profile.save()
                 return contact['id']
@@ -845,3 +846,9 @@ def normalize_field_names(fieldnames):
         fieldnames[i] = fieldnames[i].lower().replace(' ', '_')
 
     return fieldnames
+
+
+def truncate_words(s, num, end_text='...'):
+    truncate = end_text and ' %s' % end_text or ''
+    return Truncator(s).words(num, truncate=truncate)
+truncate_words = allow_lazy(truncate_words, unicode)
