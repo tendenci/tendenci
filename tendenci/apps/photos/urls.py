@@ -9,7 +9,7 @@ urlpath = get_setting('module', 'photos', 'url')
 if not urlpath:
     urlpath = "photos"
 
-urlpatterns = patterns('tendenci.addons',
+urlpatterns = patterns('tendenci.apps',
 
     ## photos ##
 
