@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from django.utils import simplejson as json
+import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 

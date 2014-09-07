@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.utils import simplejson
+import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from api.utils import validate_api_request
 

@@ -22,7 +22,7 @@ from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
-from django.utils import simplejson
+import simplejson
 
 from johnny.cache import invalidate
 

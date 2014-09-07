@@ -22,7 +22,7 @@ from django.forms.models import modelformset_factory
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.utils import simplejson
+import simplejson
 from django.utils.html import strip_tags
 from pytz import timezone
 from pytz import UnknownTimeZoneError

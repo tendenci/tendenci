@@ -1,5 +1,5 @@
 import os
-from django.utils import simplejson
+import simplejson
 from django.utils.encoding import smart_str
 
 def get_apps(local_root):

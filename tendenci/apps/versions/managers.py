@@ -4,7 +4,7 @@ from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
-from django.utils import simplejson as json
+import simplejson as json
 
 
 class VersionManager(Manager):

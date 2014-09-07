@@ -20,7 +20,7 @@ from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.db.models.fields import AutoField
 from django.utils.encoding import smart_str
-from django.utils import simplejson
+import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string

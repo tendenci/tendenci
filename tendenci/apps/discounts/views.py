@@ -1,5 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson as json
+import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect

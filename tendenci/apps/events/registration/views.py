@@ -3,7 +3,7 @@
 from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson as json
+import simplejson as json
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.template.defaultfilters import date as date_filter

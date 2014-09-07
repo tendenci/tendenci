@@ -13,7 +13,7 @@ to enable this service support.
 import urllib
 
 from django.conf import settings
-from django.utils import simplejson
+import simplejson
 
 from tendenci.apps.social_auth.backends import OAuthBackend, USERNAME
 from tendenci.apps.social_auth.backends.google import BaseGoogleOAuth

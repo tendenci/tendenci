@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
-from django.utils import simplejson as json
+import simplejson as json
 
 from tendenci.apps.versions.managers import VersionManager
 

@@ -10,7 +10,7 @@ import time as ttime
 
 from django.http import HttpResponseServerError
 from django.conf import settings
-from django.utils import simplejson
+import simplejson
 from django.contrib.auth.models import User
 from django.template import loader
 from django.template.defaultfilters import slugify

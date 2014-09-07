@@ -18,7 +18,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
-from django.utils import simplejson
+import simplejson
 from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt

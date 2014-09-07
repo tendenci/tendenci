@@ -161,7 +161,7 @@ class HighchartRender(object):
 
     @property
     def options(self):
-        from django.utils import simplejson
+        import simplejson
         json = unicode(self.model)
         json = simplejson.dumps(json)[1:-1]
         json = json.replace("'true'", 'true')

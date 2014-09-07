@@ -6,7 +6,7 @@ from subprocess import Popen
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson as json
+import simplejson as json
 from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.models import User

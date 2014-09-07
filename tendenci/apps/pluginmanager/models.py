@@ -19,7 +19,7 @@ class PluginApp(models.Model):
 ###
 # Tools
 def db2json():
-    from django.utils import simplejson
+    import simplejson
     import os
     from django.conf import settings
     path = settings.PROJECT_ROOT

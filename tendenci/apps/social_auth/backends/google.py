@@ -17,7 +17,7 @@ from urllib import urlencode
 from urllib2 import Request, urlopen
 
 from django.conf import settings
-from django.utils import simplejson
+import simplejson
 
 from tendenci.apps.social_auth.backends import OpenIdAuth, ConsumerBasedOAuth, BaseOAuth2, \
                                  OAuthBackend, OpenIDBackend, USERNAME

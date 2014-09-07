@@ -9,7 +9,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import (
     HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError)
-from django.utils import simplejson
+import simplejson
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
 from django.forms.models import modelformset_factory
