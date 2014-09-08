@@ -4,11 +4,11 @@
 <div class="navbar yamm navbar-inverse navbar-fixed-top t-top-nav" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-1" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url dashboard %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
+            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url dashboard %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
         </div>
         <div id="navbar-collapse-0" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
                     <ul class="dropdown-menu">
                         <li>
                             <div class="yamm-content custom-yamm-content">
@@ -22,13 +22,13 @@
                                             <a  href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
                                             </span>
                                             {% if app.has_settings and app.url.settings %}
-                                            <span class="pull-right"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
+                                            <span class="pull-right hidden-xs"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
                                             {% endif %}
                                             {% if app.url.search %}
-                                            <span class="pull-right"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
+                                            <span class="pull-right hidden-xs"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
                                             {% endif %}
                                             {% if app.url.add %}
-                                            <span class="pull-right"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
+                                            <span class="pull-right hidden-xs"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
                                             {% endif %}
                                         </li>
                                         {% endif %}
@@ -44,13 +44,13 @@
                                             <a  href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
                                             </span>
                                             {% if app.has_settings and app.url.settings %}
-                                            <span class="pull-right"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
+                                            <span class="pull-right hidden-xs"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
                                             {% endif %}
                                             {% if app.url.search %}
-                                            <span class="pull-right"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
+                                            <span class="pull-right hidden-xs"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
                                             {% endif %}
                                             {% if app.url.add %}
-                                            <span class="pull-right"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
+                                            <span class="pull-right hidden-xs"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
                                             {% endif %}
                                         </li>
                                         {% endif %}
@@ -63,7 +63,7 @@
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+                    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
                     {% if registered_apps.people %}
                     <ul class="dropdown-menu classic">
                     {% for app in registered_apps.people %}
@@ -116,7 +116,7 @@
                     </ul>
                 </li>
                 {% endif %}
-                <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#117;</span>&nbsp;&nbsp;{% trans "Reports" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#117;</span>&nbsp;&nbsp;{% trans "Reports" %}</a>
                     <ul class="dropdown-menu">
                         <li><a  href="{% url report_list %}">{% trans "Invoice Reports" %}</a></li>
                         <li><a  href="{% url reports-events-summary %}">{% trans "Event logs Summary" %}</a></li>
@@ -136,7 +136,7 @@
                         <li><a  href="{% url reports-404-count %}">{% trans "404 Tracker" %}</a></li>
                     </ul>
                 </li>
-                <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "Quick Links" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "Quick Links" %}</a>
                     <ul class="dropdown-menu">
                         <li><a  href="{% url settings.index 'site' 'global' %}"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Site Settings" %}</a></li>
                         <li><a  href="{% url settings %}"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Full Settings List" %}</a></li>
@@ -156,7 +156,7 @@
                         <li><a  href="/">{% trans "Home" %}</a></li>
                     </ul>
                 </li>
-                <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#87;</span><strong>&nbsp;&nbsp;{% trans "Support" %}</strong></a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#87;</span><strong>&nbsp;&nbsp;{% trans "Support" %}</strong></a>
                     <ul class="dropdown-menu">
                         <li><a  href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">{% trans 'Tendenci Guide' %}</a></li>
                         <li><a  href="http://tendenci.com/help-files/" target="_blank">{% trans "Search Help Files" %}</a></li>
@@ -169,7 +169,7 @@
                     </ul>
                 </li>
                 {% if CUSTOM_TEMPLATE %}
-                <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">{% trans "Using Custom Template" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">{% trans "Using Custom Template" %}</a>
                     <ul class="dropdown-menu">
                         <li><a  href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{% trans "Theme" %}: {{ THEME }}</a></li>
                         <li><a  href="{% url theme_editor.editor %}?file=templates/{{ THEME_TEMPLATE }}&theme_edit={{ THEME }}">{% trans 'Template' %}: {{ THEME_TEMPLATE }}</a></li>
@@ -185,7 +185,7 @@
                 {% comment %}
                 {% if THEME_INFO.SSU.color %}
                 <li class="dropdown" id="themecolor">
-                    <a href="#" data-toggle="dropdown" class="dropdown-toggle"><img class="themecolorLogo" src="{{ STATIC_URL }}images/icons/color-palette-16x16.png">&nbsp;&nbsp;{% trans "Colors" %}</a>
+                    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img class="themecolorLogo" src="{{ STATIC_URL }}images/icons/color-palette-16x16.png">&nbsp;&nbsp;{% trans "Colors" %}</a>
                     {% include 'theme_editor/theme_color_admin-new.html' %}
                 </li>
                 {% endif %}

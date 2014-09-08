@@ -23,7 +23,7 @@
     <link href="{{ STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />
     {% if request.user.is_authenticated %}
         <link rel="stylesheet" href="{{ STATIC_URL }}yamm/yamm.css">
-        <link href="{{ STATIC_URL }}css/top-menu.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />
         <link href="{{ STATIC_URL }}css/theme_bar.css" rel="stylesheet" type="text/css" />
     {% endif %}
     {% if request.user.is_superuser and THEME_INFO.SSU.color %}
