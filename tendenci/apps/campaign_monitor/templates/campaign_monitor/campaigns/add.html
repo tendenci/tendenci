@@ -18,7 +18,7 @@
     <h1>Campaign Add</h1>
 
     <div class="template-wrap">
-        <form action="{% url campaign_monitor.campaign_generate %}" method="post">{% csrf_token %}
+        <form action="{% url "campaign_monitor.campaign_generate" %}" method="post">{% csrf_token %}
         <div class="forms">
             {% if form.non_field_errors %}
                 {{ form.non_field_errors }}

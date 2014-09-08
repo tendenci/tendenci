@@ -18,7 +18,7 @@
     {{ directory.headline }}</h1>
 
     <div class="directory-wrap">
-        <form action="{% url directory.edit.meta directory.pk %}" method="post">{% csrf_token %}
+        <form action="{% url "directory.edit.meta" directory.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="Save Changes" />

@@ -21,11 +21,11 @@
             {% trans "Are you sure you want to permanently delete this nav?" %}
         </div>
         <div class="delete-form">
-            <form action="{% url navs.delete current_nav.id %}" method="post">{% csrf_token %}
+            <form action="{% url "navs.delete" current_nav.id %}" method="post">{% csrf_token %}
                 <input type="submit" value="{% trans 'Confirm Delete' %}" />
             </form>
         </div>
-        <div class="back-search"><a href="{% url navs.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_NAVS_LABEL 'navs' %} </a></div>
+        <div class="back-search"><a href="{% url "navs.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_NAVS_LABEL 'navs' %} </a></div>
     </div>
 </div>
 {% endblock %}

@@ -31,7 +31,7 @@
         {% endfor %}
 
         <div class="delete-form" style="margin-top:10px;">
-            <form name="recurring-event-delete" method="POST" action="{% url event.delete_recurring event.pk %}">{% csrf_token %}
+            <form name="recurring-event-delete" method="POST" action="{% url "event.delete_recurring" event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
                 <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
             </form>

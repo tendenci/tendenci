@@ -27,11 +27,11 @@
             {% trans "Are you sure you want to permanently delete this story?" %}
         </div>
         <div class="delete-form">
-            <form action="{% url story.delete story.id %}" method="post">{% csrf_token %}
+            <form action="{% url "story.delete" story.id %}" method="post">{% csrf_token %}
                 <input type="submit" value="{% trans "Confirm Delete" %}" />
             </form>
         </div>
-        <div class="back-search"><a href="{% url story.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_STORIES_LABEL 'stories' %} </a></div>
+        <div class="back-search"><a href="{% url "story.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_STORIES_LABEL 'stories' %} </a></div>
     </div>
 </div>
 {% endblock %}

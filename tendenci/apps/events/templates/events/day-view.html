@@ -24,7 +24,7 @@
 
     <h2>{{ date|date:"l, F j Y" }}</h2>
 
-<form class="search-form" action="{% url event.today %}" method="get">
+<form class="search-form" action="{% url "event.today" %}" method="get">
 
 <div class="form-field clearfix">
     <div class="id_start_dt">
@@ -121,13 +121,13 @@
             <div style="clear:both;"></div>
 
             <!-- delete-event form -->
-            <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
+            <form name="event-delete" method="POST" action="{% url "event.delete" event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
         </div>
     {% empty %}
         <div class="no-events">{% trans "No events here, yet. " %}
-            <a href="{% url event.add date.year date.month date.day %}">
+            <a href="{% url "event.add" date.year date.month date.day %}">
             {% trans "I would like to add one." %}</a></div>
     {% endfor %}
 

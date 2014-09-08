@@ -14,7 +14,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -30,7 +30,7 @@
             <div>
             <ul class="dropdown-menu">
         {% endif %}
-            <li><a href="{% url payment.search %}">{% trans "Search Payments" %}</a></li>
+            <li><a href="{% url "payment.search" %}">{% trans "Search Payments" %}</a></li>
         </ul>
         {% if nav_object %}
             {% if can_view_invoice %}
@@ -38,7 +38,7 @@
                 <li class="heading">{% trans "This Payment" %}</li>
                 <li class="divider"></li>
                 {% if can_view_invoice %}
-                    <li><a href="{% url invoice.view nav_object.invoice.pk %}">{% trans "View Invoice" %}</a></li>
+                    <li><a href="{% url "invoice.view" nav_object.invoice.pk %}">{% trans "View Invoice" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}
@@ -50,12 +50,12 @@
         <a href="#" class="dropdown-toggle">{% trans "Invoices" %}</a>
         <ul class="dropdown-menu">
             {% if can_edit_setting %}
-            <li><a href="{% url settings.index "module" "invoices" %}">{% trans "Settings" %}</a></li>
+            <li><a href="{% url "settings.index" "module" "invoices" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url invoice.search %}">{% trans "Search Invoices" %}</a></li>
+            <li><a href="{% url "invoice.search" %}">{% trans "Search Invoices" %}</a></li>
             {% if user.profile.is_superuser %}
-                <li><a href="{% url invoice.export %}">{% trans "Export Invoices" %}</a></li>
-                <li><a href="{% url reports-top-spenders %}">{% trans "Top Spenders Report" %}</a></li>
+                <li><a href="{% url "invoice.export" %}">{% trans "Export Invoices" %}</a></li>
+                <li><a href="{% url "reports-top-spenders" %}">{% trans "Top Spenders Report" %}</a></li>
             {% endif %}
         </ul>
     </li>

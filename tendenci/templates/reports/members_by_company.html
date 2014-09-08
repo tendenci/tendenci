@@ -28,7 +28,7 @@
     <tbody>
     {% for company in companies %}
     <tr>
-        <td><a href="{% url profile.search %}?member_only=on&search_criteria=company&search_text={{ company.name|urlencode }}&search_method=exact">{{ company.name|truncatechars:45 }}</a></td>
+        <td><a href="{% url "profile.search" %}?member_only=on&search_criteria=company&search_text={{ company.name|urlencode }}&search_method=exact">{{ company.name|truncatechars:45 }}</a></td>
         <td class="align_center">{{ company.total_members }}</td>
     </tr>
     {% endfor %}

@@ -24,7 +24,7 @@
         To view the profile of this member, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' membership.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url 'profile' membership.user.username %}</a>.
         <br /> <br />
 
-         To view and manage the corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view corp_membership.id %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view corp_membership.id %}</a>.
+         To view and manage the corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" corp_membership.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" corp_membership.id %}</a>.
         <br /> <br />
 
         Thanks,<br />

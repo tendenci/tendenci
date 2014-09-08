@@ -22,13 +22,13 @@
             <h3>{% trans "Topics" %}</h3>
             <div class="col">
             {% for topic in topics.0 %}
-                <a href="{% url help_files.topic topic.pk %}">{{ topic }}</a>
+                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>
                 <br>
             {% endfor %}
             </div>
             <div class="col">
             {% for topic in topics.1 %}
-                <a href="{% url help_files.topic topic.pk %}">{{ topic }}</a>
+                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>
                 <br>
             {% endfor %}
             </div>
@@ -37,7 +37,7 @@
     <div class="right-col">
         <div>
             <ul class="request-help-file">
-                <li><a href="{% url help_files.request %}">{% trans "Request" %} {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}</a></li>
+                <li><a href="{% url "help_files.request" %}">{% trans "Request" %} {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}</a></li>
             </ul>
         </div>
         <div class="sub-column">

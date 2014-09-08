@@ -59,7 +59,7 @@
                   <td width="83%"><b>{{ profile.email }}</b></td>
                 </tr>
               </table>              <p>                  <br>
-                {% blocktrans %}To view the complete application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}</strong>
+                {% blocktrans %}To view the complete application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}</strong>
               <p>{% trans "For more on the person who submitted the application, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
               <p>{% trans "If you have received this in error, please contact the webmaster below." %} </p>
               <p>                {% trans "Thanks!" %}</p>

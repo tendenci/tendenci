@@ -13,12 +13,12 @@
 
         <div class="links">
             <div>
-                <a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.export event.id %}">
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.export" event.id %}">
                     {% trans "Export Registration" %}
                 </a>
             </div>
             <div>
-                <a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.roster.total event.id %}">
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.roster.total" event.id %}">
                     {% trans "Event Roster" %}
                 </a>
             </div>

@@ -7,7 +7,7 @@
     <h1>{% trans "Module Upload" %}</h1>
     <p>Module named <strong>{{ addon_name }}</strong> already exists in <strong>SITE ADDONS PATH</strong></p>
     <p>Would you like to overwrite this module?</p>
-    <form method='post' action="{% url addon.upload.preview sid %}" >{% csrf_token %}
+    <form method='post' action="{% url "addon.upload.preview" sid %}" >{% csrf_token %}
     <input type='submit' value="Overwrite Module">
     </form>
 </div>

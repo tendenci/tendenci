@@ -9,7 +9,7 @@
 
 {% if object.invoice %}
 <p>
-	{% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view object.invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view object.invoice.pk %}</a>
+	{% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" object.invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" object.invoice.pk %}</a>
 </p>
 {% endif %}
 

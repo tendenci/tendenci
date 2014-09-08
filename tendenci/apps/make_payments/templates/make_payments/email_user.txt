@@ -23,7 +23,7 @@
 
     <p><font face="Arial, Helvetica, sans-serif" size="2">
     {% trans "To check the status of your payment, click here:" %}
-    <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.id invoice.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.id invoice.guid %}</a>
+    <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.id invoice.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.id invoice.guid %}</a>
     </font></p>
 
     <p><font face="Arial, Helvetica, sans-serif" size="2" color="red">

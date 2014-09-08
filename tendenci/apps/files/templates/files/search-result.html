@@ -53,7 +53,7 @@
 
         <div class="submitted">
             {% if layout == "list" %}<span>{% trans "Created" %} {{ file.create_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</span><br />{% endif %}
-            <a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">
+            <a href="{% url "event_log.search" %}?source=files&object_id={{ file.pk }}">
             {% trans "Updated" %}
             {% if layout == "list" %}{{ file.update_dt|date:"D d M Y P" }}
             {% else %}{{ file.update_dt|date:"m/d/y P" }}<br>
@@ -66,7 +66,7 @@
     </div>
 
     <!-- delete-file form -->
-    <form name="file-delete" method="POST" action="{% url file.delete file.pk %}">{% csrf_token %}
+    <form name="file-delete" method="POST" action="{% url "file.delete" file.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>
 </div>

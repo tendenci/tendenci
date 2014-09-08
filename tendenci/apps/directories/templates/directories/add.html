@@ -22,13 +22,13 @@
     <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Add" %}</h1>
 
     <div class="directory-wrap">
-        <form action="{% url directory.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url "directory.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {% if MODULE_DIRECTORIES_DIRECTORIESREQUIRESPAYMENT %}
              <div class="pricing-table-block">
              <h4>Directory Pricing</h4>
             {% directory_pricing_table %}
-            <a href="{% url directory_pricing.add %}">{% trans "Add pricing options" %}</a>
+            <a href="{% url "directory_pricing.add" %}">{% trans "Add pricing options" %}</a>
             </div>
             {% endif %}
             {{ form|styled_form }}
@@ -84,7 +84,7 @@
             if (pricing_id && list_type){
                 $.ajax({
                    type: "POST",
-                   url: "{% url directory.query_price %}",
+                   url: "{% url "directory.query_price" %}",
                    data: {'pricing_id': pricing_id, 'list_type': list_type},
                    success: function(ret_data){
                        var obj = $.parseJSON(ret_data);

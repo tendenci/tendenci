@@ -8,7 +8,7 @@ Total Attempted to Send = {{ act_attempt }} <br />
 Bad Address or E-mail Blocked = {{ act_fail }} <br />
 Total Processed = {{ act_sent }} <br /><br />
 
-For details of this submission, go to:{% endblocktrans %} {{ SITE_GLOBAL_SITEURL }}{% url action.recap action.id %} <br /><br />
+For details of this submission, go to:{% endblocktrans %} {{ SITE_GLOBAL_SITEURL }}{% url "action.recap" action.id %} <br /><br />
 
 {% trans "Thanks!" %} <br /><br />
 

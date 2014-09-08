@@ -83,7 +83,7 @@
 
 
          <!-- delete-directory_pricing form -->
-            <form name="directory-pricing-delete" method="POST" action="{% url directory_pricing.delete directory_pricing.pk %}">{% csrf_token %}
+            <form name="directory-pricing-delete" method="POST" action="{% url "directory_pricing.delete" directory_pricing.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

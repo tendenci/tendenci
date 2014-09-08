@@ -25,7 +25,7 @@
         <div>
             You are renewing: {{ directory.headline }}. Click submit below to complete your renewal.
         </div>
-        <form action="{% url directory.renew directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url "directory.renew" directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="Submit Renewal" />

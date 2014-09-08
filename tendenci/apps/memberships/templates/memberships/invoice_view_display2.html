@@ -18,7 +18,7 @@
     <tr>
         <td>
             {% if membership %}
-                {% trans "Membership #" %}<a href="{% url admin:memberships_membershipdefault_change membership.pk %}" title="Membership">{{ membership.pk }}</a>
+                {% trans "Membership #" %}<a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}" title="Membership">{{ membership.pk }}</a>
                 {{ membership.membership_type.name|truncatewords:30 }}
                 {% if membership.first_name or membership.last_name or membership.email %}
                     &nbsp;&ndash;&nbsp;{{ membership.first_name }} {{ membership.last_name }} {{ membership.email }}

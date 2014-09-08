@@ -32,7 +32,7 @@
              {{ field_labels.name }}:
          </div>
          <div class="block-inline">
-             <strong><a href="{% url corpmembership.view corporate_membership.id %}" target="_blank">{{ corporate_membership.corp_profile.name }}</a></strong>
+             <strong><a href="{% url "corpmembership.view" corporate_membership.id %}" target="_blank">{{ corporate_membership.corp_profile.name }}</a></strong>
          </div>
      </div>
      <div>
@@ -112,7 +112,7 @@
        <div>
         {% blocktrans with corporate_membership.renew_dt|date:"d-M-Y" as renew_date %}Renewed on {{ renew_date }} by:{% endblocktrans %} <a href="{% url 'profile' corporate_membership.creator.username %}">{{ corporate_membership.creator.get_full_name }}</a>
         <br />
-        <a href="{% url invoice.view corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>
+        <a href="{% url "invoice.view" corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>
         <br />
         {% trans "New expiration date upon approval: " %}<b>{{ new_expiration_dt }}</b>
 

@@ -17,7 +17,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -26,13 +26,13 @@
         <a href="#" class="dropdown-toggle">{% firstof MODULE_EVENT_LOGS_LABEL trans 'Event Logs' %}</a>
         <div>
         <ul class="dropdown-menu">
-            <li><a href="{% url event_log.search %}">{% trans "Search" %}</a></li>
-            <li><a href="{% url event_log.info %}">{% trans "Info List" %}</a></li>
+            <li><a href="{% url "event_log.search" %}">{% trans "Search" %}</a></li>
+            <li><a href="{% url "event_log.info" %}">{% trans "Info List" %}</a></li>
         </ul>
         </div>
     </li>
     {% if MODULE_USERS_ENABLED %}
-    <li><a href="{% url profile.search %}">{% firstof MODULE_USERS_LABEL 'Users' %}</a></li>
+    <li><a href="{% url "profile.search" %}">{% firstof MODULE_USERS_LABEL 'Users' %}</a></li>
     {% endif %}
 </ul>
 {% endif %}

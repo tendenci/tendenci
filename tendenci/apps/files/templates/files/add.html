@@ -19,7 +19,7 @@
     <h1>{% trans "Add File" %}</h1>
 
     <div class="file-wrap">
-    <form action="{% url file.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <form action="{% url "file.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="Add File" />

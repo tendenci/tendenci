@@ -29,7 +29,7 @@
             <div class="almost-registered">{% trans "Almost registered. Payment is still required." %}"
 
             {% if event.registration_configuration.can_pay_online %}
-            <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
+            <a href="{% url "payment.pay_online" registration.invoice.pk registration.invoice.guid %}">
                 {% trans "Complete registration." %}</a>
             {% endif %}
             </div>
@@ -40,7 +40,7 @@
     <div class="registered">{% blocktrans with registration.invoice.balance as regbal %}You are registered. Balance is ${{ regbal }}. {% endblocktrans %}
 
             {% if event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
-            <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
+            <a href="{% url "payment.pay_online" registration.invoice.pk registration.invoice.guid %}">
                 {% trans "Pay online." %}</a>
             {% endif %}
             </div>
@@ -89,13 +89,13 @@
 
         {% if not registration.canceled %}
             <div>
-             <a href="{% if hash %}{% url event.registration_edit registration.pk, hash %}{% else %}{% url event.registration_edit registration.pk %}{% endif %}">Edit Registrant(s) Info</a>
+             <a href="{% if hash %}{% url "event.registration_edit" registration.pk, hash %}{% else %}{% url "event.registration_edit" registration.pk %}{% endif %}">Edit Registrant(s) Info</a>
             {% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
                     &nbsp;&nbsp;
                   {% if user.is_authenticated %}
-                      <a href="{% url event.cancel_registration event.pk registration.pk %}">{% trans "Cancel Registation" %}</a>
+                      <a href="{% url "event.cancel_registration" event.pk registration.pk %}">{% trans "Cancel Registation" %}</a>
                   {% else %}
-                      <a href="{% url event.cancel_registration event.pk registration.pk registration.hash %}">{% trans "Cancel Registation" %}</a>
+                      <a href="{% url "event.cancel_registration" event.pk registration.pk registration.hash %}">{% trans "Cancel Registation" %}</a>
                   {% endif %}
              {% endif %}
               </div>
@@ -152,9 +152,9 @@
                 {% else %}
                     {% if not registration.is_table %}
                       {% if user.is_authenticated %}
-                          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">{% trans "Cancel" %}</a>
+                          <a href="{% url "event.cancel_registrant" event.pk registrant.pk %}">{% trans "Cancel" %}</a>
                       {% else %}
-                          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">{% trans "Cancel" %}</a>
+                          <a href="{% url "event.cancel_registrant" event.pk registrant.hash %}">{% trans "Cancel" %}</a>
                       {% endif %}
                     {% endif %}
                 {% endif %}
@@ -230,11 +230,11 @@
             <p>{% trans "Payment Method: " %}{{ registration.payment_method }}</p>
 
             {% if registration.invoice %}
-            <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">{% trans "View invoice" %}</a>
+            <a href="{% url "invoice.view" registration.invoice.pk registration.invoice.guid %}">{% trans "View invoice" %}</a>
             {% endif %}
 
             {% if registration.invoice and event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
-                <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">{% trans "Pay online" %}</a>
+                <a href="{% url "payment.pay_online" registration.invoice.pk registration.invoice.guid %}">{% trans "Pay online" %}</a>
             {% endif %}
         </div>
 

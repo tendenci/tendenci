@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
   {% endif %}
   {% if cl.formset or action_form %}
-    {% url admin:jsi18n as jsi18nurl %}
+    {% url "admin:jsi18n" as jsi18nurl %}
     <script type="text/javascript" src="{{ jsi18nurl|default:'../../jsi18n/' }}"></script>
   {% endif %}
   {{ media.css }}
@@ -59,7 +59,7 @@
       {% if has_add_permission %}
         <ul class="object-tools">
           <li>
-            <a href="{% url boxes.export %}">
+            <a href="{% url "boxes.export" %}">
               {% blocktrans with cl.opts.verbose_name_plural as name %}Export {{ name }}{% endblocktrans %}
             </a>
           </li>

@@ -12,12 +12,12 @@
                 <span class="copyright body-copy-alerts"><em>{% trans "Superuser" %}</em></span>
             {% endif %}
             {% if profile.status == 0 %}
-                <a href="{% url profile.edit user_this.id %}" title="Inactive" class="t-statusdetail"
+                <a href="{% url "profile.edit" user_this.id %}" title="Inactive" class="t-statusdetail"
                  style="background-color:#FF0000;">{% trans "Inactive" %}</a>
             {% else %}
                 {% if profile.status_detail %}
                     {% if profile.status_detail|lower != 'active' %}
-                        <a href="{% url profile.edit user_this.id %}" class="t-statusdetail"
+                        <a href="{% url "profile.edit" user_this.id %}" class="t-statusdetail"
                         title="{{ profile.status_detail }}"  style="background-color:#52008F;">{{ profile.status_detail|title }}</a>
                     {% endif %}
                 {% endif %}
@@ -29,7 +29,7 @@
                     alt="Non-Interactive" title="Non-Interactive">
                 {% endif %}
 
-                <a href="{% url profile.edit user_this.id %}" class="option-link edit">{% trans "Edit" %}</a>
+                <a href="{% url "profile.edit" user_this.id %}" class="option-link edit">{% trans "Edit" %}</a>
         {% endif %}
     {% endif %}
 
@@ -39,20 +39,20 @@
         <div class="more-options-target">
             <ul>
                 <li class="divider">
-                 <a href="{% url profile.edit_groups user_this.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
+                 <a href="{% url "profile.edit_groups" user_this.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
                 </li>
                 <li>
                  <a href="{% url 'auth_password_change' user_this.id %}" class="changepassword" title=="Change Password">{% trans "Change Password" %}</a>
                 </li>
                 {% if request.user.is_superuser %}
                 <li>
-                <a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">{% trans "Permissions" %}</a>
+                <a href="{% url "profile.edit_perms" user_this.id %}" class="permissions" title=="Edit Permissions">{% trans "Permissions" %}</a>
                 </li>
                 <li>
                 <a href="{{ request.path }}?_impersonate={{ user_this.username }}" class="permissions" title=="Impersonate">{% trans "Impersonate" %}</a>
                 </li>
                 <li>
-                 <a href="{% url profile.delete user_this.id %}" class="delete" title=="Delete User">{% trans "Delete" %}</a>
+                 <a href="{% url "profile.delete" user_this.id %}" class="delete" title=="Delete User">{% trans "Delete" %}</a>
                 </li>
                 {% endif %}
 

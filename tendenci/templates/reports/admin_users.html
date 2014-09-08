@@ -16,44 +16,44 @@
     <th>{% trans "#" %}</th>
     <th>
         {% if is_ascending_username %}
-        <a href="{% url reports-admin-users %}?sort=username" >{% trans "Username" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=username" >{% trans "Username" %}</a>
         {% else %}
-        <a href="{% url reports-admin-users %}?sort=-username" >{% trans "Username" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=-username" >{% trans "Username" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_id %}
-        <a href="{% url reports-admin-users %}?sort=id" >{% trans "UserId" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=id" >{% trans "UserId" %}</a>
         {% else %}
-        <a href="{% url reports-admin-users %}?sort=-id" >{% trans "UserId" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=-id" >{% trans "UserId" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_last_name %}
-        <a href="{% url reports-admin-users %}?sort=last_name" >{% trans "Lastname" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=last_name" >{% trans "Lastname" %}</a>
         {% else %}
-        <a href="{% url reports-admin-users %}?sort=-last_name" >{% trans "Lastname" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=-last_name" >{% trans "Lastname" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_first_name %}
-        <a href="{% url reports-admin-users %}?sort=first_name" >{% trans "Firstname" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=first_name" >{% trans "Firstname" %}</a>
         {% else %}
-        <a href="{% url reports-admin-users %}?sort=-first_name" >{% trans "Firstname" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=-first_name" >{% trans "Firstname" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_email %}
-        <a href="{% url reports-admin-users %}?sort=email" >{% trans "Email" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=email" >{% trans "Email" %}</a>
         {% else %}
-        <a href="{% url reports-admin-users %}?sort=-email" >{% trans "Email" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=-email" >{% trans "Email" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_phone %}
-        <a href="{% url reports-admin-users %}?sort=phone" >{% trans "Phone" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=phone" >{% trans "Phone" %}</a>
         {% else %}
-        <a href="{% url reports-admin-users %}?sort=-phone" >{% trans "Phone" %}</a>
+        <a href="{% url "reports-admin-users" %}?sort=-phone" >{% trans "Phone" %}</a>
         {% endif %}
     </th>
 </tr>

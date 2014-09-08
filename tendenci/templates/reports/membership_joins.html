@@ -14,7 +14,7 @@
         <button type="submit" class="btn">Filter Memberships</button>
     </form>
 
-    <a class="download-pdf-version" href="{% url reports-memberships-joins-pdf %}?start_date={{ start_date|date:"Y-m-d" }}&amp;end_date={{ end_date|date:"Y-m-d" }}&amp;mem_type={{ membership_type.pk }}&amp;mem_stat={{ membership_status }}">{% trans "Download PDF version" %}</a>
+    <a class="download-pdf-version" href="{% url "reports-memberships-joins-pdf" %}?start_date={{ start_date|date:"Y-m-d" }}&amp;end_date={{ end_date|date:"Y-m-d" }}&amp;mem_type={{ membership_type.pk }}&amp;mem_stat={{ membership_status }}">{% trans "Download PDF version" %}</a>
 
     <table class="table table-striped table-bordered table-hover table-condensed">
         <tr style="font-size: .9em;">

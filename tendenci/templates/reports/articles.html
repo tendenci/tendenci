@@ -13,14 +13,14 @@
 
 <table>
 <tr>
-    <th><a href="{% url reports-articles %}?sort=viewed" >{% trans "Viewed" %}</a></th>
-    <th><a href="{% url reports-articles %}?sort=name" >{% trans "Name" %}</a></th>
-    <th><a href="{% url reports-articles %}?sort=day" >{% trans "Views / Day" %}</a></th>
-    <th><a href="{% url reports-articles %}?sort=created" >{% trans "Created" %}</a></th>
+    <th><a href="{% url "reports-articles" %}?sort=viewed" >{% trans "Viewed" %}</a></th>
+    <th><a href="{% url "reports-articles" %}?sort=name" >{% trans "Name" %}</a></th>
+    <th><a href="{% url "reports-articles" %}?sort=day" >{% trans "Views / Day" %}</a></th>
+    <th><a href="{% url "reports-articles" %}?sort=created" >{% trans "Created" %}</a></th>
 </tr>
 {% for item in stats %}
 <tr>
-    <td><a href="{% url event_log.search %}?application=articles&action=detail&object_id={{item.object_id}}">{{ item.count }}</a></td>
+    <td><a href="{% url "event_log.search" %}?application=articles&action=detail&object_id={{item.object_id}}">{{ item.count }}</a></td>
 {% if item.article %}
     <td><a href="{% url 'article' item.article.slug %}">{{ item.article }}</a></td>
     <td>{{ item.per_day|floatformat:2 }}</td>

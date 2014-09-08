@@ -14,7 +14,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css">
-<link rel="alternate" type="application/rss+xml" title="Latest resumes" href="{% url resume.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="Latest resumes" href="{% url "resume.feed" %}" />
 {% endblock %}
 
 {% block body %}

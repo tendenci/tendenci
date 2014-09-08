@@ -34,7 +34,7 @@
       <div id="walkthrough-space_1" class="walkthrough-item" style="display:none;">
         <p class="tooltipTitle">{% trans 'Customize Spaces' %}</p>
             <p>{% blocktrans %}This is a sample Space. You can customize your Spaces to feature different content such as sidebars, photos, videos, events, and more. Just hover over the Space and click on "Edit Space." Spaces will feed content from other pages on your site to the homepage. If you dedicate this Space to{% endblocktrans %}
-            <a href="{% url event.month %}" target="_blank">{{ MODULE_EVENTS_LABEL }}</a>
+            <a href="{% url "event.month" %}" target="_blank">{{ MODULE_EVENTS_LABEL }}</a>
             {% blocktrans %}(for example), this Space will display your organization's upcoming events. For more instruction on Spaces, check out{% endblocktrans %}
             <a href="http://tendenci.com/help-files/using-spaces-tendenci-community-themes/" target="_blank">{% trans 'this training video.' %}</a></p>
             <br>
@@ -55,7 +55,7 @@
       <div id="walkthrough-footer" class="walkthrough-item" style="display:none;">
         <p class="tooltipTitle">{% trans 'This is the Footer' %}</p>
             <p>{% blocktrans %}We've populated this area with some info you've already provided. You can change your address in{% endblocktrans %}
-            <a href="{% url settings.index 'site' 'global' %}" target="_blank">Site Settings</a>
+            <a href="{% url "settings.index" 'site' 'global' %}" target="_blank">Site Settings</a>
             {% blocktrans %}under "Quick Links" in the blue admin bar above.{% endblocktrans %}
             <br>
             <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
@@ -67,7 +67,7 @@
             <p>{% blocktrans %}You can access your site's backend from the blue admin bar{% endblocktrans %}
             <strong>{% trans 'above' %}</strong>.
             {% blocktrans %}Under "Content," you'll find all the editable content modules. Under "People," you can add user and groups and assign permissions. "Reports" will show you how people are accessing your website. Under "Quick Links," you have access to the Site Settings as well as the{% endblocktrans %}
-            <a href="{% url theme_editor.editor %}" target="_blank">{% trans 'Theme Editor' %}</a>,
+            <a href="{% url "theme_editor.editor" %}" target="_blank">{% trans 'Theme Editor' %}</a>,
             {% blocktrans %}where you can edit your site's html and css.{% endblocktrans %}</p>
             <br>
             <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>

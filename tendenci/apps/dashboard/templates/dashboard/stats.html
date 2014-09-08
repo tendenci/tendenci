@@ -50,10 +50,10 @@
             <li><a href="{{ url }}">{{ name }}</a></li>
         {% endfor %}
         </ol>
-        <p><a href="{% url reports-memberships-joins %}">More new memberships.</a></p>
+        <p><a href="{% url "reports-memberships-joins" %}">More new memberships.</a></p>
     {% else %}
         <p>No new memberships within this time period.
-           <a href="{% url reports-memberships-joins %}"> View all new memberships.</a>
+           <a href="{% url "reports-memberships-joins" %}"> View all new memberships.</a>
         </p>
     {% endif %}
 </div>
@@ -68,10 +68,10 @@
             <li><a href="{{ url }}">{{ name }}</a></li>
         {% endfor %}
         </ol>
-        <p><a href="{% url reports-renewed-members %}">More renewed memberships.</a></p>
+        <p><a href="{% url "reports-renewed-members" %}">More renewed memberships.</a></p>
     {% else %}
         <p>No renewed memberships within this time period.
-           <a href="{% url reports-renewed-members %}"> View all renewed memberships.</a>
+           <a href="{% url "reports-renewed-members" %}"> View all renewed memberships.</a>
         </p>
     {% endif %}
 </div>
@@ -86,10 +86,10 @@
             <li><a href="{{ url }}">{{ name }}</a></li>
         {% endfor %}
         </ol>
-        <p><a href="{% url reports-expired-members %}">More expired memberships.</a></p>
+        <p><a href="{% url "reports-expired-members" %}">More expired memberships.</a></p>
     {% else %}
         <p>No expired memberships within this time period.
-            <a href="{% url reports-expired-members %}">View all expired memberships.</a>
+            <a href="{% url "reports-expired-members" %}">View all expired memberships.</a>
         </p>
     {% endif %}
 </div>

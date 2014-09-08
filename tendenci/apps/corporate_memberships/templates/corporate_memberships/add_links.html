@@ -3,7 +3,7 @@
 {% if corp_apps %}
     {% if app_count == 1 %}
         {% for corp_app in corp_apps %}
-            <a href="{% url corp_memb.add corp_app.slug %}">{% trans "Add" %}</a>
+            <a href="{% url "corp_memb.add" corp_app.slug %}">{% trans "Add" %}</a>
         {% endfor %}
     {% else %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships-add_links.css">
@@ -13,7 +13,7 @@
             <ul style="margin:0;">
             {% for corp_app in corp_apps %}
                 <li>
-                <a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a>
+                <a href="{% url "corp_memb.add" corp_app.slug %}">{{ corp_app.name }}</a>
                 </li>
             {% endfor %}
             </ul>

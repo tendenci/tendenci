@@ -35,7 +35,7 @@ $(document).ready(function(){
     var completed = false;
 
     var poll_and_process = function(){
-        var myurl = "{% url import.user_upload_subprocess id %}";
+        var myurl = "{% url "import.user_upload_subprocess" id %}";
         var retval;
         var doc_h;
         //var dfd = $$.Deferred();

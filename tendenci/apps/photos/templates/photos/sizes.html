@@ -58,7 +58,7 @@
             </div>
             <div class="size-wrap{% if size_name == "large" %} highlight{% endif %}">
                 <div class="size-name">
-                    <a target="_blank" href="{% url photo.size photo.pk photo.get_large_size|join:"x" %}">
+                    <a target="_blank" href="{% url "photo.size" photo.pk photo.get_large_size|join:"x" %}">
                         {% trans "Large (opens in new tab)" %}</a></div>
                 <div class="size-numerals">{{ photo.get_large_size|join:" x " }}</div>
             </div>

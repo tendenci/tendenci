@@ -12,7 +12,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -23,12 +23,12 @@
             <ul class="dropdown-menu">
                 <li><a href="{% url 'files' %}">{% trans "File List" %}</a></li>
                 {% if can_add_file %}
-                <li><a href="{% url file.add %}">{% trans "Add a File" %}</a></li>
-                <li><a href="{% url file.bulk_add %}">{% trans "Add Multiple Files" %}</a></li>
+                <li><a href="{% url "file.add" %}">{% trans "Add a File" %}</a></li>
+                <li><a href="{% url "file.bulk_add" %}">{% trans "Add Multiple Files" %}</a></li>
                 {% endif %}
                 <li class="divider"></li>
                 {% if user.profile.is_staff %}
-                <li><a href="{% url file.report_most_viewed %}">{% trans "Most Viewed" %}</a></li>
+                <li><a href="{% url "file.report_most_viewed" %}">{% trans "Most Viewed" %}</a></li>
                 {% endif %}
             </ul>
             </div>

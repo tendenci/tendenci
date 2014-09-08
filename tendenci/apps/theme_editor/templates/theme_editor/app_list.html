@@ -15,7 +15,7 @@
 {% block body %}
 <div class="t">
     <div class="editor-nav" style="float:right">
-        <a href="{% url theme_editor.editor %}" >{% trans "Back to Theme-Editor" %}</a>
+        <a href="{% url "theme_editor.editor" %}" >{% trans "Back to Theme-Editor" %}</a>
     </div>
 
     <h1>{% trans "Tendenci Apps" %}</h1>
@@ -23,11 +23,11 @@
     <div class="apps-wrap">
         <div class="app">
             <!--default templates dir, will be here until all templates are moved into their app dirs -->
-            <a href="{% url theme_editor.original_templates %}">default templates</a>
+            <a href="{% url "theme_editor.original_templates" %}">default templates</a>
         </div>
     {% for app in apps %}
         <div class="app">
-            <a href="{% url theme_editor.original_templates app.0 %}">{{ app.0 }}</a>
+            <a href="{% url "theme_editor.original_templates" app.0 %}">{{ app.0 }}</a>
         </div>
     {% endfor %}
     </div>

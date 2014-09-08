@@ -27,7 +27,7 @@
             {% endif %}
             {% if pricing %}
                 <div class="pricing-list-wrap">
-                    <form action="{% url event.register event.pk %}" method="get">
+                    <form action="{% url "event.register" event.pk %}" method="get">
 
                     {% if pricing|length == 1 and pricing.0.price == 0 %}
                         <input class="registration-green-button" type="submit" name="submit" value="{% trans 'RSVP' %}" />
@@ -45,7 +45,7 @@
 
                     {% if event.registration_configuration.has_member_price %}
                     {% if not request.user.profile.is_member %}
-                    <a class="become-a-member" href="{% url membership-referer-url %}?next={% url membership-applications %}">Become a member</a>
+                    <a class="become-a-member" href="{% url "membership-referer-url" %}?next={% url "membership-applications" %}">Become a member</a>
                     {% endif %}
                     {% endif %}
 
@@ -54,7 +54,7 @@
                 {% include "events/include/spots_status.html" %}
 
                 {% if is_registrant %}
-                <div id="is-registrant"><a href="{% url event.registrant.search event.pk %}?q={{ user.email }}">You have already registered</a></div>
+                <div id="is-registrant"><a href="{% url "event.registrant.search" event.pk %}?q={{ user.email }}">You have already registered</a></div>
                 {% endif %}
 
                 </div>

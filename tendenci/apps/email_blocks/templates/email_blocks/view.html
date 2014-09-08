@@ -23,7 +23,7 @@
 
 <p>
 <div>
-    <a href="{% url email_block.view email_block.pk %}">
+    <a href="{% url "email_block.view" email_block.pk %}">
     {% if email_block.email %}
     {{ email_block.email|obfuscate_email }}
     {% else %}

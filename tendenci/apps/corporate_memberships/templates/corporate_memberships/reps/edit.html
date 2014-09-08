@@ -19,7 +19,7 @@
 <div class="t">
 {% corpmemb_nav request.user corp_memb %}
 <div class="corp-reps">
-     <h1>{% trans "Representatives for: " %} <a href="{% url corpmembership.view corp_memb.id %}">{{ corp_memb.corp_profile.name }}</a></h1>
+     <h1>{% trans "Representatives for: " %} <a href="{% url "corpmembership.view" corp_memb.id %}">{{ corp_memb.corp_profile.name }}</a></h1>
      {% if reps %}
      <table width="90%">
             <tr>
@@ -47,9 +47,9 @@
                         -
                     {% endif %}
                 </td>
-                <td><a href="{% url corp_membership.delete_rep rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
+                <td><a href="{% url "corp_membership.delete_rep" rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
                 <!-- delete-corp_memb form -->
-                    <form name="corp-memb-rep-delete" method="POST" action="{% url corp_membership.delete_rep rep.pk %}">{% csrf_token %}
+                    <form name="corp-memb-rep-delete" method="POST" action="{% url "corp_membership.delete_rep" rep.pk %}">{% csrf_token %}
                         <input type="hidden" name="action" value="delete">
                     </form>
                 </td>
@@ -98,7 +98,7 @@
         });
 
         $( "#id_user_display" ).autocomplete({
-            source: "{% url corp_membership.reps_lookup %}",
+            source: "{% url "corp_membership.reps_lookup" %}",
             selectFirst:true,
             minLength:2,
             select:function(event,ui) {

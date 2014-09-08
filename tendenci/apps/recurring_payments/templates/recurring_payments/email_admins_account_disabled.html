@@ -10,7 +10,7 @@ The recurring payment account for {{ rp }} has been disabled by <a href="{% url 
 
 To view this recurring payment account, go to:
 <br />
-<a href="{{ site_url }}{% url recurring_payment.view_account rp.id %}">{{ site_url }}{% url recurring_payment.view_account rp.id %}</a>
+<a href="{{ site_url }}{% url "recurring_payment.view_account" rp.id %}">{{ site_url }}{% url "recurring_payment.view_account" rp.id %}</a>
 
 </div>
 

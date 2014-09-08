@@ -31,7 +31,7 @@ $(document).ready(function(){
         {% endif %}
 
         $.post(
-            '{% url discount.discounted_prices %}',
+            '{% url "discount.discounted_prices" %}',
             {
                 'code':code,
                 'prices':prices,

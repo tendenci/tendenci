@@ -15,7 +15,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -31,10 +31,10 @@
             <div>
             <ul class="dropdown-menu">
             {% endif %}
-            <li><a href="{% url campaign_monitor.template_index %}">{% trans "Search Templates" %}</a></li>
+            <li><a href="{% url "campaign_monitor.template_index" %}">{% trans "Search Templates" %}</a></li>
             {% if can_add_template %}
-                <li><a href="{% url campaign_monitor.template_add %}">{% trans "Add Template" %}</a></li>
-                <li><a href="{% url campaign_monitor.template_sync %}">{% trans "Sync Templates" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_add" %}">{% trans "Add Template" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_sync" %}">{% trans "Sync Templates" %}</a></li>
             {% endif %}
         </ul>
         {% comment %}
@@ -44,10 +44,10 @@
                 <li class="divider"></li>
                 <li><a href="{{ nav_object.cm_preview_url }}">{% trans "Preview Template" %}</a></li>
                 {% if can_change %}
-                <li><a href="{% url campaign_monitor.template_edit nav_object.template_id %}">{% trans "Edit Template" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_edit" nav_object.template_id %}">{% trans "Edit Template" %}</a></li>
                 {% endif %}
                 {% if can_delete %}
-                <li><a href="{% url campaign_monitor.template_delete nav_object.template_id %}">{% trans "Delete Template" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_delete" nav_object.template_id %}">{% trans "Delete Template" %}</a></li>
                 {% endif %}
             </ul>
         {% endif %}
@@ -58,10 +58,10 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Campaigns" %}</a>
         <ul class="dropdown-menu">
-            <li><a href="{% url campaign_monitor.campaign_index %}">{% trans "Search Campaigns" %}</a></li>
+            <li><a href="{% url "campaign_monitor.campaign_index" %}">{% trans "Search Campaigns" %}</a></li>
             {% if can_add_campaign %}
-                <li><a href="{% url campaign_monitor.campaign_generate %}">{% trans "Add Campaign" %}</a></li>
-                <li><a href="{% url campaign_monitor.campaign_sync %}">{% trans "Sync Campaigns" %}</a></li>
+                <li><a href="{% url "campaign_monitor.campaign_generate" %}">{% trans "Add Campaign" %}</a></li>
+                <li><a href="{% url "campaign_monitor.campaign_sync" %}">{% trans "Sync Campaigns" %}</a></li>
                 {% if cm_url %}
                 <li class="divider"></li>
                 <li><a href="{{ cm_url }}" target="_blank">{% trans "Go to Campaign Monitor" %}</a></li>

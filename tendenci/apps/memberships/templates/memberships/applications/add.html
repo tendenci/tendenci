@@ -73,7 +73,7 @@
 
         {% if is_edit %}
         <p>Update your membership information.</p>
-        <span> Go back to your <a href="{% url membership.details membership.pk %}">Membership Info</a></span>
+        <span> Go back to your <a href="{% url "membership.details" membership.pk %}">Membership Info</a></span>
         {% endif %}
 
        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
@@ -191,7 +191,7 @@
                 var prices = '0';
 
                 $.post(
-                    '{% url discount.check_discount %}',
+                    '{% url "discount.check_discount" %}',
                     {
                         'code':code,
                         'prices':prices,

@@ -18,7 +18,7 @@
 {% for day, items in chart_data.items %}
     <td>
         {% for item in items %}
-            <a href="{% url event_log.search %}?application={{ application }}&action={{ item.action }}" title="{{ item.action }} ({{ item.count|intcomma }})">
+            <a href="{% url "event_log.search" %}?application={{ application }}&action={{ item.action }}" title="{{ item.action }} ({{ item.count|intcomma }})">
                 <div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
             </a>
         {% endfor %}
@@ -34,14 +34,14 @@
     <li>
     <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
     &nbsp;
-    <a href="{% url event_log.search %}?application={{ application }}&action={{ item.action }}">{{ item.action }} ({{ item.count|intcomma }})</a>
+    <a href="{% url "event_log.search" %}?application={{ application }}&action={{ item.action }}">{{ item.action }} ({{ item.count|intcomma }})</a>
     </li>
 {% endfor %}
 </ul>
 
 <div style="clear: both;"></div>
 
-<p><a href="{% url reports-events-summary %}?{{ request.META.QUERY_STRING }}">{% trans "Back to main Event Logs report" %}</a></p>
+<p><a href="{% url "reports-events-summary" %}?{{ request.META.QUERY_STRING }}">{% trans "Back to main Event Logs report" %}</a></p>
 
 {% comment %}
 <form>{% csrf_token %}

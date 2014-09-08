@@ -29,7 +29,7 @@
 {% if object.status_detail != 'active' %}
     <br>
 <p>{% blocktrans %}To activate this resume, go
-  to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url resume.approve object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url resume.approve object.pk %}</a></b>
+  to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "resume.approve" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "resume.approve" object.pk %}</a></b>
   </p>
   {% endif %}
 

@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="forms">
-        <form action="{% url event.reassign_type type.pk %}" method="post">{% csrf_token %}
+        <form action="{% url "event.reassign_type" type.pk %}" method="post">{% csrf_token %}
             <div class="item">
                 <div class="errs">{{ form.type.errors }}</div>
                 <div class="label">{{ form.type.label }}</div>

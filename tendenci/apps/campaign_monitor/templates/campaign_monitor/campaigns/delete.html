@@ -33,12 +33,12 @@
             {% trans "Are you sure you want to permanently delete this campaign?" %}
         </div>
     <div class="delete-form">
-        <form name="campaign-delete" method="POST" action="{% url campaign_monitor.campaign_delete campaign.campaign_id %}">{% csrf_token %}
+        <form name="campaign-delete" method="POST" action="{% url "campaign_monitor.campaign_delete" campaign.campaign_id %}">{% csrf_token %}
             <input type="hidden" name="action" value="delete">
             <input type="submit" name="submit" value="{% trans "Confirm Delete" %}">
         </form>
     </div>
         <div class="back-item"><a href="{{ campaign.get_absolute_url }}">&laquo; {% trans "Back to" %} {{ campaign.name }}</a></div>
-        <div class="back-search"><a href="{% url campaign_monitor.campaign_index %}">&laquo; {% trans "Back to all campaigns" %} </a></div>
+        <div class="back-search"><a href="{% url "campaign_monitor.campaign_index" %}">&laquo; {% trans "Back to all campaigns" %} </a></div>
 </div>
 {% endblock %}

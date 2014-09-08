@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <h2><a href="{% url job_pricing.view jp.pk %}">{% trans "Duration:" %} {{ jp.duration }}</a></h2>
+            <h2><a href="{% url "job_pricing.view" jp.pk %}">{% trans "Duration:" %} {{ jp.duration }}</a></h2>
             <div class="content">{% trans "Title:" %} {{ jp.get_title }}</div>
             <div class="content">{% trans "Regular Price:" %} {{ jp.regular_price|format_currency }}</div>
             <div class="content">{% trans "Premium Price:" %} {{ jp.premium_price|format_currency }}</div>
@@ -47,7 +47,7 @@
             </div>
 
             <!-- delete-job form -->
-            <form name="job-pricing-delete" method="POST" action="{% url job_pricing.delete jp.pk %}">{% csrf_token %}
+            <form name="job-pricing-delete" method="POST" action="{% url "job_pricing.delete" jp.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
         </div>

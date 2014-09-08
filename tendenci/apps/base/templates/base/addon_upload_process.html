@@ -19,7 +19,7 @@
     $(document).ready(function() {
         var status_check = function(){
             $.ajax({
-                url: "{% url addon.upload.check sid %}",
+                url: "{% url "addon.upload.check" sid %}",
                 success: function(status_data){
                     if (status_data == 'True') {
                         location.reload();

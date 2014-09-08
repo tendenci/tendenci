@@ -33,12 +33,12 @@
                         {% endif %}
 
                         {% if membership.get_invoice %}
-                        <a href="{% url invoice.view membership.get_invoice.pk membership.get_invoice.guid %}">
+                        <a href="{% url "invoice.view" membership.get_invoice.pk membership.get_invoice.guid %}">
                             {% trans "Invoice" %}</a>
                         {% endif %}
 
                         {% if user.is_superuser %}
-                        <a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">
+                        <a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">
                             {% trans "Edit Membership" %}</a>
                         {% endif %}
                     </div>
@@ -458,7 +458,7 @@
                         {% endif %}
 
                     </div>
-                    <div class="value"><a href="{% url membership.details archive.pk %}">{{ archive.membership_type.name }}</a></div>
+                    <div class="value"><a href="{% url "membership.details" archive.pk %}">{{ archive.membership_type.name }}</a></div>
                 </div>
             {% endfor %}
         </fieldset>

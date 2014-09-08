@@ -32,20 +32,20 @@
         <div id="group-options">
 
             <ul>
-                <li><a href="{% url group.members_export group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
+                <li><a href="{% url "group.members_export" group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
 
                 {% if request.user.profile.is_superuser %}
-                <li><a href="{% url group.message group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
+                <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
                 {% endif %}
 
-                <li><a href="{% url group.edit_perms group.pk %}">
+                <li><a href="{% url "group.edit_perms" group.pk %}">
                     {% trans "Change Group Member Permissions" %}</a></li>
 
                 {% if group.email_recipient %}
-                    <li><a href="{% url group.edit group.slug %}">{% blocktrans %}Emails regarding group activity will be sent to{% endblocktrans %} <strong>{{ group.email_recipient }}</strong></a></li>
+                    <li><a href="{% url "group.edit" group.slug %}">{% blocktrans %}Emails regarding group activity will be sent to{% endblocktrans %} <strong>{{ group.email_recipient }}</strong></a></li>
                 {% else %}
                     <li>{% blocktrans %}Please set a {% endblocktrans%}
-                    <a href="{% url group.edit group.slug %}">{% blocktrans %}recipient{% endblocktrans %}</a>{% blocktrans %} for this group{% endblocktrans %}</li>
+                    <a href="{% url "group.edit" group.slug %}">{% blocktrans %}recipient{% endblocktrans %}</a>{% blocktrans %} for this group{% endblocktrans %}</li>
                 {% endif %}
 
                 {% if group.type %}
@@ -53,18 +53,18 @@
                 {% endif %}
 
                 {% if group.allow_self_add %}
-                    <li><a href="{% url group.edit group.slug %}">
+                    <li><a href="{% url "group.edit" group.slug %}">
                         {% blocktrans %}Users can add themselves to this group{% endblocktrans %}</a></li>
                 {% else %}
-                    <li><a href="{% url group.edit group.slug %}">
+                    <li><a href="{% url "group.edit" group.slug %}">
                         {% blocktrans %}Users cannot add themselves to this group{% endblocktrans %}</a></li>
                 {% endif %}
 
                 {% if group.allow_self.remove %}
-                    <li><a href="{% url group.edit group.slug %}">
+                    <li><a href="{% url "group.edit" group.slug %}">
                         {% blocktrans %}Users can remove themselves from this group{% endblocktrans %}</a></li>
                 {% else %}
-                    <li><a href="{% url group.edit group.slug %}">
+                    <li><a href="{% url "group.edit" group.slug %}">
                         {% blocktrans %}Users cannot remove themsleves{% endblocktrans %}</a></li>
                 {% endif %}
             </ul>
@@ -84,9 +84,9 @@
                  <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if gm.role %}- {{ gm.role }}{% endif %}</a>
 
                  {% if can_delete %}
-                    &nbsp;<span class="delete-member"><a href="{% url group.deleteuser group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
+                    &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
                  <!-- delete-member form -->
-                    <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">{% csrf_token %}
+                    <form name="member-delete" method="POST" action="{% url "group.deleteuser" group.slug gm.member.id %}">{% csrf_token %}
                         <input type="hidden" name="action" value="delete">
                     </form>
                 {% endif %}

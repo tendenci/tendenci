@@ -29,15 +29,15 @@
                     {% trans "View Profile" %}</a>
                 {% endif %}
 
-                <a href="{% url membership.details membership.pk %}?print">
+                <a href="{% url "membership.details" membership.pk %}?print">
                     {% trans "Print Page" %}</a>
 
                 {% if user.is_superuser %}
-                <a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">
+                <a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">
                     {% trans "Edit Membership" %}</a>
                 {% endif %}
                 {% if member_can_edit_records and user == membership.user %}
-                <a href="{% url membership_default.edit membership.pk %}">{% trans "Edit Your Membership" %}</a>
+                <a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
                 {% endif %}
             </div>
             <div style="clear:both;"></div>
@@ -49,7 +49,7 @@
                     {{ memname }}{% endblocktrans %}</h1>
 
                     {% if membership.get_invoice %}
-                        <div class="membership-details-balance"><a href="{% url invoice.view membership.get_invoice.pk membership.get_invoice.guid %}">Balance Due: ${{ membership.get_invoice.balance|floatformat:"2" }}</a></div>
+                        <div class="membership-details-balance"><a href="{% url "invoice.view" membership.get_invoice.pk membership.get_invoice.guid %}">Balance Due: ${{ membership.get_invoice.balance|floatformat:"2" }}</a></div>
                     {% endif %}
 
                 </div>
@@ -112,16 +112,16 @@
                             {% if membership.user == request.user %}
                             {% if membership.can_renew %}
                                 {% if membership.corporate_membership_id %}
-                                    <a href="{% url membership_default.renew_under_corp membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                                    <a href="{% url "membership_default.renew_under_corp" membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
                                 {% else %}
                                     {% if membership.app %}
-                                    <a href="{% url membership_default.renew membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                                    <a href="{% url "membership_default.renew" membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
                                     {% endif %}
                                 {% endif %}
                             {% else %}
                                 {% if membership.app %}
                                     {% if membership.is_expired %}
-                                    <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Oh no you're expired, sign up for membership.</a>
+                                    <a href="{% url "membership_default.add" membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Oh no you're expired, sign up for membership.</a>
                                     {% else %}
                                         <div>No pending actions required, good job!</div>
                                     {% endif %}
@@ -447,7 +447,7 @@
                         {% endif %}
 
                     </div>
-                    <div class="value"><a href="{% url membership.details archive.pk %}">{{ archive.membership_type.name }}</a></div>
+                    <div class="value"><a href="{% url "membership.details" archive.pk %}">{{ archive.membership_type.name }}</a></div>
                 </div>
             {% endfor %}
         </fieldset>

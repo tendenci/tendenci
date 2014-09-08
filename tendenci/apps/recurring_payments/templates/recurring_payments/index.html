@@ -71,7 +71,7 @@
         <div style="clear: right;"></div>
 
         {% if num_accounts > 1 %}
-        <div><a href="{% url recurring_payment.my_accounts rp.user.username %}">View all {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
+        <div><a href="{% url "recurring_payment.my_accounts" rp.user.username %}">View all {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
           {% endif %}
 
       <div id="rpview-tabs">
@@ -169,7 +169,7 @@
                     <td>{{ rp_invoice.billing_dt|date:"n/j/Y" }}</td>
                     <td>{% if rp_invoice.payment_received_dt %}{{ rp_invoice.payment_received_dt|date:"n/j/Y" }}{% endif %}</td>
                     <td>{% if rp_invoice.invoice.balance <= 0 %}Y{% else %}N{% endif %}</td>
-                    <td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid   %}" title="view invoice" target="_blank">{{ rp_invoice.invoice.id }}</a></td>
+                    <td><a href="{% url "invoice.view" rp_invoice.invoice.id rp_invoice.invoice.guid   %}" title="view invoice" target="_blank">{{ rp_invoice.invoice.id }}</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -198,11 +198,11 @@
             {% with pt.recurring_payment_invoice as rp_invoice %}
                 <tr>
                     <td>{{ pt.create_dt|date:"n/j/Y" }}</td>
-                    <td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid  %}" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
+                    <td><a href="{% url "invoice.view" rp_invoice.invoice.id rp_invoice.invoice.guid  %}" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
                     <td>{{ pt.amount|format_currency }} </td>
                     <td>{% if pt.status  %}<span class="transaction-success">Success</span>{% else %}<span class="transaction-failed">Failed</span>{% endif %}</td>
                     <td>{% if not pt.status %}{{ pt.message_text }}{% endif %}</td>
-                    <td>{% if pt.status  %}<a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a>{% endif %}</td>
+                    <td>{% if pt.status  %}<a href="{% url "recurring_payment.transaction_receipt" rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a>{% endif %}</td>
                 </tr>
             {% endwith %}
             {% endfor %}
@@ -332,7 +332,7 @@ $(document).ready(function(){
      $("#btn-pm").click(function(){
          $.ajax({
            type: "POST",
-           url: "{% url recurring_payment.authnet.retrieve_token %}",
+           url: "{% url "recurring_payment.authnet.retrieve_token" %}",
            data: {rpid : {{rp.id}}, guid : '{{rp.guid}}' },
            success: function(t){
              $("input[name=Token]").val(t);
@@ -353,7 +353,7 @@ $(document).ready(function(){
         if(action_result=="successfulSave"){
             $.ajax({
                    type: "POST",
-                   url: "{% url recurring_payment.authnet.update_payment_profile_local %}",
+                   url: "{% url "recurring_payment.authnet.update_payment_profile_local" %}",
                    data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
                    success: function(msg){
                      //alert( msg );

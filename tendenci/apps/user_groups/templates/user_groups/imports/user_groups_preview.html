@@ -60,7 +60,7 @@
     </div>
 
     <div align="right">
-    <form class="import" method="post" action="{% url group.import_process import_i.pk %}">{% csrf_token %}
+    <form class="import" method="post" action="{% url "group.import_process" import_i.pk %}">{% csrf_token %}
     <input type="submit" class="submit-btn" name="submit" value="Import Now" >
     </form>
     </div>

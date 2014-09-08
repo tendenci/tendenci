@@ -25,12 +25,12 @@
        <div id="display-content"{% if not download_ready %} class="display-hide"{% endif %}>
        <p>The export file is ready, click the download link below to download.</p>
        <div>
-           <a href="{% url group.members_export_download group.slug, export_target, identifier %}">Download Now</a>
+           <a href="{% url "group.members_export_download" group.slug, export_target, identifier %}">Download Now</a>
        </div>
        <div>&nbsp;</div>
        <div>&nbsp;</div>
        <div>
-           <a href="{% url group.detail group.slug %}">{% trans "Back to Group" %} &raquo;</a>
+           <a href="{% url "group.detail" group.slug %}">{% trans "Back to Group" %} &raquo;</a>
        </div>
        </div>
 

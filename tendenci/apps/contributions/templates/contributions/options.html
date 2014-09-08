@@ -6,9 +6,9 @@
 {% has_perm user contributions.delete_contribution opt_object as can_delete %}
 
 <div class="t-iconrow">
-		<a class="option-link print" href="{% url contribution.print_view opt_object.pk %}">{% trans "Print" %}</a>
+		<a class="option-link print" href="{% url "contribution.print_view" opt_object.pk %}">{% trans "Print" %}</a>
 	{% if can_edit %}
-		<a class="option-link edit" href="{% url contribution.edit opt_object.pk %}">{% trans "Edit" %}</a>
+		<a class="option-link edit" href="{% url "contribution.edit" opt_object.pk %}">{% trans "Edit" %}</a>
 	{% endif %}
 
  {% if can_edit %}
@@ -18,7 +18,7 @@
 	        <ul>
 				{% if can_delete %}
 					<li>
-						<a class="option-link delete" href="{% url contribution.delete opt_object.pk %}">{% trans "Delete" %}</a>
+						<a class="option-link delete" href="{% url "contribution.delete" opt_object.pk %}">{% trans "Delete" %}</a>
 					</li>				
 				{% endif %}
 			 </ul>

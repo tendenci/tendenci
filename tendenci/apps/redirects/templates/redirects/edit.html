@@ -16,7 +16,7 @@
     <h1>{% trans "Redirect Edit" %}</h1>
 
     <div class="redirect-wrap">
-        <form action="{% url redirect.edit redirect.pk %}" method="post">{% csrf_token %}
+        <form action="{% url "redirect.edit" redirect.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="Save Changes" />

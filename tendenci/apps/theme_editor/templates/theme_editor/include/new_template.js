@@ -52,7 +52,7 @@ $(function() {
                 if ( is_valid ) {
                     // ajax submit form
                     $.post(
-                        '{% url theme_editor.create_new_template %}',
+                        '{% url "theme_editor.create_new_template" %}',
                         {
                             'template_name': tname.val()
                         },
@@ -61,7 +61,7 @@ $(function() {
                             if (json["created"]){
                                 $this.dialog( "close" );
                                 // redirect
-                                location = "{% url theme_editor.editor%}?file=templates/" +
+                                location = "{% url "theme_editor.editor"%}?file=templates/" +
                                             json["template_name"];
                             }else{
                                 update_tips(json["err"]);

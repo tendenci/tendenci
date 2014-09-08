@@ -3,7 +3,7 @@
 <div class="wrap-search-item {% if not payment.status_detail %}body-copy-yellow{% endif %}">
     <div class="search-item payment-search-item clearfix">
         <div class="payment-id">
-            <p class="header"><a href="{% url payment.view payment.id %}">{{ payment.id }}</a></p>
+            <p class="header"><a href="{% url "payment.view" payment.id %}">{{ payment.id }}</a></p>
         </div>
         <div class="payment-info">
             <p class="header">{% if payment.last_name %}{{ payment.last_name }}, {% endif %}{{ payment.first_name }}</p>
@@ -21,7 +21,7 @@
         </div>
         <div class="payment-status">
             <p class="header">{{ payment.create_dt|date:"F j, Y P" }}</p>
-            <p>{% trans 'Invoice' %}: <a href="{% url invoice.view payment.invoice.pk %}">{{ payment.invoice.pk }}</a></p>
+            <p>{% trans 'Invoice' %}: <a href="{% url "invoice.view" payment.invoice.pk %}">{{ payment.invoice.pk }}</a></p>
             <p>[ {% trans 'Payment Status' %}:
                 {% if not payment.status_detail %}
                     {% if not payment.verified %}

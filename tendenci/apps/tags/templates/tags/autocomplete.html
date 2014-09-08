@@ -20,7 +20,7 @@ $(function() {
         .autocomplete({
             minLength: 0,
             source: function( request, response ) {
-                $.getJSON( "{% url tag.autocomplete %}", {
+                $.getJSON( "{% url "tag.autocomplete" %}", {
                     term: extractLast( request.term )
                 }, response );
             },

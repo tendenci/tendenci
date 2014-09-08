@@ -16,9 +16,9 @@
         {% endif %}
     {% endif %}
 
-    <a class="option-link print" href="{% url job.print_view opt_object.slug %}">{% trans "Print" %}</a>
+    <a class="option-link print" href="{% url "job.print_view" opt_object.slug %}">{% trans "Print" %}</a>
     {% if can_edit %}
-        <a class="option-link edit" href="{% url job.edit opt_object.pk %}">{% trans "Edit" %}</a>
+        <a class="option-link edit" href="{% url "job.edit" opt_object.pk %}">{% trans "Edit" %}</a>
     {% endif %}
 
  {% if can_edit %}
@@ -27,22 +27,22 @@
         <div class="more-options-target">
             <ul>
                 <li class="divider">
-                  <a href="{% url job.edit.meta opt_object.pk %}">{% trans "Edit Meta" %}</a>
+                  <a href="{% url "job.edit.meta" opt_object.pk %}">{% trans "Edit Meta" %}</a>
                 </li>
 
                 {% if request.user.is_superuser %}
                     <li>
                     {% if opt_object.object %}
-                        <a href="{% url category.update opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+                        <a href="{% url "category.update" opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
                     {% else %}
-                        <a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+                        <a href="{% url "category.update" opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
                     {% endif %}
                     </li>
                 {% endif %}
 
                 {% if can_delete %}
                     <li>
-                        <a class="option-link delete" href="{% url job.delete opt_object.pk %}">{% trans "Delete" %}</a>
+                        <a class="option-link delete" href="{% url "job.delete" opt_object.pk %}">{% trans "Delete" %}</a>
                     </li>
                 {% endif %}
              </ul>

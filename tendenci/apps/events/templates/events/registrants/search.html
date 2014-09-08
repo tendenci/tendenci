@@ -14,7 +14,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-reg-search.css">
-<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
 <style>
     #id_search_criteria, #id_search_text{
         width: 150px;
@@ -65,8 +65,8 @@
 
             <div class="filter-wrap">
                 <div><strong>Filters</strong></div>
-                <div><a href="{% url event.registrant.search event.pk %}?status=active">{{ active_registrants }} Active</a></div>
-                <div><a href="{% url event.registrant.search event.pk %}?status=canceled">{{ canceled_registrants }} Canceled</a></div>
+                <div><a href="{% url "event.registrant.search" event.pk %}?status=active">{{ active_registrants }} Active</a></div>
+                <div><a href="{% url "event.registrant.search" event.pk %}?status=canceled">{{ canceled_registrants }} Canceled</a></div>
             </div>
 
 

@@ -8,7 +8,7 @@ function getUserStatus(form){
     var pricingid = form.find('.registrant-pricing').val();
 
     $.ajax({
-        url: "{% url event.reg_user_status event.pk %}",
+        url: "{% url "event.reg_user_status" event.pk %}",
         type: "GET",
         data: {'email':email, 'memberid':memberid, 'pricingid':pricingid},
         dataType: "json",
@@ -37,7 +37,7 @@ function getPricingList(){
     var email = $('#pricing-email').val();
     var memberid = $('#pricing-memberid').val();
     $.ajax({
-        url: "{% url event.reg_pricing event.pk %}",
+        url: "{% url "event.reg_pricing" event.pk %}",
         type: "GET",
         data: {'email':email, 'memberid':memberid},
         dataType: "json",
@@ -82,7 +82,7 @@ $(document).ready(function(){
         var price = $('#total-amount').html();
         var count = 1;
         $.post(
-            '{% url discount.discounted_price %}',
+            '{% url "discount.discounted_price" %}',
             {
                 'code':code,
                 'price':price,

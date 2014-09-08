@@ -4,44 +4,44 @@
 <tr>
     <th>
         {% if is_reverse %}
-        <a href="{% url reports-user-activity %}?sort={{ request.GET.sort|striptags }}&reverse=False">{% trans "#" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort={{ request.GET.sort|striptags }}&reverse=False">{% trans "#" %}</a>
         {% else %}
-        <a href="{% url reports-user-activity %}?sort={{ request.GET.sort|striptags }}&reverse=True">{% trans "#" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort={{ request.GET.sort|striptags }}&reverse=True">{% trans "#" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_username %}
-        <a href="{% url reports-user-activity %}?sort=username" >{% trans "Username" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=username" >{% trans "Username" %}</a>
         {% else %}
-        <a href="{% url reports-user-activity %}?sort=-username" >{% trans "Username" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=-username" >{% trans "Username" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_last_name %}
-        <a href="{% url reports-user-activity %}?sort=last_name" >{% trans "Lastname" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=last_name" >{% trans "Lastname" %}</a>
         {% else %}
-        <a href="{% url reports-user-activity %}?sort=-last_name" >{% trans "Lastname" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=-last_name" >{% trans "Lastname" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_first_name %}
-        <a href="{% url reports-user-activity %}?sort=first_name" >{% trans "Firstname" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=first_name" >{% trans "Firstname" %}</a>
         {% else %}
-        <a href="{% url reports-user-activity %}?sort=-first_name" >{% trans "Firstname" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=-first_name" >{% trans "Firstname" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_email %}
-        <a href="{% url reports-user-activity %}?sort=email" >{% trans "Email" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=email" >{% trans "Email" %}</a>
         {% else %}
-        <a href="{% url reports-user-activity %}?sort=-email" >{% trans "Email" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=-email" >{% trans "Email" %}</a>
         {% endif %}
     </th>
     <th>
         {% if is_ascending_events %}
-        <a href="{% url reports-user-activity %}?sort=events" >{% trans "Events" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=events" >{% trans "Events" %}</a>
         {% else %}
-        <a href="{% url reports-user-activity %}?sort=-events" >{% trans "Events" %}</a>
+        <a href="{% url "reports-user-activity" %}?sort=-events" >{% trans "Events" %}</a>
         {% endif %}
     </th>
 </tr>

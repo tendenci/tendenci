@@ -125,7 +125,7 @@
                 if (item_id != 0) {
                     jQuery.ajax({
                         type: "GET",
-                        url: '{% url navs.get_item_attrs %}',
+                        url: '{% url "navs.get_item_attrs" %}',
                         data: {'item_id': item_id},
                         dataType: 'json',
                         success: function(data) {

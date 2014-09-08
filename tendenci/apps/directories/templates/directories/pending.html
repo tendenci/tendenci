@@ -26,7 +26,7 @@
             by {{ directory.creator.username }}
             {% endif %}
             &nbsp;&ndash;&nbsp;
-            <a href="{% url directory.approve directory.pk %}">{% trans "Approve" %}</a>
+            <a href="{% url "directory.approve" directory.pk %}">{% trans "Approve" %}</a>
         </li>
     {% empty %}
         <li>{% trans "There are no pending directories." %}</li>

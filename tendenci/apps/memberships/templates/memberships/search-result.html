@@ -8,7 +8,7 @@
     {% endif %}
 
     <div class="type-and-period">
-        <div><a href="{% url membership.details membership.pk %}">{{ membership.membership_type }}</a></div>
+        <div><a href="{% url "membership.details" membership.pk %}">{{ membership.membership_type }}</a></div>
         <div>{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}</div>
     </div>
 
@@ -17,7 +17,7 @@
     <div>
         <h2>{% trans "Application Entries" %}:</h2>
         {% for entry in entries %}
-            <div><a href="{% url membership.application_entries entry.pk %}">{{ entry }} - {{ entry.status_msg }}</a></div>
+            <div><a href="{% url "membership.application_entries" entry.pk %}">{{ entry }} - {{ entry.status_msg }}</a></div>
         {% endfor %}
     </div>
     {% endif %}

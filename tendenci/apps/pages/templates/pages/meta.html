@@ -17,9 +17,9 @@
         {% with page.category_set as page_cat %}
         {% if page_cat %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url page.search %}?q=category:{{ page_cat }}">{{ page_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url "page.search" %}?q=category:{{ page_cat }}">{{ page_cat.category }}</a>
         {% if page_cat.sub_category %}
-            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url page.search %}?q=sub_category:{{ page_cat.sub_category }}">{{ page_cat.sub_category }}</a>
+            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url "page.search" %}?q=sub_category:{{ page_cat.sub_category }}">{{ page_cat.sub_category }}</a>
         {% endif %}
         </div>
         {% endif %}
@@ -29,12 +29,12 @@
                     <div class="tags">
                       {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
                       {% for tag in nonhash_tags %}
-                        <a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                        <a href="{% url "page.search" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
                       {% endfor %}
 
                       {% if hash_tags and can_edit %}
                       {% for tag in hash_tags %}
-                        {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                        {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url "page.search" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
                       {% endfor %}
                     {% endif %}
                     </div>
@@ -49,7 +49,7 @@
     </div>
     <div class="meta-right">
         {% if page.status %}
-        <a class="print-link" href="{% url page.print_view page.slug %}">{% trans "Print" %}</a>
+        <a class="print-link" href="{% url "page.print_view" page.slug %}">{% trans "Print" %}</a>
         {% endif %}
     </div>
 </div>
@@ -69,17 +69,17 @@
     </div>
     <div class="edit-links">
     <ul>
-        <li><a class="eventlog-link" href="{% url event_log.search %}?application=pages&object_id={{ page.pk }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?application=pages&object_id={{ page.pk }}">{% trans "Eventlogs" %}</a></li>
         <li><a class="versions-link" href="{% url 'versions' page.content_type_id page.pk %}">{% trans "Versions" %}</a></li>
-        <li><a class="edit-link" href="{% url page.edit page.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="edit-link" href="{% url "page.edit" page.pk %}">{% trans "Edit" %}</a></li>
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
             {% if page.status and can_delete_page %}
-                <li><a class="delete" href="{% url page.delete page.pk %}">{% trans "Delete" %}</a></li>
+                <li><a class="delete" href="{% url "page.delete" page.pk %}">{% trans "Delete" %}</a></li>
             {% endif %}
-                <li><a href="{% url page.edit.meta page.pk %}">{% trans "Edit Meta" %}</a></li>
-                <li><a href="{% url category.update page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a></li>
+                <li><a href="{% url "page.edit.meta" page.pk %}">{% trans "Edit Meta" %}</a></li>
+                <li><a href="{% url "category.update" page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a></li>
             </ul>
         </div>
         </li>

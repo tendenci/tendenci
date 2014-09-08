@@ -43,7 +43,7 @@
 
 {% if mimport.status == 'preprocess_done' %}
 
-    <form class="import" method="post" action="{% url memberships.default_import_process mimport.id %}">{% csrf_token %}
+    <form class="import" method="post" action="{% url "memberships.default_import_process" mimport.id %}">{% csrf_token %}
 
     <div class="import-preview">
         <table>
@@ -158,7 +158,7 @@
     var status_check = function(){
         $.ajax({
            type: "POST",
-           url: "{% url memberships.default_import_check_preprocess_status mimport.id %}",
+           url: "{% url "memberships.default_import_check_preprocess_status" mimport.id %}",
            success: function(status_data){
                if (status_data == 'preprocess_done'){
                    clearInterval(status_check_intval);

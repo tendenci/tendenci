@@ -21,7 +21,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -38,23 +38,23 @@
             <ul class="dropdown-menu">
         {% endif %}
             {% if can_edit_setting %}
-                <li><a href="{% url settings.index "module" "users" %}">{% trans "Settings" %}</a></li>
+                <li><a href="{% url "settings.index" "module" "users" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url profile.search %}">{% trans "Search Users" %}</a></li>
+            <li><a href="{% url "profile.search" %}">{% trans "Search Users" %}</a></li>
             {% if can_add_profile %}
-                <li><a href="{% url profile.add %}">{% trans "Add a User" %}</a></li>
+                <li><a href="{% url "profile.add" %}">{% trans "Add a User" %}</a></li>
             {% endif %}
 
             {% if user.profile.is_superuser %}
-            <li><a href="{% url profile.similar %}">{% trans "Similar Users List" %}</a></li>
+            <li><a href="{% url "profile.similar" %}">{% trans "Similar Users List" %}</a></li>
             {% endif %}
 
             {% if user.profile.is_staff %}
-                <li><a href="{% url reports-memberships %}">{% trans "Membership Reports" %}</a></li>
-                <li><a href="{% url profile.admins %}">{% trans "Admin List" %}</a></li>
+                <li><a href="{% url "reports-memberships" %}">{% trans "Membership Reports" %}</a></li>
+                <li><a href="{% url "profile.admins" %}">{% trans "Admin List" %}</a></li>
                 <li class="divider"></li>
-                <li><a href="{% url profiles.user_import %}">{% trans "Import" %}</a></li>
-                <li><a href="{% url profile.export %}">{% trans "Export" %}</a></li>
+                <li><a href="{% url "profiles.user_import" %}">{% trans "Import" %}</a></li>
+                <li><a href="{% url "profile.export" %}">{% trans "Export" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -67,17 +67,17 @@
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View User Profile" %}</a></li>
                 {% endif %}
                 {% if can_edit %}
-                    <li><a href="{% url profile.edit user_this.id %}">{% trans "Edit User Profile" %}</a></li>
-                    <li><a href="{% url profile.edit_groups user_this.username %}">{% trans "Edit Groups" %}</a></li>
+                    <li><a href="{% url "profile.edit" user_this.id %}">{% trans "Edit User Profile" %}</a></li>
+                    <li><a href="{% url "profile.edit_groups" user_this.username %}">{% trans "Edit Groups" %}</a></li>
                 {% endif %}
                 {% if user.profile.is_staff %}
                     <li class="divider"></li>
-                    <li><a href="{% url profile.edit_perms user_this.id %}">{% trans "Edit Permissions" %}</a></li>
+                    <li><a href="{% url "profile.edit_perms" user_this.id %}">{% trans "Edit Permissions" %}</a></li>
                     <li><a href="{% url 'auth_password_change' user_this.id %}">{% trans "Change Password" %}</a></li>
                 {% endif %}
                 {% if can_delete_profile %}
                     <li class="divider"></li>
-                    <li><a class="delete" href="{% url profile.delete user_this.pk %}">{% trans "Delete User" %}</a></li>
+                    <li><a class="delete" href="{% url "profile.delete" user_this.pk %}">{% trans "Delete User" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}
@@ -85,7 +85,7 @@
         </div>
     </li>
     <li><a href="{% url 'groups' %}">{% firstof MODULE_GROUPS_LABEL trans "Groups" %}</a></li>
-    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED and MODULE_USERS_SHOWCORPMEMTAB %}<li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
+    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED and MODULE_USERS_SHOWCORPMEMTAB %}<li><a href="{% url "corp_memb.search" %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
 </ul>
 {% endif %}
 

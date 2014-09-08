@@ -16,7 +16,7 @@
     <div style="background-color:#CFFFCE; padding:10px; font-size:1.2em;">
         {% if for_admin %}
             {% trans "Registration Complete." %}
-            <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
             <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
                     {% for registrant in registrants %}
@@ -54,7 +54,7 @@
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
             {% if for_admin %}
                 {% trans "Almost Registered. Payment is still required." %}
-                <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
                 <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
                     {% for registrant in registrants %}
@@ -84,7 +84,7 @@
                 </div>
             {% else %}
                 {% trans "Almost Registered. Payment is still required." %}
-                <a href="{{ SITE_GLOBAL_SITEURL }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "payment.pay_online" reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
             {% endif %}
         </div>
     {% else %}
@@ -159,20 +159,20 @@
 <h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>
 <ol style="margin-top:0;">
     <li>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registration_confirmation event.pk reg8n.registrant.hash %}">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registration_confirmation" event.pk reg8n.registrant.hash %}">
             {% trans "Registration Details" %}
         </a>
     </li>
     <li>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url event.cancel_registrant event.pk reg8n.registrant.hash %}">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.cancel_registrant" event.pk reg8n.registrant.hash %}">
             {% trans "Cancel Registration" %}
         </a>
     </li>
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "Event Details" %}</a></li>
     {% if for_admin %}
-        <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.roster event.pk %}">{% trans "Event Roster" %}</a></li>
+        <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.roster" event.pk %}">{% trans "Event Roster" %}</a></li>
     {% endif %}
-    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.ics_single event.pk %}">{% trans "Add this event to your calendar." %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.ics_single" event.pk %}">{% trans "Add this event to your calendar." %}</a></li>
     <li><a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEURL }}</a></li>
 </ol>
 {% if for_admin %}

@@ -20,7 +20,7 @@
     <div class="invoice-detail">
         <p>{% blocktrans with invoice.id as invoice_id %}A summary of the accounting entries for invoice {{ invoice_id }} is below.{% endblocktrans %}</p>
 
-        <div>{% trans "Invoice:" %} <a href="{% url invoice.view invoice.id %}">{{ invoice.id  }}</a></div>
+        <div>{% trans "Invoice:" %} <a href="{% url "invoice.view" invoice.id %}">{{ invoice.id  }}</a></div>
         {% if acct_entries %}
             <table width="550px">
             <tr>
@@ -68,7 +68,7 @@
             </table>
         </div>
 
-        <div style="margin-top: 1em;"><a href="{% url accounting.account_numbers %}">{% trans "View All Account Numbers" %}</a></div>
+        <div style="margin-top: 1em;"><a href="{% url "accounting.account_numbers" %}">{% trans "View All Account Numbers" %}</a></div>
     </div>
 
 </div>

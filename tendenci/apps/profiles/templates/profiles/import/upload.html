@@ -86,19 +86,19 @@
     </div>
 
     <div class="template-download">
-        <a href="{% url profiles.download_user_template %}">
+        <a href="{% url "profiles.download_user_template" %}">
         <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
         </a>
 
         <div class="link">
-            <a href="{% url profiles.download_user_template %}">{% trans "Download Template" %}</a>
+            <a href="{% url "profiles.download_user_template" %}">{% trans "Download Template" %}</a>
 
         </div>
     </div>
 
     <div class="clear"></div>
 
-    <form method='post' action='{% url profiles.user_import %}' enctype="multipart/form-data">
+    <form method='post' action='{% url "profiles.user_import" %}' enctype="multipart/form-data">
     {% csrf_token %}
     <div id="upload-form-wrap">
         <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>

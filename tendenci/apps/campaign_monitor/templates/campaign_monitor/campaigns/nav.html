@@ -12,7 +12,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -28,10 +28,10 @@
             <div>
             <ul class="dropdown-menu">
             {% endif %}
-            <li><a href="{% url campaign_monitor.campaign_index %}">{% trans "Search Campaigns" %}</a></li>
+            <li><a href="{% url "campaign_monitor.campaign_index" %}">{% trans "Search Campaigns" %}</a></li>
             {% if can_add_campaign %}
-                <li><a href="{% url campaign_monitor.campaign_generate %}">{% trans "Add Campaign" %}</a></li>
-                <li><a href="{% url campaign_monitor.campaign_sync %}">{% trans "Sync Campaigns" %}</a></li>
+                <li><a href="{% url "campaign_monitor.campaign_generate" %}">{% trans "Add Campaign" %}</a></li>
+                <li><a href="{% url "campaign_monitor.campaign_sync" %}">{% trans "Sync Campaigns" %}</a></li>
                 {% if cm_url %}
                 <li class="divider"></li>
                 <li><a href="{{ cm_url }}" target="_blank">{% trans "Go to Campaign Monitor" %}</a></li>
@@ -57,10 +57,10 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Templates" %}</a>
         <ul class="dropdown-menu">
-            <li><a href="{% url campaign_monitor.template_index %}">{% trans "Search Templates" %}</a></li>
+            <li><a href="{% url "campaign_monitor.template_index" %}">{% trans "Search Templates" %}</a></li>
             {% if can_add_template %}
-                <li><a href="{% url campaign_monitor.template_add %}">{% trans "Add Template" %}</a></li>
-                <li><a href="{% url campaign_monitor.template_sync %}">{% trans "Sync Templates" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_add" %}">{% trans "Add Template" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_sync" %}">{% trans "Sync Templates" %}</a></li>
             {% endif %}
         </ul>
     </li>

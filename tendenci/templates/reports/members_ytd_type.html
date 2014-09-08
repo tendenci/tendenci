@@ -12,7 +12,7 @@
 {% blocktrans with year=year %}
     Currently showing data for {{ year }}.
 {% endblocktrans %}
-<form class="search-form" action="{% url reports-members-ytd-type %}" method="get">
+<form class="search-form" action="{% url "reports-members-ytd-type" %}" method="get">
 <label for="id_year">{% trans "Year" %}:</label><select name="year" id="id_year" onchange="this.form.submit();">
 <option value="" selected="selected">-----------</option>
 {% for year in years %}

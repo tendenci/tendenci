@@ -1,6 +1,6 @@
 {% load styled_forms %}
 <div class="forms">
-    <form id="search-form" action="{% url event_log.search %}" method="get">
+    <form id="search-form" action="{% url "event_log.search" %}" method="get">
         {{ search_form|styled_form }}
         <input type="submit" name="search" value="Search" />
     </form>

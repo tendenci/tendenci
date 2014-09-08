@@ -12,7 +12,7 @@
         {% for user in users %}
         <tr>
             <td>{{ user.id }}</td>
-            <td><a href="{% if user.username %}{% url 'profile' user.username %}{% else %}{% url profile.edit user.id  %}{% endif %}">{{ user.username }}</a></td>
+            <td><a href="{% if user.username %}{% url 'profile' user.username %}{% else %}{% url "profile.edit" user.id  %}{% endif %}">{{ user.username }}</a></td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>{{ user.email }}</td>

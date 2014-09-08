@@ -18,8 +18,8 @@
          {% if corp_app %}
             <ol>
                 <li>
-                    <a href="{% url corpmembership_app.preview corp_app.slug %}">{{ corp_app.name }}</a>
-                    (<a href="{% url admin:corporate_memberships_corpmembershipapp_change corp_app.id %}">{% trans "Edit" %}</a>)
+                    <a href="{% url "corpmembership_app.preview" corp_app.slug %}">{{ corp_app.name }}</a>
+                    (<a href="{% url "admin:corporate_memberships_corpmembershipapp_change" corp_app.id %}">{% trans "Edit" %}</a>)
 
 
                     <h2>{% trans "Types:" %}</h2>
@@ -30,8 +30,8 @@
                     </tr>
                     {% for cm_type in corp_app.corp_memb_type.all %}
                         <tr>
-                        <td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change cm_type.id %}">{{ cm_type.name }}</a></td>
-                        <td><a href="{% url admin:memberships_membershiptype_change cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>
+                        <td><a href="{% url "admin:corporate_memberships_corporatemembershiptype_change" cm_type.id %}">{{ cm_type.name }}</a></td>
+                        <td><a href="{% url "admin:memberships_membershiptype_change" cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>
 
                         </tr>
                     {% endfor %}
@@ -44,10 +44,10 @@
 
             <h2>{% trans "Other links:" %}</h2>
             <ol>
-            <li><a href="{% url corpmembership.search %}">{% trans "Search Corporate Memberships" %}</a></li>
+            <li><a href="{% url "corpmembership.search" %}">{% trans "Search Corporate Memberships" %}</a></li>
             </ol>
          {% else %}
-            {% trans "No active applications available. " %}<a href="{% url admin:corporate_memberships_corpmembershipapp_add %}">{% trans "Add one" %}</a>.
+            {% trans "No active applications available. " %}<a href="{% url "admin:corporate_memberships_corpmembershipapp_add" %}">{% trans "Add one" %}</a>.
          {% endif %}
     </div>
 </div>

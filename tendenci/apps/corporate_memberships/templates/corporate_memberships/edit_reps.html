@@ -20,7 +20,7 @@
 {% corpmemb_nav request.user corp_memb %}
 <div class="corp-reps">
      <h1>{% trans "Corporate Membership Representatives" %}</h1>
-     <div><a href="{% url corp_memb.view corp_memb.id %}">{{ corp_memb.name }}</a></div>
+     <div><a href="{% url "corp_memb.view" corp_memb.id %}">{{ corp_memb.name }}</a></div>
      {% if reps %}
      <table width="90%">
              <tr>
@@ -48,9 +48,9 @@
                          -
                      {% endif %}
                  </td>
-                 <td><a href="{% url corp_memb.delete_rep rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
+                 <td><a href="{% url "corp_memb.delete_rep" rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
                  <!-- delete-corp_memb form -->
-                    <form name="corp-memb-rep-delete" method="POST" action="{% url corp_memb.delete_rep rep.pk %}">{% csrf_token %}
+                    <form name="corp-memb-rep-delete" method="POST" action="{% url "corp_memb.delete_rep" rep.pk %}">{% csrf_token %}
                         <input type="hidden" name="action" value="delete">
                     </form>
                  </td>
@@ -78,7 +78,7 @@
     {% for membership in memberships %}
         {% with membership|get_object as membership %}
                 <li class="member-line">
-                        <a href="{% url profiles.views.index membership.user.username %}">
+                        <a href="{% url "profiles.views.index" membership.user.username %}">
                         {{ membership.user.get_full_name }}
                         {% if membership.user.email %}
                         ({{ membership.user.email }})
@@ -122,7 +122,7 @@
         });
 
         $( "#id_user_display" ).autocomplete({
-            source: "{% url corp_memb.reps_lookup %}",
+            source: "{% url "corp_memb.reps_lookup" %}",
             selectFirst:true,
             minLength:2,
             select:function(event,ui) {

@@ -11,7 +11,7 @@
             var swfupload = new SWFUpload({
             debug: false,
 
-            upload_url: "{% url theme_editor.upload %}",
+            upload_url: "{% url "theme_editor.upload" %}",
             flash_url: "{{ LOCAL_STATIC_URL }}swfupload/swfupload.swf",
             post_params: {
                 "file_dir" : file_dir,
@@ -46,7 +46,7 @@
 
             custom_settings : {
                 progressTarget : "swf-progress",
-                redirect: "{% url theme_editor.editor %}"
+                redirect: "{% url "theme_editor.editor" %}"
             },
 
             // SWFObject settings

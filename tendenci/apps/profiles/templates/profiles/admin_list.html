@@ -33,7 +33,7 @@
                     <strong>
                         {{ admin }}
                             {% if request.user.is_superuser %}
-                                &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">{% trans "edit" %}</a>
+                                &ndash;&nbsp;<a href="{% url "profile.edit" admin.user.pk %}">{% trans "edit" %}</a>
                             {% endif %}
                     </strong>
                 </p>

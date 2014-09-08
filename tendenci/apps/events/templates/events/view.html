@@ -96,7 +96,7 @@
                 </div>
                 {% endfor %}
                 {% if speakers_length > 1 %}
-                <a href="{% url event.speakers event.pk %}">{% trans "View all speakers" %}</a>
+                <a href="{% url "event.speakers" event.pk %}">{% trans "View all speakers" %}</a>
                 {% endif %}
 
                 {% if organizer.name %}

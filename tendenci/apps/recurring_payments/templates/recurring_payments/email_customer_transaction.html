@@ -38,14 +38,14 @@ We attempted a payment for the {{ pt.recurring_payment.description }} but was fa
 <div>
 To view your account, go to:
 <br />
-<a href="{{ site_url }}{% url recurring_payment.view_account pt.recurring_payment.id %}">{{ site_url }}{% url recurring_payment.view_account pt.recurring_payment.id %}</a>
+<a href="{{ site_url }}{% url "recurring_payment.view_account" pt.recurring_payment.id %}">{{ site_url }}{% url "recurring_payment.view_account" pt.recurring_payment.id %}</a>
 </div>
 
 <br />
 <div>
 To update your payment method, go to:
 <br />
-<a href="{{ site_url }}{% url recurring_payment.authnet.update_payment_info pt.recurring_payment.id %}">{{ site_url }}{% url recurring_payment.authnet.update_payment_info pt.recurring_payment.id %}</a>
+<a href="{{ site_url }}{% url "recurring_payment.authnet.update_payment_info" pt.recurring_payment.id %}">{{ site_url }}{% url "recurring_payment.authnet.update_payment_info" pt.recurring_payment.id %}</a>
 </div>
 <br />
 Your login username is: {{ pt.recurring_payment.user.username }}

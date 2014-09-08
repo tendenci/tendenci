@@ -23,7 +23,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -40,7 +40,7 @@
             <ul class="dropdown-menu">
         {% endif %}
             {% if can_edit_setting %}
-                <li><a href="{% url settings.index "module" "photos" %}">{% trans "Settings" %}</a></li>
+                <li><a href="{% url "settings.index" "module" "photos" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url 'photoset_latest' %}">{% trans "Search Sets" %}</a></li>
             {% if can_add_photoset %}

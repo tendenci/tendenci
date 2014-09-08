@@ -20,7 +20,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -37,9 +37,9 @@
             <div>
             <ul class="dropdown-menu">
         {% endif %}
-            <li><a href="{% url job_pricing.search %}">{% trans "Search Pricings" %}</a></li>
+            <li><a href="{% url "job_pricing.search" %}">{% trans "Search Pricings" %}</a></li>
             {% if can_add_job_pricing %}
-                <li><a href="{% url job_pricing.add %}">{% trans "Add Pricing" %}</a></li>
+                <li><a href="{% url "job_pricing.add" %}">{% trans "Add Pricing" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -48,14 +48,14 @@
                 <li class="heading">{% trans "This Pricing" %}</li>
                 <li class="divider"></li>
                 {% if can_view_job_pricing %}
-                    <li><a href="{% url job_pricing.view nav_object.pk %}">{% trans "View Pricing" %}</a></li>
+                    <li><a href="{% url "job_pricing.view" nav_object.pk %}">{% trans "View Pricing" %}</a></li>
                 {% endif %}
                 {% if can_edit_job_pricing %}
-                    <li><a href="{% url job_pricing.edit nav_object.pk %}">{% trans "Edit Pricing" %}</a></li>
+                    <li><a href="{% url "job_pricing.edit" nav_object.pk %}">{% trans "Edit Pricing" %}</a></li>
                 {% endif %}
                 {% if can_delete_job_pricing %}
                     <li class="divider"></li>
-                    <li><a class="delete" href="{% url job_pricing.delete nav_object.pk %}">{% trans "Delete Pricing" %}</a></li>
+                    <li><a class="delete" href="{% url "job_pricing.delete" nav_object.pk %}">{% trans "Delete Pricing" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}

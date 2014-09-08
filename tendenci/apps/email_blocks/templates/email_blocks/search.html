@@ -30,7 +30,7 @@
                 </div>
 
             <div>
-                <a href="{% url email_block.view email_block.pk %}">
+                <a href="{% url "email_block.view" email_block.pk %}">
                 {% if email_block.email %}
                     {{ email_block.email|obfuscate_email }}
                 {% else %}
@@ -46,7 +46,7 @@
             </div>
 
             <!-- delete-email form -->
-            <form name="email_block-delete" method="POST" action="{% url email_block.delete email_block.pk %}">{% csrf_token %}
+            <form name="email_block-delete" method="POST" action="{% url "email_block.delete" email_block.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

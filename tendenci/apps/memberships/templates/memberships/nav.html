@@ -21,7 +21,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
@@ -38,19 +38,19 @@
             <ul class="dropdown-menu">
         {% endif %}
 
-            <li><a href="{% url membership.search %}">{% trans "Search" %}</a></li>
+            <li><a href="{% url "membership.search" %}">{% trans "Search" %}</a></li>
 
             {% if can_edit_setting %}
-            <li><a href="{% url settings.index "module" "memberships" %}">{% trans "Settings" %}</a></li>
+            <li><a href="{% url "settings.index" "module" "memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
 
             {% if user.profile.is_superuser %}
             <li class="divider"></li>
-            <li><a href="{% url admin:memberships_membershiptype_changelist %}">{% trans "Types" %}</a></li>
-            <li><a href="{% url admin:memberships_notice_changelist %}">{% trans "Notices" %}</a></li>
+            <li><a href="{% url "admin:memberships_membershiptype_changelist" %}">{% trans "Types" %}</a></li>
+            <li><a href="{% url "admin:memberships_notice_changelist" %}">{% trans "Notices" %}</a></li>
             <li class="divider"></li>
-            <li><a href="{% url memberships.default_import %}">{% trans "Import" %}</a></li>
-            <li><a href="{% url memberships.default_export %}">{% trans "Export" %}</a></li>
+            <li><a href="{% url "memberships.default_import" %}">{% trans "Import" %}</a></li>
+            <li><a href="{% url "memberships.default_export" %}">{% trans "Export" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -62,16 +62,16 @@
                     <li><a href="{{ nav_object.user.get_absolute_url }}">{% trans "View Profile" %}</a></li>
                 {% endif %}
                 {% if can_edit_memb %}
-                    <li><a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">{% trans "Edit Membership" %}</a></li>
+                    <li><a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">{% trans "Edit Membership" %}</a></li>
                 {% endif %}
                 {% if member_can_edit_records and user == membership.user %}
-                    <li><a href="{% url membership_default.edit membership.pk %}">{% trans "Edit Your Membership" %}</a></li>
+                    <li><a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}
         {% endif %}
         </div>
     </li>
-    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}<li><a href="{% url corpmembership.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
+    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}<li><a href="{% url "corpmembership.search" %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
 </ul>
 {% endif %}

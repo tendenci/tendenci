@@ -7,7 +7,7 @@
 <h1>{% trans "Tendenci&reg; Event Log Summary Report" %}</h1>
 
 <div>
-    <p>You can <a href="{% url reports-events-summary-historical %}">view historical reports</a> or go to the <a href="{% url event_log.search %}">Event log search</a> to see the latest event logs.</p>
+    <p>You can <a href="{% url "reports-events-summary-historical" %}">view historical reports</a> or go to the <a href="{% url "event_log.search" %}">Event log search</a> to see the latest event logs.</p>
 </div>
 
 <div class="event-log-summary-nav">
@@ -22,7 +22,7 @@
     <td>
         {% for item in items %}
             {% if item.application %}
-            <a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}" title="{{ item.application }} ({{ item.count|intcomma }})">
+            <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}" title="{{ item.application }} ({{ item.count|intcomma }})">
                 <div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
             </a>
             {% endif %}
@@ -40,7 +40,7 @@
     <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
     &nbsp;
     {% if item.application %}
-    <a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
+    <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
     {% endif %}
     </li>
     {% endif %}
@@ -53,7 +53,7 @@
     <li>
     <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
     &nbsp;
-    <a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
+    <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
     </li>
     {% endif %}
 {% endfor %}
@@ -65,7 +65,7 @@
     <li>
     <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
     &nbsp;
-    <a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
+    <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
     </li>
     {% endif %}
 {% endfor %}

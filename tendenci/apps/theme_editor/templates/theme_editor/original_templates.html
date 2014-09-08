@@ -15,15 +15,15 @@
 {% block body %}
 <div class="t">
     <div class="editor-nav" style="float:right">
-        <a href="{% url theme_editor.app_list %}" >{% trans "Back to App List" %}</a>&nbsp;&nbsp;
-        <a href="{% url theme_editor.editor %}" >{% trans "Back to Theme-Editor" %}</a>
+        <a href="{% url "theme_editor.app_list" %}" >{% trans "Back to App List" %}</a>&nbsp;&nbsp;
+        <a href="{% url "theme_editor.editor" %}" >{% trans "Back to Theme-Editor" %}</a>
     </div>
     <h1>{% if app %}{{ app }}{% else %}default{% endif %} templates</h1>
     <strong>{% trans "Choose a folder or file:" %}</strong>
     <div id="right_files_list">
         {% if prev_dir %}
            <p class="prev_dir">
-               <a href="{% if app %}{% url theme_editor.original_templates app %}{% else %}{% url theme_editor.original_templates %}{% endif %}?dir={{ prev_dir }}">
+               <a href="{% if app %}{% url "theme_editor.original_templates" app %}{% else %}{% url "theme_editor.original_templates" %}{% endif %}?dir={{ prev_dir }}">
                &laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}
                </a>
            </p>
@@ -31,7 +31,7 @@
         {% if dirs %}
            <ul class="dir_list">
                 {% for dir in dirs %}
-                    <li class="dir_item"><a href="{% if app %}{% url theme_editor.original_templates app %}{% else %}{% url theme_editor.original_templates %}{% endif %}?dir={{ dir }}">
+                    <li class="dir_item"><a href="{% if app %}{% url "theme_editor.original_templates" app %}{% else %}{% url "theme_editor.original_templates" %}{% endif %}?dir={{ dir }}">
                     {{ dir|basename|safe }}</a></li>
                 {% endfor %}
            </ul>
@@ -40,7 +40,7 @@
            <ul class="files_list">
                 {% for file in files %}
                     <li>
-                        {{ file|safe }}<a class="copy" href="{% if app %}{% url theme_editor.copy_to_theme app %}{% else %}{% url theme_editor.copy_to_theme %}{% endif %}?dir={{ current_dir }}&file={{ file }}">
+                        {{ file|safe }}<a class="copy" href="{% if app %}{% url "theme_editor.copy_to_theme" app %}{% else %}{% url "theme_editor.copy_to_theme" %}{% endif %}?dir={{ current_dir }}&file={{ file }}">
                         &laquo;&nbsp;{% trans "copy to custom templates" %}</a>
                     </li>
                 {% endfor %}

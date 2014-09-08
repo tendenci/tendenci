@@ -452,7 +452,7 @@
                     type: 'post',
                     dataType: 'json',
                     data: {'page_num': current_page},
-                    url: '{% url file.tinymce_get_files %}',
+                    url: '{% url "file.tinymce_get_files" %}',
                     success: function(response) {
                         gallery.append(response.content);
                         // Reapply handler for adding styling in selected file

@@ -47,11 +47,11 @@
                 </p>
                 {% if template.html_file %}
                 <p>
-                    Click <a href="{% url campaign_monitor.template_render template.template_id %}">here</a>
+                    Click <a href="{% url "campaign_monitor.template_render" template.template_id %}">here</a>
                     to view a rendered version of the html with the latest data.
                 </p>
                 <p>
-                    Click <a href="{% url campaign_monitor.template_update template.template_id %}">here</a>
+                    Click <a href="{% url "campaign_monitor.template_update" template.template_id %}">here</a>
                     to use the same files to update this template.
                 </p>
                 {% endif %}

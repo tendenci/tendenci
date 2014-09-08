@@ -203,7 +203,7 @@
         if ($('.dynamic-fields').length == 0){
             $.ajax({
                type: "POST",
-               url: "{% url memberships.get_app_fields %}",
+               url: "{% url "memberships.get_app_fields" %}",
                success: function(status_data){
                   disabledFields = status_data;
                    var objs = $.parseJSON(status_data);
@@ -217,7 +217,7 @@
                   $.ajax({
                       type: "POST",
                       dataType: "json",
-                      url: "{% url memberships.get_taken_fields %}",
+                      url: "{% url "memberships.get_taken_fields" %}",
                       success: function(status_data){
                         disabledFields = status_data;
                         disableTakenFields(status_data);
@@ -233,7 +233,7 @@
                   type: "POST",
                   dataType: "json",
                   data: {app_pk: "{{ object_id }}"},
-                  url: "{% url memberships.get_taken_fields %}",
+                  url: "{% url "memberships.get_taken_fields" %}",
                   success: function(status_data){
                     disabledFields = status_data;
                     disableTakenFields(status_data);

@@ -67,7 +67,7 @@
 
 
              <div>&nbsp;</div>
-             <div><a href="{% url corpmembership.import %}">Import more corporate memberships</a></div>
+             <div><a href="{% url "corpmembership.import" %}">Import more corporate memberships</a></div>
         </div>
 
         <div id="error-msg">
@@ -94,7 +94,7 @@
     var status_check = function(){
         $.ajax({
            type: "POST",
-           url: "{% url corpmembership.import_get_status mimport.id %}",
+           url: "{% url "corpmembership.import_get_status" mimport.id %}",
            success: function(status_data){
                var obj = $.parseJSON(status_data);
                //var obj = status_data;

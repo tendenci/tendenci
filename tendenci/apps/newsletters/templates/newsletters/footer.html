@@ -36,12 +36,12 @@ You are on the "{{ action.group.name }}" list for
  {% if action.group %}
 <font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">
 If you no longer want to receive this letter, </font>
-<A href="{{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser action.group.slug user_this.id %}">
+<A href="{{ SITE_GLOBAL_SITEURL }}{% url "group.deleteuser" action.group.slug user_this.id %}">
 <font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">follow this link</font>
 </a>.<br>
 
 <font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">If you no longer want to receive any emails from Schipul Beta, </font>
-<A href="{{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser action.group.slug user_this.id %}">
+<A href="{{ SITE_GLOBAL_SITEURL }}{% url "group.deleteuser" action.group.slug user_this.id %}">
 <font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">follow this link</font></a>.
 <br>
  {% endif %}

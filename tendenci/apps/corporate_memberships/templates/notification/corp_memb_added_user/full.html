@@ -12,13 +12,13 @@
 
 {% if invoice.balance <= 0 %}
 	<p>
-	{% trans "To view the invoice, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+	{% trans "To view the invoice, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
 	</p>
 {% else %}
 	{% if object.payment_method == 'cc' or object.payment_method == 'credit card' %}
 	<p>
         {% trans "To make online credit card payment, go to the invoice view page and make online payment from there." %}
-		<a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+		<a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
 		
 	</p>
 	{% endif %}
@@ -31,7 +31,7 @@
 	</p>
 {% else %}
 <p>
-{% trans "To view this corporate membership, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk  %}</a>
+{% trans "To view this corporate membership, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk  %}</a>
 </p>
 {% endif %}
 

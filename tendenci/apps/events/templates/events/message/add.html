@@ -27,7 +27,7 @@
 
             <div class="recipient-set">{{ form.payment_status }}</div>
 
-            <div class="message-item"><a href="{% url event.registrant.roster event.id %}">{% trans "View all registrant(s)" %}</a></div>
+            <div class="message-item"><a href="{% url "event.registrant.roster" event.id %}">{% trans "View all registrant(s)" %}</a></div>
 
             <div class="message-item">
                 <p><strong>{{ form.subject.label }}:</strong></p>

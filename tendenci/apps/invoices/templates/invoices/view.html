@@ -28,8 +28,8 @@
     {% if invoice.is_tendered %}
       <li><a class="admin-option" href="{%url invoice.adjust invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
     {% endif%}
-    <li><a class="admin-option" href="{% url invoice.detail invoice.id%}">{% trans "Accounting Entries" %}</a></li>
-    <li><a class="admin-option" href="{% url invoice.detail invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">{% trans "Make Notes" %}</a></li>
+    <li><a class="admin-option" href="{% url "invoice.detail" invoice.id%}">{% trans "Accounting Entries" %}</a></li>
+    <li><a class="admin-option" href="{% url "invoice.detail" invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">{% trans "Make Notes" %}</a></li>
   </ul>
 </div>
 {% endif %}
@@ -37,7 +37,7 @@
 {% if invoice.balance > 0 %}
 <div class="invoice-options">
     <ul>
-        <li><a class="admin-options" href="{% url invoice.mark_as_paid invoice.pk %}">{% trans "Mark as Paid" %}</a></li>
+        <li><a class="admin-options" href="{% url "invoice.mark_as_paid" invoice.pk %}">{% trans "Mark as Paid" %}</a></li>
     </ul>
 </div>
 {% endif %}
@@ -45,7 +45,7 @@
 {% if request.user.is_superuser and invoice.payments_credits > 0 %}
 <div class="invoice-options">
     <ul>
-        <li><a class="admin-option" href="{% url invoice.void_payment invoice.id %}"> {% trans "Void Payment" %}</a></li>
+        <li><a class="admin-option" href="{% url "invoice.void_payment" invoice.id %}"> {% trans "Void Payment" %}</a></li>
     </ul>
 </div>
 {% endif %}
@@ -53,16 +53,16 @@
 <div class="invoice-options">
     <ul>
         {% if invoice.is_void %}
-        <li><a href="{% url invoice.unvoid_invoice invoice.pk %}">Un-Void Invoice</a></li>
+        <li><a href="{% url "invoice.unvoid_invoice" invoice.pk %}">Un-Void Invoice</a></li>
         {% else %}
-        <li><a href="{% url invoice.void_invoice invoice.pk %}">Void Invoice</a></li>
+        <li><a href="{% url "invoice.void_invoice" invoice.pk %}">Void Invoice</a></li>
         {% endif %}
     </ul>
 </div>
 
 <div class="invoice-options">
     <ul>
-      <li><a href="{% url invoice.print_view invoice.id guid %}">Print Invoice</a></li>
+      <li><a href="{% url "invoice.print_view" invoice.id guid %}">Print Invoice</a></li>
     </ul>
 </div>
 
@@ -89,7 +89,7 @@
           <td>{% trans "Invoice For" %}</td>
           <td class="td-right">
       {% if object.event.pk %}
-          <a href="{% url event.registration_confirmation object.event.pk object.pk %}">{{ object }}</a><br>
+          <a href="{% url "event.registration_confirmation" object.event.pk object.pk %}">{{ object }}</a><br>
       <strong>Event Date:</strong> {{ object.event.start_dt }}
           {% else %}
       {{ SITE_GLOBAL_SITEDISPLAYNAME }}

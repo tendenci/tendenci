@@ -23,7 +23,7 @@
     <h1>{% trans "Add Files" %}</h1>
 
     <div class="file-wrap">
-        <form id="fileupload" action="{% url file.bulk_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form id="fileupload" action="{% url "file.bulk_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
             <input type="file" name="files"  multiple />
 
     	    <div id="formset-container">

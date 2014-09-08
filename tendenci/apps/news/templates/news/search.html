@@ -15,7 +15,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
-<link rel="alternate" type="application/rss+xml" title="Latest News" href="{% url news.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="Latest News" href="{% url "news.feed" %}" />
 {% endblock %}
 
 {% block body %}

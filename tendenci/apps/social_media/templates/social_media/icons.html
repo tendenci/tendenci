@@ -11,5 +11,5 @@
 
     <a target="_blank" class="social-button social-email" href="mailto:{{ MODULE_SOCIAL_MEDIA_CONTACT_EMAIL }}?subject={{ MODULE_SOCIAL_MEDIA_CONTACT_SUBJECT }}&amp;body={{ MODULE_SOCIAL_MEDIA_CONTACT_MESSAGE }}"></a>
 
-    <a target="_blank" class="social-button social-print" href="{% url event.print_view event.pk %}"></a>
+    <a target="_blank" class="social-button social-print" href="{% url "event.print_view" event.pk %}"></a>
 </div>

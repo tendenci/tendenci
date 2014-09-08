@@ -21,7 +21,7 @@
 
 {% if event.is_recurring_event %}
 <p style="margin:2px">{% trans "This is a recurring event, you can view the rest of the events here" %}:
-<a href="{% url event.recurring event.pk %}">{% trans "View recurring event list" %}</a></p>
+<a href="{% url "event.recurring" event.pk %}">{% trans "View recurring event list" %}</a></p>
 {% endif %}
 
 <p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">

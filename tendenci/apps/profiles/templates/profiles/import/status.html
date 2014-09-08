@@ -39,7 +39,7 @@
 
             {% if uimport.group_id and uimport.group %}
 	        <div>{% trans "Add users to the group" %}:
-	        	<strong><a href="{% url group.detail uimport.group.slug %}">{{ uimport.group }}</a></strong>
+	        	<strong><a href="{% url "group.detail" uimport.group.slug %}">{{ uimport.group }}</a></strong>
 
 	        	{% if uimport.clear_group_membership %}
 	        	<div>
@@ -78,9 +78,9 @@
              <div class="status-invalid">Invalid: <strong><span id="num-invalid"></span></strong></div>
 
             <div>&nbsp;</div>
-            <div><a href="{% url profiles.user_import_download_recap uimport.id %}">Download Recap</a> (appended 2 extra fields: action and error)</div>
+            <div><a href="{% url "profiles.user_import_download_recap" uimport.id %}">Download Recap</a> (appended 2 extra fields: action and error)</div>
              <div>&nbsp;</div>
-             <div><a href="{% url profiles.user_import %}">Import more users</a></div>
+             <div><a href="{% url "profiles.user_import" %}">Import more users</a></div>
         </div>
 
         <div id="error-msg">
@@ -107,7 +107,7 @@
     var status_check = function(){
         $.ajax({
            type: "POST",
-           url: "{% url profiles.user_import_get_status uimport.id %}",
+           url: "{% url "profiles.user_import_get_status" uimport.id %}",
            success: function(status_data){
                var obj = $.parseJSON(status_data);
                //var obj = status_data;

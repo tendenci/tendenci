@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <h2><a href="{% url directory_pricing.view dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
+            <h2><a href="{% url "directory_pricing.view" dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
 
             <div class="pricing-wrap" >
             <table width="70%">
@@ -60,7 +60,7 @@
             </div>
 
             <!-- delete-directory form -->
-            <form name="directory-pricing-delete" method="POST" action="{% url directory_pricing.delete dp.pk %}">{% csrf_token %}
+            <form name="directory-pricing-delete" method="POST" action="{% url "directory_pricing.delete" dp.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
         </div>

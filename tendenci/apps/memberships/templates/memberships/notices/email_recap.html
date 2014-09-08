@@ -7,7 +7,7 @@
 
 <ol>
 {% for notice in notices %}
-    <li><a href="{{ site_url }}{% url admin:memberships_notice_change notice.id %}">{{ notice.notice_name  }}</a></li>
+    <li><a href="{{ site_url }}{% url "admin:memberships_notice_change" notice.id %}">{{ notice.notice_name  }}</a></li>
 {% endfor %}
 </ol>
 <br />
@@ -17,7 +17,7 @@
 <br />
 {% for notice in notices %}
     {{ notice.num_days }} day(s) {{ notice.notice_time }} {{ notice.notice_type }} -
-    {{ site_url }}{% url admin:memberships_notice_change notice.id %}
+    {{ site_url }}{% url "admin:memberships_notice_change" notice.id %}
     <br />
 
     {% if notice.log.num_sent <= 50 %}

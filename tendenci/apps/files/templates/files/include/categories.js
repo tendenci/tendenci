@@ -2,7 +2,7 @@
 $('select#id_file_cat').change(function() {
     // Get sub categories through ajax
     $.post(
-        "{% url file.get_categories %}",
+        "{% url "file.get_categories" %}",
         {'category':$(this).val(),
          'csrfmiddlewaretoken':$('input[name="csrfmiddlewaretoken"]').val(),},
         function(data, textStatus, jqXHR){

@@ -6,10 +6,10 @@
         {% trans "INVALID:" %} <b>{{ count_invalid }}</b><br>
         <b>{% trans "TOTAL:" %} {{ total }}</b><br /><br />
 
-        <a href="{% url import.user_upload_recap id %}">{% trans "Download recap" %}</a>
+        <a href="{% url "import.user_upload_recap" id %}">{% trans "Download recap" %}</a>
         <br /><br />
-        <a href="{% url profile.search %}">{% trans "Search Users" %}</a>
-        <a href="{% url import.user_upload_add %}">{% trans "Import More Users" %}</a>
+        <a href="{% url "profile.search" %}">{% trans "Search Users" %}</a>
+        <a href="{% url "import.user_upload_add" %}">{% trans "Import More Users" %}</a>
 
     {% else %}
         <div class="loading-icon" style="position:absolute;top:100;left:50;width:300px;padding:5px;border:1px solid #071C7F;margin-bottom:3em;">

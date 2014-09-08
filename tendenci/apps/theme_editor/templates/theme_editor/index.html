@@ -42,7 +42,7 @@
                     </div>
               </form>
             {% if current_file not in non_deletable_files  %}
-            <a id="delete-btn" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
+            <a id="delete-btn" href="{% url "theme_editor.delete" %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
             {% endif %}
             <div style="clear:both"></div>
 
@@ -74,7 +74,7 @@
                 {% ifnotequal ACTIVE_THEME current_theme %}
                 <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
                 {% endifnotequal %}
-                <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}. <a href="{% url theme_editor.picker %}">{% trans "Change?" %}</a></p>
+                <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}. <a href="{% url "theme_editor.picker" %}">{% trans "Change?" %}</a></p>
                 </div>
                 {# endif #}
             </div>
@@ -111,13 +111,13 @@
                                {% endif %}
                                {% if prev_dir %}
                                    <p class="prev_dir">
-                                       <a href="{% url theme_editor.editor %}?file={{ prev_dir }}&theme_edit={{ current_theme }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
+                                       <a href="{% url "theme_editor.editor" %}?file={{ prev_dir }}&theme_edit={{ current_theme }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
                                    </p>
                                {% endif %}
                                {% if dirs %}
                                <ul class="dir_list">
                                     {% for dir in dirs %}
-                                        <li class="dir_item"><a href="{% url theme_editor.editor %}?file={{ dir }}/&theme_edit={{ current_theme }}">{{ dir|basename|safe }}</a></li>
+                                        <li class="dir_item"><a href="{% url "theme_editor.editor" %}?file={{ dir }}/&theme_edit={{ current_theme }}">{{ dir|basename|safe }}</a></li>
                                     {% endfor %}
                                </ul>
                                {%  endif %}
@@ -126,7 +126,7 @@
                                     {% if files %}
                                     {% for file in files %}
                                         <li {% if current_file == file %}class="highlight"{% endif %}>
-                                            <a href="{% url theme_editor.editor %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
+                                            <a href="{% url "theme_editor.editor" %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
                                         </li>
                                     {% endfor %}
                                     {% endif %}
@@ -149,7 +149,7 @@
                                <div class="well well-small">
                                <h4>Customize more templates:</h4>
                                Copy down one of Tendenci's built-in app templates and customize it.
-                               <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
+                               <a href="{% url "theme_editor.app_list" %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
 
                                </div>
 

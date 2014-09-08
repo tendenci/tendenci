@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-search.css">
-<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
 {% endblock %}
 
 {% block body %}
@@ -25,10 +25,10 @@
     <div class="event-tabs">
         <ul class="tabs">
             <li class="dropdown {% if not past %}active{% endif %}">
-                <a href="{% url event.search %}?{{ request.GET.urlencode }}">{% trans "Ongoing Events" %}</a>
+                <a href="{% url "event.search" %}?{{ request.GET.urlencode }}">{% trans "Ongoing Events" %}</a>
             </li>
             <li class="dropdown {% if past %}active{% endif %}">
-                <a href="{% url event.past_search %}?{{ request.GET.urlencode }}">{% trans "Past Events" %}</a>
+                <a href="{% url "event.past_search" %}?{{ request.GET.urlencode }}">{% trans "Past Events" %}</a>
             </li>
         </ul>
     </div>

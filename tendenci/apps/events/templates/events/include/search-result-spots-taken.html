@@ -2,7 +2,7 @@
 <div class="spots-taken">
 
     {% if user.profile.is_superuser %}
-        <a href="{% url event.registrant.roster event.pk %}">{{ event.get_spots_status.0 }}
+        <a href="{% url "event.registrant.roster" event.pk %}">{{ event.get_spots_status.0 }}
         {% if event.registration_configuration.payment_required %}Paid{% endif %}
         Attendee{{ event.get_spots_status.0|pluralize }} Registered</a>
     {% else %}

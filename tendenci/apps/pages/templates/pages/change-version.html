@@ -20,7 +20,7 @@
     <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Change version" %}</h1>
 
     <div class="page-wrap">
-        <form action="{% url page.change_version page.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url "page.change_version" page.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="{% trans 'Save Page Changes' %}" />

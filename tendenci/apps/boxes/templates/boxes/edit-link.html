@@ -5,7 +5,7 @@
   <div class="admin-border admin-border-right"></div>
   <div class="admin-border admin-border-bottom"></div>
   <div class="admin-border admin-border-left"></div>
-  <div class="admin-links clear-block"><a href="{% url admin:boxes_box_change box.pk %}?next={{ request.path }}" title="Edit Box" class="edit-box">Edit {{ box.title|title }} Box</a></div>
+  <div class="admin-links clear-block"><a href="{% url "admin:boxes_box_change" box.pk %}?next={{ request.path }}" title="Edit Box" class="edit-box">Edit {{ box.title|title }} Box</a></div>
 </div>
 
 {% endif %}

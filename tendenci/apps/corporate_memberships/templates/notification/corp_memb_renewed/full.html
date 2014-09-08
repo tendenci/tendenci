@@ -59,9 +59,9 @@
                   <td width="83%"><b>{{ profile.email }}</b></td>
                 </tr>
               </table>              <p>                  <br>
-                {% blocktrans %}To view the complete application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}</strong>
+                {% blocktrans %}To view the complete application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}</strong>
                 {% if object.status_detail == 'pending' and object.payment_method != 'cc' %}
-                	<p>{% blocktrans %}To approve the application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.approve object.pk %}</strong></p>           
+                	<p>{% blocktrans %}To approve the application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.approve" object.pk %}</strong></p>           
                 {% endif %}
               <p>{% blocktrans %}For more on the person who submitted the application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
               <p>{% trans "If you have received this in error, please contact the webmaster below." %} </p>

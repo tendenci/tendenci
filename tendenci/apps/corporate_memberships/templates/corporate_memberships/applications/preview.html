@@ -54,9 +54,9 @@
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <p>
                 This is the preview{% if current_app.id == app.id%}
-                of the <a href="{% url corpmembership.add current_app.slug %}">current application</a>.
+                of the <a href="{% url "corpmembership.add" current_app.slug %}">current application</a>.
                 {% else %}
-               . This application is NOT the current application. <a href="{% url corpmembership.add current_app.slug %}">Click here to view current application</a>.
+               . This application is NOT the current application. <a href="{% url "corpmembership.add" current_app.slug %}">Click here to view current application</a>.
                 {% endif %}
             </p>
         </div>

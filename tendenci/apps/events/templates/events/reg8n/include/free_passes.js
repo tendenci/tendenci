@@ -15,7 +15,7 @@ $(document).ready(function () {
         }else{
 
             $.post(
-                '{% url event.check_free_pass_eligibility %}',
+                '{% url "event.check_free_pass_eligibility" %}',
                 {
                     'email': email,
                     'member_number': member_number,

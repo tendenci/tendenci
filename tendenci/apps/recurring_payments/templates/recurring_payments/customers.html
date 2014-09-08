@@ -74,7 +74,7 @@
             {% for rp in recurring_payments %}
             {% with rp|get_object as rp %}
                 <tr>
-                    <td><a href="{% url recurring_payment.view_account rp.id %}">{% if not rp.user.get_full_name %}{{ rp.user.username }}{% else %}{{ rp.user.get_full_name }}{% endif %}</a></td>
+                    <td><a href="{% url "recurring_payment.view_account" rp.id %}">{% if not rp.user.get_full_name %}{{ rp.user.username }}{% else %}{{ rp.user.get_full_name }}{% endif %}</a></td>
                     <td>{{ rp.description }}</td>
                     <td>{{ rp.payment_amount }}</td>
                     <td>{{ rp.billing_start_dt|date:"n/j/Y" }}</td>
@@ -138,7 +138,7 @@ function run_now(id){
 
     $.ajax({
            type: "POST",
-           url: "{% url recurring_payment.run_now %}",
+           url: "{% url "recurring_payment.run_now" %}",
            data: {rp_id : id },
            success: function(result_data){
                 var obj = $.parseJSON(result_data);

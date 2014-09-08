@@ -33,7 +33,7 @@
     <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Add" %}</h1>
 
     <div class="page-wrap">
-        <form action="{% url page.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url "page.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <fieldset class="boxy-grey" >
@@ -123,7 +123,7 @@
         $('input.previewButton').click(function() {
             var form = $('div.page-wrap > form');
             var url = form.attr('action');
-            form.attr('action', "{% url page.preview %}");
+            form.attr('action', "{% url "page.preview" %}");
             form.attr('target', '_blank');
             form.submit();
 

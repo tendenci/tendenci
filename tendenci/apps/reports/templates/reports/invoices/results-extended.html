@@ -100,7 +100,7 @@
                 {% with payment=invoice.get_first_approved_payment %}
                 <td class="inv-payment-id">
                     {% if payment %}
-                    <a href="{% url payment.view payment.pk payment.guid %}">
+                    <a href="{% url "payment.view" payment.pk payment.guid %}">
                     {{ payment.pk }}</a>
                     {% endif %}</td>
                 <td class="inv-payer">{{ payment.first_name }} {{ payment.last_name }}</td>

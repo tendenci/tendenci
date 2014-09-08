@@ -20,7 +20,7 @@
             &nbsp;&ndash;&nbsp;
             {{ job.create_dt|date }}&nbsp;{{ job.create_dt|time }}
             &nbsp;&ndash;&nbsp;
-            <a href="{% url job.approve job.pk %}">{% trans "Approve" %}</a>
+            <a href="{% url "job.approve" job.pk %}">{% trans "Approve" %}</a>
         </li>
     {% empty %}
         <li>{% trans "There are no pending jobs." %}</li>

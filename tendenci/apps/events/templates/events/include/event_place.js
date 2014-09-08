@@ -3,7 +3,7 @@ $('select#id_place-place').change(function() {
     if($(this).val()) {
         //Get values of place through ajax
         $.post(
-            "{% url event.get_place %}",
+            "{% url "event.get_place" %}",
             {
                 'id':$(this).val(),
             },

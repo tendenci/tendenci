@@ -18,11 +18,11 @@
   $(document).ready(function() {
     var status_check = function(){
         $.ajax({
-           url: "{% url theme_editor.get_themes %}",
+           url: "{% url "theme_editor.get_themes" %}",
            success: function(status_data){
                console.log(status_data)
                if (status_data == 'False') {
-                  window.location = "{% url theme_editor.picker %}";
+                  window.location = "{% url "theme_editor.picker" %}";
                }
            }
          });

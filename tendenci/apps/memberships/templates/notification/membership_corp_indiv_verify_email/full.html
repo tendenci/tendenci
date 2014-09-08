@@ -8,7 +8,7 @@ the corporate "{{ memname }}" on
 
 To verify and continue to sign up for the membership, click the following URL:{% endblocktrans %}<br /><br />
 
-<a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.verify_email  object.pk object.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url membership.verify_email  object.pk object.guid  %}</a>
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership.verify_email"  object.pk object.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url "membership.verify_email"  object.pk object.guid  %}</a>
 <br /><br />
 
 {% blocktrans %}Thanks,

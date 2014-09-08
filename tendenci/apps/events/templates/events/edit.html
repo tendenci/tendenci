@@ -23,22 +23,22 @@
     <div class="event-tabs">
         <ul class="tabs">
             <li class="dropdown {% if label == 'overview' %}active{% endif %}">
-                <a href="{% url event.edit event.pk %}">{% trans "Overview" %}</a>
+                <a href="{% url "event.edit" event.pk %}">{% trans "Overview" %}</a>
             </li>
             <li class="dropdown {% if label == 'location' %}active{% endif %}">
-                <a href="{% url event.location_edit event.pk %}">{% trans "Location" %}</a>
+                <a href="{% url "event.location_edit" event.pk %}">{% trans "Location" %}</a>
             </li>
             <li class="dropdown {% if label == 'organizer' %}active{% endif %}">
-                <a href="{% url event.organizer_edit event.pk %}">{% trans "Organizer" %}</a>
+                <a href="{% url "event.organizer_edit" event.pk %}">{% trans "Organizer" %}</a>
             </li>
             <li class="dropdown {% if label == 'speakers' %}active{% endif %}">
-                <a href="{% url event.speaker_edit event.pk %}">{% trans "Speaker(s)" %}</a>
+                <a href="{% url "event.speaker_edit" event.pk %}">{% trans "Speaker(s)" %}</a>
             </li>
             <li class="dropdown {% if label == 'regconf' %}active{% endif %}">
-                <a href="{% url event.regconf_edit event.pk %}">{% trans "Registration" %}</a>
+                <a href="{% url "event.regconf_edit" event.pk %}">{% trans "Registration" %}</a>
             </li>
             <li class="dropdown {% if label == 'pricing' %}active{% endif %}">
-                <a href="{% url event.pricing_edit event.pk %}">{% trans "Pricing(s)" %}</a>
+                <a href="{% url "event.pricing_edit" event.pk %}">{% trans "Pricing(s)" %}</a>
             </li>
         </ul>
     </div>
