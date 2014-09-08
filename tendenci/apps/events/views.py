@@ -134,9 +134,9 @@ from tendenci.apps.events.utils import (
     create_member_registration,
     get_recurrence_dates,
     get_week_days)
-from tendenci.apps.events.apps.forms import RegAddonForm
-from tendenci.apps.events.apps.formsets import RegAddonBaseFormSet
-from tendenci.apps.events.apps.utils import get_available_addons
+from tendenci.apps.events.addons.forms import RegAddonForm
+from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
+from tendenci.apps.events.addons.utils import get_available_addons
 
 
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):

@@ -29,9 +29,9 @@ from tendenci.apps.events.registration.utils import process_registration, send_r
 from tendenci.apps.events.registration.utils import get_pricings_for_list
 from tendenci.apps.events.registration.forms import RegistrantForm, RegistrationForm
 from tendenci.apps.events.registration.formsets import RegistrantBaseFormSet
-from tendenci.apps.events.apps.forms import RegAddonForm
-from tendenci.apps.events.apps.formsets import RegAddonBaseFormSet
-from tendenci.apps.events.apps.utils import get_active_addons, get_available_addons, get_addons_for_list
+from tendenci.apps.events.addons.forms import RegAddonForm
+from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
+from tendenci.apps.events.addons.utils import get_active_addons, get_available_addons, get_addons_for_list
 from tendenci.apps.events.forms import FormForCustomRegForm
 
 def ajax_user(request, event_id):
