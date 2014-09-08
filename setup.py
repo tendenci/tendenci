@@ -193,7 +193,7 @@ setup(
         "django-ses==0.6.0",
         "Geraldo==0.4.16",
         "django-tastypie==0.11.1",
-        "johnny-cache==1.4",
+        "johnny-cache==1.6.1a",
         "docutils==0.9.1",
         'chardet==2.1.1',
         "dj-database-url==0.2.1",
