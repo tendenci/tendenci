@@ -1,13 +1,13 @@
 {% load i18n %}
 {% load perm_tags %}
 <div class="navbar yamm navbar-inverse navbar-fixed-top t-top-nav" role="navigation">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-1" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url dashboard %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
+            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url dashboard %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
         </div>
         <div id="navbar-collapse-0" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
                     <ul class="dropdown-menu">
                         {% if SITE_GLOBAL_SEARCHINDEX %}
                         <li><a href="/search"><span class="glyph search">&#76;</span>&nbsp;&nbsp;{% trans "Search All Content" %}</a></li>
@@ -69,7 +69,7 @@
                         <li><a href="{% url contribution.search %}">{% trans "My Content" %}</a></li>
                     </ul>
                 </li>
-                <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#87;</span>&nbsp;&nbsp;{% trans "Support" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#87;</span>&nbsp;&nbsp;{% trans "Support" %}</a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url help_files.search %}">{% trans 'Help Files' %}</a></li>
                         <li><a href="/contact/">{% trans "Contact" %}</a></li>

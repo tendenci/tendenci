@@ -456,6 +456,16 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     height: 30px;
 }
 
+.t-top-nav .navbar-toggle {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 5px 10px;
+}
+
+.t-top-nav .navbar-brand {
+    height: 30px;
+}
+
 .t-top-nav .dropdown-menu {
     max-width: 1170px;
 }
@@ -522,4 +532,39 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 
 .t-top-nav .navbar-form input.form-control {
     height: 26px;
+}
+
+
+@media (max-width: 992px) {
+    .t-top-nav .nav > li > a {
+        padding: 5px !important;
+    }
+
+    .t-top-nav .navbar-form input.form-control {
+        width: 80%;
+    }
+}
+
+
+@media (max-width:767px) {
+    .t-top-nav .content-head {
+        color: #666666;
+    }
+
+    .t-top-nav .content-item {
+        width: 100%;
+    }
+    .t-top-nav .app-name {
+        max-width: 100%;
+        width: 50%;
+    }
+
+    .t-top-nav .lang-scrollable-menu {
+        max-height: none;
+        width: 100% !important;
+    }
+
+    .t-top-nav .navbar-form input.form-control {
+        width: 100%;
+    }
 }

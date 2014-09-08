@@ -2,7 +2,7 @@
 {% list_plugins as plugins %}
 {% load i18n %}
 <div class="navbar yamm navbar-inverse navbar-fixed-top t-top-nav" role="navigation">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url dashboard %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
         </div>
@@ -13,30 +13,30 @@
                         <li>
                             <div class="yamm-content custom-yamm-content">
                                 <div class="row">
-                                    <ul class="list-unstyled col-sm-6">
-                                        <li><p><strong>{% trans 'Apps' %}</strong></p></li>
+                                    <ul class="list-unstyled col-sm-6 col-xs-12">
+                                        <li><span class="content-head"><strong>{% trans 'Apps' %}</strong></span></li>
                                         {% for app in registered_apps.core %}
                                         {% if app.enabled %}
-                                        <li>
+                                        <li class="content-item">
                                             <span class="app-name pull-left">
                                             <a  href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
                                             </span>
                                             {% if app.has_settings and app.url.settings %}
-                                            <span class="pull-right hidden-xs"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
+                                            <span class="pull-right"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
                                             {% endif %}
                                             {% if app.url.search %}
-                                            <span class="pull-right hidden-xs"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
+                                            <span class="pull-right"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
                                             {% endif %}
                                             {% if app.url.add %}
-                                            <span class="pull-right hidden-xs"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
+                                            <span class="pull-right"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
                                             {% endif %}
                                         </li>
                                         {% endif %}
                                         {% endfor %}
                                     </ul>
                                     {% if registered_apps.addons %}
-                                    <ul class="list-unstyled col-sm-6">
-                                        <li><p><strong>{% trans 'Add-ons' %}</strong></p></li>
+                                    <ul class="list-unstyled col-sm-6 col-xs-12">
+                                        <li><span class="content-head"><strong>{% trans 'Add-ons' %}</strong></span></li>
                                         {% for app in registered_apps.addons %}
                                         {% if app.enabled %}
                                         <li>
@@ -44,13 +44,13 @@
                                             <a  href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
                                             </span>
                                             {% if app.has_settings and app.url.settings %}
-                                            <span class="pull-right hidden-xs"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
+                                            <span class="pull-right"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
                                             {% endif %}
                                             {% if app.url.search %}
-                                            <span class="pull-right hidden-xs"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
+                                            <span class="pull-right"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
                                             {% endif %}
                                             {% if app.url.add %}
-                                            <span class="pull-right hidden-xs"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
+                                            <span class="pull-right"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
                                             {% endif %}
                                         </li>
                                         {% endif %}
