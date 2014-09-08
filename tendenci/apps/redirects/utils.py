@@ -1,5 +1,6 @@
 from django.conf.urls import url, patterns
 from django.utils.http import urlquote
+from django.views.generic import RedirectView
 from tendenci.apps.redirects.models import Redirect
 
 def group_aruments(seq, group=254):
@@ -34,12 +35,12 @@ def get_redirect_patterns():
 
         if redirect.http_status == 302:
             extra.update({'permanent': False})
-            url_list.append(url(pattern, 'redirect_to', extra))
+            url_list.append(url(pattern, RedirectView.as_view(**extra)))
         else:
-            url_list.append(url(pattern, 'redirect_to', extra))
+            url_list.append(url(pattern, RedirectView.as_view(**extra)))
     arg_groups = list(group_aruments(url_list))
 
     for args in arg_groups:
-        url_patterns += patterns('django.views.generic.simple',*args)
+        url_patterns += patterns('',*args)
 
     return url_patterns

@@ -1,7 +1,7 @@
 from os.path import join
 from django.conf.urls import *
 from django.conf import settings
-from django.views.generic.simple import direct_to_template, redirect_to
+from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin
 from tendenci.libs.model_report import report
 
@@ -84,12 +84,12 @@ urlpatterns += patterns('',
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
 
-    url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
+    url(r'^sitemap/$', TemplateView.as_view(template_name='site_map.html'), name="site_map"),
     url(r'^robots.txt', 'tendenci.apps.base.views.robots_txt', name="robots"),
     url(r'^(?P<file_name>[\w-]+\.[\w]{2,4})$', 'tendenci.apps.base.views.base_file'),
 
     # legacy redirects
-    url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
+    url(r'^login/$', RedirectView.as_view(url='/accounts/login/')),
 
     url(r'^', include('tendenci.apps.articles.urls')),
     url(r'^', include('tendenci.apps.corporate_memberships.urls')),
@@ -160,7 +160,7 @@ urlpatterns += patterns('',
 # template tag testing environment
 if settings.DEBUG:
     urlpatterns += patterns('',
-        url(r'^tag-test/$', direct_to_template, {"template": "tag_test.html", }, name="tag_test"),
+        url(r'^tag-test/$', TemplateView.as_view(template_name='tag_test.html'), name="tag_test"),
     )
 
 # Local url patterns for development
@@ -174,7 +174,7 @@ except ImportError:
 from tendenci.apps.registry.utils import get_url_patterns
 urlpatterns += get_url_patterns()
 
-urlpatterns += patterns('', url(r'^en/$', redirect_to, {'url': '/accounts/login/'}),)
+urlpatterns += patterns('', url(r'^en/$', RedirectView.as_view(url='/accounts/login/')),)
 
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first

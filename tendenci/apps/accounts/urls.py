@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from django.views.generic.simple import direct_to_template
+from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
 from tendenci.apps.registration.views import activate
@@ -47,7 +47,6 @@ urlpatterns = patterns('tendenci.apps',
                            name='registration_register'),
                        url(r'^register/event/(?P<event_id>\d+)/$', register, {'form_class' : RegistrationCustomForm, 'template_name': 'accounts/registration_form.html'}, name='registration_event_register'),
                        url(r'^register/complete/$',
-                           direct_to_template,
-                           {'template': 'accounts/registration_complete.html'},
+                           TemplateView.as_view(template_name='accounts/registration_complete.html'),
                            name='registration_complete'),
                        )

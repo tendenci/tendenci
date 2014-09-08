@@ -21,7 +21,7 @@ various steps of the user-signup process.
 
 
 from django.conf.urls import *
-from django.views.generic.simple import direct_to_template
+from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
 from tendenci.apps.registration.views import activate
@@ -66,7 +66,6 @@ urlpatterns = patterns('',
                            register,
                            name='registration_register'),
                        url(r'^register/complete/$',
-                           direct_to_template,
-                           {'template': 'registration/registration_complete.html'},
+                           TemplateView.as_view(template_name='registration/registration_complete.html'),
                            name='registration_complete'),
                        )

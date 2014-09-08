@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+from django.views.generic import RedirectView
 from tendenci.apps.site_settings.utils import get_setting
 
 urlpath = get_setting('module', 'users', 'url')
@@ -59,6 +60,5 @@ urlpatterns = patterns('tendenci.apps.profiles.views',
 
 urlpatterns += patterns('',
     # Special redirect for user.get_absolute_url
-    url(r'^users/(?P<username>[+-.\w\d@\s]+)/$', 'django.views.generic.simple.redirect_to', {
-        'url': '/%s/%s/' % (urlpath, '%(username)s')}),
+    url(r'^users/(?P<username>[+-.\w\d@\s]+)/$', RedirectView.as_view(url='/%s/%s/' % (urlpath, '%(username)s'))),
 )
