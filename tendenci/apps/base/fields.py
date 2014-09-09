@@ -16,8 +16,8 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 # introspection rules for south migration for the slugfield
-add_introspection_rules([], ['^tendenci\.core\.base\.fields\.SlugField'])
-add_introspection_rules([], ['^tendenci\.core\.base\.fields\.DictField'])
+add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.SlugField'])
+add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.DictField'])
 
 
 class SlugField(CharField):
