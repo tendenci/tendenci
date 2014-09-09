@@ -140,7 +140,8 @@ def search(request, template_name="articles/search.html"):
             pass
 
     # don't use order_by with "whoosh"
-    if not query or settings.HAYSTACK_SEARCH_ENGINE.lower() != "whoosh":
+    default_engine = settings.HAYSTACK_CONNECTIONS.get('default', {}).get('ENGINE', '')
+    if not query or "whoosh" not in default_engine:
         articles = articles.order_by('-release_dt')
     else:
         articles = articles.order_by('-create_dt')
