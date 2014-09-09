@@ -68,7 +68,7 @@ class Command(BaseCommand):
             pass
 
         contribs = list(set(contribs))  # remove duplicates
-        slackers = User.objects.exclude(username__in=[c.username for c in contribs])
+        slackers = User.objects.exclude(username__in=[c.username for c in contribs if c])
 
         print 'contribs', len(contribs)
         print 'slackers', slackers.count()

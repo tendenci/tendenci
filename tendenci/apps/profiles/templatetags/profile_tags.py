@@ -1,7 +1,7 @@
 from django.template import Library
 from django.contrib.auth.models import User
 
-from avatar import AVATAR_DEFAULT_URL, AVATAR_GRAVATAR_BACKUP, AVATAR_GRAVATAR_DEFAULT
+from avatar.util import get_default_avatar_url
 from avatar.templatetags.avatar_tags import avatar_url
 
 
@@ -94,12 +94,12 @@ def has_avatar(user, size=88):
             alt = unicode(user)
             url = avatar_url(user, size)
         except User.DoesNotExist:
-            url = AVATAR_DEFAULT_URL
+            url = get_default_avatar_url()
             alt = _("Default Avatar")
     else:
         alt = unicode(user)
         url = avatar_url(user, size)
-    if url == AVATAR_DEFAULT_URL:
+    if url == get_default_avatar_url():
         return ""
 
     title = "%s profile" % alt
