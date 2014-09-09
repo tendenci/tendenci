@@ -14,7 +14,7 @@
                             <div class="yamm-content custom-yamm-content">
                                 <div class="row">
                                     <ul class="list-unstyled col-sm-6 col-xs-12">
-                                        <li><span class="content-head"><strong>{% trans 'Apps' %}</strong></span></li>
+                                        <li><span class="content-head"><a href="{% url dashboard %}">{% trans 'Apps' %}</a></span></li>
                                         {% for app in registered_apps.core %}
                                         {% if app.enabled %}
                                         <li class="content-item">
@@ -36,7 +36,7 @@
                                     </ul>
                                     {% if registered_apps.addons %}
                                     <ul class="list-unstyled col-sm-6 col-xs-12">
-                                        <li><span class="content-head"><strong>{% trans 'Add-ons' %}</strong></span></li>
+                                        <li><span class="content-head"><a href="{% url dashboard %}">{% trans 'Add-ons' %}</a></span></li>
                                         {% for app in registered_apps.addons %}
                                         {% if app.enabled %}
                                         <li>
@@ -64,47 +64,50 @@
                 </li>
                 <li class="dropdown">
                     <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
-                    {% if registered_apps.people %}
-                    <ul class="dropdown-menu classic">
-                    {% for app in registered_apps.people %}
-                        {% if app.enabled %}
+                    <ul class="dropdown-menu">
+                        {% if registered_apps.people %}
                         <li>
-                          <ul class="list-unstyled">
-                              <li class="app-name pull-left">
-                                 <a  href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
-                              </li>
-                              {% if app.has_settings and app.url.settings %}
-                              <li class="pull-right"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></li>
-                              {% endif %}
-                              {% if app.url.search %}
-                              <li class="pull-right"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></li>
-                              {% endif %}
-                              {% if app.url.add %}
-                              <li class="pull-right"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></li>
-                              {% endif %}
-                          </ul>
+                            <div class="yamm-content custom-yamm-content">
+                                <div class="row">
+                                    <ul class="list-unstyled col-sm-12 col-xs-12">
+                                        {% for app in registered_apps.people %}
+                                        {% if app.enabled %}
+                                        <li>
+                                            <span class="app-name pull-left"><a  href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
+                                            </span>
+                                            {% if app.has_settings and app.url.settings %}
+                                            <span class="pull-right"><a href="{{ app.url.settings }}" class="glyph gear app-button" title="{{ app|title }} settings">&#83;</a></span>
+                                            {% endif %}
+                                            {% if app.url.search %}
+                                            <span class="pull-right"><a href="{{ app.url.search }}" class="glyph search app-button" title="Search {{ app|title }}">&#76;</a></span>
+                                            {% endif %}
+                                            {% if app.url.add %}
+                                            <span class="pull-right"><a href="{{ app.url.add }}" class="glyph plus app-button" title="Add {{ app|title }}">&#43;</a></span>
+                                            {% endif %}
+                                        </li>
+                                        {% endif %}
+                                        {% endfor %}
+                                        <li>
+                                            <span class="app-name pull-left"><a  href="{% url reports-user-activity %}">{% trans "Activity Report" %}</a></span>
+                                            <span class="pull-right"><a href="{% url reports-user-activity %}" class="glyph heading app-button">&#117;</a></span>
+                                        </li>
+                                        <li>
+                                            <span class="app-name pull-left"><a  href="{% url profile.admins %}">{% trans "Administrators" %}</a></span>
+                                            {% if SITE_ADMIN_EMAIL %}
+                                            <span class="pull-right"><a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="Email Administrators" class="app-button"><i class="fa fa-envelope"></i></a></span>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
+                        {% else %}
+                        <li><a href="{% url profile.search %}">{% trans 'Seaach' %}</a></li>
                         {% endif %}
-                    {% endfor %}
-                        <li>
-                            <ul class="list-unstyled">
-                                <li class="app-name pull-left"><a  href="{% url reports-user-activity %}">{% trans "Activity Report" %}</a></li>
-                                <li class="pull-right"><a href="{% url reports-user-activity %}" class="glyph heading app-button">&#117;</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <ul class="list-unstyled">
-                                <li class="app-name pull-left"><a  href="{% url profile.admins %}">{% trans "Administrators" %}</a></li>
-                                {% if SITE_ADMIN_EMAIL %}
-                                <li class="pull-right"><a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="Email Administrators" class="app-button"><i class="fa fa-envelope"></i></a></li>
-                                {% endif %}
                     </ul>
-                        </li>
-                    </ul>
-                    {% endif %}
                 </li>
                 {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
-                <li class="dropdown"><a href="{% url settings %}"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
                     <ul class="dropdown-menu">
                         <li><a  href="{% url theme_editor.picker %}">
                             {% trans "Change Theme From: " %}

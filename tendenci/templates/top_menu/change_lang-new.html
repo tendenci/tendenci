@@ -1,10 +1,10 @@
 {% load i18n %}
 {% load url from future %}
 {% with request.user.profile.lang as user_lang %}
-    <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
         <i class="fa fa-globe"></i> {% get_language_info for user_lang as l %}{{ l.name_local }}
     </a>
-    <ul id="lang-menu" class="dropdown-menu lang-scrollable-menu pull-left" role="menu">
+    <ul id="lang-menu" class="dropdown-menu lang-scrollable-menu col-xs-12 col-sm-2" role="menu">
         {% get_language_info_list for LANGUAGES as languages %}
         {% for language in languages %}
             <li{% if language.code == user_lang %} class="active"{% endif %}>

@@ -479,6 +479,12 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     font-size: 12px;
 }
 
+.t-top-nav .content-head a {
+    font-weight: bold;
+    font-size: 18px;
+    padding: 4px 0;
+}
+
 .t-top-nav .nav > li > a {
     padding: 5px 15px !important;
 }
@@ -547,8 +553,14 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 
 
 @media (max-width:767px) {
-    .t-top-nav .content-head {
-        color: #666666;
+    .t-top-nav  a {
+        text-shadow: none;
+        color: #999999 !important;
+    }
+
+    .t-top-nav a:hover {
+        background: none !important;
+        color: #fff !important;
     }
 
     .t-top-nav .content-item {
@@ -562,6 +574,7 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     .t-top-nav .lang-scrollable-menu {
         max-height: none;
         width: 100% !important;
+        overflow-x: inherit !important;
     }
 
     .t-top-nav .navbar-form input.form-control {
