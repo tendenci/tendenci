@@ -30,14 +30,14 @@ class Setting(models.Model):
     default_value = models.TextField(blank=True)
     input_type = models.CharField(max_length=25, choices=INPUT_TYPE_CHOICES)
     input_value = models.CharField(max_length=1000, blank=True)
-    client_editable = models.BooleanField(default=True)
-    store = models.BooleanField(default=True)
+    client_editable = models.NullBooleanField(default=True)
+    store = models.NullBooleanField(default=True)
     update_dt = models.DateTimeField(auto_now=True, null=True)
     updated_by = models.CharField(max_length=50, blank=True)
     scope = models.CharField(max_length=50)
     scope_category = models.CharField(max_length=50)
     parent_id = models.IntegerField(blank=True, default=0)
-    is_secure = models.BooleanField(default=False)
+    is_secure = models.NullBooleanField(default=False)
 
     def get_absolute_url(self):
         return ("setting.permalink",

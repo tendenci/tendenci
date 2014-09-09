@@ -12,11 +12,11 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
     # authority fields
-    allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
-    allow_user_view = models.BooleanField(_("Signed in user can view"))
-    allow_member_view = models.BooleanField()
-    allow_user_edit = models.BooleanField(_("Signed in user can change"))
-    allow_member_edit = models.BooleanField()
+    allow_anonymous_view = models.NullBooleanField(_("Public can view"), default=True)
+    allow_user_view = models.NullBooleanField(_("Signed in user can view"))
+    allow_member_view = models.NullBooleanField()
+    allow_user_edit = models.NullBooleanField(_("Signed in user can change"))
+    allow_member_edit = models.NullBooleanField()
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -24,7 +24,7 @@ class TendenciBaseModel(models.Model):
     creator_username = models.CharField(max_length=50)
     owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
     owner_username = models.CharField(max_length=50)
-    status = models.BooleanField("Active", default=True)
+    status = models.NullBooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')
 
     class Meta:

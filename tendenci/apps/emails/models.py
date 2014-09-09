@@ -25,7 +25,7 @@ class Email(TendenciBaseModel):
     content_type = models.CharField(max_length=255, default='text/html', choices=(('text/html','text/html'),('text','text'),))
     
     #create_dt = models.DateTimeField(auto_now_add=True)
-    #status = models.BooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
+    #status = models.NullBooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
     
     @models.permalink
     def get_absolute_url(self):

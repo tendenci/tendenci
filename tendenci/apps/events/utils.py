@@ -1571,7 +1571,7 @@ def do_event_import(event_object_dict):
                 field_type = Event._meta.get_field_by_name(field)[0]
                 if isinstance(field_type, models.DateTimeField):
                     setattr(event, field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
-                elif isinstance(field_type, models.BooleanField):
+                elif isinstance(field_type, models.NullBooleanField):
                     if event_object_dict[field].lower() == "false" or event_object_dict[field] == "0":
                         setattr(event, field, False)
                     else:
@@ -1588,7 +1588,7 @@ def do_event_import(event_object_dict):
             field_type = Place._meta.get_field_by_name(p_field)[0]
             if isinstance(field_type, models.DateTimeField):
                 setattr(place, p_field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
-            elif isinstance(field_type, models.BooleanField):
+            elif isinstance(field_type, models.NullBooleanField):
                 setattr(place, p_field, bool(ast.literal_eval(event_object_dict[field])))
             else:  # assume its a string
                 if field_type.max_length:

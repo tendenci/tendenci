@@ -7,7 +7,7 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 class DashboardStatType(OrderingBaseModel):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True)
-    displayed = models.BooleanField(default=True)
+    displayed = models.NullBooleanField(default=True)
 
 
 class DashboardStat(models.Model):

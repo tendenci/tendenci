@@ -25,19 +25,19 @@ class Group(TendenciBaseModel):
                                          ('system_generated', 'System Generated')
                                             ), default='distribution')
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
-    show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
-    allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
-    allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
-    sync_newsletters = models.BooleanField(_('Sync for newsletters'), default=1)
+    show_as_option = models.NullBooleanField(_('Display Option'), default=1, blank=True)
+    allow_self_add = models.NullBooleanField(_('Allow Self Add'), default=1)
+    allow_self_remove = models.NullBooleanField(_('Allow Self Remove'), default=1)
+    sync_newsletters = models.NullBooleanField(_('Sync for newsletters'), default=1)
     description = models.TextField(blank=True)
-    auto_respond = models.BooleanField(_('Auto Responder'), default=0)
+    auto_respond = models.NullBooleanField(_('Auto Responder'), default=0)
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
 
     group = models.OneToOneField(AuthGroup, null=True, default=None)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
-    # use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
+    # use_for_membership = models.NullBooleanField(_('User for Membership Only'), default=0, blank=True)
 
     objects = GroupManager()
 
@@ -147,7 +147,7 @@ class GroupMembership(models.Model):
     creator_username = models.CharField(max_length=50, editable=False)
     owner_id = models.IntegerField(default=0, editable=False)
     owner_username = models.CharField(max_length=50, editable=False)
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
     status_detail = models.CharField(max_length=50, choices=(
         ('active','Active'), ('inactive','Inactive'),), default='active')
 

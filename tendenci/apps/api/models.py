@@ -10,4 +10,4 @@ class APIAccessKey(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, related_name="apiaccesskey_creator",  null=True)
     update_dt = models.DateTimeField(auto_now=True)
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)

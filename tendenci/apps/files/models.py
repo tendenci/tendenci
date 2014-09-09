@@ -48,7 +48,7 @@ class File(TendenciBaseModel):
     description = models.TextField(blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
-    is_public = models.BooleanField(default=True)
+    is_public = models.NullBooleanField(default=True)
     group = models.ForeignKey(
         Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)

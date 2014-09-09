@@ -22,7 +22,7 @@ class Redirect(models.Model):
         help_text=_("You may reference any named regex pattern in From URL with (name). e.g. (?P<slug>[\w\-\/]+) can be mapped to (slug)."))
     http_status = models.SmallIntegerField(_('HTTP Status'),choices=HTTP_STATUS_CHOICES, default=301)
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=1)
-    uses_regex = models.BooleanField(_('Uses Regular Expression'), default=False, help_text=uses_regex_helptext)
+    uses_regex = models.NullBooleanField(_('Uses Regular Expression'), default=False, help_text=uses_regex_helptext)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 

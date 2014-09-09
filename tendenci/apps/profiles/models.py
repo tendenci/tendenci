@@ -54,18 +54,18 @@ class Profile(Person):
     department = models.CharField(_('department'), max_length=50, blank=True)
     education = models.CharField(_('education'), max_length=100, blank=True)
     student = models.IntegerField(_('student'), null=True, blank=True)
-    remember_login = models.BooleanField(_('remember login'))
-    exported = models.BooleanField(_('exported'))
-    direct_mail = models.BooleanField(_('direct mail'), default=False)
+    remember_login = models.NullBooleanField(_('remember login'))
+    exported = models.NullBooleanField(_('exported'))
+    direct_mail = models.NullBooleanField(_('direct mail'), default=False)
     notes = models.TextField(_('notes'), blank=True)
     admin_notes = models.TextField(_('admin notes'), blank=True)
     referral_source = models.CharField(_('referral source'), max_length=50, blank=True)
-    hide_in_search = models.BooleanField(default=False)
-    hide_address = models.BooleanField(default=False)
-    hide_email = models.BooleanField(default=False)
-    hide_phone = models.BooleanField(default=False)
-    first_responder = models.BooleanField(_('first responder'), default=False)
-    agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
+    hide_in_search = models.NullBooleanField(default=False)
+    hide_address = models.NullBooleanField(default=False)
+    hide_email = models.NullBooleanField(default=False)
+    hide_phone = models.NullBooleanField(default=False)
+    first_responder = models.NullBooleanField(_('first responder'), default=False)
+    agreed_to_tos = models.NullBooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
 
     sf_contact_id = models.CharField(max_length=100, blank=True, null=True)
@@ -398,10 +398,10 @@ class UserImport(BaseImport):
     recap_file = models.FileField(_("Recap File"), max_length=260,
                                    upload_to=UPLOAD_DIR, null=True)
 
-    interactive = models.BooleanField(choices=INTERACTIVE_CHOICES, default=False)
+    interactive = models.NullBooleanField(choices=INTERACTIVE_CHOICES, default=False)
     group_id = models.IntegerField(default=0)
 
-    clear_group_membership = models.BooleanField(default=False)
+    clear_group_membership = models.NullBooleanField(default=False)
 
     def generate_recap(self):
         if not self.recap_file and self.header_line:

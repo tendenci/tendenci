@@ -66,11 +66,11 @@ class RecurringPayment(models.Model):
     #billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"))
     #billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=15, decimal_places=2)
-    tax_exempt =models.BooleanField(default=1)
-    taxable = models.BooleanField(default=0)
+    tax_exempt =models.NullBooleanField(default=1)
+    taxable = models.NullBooleanField(default=0)
     tax_rate = models.DecimalField(blank=True, max_digits=7, decimal_places=6, default=0,
                                    help_text='Example: 0.0825 for 8.25%.')
-    has_trial_period = models.BooleanField(default=0)
+    has_trial_period = models.NullBooleanField(default=0)
     trial_period_start_dt = models.DateTimeField(_('Trial period start date'), blank=True, null=True)
     trial_period_end_dt = models.DateTimeField(_('Trial period end date'), blank=True, null=True)
     trial_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
@@ -91,7 +91,7 @@ class RecurringPayment(models.Model):
     owner = models.ForeignKey(User, related_name="recurring_payment_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active', choices=STATUS_DETAIL_CHOICES)
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     objects = RecurringPaymentManager()
 
@@ -500,7 +500,7 @@ class PaymentProfile(models.Model):
     owner = models.ForeignKey(User, related_name="payment_profile_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active')
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     def update_local(self, request):
         cim_payment_profile = CIMCustomerPaymentProfile(
@@ -530,7 +530,7 @@ class RecurringPaymentInvoice(models.Model):
     billing_dt = models.DateTimeField(blank=True, null=True)
     payment_received_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
-    #is_paid = models.BooleanField(default=False)
+    #is_paid = models.NullBooleanField(default=False)
 
     def make_payment_transaction(self, payment_profile_id):
         """
@@ -630,7 +630,7 @@ class PaymentTransaction(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, related_name="payment_transaction_creator",  null=True, on_delete=models.SET_NULL)
     # True=success or False=failed
-    status = models.BooleanField()
+    status = models.NullBooleanField()
     #status_detail = models.CharField(max_length=50,  null=True)
 
 

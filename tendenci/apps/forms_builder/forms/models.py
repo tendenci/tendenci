@@ -100,7 +100,7 @@ class Form(TendenciBaseModel):
         default="[title] - [first name]  [last name] - [phone]",
         max_length=200,
         blank=True, null=True)
-    send_email = models.BooleanField(_("Send email"), default=False,
+    send_email = models.NullBooleanField(_("Send email"), default=False,
         help_text=_("If checked, the person submitting the form will be sent an email."))
     email_from = models.EmailField(_("Reply-To address"), blank=True,
         help_text=_("The address the replies to the email will be sent to"))
@@ -112,9 +112,9 @@ class Form(TendenciBaseModel):
     template = models.CharField(_('Template'), max_length=50, blank=True)
 
     # payments
-    custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,
+    custom_payment = models.NullBooleanField(_("Is Custom Payment"), default=False,
         help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
-    recurring_payment = models.BooleanField(_("Is Recurring Payment"), default=False,
+    recurring_payment = models.NullBooleanField(_("Is Recurring Payment"), default=False,
         help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount. Please also add an email field as a required field with type 'email'"))
     payment_methods = models.ManyToManyField("payments.PaymentMethod", blank=True)
 
@@ -208,8 +208,8 @@ class Field(OrderingBaseModel):
         max_length=64)
     field_function = models.CharField(_("Special Functionality"),
         choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
-    required = models.BooleanField(_("Required"), default=True)
-    visible = models.BooleanField(_("Visible"), default=True)
+    required = models.NullBooleanField(_("Required"), default=True)
+    visible = models.NullBooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
     default = models.CharField(_("Default"), max_length=1000, blank=True,
@@ -461,7 +461,7 @@ class Pricing(models.Model):
     )
 
     # Recurring payment fields
-    taxable = models.BooleanField(default=False)
+    taxable = models.NullBooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text='Example: 0.0825 for 8.25%.')
     billing_period = models.CharField(max_length=50, choices=BILLING_PERIOD_CHOICES,
@@ -470,7 +470,7 @@ class Pricing(models.Model):
     num_days = models.IntegerField(default=0)
     due_sore = models.CharField(_("Billing cycle start or end date"), max_length=20,
                                    choices=DUE_SORE_CHOICES, default='start')
-    has_trial_period = models.BooleanField(default=False)
+    has_trial_period = models.NullBooleanField(default=False)
     trial_period_days = models.IntegerField(default=0)
     trial_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True, default=0.0)
 

@@ -6,7 +6,7 @@ class PluginApp(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     package = models.CharField(max_length=255)
-    is_enabled = models.BooleanField(default=True, blank=True)
+    is_enabled = models.NullBooleanField(default=True, blank=True)
 
     def __unicode__(self):
         return self.title

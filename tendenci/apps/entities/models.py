@@ -24,12 +24,12 @@ class Entity(models.Model):
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
 
     # Model removed from TendenciBaseModel. Those fields added below
-    allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
-    allow_user_view = models.BooleanField(_("Signed in user can view"))
-    allow_member_view = models.BooleanField()
-    allow_anonymous_edit = models.BooleanField()
-    allow_user_edit = models.BooleanField(_("Signed in user can change"))
-    allow_member_edit = models.BooleanField()
+    allow_anonymous_view = models.NullBooleanField(_("Public can view"), default=True)
+    allow_user_view = models.NullBooleanField(_("Signed in user can view"))
+    allow_member_view = models.NullBooleanField()
+    allow_anonymous_edit = models.NullBooleanField()
+    allow_user_edit = models.NullBooleanField(_("Signed in user can change"))
+    allow_member_edit = models.NullBooleanField()
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -37,7 +37,7 @@ class Entity(models.Model):
     creator_username = models.CharField(max_length=50)
     owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50)
-    status = models.BooleanField("Active", default=True)
+    status = models.NullBooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')
 
     objects = EntityManager()

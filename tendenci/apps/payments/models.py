@@ -9,7 +9,7 @@ from tendenci.apps.site_settings.utils import get_setting
 class Payment(models.Model):
     guid = models.CharField(max_length=50)
     invoice = models.ForeignKey(Invoice)
-    payment_attempted = models.BooleanField(default=1)
+    payment_attempted = models.NullBooleanField(default=1)
     response_code = models.CharField(max_length=2, default='')
     response_subcode = models.CharField(max_length=10, default='')
     response_reason_code = models.CharField(max_length=15, default='')
@@ -71,7 +71,7 @@ class Payment(models.Model):
     cust_id = models.CharField(max_length=20, default=0)
     tax = models.CharField(max_length=16, blank=True)
     duty = models.CharField(max_length=16, blank=True)
-    verified = models.BooleanField(blank=True, default=False)
+    verified = models.NullBooleanField(blank=True, default=False)
     submit_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -82,7 +82,7 @@ class Payment(models.Model):
                               null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='')
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     def save(self, user=None):
         if not self.id:
@@ -226,8 +226,8 @@ class PaymentMethod(models.Model):
     """
     human_name = models.CharField(max_length=200, blank=False)
     machine_name = models.CharField(max_length=200, blank=False)
-    is_online = models.BooleanField()
-    admin_only = models.BooleanField(default=0,
+    is_online = models.NullBooleanField()
+    admin_only = models.NullBooleanField(default=0,
                                      help_text=_(
                         "if checked, it will only show for administrators"))
 

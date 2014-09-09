@@ -34,7 +34,7 @@ class MakePayment(models.Model):
     owner = models.ForeignKey(User, null=True, related_name="make_payment_owner", on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     class Meta:
         verbose_name = _("General Payment")

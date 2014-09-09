@@ -59,7 +59,7 @@ class Directory(TendenciBaseModel):
     email2 = models.CharField(_('Email 2'), max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
 
-    renewal_notice_sent = models.BooleanField(default=False)
+    renewal_notice_sent = models.NullBooleanField(default=False)
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
     pricing = models.ForeignKey('DirectoryPricing', null=True)
@@ -68,7 +68,7 @@ class Directory(TendenciBaseModel):
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
 
-    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
+    syndicate = models.NullBooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
     tags = TagField(blank=True)
@@ -223,14 +223,14 @@ class DirectoryPricing(models.Model):
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    show_member_pricing = models.BooleanField()
+    show_member_pricing = models.NullBooleanField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="directory_pricing_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     class Meta:
         permissions = (("view_directorypricing", "Can view directory pricing"),)
