@@ -8,7 +8,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
-from tendenci.apps.profiles.models import Profile
 from tendenci.apps.perms.object_perms import ObjectPermission
 
 
