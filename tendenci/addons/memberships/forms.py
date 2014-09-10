@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.core.base.fields import EmailVerificationField, PriceField
+from tendenci.core.base.fields import EmailVerificationField, PriceField, CountrySelectField
 from tendenci.addons.corporate_memberships.models import (
     CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
@@ -699,6 +699,7 @@ class UserForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
+    country = CountrySelectField(label=_('Country'), required=False)
     class Meta:
         model = Profile
 
