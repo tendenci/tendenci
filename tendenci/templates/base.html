@@ -94,10 +94,5 @@
 </script>
 {% endif %}
 
-{% if request.user.is_superuser and request.path == '/' %}
-    {% include 'theme_editor/walkthrough.html' %}
-{% endif %}
-
-{{ NEW_RELIC_FOOTER|safe }}
 </body>
 </html>
