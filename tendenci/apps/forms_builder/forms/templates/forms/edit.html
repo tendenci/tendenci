@@ -1,26 +1,27 @@
 {% extends "forms/base.html" %}
 {% load styled_forms %}
 {% load forms_tags %}
+{% load i18n %}
 
-{% block title %}{% firstof MODULE_FORMS_LABEL 'Forms' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Edit' %}{% endblock %}
 
 {% block body %}
 
 <div class="t">
     {% forms_nav request.user form_instance %}
 
-    <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Edit</h1>
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Edit' %}</h1>
 
     <div class="form-builder-wrap">
         <form action="{% url form_edit form_instance.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <fieldset id='pricing-options'>
-                <legend>Pricing Options</legend>
+                <legend>{% trans 'Pricing Options' %}</legend>
                 {{ formset.management_form }}
                 {{ formset|styled_form_set }}
             </fieldset>
-            <input type="submit" value="Apply Change(s)" />
+            <input type="submit" value="{% trans 'Apply Change(s)' %}" />
         </div>
         </form>
     </div>

@@ -5,7 +5,7 @@
 {% load recurring_payments_tags %}
 {% load i18n %}
 
-{% block title %}Recurring Payment View{% endblock %}
+{% block title %}{% trans 'Recurring Payment View' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -45,33 +45,33 @@
  {% rp_nav request.user rp %}
 
         {% if not is_active %}
-        <div class="not-active-alert">This account is {{ rp.status_detail }}</div>
+        <div class="not-active-alert">{% trans 'This account is' %} {{ rp.status_detail }}</div>
         {% endif %}
 
-        <h1>Recurring Payment Account </h1>
+        <h1>{% trans 'Recurring Payment Account' %} </h1>
 
         {% if is_active %}
         <div id="btn-pm-wrap">
-        <button id="btn-pm" class="btn primary">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
+        <button id="btn-pm" class="btn primary">{% if payment_profile %}{% trans 'Update Payment Info' %}{% else %}{% trans 'Add Payment Method' %}{% endif %}</button>
         {% if payment_profile %}
-        <div class="last-updated">Last updated by {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
+        <div class="last-updated">{% trans 'Last updated by' %}{{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
         {% endif %}
         </div>
         {% endif %}
 
         {% if not payment_profile %}
-        <div class="rp-warning-wrap"><span class="bs-callout-warning">NOT complete yet! <br />Please click the button at right to add a payment method.</span></div>
+        <div class="rp-warning-wrap"><span class="bs-callout-warning">{% trans 'NOT complete yet!' %} <br />{% trans 'Please click the button at right to add a payment method.' %}</span></div>
         {% endif %}
-        <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+        <div class="rp-dname">{% trans 'Name' %}: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
         {% if rp.url %}
-        <div class="rp-dname">URL: {{ rp.url|urlize }}</div>
+        <div class="rp-dname">{% trans 'URL' %}: {{ rp.url|urlize }}</div>
         {% endif %}
-        <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
+        <div class="rp-dname">{% trans 'Description' %}: <span style="color:#669900;">{{ rp.description }}</span></div>
 
         <div style="clear: right;"></div>
 
         {% if num_accounts > 1 %}
-        <div><a href="{% url recurring_payment.my_accounts rp.user.username %}">View all {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
+        <div><a href="{% url recurring_payment.my_accounts rp.user.username %}">{% trans 'View all' %} {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
           {% endif %}
 
       <div id="rpview-tabs">
@@ -87,58 +87,58 @@
 
     <div id="rpview-overview">
           <div class="basic-info">
-          Current account balance: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
+          {% trans 'Current account balance' %}: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
           <br />
           <br />
 
           {% if last_paid_payment_transaction %}
-                  The last payment (<span class="body-bold">{{ last_paid_payment_transaction.amount|format_currency }}</span>)
-                  received date:  {{ last_paid_payment_transaction.create_dt  }}.
+                  {% trans 'The last payment' %} (<span class="body-bold">{{ last_paid_payment_transaction.amount|format_currency }}</span>)
+                  {% trans 'received date' %}:  {{ last_paid_payment_transaction.create_dt  }}.
                   <br />
                   <br />
           {% endif %}
 
 
           {% if last_failed_payment_transaction %}
-                  The last payment ({{ last_paid_payment_transaction.amount|format_currency }})
-                  was failed on {{ last_failed_payment_transaction.create_dt|date  }}.
+                  {% trans 'The last payment' %} ({{ last_paid_payment_transaction.amount|format_currency }})
+                  {% trans 'was failed on' %} {{ last_failed_payment_transaction.create_dt|date  }}.
 
                   <br />
                   <br />
           {% endif %}
 
-          The number of billing cycle completed: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span>
+          {% trans 'The number of billing cycle completed' %}: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span>
           <br />
           <br />
-          The number of billing cycle failed: {{ rp.num_billing_cycle_failed }}
+          {% trans 'The number of billing cycle failed' %}: {{ rp.num_billing_cycle_failed }}
 
           </div>
 
           <div class="l0"></div>
 
-          <div class="section-header">Recurring Billing Settings</div>
+          <div class="section-header">{% trans 'Recurring Billing Settings' %}</div>
 
           <div class="rp-body">
-        <div >Payment Amount: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
+        <div >{% trans 'Payment Amount' %}: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
         {% if rp.tax_rate %}
-        <div >Tax Rate: <span class="body-bold">{{ rp.tax_rate_percentage }}</span></div>
+        <div >{% trans 'Tax Rate' %}: <span class="body-bold">{{ rp.tax_rate_percentage }}</span></div>
         {% endif %}
 
-        <div>Initial Billing Cycle Start Date: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
+        <div>{% trans 'Initial Billing Cycle Start Date' %}: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
 
-        <div>Billing Frequency: <span class="body-bold">Once every {{ rp.billing_frequency }}
+        <div>{% trans 'Billing Frequency' %}: <span class="body-bold">{% trans 'Once every' %} {{ rp.billing_frequency }}
         {{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
 
-        <div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle {{ rp.due_sore }} date</span></div>
+        <div>{% trans 'Billing Date' %}: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  {% trans 'after each billing cycle' %} {{ rp.due_sore }} date</span></div>
 
           </div>
 
           {% if rp.has_trial_period %}
               <div class="l0"></div>
-              <div class="section-header">Trial Period</div>
+              <div class="section-header">{% trans 'Trial Period' %}</div>
               <div class="rp-body">
-                  <div>Amount: <span class="body-bold">{{ rp.trial_amount|format_currency }}</span></div>
-                  <div>From {{ rp.trial_period_start_dt|date }} to {{ rp.trial_period_end_dt|date }}</div>
+                  <div>{% trans 'Amount' %}: <span class="body-bold">{{ rp.trial_amount|format_currency }}</span></div>
+                  <div>{% trans 'From' %} {{ rp.trial_period_start_dt|date }} {% trans 'to' %} {{ rp.trial_period_end_dt|date }}</div>
               </div>
 
           {% endif %}
@@ -153,12 +153,12 @@
         <table width="90%" class="tablesorter" id="rpinvoicetable">
             <thead>
             <tr>
-                <th class="iheader">Billing Cycle</th>
-                <th class="iheader">Amount</th>
-                <th class="iheader">Due Date</th>
-                <th class="iheader">Payment Received Date</th>
-                <th class="iheader">Paid?</th>
-                <th class="iheader">Invoice #</th>
+                <th class="iheader">{% trans 'Billing Cycle' %}</th>
+                <th class="iheader">{% trans 'Amount' %}</th>
+                <th class="iheader">{% trans 'Due Date' %}</th>
+                <th class="iheader">{% trans 'Payment Received Date' %}</th>
+                <th class="iheader">{% trans 'Paid?' %}</th>
+                <th class="iheader">{% trans 'Invoice' %} #</th>
             </tr>
             </thead>
             <tbody>
@@ -175,7 +175,7 @@
             </tbody>
         </table>
     {% else %}
-        No invoices available yet.
+        {% trans 'No invoices available yet.' %}
     {% endif %}
     </div>
 
@@ -185,12 +185,12 @@
         <table width="90%" class="tablesorter" id="rptranstable">
             <thead>
             <tr>
-                <th class="iheader">Date</th>
-                <th class="iheader">Invoice #</th>
-                <th class="iheader">Amount</th>
-                <th class="iheader">Result</th>
-                <th class="iheader">Reason if Failed</th>
-                <th class="iheader">View Receipt</th>
+                <th class="iheader">{% trans 'Date' %}</th>
+                <th class="iheader">{% trans 'Invoice #' %}</th>
+                <th class="iheader">{% trans 'Amount' %}</th>
+                <th class="iheader">{% trans 'Result' %}</th>
+                <th class="iheader">{% trans 'Reason if Failed' %}</th>
+                <th class="iheader">{% trans 'View Receipt' %}</th>
             </tr>
             </thead>
             <tbody>
@@ -200,16 +200,16 @@
                     <td>{{ pt.create_dt|date:"n/j/Y" }}</td>
                     <td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid  %}" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
                     <td>{{ pt.amount|format_currency }} </td>
-                    <td>{% if pt.status  %}<span class="transaction-success">Success</span>{% else %}<span class="transaction-failed">Failed</span>{% endif %}</td>
+                    <td>{% if pt.status  %}<span class="transaction-success">{% trans 'Success' %}</span>{% else %}<span class="transaction-failed">{% trans 'Failed' %}</span>{% endif %}</td>
                     <td>{% if not pt.status %}{{ pt.message_text }}{% endif %}</td>
-                    <td>{% if pt.status  %}<a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a>{% endif %}</td>
+                    <td>{% if pt.status  %}<a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="{% trans 'view receipt' %}" target="_blank">{{ pt.payment.id }}</a>{% endif %}</td>
                 </tr>
             {% endwith %}
             {% endfor %}
             </tbody>
         </table>
     {% else %}
-        No payment transactions available yet.
+        {% trans 'No payment transactions available yet.' %}
     {% endif %}
 
     </div>

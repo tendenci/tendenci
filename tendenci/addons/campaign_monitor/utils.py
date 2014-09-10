@@ -12,6 +12,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.utils.translation import ugettext_lazy as _
 
 from createsend import CreateSend, Client, Subscriber
 from createsend.createsend import BadRequest
@@ -126,14 +127,16 @@ def sync_templates(request=None):
         except BadRequest, e:
             success = False
             if request:
-                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+                msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
+                messages.add_message(request, messages.ERROR, _(msg_string))
             else:
                 print e.data.Code, e.data.Message
                 return
         except Exception, e:
             success = False
             if request:
-                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+                msg_string = 'Error: %s' % e
+                messages.add_message(request, messages.ERROR, _(msg_string))
             else:
                 print e.data.Code, e.data.Message
                 return
@@ -197,4 +200,3 @@ def update_subscription(profile, old_email):
                     subscriber.update(user.email, user.get_full_name(), [], False)
                 except BadRequest, e:
                     print e
-

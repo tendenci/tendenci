@@ -1,6 +1,7 @@
 from datetime import datetime, date, timedelta
 from django import template
 from django.http import QueryDict
+from django.utils.translation import ugettext_lazy as _
 
 
 register = template.Library()
@@ -43,5 +44,5 @@ def month_url(parser, token):
         if not kind in ['next', 'previous']:
             raise ValueError('Not next/previous')
     except ValueError:
-        raise template.TemplateSyntaxError('Usage {% month_url next|previous %}')
+        raise template.TemplateSyntaxError(_('Usage {% month_url next|previous %}'))
     return MonthUrlNode(kind)

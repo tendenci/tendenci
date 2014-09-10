@@ -1,3 +1,5 @@
+from django.utils.translation import ugettext_lazy as _
+
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
 from tendenci.addons.help_files.models import HelpFile
@@ -5,9 +7,9 @@ from tendenci.addons.help_files.models import HelpFile
 
 class HelpFileRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Create help files, tutorials and more!'
+    description = _('Create help files, tutorials and more!')
 
     event_logs = {
         'help_file':{

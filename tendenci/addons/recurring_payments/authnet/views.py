@@ -145,6 +145,7 @@ def update_payment_profile_local(request):
 
     return HttpResponse(simplejson.dumps(ret_d))
 
+
 def retrieve_token(request):
     """
     retrieve a token for a given recurring payment.
@@ -161,8 +162,3 @@ def retrieve_token(request):
                                      is_secure=request.is_secure())
 
     return HttpResponse(token)
-
-
-
-
-

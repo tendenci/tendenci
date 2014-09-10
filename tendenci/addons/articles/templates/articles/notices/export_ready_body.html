@@ -8,6 +8,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 <body bgcolor="#ffffff" text="#000000">
+    {% blocktrans %}
     <p>
         Hello {{ user.first_name }},<br /><br />
         Your articles export is ready.
@@ -23,5 +24,6 @@
         <br /><br />
     </p>
     <P>Time submitted:  {% now "D d M Y P" %}</P>
+    {% endblocktrans %}
 </body>
 </html>

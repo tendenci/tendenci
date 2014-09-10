@@ -2,7 +2,7 @@
 {% load event_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Types{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Types' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -38,7 +38,7 @@
                 <div class="field" style="margin-left:150px">{{ form.type }}</div>
                 <div class="clear"></div>
             </div>
-            <input type="Submit" value="Reassign Events" />
+            <input type="Submit" value="{% trans 'Reassign Events' %}" />
         </form>
         </div>
     </div>

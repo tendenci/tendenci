@@ -1,14 +1,14 @@
 {% extends "default.html" %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} Missing Required App{% endblock%}
+{% block title %}{{ block.super }} {% trans 'Missing Required App' %}{% endblock%}
 
 {% block body %}
 
 {% if exception_value %}
-    {{ exception_value }}
+    {% blocktrans with e=exception_value %}{{ e }}{% endblocktrans %}
 {% else %}
-    Oops, it looks like you're missing a required app.
+    {% trans 'Oops, it looks like you're missing a required app.' %}
 {% endif %}
 
 {% endblock %}

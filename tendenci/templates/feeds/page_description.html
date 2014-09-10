@@ -1,1 +1,3 @@
-{{ obj.content|safe }}
+{% load i18n %}
+
+{% blocktrans with c=obj.content|safe %}{{ c }}{% endblocktrans %}

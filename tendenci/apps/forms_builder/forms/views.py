@@ -15,6 +15,7 @@ from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from djcelery.models import TaskMeta
 
 from tendenci.core.perms.decorators import is_enabled
@@ -64,7 +65,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
 
                 formset.save()
 
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % form_instance)
+                messages.add_message(request, messages.SUCCESS, _('Successfully added %(f)s' % {'f':form_instance}))
                 return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(user=request.user)
@@ -101,7 +102,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             if not form.cleaned_data['custom_payment']:
                 form_instance.pricing_set.all().delete()
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % form_instance)
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited %(f)s' % {'f': form_instance}))
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(instance=form_instance, user=request.user)
@@ -132,7 +133,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         if form.is_valid():
             form.save()
             EventLog.objects.log()
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % form_instance)
+            messages.add_message(request, messages.SUCCESS, _('Successfully updated %(f)s' % {'f':form_instance}))
             return redirect('form_detail', form_instance.slug)
     else:
         form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
@@ -151,7 +152,7 @@ def delete(request, id, template_name="forms/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % form_instance)
+        messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(f)s' % {'f':form_instance}))
 
         form_instance.delete()
         return HttpResponseRedirect(reverse('forms'))
@@ -229,7 +230,7 @@ def copy(request, id):
             )
 
     EventLog.objects.log(instance=form_instance)
-    messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
+    messages.add_message(request, messages.SUCCESS, _('Successfully added %(n)s' % {'n': new_form}))
     return redirect('form_edit', new_form.pk)
 
 
@@ -259,7 +260,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, 'Successfully deleted entry %s' % entry)
+        messages.add_message(request, messages.SUCCESS, _('Successfully deleted entry %(e)s' % { 'e': entry}))
         entry.delete()
         return HttpResponseRedirect(reverse('forms'))
 
@@ -534,7 +535,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     rp.add_customer_profile()
 
                     # redirect to recurring payments
-                    messages.add_message(request, messages.SUCCESS, 'Successful transaction.')
+                    messages.add_message(request, messages.SUCCESS, _('Successful transaction.'))
                     return redirect('recurring_payment.view_account', rp.id, rp.guid)
                 else:
                     # create the invoice

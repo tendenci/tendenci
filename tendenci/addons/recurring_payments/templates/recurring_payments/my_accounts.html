@@ -5,7 +5,7 @@
 {% load recurring_payments_tags %}
 {% load i18n %}
 
-{% block title %}My Recurring Payment Accounts{% endblock %}
+{% block title %}{% trans 'My Recurring Payment Accounts' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -20,25 +20,25 @@
 {% rp_nav request.user %}
 <div id="t-view-accounts">
 
-    <h1>{% if is_owner %}My {% else %}{{ account_user.get_full_name }}({{ account_user.username }})'s {% endif %}Recurring Payment Accounts </h1>
+    <h1>{% if is_owner %}{% trans 'My' %} {% else %}{{ account_user.get_full_name }}({{ account_user.username }})'s {% endif %}{% trans 'Recurring Payment Accounts' %} </h1>
     {% for rp in rps %}
 
     <div id="accounts-body">
 
-        <div class="item-left account-header">Account #{{ forloop.counter }}: </div>
+        <div class="item-left account-header">{% trans 'Account #' %} {{ forloop.counter }}: </div>
 
         <div class="item-right">
-            <div class="account-header"><a href="{% url recurring_payment.view_account rp.id %}">{{ rp.description }}</a></div>
-            <div >Payment Amount: <span class="body-bold"><b>{{ rp.payment_amount|format_currency }}</b></span></div>
+            <div class="account-header"><a href="{% url recurring_payment.view_account rp.id %}">{% blocktrans with d=rp.description %}{{ d }}{% endblocktrans %}</a></div>
+            <div >{% trans 'Payment Amount' %}: <span class="body-bold"><b>{{ rp.payment_amount|format_currency }}</b></span></div>
 
-            <div>Initial Billing Cycle Start Date: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
+            <div>{% trans 'Initial Billing Cycle Start Date' %}: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
 
-            <div>Billing Frequency: <span class="body-bold">Once every {{ rp.billing_frequency }}
+            <div>{% trans 'Billing Frequency' %}: <span class="body-bold">{% trans 'Once every' %} {{ rp.billing_frequency }}
             {{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
 
-            <div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle {{ rp.due_sore }} date</span></div>
+            <div>{% trans 'Billing Date' %}: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  {% trans 'after each billing cycle' %} {{ rp.due_sore }} date</span></div>
 
-            <div>Status: <span class="{{ rp.status_detail }}">{{ rp.status_detail }}</span></div>
+            <div>{% trans 'Status' %}: <span class="{{ rp.status_detail }}">{{ rp.status_detail }}</span></div>
         </div>
 
         <div class="clear-left"></div>

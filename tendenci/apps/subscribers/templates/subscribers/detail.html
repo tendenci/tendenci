@@ -16,7 +16,7 @@
     <div class="subscriber-wrap">
         <h1>{{ grp_sub.name }} ({{ grp_sub.email }})</h1>
         <p>
-            <strong>Group</strong><br />
+            <strong>{% trans 'Group' %}</strong><br />
             <em><a href="{{ grp_sub.group.get_absolute_url }}">{{ grp_sub.group }}</a></em>
         </p>
         {% if grp_sub.subscriber %}
@@ -35,7 +35,7 @@
             {% endfor %}
             {% if grp_sub.subscriber.entry_path %}
                 <p>
-                    <strong>Entry Path</strong><br />
+                    <strong>{% trans 'Entry Path' %}</strong><br />
                     <em>{{ entry.entry_path }}</em>
                 </p>
             {% endif %}

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.pluginmanager.models import PluginApp
 from tendenci.apps.pluginmanager.forms import PluginAppForm
@@ -13,7 +14,7 @@ class PluginAppAdmin(admin.ModelAdmin):
 
     def edit_link(self, obj):
         return "Edit"
-    edit_link.short_description = 'edit'
+    edit_link.short_description = _('edit')
 
     def view_app(self, obj):
         if obj.is_enabled:
@@ -24,7 +25,7 @@ class PluginAppAdmin(admin.ModelAdmin):
         else:
             return obj.title
     view_app.allow_tags = True
-    view_app.short_description = 'view'
+    view_app.short_description = _('view')
 
     # Hide the add button since addons are auto added to the list
     def has_add_permission(self, request):

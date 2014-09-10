@@ -1,6 +1,6 @@
 {% extends "base-wide.html" %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_NAVS_LABEL "Navs" %} {% endblock %}
+{% block title %}{% firstof MODULE_NAVS_LABEL trans "Navs" %} {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

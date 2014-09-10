@@ -1,5 +1,6 @@
 {% extends "base-wide.html" %}
+{% load i18n %}
 
-{% block title %}{% firstof MODULE_EVENTS_LABEL 'Event' %} - {% endblock %}
+{% block title %}{% firstof MODULE_EVENTS_LABEL trans 'Event' %} - {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

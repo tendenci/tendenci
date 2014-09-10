@@ -4,20 +4,21 @@
 {% load photo_tags %}
 {% load box_tags %}
 {% load news_tags %}
+{% load i18n %}
 
 
 <!--temp <div class="row"> -->
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">Latest News</h3>
+      <h3 class="panel-title">{% trans 'Latest News' %}</h3>
     </div>
     <div class="panel-body">
   {% list_news as news_list limit=3 %}
   {% for news_item in news_list %}
-  <h4><a href="{{ news_item.get_absolute_url }}">{{ news_item.headline }}</a></h4>
-      <p>{{ news_item.summary|striptags|safe|truncatewords:"30" }}</p><br>
+  <h4><a href="{{ news_item.get_absolute_url }}">{% blocktrans with h=news_item.headline %}{{ h }}{% endblocktrans %}</a></h4>
+      <p>{% blocktrans with c=news_item.summary|striptags|safe|truncatewords:"30" %}{{ c }}{% endblocktrans %}</p><br>
   {% endfor %}
-  <p><a href="/news/">View More News &raquo;</a></p>
+  <p><a href="/news/">{% trans 'View More News' %} &raquo;</a></p>
     </div>
   </div>
 <!--temp </div> -->

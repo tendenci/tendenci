@@ -42,7 +42,7 @@
         {% if profile.is_member %}
             {% if profile|allow_edit_by:user %}
                 <div style="float: right;">
-                <span class="member-icon">Member ID: {{ profile.member_number }}</span>
+                <span class="member-icon">{% trans 'Member ID' %}: {{ profile.member_number }}</span>
                 </div>
             {% endif %}
 

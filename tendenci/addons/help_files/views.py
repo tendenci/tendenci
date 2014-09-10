@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
@@ -111,8 +112,8 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
                 # add all permissions and save the model
                 help_file = update_perms_and_save(request, form, help_file)
                 form.save_m2m()
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % help_file)
+                msg_string = 'Successfully added %s' % help_file
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
@@ -145,8 +146,8 @@ def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/ed
                 # add all permissions and save the model
                 help_file = update_perms_and_save(request, form, help_file)
                 form.save_m2m()
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % help_file)
+                msg_string = 'Successfully edited %s' % help_file
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
@@ -182,7 +183,7 @@ def request_new(request, template_name="help_files/request_new.html"):
                         'request': request,
                     }
                     notification.send_emails(recipients,'help_file_requested', extra_context)
-            messages.add_message(request, messages.INFO, 'Thanks for requesting a new help file!')
+            messages.add_message(request, messages.INFO, _('Thanks for requesting a new help file!'))
             EventLog.objects.log()
             return HttpResponseRedirect(reverse('help_files'))
     else:

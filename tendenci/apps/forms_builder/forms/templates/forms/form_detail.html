@@ -1,9 +1,10 @@
 {% extends form_template %}
 {% load styled_forms %}
 {% load forms_tags %}
+{% load i18n %}
 
-{% block title %}{{ form.title }}{% endblock %}
-{% block meta_description %}{{ form.intro }}{% endblock %}
+{% block title %}{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with i=form.intro %}{{ i }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,11 +20,11 @@
     {% endif %}
 
     <div class="form-wrap">
-        <h1>{{ form.title }}</h1>
+        <h1>{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}</h1>
 
         <div id="form-intro">
-            <h2>{{ form.intro_name }}</h2>
-            <div>{{ form.intro|safe|urlize }}</div>
+            <h2>{% blocktrans with i=form.intro_name %}{{ i }}{% endblocktrans %}</h2>
+            <div>{% blocktrans with i=form.intro|safe|urlize %}{{ i }}{% endblocktrans %}</div>
         </div>
 
         <div class="form-builder-wrap">
@@ -33,7 +34,7 @@
             </div>
             <div class="forms">
                 {{ form_for_form|styled_form }}
-                <input type="submit" value="Submit" />
+                <input type="submit" value="{% trans 'Submit' %}" />
             </div>
             </form>
         </div>
@@ -71,8 +72,8 @@
                 {% endif %}
             {% endwith %}
 
-            var fieldsName = $("<h2>{{ form.fields_name }}</h2>");
-            var pricingName = $("<h2>{{ form.pricing_name }}</h2>");
+            var fieldsName = $("<h2>{% blocktrans with n=form.fields_name %}{{ n }}{% endblocktrans %}</h2>");
+            var pricingName = $("<h2>{% blocktrans with n=form.pricing_name %}{{ n }}{% endblocktrans %}</h2>");
 
             var fieldsOption = $('.formforform-field:first');
             fieldsName.insertBefore(fieldsOption.parents('.form-field'));

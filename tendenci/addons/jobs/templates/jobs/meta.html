@@ -17,9 +17,9 @@
 
         {% if job.tags %}
         <div class="tags">
-            <strong>Tags: </strong>
+            <strong>{% trans 'Tags' %}: </strong>
             {% for tag in job.tags|tag_split %}
-                <a href="{% url jobs %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url jobs %}?q=tag:{{ tag }}">{% blocktrans with t=tag %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
@@ -28,7 +28,7 @@
             {% if not user.profile.is_superuser %}
             {% if user == job.creator or user == job.owner %}
             <div class="categories">
-                <strong>Owned by you</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
+                <strong>{% trans 'Owned by you' %}</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
             </div>
             {% endif %}
             {% endif %}

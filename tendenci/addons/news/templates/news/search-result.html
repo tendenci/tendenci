@@ -7,12 +7,12 @@
 
 <div class="wrap-search-item">
     <div class="search-item news-search-item">
-        <h2><a href="{{ news.get_absolute_url }}">{{ news.headline }}</a></h2>
+        <h2><a href="{{ news.get_absolute_url }}">{% blocktrans with h=news.headline %}{{ h }}{%  endblocktrans %}</a></h2>
         <div class="item-content">
             {% if news.summary %}
-                {{ news.summary|striptags|truncatewords:20|safe }}
+                {% blocktrans with s=news.summary|striptags|truncatewords:20|safe %}{{ s }}{% endblocktrans %}
             {% else %}
-                {{ news.body|striptags|truncatewords:20|safe }}
+                {% blocktrans with s=news.body|striptags|truncatewords:20|safe %}{{ s }}{% endblocktrans %}
             {% endif %}
         </div>
     </div>

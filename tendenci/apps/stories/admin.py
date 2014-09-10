@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.stories.models import Story, Rotator
@@ -14,7 +15,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
     search_fields = ('title', 'content')
     list_editable = ['title', 'tags', 'position']
     actions = ['clone_story']
-    fieldsets = [('Story Information', {
+    fieldsets = [(_('Story Information'), {
                       'fields': ['title',
                                  'content',
                                  'photo_upload',
@@ -27,13 +28,13 @@ class StoryAdmin(TendenciBaseModelAdmin):
                                  'expires'
                                  ],
                       }),
-                    ('Permissions', {'fields': ('allow_anonymous_view',)}),
-                    ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+                    (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+                    (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
                         'user_perms',
                         'member_perms',
                         'group_perms',
                     )}),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
@@ -85,14 +86,14 @@ class StoryAdmin(TendenciBaseModelAdmin):
                 alt = alt[:123]
             return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
-            return "No image"
+            return _("No image")
     image_preview.allow_tags = True
-    image_preview.short_description = 'Image'
+    image_preview.short_description = _('Image')
 
     def clone_story(self, request, queryset):
         for story in queryset:
             copy_story(story, request.user)
-    clone_story.short_description = "Clone selected stories"
+    clone_story.short_description = _("Clone selected stories")
 
 
 class StoryInline(admin.TabularInline):
@@ -113,9 +114,9 @@ class StoryInline(admin.TabularInline):
                 alt = alt[:123]
             return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
-            return "No image"
+            return _("No image")
     image_preview.allow_tags = True
-    image_preview.short_description = 'Image'
+    image_preview.short_description = _('Image')
 
 
 class RotatorAdmin(admin.ModelAdmin):

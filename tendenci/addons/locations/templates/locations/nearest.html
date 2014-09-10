@@ -5,7 +5,7 @@
 {% load search_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,7 +22,7 @@
 
     <form class="search-form" action="{% url location.nearest %}" method="get">
     <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-    <input style="vertical-align:top;" class="btn" type="submit" value="Find Nearest {% firstof MODULE_LOCATIONS_LABEL 'Location' %}" />
+    <input style="vertical-align:top;" class="btn" type="submit" value="{% trans 'Find Nearest' %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}" />
     </form>
 
     {% autopaginate locations 10 %}

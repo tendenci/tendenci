@@ -4,6 +4,7 @@ from django.template import Library, Template
 from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode
+from django.utils.translation import ugettext_lazy as _
 
 register = Library()
 
@@ -79,7 +80,7 @@ def search_result(parser, token):
     """
     bits = token.split_contents()
     if len(bits) != 2:
-        raise TemplateSyntaxError("%r tag takes one argument: the search result object" % bits[0])
+        raise TemplateSyntaxError(_("%(bit)r tag takes one argument: the search result object" % {'bit':bits[0]}))
     return SearchResultNode(bits[1])
 
 register.tag('search_result', search_result)

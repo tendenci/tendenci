@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% trans "Greetings:" %}<br /><br />
-{% blocktrans %}Corporate Membership Notices were distributed on {{ site_display_name }}.{% endblocktrans %}
+{% blocktrans with display_name=site_display_name %}Corporate Membership Notices were distributed on {{ display_name }}.{% endblocktrans %}
 <br /><br />
 {% trans "Total Notices sent:" %} {{ total_sent }}<br>
 

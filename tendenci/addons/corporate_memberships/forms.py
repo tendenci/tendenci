@@ -49,14 +49,14 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                                   required=False,
                                widget=forms.Textarea(
                                     attrs={'rows': '3'}))
-    price = PriceField(decimal_places=2, help_text="Set 0 for free membership.")
+    price = PriceField(decimal_places=2, help_text=_("Set 0 for free membership."))
     renewal_price = PriceField(decimal_places=2,
                                        required=False,
-                               help_text="Set 0 for free membership.")
+                               help_text=_("Set 0 for free membership."))
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'),
-                 ('inactive', 'Inactive'),
-                 ('admin hold', 'Admin Hold'),))
+        choices=(('active', _('Active')),
+                 ('inactive', _('Inactive')),
+                 ('admin hold', _('Admin Hold')),))
 
     class Meta:
         model = CorporateMembershipType
@@ -90,20 +90,20 @@ class CorpMembershipAppForm(TendenciBaseForm):
                     mce_attrs={
                    'storme_app_label': CorpMembershipApp._meta.app_label,
                    'storme_model': CorpMembershipApp._meta.module_name.lower()}),
-                   help_text='Will show at the top of the application form.')
+                   help_text=_('Will show at the top of the application form.'))
     confirmation_text = forms.CharField(required=False,
                  widget=TinyMCE(
                     attrs={'style': 'width:70%'},
                     mce_attrs={'storme_app_label': CorpMembershipApp._meta.app_label,
                                'storme_model': CorpMembershipApp._meta.module_name.lower()}),
-                               help_text='Will show on the confirmation page.')
+                               help_text=_('Will show on the confirmation page.'))
     notes = forms.CharField(label=_('Notes'), required=False,
                widget=forms.Textarea(attrs={'rows': '3'}),
-               help_text='Notes for editor. Will not display on the application form.')
+               help_text=_('Notes for editor. Will not display on the application form.'))
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'),
-                 ('inactive', 'Inactive'),
-                 ('admin hold', 'Admin Hold'),))
+        choices=(('active', _('Active')),
+                 ('inactive', _('Inactive')),
+                 ('admin hold', _('Admin Hold')),))
 
     class Meta:
         model = CorpMembershipApp
@@ -147,9 +147,9 @@ class CorpMembershipAppForm(TendenciBaseForm):
         if is_public and corp_memb_types:
             public_types = [not cm_type.admin_only for cm_type in corp_memb_types]
             if not any(public_types):
-                raise forms.ValidationError(
+                raise forms.ValidationError(_(
                     'Please select a public corporate membership type. \
-                    All types currently selected are admin only.')
+                    All types currently selected are admin only.'))
 
         return cleaned_data
 
@@ -375,14 +375,14 @@ class CorpProfileForm(forms.ModelForm):
 
 class CorpMembershipForm(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
-            ('active', 'Active'),
-            ('pending', 'Pending'),
-            ('paid - pending approval', 'Paid - Pending Approval'),
-            ('expired', 'Expired'),
+            ('active', _('Active')),
+            ('pending', _('Pending')),
+            ('paid - pending approval', _('Paid - Pending Approval')),
+            ('expired', _('Expired')),
                              )
     STATUS_CHOICES = (
-                      (1, 'Active'),
-                      (0, 'Inactive')
+                      (1, _('Active')),
+                      (0, _('Inactive'))
                       )
 
     class Meta:
@@ -479,8 +479,8 @@ class CorpMembershipRenewForm(forms.ModelForm):
 
         members_choices = get_indiv_memberships_choices(self.instance)
         self.fields['members'].choices = members_choices
-        self.fields['members'].label = "Select the individual members you " + \
-                                        "want to renew"
+        self.fields['members'].label = _("Select the individual members you " + \
+                                        "want to renew")
         if self.instance.corporate_membership_type.renewal_price == 0:
             self.fields['select_all_members'].initial = True
             self.fields['members'].initial = [c[0] for c in members_choices]
@@ -588,7 +588,7 @@ class CorpMembershipSearchForm(forms.Form):
 
 class CorpMembershipUploadForm(forms.ModelForm):
     KEY_CHOICES = (
-        ('company_name', 'Company Name'),
+        ('company_name', _('Company Name')),
         )
     key = forms.ChoiceField(label="Key",
                             choices=KEY_CHOICES)
@@ -610,7 +610,7 @@ class CorpMembershipUploadForm(forms.ModelForm):
         key = self.cleaned_data['key']
         upload_file = self.cleaned_data['upload_file']
         if not key:
-            raise forms.ValidationError('Please specify the key to identify duplicates')
+            raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
         file_content = upload_file.read()
         upload_file.seek(0)
@@ -618,18 +618,18 @@ class CorpMembershipUploadForm(forms.ModelForm):
         header_list = ((file_content[:header_line_index]
                             ).strip('\r')).split(',')
         if 'company_name' not in header_list:
-            raise forms.ValidationError(
-                        """
-                        'Field %s used to identify the duplicates
+            msg_string = """
+                        'Field company_name used to identify the duplicates
                         should be included in the .csv file.'
-                        """ % 'company_name')
+                        """
+            raise forms.ValidationError(_(msg_string))
         return upload_file
 
 
 class CorpExportForm(forms.Form):
     export_format = forms.ChoiceField(
                 label=_('Export Format'),
-                choices=(('csv', 'csv (Export)'),))
+                choices=(('csv', _('csv (Export)')),))
 
 
 class CreatorForm(forms.ModelForm):
@@ -647,7 +647,7 @@ class CreatorForm(forms.ModelForm):
 class CorpApproveForm(forms.Form):
 
     users = forms.ChoiceField(
-        label='Assign creator/owner to this corporate membership',
+        label=_('Assign creator/owner to this corporate membership'),
         choices=[],
         widget=forms.RadioSelect,
         )
@@ -716,7 +716,7 @@ class CorpApproveForm(forms.Form):
 class CorpMembershipRepForm(forms.ModelForm):
     user_display = forms.CharField(max_length=100,
                         required=False,
-                        help_text='type name, or username or email')
+                        help_text=_('type name, or username or email'))
 
     class Meta:
         model = CorpMembershipRep
@@ -729,10 +729,10 @@ class CorpMembershipRepForm(forms.ModelForm):
         self.corp_membership = corp_membership
         super(CorpMembershipRepForm, self).__init__(*args, **kwargs)
 
-        self.fields['user_display'].label = "Add a Representative"
+        self.fields['user_display'].label = _("Add a Representative")
         self.fields['user'].widget = forms.HiddenInput()
         self.fields['user'].error_messages['required'
-                                ] = 'Please enter a valid user.'
+                                ] = _('Please enter a valid user.')
 
     def clean_user(self):
         value = self.cleaned_data['user']
@@ -745,9 +745,6 @@ class CorpMembershipRepForm(forms.ModelForm):
         except CorpMembershipRep.DoesNotExist:
             pass
         return value
-
-
-
 
 
 class RosterSearchForm(forms.Form):
@@ -781,9 +778,9 @@ class CSVForm(forms.Form):
 
             self.fields['update_option'] = forms.CharField(
                     widget=forms.RadioSelect(
-                        choices=(('skip', 'Skip'),
-                                 ('update', 'Update Blank Fields'),
-                                ('override', 'Override All Fields'),)),
+                        choices=(('skip', _('Skip')),
+                                 ('update', _('Update Blank Fields')),
+                                ('override', _('Override All Fields')),)),
                         initial='skip',
                         label=_('Select an Option for the Existing Records:')
                     )
@@ -829,14 +826,14 @@ class CSVForm(forms.Form):
                             field_key.lower() == choice.lower():
                             self.fields[field_key].initial = choice
 
-            extra_fields = (('secret_code', 'Secret Code'),
-                            ('join_dt', 'Join Date'),
-                            ('renew_dt', 'Renew Date'),
-                            ('expiration_dt', 'Expiration Date'),
-                            ('approved', 'Approved'),
-                            ('dues_rep', 'Dues Representative'),
-                            ('status', 'Status'),
-                            ('status_detail', 'Status Detail'))
+            extra_fields = (('secret_code', _('Secret Code')),
+                            ('join_dt', _('Join Date')),
+                            ('renew_dt', _('Renew Date')),
+                            ('expiration_dt', _('Expiration Date')),
+                            ('approved', _('Approved')),
+                            ('dues_rep', _('Dues Representative')),
+                            ('status', _('Status')),
+                            ('status_detail', _('Status Detail')))
             # corp_memb_field_names = [smart_str(field.name)
             # for field in CorporateMembership._meta.fields]
             for key, label in extra_fields:
@@ -883,12 +880,12 @@ class CSVForm(forms.Form):
 
 class NoticeForm(forms.ModelForm):
     notice_time_type = NoticeTimeTypeField(
-        label='When to Send', widget=NoticeTimeTypeWidget)
+        label=_('When to Send'), widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(
         widget=TinyMCE(attrs={'style':'width:70%'},
                        mce_attrs={'storme_app_label': Notice._meta.app_label,
                                   'storme_model':Notice._meta.module_name.lower()}),
-        help_text="Click here to view available tokens")
+        help_text=_("Click here to view available tokens"))
 
     class Meta:
         model = Notice

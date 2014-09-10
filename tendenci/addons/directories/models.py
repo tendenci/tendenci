@@ -91,9 +91,9 @@ class Directory(TendenciBaseModel):
     objects = DirectoryManager()
 
     class Meta:
-        permissions = (("view_directory","Can view directory"),)
-        verbose_name = "Directory"
-        verbose_name_plural = "Directories"
+        permissions = (("view_directory",_("Can view directory")),)
+        verbose_name = _("Directory")
+        verbose_name_plural = _("Directories")
 
     def get_meta(self, name):
         """
@@ -233,7 +233,7 @@ class DirectoryPricing(models.Model):
     status = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (("view_directorypricing", "Can view directory pricing"),)
+        permissions = (("view_directorypricing", _("Can view directory pricing")),)
 
     def __unicode__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')

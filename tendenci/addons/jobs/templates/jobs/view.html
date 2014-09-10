@@ -4,9 +4,9 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ job.get_title }}{% endblock %}
-{% block meta_description %}{{ job.get_description }}{% endblock %}
-{% block meta_keywords %}{{ job.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with t=job.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=job.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=job.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ job.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -22,12 +22,12 @@
     <div class="job-wrap">
         <h1>{{ job.title }}</h1>
 
-        <h2>{% firstof MODULE_JOBS_LABEL 'Job' %} {% trans "Information" %}</h2>
+        <h2>{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans "Information" %}</h2>
 
 {% if job.description %}
         <div class="section-block">
             <div class="label">{% trans "Description" %}</div>
-            <div class="value">{{ job.description|safe }}</div>
+            <div class="value">{% blocktrans with d=job.description|safe %}{{ d }}{% endblocktrans %}</div>
         </div>
 {% endif %}
 
@@ -103,25 +103,25 @@
 {% if job.experience %}
 <div class="section-block">
     <div class="label">{% trans "Experience" %}</div>
-    <div class="value">{{ job.experience|striptags|linebreaks }}</div>
+    <div class="value">{% blocktrans with e=job.experience|striptags|linebreaks %}{{ e }}{% endblocktrans %}</div>
 </div>
 {% endif %}
 {% if job.skills %}
 <div class="section-block">
     <div class="label">{% trans "Skills" %}</div>
-    <div class="value">{{ job.skills|striptags|linebreaks }}</div>
+    <div class="value">{% blocktrans with s=job.skills|striptags|linebreaks %}{{ s }}{% endblocktrans %}</div>
 </div>
 {% endif %}
 {% if job.computer_skills %}
 <div class="section-block">
     <div class="label">{% trans "Computer Skills" %}</div>
-    <div class="value">{{ job.computer_skills|striptags|linebreaks }}</div>
+    <div class="value">{% blocktrans with c=job.computer_skills|striptags|linebreaks %}{{ c }}{% endblocktrans %}</div>
 </div>
 {% endif %}
 {% if job.education %}
 <div class="section-block">
     <div class="label">{% trans "Education Required" %}</div>
-    <div class="value">{{ job.education|striptags|linebreaks }}</div>
+    <div class="value">{% blocktrans with e=job.education|striptags|linebreaks %}{{ e }}{% endblocktrans %}</div>
 </div>
 {% endif %}
 

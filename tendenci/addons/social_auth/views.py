@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.social_auth.backends import get_backend
 from tendenci.addons.social_auth.utils import sanitize_redirect
@@ -33,7 +34,7 @@ def complete_process(request, backend):
     """Authentication complete process"""
     backend = get_backend(backend, request, request.path)
     if not backend:
-        return HttpResponseServerError('Incorrect authentication service')
+        return HttpResponseServerError(_('Incorrect authentication service'))
 
     try:
         user = backend.auth_complete()
@@ -71,7 +72,7 @@ def associate_complete(request, backend):
     """Authentication complete process"""
     backend = get_backend(backend, request, request.path)
     if not backend:
-        return HttpResponseServerError('Incorrect authentication service')
+        return HttpResponseServerError(_('Incorrect authentication service'))
     backend.auth_complete(user=request.user)
     url = request.session.pop(REDIRECT_FIELD_NAME, '') or DEFAULT_REDIRECT
     return HttpResponseRedirect(url)
@@ -93,7 +94,7 @@ def auth_process(request, backend, complete_url_name):
     redirect = reverse(complete_url_name, args=(backend,))
     backend = get_backend(backend, request, redirect)
     if not backend:
-        return HttpResponseServerError('Incorrect authentication service')
+        return HttpResponseServerError(_('Incorrect authentication service'))
     # Check and sanitize a user-defined GET/POST redirect_to field value.
     redirect = sanitize_redirect(request.get_host(),
                                  request.REQUEST.get(REDIRECT_FIELD_NAME))

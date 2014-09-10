@@ -59,7 +59,7 @@
     <input type="submit" name="submit" value="Submit" />
     </form>
 
-    <span>*** Registrants without names (if any) are listed at the bottom.</span>
+    <span>*** {% trans "Registrants without names (if any) are listed at the bottom" %}.</span>
 </div>
 
 
@@ -71,20 +71,20 @@
 <tr>
     <th width="2%">#</th>
 
-    <th width="22%" title="Name and Phone Number">{% trans "Name & Phone" %}</th>
-    <th width="30%" title="Company and Title">{% trans "Title &amp; Company" %}</th>
-    <th width="8%" title="Invoice Number">{% trans "Inv#" %}</th>
-    <th width="8%" title="Invoice Amount">{% trans "Inv$" %}</th>
-    <th width="8%" title="Registration Number">{% trans "Reg#" %}</th>
-    <th width="8%" title="Registration Amount">{% trans "Reg$" %}</th>
+    <th width="22%" title="{% trans "Name and Phone Number" %}">{% trans "Name & Phone" %}</th>
+    <th width="30%" title="{% trans "Company and Title" %}">{% trans "Title &amp; Company" %}</th>
+    <th width="8%" title="{% trans "Invoice Number" %}">{% trans "Inv#" %}</th>
+    <th width="8%" title="{% trans "Invoice Amount" %}">{% trans "Inv$" %}</th>
+    <th width="8%" title="{% trans "Registration Number" %}">{% trans "Reg#" %}</th>
+    <th width="8%" title="{% trans "Registration Amount" %}">{% trans "Reg$" %}</th>
     {% if has_addons %}
-    <th width="8%" title="Addon Amount">{% trans "Addon$" %}</th>
+    <th width="8%" title="{% trans "Addon Amount" %}">{% trans "Addon$" %}</th>
     {% endif %}
     {% if discount_available %}
-    <th width="8%" title="Discount Amount">{% trans "Discount$" %}</th>
+    <th width="8%" title="{% trans "Discount Amount" %}">{% trans "Discount$" %}</th>
     {% endif %}
-    <th width="8%" title="Balance">{% trans "Balance" %}</th>
-    <th width="6%" class='attended' title="Attendance Checkbox">Attend</th>
+    <th width="8%" title="{% trans "Balance" %}">{% trans "Balance" %}</th>
+    <th width="6%" class='attended' title="{% trans "Attendance Checkbox" %}">{% trans "Attend" %}</th>
 </tr>
 <tr class='row-spacer'><td colspan="9"></td></tr>
 {% for registrant in registrants %}
@@ -103,7 +103,7 @@
     <div title="View {{ registrant.first_name}}'s profile">
         <a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.lastname_firstname registrant.email %}</a>
         {% if registrant.memberid %}
-        <span class="member-icon" title="memberID: {{ registrant.memberid }}">Member</span>
+        <span class="member-icon" title="memberID: {{ registrant.memberid }}">{% trans "Member" %}</span>
         {% endif %}
     </div>
     {% else %}
@@ -179,7 +179,7 @@
     </td>
     <td>
    {% if registrant.email %}{{ registrant.email }}{% endif %}
-   <div>Registered as: {% firstof registrant.price_title 'Untitled' %}</div>
+   <div>{% trans "Registered as" %}: {% firstof registrant.price_title 'Untitled' %}</div>
     </td>
     <td colspan="{% if has_addons %}5{% else %}4{% endif %}">
 

@@ -65,13 +65,13 @@
     <form action="" method="post">{% csrf_token %}
     <div class="forms">
         {{ form|styled_form }}
-            <input type="submit" name="submit" value="Save and Continue Add Another" />
-            <input type="submit" name="submit" value="Save" />
+            <input type="submit" name="submit" value="{% trans 'Save and Continue Add Another' %}" />
+            <input type="submit" name="submit" value="{% trans 'Save' %}" />
     </div>
 
     </form>
 
-    <div id="toggle_members_list"><a href="javascript:;">Click to view members</a></div>
+    <div id="toggle_members_list"><a href="javascript:;">{% trans 'Click to view members' %}</a></div>
     <div id="members-list">
     {% autopaginate memberships 10 %}
     <ul style="margin: 1em 0;">

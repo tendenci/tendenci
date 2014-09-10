@@ -1,6 +1,8 @@
 # settings - jobspaymenttypes, jobsrequirespayment
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import ugettext_lazy as _
+
 from tendenci.addons.jobs.models import Job, JobPricing
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.payments.models import Payment
@@ -9,9 +11,9 @@ from tendenci.core.site_settings.utils import get_setting
 
 def get_payment_method_choices(user):
     if user.profile.is_superuser:
-        return (('paid - check', 'User paid by check'),
-                ('paid - cc', 'User paid by credit card'),
-                ('Credit Card', 'Make online payment NOW'),)
+        return (('paid - check', _('User paid by check')),
+                ('paid - cc', _('User paid by credit card')),
+                ('Credit Card', _('Make online payment NOW')),)
     else:
         job_payment_types = get_setting('module', 'jobs', 'jobspaymenttypes')
         if job_payment_types:
@@ -44,7 +46,7 @@ def job_set_inv_payment(user, job, pricing):
             inv.object_type = ContentType.objects.get(app_label=job._meta.app_label,
                                               model=job._meta.module_name)
             inv.object_id = job.id
-            inv.title = "Job Add Invoice"
+            inv.title = _("Job Add Invoice")
             inv.bill_to = job.contact_name
             first_name = ''
             last_name = ''
@@ -76,10 +78,10 @@ def job_set_inv_payment(user, job, pricing):
             inv.ship_to_phone = job.contact_phone
             inv.ship_to_fax = job.contact_fax
             inv.ship_to_email =job.contact_email
-            inv.terms = "Due on Receipt"
+            inv.terms = _("Due on Receipt")
             inv.due_date = datetime.now()
             inv.ship_date = datetime.now()
-            inv.message = 'Thank You.'
+            inv.message = _('Thank You.')
             inv.status = True
 
             inv.total = get_job_price(user, job, pricing)

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load story_tags %}
 
-{% block title %}{{ block.super }}{{ story.headline }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with h=story.headline %}{{ h }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -24,7 +24,7 @@
 
         <h2>{% trans "Upload a Story Image" %}</h2>
         <p>
-            {% trans "Title:" %} <a href="{% url stories.views.index story.pk%}">{{ story.title }}</a>
+            {% trans "Title:" %} <a href="{% url stories.views.index story.pk%}">{%blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a>
             <br />
             <br />
             {% trans "To upload image to this story, browse to your document and click Upload Image." %}

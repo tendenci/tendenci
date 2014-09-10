@@ -5,7 +5,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Most Viewed{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Most Viewed' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -32,8 +32,8 @@
     {{ form.start_dt }}
     {{ form.end_dt }}
     {{ form.file_type }}
-    <input class="btn" type="submit" value="Filter Files" />
-    <div id="results">{{ event_logs|length }} Results</div>
+    <input class="btn" type="submit" value="{% trans 'Filter Files' %}" />
+    <div id="results">{{ event_logs|length }} {% trans 'Results' %}</div>
     </form>
 
     {% autopaginate event_logs 10 %}
@@ -76,7 +76,7 @@
 
             // delete confirmation
             $('.delete').click(function(){
-                var delete_file = confirm('Permenantly delete file?');    // confirm
+                var delete_file = confirm('{% trans "Permenantly delete file?" %}');    // confirm
                 if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

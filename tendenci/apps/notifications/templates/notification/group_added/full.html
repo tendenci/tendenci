@@ -18,12 +18,12 @@
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Name:" %}</td>
-    <td width="75%"><b>{{ object.name }}</b></td>
+    <td width="75%"><b>{% blocktrans with n=object.name %}{{ n }}{% endblocktrans %}</b></td>
   </tr>
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Label:" %}</td>
-    <td width="75%"><b>{{ object.label }}</b></td>
+    <td width="75%"><b>{% blocktrans with l=object.label %}{{ l }}{% endblocktrans %}</b></td>
   </tr>
 </table>
 <p>{% blocktrans %}To view the details of this

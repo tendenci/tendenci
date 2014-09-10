@@ -37,14 +37,14 @@ class Entity(models.Model):
     creator_username = models.CharField(max_length=50)
     owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50)
-    status = models.BooleanField("Active", default=True)
+    status = models.BooleanField(_("Active"), default=True)
     status_detail = models.CharField(max_length=50, default='active')
 
     objects = EntityManager()
 
     class Meta:
-        permissions = (("view_entity","Can view entity"),)
-        verbose_name_plural = "entities"
+        permissions = (("view_entity",_("Can view entity")),)
+        verbose_name_plural = _("entities")
         ordering = ("entity_name",)
 
     def __unicode__(self):

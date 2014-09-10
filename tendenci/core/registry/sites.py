@@ -1,6 +1,7 @@
 from tendenci.core.registry.exceptions import AlreadyRegistered, NotRegistered
 from tendenci.core.registry.utils import RegisteredApps
 from tendenci.core.registry.cache import cache_reg_apps, get_reg_apps, delete_reg_apps_cache
+from django.utils.translation import ugettext_lazy as _
 
 
 class RegistrySite(object):
@@ -25,10 +26,10 @@ class RegistrySite(object):
             registry_class = CoreRegistry
 
         if not hasattr(model, '_meta'):
-            raise AttributeError('The model being registered must derive from Model.')
+            raise AttributeError(_('The model being registered must derive from Model.'))
 
         if model in self._registry:
-            raise AlreadyRegistered('The model %s is already registered' % model.__class__)
+            raise AlreadyRegistered(_('The model %(cls)s is already registered' % {'cls' :model.__class__}))
 
         self._registry[model] = registry_class(model)
 
@@ -41,7 +42,7 @@ class RegistrySite(object):
         Unregisters a model from the site.
         """
         if model not in self._registry:
-            raise NotRegistered('The model %s is not registered' % model.__class__)
+            raise NotRegistered(_('The model %(cls)s is not registered' % {'cls' :model.__class__}))
         del(self._registry[model])
 
         #reset cache of the registered apps

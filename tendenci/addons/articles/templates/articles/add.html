@@ -32,7 +32,7 @@
                     {{ categoryform|styled_form }}
                 </div>
             </fieldset>
-            <input type="submit" value="Add {% firstof MODULE_ARTICLES_LABEL 'Article' %}" />
+            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_ARTICLES_LABEL  trans 'Article' %}" />
         </div>
         </form>
     </div>

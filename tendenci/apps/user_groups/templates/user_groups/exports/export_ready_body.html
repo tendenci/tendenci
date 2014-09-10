@@ -9,20 +9,20 @@
 </head>
 <body bgcolor="#ffffff" text="#000000">
     <p>
-        Hello {{ user.first_name }},<br /><br />
-        Your group members export for "{{ group.name }}" is ready.
+        {% trans 'Hello' %} {{ user.first_name }},<br /><br />
+        {% blocktrans with g=group.name %}Your group members export for "{{ g }}" is ready.{% endblocktrans %}
         <br /><br />
 
-        To download the export file, go to: <br />
+        {% trans 'To download the export file, go to' %}: <br />
         <a href="{{ site_url }}{{ download_url }}">{{ site_url }}{{ download_url }}</a>
         <br /><br />
-        Note that the download link will expire in one week.
+        {% trans 'Note that the download link will expire in one week' %}.
         <br /><br />
-        Thanks,<br />
+        {% trans 'Thanks' %},<br />
         {{ site_display_name }}
         <br /><br />
     </p>
-    <P>Time submitted:  {% now "D d M Y P" %}</P>
+    <P>{% trans 'Time submitted' %}:  {% now "D d M Y P" %}</P>
 
 </body>
 </html>

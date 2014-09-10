@@ -1,7 +1,9 @@
+{% load i18n %}
+
 {% if render_report %}
 <tr class="inline-report">
      <td colspan="{{ inline_column_span }}">
-        <strong>{{ report.get_title }}</strong>
+        <strong>{% blocktrans with t=report.get_title %}{{ t }}{% endblocktrans %}</strong>
     </td>
 </tr>
 <tr class="inline-report">

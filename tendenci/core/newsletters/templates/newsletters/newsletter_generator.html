@@ -41,15 +41,17 @@
         <h1>{% trans 'Email Newsletters'%}</h1>
 
        {% if request.user.is_superuser %}
+       {% blocktrans %}
        <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href="{% url admin:newsletters_newslettertemplate_changelist %}">Newsletter Templates</a> see your templates and generate new email newsletters.</p>
+       {% endblocktrans %}
        {% endif %}
 
-       <h3>MailChimp</h3>
+       <h3>{% trans 'MailChimp' %}</h3>
        <div class="third-party-newletter">
           <a href="http://mailchimp.com" target="_blank">
           <img src="{{ STATIC_URL }}images/newsletters/mailchimp_logo.jpg" class="provider-logo" alt="mailchimp logo" title="mailchimp" />
            </a>
-
+           {% blocktrans %}
            <div class="tpn-detail">
                <a href="http://mailchimp.com" target="_blank">MailChimp</a> helps you to design email
                campaigns, share them on social networks, integrate with
@@ -60,16 +62,17 @@
                <a href="{% url profile.export %}">export users</a>
                to MailChimp.
            </div>
+           {% endblocktrans %}
 
        </div>
 
 
-        <h3>Constant Contact</h3>
+        <h3>{% trans 'Constant Contact' %}</h3>
        <div class="third-party-newletter">
           <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">
           <img src="{{ STATIC_URL }}images/newsletters/constant_contact_logo.jpg" class="provider-logo" alt="constant contact logo" title="constant contact" />
            </a>
-
+           {% blocktrans %}
            <div class="tpn-detail">
                <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">Constant Contact</a>'s email marketing is easy for you to connect with your customers,
                and for customers to share your message with their networks. <a href="" target="_blank">More...</a>
@@ -79,15 +82,16 @@
                <a href="{% url profile.export %}">export users</a>
                to Constant Contact.
            </div>
+           {% endblocktrans %}
 
        </div>
 
-       <h3>Campaign Monitor</h3>
+       <h3>{% trans 'Campaign Monitor' %}</h3>
        <div class="third-party-newletter">
           <a href="http://www.campaignmonitor.com/" target="_blank">
           <img src="{{ STATIC_URL }}images/newsletters/campaign_monitor_logo.jpg" class="provider-logo" alt="campaign monitor logo" title="campaign monitor" />
            </a>
-
+           {% blocktrans %}
            <div class="tpn-detail">
                <a href="http://www.campaignmonitor.com/" target="_blank">Campaign Monitor</a>
                makes it easy for your to send beautiful email newsletters and
@@ -107,6 +111,7 @@
 
 
            </div>
+           {% endblocktrans %}
        </div>
 </div>
 </div>

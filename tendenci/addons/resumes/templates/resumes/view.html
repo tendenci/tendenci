@@ -6,9 +6,9 @@
 {% load category_tags %}
 {% load i18n %}
 
-{% block title %}{{ resume.get_title }}{% endblock %}
-{% block meta_description %}{{ resume.get_description }}{% endblock %}
-{% block meta_keywords %}{{ resume.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with t=resume.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=resume.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=resume.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -23,7 +23,7 @@
 
     <div class="resume-wrap">
 
-        <h1>{{ resume.title }}</h1>
+        <h1>{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</h1>
 
         {% if resume.resume_url %}
         <div id="resume-link">
@@ -40,7 +40,7 @@
         {% if resume.description %}
                 <div class="section-block">
                     <div class="label">{% trans "Description" %}</div>
-                    <div class="value">{{ resume.description|safe }}</div>
+                    <div class="value">{% blocktrans with d=resume.description|safe %}{{ d }}{% endblocktrans %}</div>
                 </div>
         {% endif %}
 
@@ -56,28 +56,28 @@
         {% if resume.experience %}
                 <div class="section-block">
                     <div class="label">{% trans "Experience" %}</div>
-                    <div class="value">{{ resume.experience|safe|linebreaks }}</div>
+                    <div class="value">{% blocktrans with e=resume.experience|safe|linebreaks %}{{ e }}{% endblocktrans %}</div>
                 </div>
         {% endif %}
 
         {% if resume.awards %}
                 <div class="section-block">
                     <div class="label">{% trans "Awards and Certifications" %}</div>
-                    <div class="value">{{ resume.awards|safe|linebreaks }}</div>
+                    <div class="value">{% blocktrans with e=resume.awards|safe|linebreaks %}{{ e }}{% endblocktrans %}</div>
                 </div>
         {% endif %}
 
         {% if resume.skills %}
                 <div class="section-block">
                     <div class="label">{% trans "Skills" %}</div>
-                    <div class="value">{{ resume.skills|safe|linebreaks }}</div>
+                    <div class="value">{% blocktrans with s=resume.skills|safe|linebreaks %}{{ s }}{% endblocktrans %}</div>
                 </div>
         {% endif %}
 
         {% if resume.education %}
                 <div class="section-block">
                     <div class="label">{% trans "Education" %}</div>
-                    <div class="value">{{ resume.education|safe|linebreaks }}</div>
+                    <div class="value">{% blocktrans with e=resume.education|safe|linebreaks %}{{ e }}{% endblocktrans %}</div>
                     <div class="clear"></div>
                 </div>
         {% endif %}

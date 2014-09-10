@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Member Registration {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Member Registration" %} {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +18,7 @@
         <form action="{% url event.member_register event.pk %}" method="post">{% csrf_token %}
             <div class="forms">
                 {{ form|styled_form }}
-                <input type="submit" value="Register Members"/>
+                <input type="submit" value="{% trans "Register Members" %}"/>
             </div>
         </form>
     </div>

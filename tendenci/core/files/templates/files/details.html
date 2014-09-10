@@ -40,7 +40,7 @@
         <h2>{% firstof file.name "Untitled" %}</h2>
         <div class="icon"><img src="{{ file.icon }}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" /></div>
         <div class="file"><a href="{{ file.file.url }}">{{ file.file }}</a></div>
-        <div class="content">{{ file.description }}</div>
+        <div class="content">{% blocktrans with d=file.description %}{{ d }}{% endblocktrans %}</div>
         <div class="meta">
             {% with file.category_set as file_cat %}
             {% if file_cat %}

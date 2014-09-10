@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Register{% endblock %}
+{% block title %}{{ block.super }}{% trans "Register" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -87,7 +87,7 @@
                 </div>
             {% endif %}
 
-               <input type="submit" value="Register for this Event" />
+               <input type="submit" value="{% trans "Register for this Event" %}" />
         </div>
         </form>
     </div>

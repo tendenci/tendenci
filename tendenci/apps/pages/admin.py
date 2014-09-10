@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import get_notice_recipients
@@ -21,18 +22,18 @@ class PageAdmin(admin.ModelAdmin):
     search_fields = ('title','content',)
     fieldsets = (
         (None, {'fields': ('title', 'slug', 'content', 'tags', 'template')}),
-        ('Meta', {'fields': (
+        (_('Meta'), {'fields': (
             'meta_title',
             'meta_keywords',
             'meta_description',
             'meta_canonical_url')}),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',),'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
         )}),
-        ('Publishing Status', {'fields': (
+        (_('Publishing Status'), {'fields': (
             'syndicate',
             'status_detail'
         )}),
@@ -58,7 +59,7 @@ class PageAdmin(admin.ModelAdmin):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:pages_page_change', args=[obj.pk])
         return link
     edit_link.allow_tags = True
-    edit_link.short_description = 'edit'
+    edit_link.short_description = _('edit')
 
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
@@ -71,7 +72,7 @@ class PageAdmin(admin.ModelAdmin):
         )
         return link
     view_on_site.allow_tags = True
-    view_on_site.short_description = 'view'
+    view_on_site.short_description = _('view')
 
     def log_deletion(self, request, object, object_repr):
         super(PageAdmin, self).log_deletion(request, object, object_repr)

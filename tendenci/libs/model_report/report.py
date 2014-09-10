@@ -65,7 +65,7 @@ class ReportInstanceManager(object):
 
     def register(self, slug, rclass):
         if slug in self._register:
-            raise ValueError('Slug already exists: %s' % slug)
+            raise ValueError(_('Slug already exists: %(slug)s' % {'slug': slug}))
         report = rclass()
         setattr(report, 'slug', slug)
         self._register[slug] = report
@@ -146,7 +146,9 @@ class ReportAdmin(object):
                         get_attr.verbose_name = field
                         model_field = field
             except IndexError:
-                raise ValueError('The field "%s" does not exist in model "%s".' % (field, self.model._meta.module_name))
+                raise ValueError(_('The field "%(f)s" does not exist in model "%(m)s".' % {
+                    'f': field,
+                    'm': self.model._meta.module_name}))
             model_fields.append([model_field, field])
             if m2mfields:
                 model_m2m_fields.append([model_field, field, len(model_fields) - 1, m2mfields])

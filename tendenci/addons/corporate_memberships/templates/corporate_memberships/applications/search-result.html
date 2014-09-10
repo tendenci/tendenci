@@ -31,7 +31,7 @@
                 {% if corporate_membership.invoice %}
                     - {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corporate_membership.invoice.total }}
                     {% if request.user.is_superuser %}
-                    <a href="{% url invoice.view corporate_membership.invoice.id %}">View Invoice</a>
+                    <a href="{% url invoice.view corporate_membership.invoice.id %}">{% trans 'View Invoice' %}</a>
                     {% endif %}
                 {% endif %}
                 </div>
@@ -55,9 +55,9 @@
                 </div>
                 {% endif %}
                 {% if request.user.is_superuser and not corporate_membership.is_archive %}
-                    {% with corporate_membership.members_count as mcount %}
+                    {% blocktrans with corporate_membership.members_count as mcount %}
                     {{ mcount }} Member{{ mcount|pluralize }}
-                    {% endwith %}
+                    {% endblocktrans %}
                 {% endif %}
                  {% if request.user.is_superuser and corporate_membership.is_join_pending %}
                         <div class="pending-info-box">

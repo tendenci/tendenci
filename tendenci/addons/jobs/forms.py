@@ -22,26 +22,26 @@ request_duration_defaults = {
 }
 
 DURATION_CHOICES = (
-    (14, '14 Days from Activation date'),
-    (30, '30 Days from Activation date'),
-    (60, '60 Days from Activation date'),
-    (90, '90 Days from Activation date'),
-    (120, '120 Days from Activation date'),
-    (180, '180 Days from Activation date'),
-    (365, '365 Days from Activation date'),
+    (14, _('14 Days from Activation date')),
+    (30, _('30 Days from Activation date')),
+    (60, _('60 Days from Activation date')),
+    (90, _('90 Days from Activation date')),
+    (120, _('120 Days from Activation date')),
+    (180, _('180 Days from Activation date')),
+    (365, _('365 Days from Activation date')),
 )
 
 
 STATUS_DETAIL_CHOICES = (
-    ('active', 'Active'),
-    ('inactive', 'Inactive'),
-    ('pending', 'Pending'),
-    ('paid - pending approval', 'Paid - Pending Approval'),
+    ('active', _('Active')),
+    ('inactive', _('Inactive')),
+    ('pending', _('Pending')),
+    ('paid - pending approval', _('Paid - Pending Approval')),
 )
 
 STATUS_CHOICES = (
-    (1, 'Active'),
-    (0, 'Inactive'),
+    (1, _('Active')),
+    (0, _('Inactive')),
 )
 
 class JobForm(TendenciBaseForm):
@@ -74,11 +74,11 @@ class JobForm(TendenciBaseForm):
         initial=datetime.now())
 
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending'),))
+        choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending')),))
 
-    list_type = forms.ChoiceField(initial='regular', choices=(('regular', 'Regular'),
-                                                              ('premium', 'Premium'),))
-    payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
+    list_type = forms.ChoiceField(initial='regular', choices=(('regular', _('Regular')),
+                                                              ('premium', _('Premium')),))
+    payment_method = forms.CharField(error_messages={'required': _('Please select a payment method.')})
 
     contact_email = EmailVerificationField(label=_("Contact email"), required=False)
     contact_country = CountrySelectField(label=_("Contact country"), required=False)
@@ -137,7 +137,7 @@ class JobForm(TendenciBaseForm):
         )
 
         fieldsets = [
-            ('Job Information', {
+            (_('Job Information'), {
                 'fields': [
                     'title',
                     'slug',
@@ -167,12 +167,12 @@ class JobForm(TendenciBaseForm):
                 ],
                 'legend': ''
             }),
-            ('Payment', {
+            (_('Payment'), {
                 'fields': ['list_type',
                            'payment_method'],
                 'classes': ['payment_method'],
             }),
-            ('Contact', {
+            (_('Contact'), {
                 'fields': [
                     'contact_company',
                     'contact_name',
@@ -189,11 +189,11 @@ class JobForm(TendenciBaseForm):
                 ],
                 'classes': ['contact'],
             }),
-            ('Security Code', {
+            (_('Security Code'), {
                 'fields': ['captcha'],
                 'classes': ['captcha'],
             }),
-            ('Permissions', {
+            (_('Permissions'), {
                 'fields': [
                     'allow_anonymous_view',
                     'user_perms',
@@ -202,7 +202,7 @@ class JobForm(TendenciBaseForm):
                 ],
                 'classes': ['permissions'],
             }),
-            ('Administrator Only', {
+            (_('Administrator Only'), {
                 'fields': ['syndicate',
                            'status_detail'],
                 'classes': ['admin-only'],
@@ -327,7 +327,7 @@ class JobSearchForm(forms.Form):
         # setup categories
         (categories, sub_categories) = Category.objects.get_for_model(Job)
         cat_length = len(categories)
-        cat_choices = [('', 'Categories (%s)' % cat_length)]
+        cat_choices = [('', _('Categories (%(l)s)' % {'l' : cat_length}))]
         for category in categories:
             cat_choices.append((category.pk, category.name))
 
@@ -336,7 +336,7 @@ class JobSearchForm(forms.Form):
         if category:
             sub_categories = Category.objects.get_for_model(Job, category)[1]
         subcat_length = len(sub_categories)
-        subcat_choices = [('', 'Subcategories (%s)' % subcat_length)]
+        subcat_choices = [('', _('Subcategories (%(l)s)' % {'l' : subcat_length}))]
         for category in sub_categories:
             subcat_choices.append((category.pk, category.name))
 

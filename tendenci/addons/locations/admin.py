@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.locations.models import Location
@@ -10,7 +11,7 @@ class LocationAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = { }#'slug': ['title']}
     search_fields = ['title', 'description']
     fieldsets = (
-        ('Location Information', {
+        (_('Location Information'), {
             'fields': ('location_name',
 #                       'slug',
                        'description',
@@ -20,7 +21,7 @@ class LocationAdmin(TendenciBaseModelAdmin):
                        'hq',
             )
         }),
-        ('Contact', {
+        (_('Contact'), {
             'fields': ('contact',
                        'address',
                        'address2',
@@ -34,13 +35,13 @@ class LocationAdmin(TendenciBaseModelAdmin):
                        'website',
             )
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        ('Status', {'fields': (
+        (_('Status'), {'fields': (
             'status_detail',
             )}),
         )

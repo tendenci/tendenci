@@ -47,7 +47,7 @@
     <td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
     <td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Comments:" %}
     </font></td>
-    <td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ mp.comments }}</font></b></td>
+    <td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {% blocktrans with c=mp.comments %}{{ c }}{% endblocktrans %}</font></b></td>
     </tr>
     </table>
 

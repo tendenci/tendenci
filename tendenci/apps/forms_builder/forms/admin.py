@@ -78,20 +78,20 @@ class FormAdmin(TendenciBaseModelAdmin):
     fieldsets = (
         (None, {"fields": ("title", "slug", "intro", "response", "completion_url", "template")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
         )}),
-        ('Publishing Status', {'fields': (
+        (_('Publishing Status'), {'fields': (
             'status_detail',
         )}),
         (_("Payment"), {"fields": payment_fields}),
         (_("Section Positions"), {"fields": position_fields,
-                                  "description": "Please select the order in which you would like the Intro paragraph, the fields (name, date, address, etc) and the pricing options to appear on your finished form. Example: If you want the paragraph at the top, position the 'Intro' to the first position."}),
+                                  "description": _("Please select the order in which you would like the Intro paragraph, the fields (name, date, address, etc) and the pricing options to appear on your finished form. Example: If you want the paragraph at the top, position the 'Intro' to the first position.")}),
         (_("Section Names"), {"fields": section_name_fields,
-                              "description": "Label the section names to meet the needs of your form. Examples for the pricing section would be: Pricing, Costs, Ticket Prices, Additional Costs, Service Fees and text of that nature."}),
+                              "description": _("Label the section names to meet the needs of your form. Examples for the pricing section would be: Pricing, Costs, Ticket Prices, Additional Costs, Service Fees and text of that nature.")}),
     )
 
     form = FormAdminForm

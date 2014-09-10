@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response
 from django.http import Http404, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.models import Setting
@@ -45,7 +46,8 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
                 pass
 
             EventLog.objects.log()
-            messages.add_message(request, messages.SUCCESS, 'Successfully saved %s settings' % scope_category.replace('_',' ').title())
+            msg_string = 'Successfully saved %s settings' % scope_category.replace('_',' ').title()
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:
@@ -92,7 +94,8 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
                 pass
 
             EventLog.objects.log()
-            messages.add_message(request, messages.SUCCESS, 'Successfully saved %s settings' % name.replace('_',' ').title())
+            msg_string = 'Successfully saved %s settings' % name.replace('_',' ').title()
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:

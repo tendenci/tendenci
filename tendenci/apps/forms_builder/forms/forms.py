@@ -27,7 +27,7 @@ from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, Billi
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 
-template_choices = [('default.html','Default')]
+template_choices = [('default.html',_('Default'))]
 template_choices += get_template_list()
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -180,12 +180,12 @@ class FormForForm(forms.ModelForm):
             # then price is custom
 
             if not custom_price:  # custom price has a value
-                raise forms.ValidationError("Please set your price.")
+                raise forms.ValidationError(_("Please set your price."))
 
             try:  # custom price is valid amount
                 custom_price = Decimal(custom_price)
             except ValueError:
-                raise forms.ValidationError("Price must be a valid amount")
+                raise forms.ValidationError(_("Price must be a valid amount"))
 
         self.cleaned_data['custom_price'] = custom_price
         return pricing_option
@@ -232,14 +232,14 @@ class FormForForm(forms.ModelForm):
 
 class FormAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
-        choices=(('draft','Draft'),('published','Published'),))
+        choices=(('draft',_('Draft')),('published',_('Published')),))
 
     intro = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.module_name.lower()}))
 
-    response = forms.CharField(required=False, label='Confirmation Text',
+    response = forms.CharField(required=False, label=_('Confirmation Text'),
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.module_name.lower()}))
@@ -311,7 +311,7 @@ class FormForm(TendenciBaseForm):
     # from django.utils.safestring import mark_safe
 
     status_detail = forms.ChoiceField(
-        choices=(('draft','Draft'),('published','Published'),))
+        choices=(('draft',_('Draft')),('published',_('Published')),))
     custom_payment = forms.BooleanField(label=_('Take Payment'), required=False)
 
     # payment_method_choices = list(PaymentMethod.objects.values_list('id','human_name'))
@@ -350,7 +350,7 @@ class FormForm(TendenciBaseForm):
                   'allow_anonymous_view',
                   'status_detail',
                  )
-        fieldsets = [('Form Information', {
+        fieldsets = [(_('Form Information'), {
                         'fields': [ 'title',
                                     'slug',
                                     'intro',
@@ -364,7 +364,7 @@ class FormForm(TendenciBaseForm):
                                     ],
                         'legend': ''
                         }),
-                    ('Permissions', {
+                    (_('Permissions'), {
                         'fields': [ 'allow_anonymous_view',
                                     'user_perms',
                                     'member_perms',
@@ -372,11 +372,11 @@ class FormForm(TendenciBaseForm):
                                     ],
                         'classes': ['permissions'],
                         }),
-                    ('Administrator Only', {
+                    (_('Administrator Only'), {
                         'fields': ['status_detail'],
                         'classes': ['admin-only'],
                     }),
-                    ('Payments', {
+                    (_('Payments'), {
                         'fields':['custom_payment','recurring_payment','payment_methods'],
                         'legend':''
                     }),]
@@ -418,45 +418,45 @@ class FormForField(forms.ModelForm):
 
         if field_function == "GroupSubscription":
             if field_type != "BooleanField":
-                raise forms.ValidationError("This field's function requires Checkbox as a field type")
+                raise forms.ValidationError(_("This field's function requires Checkbox as a field type"))
             if not choices:
-                raise forms.ValidationError("This field's function requires at least 1 group specified.")
+                raise forms.ValidationError(_("This field's function requires at least 1 group specified."))
             else:
                 for val in choices.split(','):
                     try:
                         Group.objects.get(name=val.strip())
                     except Group.DoesNotExist:
-                        raise forms.ValidationError("The group \"%s\" does not exist" % (val))
+                        raise forms.ValidationError(_("The group \"%(val)s\" does not exist" % { 'val' : val }))
 
         if field_function == "Recipients":
             if (field_type != "MultipleChoiceField/django.forms.CheckboxSelectMultiple" and
                 field_type != "MultipleChoiceField" and
                 field_type != "BooleanField" and
                 field_type != "ChoiceField"):
-                raise forms.ValidationError("The \"Email to Recipients\" function requires Multi-select - Checkboxes "
-                                            + "or Multi-select - Select Many as field type")
+                raise forms.ValidationError(_("The \"Email to Recipients\" function requires Multi-select - Checkboxes "
+                                            + "or Multi-select - Select Many as field type"))
 
             if field_type == "BooleanField":
                 if not choices:
-                    raise forms.ValidationError("The \"Email to Recipients\" function requires at least 1 email specified.")
+                    raise forms.ValidationError(_("The \"Email to Recipients\" function requires at least 1 email specified."))
                 else:
                     for val in choices.split(','):
                         if not email_re.match(val.strip()):
-                            raise forms.ValidationError("\"%s\" is not a valid email address" % (val))
+                            raise forms.ValidationError(_("\"%(val)s\" is not a valid email address" % {'val':val}))
             else:
                 if not choices:
-                    raise forms.ValidationError("The \"Email to Recipients\" function requires at least 1 choice specified.")
+                    raise forms.ValidationError(_("The \"Email to Recipients\" function requires at least 1 choice specified."))
                 else:
                     for val in choices.split(','):
                         val = val.split(':')
                         if len(val) < 2:
-                            raise forms.ValidationError("The \"Email to Recipients\" function requires choices to be in the following format: <choice_label>:<email_address>.")
+                            raise forms.ValidationError(_("The \"Email to Recipients\" function requires choices to be in the following format: <choice_label>:<email_address>."))
                         if not email_re.match(val[1].strip()):
-                            raise forms.ValidationError("\"%s\" is not a valid email address" % (val[1]))
+                            raise forms.ValidationError(_("\"%(val)s\" is not a valid email address" % {'val':val[1]}))
 
         if field_function != None and field_function.startswith("Email"):
             if field_type != "CharField":
-                raise forms.ValidationError("This field's function requires Text as a field type")
+                raise forms.ValidationError(_("This field's function requires Text as a field type"))
 
         #unrequire the display only fields
         if field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Description":
@@ -468,13 +468,13 @@ class FormForField(forms.ModelForm):
 
 
 class PricingForm(forms.ModelForm):
-    billing_dt_select = BillingCycleField(label='When to bill',
+    billing_dt_select = BillingCycleField(label=_('When to bill'),
                                           widget=BillingDateSelectWidget,
-                                          help_text='It is used to determine the payment due date for each billing cycle')
-    billing_cycle = BillingCycleField(label='How often to bill',
+                                          help_text=_('It is used to determine the payment due date for each billing cycle'))
+    billing_cycle = BillingCycleField(label=_('How often to bill'),
                                       widget=BillingCycleWidget)
     price = PriceField(max_digits=10, decimal_places=2, required=False,
-                       help_text='Leaving this field blank allows visitors to set their own price')
+                       help_text=_('Leaving this field blank allows visitors to set their own price'))
 
     class Meta:
         model = Pricing
@@ -487,7 +487,7 @@ class PricingForm(forms.ModelForm):
                   'has_trial_period',
                   'trial_period_days',
                  )
-        fieldsets = [('Form Information', {
+        fieldsets = [(_('Form Information'), {
                         'fields': [ 'label',
                                     'price',
                                     'taxable',
@@ -497,7 +497,7 @@ class PricingForm(forms.ModelForm):
                                     ],
                         'legend': ''
                         }),
-                    ('Trial Period', {
+                    (_('Trial Period'), {
                         'fields': [ 'has_trial_period',
                                     'trial_period_days',],
                         'legend': '',

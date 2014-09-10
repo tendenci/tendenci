@@ -3,7 +3,7 @@
 {% load i18n %}
 {% theme_extends "site_base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}{% trans 'Dashboard' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -46,7 +46,7 @@ Customize the dashboard statistics that would show up in the dashboard page by e
       </tr>
     {% endfor %}
     </table>
-    <input type="submit" value="Save changes"/>
+    <input type="submit" value="{% trans 'Save changes' %}"/>
 </form>
 {% endblock %}
 

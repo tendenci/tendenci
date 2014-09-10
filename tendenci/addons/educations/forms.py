@@ -1,14 +1,15 @@
 from tendenci.addons.educations.models import Education
 from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 
 class EducationForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'),
-                 ('inactive', 'Inactive'),
-                 ('pending', 'Pending'),))
+        choices=(('active', _('Active')),
+                 ('inactive', _('Inactive')),
+                 ('pending', _('Pending')),))
 
     class Meta:
         model = Education
@@ -26,7 +27,7 @@ class EducationForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('Education Information', {
+        fieldsets = [(_('Education Information'), {
                       'fields': ['user',
                                 'school',
                                 'major',
@@ -34,7 +35,7 @@ class EducationForm(TendenciBaseForm):
                                 'graduation_dt',
                                  ],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -42,7 +43,7 @@ class EducationForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status',
                                  'status_detail'],
                       'classes': ['admin-only'],

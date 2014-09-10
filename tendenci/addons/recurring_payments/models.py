@@ -44,7 +44,7 @@ class RecurringPayment(models.Model):
     user = models.ForeignKey(User, related_name="recurring_payment_user",
                              verbose_name=_('Customer'),  null=True, on_delete=models.SET_NULL)
     url = models.CharField(_('Website URL'), max_length=100, default='', blank=True, null=True)
-    description = models.CharField(_('Description'), max_length=100, help_text="Use a short term, example: web hosting")
+    description = models.CharField(_('Description'), max_length=100, help_text=_("Use a short term, example: web hosting"))
     # with object_content_type and object_content_id, we can apply the recurring
     # payment to other modules such as memberships, jobs, etc.
     object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
@@ -69,7 +69,7 @@ class RecurringPayment(models.Model):
     tax_exempt =models.BooleanField(default=1)
     taxable = models.BooleanField(default=0)
     tax_rate = models.DecimalField(blank=True, max_digits=7, decimal_places=6, default=0,
-                                   help_text='Example: 0.0825 for 8.25%.')
+                                   help_text=_('Example: 0.0825 for 8.25%.'))
     has_trial_period = models.BooleanField(default=0)
     trial_period_start_dt = models.DateTimeField(_('Trial period start date'), blank=True, null=True)
     trial_period_end_dt = models.DateTimeField(_('Trial period end date'), blank=True, null=True)

@@ -36,7 +36,7 @@
 <br />
 <form action="{% url corpmembership.delete corp_memb.pk %}" method="post">{% csrf_token %}
 <input type="hidden" name="id" value="{{ corp_memb.pk }}" />
-<input type="submit" value="Delete Corporate" />
+<input type="submit" value="{% trans 'Delete Corporate' %}" />
 </form>
 
 {% endblock %}

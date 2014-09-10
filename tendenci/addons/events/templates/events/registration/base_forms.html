@@ -29,7 +29,7 @@
                         <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                         <div class="field">{{ field }}</div>
                         {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text }}</div>
+                        <div class="help-text">{% blocktrans with help_text=field.help_text %}{{ help_text }}{% endblocktrans %}</div>
                         {% endif %}
                     {% else %}
                         <div class="field">{{ field }}</div>

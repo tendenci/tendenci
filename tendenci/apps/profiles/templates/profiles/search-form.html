@@ -26,7 +26,7 @@
 {% endif %}
 <div class="form-field">
     {% trans 'Search By'%}: {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
-    <input type="submit" name="search" value="Search" />
+    <input type="submit" name="search" value="{% trans 'Search' %}" />
 </div>
 
 </form>

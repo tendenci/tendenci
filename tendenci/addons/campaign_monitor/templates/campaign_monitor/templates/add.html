@@ -21,7 +21,7 @@
         <form action="{% url campaign_monitor.template_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             { form|styled_form }}
-            <input type="submit" value="Add Template" />
+            <input type="submit" value="{% trans 'Add Template' %}" />
         </div>
         </form>
     </div>

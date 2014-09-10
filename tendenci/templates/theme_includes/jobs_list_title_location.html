@@ -6,8 +6,8 @@
     <h3>{% firstof TEMPLATE_JOBS_LIST_TITLE_LOCATION_TITLE "Jobs" %}</h3>
     {% list_jobs as jobs_list limit=TEMPLATE_JOBS_LIST_TITLE_LOCATION_LIMIT %}
         {% for job in jobs_list %}
-        <h4><a href="{{ job.get_absolute_url }}">{{ job.title }}</a></h4>
-        <p>{{ job.location }} {{ job.description|safe|truncatewords:"10" }}</p>
+        <h4><a href="{{ job.get_absolute_url }}">{% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}</a></h4>
+        <p>{{ job.location }} {% blocktrans with d=job.description|safe|truncatewords:"10" %}{{ d }}{% endblocktrans %}</p>
     {% empty %}
         <h4>{% if user.profile.is_superuser %}<a href="{% url job.add %}">{% trans "Add your first job" %}</a>{% else %}<a href="#">{% trans "Great New Job" %}</a>{% endif %}</h4>
         <p>{% trans "Houston: A new job opening is available..." %}</p>

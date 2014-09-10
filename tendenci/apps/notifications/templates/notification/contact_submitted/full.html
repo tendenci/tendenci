@@ -42,7 +42,7 @@
 </div>
 
 
-<div>{{ message|linebreaks }}</div>
+<div>{% blocktrans with m=message|linebreaks %}{{ m }}{% endblocktrans %}</div>
 
 <div style="margin-top:20px;">
 {% trans "View message online:" %} {{ message_link }}{{ contact.get_absolute_url }}

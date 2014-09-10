@@ -12,7 +12,7 @@ class ExportForm(forms.Form):
             'pages',
             'resumes',
         )
-        fieldsets = [('Data To Include', {
+        fieldsets = [(_('Data To Include'), {
                       'fields': ['articles',
                                  'case_studies',
                                  'events',

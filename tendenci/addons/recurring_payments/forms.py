@@ -14,10 +14,10 @@ class RecurringPaymentForm(forms.ModelForm):
     payment_amount = PriceField(decimal_places=2)
     trial_amount = PriceField(decimal_places=2, required=False)
 
-    billing_dt_select = BillingCycleField(label='When to bill',
+    billing_dt_select = BillingCycleField(label=_('When to bill'),
                                           widget=BillingDateSelectWidget,
-                                          help_text='It is used to determine the payment due date for each billing cycle')
-    billing_cycle = BillingCycleField(label='How often to bill',
+                                          help_text=_('It is used to determine the payment due date for each billing cycle'))
+    billing_cycle = BillingCycleField(label=_('How often to bill'),
                                           widget=BillingCycleWidget)
 
     class Meta:

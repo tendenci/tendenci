@@ -1,10 +1,10 @@
-
+{% load i18n %}
 {% if only_content %}
-    {{ email.content|safe }}
+    {% blocktrans with c=email.content|safe %}{{ c }}{% endblocktrans %}
 {% else %}
 <html>
 <head>
-    <title>{{ email.title }}</title>
+    <title>{% blocktrans with t=email.title %}{{ t }}{% endblocktrans %}</title>
 
 <style type="text/css">
     body {
@@ -34,23 +34,23 @@
 
 <table id="t-header">
     <tr>
-        <td>from:</td>
+        <td>{% trans 'from' %}:</td>
         <td>
             <span title="from address">{{ email.sender }}</span>
             <span title="from display">{{ email.from_display }}</span>
         </td>
     </tr>
     <tr>
-        <td>to:</td>
+        <td>{% trans 'to' %}:</td>
         <td><span title="to address">{{ email.emails }}</span></td>
     </tr>
     <tr>
-        <td>date:</td>
+        <td>{% trans 'date' %}:</td>
         <td>{{ email.date_sent }}</td>
     </tr>
     <tr>
-        <td>subject:</td>
-        <td>{{ email.title }}</td>
+        <td>{% trans 'subject' %}:</td>
+        <td>{% blocktrans with t=email.title %}{{ t }}{% endblocktrans %}</td>
     </tr>
 </table>
 

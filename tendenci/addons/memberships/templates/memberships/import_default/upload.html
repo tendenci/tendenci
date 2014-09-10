@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Import Memberships from CSV file{% endblock %}
+{% block title %}{% trans 'Import Memberships from CSV file' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -66,23 +66,31 @@
 
     {% if not memb_type_exists %}
     <div class="alert">
-        Please <a href="{% url admin:memberships_membershiptype_add %}">set up membership types</a> before proceeding.
+        {% url admin:memberships_membershiptype_add as memtype_url %}
+        {% blocktrans %}
+        Please <a href="{{ memtype_url }}">set up membership types</a> before proceeding.
+        {% endblocktrans %}
     </div>
     {% endif %}
 
     {% if not memb_app_exists %}
     <div class="alert">
-        Please <a href="{% url admin:memberships_membershipapp_add %}">set up membership applications</a> before proceeding.
+        {% url admin:memberships_membershipapp_add as app_add_url %}
+        {% blocktrans %}
+        Please <a href="{{ app_add_url }}">set up membership applications</a> before proceeding.
+        {% endblocktrans %}
     </div>
     {% endif %}
 
 
     <div id="import-instruction">
         <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
+        {% url settings.index 'module' 'memberships' as mem_settings_url %}
+        {% blocktrans %}
+        <p style="margin-top:0;">Please review your membership <a href="{{ mem_settings_url }}">privacy settings</a> before importing.</p>
+        {%% blocktrans }
 
-        <p style="margin-top:0;">Please review your membership <a href="{% url settings.index 'module' 'memberships' %}">privacy settings</a> before importing.</p>
-
-
+        {% blocktrans %}
         <h3>How to prepare the spreadsheet (.csv file)?</h3>
         <ul>
            <li>
@@ -99,8 +107,9 @@
                Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.
            </li>
         </ul>
+        {% endblocktrans %}
         <div id="fk-list-wrap">
-            <h3>List of ForeignKey Fields:</h3>
+            <h3>{% trans 'List of ForeignKey Fields' %}:</h3>
             <div id="fk-list">
                 {{ foreign_keys}}
             </div>
@@ -110,7 +119,7 @@
 
     <div class="template-download">
         <a href="{% url memberships.download_default_template %}">
-        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
         </a>
 
         <div class="link">
@@ -128,15 +137,15 @@
 
         {% if form.errors.values %}
         <div class="errors">
-        There were some problems in the form. Please review. Thanks!
+        {% trans 'There were some problems in the form. Please review. Thanks!' %}
         {% for error in form.non_field_errors %}
-            <p><a href="#">{{ error }}</a></p>
+            <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
         {% endfor %}
 
         {% for field in form %}
             {% if field.errors %}
                   {% for error in field.errors %}
-                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
                   {% endfor %}
             {% endif %}
         {% endfor %}
@@ -156,34 +165,34 @@
             {% endif %}
 
             <div class="import-field">
-                <div class="field-label">Update</div>
+                <div class="field-label">{% trans 'Update' %}</div>
                 <div>{{ form.override }}</div>
             </div>
 
             {% if form.key.errors %}
             <div class="error">
                 {% for error in form.key.errors %}
-                <p>{{ error }}</p>
+                <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
             <div class="import-field">
-                 <div class="field-label">Identify duplicates by</div>
+                 <div class="field-label">{% trans 'Identify duplicates by' %}</div>
                 <div>{{ form.key }}</div>
             </div>
 
             {% if form.upload_file.errors %}
             <div class="error">
                 {% for error in form.upload_file.errors %}
-                <p>{{ error }}</p>
+                <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
              <div class="import-field">{{ form.upload_file }}</div>
 
-            <div class="prev-btn"><input type="submit" value="Preview Import" class="btn"></div>
+            <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn"></div>
         </div>
 
      </div>
@@ -192,4 +201,3 @@
 </div>
 </div>
 {% endblock %}
-

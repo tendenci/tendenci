@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.categories.forms import CategoryForm
@@ -61,7 +62,7 @@ def edit_categories(request, app_label, model, pk, form_class=CategoryForm, temp
             # TODO: find a better way to update the index if a category has been changed
             object.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s categories.' % model)
+            messages.add_message(request, messages.SUCCESS, _('Successfully updated %(m)s categories.' % {'m':model}))
             return HttpResponseRedirect(reverse('category.update',
                                          args=[form.cleaned_data['app_label'],
                                                form.cleaned_data['model'],

@@ -15,7 +15,7 @@
 
 <div class="t">
     {% nav_nav request.user %}
-    <h1>{% firstof MODULE_NAVS_LABEL "Nav" %}  {% trans "Add" %}</h1>
+    <h1>{% firstof MODULE_NAVS_LABEL trans "Nav" %}  {% trans "Add" %}</h1>
 
     <div class="nav-wrap">
         <form action="{% url navs.add %}" method="post">{% csrf_token %}

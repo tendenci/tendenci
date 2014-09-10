@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Edit{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Edit' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +18,7 @@
 <div class="t">
     {% event_nav request.user event %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %}{% trans " Edit" %}</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %}{% trans " Edit" %}</h1>
 
     <div class="event-tabs">
         <ul class="tabs">
@@ -48,13 +48,13 @@
         <div class="forms">
             {{ multi_event_forms|styled_multi_forms }}
             {% if label != "pricing" %}
-            <input type="submit" value="Save and Continue Editing" name="_continue"/>
+            <input type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
             {% endif %}
-            <input type="submit" value="Save Changes" name="_save"/>
+            <input type="submit" value="{% trans 'Save Changes' %}" name="_save"/>
         </div>
         </form>
 
-        <div id="confirm-dialog" title="Apply changes to all events?">
+        <div id="confirm-dialog" title="{% trans 'Apply changes to all events?' %}">
             <p>{% blocktrans %}
             These changes would be applied to every event part of this series, including past events. Are you sure?
             {% endblocktrans %}</p>

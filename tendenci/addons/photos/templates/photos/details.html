@@ -9,8 +9,8 @@
 {% load base_tags %}
 {% load base_filters %}
 
-{% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
-{% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
+{% block meta_description %}{% blocktrans with d=photo.title|striptags|truncatewords:20 %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=photo.meta_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ photo.get_canonical_url }}" />{% endblock %}
 
 {% block title %}{% firstof photo.title "Untitled" %} - {% blocktrans %}Photo{% endblocktrans %}{% endblock %}
@@ -58,18 +58,18 @@
 
                     {% if photo_next_url %}
                     <a id="image-photo-next" href="{{ photo_next_url }}">
-                        <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}" /></a>
+                        <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" /></a>
                     {% else %}
-                    <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}" />
+                    <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" />
                     {% endif %}
 
                     <br />
                     <div id="photo-rights">
-                    <span property="dct:title">{{ photo.title }}</span>
+                    <span property="dct:title">{{ photo.title }}{% blocktrans with t=photo.title %}{{ t }}{% endblocktrans %}</span>
                     {% if photo.photographer %}
-                        taken by {{ photo.photographer }}
+                        {% blocktrans with p=photo.photographer %}taken by {{ p }}{% endblocktrans %}
                     {% else %}
-                    uploaded by <a href="{{ photo.creator.get_absolute_url }}"
+                    {% trans 'uploaded by' %} <a href="{{ photo.creator.get_absolute_url }}"
                         property="cc:attributionName"
                         rel="cc:attributionURL dct:creator">{% if photo.creator.get_full_name %}{{ photo.creator.get_full_name }}{% else %}{{ photo.creator.username }}{% endif %}</a>.
                     {% endif %}
@@ -86,7 +86,7 @@
             </div>
         </div>
         <div class="photo-caption-wrap">
-            {{ photo.caption|safe|urlize }}
+            {% blocktrans with c=photo.caption|safe|urlize %}{{ c }}{% endblocktrans %}
         </div>
         {% if photo.exif_data %}
 

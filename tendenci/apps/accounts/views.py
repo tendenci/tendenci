@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 from django.contrib.auth.views import password_reset as auth_password_reset
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.registration.forms import RegistrationForm
 from forms import LoginForm
 from tendenci.core.event_logs.models import EventLog
@@ -40,9 +41,9 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         elif form.user_exists:
             messages.add_message(
                 request, messages.INFO,
-                u"The password entered for account %s is invalid." % \
-                    form.user_exists.username
-            )
+                _(u"The password entered for account %(uname)s is invalid." % {
+                    'uname' : form.user_exists.username }))
+
             return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
         form = form_class()
@@ -193,11 +194,12 @@ def register(request, success_url=None,
         elif form.similar_email_found:
             messages.add_message(
                 request, messages.INFO,
-                u"An account already exists for the email %s." % \
-                    request.POST.get('email_0') or request.POST.get('email_1')
-            )
+                _(u"An account already exists for the email %(email)s." % {
+                    'email': request.POST.get('email_0') or request.POST.get('email_1')}))
+
             querystring = 'registration=True'
             return HttpResponseRedirect(reverse('auth_password_reset')+ "?%s" % querystring)
+
     else:
         allow_same_email = request.GET.get('registration_approved', False)
         form_params = {'allow_same_email' : allow_same_email }

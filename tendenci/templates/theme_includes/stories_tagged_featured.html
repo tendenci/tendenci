@@ -7,7 +7,7 @@
     {% if featured_stories %}
         {% for story in featured_stories %}
             <div class="featured-item">
-                <a href="{{ story.full_story_link }}">{{ story.title }}</a>
+                <a href="{{ story.full_story_link }}">{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a>
             </div>
         {% endfor %}
     {% else %}

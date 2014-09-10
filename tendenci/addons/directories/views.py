@@ -16,6 +16,7 @@ from django.conf import settings
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.decorators import password_required
@@ -130,7 +131,8 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
 
     pricings = DirectoryPricing.objects.filter(status=True)
     if not pricings and has_perm(request.user, 'directories.add_directorypricing'):
-        messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add %s.' % (get_setting('module', 'directories', 'label_plural'),get_setting('module', 'directories', 'label')))
+        msg_string = 'You need to add a %s Pricing before you can add %s.' % (get_setting('module', 'directories', 'label_plural'),get_setting('module', 'directories', 'label'))
+        messages.add_message(request, messages.WARNING, _(msg_string))
         return HttpResponseRedirect(reverse('directory_pricing.add'))
 
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
@@ -177,8 +179,8 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
 
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % directory)
+            msg_string = 'Successfully added %s' % directory
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
             # get admin notice recipients
@@ -246,8 +248,8 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                     directory.logo = None
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % directory)
+            msg_string = 'Successfully updated %s' % directory
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
         else:
@@ -282,8 +284,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
         if form.is_valid():
             directory.meta = form.save() # save meta
             directory.save() # save relationship
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % directory)
+            msg_string = 'Successfully updated meta for %s' % directory
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
     else:
@@ -312,8 +314,8 @@ def delete(request, id, template_name="directories/delete.html"):
 
     if has_perm(request.user,'directories.delete_directory'):
         if request.method == "POST":
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory)
+            msg_string = 'Successfully deleted %s' % directory
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
@@ -482,8 +484,8 @@ def approve(request, id, template_name="directories/approve.html"):
             except:
                 pass
 
-
-        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % directory)
+        msg_string = 'Successfully approved %s' % directory
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
@@ -539,8 +541,8 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
 
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully renewed %s' % directory)
+            msg_string = 'Successfully renewed %s' % directory
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
             # get admin notice recipients

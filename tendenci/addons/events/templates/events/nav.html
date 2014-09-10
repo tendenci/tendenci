@@ -134,7 +134,7 @@
     </li>
     {% if request.user.is_superuser %}
     {% if MODULE_DISCOUNTS_ENABLED %}
-    <li><a href="{% url discounts %}">{% firstof MODULE_DISCOUNTS_LABEL 'Discounts' %}</a></li>
+    <li><a href="{% url discounts %}">{% firstof MODULE_DISCOUNTS_LABEL trans 'Discounts' %}</a></li>
     {% endif %}
     {% else %}
     {% if MODULE_NEWS_ENABLED and MODULE_EVENTS_SHOW_NEWS_TAB %}

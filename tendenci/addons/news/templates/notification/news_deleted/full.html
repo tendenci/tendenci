@@ -16,7 +16,7 @@
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Headline:" %}</td>
-    <td width="75%"><b>{{ object.headline }}</b></td>
+    <td width="75%"><b>{% blocktrans with h=object.headline %}{{ h }}{% endblocktrans %}</b></td>
   </tr>
   <tr>
     <td width="2%">&nbsp;</td>

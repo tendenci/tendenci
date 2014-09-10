@@ -14,10 +14,10 @@
 <div class="t">
     <h1><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></h1>
 
-    <button id="d_clip_button" data-clipboard-target="clipboard_textarea" title="Click to copy.">{% trans "Copy HTML to Clipboard" %}</button>
+    <button id="d_clip_button" data-clipboard-target="clipboard_textarea" title="{% trans 'Click to copy.' %}">{% trans "Copy HTML to Clipboard" %}</button>
 
     <textarea id="clipboard_textarea" rows=30 style="width:90%; margin:20px 0;">
-    {{ content }}
+    {% blocktrans with c=content %}{{ c }}{% endblocktrans %}
     </textarea>
 
 </div>
@@ -30,7 +30,7 @@
         moviePath: "{{ STATIC_URL }}js/zeroclipboard/ZeroClipboard.swf"
     });
     clip.on('complete', function (client, args) {
-        alert("Successfully added HTML to clipboard");
+        alert("{% trans 'Successfully added HTML to clipboard' %}");
     });
 </script>
 {% endblock %}

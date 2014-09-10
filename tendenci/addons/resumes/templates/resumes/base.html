@@ -1,7 +1,8 @@
 {% extends "site_base.html" %}
+{% load i18n %}
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Resume Listings for {{SITE_GLOBAL_SITEDISPLAYNAME }} - employment opportunities and resume openings{% endblock %}
-{% block meta_description %}Resume search page for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} listing resume openings and employment opportunities{% endblock %}
-{% block meta_keywords %}Employment Search, Resume Search, {{SITE_GLOBAL_SITEDISPLAYNAME }}, Employment, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} resumes, employment opportunities, employment, hiring, staffing, agencies{% endblock %}
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% trans 'Resume Listings for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans 'employment opportunities and resume openings' %}{% endblock %}
+{% block meta_description %}{% trans 'Resume search page for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'listing resume openings and employment opportunities ' %}{% endblock %}
+{% block meta_keywords %}{% trans 'Employment Search, Resume Search,' %} {{SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans 'Employment' %}, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'resumes, employment opportunities, employment, hiring, staffing, agencies' %}{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

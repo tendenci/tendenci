@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "events/base.html" %}
 {% load styled_forms %}
 {% load event_tags %}
@@ -16,18 +17,19 @@
     <div class="form-wrap">
 
         <h1>{{ form.name }}</h1>
-
+        {% blocktrans %}
         <p class="preview-reminder">This is just the <span style="color:#000;">preview</span>.
             The real look can only be viewed through the event registration
              if it is
             associated with an event.</p>
+        {% endblocktrans %}
 
         <div class="form-builder-wrap">
             <form method="post">{% csrf_token %}
 
             <div class="forms">
                 {{ form_for_form|styled_form }}
-                <input type="submit" value="Submit" disabled="true" />
+                <input type="submit" value="{% trans 'Submit' %}" disabled="true" />
             </div>
             </form>
         </div>

@@ -1,4 +1,5 @@
 from django.template import Library, Node, TemplateSyntaxError, Variable, VariableDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 from tendenci.core.files.models import File
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 
@@ -86,11 +87,11 @@ def files_for_model(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 3" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[2] != "as":
         message = "'%s' second argument must be 'as" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     return FilesForModelNode(context_var, *args, **kwargs)
 
@@ -172,11 +173,11 @@ def list_files(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 3" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 

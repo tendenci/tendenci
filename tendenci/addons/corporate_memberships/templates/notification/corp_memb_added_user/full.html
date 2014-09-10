@@ -11,24 +11,24 @@
 
 
 {% if invoice.balance <= 0 %}
-	<p>
-	{% trans "To view the invoice, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
-	</p>
+    <p>
+    {% trans "To view the invoice, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+    </p>
 {% else %}
-	{% if object.payment_method == 'cc' or object.payment_method == 'credit card' %}
-	<p>
+    {% if object.payment_method == 'cc' or object.payment_method == 'credit card' %}
+    <p>
         {% trans "To make online credit card payment, go to the invoice view page and make online payment from there." %}
-		<a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
-		
-	</p>
-	{% endif %}
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+
+    </p>
+    {% endif %}
 {% endif %}
 
 {% if object.status_detail == "pending" %}
-	<p>
-	{% trans "You will be notified by email when your corporate membership is approved." %}<br /><br />
-	{% trans "Your corporate membership has to be approved before individuals can join under your corporate membership." %}
-	</p>
+    <p>
+    {% trans "You will be notified by email when your corporate membership is approved." %}<br /><br />
+    {% trans "Your corporate membership has to be approved before individuals can join under your corporate membership." %}
+    </p>
 {% else %}
 <p>
 {% trans "To view this corporate membership, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk  %}</a>
@@ -37,4 +37,4 @@
 
 <p>{% trans "Thanks!" %}</p>
 <p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
- <p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>
+<p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

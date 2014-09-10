@@ -1,5 +1,6 @@
 {% extends "memberships/base.html" %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{% endblock %}
 {% block meta_description %}{% endblock %}
@@ -14,13 +15,13 @@
 {% block body %}
 <div class="t">
     <h2>{{ app.name }}</h2>
-    <p>{{ app.description|safe|urlize }}</p>
+    <p>{% blocktrans with d=app.description|safe|urlize %}{{ d }}{% endblocktrans %}</p>
 
     <div class="form-builder-wrap">
         <form method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Submit &raquo;" />
+            <input type="submit" value="{% trans 'Submit' %}&raquo;" />
         </div>
         </form>
     </div>

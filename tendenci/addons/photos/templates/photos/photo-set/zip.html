@@ -25,7 +25,7 @@
 
     {% if task_id %}
         <div id="zip-wait">
-            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="loading" title="loading" ></p>
+            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="{% trans 'loading' %}" title="{% trans 'loading' %}" ></p>
         </div>
     {% endif %}
 

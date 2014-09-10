@@ -27,9 +27,9 @@
         {% for model in app.models %}
             <tr>
             {% if model.perms.change %}
-                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+                <th scope="row"><a href="{{ model.admin_url }}">{% blocktrans with m=model.name %}{{ m }}{% endblocktrans %}</a></th>
             {% else %}
-                <th scope="row">{{ model.name }}</th>
+                <th scope="row">{% blocktrans with m=model.name %}{{ m }}{% endblocktrans %}</th>
             {% endif %}
 
             {% if model.perms.add %}

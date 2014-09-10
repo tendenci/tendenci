@@ -52,7 +52,10 @@
     <div class="alert-message" data-alert="alert">
         <a class="close" href="#">×</a>
         <p>
-            This is the preview of "{{ app.name }}". Back to <a href="{% url admin:memberships_membershipapp_change app.id %}">App Edit</a>.
+            {% url admin:memberships_membershipapp_change app.id  as app_url %}
+            {% blocktrans with n=app.name  %}
+            This is the preview of "{{ n }}". Back to <a href="{{ app_url }}">App Edit</a>.
+            {% endblocktrans %}
         </p>
     </div>
 
@@ -63,7 +66,7 @@
             {% render_membership_field request field_obj user_form profile_form demographics_form membership_form %}
         {% endfor %}
 
-        <input class="btn" type="submit" name="submit" value="Submit" disabled="true" />
+        <input class="btn" type="submit" name="submit" value="{% trans 'Submit' %}" disabled="true" />
 
 </div>
 </div>

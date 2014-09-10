@@ -25,8 +25,8 @@
         </div>
 
 
-        <h2>{{ contact.headline }}</h2>
-        <div class="content">{{ contact.body|safe }}</div>
+        <h2>{% blocktrans with h=contact.headline %}{{ h }}{% endblocktrans %}</h2>
+        <div class="content">{% blocktrans with b=contact.body|safe %}{{ b }}{% endblocktrans %}</div>
         <div class="meta">
             <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date and contact.creator as contact_creator%}Submitted on {{ create_date }} by {{ contact_creator }}{% endblocktrans %}</div>
         </div>

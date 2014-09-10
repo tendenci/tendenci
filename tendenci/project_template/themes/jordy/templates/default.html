@@ -1,5 +1,6 @@
 {% load theme_tags %}
 {% theme_extends "base.html" %}
+{% load i18n %}
 
 
 <!-- Tendenci Specific Load Tags (Delete as Needed)
@@ -26,7 +27,7 @@
     <link rel="shortcut icon" href="{{ THEME_URL }}media/img/favicon.ico">
     <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
 
-    <title>Theme Template for Bootstrap</title>
+    <title>{% trans 'Theme Template for Bootstrap' %}</title>
 
     <!-- Bootstrap core CSS
 =========================================================== -->
@@ -62,7 +63,7 @@
 {% block body_ids %}sub{% endblock body_ids %}
 {% block body_classes %}sub{% endblock body_classes %}
 {% block html_body %}
-    <a class="sr-only" href="#content">Skip to main content</a>
+    <a class="sr-only" href="#content">{% trans 'Skip to main content' %}</a>
 
 
 

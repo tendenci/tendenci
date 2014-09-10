@@ -92,11 +92,11 @@ SIZE_CHOICES = (
                 ('l', _('Large')),
                 )
 NOTICE_TYPES = (
-    ('approve_join', 'Approval Date'),
-    ('disapprove_join', 'Disapproval Date'),
-    ('approve_renewal', 'Renewal Approval Date'),
-    ('disapprove_renewal', 'Renewal Disapproval Date'),
-    ('expiration', 'Expiration Date'),
+    ('approve_join', _('Approval Date')),
+    ('disapprove_join', _('Disapproval Date')),
+    ('approve_renewal', _('Renewal Approval Date')),
+    ('disapprove_renewal', _('Renewal Disapproval Date')),
+    ('expiration', _('Expiration Date')),
 )
 
 
@@ -106,11 +106,11 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     description = models.CharField(_('Description'), max_length=500)
     price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2,
                                 blank=True, default=0,
-                                help_text="Set 0 for free membership.")
+                                help_text=_("Set 0 for free membership."))
     renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15,
                                         decimal_places=2,
                                         blank=True, default=0, null=True,
-                                        help_text="Set 0 for free membership.")
+                                        help_text=_("Set 0 for free membership."))
     membership_type = models.ForeignKey(MembershipType,
         help_text=_("Bind individual memberships to this membership type."))
     admin_only = models.BooleanField(_('Admin Only'), default=0)
@@ -1284,16 +1284,16 @@ class CorpMembershipApp(TendenciBaseModel):
     authentication_method = models.CharField(_("Authentication Method"),
                                              choices=AUTH_METHOD_CHOICES,
                                     default='admin', max_length=50,
-                                    help_text='Define a method for ' + \
+                                    help_text=_('Define a method for ' + \
                                     'individuals to be bound to their' + \
-                                    ' corporate memberships when signing up.')
+                                    ' corporate memberships when signing up.'))
     description = tinymce_models.HTMLField(_("Description"),
                                     blank=True, null=True,
-                                   help_text='Will display at the top of ' + \
-                                   'the application form.')
+                                   help_text=_('Will display at the top of ' + \
+                                   'the application form.'))
     notes = models.TextField(_("Notes"), blank=True, null=True,
-                                   help_text='Notes for editor. ' + \
-                                   'Will not display on the application form.')
+                                   help_text=_('Notes for editor. ' + \
+                                   'Will not display on the application form.'))
     confirmation_text = models.TextField(_("Confirmation Text"),
                                          blank=True, null=True)
 
@@ -1306,7 +1306,7 @@ class CorpMembershipApp(TendenciBaseModel):
                                              verbose_name="Payment Methods")
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
-                                   help_text='Example: 0.0825 for 8.25%.')
+                                   help_text=_('Example: 0.0825 for 8.25%.'))
 
     objects = CorpMembershipAppManager()
 
@@ -1389,7 +1389,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                                  max_length=2000, blank=True, default='')
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
                     null=True,
-                    help_text="Comma separated options where applicable")
+                    help_text=_("Comma separated options where applicable"))
     # checkbox/radiobutton
     field_layout = models.CharField(_("Choice Field Layout"),
                                     choices=FIELD_LAYOUT_CHOICES,
@@ -1553,9 +1553,9 @@ class IndivMembershipRenewEntry(models.Model):
     the corporate membership.
     """
     STATUS_DETAIL_CHOICES = (
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('disapproved', 'Disapproved'),
+        ('pending', _('Pending')),
+        ('approved', _('Approved')),
+        ('disapproved', _('Disapproved')),
     )
     corp_membership = models.ForeignKey("CorpMembership")
     membership = models.ForeignKey(MembershipDefault)
@@ -1566,16 +1566,16 @@ class IndivMembershipRenewEntry(models.Model):
 
 class CorpMembershipImport(models.Model):
     OVERRIDE_CHOICES = (
-        (0, 'Blank Fields'),
-        (1, 'All Fields (override)'),
+        (0, _('Blank Fields')),
+        (1, _('All Fields (override)')),
     )
 
     STATUS_CHOICES = (
-        ('not_started', 'Not Started'),
-        ('preprocessing', 'Pre_processing'),
-        ('preprocess_done', 'Pre_process Done'),
-        ('processing', 'Processing'),
-        ('completed', 'Completed'),
+        ('not_started', _('Not Started')),
+        ('preprocessing', _('Pre_processing')),
+        ('preprocess_done', _('Pre_process Done')),
+        ('processing', _('Processing')),
+        ('completed', _('Completed')),
     )
 
     UPLOAD_DIR = "imports/corpmemberships/%s" % uuid.uuid1().get_hex()[:8]
@@ -1642,9 +1642,9 @@ class Notice(models.Model):
     notice_name = models.CharField(_("Name"), max_length=250)
     num_days = models.IntegerField(default=0)
     notice_time = models.CharField(_("Notice Time"), max_length=20,
-                                   choices=(('before', 'Before'),
-                                            ('after', 'After'),
-                                            ('attimeof', 'At Time Of')))
+                                   choices=(('before', _('Before')),
+                                            ('after', _('After')),
+                                            ('attimeof', _('At Time Of'))))
     notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
     system_generated = models.BooleanField(_("System Generated"), default=0)
     corporate_membership_type = models.ForeignKey(
@@ -1676,7 +1676,7 @@ class Notice(models.Model):
         null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(
-        choices=(('active', 'Active'), ('admin_hold', 'Admin Hold')),
+        choices=(('active', _('Active')), ('admin_hold', _('Admin Hold'))),
         default='active', max_length=50)
     status = models.BooleanField(default=True)
 

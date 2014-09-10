@@ -4,7 +4,7 @@
 {% load theme_editor_tags %}
 {% load theme_editor_filters %}
 
-{% block title %}{{ block.super }}Theme Picker{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Theme Picker' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,7 +15,7 @@
 <h1>{% trans "Theme Picker" %}</h1>
 
 <form method="POST" action="{% url theme_editor.get_themes %}">{% csrf_token %}
-    <input style="padding:3px;" type="submit" value="Get more themes"/>
+    <input style="padding:3px;" type="submit" value="{% trans 'Get more themes' %}"/>
 </form>
 
 {% for theme in themes %}

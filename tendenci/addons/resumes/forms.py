@@ -28,20 +28,20 @@ class ResumeForm(TendenciBaseForm):
 
     resume_url = forms.CharField(
         label=_('Resume URL'),
-        help_text="Link to an external resume (eg. Google Docs)",
+        help_text=_("Link to an external resume (eg. Google Docs)"),
         required=False
     )
 
     is_agency = forms.BooleanField(
         label=_('Agency'),
-        help_text="Are you an agency posting this resume?",
+        help_text=_("Are you an agency posting this resume?"),
         required=False
     )
 
     requested_duration = forms.ChoiceField(
         label=_('Duration'),
-        choices=(('30','30 Days'),('60','60 Days'),('90','90 Days'),),
-        help_text="Amount of days you would like your resume to stay up.",
+        choices=(('30',_('30 Days')),('60',_('60 Days')),('90',_('90 Days')),),
+        help_text=_("Amount of days you would like your resume to stay up."),
         required=False
     )
 
@@ -57,7 +57,7 @@ class ResumeForm(TendenciBaseForm):
         initial=(datetime.now() + timedelta(days=30)))
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     class Meta:
         model = Resume
@@ -97,7 +97,7 @@ class ResumeForm(TendenciBaseForm):
         'status_detail',
        )
 
-        fieldsets = [('Resume Information', {
+        fieldsets = [(_('Resume Information'), {
                       'fields': ['title',
                                  'slug',
                                  'description',
@@ -114,7 +114,7 @@ class ResumeForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Contact', {
+                      (_('Contact'), {
                       'fields': ['contact_name',
                                  'contact_address',
                                  'contact_address2',
@@ -130,12 +130,12 @@ class ResumeForm(TendenciBaseForm):
                                  ],
                         'classes': ['contact'],
                       }),
-                     ('Security Code', {
+                     (_('Security Code'), {
                       'fields': ['captcha',
                                  ],
                         'classes': ['captcha'],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -143,7 +143,7 @@ class ResumeForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['activation_dt',
                                  'expiration_dt',
                                  'syndicate',
@@ -197,5 +197,5 @@ class ResumeForm(TendenciBaseForm):
             extension = splitext(resume.name)[1]
             # check the extension
             if extension.lower() not in ALLOWED_FILE_EXT:
-                raise forms.ValidationError('The file must be of doc, docx, pdf, or rtf format.')
+                raise forms.ValidationError(_('The file must be of doc, docx, pdf, or rtf format.'))
         return resume

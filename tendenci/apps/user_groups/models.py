@@ -20,9 +20,9 @@ class Group(TendenciBaseModel):
     dashboard_url = models.CharField(_('Dashboard URL'), max_length=255, default='', blank=True,
                                      help_text=_('Enable Group Dashboard Redirect in site settings to use this feature.'))
     type = models.CharField(max_length=75, blank=True, choices=(
-                                         ('distribution', 'Distribution'),
-                                         ('security', 'Security'),
-                                         ('system_generated', 'System Generated')
+                                         ('distribution', _('Distribution')),
+                                         ('security', _('Security')),
+                                         ('system_generated', _('System Generated'))
                                             ), default='distribution')
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
     show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
@@ -42,9 +42,9 @@ class Group(TendenciBaseModel):
     objects = GroupManager()
 
     class Meta:
-        permissions = (("view_group", "Can view group"),)
-        verbose_name = "Group"
-        verbose_name_plural = "Groups"
+        permissions = (("view_group", _("Can view group")),)
+        verbose_name = _("Group")
+        verbose_name_plural = _("Groups")
         ordering = ("name",)
 
     def __unicode__(self):
@@ -159,8 +159,8 @@ class GroupMembership(models.Model):
 
     class Meta:
         unique_together = ('group', 'member',)
-        verbose_name = "Group Membership"
-        verbose_name_plural = "Group Memberships"
+        verbose_name = _("Group Membership")
+        verbose_name_plural = _("Group Memberships")
 
     @classmethod
     def add_to_group(cls, **kwargs):

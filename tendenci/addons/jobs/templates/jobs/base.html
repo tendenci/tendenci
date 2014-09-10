@@ -1,7 +1,8 @@
 {% extends "site_base.html" %}
+{% load i18n %}
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_JOBS_LABEL 'Job' %} Listings for {{SITE_GLOBAL_SITEDISPLAYNAME }} - employment opportunities and {% firstof MODULE_JOBS_LABEL 'Job' %} openings{% endblock %}
-{% block meta_description %}{% firstof MODULE_JOBS_LABEL 'Job' %} search page for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} listing {% firstof MODULE_JOBS_LABEL 'Job' %} openings and employment opportunities{% endblock %}
-{% block meta_keywords %}Employment Search, {% firstof MODULE_JOBS_LABEL 'Job' %} Search, {{SITE_GLOBAL_SITEDISPLAYNAME }}, Employment, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}, employment opportunities, employment, hiring, staffing, agencies{% endblock %}
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_JOBS_LABEL 'Job' %} {% trans 'Listings for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans 'employment opportunities and' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'openings' %}{% endblock %}
+{% block meta_description %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'search page for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'in' %} {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'listing' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'openings and employment opportunities' %}{% endblock %}
+{% block meta_keywords %}{% trans 'Employment Search' %}, {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'Search' %}, {{SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans 'Employment' %}, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}, {% trans 'employment opportunities, employment, hiring, staffing, agencies' %}{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

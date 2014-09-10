@@ -3,21 +3,21 @@
 {% load forms_tags %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_FORMS_LABEL 'Forms' %} Fields Update{% endblock %}
+{% block title %}{% firstof MODULE_FORMS_LABEL 'Forms' %} {% trans 'Fields Update' %}{% endblock %}
 
 {% block body %}
 
 <div class="t">
     {% forms_nav request.user form_instance %}
 
-    <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} {% trans "Fields Update" %}</h1>
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans "Fields Update" %}</h1>
 
     <div class="form-builder-wrap">
         <form action="{% url form_field_update form_instance.pk %}" method="post">{% csrf_token %}
         {{ form.management_form }}
         <div class="forms">
             {{ form|styled_form_set }}
-            <input type="submit" value="Update Field(s)" />
+            <input type="submit" value="{% trans 'Update Field(s)' %}" />
         </div>
         </form>
     </div>

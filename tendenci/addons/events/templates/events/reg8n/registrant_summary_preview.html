@@ -4,7 +4,7 @@
     <ul>
         {% for field in registrant %}
             {% if field.name == "email" %}
-                <li>Email:  {{ field.value.0 }}</li>
+                <li>{% trans "Email" %}:  {{ field.value.0 }}</li>
             {% elif field.name in flat_ignore_fields %}
 
             {% elif field.name == "pricing" %}
@@ -15,7 +15,7 @@
                 {% endif %}
             {% elif field.name == "override_price" %}
                 {% if registrant.cleaned_data.override %}
-                    <li>Price:  {{ currency_symbol }}{{ field.value }}</li>
+                    <li>{% trans "Price" %}:  {{ currency_symbol }}{{ field.value }}</li>
                 {% endif %}
             {% else %}
                 <li>{{ field.label }}:  {{ field.value|field_to_string }}</li>

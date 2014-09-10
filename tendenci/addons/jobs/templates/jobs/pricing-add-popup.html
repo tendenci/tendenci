@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US">
 
 <head profile="http://gmpg.org/xfn/11">{{ NEW_RELIC_HEADER|safe }}
-    <title>{% blocktrans %}Add a New Price: {% endblocktrans %}{% firstof MODULE_JOBS_LABEL 'Job' %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
+    <title>{% blocktrans %}Add a New Price: {% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
     <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 </head>
 
@@ -102,7 +102,7 @@
         </div>
 
         <div id="pricing-submit">
-            <input type="submit" value="Submit" />
+            <input type="submit" value="{% trasn 'Submit' %}" />
         </div>
         <div class="clear"></div>
     </form>

@@ -15,7 +15,7 @@
 {% block body %}
 <div class="t">
     <h2>{{ app.name }}</h2>
-    <p>{{ app.description|safe|urlize }}</p>
+    <p>{% blocktrans with d=app.description|safe|urlize %}{{ d }}{% endblocktrans %}</p>
 
     {% if pending_entries %}
         <!-- <div class="pending-entries">

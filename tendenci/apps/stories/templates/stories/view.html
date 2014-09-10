@@ -5,7 +5,7 @@
 {% load base_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}{{ story.title }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,12 +18,12 @@
     <div class="story-wrap">
         {% if story.image %}
         <div class="photo">
-            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{{ story.title|truncatechars:123 }}" alt="{{ story.title|truncatechars:123 }}" />
+            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" alt="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" />
         </div>
         {% endif %}
         <div class="content">
-        <h1>{{ story.title }}</h1>
-        {{ story.content|safe }}
+        <h1>{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</h1>
+        {% blocktrans with c=story.content|safe %}{{ c }}{% endblocktrans %}
         </div>
         {% include "stories/meta.html" %}
     </div>

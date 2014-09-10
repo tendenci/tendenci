@@ -9,10 +9,10 @@
   <table class="report">
     <tr>
       <td></td>
-      <td>Since Date</td>
-      <td>New</td>
-      <td>Renewal</td>
-      <td>Totals</td>
+      <td>{% trans 'Since Date' %}</td>
+      <td>{% trans 'New' %}</td>
+      <td>{% trans 'Renewal' %}</td>
+      <td>{% trans 'Totals' %}</td>
     </tr>
   {% for stat in stats|slice:":5" reversed %}
     <tr>
@@ -21,7 +21,7 @@
       <td>{{ stat.new }}</td>
       <td>{{ stat.renewing }}</td>
       <td>{{ stat.new|add:stat.renewing }}</td>
-    </tr>  
+    </tr>
   {% endfor %}
   </table>
 
@@ -57,5 +57,5 @@
     }
   </script>
 </div>
- 
+
 {% endblock content %}

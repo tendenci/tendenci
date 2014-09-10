@@ -512,7 +512,7 @@ class PhotoSize(models.Model):
     def save(self, *args, **kwargs):
         if self.crop is True:
             if self.width == 0 or self.height == 0:
-                raise ValueError("PhotoSize width and/or height can not be zero if crop=True.")
+                raise ValueError(_("PhotoSize width and/or height can not be zero if crop=True."))
         super(PhotoSize, self).save(*args, **kwargs)
         PhotoSizeCache().reset()
         self.clear_cache()
@@ -557,7 +557,7 @@ class PhotoSet(TendenciBaseModel):
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
-    tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
+    tags = TagField(blank=True, help_text=_("Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3"))
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     perms = generic.GenericRelation(ObjectPermission,
@@ -567,7 +567,7 @@ class PhotoSet(TendenciBaseModel):
     class Meta:
         verbose_name = _('Photo Album')
         verbose_name_plural = _('Photo Album')
-        permissions = (("view_photoset", "Can view photoset"),)
+        permissions = (("view_photoset", _("Can view photoset")),)
 
     objects = PhotoSetManager()
 
@@ -702,7 +702,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True, on_delete=models.SET_NULL)
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
-    tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
+    tags = TagField(blank=True, help_text=_("Comma delimited (eg. mickey, donald, goofy)"))
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
     exif_data = DictField(_('exif'), null=True)
@@ -1000,7 +1000,7 @@ class Pool(models.Model):
 
     class Meta:
         # Enforce unique associations per object
-        permissions = (("view_photopool","Can view photopool"),)
+        permissions = (("view_photopool",_("Can view photopool")),)
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')

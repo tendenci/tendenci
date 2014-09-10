@@ -1,4 +1,5 @@
 {% extends "pages/base.html" %}
+{% load i18n %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,15 +23,15 @@
     <div class="page-wrap">
         {% if page.header_image %}
         <div class="page-header">
-            <img src="{{ page.get_header_image_url }}" alt="Page Header" title="Page Header" />
+            <img src="{{ page.get_header_image_url }}" alt="{% trans 'Page Header' %}" title="{% trans 'Page Header' %}" />
         </div>
         {% endif %}
 
       {% if page.title %}
-          <h1>{{ page.title }}</h1>
+          <h1>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h1>
       {% endif %}
 
-        <div class="content">{{ page.content|safe }}</div>
+        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
 
         <!-- Insert custom template code here -->
 

@@ -11,6 +11,7 @@ from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.core.site_settings.utils import get_setting
@@ -198,7 +199,7 @@ def event_list(parser, token):
 
     if len(bits) != 4 and len(bits) != 5 and len(bits) != 6:
         message = '%s tag requires 4 or 5 or 6 arguments' % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if len(bits) == 4:
         day = bits[1]
@@ -252,7 +253,7 @@ def is_registered_user(parser, token):
 
     if len(bits) != 5:
         message = '%s tag requires 5 arguments' % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     user = bits[1]
     event = bits[2]
@@ -470,11 +471,11 @@ def list_events(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 3" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 

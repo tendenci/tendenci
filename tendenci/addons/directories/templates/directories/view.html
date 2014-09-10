@@ -4,9 +4,9 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ directory.get_title }}{% endblock %}
-{% block meta_description %}{{ directory.get_description }}{% endblock %}
-{% block meta_keywords %}{{ directory.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with title=directory.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=directory.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=directory.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ directory.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -20,17 +20,17 @@
 
     <div class="directory-wrap">
 
-        <h2>{{ directory.headline }}</h2>
+        <h2>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h2>
 
         <div class="content">
 
             {% if directory.logo %}
-                <div class="directory-image"><img src="{{ directory.get_logo_url }}" alt="{{ directory.headline|truncatechars:123 }}" title="{{ directory.headline|truncatechars:123 }}" /></div>
+                <div class="directory-image"><img src="{{ directory.get_logo_url }}" alt="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}" title="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}" /></div>
             {% endif %}
-            <p>{{ directory.body|safe }}</p>
+            <p>{% blocktrans with body=directory.body|safe %}{{ body }}{% endblocktrans %}</p>
 
             {% if directory.source %}
-            <p>{% trans "Source: " %}{{ directory.source|safe }}</p>
+            <p>{% trans "Source: " %}{% blocktrans with source=directory.source|safe %}{{ source }}{% endblocktrans %}</p>
             {% endif %}
 
             <div class="contact">

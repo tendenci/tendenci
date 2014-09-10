@@ -10,9 +10,9 @@
 <body bgcolor="#ffffff" text="#000000">
 <p>{% blocktrans with request.user.get_full_name as author %}Your blog has been imported to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Articles module. Thank you for waiting.{% endblocktrans %}.</p>
 
-<p>To view the blog go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}/articles">{{ SITE_GLOBAL_SITEURL }}/articles</a></b><br>
+<p>{% trans 'To view the blog go to' %}: <b><a href="{{ SITE_GLOBAL_SITEURL }}/articles">{{ SITE_GLOBAL_SITEURL }}/articles</a></b><br>
 
-<P>Time submitted:  {% now "D d M Y P" %}</P>
+<P>{% trans 'Time submitted' %}:  {% now "D d M Y P" %}</P>
 
 </body>
 </html>

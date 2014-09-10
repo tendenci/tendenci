@@ -9,6 +9,7 @@ from django.template.loader import (BaseLoader, get_template_from_string,
     find_template_loader, make_origin)
 from django.utils._os import safe_join
 from django.core.cache import cache
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
 from tendenci.core.theme.utils import get_theme_root
@@ -124,7 +125,7 @@ class Loader(BaseLoader):
             error_msg = "Tried %s" % tried
         else:
             error_msg = "Your TEMPLATE_DIRS setting is empty. Change it to point to at least one template directory."
-        raise TemplateDoesNotExist(error_msg)
+        raise TemplateDoesNotExist(_(error_msg))
     load_template_source.is_usable = True
 
 _loader = Loader()

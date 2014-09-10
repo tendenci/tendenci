@@ -1,7 +1,8 @@
 {% extends "site_base.html" %}
+{% load i18n %}
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} for  {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
-{% block meta_description %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} and White Papers for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
-{% block meta_keywords %}{% firstof MODULE_ARTICLES_LABEL 'Articles' %},  {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
+{% block title %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %} {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}for {{ display_name }} in {{ location }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }} {% endblocktrans %}: {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %} {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}and White Papers for {{ display_name }} in {{ location }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}, {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %}{{ location }}, {{ display_name }}, white papers, {{ keys }}{% endblocktrans %}{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

@@ -45,7 +45,9 @@
         {% if event.is_recurring_event %}
             <div class="event-recurring"></div>
         {% endif %}
-        <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
+        <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">
+        {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}
+        </span></a>
         </h3>
         {% if event.place %}
         <div class="place" itemprop="location">{{ event.place }}</div>
@@ -57,7 +59,7 @@
         </div>
 
         <div class="description" itemprop="description">
-            {{ event.description|striptags|safe|truncatewords:40 }}
+            {% blocktrans with desc=event.description|striptags|safe|truncatewords:40 %}{{ desc }}{% endblocktrans %}
         </div>
 
         {% if event.registration_configuration.enabled %}

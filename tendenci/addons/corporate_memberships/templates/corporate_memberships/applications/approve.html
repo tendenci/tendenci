@@ -23,7 +23,7 @@
      <h1>{% trans "Corporate Membership Submission" %}</h1>
      {% if corporate_membership.is_pending %}
      <div class="alert alert-warning" role"alert" align="center">
-        <strong>Pending</strong>
+        <strong>{% trans 'Pending' %}</strong>
      </div>
      {% endif %}
 
@@ -138,7 +138,7 @@
    {% else %}
       {% if corporate_membership.anonymous_creator  %}
       <dl class="">
-      <dt>This corporate membership was submitted by: </dt>
+      <dt>{% blocktrans %}This corporate membership was submitted by: {% endblocktrans %}</dt>
         <dd>
         {{ corporate_membership.anonymous_creator.first_name }}
         {{ corporate_membership.anonymous_creator.last_name }}

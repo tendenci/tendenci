@@ -25,7 +25,9 @@
             {% endif %}
             </div>
 
-            <div class="set-description">{{ photo_set.description|safe|urlize|linebreaks }}</div>
+            <div class="set-description">
+            {% blocktrans with d=photo_set.description|safe|urlize|linebreaks %}{{ d }}{% endblocktrans %}
+            </div>
         </div>
     </div>
     <div class="delete-form">

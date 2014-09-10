@@ -1,7 +1,7 @@
 {% load nav_tags %}
 {% load base_tags %}
 {% load theme_tags %}
-
+{% load i18n %}
 
 <nav id="topnav" class="navbar navbar-default" role="navigation">
 <!-- Utility navbar -->
@@ -11,11 +11,11 @@
     <li><a href="#"><i class="utilnav fa fa-linkedin-square"></i></a></li>
     <li><a href="#"><i class="utilnav fa fa-twitter-square"></i></a></li>
     <li><a href="#"><i class="utilnav fa fa-facebook-square"></i></a></li>
-    <li><a href="/contact">Contact</a></li>
-    <li><a href="/donate">Donate</a></li>
-    <li><a href="/login">Member Login</a></li>
+    <li><a href="/contact">{% trans 'Contact' %}</a></li>
+    <li><a href="/donate">{% trans 'Donate' %}</a></li>
+    <li><a href="/login">{% trans 'Member Login' %}</a></li>
   </ul>
-      
+
 <!-- Fixed navbar -->
   <div class="container pull-left col-lg-12 col-md-12 col-sm-12">
     <div class="navbar-header">

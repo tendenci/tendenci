@@ -67,7 +67,7 @@ class File(TendenciBaseModel):
     objects = FileManager()
 
     class Meta:
-        permissions = (("view_file", "Can view file"),)
+        permissions = (("view_file", _("Can view file")),)
 
     def __init__(self, *args, **kwargs):
         from django.db.models.related import RelatedObject
@@ -176,9 +176,9 @@ class File(TendenciBaseModel):
             story.save()
 
         # roll back the transaction to fix the error for postgresql
-        #"current transaction is aborted, commands ignored until 
+        #"current transaction is aborted, commands ignored until
         # end of transaction block"
-        #connection._rollback()    # comment it out because this line of code leads to IntegrityError for files that inherit File's model. 
+        #connection._rollback()    # comment it out because this line of code leads to IntegrityError for files that inherit File's model.
 
         # send notification to administrator(s) and module recipient(s)
         if self.file:
@@ -391,7 +391,7 @@ class FilesCategory(models.Model):
     parent = models.ForeignKey('self', null=True)
 
     class Meta:
-        verbose_name_plural = "File Categories"
+        verbose_name_plural = _("File Categories")
         ordering = ('name',)
 
     def __unicode__(self):

@@ -1,14 +1,15 @@
 {% extends form_template %}
+{% load i18n %}
 
 {% block extra_head %}
-<title>{{ form.title }}</title>
+<title>{% blocktrans with t=form.title  %}{{ t }}{% endblocktrans %}</title>
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 {{ block.super }}
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h2>{{ form.title }}</h2>
-    {{ form.response|safe|urlize }}
+    <h2>{% blocktrans with t=form.title  %}{{ t }}{% endblocktrans %}</h2>
+    {% blocktrans with r=form.response|safe|urlize %}{{ r }}{% endblocktrans %}
 </div>
 {% endblock %}

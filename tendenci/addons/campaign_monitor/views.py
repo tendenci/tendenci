@@ -9,6 +9,7 @@ from django.template import Template as DTemplate
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import Http404, HttpResponse
+from django.utils.translation import ugettext_lazy as _
 from createsend import CreateSend
 from createsend import Template as CST
 from createsend import Campaign as CSC
@@ -280,12 +281,14 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
                         html_url, zip_url
                     )
             except BadRequest, e:
-                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+                msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
+                messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
                 return render_to_response(template_name, {'form':form},
                     context_instance=RequestContext(request))
             except Exception, e:
-                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+                msg_string = 'Error: %s' % e
+                messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
                 return render_to_response(template_name, {'form':form},
                     context_instance=RequestContext(request))
@@ -300,8 +303,8 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
 
             #extract and serve files in zip
             extract_files(template)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully created Template : %s' % t_id)
+            msg_string = 'Successfully created Template : %s' % t_id
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return redirect(template)
 
@@ -347,11 +350,13 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
                 t = CST(auth=auth, template_id = form.instance.template_id)
                 t.update(str(template.name), html_url, zip_url)
             except BadRequest, e:
-                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+                msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
+                messages.add_message(request, messages.ERROR, _(msg_string))
                 return render_to_response(template_name, {'form':form},
                     context_instance=RequestContext(request))
             except Exception, e:
-                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+                msg_string = 'Error: %s' % e
+                messages.add_message(request, messages.ERROR, _(msg_string))
                 return render_to_response(template_name, {'form':form},
                     context_instance=RequestContext(request))
 
@@ -364,8 +369,8 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
 
             #extract and serve files in zip
             extract_files(template)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated Template : %s' % template.template_id)
+            msg_string = 'Successfully updated Template : %s' % template.template_id
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return redirect(template)
 
@@ -414,10 +419,12 @@ def template_update(request, template_id):
         t = CST(auth=auth, template_id = template.template_id)
         t.update(unicode(template.name), html_url, zip_url)
     except BadRequest, e:
-        messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+        msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
+        messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
     except Exception, e:
-        messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+        msg_string = 'Error: %s' % e
+        messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
 
     #get campaign monitor details
@@ -426,8 +433,8 @@ def template_update(request, template_id):
     template.cm_preview_url = t.PreviewURL
     template.cm_screenshot_url = t.ScreenshotURL
     template.save()
-
-    messages.add_message(request, messages.SUCCESS, 'Successfully updated Template : %s' % template.template_id)
+    msg_string = 'Successfully updated Template : %s' % template.template_id
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     return redirect(template)
 
@@ -443,14 +450,17 @@ def template_delete(request, template_id):
     try:
         CST(auth=auth, template_id=t_id).delete()
     except BadRequest, e:
-        messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+        msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
+        messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
     except Exception, e:
-        messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+        msg_string = 'Error: %s' % e
+        messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
 
     template.delete()
-    messages.add_message(request, messages.SUCCESS, 'Successfully deleted Template : %s' % t_id)
+    msg_string = 'Successfully deleted Template : %s' % t_id
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     return redirect("campaign_monitor.template_index")
 
@@ -465,7 +475,7 @@ def template_sync(request):
         messages.add_message(
             request,
             messages.SUCCESS,
-            'Successfully synced with Campaign Monitor')
+            _('Successfully synced with Campaign Monitor'))
 
     return redirect("campaign_monitor.template_index")
 
@@ -496,7 +506,7 @@ def campaign_sync(request):
 
     sync_campaigns()
 
-    messages.add_message(request, messages.SUCCESS, 'Successfully synced with Campaign Monitor')
+    messages.add_message(request, messages.SUCCESS, _('Successfully synced with Campaign Monitor'))
     return redirect("campaign_monitor.campaign_index")
 
 @login_required
@@ -570,14 +580,16 @@ def campaign_delete(request, campaign_id, template_name="campaign_monitor/campai
         try:
             CSC(auth=auth, campaign_id=campaign.campaign_id).delete()
         except BadRequest, e:
-            messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+            msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
+            messages.add_message(request, messages.ERROR, _(msg_string))
             return redirect(campaign)
         except Exception, e:
-            messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+            msg_string = 'Error: %s' % e
+            messages.add_message(request, messages.ERROR, _(msg_string))
             return redirect(campaign)
 
         campaign.delete()
-        messages.add_message(request, messages.SUCCESS, 'Successfully deleted campaign.')
+        messages.add_message(request, messages.SUCCESS, _('Successfully deleted campaign.'))
         return redirect("campaign_monitor.campaign_index")
 
     return render_to_response(template_name, {'campaign': campaign},

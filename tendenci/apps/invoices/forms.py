@@ -24,9 +24,9 @@ class AdminAdjustForm(forms.ModelForm):
 class InvoiceSearchForm(forms.Form):
     INVOICE_TYPE_CHOICES = (
         ('', '-----------------'),
-        ('events', 'events'),
-        ('memberships', 'memberships'),
-        ('jobs', 'jobs')
+        ('events', _('events')),
+        ('memberships', _('memberships')),
+        ('jobs', _('jobs'))
     )
     SEARCH_METHOD_CHOICES = (
         ('starts_with', _('Starts With')),
@@ -67,7 +67,7 @@ class InvoiceSearchForm(forms.Form):
     event = forms.ModelChoiceField(queryset=Event.objects.all(),
                                    label=_("Event "),
                                    required=False,
-                                   empty_label='All Events')
+                                   empty_label=_('All Events'))
     event_id = forms.ChoiceField(label=_('Event ID'), required=False, choices=[])
 
     def __init__(self, *args, **kwargs):
@@ -84,7 +84,7 @@ class InvoiceSearchForm(forms.Form):
             }
 
         # Set search criteria choices
-        criteria_choices = [('', 'SELECT ONE')]
+        criteria_choices = [('', _('SELECT ONE'))]
         criteria_choices.append(('id', _('ID')))
         for field in Invoice._meta.fields:
             if isinstance(field, CharField) or isinstance(field, DecimalField):
@@ -102,7 +102,7 @@ class InvoiceSearchForm(forms.Form):
         self.fields['invoice_type'].choices = invoice_choices
 
         # Set event_id choices
-        choices = [('', 'All events')]
+        choices = [('', _('All events'))]
         events = Event.objects.all()  # .filter(registration__invoice__isnull=False)
         for event_obj in events:
             choices.append((event_obj.pk, event_obj.pk))

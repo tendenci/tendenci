@@ -4,7 +4,7 @@
 
     <h2><a href="{% url profile membership.user %}">{{ membership.get_name }}</a></h2>
     {% if user.profile.is_superuser %}
-    <div><strong>Member Number: {{ membership.member_number }}</strong></div>
+    <div><strong>{% trans 'Member Number' %}: {{ membership.member_number }}</strong></div>
     {% endif %}
 
     <div class="type-and-period">

@@ -63,8 +63,8 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     objects = StoryManager()
 
     class Meta:
-        permissions = (("view_story", "Can view story"),)
-        verbose_name_plural = "stories"
+        permissions = (("view_story", _("Can view story")),)
+        verbose_name_plural = _("stories")
         ordering = ['position']
 
     def __unicode__(self):
@@ -151,4 +151,3 @@ class Rotator(models.Model):
 
     def __unicode__(self):
         return self.name
-

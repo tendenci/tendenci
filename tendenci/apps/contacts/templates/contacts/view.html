@@ -70,7 +70,7 @@
                 {% blocktrans with contact.create_dt|date:"long" as create_date %}Submitted {{ create_date }}{% endblocktrans %}
             </div>
             <div class="content">
-                {{ contact.message|linebreaks }}
+                {% blocktrans with m=contact.message|linebreaks %}{{ m }}{% endblocktrans %}
             </div>
         </div>
 

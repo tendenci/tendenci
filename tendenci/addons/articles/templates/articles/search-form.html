@@ -1,7 +1,9 @@
+{% load i18n %}
+
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="search-form" action="{% url articles %}" method="get">
     <div class="first-row" id="form-row">
-        <span>Search by: </span>
+        <span>{% trans 'Search by:' %} </span>
         <div class="search-category">
             {{ form.search_category}}
             {{ form.search_category.errors }}
@@ -10,7 +12,7 @@
             {{ form.q }}
             {{ form.q.errors }}
         </div>
-        <input type="submit" value="Search" />
+        <input type="submit" value="{% trans 'Search' %}" />
         <div class="clearfix"></div>
     </div>
   <!--

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.template.defaultfilters import striptags, truncatewords
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin, TagsFilter
 from tendenci.addons.articles.models import Article
@@ -12,7 +13,7 @@ class ArticleAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = {'slug': ['headline']}
     search_fields = ['headline', 'body']
     fieldsets = (
-        ('Article Information', {
+        (_('Article Information'), {
             'fields': ('headline',
                 'slug',
                 'summary',
@@ -25,7 +26,7 @@ class ArticleAdmin(TendenciBaseModelAdmin):
                 'timezone',
                 )
             }),
-        ('Author', {
+        (_('Author'), {
             'fields': ('first_name',
                      'last_name',
                      'google_profile',
@@ -35,13 +36,13 @@ class ArticleAdmin(TendenciBaseModelAdmin):
                      ),
                     'classes': ('contact',),
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
         )}),
-        ('Publishing Status', {'fields': (
+        (_('Publishing Status'), {'fields': (
             'syndicate',
             'status_detail',
         )}),
@@ -53,6 +54,6 @@ class ArticleAdmin(TendenciBaseModelAdmin):
         content = truncatewords(striptags(obj.body), 15)
         return content
     article_body.allow_tags = True
-    article_body.short_description = 'body'
+    article_body.short_description = _('body')
 
 admin.site.register(Article, ArticleAdmin)

@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Registration Pre {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Registration Pre" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,9 +17,9 @@
 <div class="t">
     {% event_nav user event %}
     <div>
-        <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
+        <div class="event-title"><a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></div>
         <div class="event-time">
-            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
          {% include "events/include/spots_status.html" %}
@@ -30,7 +30,7 @@
 
     {% if individual_pricings %}
         {% if table_pricings %}
-        <div style="font-weight: bold; font-size: 1.2em;">For Individuals:</div>
+        <div style="font-weight: bold; font-size: 1.2em;">{% trans "For Individuals" %}:</div>
         {% endif %}
         <div class="pricing-list">
             {% for pricing in individual_pricings %}
@@ -53,7 +53,7 @@
 
     {% if table_pricings %}
         {% if individual_pricings %}
-        <div style="font-weight: bold; font-size: 1.2em;">For Table/Team:</div>
+        <div style="font-weight: bold; font-size: 1.2em;">{% trans "For Table/Team" %}:</div>
         {% endif %}
         <div class="pricing-list">
             {% for pricing in table_pricings %}

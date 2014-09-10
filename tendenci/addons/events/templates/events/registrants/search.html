@@ -8,7 +8,7 @@
 {% load avatar_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -64,9 +64,9 @@
             {% endif %}
 
             <div class="filter-wrap">
-                <div><strong>Filters</strong></div>
-                <div><a href="{% url event.registrant.search event.pk %}?status=active">{{ active_registrants }} Active</a></div>
-                <div><a href="{% url event.registrant.search event.pk %}?status=canceled">{{ canceled_registrants }} Canceled</a></div>
+                <div><strong>{% trans "Filters" %}</strong></div>
+                <div><a href="{% url event.registrant.search event.pk %}?status=active">{{ active_registrants }} {% trans "Active" %}</a></div>
+                <div><a href="{% url event.registrant.search event.pk %}?status=canceled">{{ canceled_registrants }} {% trans "Canceled" %}</a></div>
             </div>
 
 
@@ -140,9 +140,9 @@
 
                     <div class="content"></div>
                     <div class="meta">
-                        <div class="submitted">{% blocktrans with registrant.registration.create_dt|date_short as reg_date %}Registered on {{ reg_date }}{% endblocktrans %}</div>
+                        <div class="submitted">{% blocktrans with registrant.registration.create_dt|date_short as reg_date %}{% trans "Registered on" %} {{ reg_date }}{% endblocktrans %}</div>
                         {% if registrant.cancel_dt %}
-                        <div class="canceled">{% blocktrans with registrant.cancel_dt|date_short as cancel_date %}Canceled on {{ cancel_date }}{% endblocktrans %}</div>
+                        <div class="canceled">{% blocktrans with registrant.cancel_dt|date_short as cancel_date %}{% trans "Canceled on" %} {{ cancel_date }}{% endblocktrans %}</div>
                         {% endif %}
                         <div style="clear:both;"></div>
                     </div>

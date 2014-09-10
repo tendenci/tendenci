@@ -48,9 +48,9 @@ class Career(TendenciBaseModel):
     objects = CareerManager()
 
     class Meta:
-        permissions = (("view_career", "Can view career"),)
-        verbose_name = "Career"
-        verbose_name_plural = "Careers"
+        permissions = (("view_career", _("Can view career")),)
+        verbose_name = _("Career")
+        verbose_name_plural = _("Careers")
 
     def __unicode__(self):
         return '%s - %s' % (self.company, self.user)

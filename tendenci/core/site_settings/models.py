@@ -3,22 +3,23 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.site_settings.crypt import encrypt, decrypt
 
 
 INPUT_TYPE_CHOICES = (
-    ('text','Text'),
-    ('textarea', 'Textarea'),
-    ('select','Select'),
-    ('file', 'File'),
+    ('text',_('Text')),
+    ('textarea', _('Textarea')),
+    ('select',_('Select')),
+    ('file', _('File')),
 )
 
 DATA_TYPE_CHOICES = (
-    ('string','string'),
-    ('boolean','boolean'),
-    ('integer','int'),
-    ('file', 'file'),
+    ('string',_('string')),
+    ('boolean',_('boolean')),
+    ('integer',_('int')),
+    ('file', _('file')),
 )
 
 class Setting(models.Model):

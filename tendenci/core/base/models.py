@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.core.base.fields import DictField
@@ -49,16 +49,16 @@ class ChecklistItem(OrderingBaseModel):
 
 class BaseImport(models.Model):
     OVERRIDE_CHOICES = (
-        (0, 'Blank Fields'),
-        (1, 'All Fields (override)'),
+        (0, _('Blank Fields')),
+        (1, _('All Fields (override)')),
     )
 
     STATUS_CHOICES = (
-        ('not_started', 'Not Started'),
-        ('preprocessing', 'Pre_processing'),
-        ('preprocess_done', 'Pre_process Done'),
-        ('processing', 'Processing'),
-        ('completed', 'Completed'),
+        ('not_started', _('Not Started')),
+        ('preprocessing', _('Pre_processing')),
+        ('preprocess_done', _('Pre_process Done')),
+        ('processing', _('Processing')),
+        ('completed', _('Completed')),
     )
 
     # store the header line to assist in generating recap

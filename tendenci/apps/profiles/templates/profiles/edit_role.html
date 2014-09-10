@@ -1,8 +1,9 @@
 {% extends "profiles/base.html" %}
 {% load profile_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}Edit Group Membership{% endblock %}
+{% block title %}{% trans 'Edit Group Membership' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,18 +14,18 @@
 {% block body %}
     <div class="t">
         {% users_nav request.user membership.member %}
-        <h1>Edit Group Membership Role</h1>
+        <h1>{% trans 'Edit Group Membership Role' %}</h1>
         <div class="profile-wrap">
-            <h2>User: <a href="{{ membership.member.get_absolute_url }}">
+            <h2>{% trans 'User' %}: <a href="{{ membership.member.get_absolute_url }}">
                 {{ membership.member.get_full_name }} ({{ membership.member.username}})</a>
             </h2>
             <h2>
-                Group: <a href="{{ membership.group.get_absolute_url }}">{{ membership.group }} ({{ membership.group.name }})</a>
+                {% trans 'Group' %}: <a href="{{ membership.group.get_absolute_url }}">{{ membership.group }} ({{ membership.group.name }})</a>
             </h2>
             <form action="." method="post">{% csrf_token %}
                 <div class="forms">
                     {{ form|styled_form }}
-                    <input type="submit" value="Save" />
+                    <input type="submit" value="{% trans 'Save' %}" />
                 </div>
             </form>
         </div>

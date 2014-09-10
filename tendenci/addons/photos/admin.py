@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.photos.models import PhotoSet, Image, Pool
@@ -12,20 +13,20 @@ class PhotoAdmin(admin.ModelAdmin):
     list_display = ('update_dt', 'create_dt', 'tags',)
 
     fieldsets = (
-        ('Photo Set Information', {
+        (_('Photo Set Information'), {
                       'fields': ('name',
                                  'description',
                                  'group',
                                  'tags',
                                  ),
                       }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        ('Photo Set Status', {'fields': (
+        (_('Photo Set Status'), {'fields': (
             'status_detail',
         )}),
     )

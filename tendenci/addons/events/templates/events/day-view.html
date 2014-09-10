@@ -40,7 +40,7 @@
 <form class="search-form" action="" method="get">
     {{ form.search_category }}
     {{ form.q }}
-    <input class="btn" type="submit" value="Search" />
+    <input class="btn" type="submit" value="{% trans 'Search' %}" />
 </form>
 
     <div class="days-nav">
@@ -87,7 +87,9 @@
                     {% endif %}
                     <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
                 </h3>
-                <div class="description" itemprop="description">{{ event.description|safe }}</div>
+                <div class="description" itemprop="description">
+                {% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}
+                </div>
 
                 {% if event.registration_configuration.enabled %}
 

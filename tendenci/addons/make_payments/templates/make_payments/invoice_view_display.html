@@ -4,7 +4,7 @@
 <tr>
     <td>
         {% if obj %}
-            Payment #<a href="{% url make_payment.view obj.id %}" title="Payment">{{ obj.pk }}</a> made by {{ obj.first_name }} {{obj.last_name}}
+            {% trans 'Payment #' %}<a href="{% url make_payment.view obj.id %}" title="{% trans 'Payment' %}">{{ obj.pk }}</a> made by {{ obj.first_name }} {{obj.last_name}}
         {% else %}
             {{ invoice.title }}
         {% endif%}

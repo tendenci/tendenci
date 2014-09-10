@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice{% endblock %}
+{% block title %}{{ block.super }}{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,7 +13,7 @@
 
 {% block body %}
 <div class="t">
-<h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} {% trans "Invoice" %}</h1>
+<h1>{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans "Invoice" %}</h1>
 
 {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
 <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
@@ -52,7 +52,7 @@
 </div>
 {% if MODULE_INVOICES_INVOICELOGO %}
 <div class="invoice-meta-logo print-view">
-    <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" alt="invoice logo" title="invoice logo" />
+    <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
 </div>
 {% endif %}
 {% endwith %}
@@ -60,8 +60,8 @@
 <div class="invoice-table">
     <table border="0" cellspacing="0" cellpadding="0">
         <tr class="invoice-table-header">
-            <td>Description</td>
-            <td class="td-right">Line Amount</td>
+            <td>{% trans 'Description' %}</td>
+            <td class="td-right">{% trans 'Line Amount' %}</td>
         </tr>
         {% invoice_object_display request invoice %}
     </table>

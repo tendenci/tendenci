@@ -22,8 +22,8 @@ class Box(OrderingBaseModel, TendenciBaseModel):
     objects = BoxManager()
 
     class Meta:
-        permissions = (("view_box","Can view box"),)
-        verbose_name_plural = "Boxes"
+        permissions = (("view_box",_("Can view box")),)
+        verbose_name_plural = _("Boxes")
         ordering = ['position']
 
     def __unicode__(self):

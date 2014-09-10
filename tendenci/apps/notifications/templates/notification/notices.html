@@ -21,7 +21,7 @@
             <p>
                 {% trans "Primary email" %}:
                 <b>{{ user.email }}</b>
-                (<a href="{% url profile.edit user.pk %}#id_email">change</a>)
+                (<a href="{% url profile.edit user.pk %}#id_email">{% trans 'change' %}</a>)
             </p>
         {% else %}
             <p>

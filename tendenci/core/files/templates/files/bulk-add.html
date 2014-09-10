@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{{ block.super }}{% trans "Add" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -26,12 +26,12 @@
         <form id="fileupload" action="{% url file.bulk_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
             <input type="file" name="files"  multiple />
 
-    	    <div id="formset-container">
-    	        {% if file_formset.total_form_count > 0 %}
-    	        <input type="submit" value="Update Files" />
-    	        <h2>Files</h2>
-    	        {% endif %}
-    	        {{ file_formset.management_form }}
+            <div id="formset-container">
+                {% if file_formset.total_form_count > 0 %}
+                <input type="submit" value="{% trans 'Update Files' %}" />
+                <h2>Files</h2>
+                {% endif %}
+                {{ file_formset.management_form }}
                 {% for file_form in file_formset.forms %}
                     {% if not forloop.first %}
                         <hr/>
@@ -46,7 +46,7 @@
                         {{ file_form|styled_form }}
                     </div>
                 {% endfor %}
-    	    </div>
+            </div>
 
         </form>
 
@@ -61,14 +61,14 @@
 <script type="text/javascript" src="{{ STATIC_URL }}jqueryupload/js/jquery.iframe-transport.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload.js"></script>
 <script language="javascript" type="text/javascript">
-	$(function () {
-		$('#fileupload').fileupload({
-			dataType: 'json',
-			progressall: function(e, data) {
+    $(function () {
+        $('#fileupload').fileupload({
+            dataType: 'json',
+            progressall: function(e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
                 $('#formset-container').html(progress + '% done.');
-			}
-		});
-	});
+            }
+        });
+    });
 </script>
 {% endblock %}

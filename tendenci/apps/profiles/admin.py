@@ -81,7 +81,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
         return obj.user.email
 
     get_email.admin_order_field = 'user__email'
-    get_email.short_description = 'Email'
+    get_email.short_description = _('Email')
 
     def is_superuser(self, obj):
         return obj.is_superuser
@@ -96,7 +96,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
         name = name.strip()
 
         return name or obj.user.username
-    get_user.short_description = 'User'
+    get_user.short_description = _('User')
 
 admin.site.register(Profile, ProfileAdmin)
 

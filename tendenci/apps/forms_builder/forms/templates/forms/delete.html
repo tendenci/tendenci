@@ -2,7 +2,7 @@
 {% load forms_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Delete{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Delete' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,7 +13,7 @@
 
 <div class="t">
     {% forms_nav request.user form %}
-    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %}{% trans " Delete" %}</h1>
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %}{% trans " Delete" %}</h1>
 
     <div class="form-builder-wrap">
         <div class="delete-prompt">
@@ -23,7 +23,7 @@
 
         <div class="delete-form">
             <form action="{% url form_delete form.pk %}" method="post">{% csrf_token %}
-                <input type="submit" value="Delete {% firstof MODULE_FORMS_LABEL 'Form' %}" />
+                <input type="submit" value="{% trans 'Delete' %} {% firstof MODULE_FORMS_LABEL trans 'Form' %}" />
             </form>
         </div>
     </div>

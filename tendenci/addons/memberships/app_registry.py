@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import PeopleRegistry, lazy_reverse
@@ -7,9 +8,9 @@ from tendenci.addons.memberships.models import MembershipDefault
 
 class MembershipRegistry(PeopleRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Membership management application.'
+    description = _('Membership management application.')
     icon = '%simages/icons/memberships-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {

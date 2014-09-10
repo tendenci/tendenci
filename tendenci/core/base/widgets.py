@@ -101,4 +101,3 @@ class PriceWidget(TextInput):
         currency_symbol = get_setting('site', 'global', 'currencysymbol') or '$'
         html = super(PriceWidget, self).render(name, value, attrs)
         return mark_safe("%s %s" %(currency_symbol, html))
-

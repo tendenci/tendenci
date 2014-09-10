@@ -19,28 +19,28 @@
 
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTRIBUTION_LABEL trans 'Contributions' %} Search</h1>
 
-	{% contribution_search %}
+    {% contribution_search %}
     {% autopaginate contributions 10 %}
-	
-	<div class="contributions-wrap">
+
+    <div class="contributions-wrap">
     {% for contribution in contributions %}
-    	{% has_perm user contributions.view_contribution contribution as can_view %}
-    	{% if can_view %}
-		<div class="contribution-wrap">
+        {% has_perm user contributions.view_contribution contribution as can_view %}
+        {% if can_view %}
+        <div class="contribution-wrap">
             <h2>
-            	{{ contribution.content_type }}: 
-				<a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title "Untitled" %}</a>
-			</h2>
-			<div class="meta">
-            	<div class="submitted">{% blocktrans with contribution.update_dt|date:"D d M Y P" as contrib_date and contribution.creator as contrib_creator %}Updated on {{ contrib_date }} 
-				by {{ contrib_creator }} {% endblocktrans %}</div>
+                {{ contribution.content_type }}:
+                <a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title "Untitled" %}</a>
+            </h2>
+            <div class="meta">
+                <div class="submitted">{% blocktrans with contribution.update_dt|date:"D d M Y P" as contrib_date and contribution.creator as contrib_creator %}Updated on {{ contrib_date }}
+                by {{ contrib_creator }} {% endblocktrans %}</div>
             </div>
-		</div>
-		{% endif %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        </div>
+        {% endif %}
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
