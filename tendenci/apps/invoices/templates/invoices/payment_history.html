@@ -11,7 +11,7 @@
     {% for payment in payments %}
         <tr>
             <td>
-                {% trans "Payment #" %}<a href="{%url payment.view payment.id%}" title="View Payment">{{ payment.id }}</a>
+                {% trans "Payment #" %}<a href="{%url "payment.view" payment.id%}" title="View Payment">{{ payment.id }}</a>
                 {% trans "by:" %} {% if not payment.last_name and not payment.first_name %}Unknown{% else%}{% if payment.first_name %}{{payment.first_name|capfirst }} {% endif %} {% if payment.last_name %}{{ payment.last_name|capfirst }}{% endif %}{% endif %}&nbsp;&ndash;&nbsp;
                 {% if not payment.status_detail %}
                      {% if not payment.verified %}

@@ -26,7 +26,7 @@
 <div class="invoice-options">
   <ul>
     {% if invoice.is_tendered %}
-      <li><a class="admin-option" href="{%url invoice.adjust invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
+      <li><a class="admin-option" href="{% url "invoice.adjust" invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
     {% endif%}
     <li><a class="admin-option" href="{% url "invoice.detail" invoice.id%}">{% trans "Accounting Entries" %}</a></li>
     <li><a class="admin-option" href="{% url "invoice.detail" invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">{% trans "Make Notes" %}</a></li>
