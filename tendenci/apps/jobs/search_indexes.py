@@ -1,5 +1,5 @@
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
@@ -8,7 +8,7 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import Category
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
-class JobIndex(TendenciBaseSearchIndex):
+class JobIndex(TendenciBaseSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
     list_type = indexes.CharField(model_attr='list_type')
     description = indexes.CharField(model_attr='description')
@@ -30,6 +30,10 @@ class JobIndex(TendenciBaseSearchIndex):
     creator_username = indexes.CharField(model_attr='creator_username', null=True)
     owner = indexes.CharField(model_attr='owner', null=True)
     owner_username = indexes.CharField(model_attr='owner_username', null=True)
+
+
+    def get_model(self):
+        return Job
 
     def prepare_description(self, obj):
         description = obj.description
@@ -53,4 +57,4 @@ class JobIndex(TendenciBaseSearchIndex):
         return obj.allow_anonymous_view and obj.syndicate \
                 and obj.status == 1 and obj.status_detail == 'active'
 
-site.register(Job, JobIndex)
+

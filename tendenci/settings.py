@@ -375,6 +375,7 @@ HAYSTACK_CONNECTIONS = {
     }
 }
 
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 
 # HAYSTACK_INDEX_LIMITS - row amount to index per core application

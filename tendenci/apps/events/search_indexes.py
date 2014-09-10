@@ -1,5 +1,5 @@
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 from django.db.models import signals
@@ -11,7 +11,7 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.search.indexes import CustomSearchIndex
 
 
-class EventIndex(TendenciBaseSearchIndex):
+class EventIndex(TendenciBaseSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
     description = indexes.CharField(model_attr='description')
     start_dt = indexes.DateTimeField(model_attr='start_dt')
@@ -34,6 +34,9 @@ class EventIndex(TendenciBaseSearchIndex):
     # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
+
+    def get_model(self):
+        return Event
 
     def prepare_description(self, obj):
         description = obj.description
@@ -70,7 +73,7 @@ class EventIndex(TendenciBaseSearchIndex):
         return obj.start_dt
 
 
-class RegistrantIndex(CustomSearchIndex):
+class RegistrantIndex(CustomSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     event_pk = indexes.IntegerField(model_attr='registration__event__pk')
     cancel_dt = indexes.DateTimeField(model_attr='cancel_dt', null=True)
@@ -85,6 +88,9 @@ class RegistrantIndex(CustomSearchIndex):
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
     order = indexes.DateTimeField()
+
+    def get_model(self):
+        return Registrant
 
     def get_updated_field(self):
         return 'update_dt'
@@ -110,7 +116,6 @@ class RegistrantIndex(CustomSearchIndex):
     def prepare_order(self, obj):
         return obj.create_dt
 
-site.register(Event, EventIndex)
 # Removed from index after search view was updated to perform
 # all searches on the database.
-# site.register(Registrant, RegistrantIndex)
+#

@@ -1,6 +1,6 @@
 from datetime import datetime
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
@@ -9,7 +9,7 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.categories.models import Category
 
 
-class ArticleIndex(TendenciBaseSearchIndex):
+class ArticleIndex(TendenciBaseSearchIndex, indexes.Indexable):
     headline = indexes.CharField(model_attr='headline')
     body = indexes.CharField(model_attr='body')
     release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
@@ -23,6 +23,9 @@ class ArticleIndex(TendenciBaseSearchIndex):
     # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
+
+    def get_model(self):
+        return Article
 
     def get_updated_field(self):
         return 'update_dt'
@@ -55,4 +58,4 @@ class ArticleIndex(TendenciBaseSearchIndex):
             return obj.create_dt
         return obj.release_dt
 
-site.register(Article, ArticleIndex)
+

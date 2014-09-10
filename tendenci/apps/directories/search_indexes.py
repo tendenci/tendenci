@@ -1,6 +1,6 @@
 from datetime import datetime
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
@@ -8,7 +8,7 @@ from tendenci.apps.directories.models import Directory
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.categories.models import Category
 
-class DirectoryIndex(TendenciBaseSearchIndex):
+class DirectoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
     headline = indexes.CharField(model_attr='headline', faceted=True)
     body = indexes.CharField(model_attr='body')
     activation_dt = indexes.DateTimeField(model_attr='activation_dt', null=True)
@@ -22,6 +22,9 @@ class DirectoryIndex(TendenciBaseSearchIndex):
     # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
+
+    def get_model(self):
+        return Directory
 
     def prepare_body(self, obj):
         body = obj.body
@@ -60,4 +63,4 @@ class DirectoryIndex(TendenciBaseSearchIndex):
     def prepare_order(self, obj):
         return obj.activation_dt
 
-site.register(Directory, DirectoryIndex)
+

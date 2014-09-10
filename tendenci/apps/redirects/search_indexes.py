@@ -1,10 +1,10 @@
 from haystack import indexes
-from haystack import site
+
 
 from tendenci.apps.redirects.models import Redirect
 
 
-class RedirectIndex(indexes.RealTimeSearchIndex):
+class RedirectIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     from_url = indexes.CharField(model_attr='from_url')
     to_url = indexes.CharField(model_attr='to_url')
@@ -19,10 +19,13 @@ class RedirectIndex(indexes.RealTimeSearchIndex):
 
     order = indexes.DateTimeField()
 
+    def get_model(self):
+        return Redirect
+
     def get_updated_field(self):
         return 'update_dt'
 
     def prepare_order(self, obj):
         return obj.create_dt
 
-site.register(Redirect, RedirectIndex)
+

@@ -1,11 +1,11 @@
 from haystack import indexes
-from haystack import site
+
 
 from tendenci.apps.corporate_memberships.models import CorpMembership
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
-class CorpMembershipIndex(TendenciBaseSearchIndex):
+class CorpMembershipIndex(TendenciBaseSearchIndex, indexes.Indexable):
     corporate_membership_type = indexes.CharField(model_attr='corporate_membership_type')
     authorized_domains = indexes.MultiValueField(null=True)
     reps = indexes.MultiValueField(null=True)
@@ -15,6 +15,9 @@ class CorpMembershipIndex(TendenciBaseSearchIndex):
     is_join_pending = indexes.IntegerField(model_attr='is_join_pending', default=0)
     is_renewal_pending = indexes.IntegerField(model_attr='is_renewal_pending', default=0)
     is_pending = indexes.IntegerField(model_attr='is_pending', default=0)
+
+    def get_model(self):
+        return CorpMembership
 
     def prepare_authorized_domains(self, obj):
         if obj.corp_profile.authorized_domains:
@@ -32,4 +35,4 @@ class CorpMembershipIndex(TendenciBaseSearchIndex):
     def prepare_corp_app(self, obj):
         return obj.corp_app.name
 
-site.register(CorpMembership, CorpMembershipIndex)
+

@@ -4,13 +4,16 @@ from tendenci.apps.memberships.models import MembershipDefault
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
-class MembershipDefaultIndex(TendenciBaseSearchIndex):
+class MembershipDefaultIndex(TendenciBaseSearchIndex, indexes.Indexable):
     corporate_membership_id = indexes.IntegerField(model_attr='corporate_membership_id', null=True)
     member_number = indexes.CharField(model_attr='member_number')
     membership_type = indexes.IntegerField()
     first_name = indexes.CharField(null=True)
     last_name = indexes.CharField(null=True)
     email = indexes.CharField(null=True)
+
+    def get_model(self):
+        return MembershipDefault
 
     def prepare_membership_type(self, obj):
         pk = obj.membership_type.pk
@@ -33,4 +36,4 @@ class MembershipDefaultIndex(TendenciBaseSearchIndex):
 # Removed from index after search view was updated to perform
 # all searches on the database.
 # site.register(AppEntry, MemberAppEntryIndex)
-# site.register(MembershipDefault, MembershipDefaultIndex)
+#

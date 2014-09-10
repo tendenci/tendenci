@@ -1,5 +1,5 @@
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
@@ -8,7 +8,7 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.categories.models import Category
 
 
-class PageIndex(TendenciBaseSearchIndex):
+class PageIndex(TendenciBaseSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
     content = indexes.CharField(model_attr='content')
     syndicate = indexes.BooleanField(model_attr='syndicate')
@@ -20,6 +20,9 @@ class PageIndex(TendenciBaseSearchIndex):
     # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
+
+    def get_model(self):
+        return Page
 
     def prepare_content(self, obj):
         content = obj.content
@@ -46,4 +49,4 @@ class PageIndex(TendenciBaseSearchIndex):
     def prepare_order(self, obj):
         return obj.update_dt
 
-site.register(Page, PageIndex)
+

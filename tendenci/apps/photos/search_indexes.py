@@ -1,5 +1,5 @@
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
@@ -7,13 +7,16 @@ from tendenci.apps.photos.models import PhotoSet, Image
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
-class PhotoSetIndex(TendenciBaseSearchIndex):
+class PhotoSetIndex(TendenciBaseSearchIndex, indexes.Indexable):
     name = indexes.CharField(model_attr='name')
     description = indexes.CharField(model_attr='description')
 
     # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
+
+    def get_model(self):
+        return PhotoSet
 
     def prepare_description(self, obj):
         description = obj.description
@@ -29,7 +32,7 @@ class PhotoSetIndex(TendenciBaseSearchIndex):
         return obj.update_dt
 
 
-class PhotoIndex(TendenciBaseSearchIndex):
+class PhotoIndex(TendenciBaseSearchIndex, indexes.Indexable):
     photo_pk = indexes.IntegerField(model_attr='pk')
     title = indexes.CharField(model_attr='title')
     caption = indexes.CharField(model_attr='caption')
@@ -41,6 +44,9 @@ class PhotoIndex(TendenciBaseSearchIndex):
 
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
+
+    def get_model(self):
+        return Image
 
     def prepare_caption(self, obj):
         caption = obj.caption
@@ -64,4 +70,4 @@ class PhotoIndex(TendenciBaseSearchIndex):
 # Removed from index after search view was updated to perform
 # all searches on the database.
 # site.register(PhotoSet, PhotoSetIndex)
-# site.register(Image, PhotoIndex)
+#

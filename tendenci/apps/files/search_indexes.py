@@ -1,5 +1,5 @@
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
@@ -8,7 +8,7 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.categories.models import Category
 
 
-class FileIndex(TendenciBaseSearchIndex):
+class FileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     file = indexes.CharField(model_attr='file')
     description = indexes.CharField(model_attr='description')
@@ -21,15 +21,18 @@ class FileIndex(TendenciBaseSearchIndex):
     category = indexes.CharField()
     sub_category = indexes.CharField()
 
+    def get_model(self):
+        return File
+
     def prepare_description(self, obj):
         description = obj.description
         description = strip_tags(description)
         description = strip_entities(description)
         return description
-        
+
     def prepare_type(self, obj):
         return obj.type()
-    
+
     def prepare_group_id(self, obj):
         if obj.group_id:
             return int(obj.group_id)
@@ -64,4 +67,4 @@ class FileIndex(TendenciBaseSearchIndex):
 
 # Removed from index after search view was updated to perform
 # all searches on the database.
-# site.register(File, FileIndex)
+#

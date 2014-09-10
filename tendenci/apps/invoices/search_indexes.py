@@ -1,11 +1,11 @@
 from haystack import indexes
-from haystack import site
+
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.search.indexes import CustomSearchIndex
 
 
-class InvoiceIndex(CustomSearchIndex):
+class InvoiceIndex(CustomSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     object_type = indexes.CharField(model_attr='object_type', null=True)
     object_id = indexes.IntegerField(model_attr='object_id', null=True)
@@ -36,6 +36,9 @@ class InvoiceIndex(CustomSearchIndex):
 
     order = indexes.DateTimeField()
 
+    def get_model(self):
+        return Invoice
+
     def get_updated_field(self):
         return 'update_dt'
 
@@ -50,4 +53,4 @@ class InvoiceIndex(CustomSearchIndex):
 
 # Removed from index after search view was updated to perform
 # all searches on the database.
-# site.register(Invoice, InvoiceIndex)
+#

@@ -3,6 +3,8 @@ import os
 import warnings
 from optparse import make_option
 from pysolr import Solr
+from haystack import connections as haystack_conn
+from haystack.exceptions import NotHandled
 from haystack.query import SearchQuerySet
 
 from django.conf import settings
@@ -54,7 +56,7 @@ def worker(bits):
 
 def get_site(optional_site=None):
     # Cause the default site to load.
-    from haystack import site
+    site = haystack_conn['default'].unified_index()
 
     if optional_site:
         path_bits = optional_site.split('.')
@@ -109,7 +111,7 @@ def do_update(index, qs, start, end, total, verbosity=1):
         else:
             print "  indexed %s - %d of %d (by %s)." % (start+1, end, total, os.getpid())
 
-    index.backend.update(index, current_qs)
+    haystack_conn['default'].get_backend().update(index, current_qs)
 
     # Clear out the DB connections queries because it bloats up RAM.
     reset_queries()
@@ -129,7 +131,7 @@ def do_remove(index, model, pks_seen, start, upper_bound, verbosity=1):
             if verbosity >= 2:
                 print "  removing %s." % result.pk
 
-            index.backend.remove(".".join([result.app_label, result.model_name, str(result.pk)]))
+            haystack_conn['default'].get_backend().remove(".".join([result.app_label, result.model_name, str(result.pk)]))
 
 
 class Command(AppCommand):
@@ -201,7 +203,6 @@ class Command(AppCommand):
 
     def handle_app(self, app, **options):
         from django.db.models import get_models
-        from haystack.exceptions import NotRegistered
 
         site = get_site(self.site)
 
@@ -211,7 +212,7 @@ class Command(AppCommand):
         for model in get_models(app):
             try:
                 index = site.get_index(model)
-            except NotRegistered:
+            except NotHandled:
                 if self.verbosity >= 2:
                     print "Skipping '%s' - no index." % model
                 continue
@@ -219,7 +220,7 @@ class Command(AppCommand):
              # if an alternate index is set use it
             if self.scratch:
                 timeout = getattr(settings, 'HAYSTACK_SOLR_TIMEOUT', 10)
-                index.backend.conn = Solr(self.scratch, timeout=timeout)
+                haystack_conn['default'].get_backend().conn = Solr(self.scratch, timeout=timeout)
 
             qs = build_queryset(index, model, age=self.age, verbosity=self.verbosity)
             total = qs.count()

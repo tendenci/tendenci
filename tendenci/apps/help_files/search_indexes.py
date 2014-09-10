@@ -1,13 +1,13 @@
 from datetime import datetime
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
 from tendenci.apps.help_files.models import HelpFile
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
-class HelpFileIndex(TendenciBaseSearchIndex):
+class HelpFileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     question = indexes.CharField(model_attr='question')
     answer = indexes.CharField(model_attr='answer')
     syndicate = indexes.BooleanField(model_attr='syndicate')
@@ -16,6 +16,9 @@ class HelpFileIndex(TendenciBaseSearchIndex):
     # RSS field
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
+
+    def get_model(self):
+        return HelpFile
 
     def prepare_answer(self, obj):
         answer = obj.answer
@@ -34,4 +37,4 @@ class HelpFileIndex(TendenciBaseSearchIndex):
     def prepare_order(self, obj):
         return obj.create_dt
 
-site.register(HelpFile, HelpFileIndex)
+

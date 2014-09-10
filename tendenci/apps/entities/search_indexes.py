@@ -1,10 +1,10 @@
 #from haystack import indexes
-#from haystack import site
+#
 #from tendenci.apps.entities.models import Entity
 #from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 #
 #
-#class EntityIndex(TendenciBaseSearchIndex):
+#class EntityIndex(TendenciBaseSearchIndex, indexes.Indexable):
 #    text = indexes.CharField(document=True, use_template=True)
 #    entity_name = indexes.CharField(model_attr='entity_name')
 #    entity_type = indexes.CharField(model_attr='entity_type')
@@ -18,4 +18,4 @@
 #    notes = indexes.CharField(model_attr='notes')
 #    admin_notes = indexes.CharField(model_attr='admin_notes')
 #
-#site.register(Entity, EntityIndex)
+#

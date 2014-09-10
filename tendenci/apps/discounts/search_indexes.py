@@ -1,5 +1,5 @@
 from haystack import indexes
-from haystack import site
+
 
 from django.utils.html import strip_tags, strip_entities
 
@@ -7,7 +7,7 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.discounts.models import Discount
 
-class DiscountIndex(TendenciBaseSearchIndex):
+class DiscountIndex(TendenciBaseSearchIndex, indexes.Indexable):
     discount_code = indexes.CharField(model_attr='discount_code')
     start_dt = indexes.DateTimeField(model_attr='start_dt')
     end_dt = indexes.DateTimeField(model_attr='end_dt')
@@ -17,7 +17,10 @@ class DiscountIndex(TendenciBaseSearchIndex):
 
     num_of_uses = indexes.IntegerField()
 
+    def get_model(self):
+        return Discount
+
     def prepare_num_of_uses(self, obj):
         return obj.num_of_uses()
 
-site.register(Discount, DiscountIndex)
+

@@ -40,6 +40,9 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
     # the prepare_order method to sort by a different field
     order = indexes.DateTimeField()
 
+    def get_model(self):
+        return None
+
     def prepare_allow_anonymous_view(self, obj):
         if is_whoosh():
             return int(obj.allow_anonymous_view)

@@ -18,7 +18,6 @@ class Command(BaseCommand):
     def handle(self, **options):
         """Clears out the search index completely."""
         # Cause the default site to load.
-        from haystack import site
         self.verbosity = int(options.get('verbosity', 1))
         self.scratch = options.get('scratch', None)
 
@@ -37,9 +36,9 @@ class Command(BaseCommand):
         if self.verbosity >= 1:
             print "Removing all documents from your index because you said so."
 
-        from haystack import backend
+        from haystack import connections
 
-        sb = backend.SearchBackend()
+        sb = connections['default'].get_backend()
 
         if self.scratch:
             timeout = getattr(settings, 'HAYSTACK_SOLR_TIMEOUT', 10)

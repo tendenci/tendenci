@@ -1,11 +1,11 @@
 from haystack import indexes
-from haystack import site
+
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
-class ProfileIndex(TendenciBaseSearchIndex):
+class ProfileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     user = indexes.CharField(model_attr='user', faceted=True)
     user_object = indexes.CharField(model_attr='user', faceted=True)
     display_name = indexes.CharField(model_attr='display_name')
@@ -17,6 +17,9 @@ class ProfileIndex(TendenciBaseSearchIndex):
     country = indexes.CharField(model_attr='country')
     last_name = indexes.CharField(faceted=True)
     hide_in_search = indexes.BooleanField(model_attr='hide_in_search')
+
+    def get_model(self):
+        return Profile
 
     def prepare_last_name(self, obj):
         return obj.user.last_name
@@ -36,4 +39,4 @@ class ProfileIndex(TendenciBaseSearchIndex):
 
 # Removed from index after search view was updated to perform
 # all searches on the database.
-# site.register(Profile, ProfileIndex)
+#
