@@ -74,13 +74,13 @@
                         </div>
                         {% if field|is_checkboxselectmultiple %}
                             {% if field.help_text %}
-                            <span class="help-text checkmultiple"><small>{% blocktrans wiht h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
+                            <span class="help-text checkmultiple"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
                             {% endif %}
                         {% endif %}
 
                         {% if field|is_fileinput %}
                             {% if field.help_text %}
-                            <span class="help-text"><small>{% blocktrans wiht h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
+                            <span class="help-text"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
                             {% endif %}
                         {% endif %}
 
@@ -95,7 +95,7 @@
                             {{ field }}
                             {% if not field|is_checkboxselectmultiple and not field|is_fileinput %}
                             {% if field.help_text %}
-                            <span class="help-text"><small>{% blocktrans wiht h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
+                            <span class="help-text"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
                             {% endif %}
                         {% endif %}
 
