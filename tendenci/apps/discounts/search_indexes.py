@@ -11,7 +11,7 @@ class DiscountIndex(TendenciBaseSearchIndex, indexes.Indexable):
     discount_code = indexes.CharField(model_attr='discount_code')
     start_dt = indexes.DateTimeField(model_attr='start_dt')
     end_dt = indexes.DateTimeField(model_attr='end_dt')
-    never_expires = indexes.BooleanField(model_attr='never_expires')
+    never_expires = indexes.BooleanField(model_attr='never_expires', null=True)
     value = indexes.DecimalField(model_attr='value')
     cap = indexes.IntegerField(model_attr='cap')
 
