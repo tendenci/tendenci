@@ -11,7 +11,7 @@ from tendenci.apps.boxes.forms import BoxForm
 class BoxAdmin(TendenciBaseModelAdmin):
     list_display = ('edit_link', 'pk', 'title', 'tags', 'short_content', 'admin_perms', 'admin_status', 'position')
     search_fields = ('title', 'content', 'tags',)
-    list_editable = ['title', 'position', 'tags', 'status']
+    list_editable = ['title', 'position', 'tags']
     fieldsets = (
         (None, {'fields': ('title', 'content', 'tags')}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),

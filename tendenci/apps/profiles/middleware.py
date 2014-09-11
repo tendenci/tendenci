@@ -1,5 +1,7 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import logout
 from django.conf import settings
+from django.contrib.auth.models import User
+
 from tendenci.core.site_settings.utils import get_setting
 
 
@@ -57,5 +59,10 @@ class ProfileLanguageMiddleware(object):
             return response
 
 
+class ForceLogoutProfileMiddleware(object):
+    def process_request(self, request):
 
-
+        # this will force logout deactivated user on next request
+        if request.user.is_authenticated():
+            if not request.user.is_active:
+                logout(request)
