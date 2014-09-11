@@ -81,7 +81,7 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.object_type = ContentType.objects.get(app_label=directory._meta.app_label,
                                               model=directory._meta.module_name)
             inv.object_id = directory.id
-            profile = user.get_profile()
+            profile = user.profile
             inv.title = "Directory Add Invoice"
             inv.bill_to = '%s %s' % (user.first_name, user.last_name)
             inv.bill_to_first_name = user.first_name

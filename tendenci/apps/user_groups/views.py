@@ -641,7 +641,7 @@ def group_member_export(request, group_slug):
     # Use custom sql to fetch the rows because we need to
     # populate the user profiles information and you
     # cannot do that with django's ORM without using
-    # get_profile() for each user query
+    # profile for each user query
     # pulling 13,000 group members can be done in one
     # query using Django's ORM but then you need
     # 13,000 individual queries :(
@@ -801,7 +801,7 @@ def group_all_export(request, group_slug):
     # Use custom sql to fetch the rows because we need to
     # populate the user profiles information and you
     # cannot do that with django's ORM without using
-    # get_profile() for each user query
+    # profile for each user query
     # pulling 13,000 group members can be done in one
     # query using Django's ORM but then you need
     # 13,000 individual queries :(

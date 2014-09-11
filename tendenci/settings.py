@@ -269,7 +269,6 @@ ACCOUNT_ACTIVATION_DAYS = 7
 
 LOGIN_REDIRECT_URL = '/dashboard'
 
-AUTH_PROFILE_MODULE = 'profiles.Profile'
 AUTHENTICATION_BACKENDS = (
     'tendenci.apps.perms.backend.ObjectPermBackend',
     'tendenci.apps.social_auth.backends.facebook.FacebookBackend',

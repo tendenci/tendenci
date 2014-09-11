@@ -630,7 +630,7 @@ def save_registration(*args, **kwargs):
     # standardize user_account & user_profile
     # consider authenticated and anonymous
     if user:
-        user_profile = user.get_profile()
+        user_profile = user.profile
 
         registrant_set_defaults.update({
             'first_name': user.first_name,
@@ -1631,7 +1631,7 @@ def add_sf_attendance(registrant, event):
             # Get Salesforce Contact ID
             if registrant.user:
                 try:
-                    profile = registrant.user.get_profile()
+                    profile = registrant.user.profile
                 except Profile.DoesNotExist:
                     profile = Profile.objects.create_profile(user=registrant.user)
 

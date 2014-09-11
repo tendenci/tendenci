@@ -6,7 +6,7 @@ set_id:{{ set.pk }}
 {% endfor %}
 {% firstof object.title "Untitled" %}
 by {{ object.member }}
-by {{ object.object.member.get_profile.display_name }}
+by {{ object.object.member.profile.display_name }}
 {{ object.caption }}
 {% tags_for_object object as tags %}
 {% for tag in tags %}

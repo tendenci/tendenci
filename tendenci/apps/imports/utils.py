@@ -367,7 +367,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
             user.save(force_update=True)
 
         try:  # get or create
-            profile = user.get_profile()
+            profile = user.profile
         except Profile.DoesNotExist:
             profile = Profile.objects.create(user=user,
                creator=request.user,

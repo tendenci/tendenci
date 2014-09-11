@@ -117,10 +117,10 @@ class RecurringPayment(models.Model):
 
     @property
     def user_profile(self):
-        """Insteading of using user.get_profile(), this function traps the error.
+        """Insteading of using user.profile, this function traps the error.
         """
         try:
-            profile = self.user.get_profile()
+            profile = self.user.profile
         except Profile.DoesNotExist:
             profile = Profile.objects.create_profile(user=self.user)
         return profile
@@ -376,7 +376,7 @@ class RecurringPayment(models.Model):
         Create an invoice and update the next_billing_dt for this recurring payment.
         """
         try:
-            profile = self.user.get_profile()
+            profile = self.user.profile
         except Profile.DoesNotExist:
             profile = Profile.objects.create_profile(user=self.user)
 

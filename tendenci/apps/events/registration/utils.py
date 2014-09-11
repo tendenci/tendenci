@@ -176,7 +176,7 @@ def create_registrant(form, event, reg8n, **kwargs):
         if not user.is_anonymous():
             registrant.user = user
             try:
-                user_profile = registrant.user.get_profile()
+                user_profile = registrant.user.profile
             except:
                 user_profile = None
             if user_profile:

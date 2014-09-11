@@ -13,7 +13,7 @@ class Command(BaseCommand):
         users = User.objects.all()
         for user in users:
             try:
-                profile = user.get_profile()
+                profile = user.profile
             except ObjectDoesNotExist:
                 profile = Profile.objects.create_profile(user)
                 if options['verbosity'] > 1:

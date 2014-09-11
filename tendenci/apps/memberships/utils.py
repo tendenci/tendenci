@@ -1428,7 +1428,7 @@ class ImportMembDefault(object):
 
         # process profile
         try:  # get or create
-            profile = user.get_profile()
+            profile = user.profile
         except Profile.DoesNotExist:
             profile = Profile.objects.create(
                 user=user,

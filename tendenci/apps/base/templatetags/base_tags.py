@@ -121,7 +121,7 @@ def callMethod(obj, methodName):
         callMethod and args are used so that we can call a method with parameters in template
         Example:
             if you want to call: user_this.allow_view_by(user_current)
-            in template: {{ user_this.get_profile|args:user_current|call:'allow_edit_by' }}
+            in template: {{ user_this.profile|args:user_current|call:'allow_edit_by' }}
     """
     method = getattr(obj, methodName)
 
@@ -189,7 +189,7 @@ class GetProfileNode(Node):
         var_name = self.resolve(self.var_name, context)
         if isinstance(user_obj, User):
             try:
-                profile = user_obj.get_profile()
+                profile = user_obj.profile
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=user_obj)
             context[var_name] = profile

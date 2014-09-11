@@ -147,7 +147,7 @@ class LoginForm(forms.Form):
 
         if user:
             try:
-                profile = user.get_profile()
+                profile = user.profile
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=user)
 

@@ -49,7 +49,7 @@
 
         <div class="meta">
             <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as encreate %}Submitted on {{ encreate }}
-            by:{% endblocktrans %} {% firstof entity.creator.get_profile.display_name entity.creator %}</div>
+            by:{% endblocktrans %} {% firstof entity.creator.profile.display_name entity.creator %}</div>
         </div>
 
         <br />

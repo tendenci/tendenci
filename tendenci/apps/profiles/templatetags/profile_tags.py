@@ -11,7 +11,7 @@ register = Library()
 def users_nav(context, user_current, user_this):
     if user_this:
         try:
-            profile_this = user_this.get_profile()
+            profile_this = user_this.profile
         except:
             profile_this = None
     else:
@@ -29,7 +29,7 @@ def users_nav(context, user_current, user_this):
 def users_options(context, user_current, user_this):
     if user_this:
         try:
-            profile_this = user_this.get_profile()
+            profile_this = user_this.profile
         except:
             profile_this = None
     else:

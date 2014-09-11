@@ -77,7 +77,7 @@ def index(request, username='', template_name="profiles/index.html"):
     user_this = get_object_or_404(User, username=username)
 
     try:
-        profile = user_this.get_profile()
+        profile = user_this.profile
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
 
