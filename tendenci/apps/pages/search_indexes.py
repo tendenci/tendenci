@@ -11,7 +11,7 @@ from tendenci.apps.categories.models import Category
 class PageIndex(TendenciBaseSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
     content = indexes.CharField(model_attr='content')
-    syndicate = indexes.BooleanField(model_attr='syndicate')
+    syndicate = indexes.BooleanField(model_attr='syndicate', null=True)
 
     # categories
     category = indexes.CharField()
