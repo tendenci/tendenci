@@ -44,7 +44,7 @@ registered_apps_models = [app['model'] for app in registered_apps \
 
 def model_choices(site=None):
     if site is None:
-        site = haystack.sites.site
+        site = haystack.connections['default'].unified_index()
 
     choices = []
     for m in site.get_indexed_models():

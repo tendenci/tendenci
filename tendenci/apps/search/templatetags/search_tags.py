@@ -24,7 +24,7 @@ class SearchResultNode(IncludeNode):
             else:
                 result_object = result
 
-            if not result_object:
+            if not result_object or not result_object._meta:
                 return u''
 
             var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
