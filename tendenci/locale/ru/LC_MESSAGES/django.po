@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-06-27 12:38-0500\n"
-"PO-Revision-Date: 2014-09-12 04:00+0000\n"
+"PO-Revision-Date: 2014-09-12 04:35+0000\n"
 "Last-Translator: Ed Schipul <eschipul@tendenci.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/tendenci/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -84,7 +84,7 @@ msgstr "Статья была добавлена."
 
 #: addons/articles/management.py:11
 msgid "Article Deleted"
-msgstr ""
+msgstr "Статья Удаленные"
 
 #: addons/articles/management.py:11
 msgid "An article has been deleted"
@@ -135,7 +135,7 @@ msgstr ""
 #: templates/reports/membership_quick_list.html:13
 #: templates/reports/top_spenders.html:14
 msgid "First Name"
-msgstr ""
+msgstr "Имя"
 
 #: addons/articles/models.py:37 addons/corporate_memberships/forms.py:521
 #: addons/directories/models.py:48 addons/events/forms.py:2138
@@ -165,7 +165,7 @@ msgstr ""
 #: templates/reports/membership_quick_list.html:12
 #: templates/reports/top_spenders.html:13
 msgid "Last Name"
-msgstr ""
+msgstr "Фамилия"
 
 #: addons/articles/models.py:40 addons/news/models.py:42
 #: apps/pages/models.py:95
@@ -257,7 +257,7 @@ msgstr ""
 #: core/files/templates/admin/files/file/change_form.html:24
 #: templates/admin/index.html:36
 msgid "Add"
-msgstr ""
+msgstr "Добавить"
 
 #: addons/articles/templates/articles/add.html:30
 #: addons/articles/templates/articles/edit.html:29
@@ -266,7 +266,7 @@ msgstr ""
 #: core/categories/forms.py:91 core/files/forms.py:26 core/files/forms.py:183
 #: core/files/forms.py:230 core/files/forms.py:347 core/files/forms.py:541
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 #: addons/articles/templates/articles/delete.html:5
 #: addons/articles/templates/articles/delete.html:16
@@ -352,7 +352,7 @@ msgstr ""
 #: core/files/templates/files/reports/most-viewed-result.html:10
 #: core/files/templates/files/templates/tinymce_upload.html:24
 msgid "Delete"
-msgstr ""
+msgstr "Удалить"
 
 #: addons/articles/templates/articles/delete.html:20
 #: addons/directories/templates/directories/delete.html:10
@@ -423,7 +423,7 @@ msgstr ""
 #: templates/theme_includes/image_edit_form.html:25
 #: templates/theme_includes/logo_edit_form.html:19
 msgid "Cancel"
-msgstr ""
+msgstr "Отменить"
 
 #: addons/articles/templates/articles/edit.html:7
 #: addons/articles/templates/articles/edit.html:22
@@ -511,7 +511,7 @@ msgstr ""
 #: core/files/templates/files/reports/most-viewed-result.html:9
 #: templates/theme_includes/setting_edit_form.html:10
 msgid "Edit"
-msgstr ""
+msgstr "Редактировать"
 
 #: addons/articles/templates/articles/edit.html:34
 msgid "Save Article Changes"
@@ -551,7 +551,7 @@ msgstr ""
 #: core/exports/templates/exports/export_status.html:22
 #: core/files/templates/files/search-result.html:19
 msgid "Download"
-msgstr ""
+msgstr "Скачать"
 
 #: addons/articles/templates/articles/index.html:3
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:50
@@ -608,7 +608,7 @@ msgstr ""
 #: core/event_logs/templates/event_logs/search.html:27 core/files/forms.py:182
 #: core/files/templates/files/index.html:6 templates/default.html:41
 msgid "Search"
-msgstr ""
+msgstr "Поиск"
 
 #: addons/articles/templates/articles/index.html:7
 #: addons/articles/templates/articles/nav.html:57
@@ -639,7 +639,7 @@ msgstr ""
 #: core/emails/templates/emails/nav.html:31
 #: core/files/templates/files/index.html:7
 msgid "View"
-msgstr ""
+msgstr "Посмотреть"
 
 #: addons/articles/templates/articles/index.html:8
 #: addons/articles/templates/articles/print-view.html:20
@@ -659,19 +659,19 @@ msgstr ""
 #: apps/pages/templates/pages/print-view.html:19
 #: apps/stories/templates/stories/print_details.html:20
 msgid "Print View"
-msgstr ""
+msgstr "Просмотр печати"
 
 #: addons/articles/templates/articles/meta.html:7
 #: addons/news/templates/news/meta.html:8
 msgid "Released:"
-msgstr ""
+msgstr "Год выхода:"
 
 #: addons/articles/templates/articles/meta.html:13
 #: addons/news/templates/news/meta.html:18
 #: core/newsletters/templates/newsletters/articles_list.txt:34
 #: core/newsletters/templates/newsletters/news_list.txt:34
 msgid "Author:"
-msgstr ""
+msgstr "Автор:"
 
 #: addons/articles/templates/articles/meta.html:16
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:70
@@ -693,7 +693,7 @@ msgstr ""
 #: apps/profiles/templates/profiles/search-result.html:35
 #: core/payments/templates/payments/view.html:193
 msgid "Phone:"
-msgstr ""
+msgstr "Телефон:"
 
 #: addons/articles/templates/articles/meta.html:19
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:60
@@ -703,7 +703,7 @@ msgstr ""
 #: addons/jobs/templates/jobs/view.html:144
 #: addons/news/templates/news/meta.html:24
 msgid "Fax:"
-msgstr ""
+msgstr "Факс:"
 
 #: addons/articles/templates/articles/meta.html:22
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:64
@@ -720,13 +720,13 @@ msgstr ""
 #: apps/profiles/templates/profiles/search-result.html:30
 #: core/payments/templates/payments/view.html:200
 msgid "Email:"
-msgstr ""
+msgstr "E-mail:"
 
 #: addons/articles/templates/articles/meta.html:25
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:27
 #: addons/news/templates/news/meta.html:30
 msgid "Website:"
-msgstr ""
+msgstr "Сайт:"
 
 #: addons/articles/templates/articles/meta.html:33
 #: addons/directories/templates/directories/meta.html:10
@@ -767,7 +767,7 @@ msgstr ""
 #: apps/stories/templates/stories/meta.html:59
 #: apps/user_groups/templates/user_groups/meta.html:45
 msgid "Eventlogs"
-msgstr ""
+msgstr "Eventlogs"
 
 #: addons/articles/templates/articles/meta.html:76
 #: apps/pages/templates/pages/meta.html:73
@@ -791,7 +791,7 @@ msgstr ""
 #: apps/stories/templates/stories/meta.html:61
 #: apps/user_groups/templates/user_groups/meta.html:47
 msgid "Options"
-msgstr ""
+msgstr "Опции"
 
 #: addons/articles/templates/articles/meta.html:84
 #: addons/articles/templates/articles/nav.html:61
@@ -877,7 +877,7 @@ msgstr ""
 #: core/payments/templates/payments/nav.html:14
 #: core/site_settings/templates/site_settings/nav.html:9
 msgid "Tendenci"
-msgstr ""
+msgstr "Tendenci"
 
 #: addons/articles/templates/articles/nav.html:23
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:14
@@ -914,7 +914,7 @@ msgstr ""
 #: templates/default.html:65 templates/top_menu/admin_top.html:141
 #: templates/top_menu/user_top.html:11
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: addons/articles/templates/articles/nav.html:24
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:15
@@ -949,7 +949,7 @@ msgstr ""
 #: core/payments/templates/payments/nav.html:17
 #: core/site_settings/templates/site_settings/nav.html:12
 msgid "My Profile"
-msgstr ""
+msgstr "Мой профиль"
 
 #: addons/articles/templates/articles/nav.html:25
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:16
@@ -989,7 +989,7 @@ msgstr ""
 #: core/payments/templates/payments/nav.html:18
 #: core/site_settings/templates/site_settings/nav.html:13
 msgid "Log Off"
-msgstr ""
+msgstr "Выход"
 
 #: addons/articles/templates/articles/nav.html:34
 #: addons/directories/templates/directories/nav.html:34
@@ -1003,7 +1003,7 @@ msgstr ""
 #: addons/locations/templates/locations/nav.html:34
 #: libs/model_report/report.py:551
 msgid "All"
-msgstr ""
+msgstr "Все"
 
 #: addons/articles/templates/articles/nav.html:41
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:47
@@ -1035,7 +1035,7 @@ msgstr ""
 #: core/site_settings/templates/site_settings/list.html:15
 #: core/site_settings/templates/site_settings/nav.html:18
 msgid "Settings"
-msgstr ""
+msgstr "Настройки"
 
 #: addons/articles/templates/articles/nav.html:43
 #: addons/articles/templates/articles/search.html:16
@@ -1043,7 +1043,7 @@ msgstr ""
 #: addons/jobs/templates/jobs/nav.html:45
 #: addons/jobs/templates/jobs/search.html:16
 msgid "Latest"
-msgstr ""
+msgstr "Последнее"
 
 #: addons/articles/templates/articles/nav.html:48
 #: addons/corporate_memberships/templates/admin/corporate_memberships/app_index.html:30
@@ -1067,7 +1067,7 @@ msgstr ""
 #: apps/navs/templates/navs/export.html:16
 #: apps/profiles/templates/profiles/nav.html:57
 msgid "Export"
-msgstr ""
+msgstr "Экспорт"
 
 #: addons/articles/templates/articles/nav.html:54
 #: addons/directories/templates/directories/nav.html:55
@@ -1076,7 +1076,7 @@ msgstr ""
 #: addons/locations/templates/locations/nav.html:57
 #: addons/news/templates/news/nav.html:54
 msgid "This"
-msgstr ""
+msgstr "Это"
 
 #: addons/articles/templates/articles/options.html:14
 #: addons/directories/templates/directories/meta.html:42
@@ -1102,13 +1102,13 @@ msgstr ""
 #: libs/model_report/templates/model_report/includes/form_report.html:13
 #: templates/model_report/includes/form_report.html:13
 msgid "Print"
-msgstr ""
+msgstr "Распечатать"
 
 #: addons/articles/templates/articles/options.html:22
 #: addons/directories/templates/directories/options.html:22
 #: apps/contributions/templates/contributions/options.html:16
 msgid "More options "
-msgstr ""
+msgstr "Дополнительные параметры"
 
 #: addons/articles/templates/articles/print-view.html:23
 msgid "Back to the"
@@ -1130,7 +1130,7 @@ msgstr ""
 #: addons/locations/templates/locations/search.html:8
 #: addons/locations/templates/locations/search.html:20
 msgid "List"
-msgstr ""
+msgstr "Список"
 
 #: addons/articles/templates/articles/search.html:32
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:119
@@ -1152,7 +1152,7 @@ msgstr ""
 #: apps/user_groups/templates/user_groups/search.html:27
 #: core/files/templates/files/search.html:24
 msgid "Found"
-msgstr ""
+msgstr "Найдено"
 
 #: addons/articles/templates/articles/search.html:39
 #: addons/directories/templates/directories/search.html:32
@@ -1167,7 +1167,7 @@ msgstr ""
 #: addons/news/templates/news/meta.html:12
 #: addons/news/templates/notification/news_added/full.html:28
 msgid "Source:"
-msgstr ""
+msgstr "Источник:"
 
 #: addons/articles/templates/notification/article_added/full.html:7
 msgid "Article Add Notice"
@@ -1223,7 +1223,7 @@ msgstr ""
 #: addons/news/templates/notification/news_added/full.html:23
 #: addons/news/templates/notification/news_deleted/full.html:18
 msgid "Headline:"
-msgstr ""
+msgstr "Заголовок:"
 
 #: addons/articles/templates/notification/article_deleted/full.html:23
 #: addons/directories/templates/notification/directory_deleted/full.html:23
@@ -1277,7 +1277,7 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit_notice.txt:700
 #: core/files/templates/notification/file_deleted/full.html:22
 msgid "Time submitted:"
-msgstr ""
+msgstr "Время представлены:"
 
 #: addons/articles/templates/notification/article_deleted/short.txt:3
 #, python-format
@@ -1372,7 +1372,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/add.html:88
 #: core/newsletters/templates/newsletters/generate.html:69
 msgid "Module"
-msgstr ""
+msgstr "Модуль"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:69
 #: core/newsletters/templates/newsletters/add.html:89
@@ -1394,7 +1394,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/jumplinks.txt:15
 #: templates/top_menu/user_top.html:24
 msgid "Articles"
-msgstr ""
+msgstr "Статьи"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:82
 #: apps/dashboard/templates/dashboard/index.html:85
@@ -1404,7 +1404,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/jumplinks.txt:22
 #: templates/top_menu/user_top.html:42
 msgid "News"
-msgstr ""
+msgstr "Новости"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:91
 #: apps/dashboard/templates/dashboard/index.html:93
@@ -1415,7 +1415,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
 #: Sidebar.html:271 Right Sidebar.html:284 templates/top_menu/user_top.html:36
 msgid "Jobs"
-msgstr ""
+msgstr "Вакансии"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:98
 #: core/newsletters/templates/newsletters/add.html:113
@@ -1431,7 +1431,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/add.html:116
 #: core/newsletters/templates/newsletters/generate.html:102
 msgid "Pages"
-msgstr ""
+msgstr "Страницы"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:112
 #: core/newsletters/templates/newsletters/add.html:133
@@ -1442,11 +1442,11 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:7
 msgid "Delete Campaign"
-msgstr ""
+msgstr "Удалить кампании"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:19
 msgid "Delete a Campaign"
-msgstr ""
+msgstr "Удаление кампании"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:23
 msgid ""
@@ -1480,7 +1480,7 @@ msgstr ""
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:8
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:8
 msgid "Index"
-msgstr ""
+msgstr "Список"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:19
 msgid "Campaign Monitor Campaigns"
@@ -1490,7 +1490,7 @@ msgstr ""
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:27
 #: core/emails/templates/emails/edit.html:33
 msgid "Subject"
-msgstr ""
+msgstr "Тема"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:32
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:28
@@ -1505,7 +1505,7 @@ msgstr ""
 #: templates/reports/mem_join_table.html:14
 #: templates/reports/membership_joins.html:30
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/index.html:35
 msgid "0 Campaigns Found"
@@ -2743,13 +2743,13 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:60
 msgid "Application"
-msgstr ""
+msgstr "Применение"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:61
 #: addons/events/templates/events/types/index.html:18
 #: addons/memberships/templates/memberships/nav.html:49
 msgid "Types"
-msgstr ""
+msgstr "Виды"
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:62
 #: addons/memberships/templates/memberships/nav.html:50
@@ -2811,13 +2811,13 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:85
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:64
 msgid "Admin"
-msgstr ""
+msgstr "Админ"
 
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:61
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:68
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:64
 msgid "Approve / Disapprove"
-msgstr ""
+msgstr "Утвердить / Disapprove"
 
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:85
 msgid "approve it"
@@ -2858,7 +2858,7 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_header.html:3
 msgid "Renewal"
-msgstr ""
+msgstr "Обновление"
 
 #: addons/corporate_memberships/templates/corporate_memberships/payment_thankyou_header.html:3
 msgid " Payment Status"
@@ -2874,7 +2874,7 @@ msgstr ""
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:29
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:49
 msgid "Join Date:"
-msgstr ""
+msgstr "Регистрация:"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:130
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:95
@@ -2938,7 +2938,7 @@ msgstr ""
 #: templates/reports/corp_mems_summary.html:14
 #: templates/reports/membership_stats.html:14
 msgid "Total"
-msgstr ""
+msgstr "Всего"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:6
 #: addons/corporate_memberships/templates/corporate_memberships/renewal_conf.html:16
@@ -2988,7 +2988,7 @@ msgstr ""
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:27
 #: addons/make_payments/templates/make_payments/view.html:33
 msgid "Address:"
-msgstr ""
+msgstr "Адрес:"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:76
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:30
