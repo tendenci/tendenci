@@ -11,7 +11,7 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 class EmergencyAnnouncement(TendenciBaseModel):
     title = models.CharField(_('Title'), max_length=250)
     content = tinymce_models.HTMLField(_('Content'))
-    enabled = models.BooleanField(_('Enabled'), default=True)
+    enabled = models.NullBooleanField(_('Enabled'), default=True)
 
     perms = generic.GenericRelation(ObjectPermission,
                                     object_id_field="object_id",

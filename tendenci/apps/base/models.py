@@ -7,7 +7,7 @@ from tendenci.apps.base.fields import DictField
 
 
 class UpdateTracker(models.Model):
-    is_updating = models.BooleanField(default=False)
+    is_updating = models.NullBooleanField(default=False)
 
     @classmethod
     def get_or_create_instance(cls):
@@ -41,7 +41,7 @@ class UpdateTracker(models.Model):
 class ChecklistItem(OrderingBaseModel):
     key = models.CharField(max_length=20, unique=True)
     label = models.CharField(max_length=200)
-    done = models.BooleanField(default=False)
+    done = models.NullBooleanField(default=False)
 
     def __unicode__(self):
         return self.label

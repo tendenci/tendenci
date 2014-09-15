@@ -45,8 +45,8 @@ class Article(TendenciBaseModel):
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     # used for better performance when retrieving a list of released articles
     release_dt_local = models.DateTimeField(null=True, blank=True)
-    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
-    featured = models.BooleanField()
+    syndicate = models.NullBooleanField(_('Include in RSS feed'), default=True)
+    featured = models.NullBooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
@@ -56,7 +56,7 @@ class Article(TendenciBaseModel):
     enclosure_type = models.CharField(_('Enclosure Type'), max_length=120, blank=True)
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
 
-    not_official_content = models.BooleanField(_('Official Content'), blank=True)
+    not_official_content = models.NullBooleanField(_('Official Content'), blank=True)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)

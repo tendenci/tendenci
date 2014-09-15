@@ -31,12 +31,12 @@ class Resume(TendenciBaseModel):
     experience = models.TextField(blank=True)
     awards = models.TextField(_('Awards and Certifications'), blank=True)
     education = models.TextField(blank=True)
-    is_agency = models.BooleanField()  # defines if the resume posting is by a third party agency
+    is_agency = models.NullBooleanField()  # defines if the resume posting is by a third party agency
 
     #TODO: do we need these fields?
     #desiredlocationstate = models.CharField(max_length=50)
     #desiredlocationcountry = models.CharField(max_length=50)
-    #willingtorelocate = models.BooleanField()
+    #willingtorelocate = models.NullBooleanField()
     #workschedulepreferred = models.CharField(max_length=100)
     #compensationdesired = models.CharField(max_length=50)
     #licenses = models.CharField(max_length=100)
@@ -54,7 +54,7 @@ class Resume(TendenciBaseModel):
     resume_url = models.CharField(max_length=300, blank=True)  # link to other (fuller) resume posting
     resume_file = models.FileField(_('Upload your resume here'), max_length=260,
                                     upload_to=file_directory, blank=True, default="")
-    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True)
+    syndicate = models.NullBooleanField(_('Include in RSS feed'), blank=True)
 
     #TODO: foreign
     contact_name = models.CharField(max_length=150, blank=True)
@@ -71,12 +71,12 @@ class Resume(TendenciBaseModel):
     contact_website = models.CharField(max_length=300, blank=True)
 
     # authority fields
-    # allow_anonymous_view = models.BooleanField(_("Public can view"))
-    # allow_user_view = models.BooleanField(_("Signed in user can view"))
-    # allow_member_view = models.BooleanField()
-    # allow_anonymous_edit = models.BooleanField()
-    # allow_user_edit = models.BooleanField(_("Signed in user can change"))
-    # allow_member_edit = models.BooleanField()
+    # allow_anonymous_view = models.NullBooleanField(_("Public can view"))
+    # allow_user_view = models.NullBooleanField(_("Signed in user can view"))
+    # allow_member_view = models.NullBooleanField()
+    # allow_anonymous_edit = models.NullBooleanField()
+    # allow_user_edit = models.NullBooleanField(_("Signed in user can change"))
+    # allow_member_edit = models.NullBooleanField()
 
     # create_dt = models.DateTimeField(auto_now_add=True)
     # update_dt = models.DateTimeField(auto_now=True)
@@ -84,7 +84,7 @@ class Resume(TendenciBaseModel):
     # creator_username = models.CharField(max_length=50, null=True)
     # owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True, on_delete=models.SET_NULL)
     # owner_username = models.CharField(max_length=50, null=True)
-    # status = models.BooleanField("Active", default=True)
+    # status = models.NullBooleanField("Active", default=True)
     # status_detail = models.CharField(max_length=50, default='active')
 
     meta = models.OneToOneField(MetaTags, null=True)

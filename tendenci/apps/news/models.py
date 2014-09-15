@@ -48,7 +48,7 @@ class News(TendenciBaseModel):
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     # used for better performance when retrieving a list of released news
     release_dt_local = models.DateTimeField(null=True, blank=True)
-    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
+    syndicate = models.NullBooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
@@ -58,7 +58,7 @@ class News(TendenciBaseModel):
     enclosure_type = models.CharField(_('Enclosure Type'),max_length=120, blank=True) # for podcast feeds
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0) # for podcast feeds
 
-    use_auto_timestamp = models.BooleanField(_('Auto Timestamp'))
+    use_auto_timestamp = models.NullBooleanField(_('Auto Timestamp'))
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)

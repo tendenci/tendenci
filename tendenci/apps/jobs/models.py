@@ -36,7 +36,7 @@ class BaseJob(TendenciBaseModel):
     education = models.TextField(blank=True)
     level = models.CharField(max_length=50, blank=True)  # e.g. entry, part-time, permanent, contract
     period = models.CharField(max_length=50, blank=True)  # full time, part time, contract
-    is_agency = models.BooleanField()  # defines if the job posting is by a third party agency
+    is_agency = models.NullBooleanField()  # defines if the job posting is by a third party agency
 
     contact_method = models.TextField(blank=True)  # preferred method - email, phone, fax. leave open field for user to define
     position_reports_to = models.CharField(max_length=200, blank=True)  # manager, CEO, VP, etc
@@ -53,7 +53,7 @@ class BaseJob(TendenciBaseModel):
     start_dt = models.DateTimeField(null=True, blank=True)  # date job starts(defined by job poster)
 
     job_url = models.CharField(max_length=300, blank=True)  # link to other (fuller) job posting
-    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True, default=True)
+    syndicate = models.NullBooleanField(_('Include in RSS feed'), blank=True, default=True)
     design_notes = models.TextField(blank=True)
 
     #TODO: foreign
@@ -205,8 +205,8 @@ class JobPricing(models.Model):
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    show_member_pricing = models.BooleanField()
-    include_tax = models.BooleanField(default=False)
+    show_member_pricing = models.NullBooleanField()
+    include_tax = models.NullBooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -215,7 +215,7 @@ class JobPricing(models.Model):
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="job_pricing_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     class Meta:
         permissions = (("view_jobpricing", _("Can view job pricing")),)

@@ -141,36 +141,36 @@ class RegistrationConfiguration(models.Model):
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
-    payment_required = models.BooleanField(
+    payment_required = models.NullBooleanField(
         help_text=_('A payment required before registration is accepted.'), default=True)
 
     limit = models.IntegerField(_('Registration Limit'), default=0)
-    enabled = models.BooleanField(_('Enable Registration'), default=False)
+    enabled = models.NullBooleanField(_('Enable Registration'), default=False)
 
-    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " + \
+    require_guests_info = models.NullBooleanField(_('Require Guests Info'), help_text=_("If checked, " + \
                         "the required fields in registration form are also required for guests.  "),
                         default=False)
 
-    is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
-    discount_eligible = models.BooleanField(default=True)
-    allow_free_pass = models.BooleanField(default=False)
-    display_registration_stats = models.BooleanField(_('Publicly Show Registration Stats'), default=False, help_text='Display the number of spots registered and the number of spots left to the public.')
+    is_guest_price = models.NullBooleanField(_('Guests Pay Registrant Price'), default=False)
+    discount_eligible = models.NullBooleanField(default=True)
+    allow_free_pass = models.NullBooleanField(default=False)
+    display_registration_stats = models.NullBooleanField(_('Publicly Show Registration Stats'), default=False, help_text='Display the number of spots registered and the number of spots left to the public.')
 
     # custom reg form
-    use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
+    use_custom_reg_form = models.NullBooleanField(_('Use Custom Registration Form'), default=False)
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfs',
                                  help_text=_("You'll have the chance to edit the selected form"))
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
-    bind_reg_form_to_conf_only = models.BooleanField(_(' '),
+    bind_reg_form_to_conf_only = models.NullBooleanField(_(' '),
                                  choices=((True, _('Use one form for all pricings')),
                                           (False, _('Use separate form for each pricing'))),
                                  default=True)
 
     # base email for reminder email
     email = models.ForeignKey(Email, null=True)
-    send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
+    send_reminder = models.NullBooleanField(_('Send Email Reminder to attendees'), default=False)
     reminder_days = models.CharField(_('Specify when (? days before the event ' + \
                                        'starts) the reminder should be sent '),
                                      max_length=20,
@@ -246,7 +246,7 @@ class RegConfPricing(OrderingBaseModel):
     groups = models.ManyToManyField(Group, blank=True, null=True)
 
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
-    include_tax = models.BooleanField(default=False)
+    include_tax = models.NullBooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
     payment_required = models.NullBooleanField(
@@ -260,11 +260,11 @@ class RegConfPricing(OrderingBaseModel):
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
     end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
 
-    allow_anonymous = models.BooleanField(_("Public can use this pricing"))
-    allow_user = models.BooleanField(_("Signed in user can use this pricing"))
-    allow_member = models.BooleanField(_("All members can use this pricing"))
+    allow_anonymous = models.NullBooleanField(_("Public can use this pricing"))
+    allow_user = models.NullBooleanField(_("Signed in user can use this pricing"))
+    allow_member = models.NullBooleanField(_("All members can use this pricing"))
 
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     def delete(self, *args, **kwargs):
         """
@@ -391,23 +391,23 @@ class Registration(models.Model):
     # The pricings should then be found in the Registrant instances
     reg_conf_price = models.ForeignKey(RegConfPricing, null=True)
 
-    reminder = models.BooleanField(default=False)
+    reminder = models.NullBooleanField(default=False)
 
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
     payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
-    is_table = models.BooleanField(_('Is table registration'), default=False)
+    is_table = models.NullBooleanField(_('Is table registration'), default=False)
     # used for table
     quantity = models.IntegerField(_('Number of registrants for a table'), default=1)
     # admin price override for table
-    override_table = models.BooleanField(_('Admin Price Override?'), default=False)
+    override_table = models.NullBooleanField(_('Admin Price Override?'), default=False)
     override_price_table = models.DecimalField(_('Override Price'), max_digits=21,
                                          decimal_places=2,
                                          blank=True,
                                          default=0)
-    canceled = models.BooleanField(_('Canceled'), default=False)
+    canceled = models.NullBooleanField(_('Canceled'), default=False)
 
     creator = models.ForeignKey(User, related_name='created_registrations', null=True, on_delete=models.SET_NULL)
     owner = models.ForeignKey(User, related_name='owned_registrations', null=True, on_delete=models.SET_NULL)
@@ -715,8 +715,8 @@ class Registrant(models.Model):
     meal_option = models.CharField(max_length=200, default='', blank=True)
     comments = models.TextField(default='', blank=True)
 
-    is_primary = models.BooleanField(_('Is primary registrant'), default=False)
-    override = models.BooleanField(_('Admin Price Override?'), default=False)
+    is_primary = models.NullBooleanField(_('Is primary registrant'), default=False)
+    override = models.NullBooleanField(_('Admin Price Override?'), default=False)
     override_price = models.DecimalField(
         _('Override Price'), max_digits=21,
         decimal_places=2,
@@ -733,12 +733,12 @@ class Registrant(models.Model):
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
     memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
-    use_free_pass = models.BooleanField(default=False)
+    use_free_pass = models.NullBooleanField(default=False)
 
-    checked_in = models.BooleanField(_('Is Checked In?'), default=False)
+    checked_in = models.NullBooleanField(_('Is Checked In?'), default=False)
     checked_in_dt = models.DateTimeField(null=True)
 
-    reminder = models.BooleanField(_('Receive event reminders'), default=False)
+    reminder = models.NullBooleanField(_('Receive event reminders'), default=False)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -954,7 +954,7 @@ class Speaker(models.Model):
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(_('Speaker Name'), blank=True, max_length=100) # static info.
     description = models.TextField(blank=True) # static info.
-    featured = models.BooleanField(
+    featured = models.NullBooleanField(
         default=False,
         help_text=_("All speakers marked as featured will be displayed when viewing the event."))
 
@@ -1028,30 +1028,30 @@ class Event(TendenciBaseModel):
     type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
-    all_day = models.BooleanField()
+    all_day = models.NullBooleanField()
     start_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30))
     end_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30, hours=2))
     timezone = TimeZoneField(_('Time Zone'))
     place = models.ForeignKey('Place', null=True)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
-    mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
-    enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True) # hide from lists
+    mark_registration_ended = models.NullBooleanField(_('Registration Ended'), default=False)
+    enable_private_slug = models.NullBooleanField(_('Enable Private URL'), blank=True) # hide from lists
     private_slug = models.CharField(max_length=500, blank=True, default=u'')
     password = models.CharField(max_length=50, blank=True)
-    on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
+    on_weekend = models.NullBooleanField(default=True, help_text=_("This event occurs on weekends"))
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
         help_text=_('Photo that represents this event.'), null=True, blank=True)
     group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
     tags = TagField(blank=True)
-    priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
+    priority = models.NullBooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
 
     # recurring events
-    is_recurring_event = models.BooleanField(_('Is Recurring Event'), default=False)
+    is_recurring_event = models.NullBooleanField(_('Is Recurring Event'), default=False)
     recurring_event = models.ForeignKey(RecurringEvent, null=True)
 
     # additional permissions
-    display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)
+    display_event_registrants = models.NullBooleanField(_('Display Attendees'), default=False)
     DISPLAY_REGISTRANTS_TO_CHOICES=(("public",_("Everyone")),
                                     ("user",_("Users Only")),
                                     ("member",_("Members Only")),
@@ -1366,20 +1366,20 @@ class CustomRegForm(models.Model):
     status = models.CharField(max_length=50, default='active')
 
     # registrant fields to be selected
-    first_name = models.BooleanField(_('First Name'), default=False)
-    last_name = models.BooleanField(_('Last Name'), default=False)
-    mail_name = models.BooleanField(_('Mail Name'), default=False)
-    address = models.BooleanField(_('Address'), default=False)
-    city = models.BooleanField(_('City'), default=False)
-    state = models.BooleanField(_('State'), default=False)
-    zip = models.BooleanField(_('Zip'), default=False)
-    country = models.BooleanField(_('Country'), default=False)
-    phone = models.BooleanField(_('Phone'), default=False)
-    email = models.BooleanField(_('Email'), default=False)
-    position_title = models.BooleanField(_('Position Title'), default=False)
-    company_name = models.BooleanField(_('Company'), default=False)
-    meal_option = models.BooleanField(_('Meal Option'), default=False)
-    comments = models.BooleanField(_('Comments'), default=False)
+    first_name = models.NullBooleanField(_('First Name'), default=False)
+    last_name = models.NullBooleanField(_('Last Name'), default=False)
+    mail_name = models.NullBooleanField(_('Mail Name'), default=False)
+    address = models.NullBooleanField(_('Address'), default=False)
+    city = models.NullBooleanField(_('City'), default=False)
+    state = models.NullBooleanField(_('State'), default=False)
+    zip = models.NullBooleanField(_('Zip'), default=False)
+    country = models.NullBooleanField(_('Country'), default=False)
+    phone = models.NullBooleanField(_('Phone'), default=False)
+    email = models.NullBooleanField(_('Email'), default=False)
+    position_title = models.NullBooleanField(_('Position Title'), default=False)
+    company_name = models.NullBooleanField(_('Company'), default=False)
+    meal_option = models.NullBooleanField(_('Meal Option'), default=False)
+    comments = models.NullBooleanField(_('Comments'), default=False)
 
     class Meta:
         verbose_name = _("Custom Registration Form")
@@ -1438,13 +1438,13 @@ class CustomRegField(OrderingBaseModel):
         max_length=64)
     field_function = models.CharField(_("Special Functionality"),
         choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
-    required = models.BooleanField(_("Required"), default=True)
-    visible = models.BooleanField(_("Visible"), default=True)
+    required = models.NullBooleanField(_("Required"), default=True)
+    visible = models.NullBooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text=_("Comma separated options where applicable"))
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text=_("Default value of the field"))
-    display_on_roster = models.BooleanField(_("Show on Roster"), default=False)
+    display_on_roster = models.NullBooleanField(_("Show on Roster"), default=False)
 
     class Meta:
         verbose_name = _("Field")
@@ -1578,11 +1578,11 @@ class Addon(models.Model):
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields
     group = models.ForeignKey(Group, blank=True, null=True)
-    allow_anonymous = models.BooleanField(_("Public can use"))
-    allow_user = models.BooleanField(_("Signed in user can use"))
-    allow_member = models.BooleanField(_("All members can use"))
+    allow_anonymous = models.NullBooleanField(_("Public can use"))
+    allow_user = models.NullBooleanField(_("Signed in user can use"))
+    allow_member = models.NullBooleanField(_("All members can use"))
 
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     def delete(self, from_db=False, *args, **kwargs):
         """

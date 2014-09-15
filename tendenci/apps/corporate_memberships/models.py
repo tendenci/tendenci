@@ -113,9 +113,9 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                         help_text=_("Set 0 for free membership."))
     membership_type = models.ForeignKey(MembershipType,
         help_text=_("Bind individual memberships to this membership type."))
-    admin_only = models.BooleanField(_('Admin Only'), default=0)
+    admin_only = models.NullBooleanField(_('Admin Only'), default=0)
 
-    apply_threshold = models.BooleanField(_('Allow Threshold'), default=False)
+    apply_threshold = models.NullBooleanField(_('Allow Threshold'), default=False)
     individual_threshold = models.IntegerField(_('Threshold Limit'),
                                                default=0,
                                                blank=True,
@@ -305,7 +305,7 @@ class CorpProfile(TendenciBaseModel):
     number_employees = models.IntegerField(default=0)
     chapter = models.CharField(_('Chapter'), max_length=150,
                                blank=True, default='')
-    tax_exempt = models.BooleanField(_("Tax exempt"), default=0)
+    tax_exempt = models.NullBooleanField(_("Tax exempt"), default=0)
 
     annual_revenue = models.CharField(_('Annual revenue'), max_length=75,
                                blank=True, default='')
@@ -412,13 +412,13 @@ class CorpMembership(TendenciBaseModel):
                                      related_name='corp_memberships')
     corporate_membership_type = models.ForeignKey("CorporateMembershipType",
                                     verbose_name=_("MembershipType"))
-    renewal = models.BooleanField(default=0)
+    renewal = models.NullBooleanField(default=0)
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     join_dt = models.DateTimeField(_("Join Date Time"))
     expiration_dt = models.DateTimeField(_("Expiration Date Time"),
                                          blank=True, null=True)
-    approved = models.BooleanField(_("Approved"), default=0)
+    approved = models.NullBooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_(
                                         "Approved or Denied Date Time"),
                                               null=True)
@@ -1304,7 +1304,7 @@ class CorpMembershipApp(TendenciBaseModel):
                             default=1)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
-    include_tax = models.BooleanField(default=False)
+    include_tax = models.NullBooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
 
@@ -1381,9 +1381,9 @@ class CorpMembershipAppField(OrderingBaseModel):
                                   blank=True, null=True,
                                   default='CharField')
 
-    required = models.BooleanField(_("Required"), default=False)
-    display = models.BooleanField(_("Show"), default=True)
-    admin_only = models.BooleanField(_("Admin Only"), default=False)
+    required = models.NullBooleanField(_("Required"), default=False)
+    display = models.NullBooleanField(_("Show"), default=True)
+    admin_only = models.NullBooleanField(_("Admin Only"), default=False)
 
     help_text = models.CharField(_("Help Text"),
                                  max_length=2000, blank=True, default='')
@@ -1512,9 +1512,9 @@ class CorpMembershipRep(models.Model):
     corp_profile = models.ForeignKey("CorpProfile",
                                         related_name="reps")
     user = models.ForeignKey(User, verbose_name=_("Representative"),)
-    is_dues_rep = models.BooleanField(_('is dues rep?'),
+    is_dues_rep = models.NullBooleanField(_('is dues rep?'),
                                       default=True, blank=True)
-    is_member_rep = models.BooleanField(_('is member rep?'),
+    is_member_rep = models.NullBooleanField(_('is member rep?'),
                                     default=True, blank=True)
 
     class Meta:
@@ -1528,7 +1528,7 @@ class IndivEmailVerification(models.Model):
     guid = models.CharField(max_length=50)
     corp_profile = models.ForeignKey("CorpProfile")
     verified_email = models.CharField(_('email'), max_length=200)
-    verified = models.BooleanField(default=0)
+    verified = models.NullBooleanField(default=0)
     verified_dt = models.DateTimeField(null=True)
     creator = models.ForeignKey(User,
                                 related_name="corp_email_veri8n_creator",
@@ -1587,7 +1587,7 @@ class CorpMembershipImport(models.Model):
     # uniqueness key
     key = models.CharField(_('Key'), max_length=50,
                            default="name")
-    bind_members = models.BooleanField(
+    bind_members = models.NullBooleanField(
                 _('Bind members to corporations by their company names'), default=False)
 
     total_rows = models.IntegerField(default=0)
@@ -1646,7 +1646,7 @@ class Notice(models.Model):
                                             ('after', _('After')),
                                             ('attimeof', _('At Time Of'))))
     notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
-    system_generated = models.BooleanField(_("System Generated"), default=0)
+    system_generated = models.NullBooleanField(_("System Generated"), default=0)
     corporate_membership_type = models.ForeignKey(
         "CorporateMembershipType",
         blank=True,
@@ -1678,7 +1678,7 @@ class Notice(models.Model):
     status_detail = models.CharField(
         choices=(('active', _('Active')), ('admin_hold', _('Admin Hold'))),
         default='active', max_length=50)
-    status = models.BooleanField(default=True)
+    status = models.NullBooleanField(default=True)
 
     def __unicode__(self):
         return self.notice_name
@@ -1905,7 +1905,7 @@ class NoticeLogRecord(models.Model):
                                    related_name="log_records")
     corp_membership = models.ForeignKey(CorpMembership,
                                    related_name="log_records")
-    action_taken = models.BooleanField(default=0)
+    action_taken = models.NullBooleanField(default=0)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
