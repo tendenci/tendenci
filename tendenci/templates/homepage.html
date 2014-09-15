@@ -46,13 +46,13 @@
                 <h2>{% trans 'Meta' %}</h2>
                 <ul>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url dashboard %}">{% trans 'Dashboard' %}</a></li>
-                        <li><a href="{% url auth_logout %}">{% trans 'Log Out' %}</a></li>
+                        <li><a href="{% url "dashboard" %}">{% trans 'Dashboard' %}</a></li>
+                        <li><a href="{% url "auth_logout" %}">{% trans 'Log Out' %}</a></li>
                     {% else %}
                         {% if MODULE_USERS_SELFREGISTRATION %}
-                        <li><a href="{% url registration_register %}">{% trans 'Register' %}</a></li>
+                        <li><a href="{% url "registration_register" %}">{% trans 'Register' %}</a></li>
                         {% endif %}
-                        <li><a href="{% url auth_login %}">{% trans 'Log in' %}</a></li>
+                        <li><a href="{% url "auth_login" %}">{% trans 'Log in' %}</a></li>
                     {% endif %}
                 </ul>
             </li>

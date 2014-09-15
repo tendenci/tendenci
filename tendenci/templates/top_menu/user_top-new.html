@@ -3,7 +3,7 @@
 <div class="navbar yamm navbar-inverse navbar-fixed-top t-top-nav" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url dashboard %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
+            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url "dashboard" %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
         </div>
         <div id="navbar-collapse-0" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -13,65 +13,65 @@
                         <li><a href="/search"><span class="glyph search">&#76;</span>&nbsp;&nbsp;{% trans "Search All Content" %}</a></li>
                         {% endif %}
                         {% if MODULE_ARTICLES_ENABLED %}
-                        <li><a href="{% url article.search %}">{% trans "Articles" %}</a></li>
+                        <li><a href="{% url "article.search" %}">{% trans "Articles" %}</a></li>
                         {% endif %}
                         {% if MODULE_DIRECTORIES_ENABLED %}
-                        <li><a href="{% url directory.search %}">{% trans "Directories" %}</a></li>
+                        <li><a href="{% url "directory.search" %}">{% trans "Directories" %}</a></li>
                         {% endif %}
                         {% if MODULE_EVENTS_ENABLED %}
-                        <li><a href="{% url event.month %}">{% trans "Events" %}</a></li>
+                        <li><a href="{% url "event.month" %}">{% trans "Events" %}</a></li>
                         {% endif %}
                         {% if MODULE_HELP_FILES_ENABLED %}
-                        <li><a href="{% url help_files.search %}">{% trans "Help Files" %}</a></li>
+                        <li><a href="{% url "help_files.search" %}">{% trans "Help Files" %}</a></li>
                         {% endif %}
                         {% if MODULE_JOBS_ENABLED %}
-                        <li><a href="{% url job.search %}">{% trans "Jobs" %}</a></li>
+                        <li><a href="{% url "job.search" %}">{% trans "Jobs" %}</a></li>
                         {% endif %}
                         {% if MODULE_LOCATIONS_ENABLED %}
-                        <li><a href="{% url location.search %}">{% trans "Locations" %}</a></li>
+                        <li><a href="{% url "location.search" %}">{% trans "Locations" %}</a></li>
                         {% endif %}
                         {% if MODULE_NEWS_ENABLED %}
-                        <li><a href="{% url news.search %}">{% trans "News" %}</a></li>
+                        <li><a href="{% url "news.search" %}">{% trans "News" %}</a></li>
                         {% endif %}
                         {% if MODULE_PHOTOS_ENABLED %}
-                        <li><a href="{% url photoset_latest %}">{% trans "Photo Albums" %}</a></li>
+                        <li><a href="{% url "photoset_latest" %}">{% trans "Photo Albums" %}</a></li>
                         {% endif %}
                         {% if MODULE_RESUMES_ENABLED %}
-                        <li><a href="{% url resume.search %}">{% trans "Resumes" %}</a></li>
+                        <li><a href="{% url "resume.search" %}">{% trans "Resumes" %}</a></li>
                         {% endif %}
                     </ul>
                 </li>
                 {% if MODULE_MEMBERSHIPS_ENABLED %}
                 {% has_perm user memberships.approve_membership as can_approve_membership %}
                 {% if can_approve_membership %}
-                <li class="dropdown"><a href="{% url profile.search %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+                <li class="dropdown"><a href="{% url "profile.search" %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url membership.search %}">{% trans "Memberships" %}</a></li>
+                        <li><a href="{% url "membership.search" %}">{% trans "Memberships" %}</a></li>
                     </ul>
                 </li>
                 {% endif %}
                 {% endif %}
                 {% if MODULE_USERS_ALLOWUSERSEARCH %}
-                <li class="dropdown"><a href="{% url profile.search %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+                <li class="dropdown"><a href="{% url "profile.search" %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url profile.search %}">{% trans "Users Search" %}</a></li>
+                        <li><a href="{% url "profile.search" %}">{% trans "Users Search" %}</a></li>
                     </ul>
                 </li>
                 {% endif %}
-                <li class="dropdown"><a href="{% url profile request.user.username %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "My Links" %}</a>
+                <li class="dropdown"><a href="{% url "profile" request.user.username %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "My Links" %}</a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url profile request.user.username %}" >{% trans "My User Profile" %}</a></li>
-                        <li><a href="{% url invoice.search %}?bill_to_email={{ request.user.email }}">{% trans "My Invoices" %}</a></li>
+                        <li><a href="{% url "profile" request.user.username %}" >{% trans "My User Profile" %}</a></li>
+                        <li><a href="{% url "invoice.search" %}?bill_to_email={{ request.user.email }}">{% trans "My Invoices" %}</a></li>
                         {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
-                        <li><a href="{% url corpmembership.mycorps %}">{% trans "My Corporate Memberships" %}</a></li>
+                        <li><a href="{% url "corpmembership.mycorps" %}">{% trans "My Corporate Memberships" %}</a></li>
                         {% endif %}
-                        <li><a href="{% url profile request.user.username %}">{% trans "My Memberships" %}</a></li>
-                        <li><a href="{% url contribution.search %}">{% trans "My Content" %}</a></li>
+                        <li><a href="{% url "profile" request.user.username %}">{% trans "My Memberships" %}</a></li>
+                        <li><a href="{% url "contribution.search" %}">{% trans "My Content" %}</a></li>
                     </ul>
                 </li>
                 <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#87;</span>&nbsp;&nbsp;{% trans "Support" %}</a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url help_files.search %}">{% trans 'Help Files' %}</a></li>
+                        <li><a href="{% url "help_files.search" %}">{% trans 'Help Files' %}</a></li>
                         <li><a href="/contact/">{% trans "Contact" %}</a></li>
                         <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Tendenci Help Files" %}</a></li>
                     </ul>
@@ -93,8 +93,8 @@
                 {% include 'top_menu/change_lang-new.html' %}
                 </li>
                 {% endif %}
-                <li><a href="{% url profile.index %}">{{ user.username }}</a></li>
-                <li><a href="{% url auth_logout %}"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
+                <li><a href="{% url "profile.index" %}">{{ user.username }}</a></li>
+                <li><a href="{% url "auth_logout" %}"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
             </ul>
         </div>
     </div>

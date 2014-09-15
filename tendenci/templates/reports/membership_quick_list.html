@@ -5,7 +5,7 @@
 <h1>{% trans "Current Members Quick List" %}</h1>
 <div class="mems-wrap quick-list">
 {% if members %}
-<p><a href="{% url reports-members-quick-list %}?output=csv">
+<p><a href="{% url "reports-members-quick-list" %}?output=csv">
     {% trans 'Download CSV File' %}</a></p>
     <table>
         <tr>

@@ -6,7 +6,7 @@
 <div class="mems-wrap stat-table">
 
 <div style="float: right; margin-right: 1em;"><a href="?year={{ year_selected }}&print=on{% if exclude_total %}&exclude_total=on{% endif %}" target="_blank">{% trans 'Print' %}</a></div>
-<form class="search-form" action="{% url reports-active-members-ytd %}" method="get">
+<form class="search-form" action="{% url "reports-active-members-ytd" %}" method="get">
 <label for="id_year">{% trans "Select a Year" %}:</label><select name="year" id="id_year" onchange="this.form.submit();">
 <option value="">-----------</option>
 {% for year in years %}
@@ -79,9 +79,9 @@
 </div>
 <div>
 {% if not exclude_total %}
-<a href="{% url reports-active-members-ytd %}?exclude_total=on">{% trans 'Exclude Total Active from Chart' %}</a>
+<a href="{% url "reports-active-members-ytd" %}?exclude_total=on">{% trans 'Exclude Total Active from Chart' %}</a>
 {% else %}
-<a href="{% url reports-active-members-ytd %}">{% trans 'Include Total Active to Chart' %}</a>
+<a href="{% url "reports-active-members-ytd" %}">{% trans 'Include Total Active to Chart' %}</a>
 {% endif %}
  </div>
 
