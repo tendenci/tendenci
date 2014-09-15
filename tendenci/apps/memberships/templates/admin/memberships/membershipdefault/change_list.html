@@ -60,7 +60,7 @@
                 {% trans 'Search Members' %} {{ profile }}</a></li>
 
             <li>
-              <a href="{% url "cl.opts|admin_urlname:'add'" %}{% if is_popup %}?_popup=1{% endif %}" class="addlink">
+              <a href="{% url cl.opts|admin_urlname:'add' %}{% if is_popup %}?_popup=1{% endif %}" class="addlink">
                 {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
               </a>
             </li>
