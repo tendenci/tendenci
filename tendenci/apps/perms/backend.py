@@ -163,7 +163,9 @@ class ObjectPermBackend(object):
         # before we ever hit the database, faster
         if 'view' in perm:
             try:  # test for an index and make the query
-                from haystack import site
+                from haystack import connections
+                site = connections['default'].unified_index()
+
                 index = site.get_index(obj.__class__)
                 if can_view(user, obj):
                     return True
