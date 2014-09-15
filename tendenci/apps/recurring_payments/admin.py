@@ -8,8 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.base.utils import tcurrency
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.utils import tcurrency
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign

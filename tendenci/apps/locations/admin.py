@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.locations.models import Location
 from tendenci.apps.locations.forms import LocationForm
 

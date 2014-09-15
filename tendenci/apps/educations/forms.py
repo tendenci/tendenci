@@ -1,5 +1,5 @@
 from tendenci.apps.educations.models import Education
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 

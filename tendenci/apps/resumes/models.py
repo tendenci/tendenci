@@ -6,12 +6,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from tendenci.core.base.fields import SlugField
+from tendenci.apps.base.fields import SlugField
 from tendenci.apps.resumes.managers import ResumeManager
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
-from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.resumes.module_meta import ResumeMeta
 
 

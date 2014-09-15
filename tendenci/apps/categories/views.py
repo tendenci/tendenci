@@ -7,9 +7,9 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.base.http import Http403
-from tendenci.core.categories.forms import CategoryForm
-from tendenci.core.categories.models import Category
+from tendenci.apps.base.http import Http403
+from tendenci.apps.categories.forms import CategoryForm
+from tendenci.apps.categories.models import Category
 
 @login_required
 def edit_categories(request, app_label, model, pk, form_class=CategoryForm, template_name="categories/update.html"):

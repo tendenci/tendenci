@@ -22,33 +22,33 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.db.models.fields import AutoField
 
-from tendenci.core.base.utils import day_validate, is_blank
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.utils import get_notice_recipients
-from tendenci.core.base.fields import DictField, CountrySelectField
+from tendenci.apps.base.utils import day_validate, is_blank
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.base.fields import DictField, CountrySelectField
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.user_groups.models import Group
-from tendenci.core.emails.models import Email
+from tendenci.apps.emails.models import Email
 from tendenci.apps.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
-from tendenci.core.base.utils import fieldify
+from tendenci.apps.base.utils import fieldify
 from tinymce import models as tinymce_models
-from tendenci.core.payments.models import PaymentMethod
+from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.user_groups.models import GroupMembership
-from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
-from tendenci.core.files.models import File
+from tendenci.apps.files.models import File
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.directories.models import Directory
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
-from tendenci.core.base.utils import UnicodeWriter
+from tendenci.apps.base.utils import UnicodeWriter
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^tinymce.models.HTMLField"])
-add_introspection_rules([], ["^tendenci.core.base.fields.SlugField"])
+add_introspection_rules([], ["^tendenci.apps.base.fields.SlugField"])
 
 FIELD_CHOICES = (
     ("text", _("Text")),
@@ -2433,7 +2433,7 @@ class MembershipFile(File):
 # the management commands due to the ImportError.
 # assign models permissions to the admin auth group
 def assign_permissions(app, created_models, verbosity, **kwargs):
-    from tendenci.core.perms.utils import update_admin_group_perms
+    from tendenci.apps.perms.utils import update_admin_group_perms
     update_admin_group_perms()
 from django.db.models.signals import post_syncdb
 #from memberships import models as membership_models

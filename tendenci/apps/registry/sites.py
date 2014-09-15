@@ -1,6 +1,6 @@
-from tendenci.core.registry.exceptions import AlreadyRegistered, NotRegistered
-from tendenci.core.registry.utils import RegisteredApps
-from tendenci.core.registry.cache import cache_reg_apps, get_reg_apps, delete_reg_apps_cache
+from tendenci.apps.registry.exceptions import AlreadyRegistered, NotRegistered
+from tendenci.apps.registry.utils import RegisteredApps
+from tendenci.apps.registry.cache import cache_reg_apps, get_reg_apps, delete_reg_apps_cache
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -22,7 +22,7 @@ class RegistrySite(object):
         to the model.
         """
         if not registry_class:
-            from tendenci.core.registry.base import CoreRegistry
+            from tendenci.apps.registry.base import CoreRegistry
             registry_class = CoreRegistry
 
         if not hasattr(model, '_meta'):

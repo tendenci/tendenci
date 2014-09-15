@@ -6,11 +6,11 @@ from django.utils.safestring import mark_safe
 from django.contrib.admin import widgets
 
 from captcha.fields import CaptchaField
-from tendenci.core.categories.models import Category
+from tendenci.apps.categories.models import Category
 from tendenci.apps.jobs.models import Job
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
 from tendenci.apps.jobs.models import JobPricing
 from tendenci.apps.jobs.utils import get_payment_method_choices, pricing_choices
 from tendenci.apps.user_groups.models import Group

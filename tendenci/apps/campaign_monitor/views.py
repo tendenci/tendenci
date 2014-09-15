@@ -14,15 +14,15 @@ from createsend import CreateSend
 from createsend import Template as CST
 from createsend import Campaign as CSC
 from createsend.createsend import BadRequest
-from tendenci.core.perms.utils import has_perm
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.campaign_monitor.models import Template, Campaign
 from tendenci.apps.campaign_monitor.forms import TemplateForm, CampaignForm
 from tendenci.apps.campaign_monitor.utils import temporary_id, extract_files
 from tendenci.apps.campaign_monitor.utils import sync_campaigns, sync_templates
 from tendenci.apps.campaign_monitor.utils import apply_template_media
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.base.http import Http403
-from tendenci.core.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.http import Http403
+from tendenci.apps.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
     newsletter_news_list, newsletter_pages_list
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)

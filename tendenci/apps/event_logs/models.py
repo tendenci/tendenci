@@ -4,10 +4,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.event_logs.managers import EventLogManager
+from tendenci.apps.event_logs.managers import EventLogManager
 from tendenci.apps.entities.models import Entity
-from tendenci.core.robots.models import Robot
-from tendenci.core.event_logs.colors import get_color
+from tendenci.apps.robots.models import Robot
+from tendenci.apps.event_logs.colors import get_color
 
 
 class EventLog(models.Model):

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.template.defaultfilters import striptags, truncatewords
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin, TagsFilter
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin, TagsFilter
 from tendenci.apps.articles.models import Article
 from tendenci.apps.articles.forms import ArticleForm
 

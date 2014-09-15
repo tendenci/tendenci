@@ -16,10 +16,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
-from tendenci.core.base.utils import UnicodeWriter
-from tendenci.core.emails.models import Email
-from tendenci.core.payments.models import Payment
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base.utils import UnicodeWriter
+from tendenci.apps.emails.models import Email
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.libs.storage import get_default_storage
 
 
@@ -171,7 +171,7 @@ def is_free_listing(user, pricing_id, list_type):
 
 def process_export(export_fields='all_fields', export_status_detail='',
                    identifier=u'', user_id=0):
-    from tendenci.core.perms.models import TendenciBaseModel
+    from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
         field_list = [

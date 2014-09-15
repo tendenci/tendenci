@@ -21,13 +21,13 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.utils import get_notice_recipients
-from tendenci.core.files.managers import FileManager
-from tendenci.core.base.utils import extract_pdf
-from tendenci.core.categories.models import CategoryItem
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.files.managers import FileManager
+from tendenci.apps.base.utils import extract_pdf
+from tendenci.apps.categories.models import CategoryItem
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def file_directory(instance, filename):
@@ -340,7 +340,7 @@ class File(TendenciBaseModel):
         """
         Returns binary in encoding base64.
         """
-        from tendenci.core.files.utils import build_image
+        from tendenci.apps.files.utils import build_image
         size = kwargs.get('size') or self.image_dimensions()
 
         binary = build_image(self.file, size, 'FILE_IMAGE_PRE_KEY')

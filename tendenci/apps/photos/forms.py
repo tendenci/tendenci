@@ -5,8 +5,8 @@ from django.utils.encoding import force_unicode
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.photos.models import Image, PhotoSet, License
-from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.perms.utils import get_query_filters
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
 class LicenseField(forms.ModelChoiceField):

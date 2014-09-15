@@ -1,6 +1,6 @@
-from tendenci.core.registry import site
-from tendenci.core.registry.base import LogRegistry, lazy_reverse
-from tendenci.core.emails.models import Email
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.emails.models import Email
 
 class EmailRegistry(LogRegistry):
     event_logs = {

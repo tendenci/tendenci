@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.utils import simplejson
 
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 
 
 @login_required

@@ -14,19 +14,19 @@ from django.core.cache import cache
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.base.template_tags import parse_tag_kwargs
-from tendenci.core.base.utils import url_exists
+from tendenci.apps.base.template_tags import parse_tag_kwargs
+from tendenci.apps.base.utils import url_exists
 from tendenci.apps.profiles.models import Profile
 
-from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
-from tendenci.core.files.utils import generate_image_cache_key
+from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
+from tendenci.apps.files.utils import generate_image_cache_key
 
 register = Library()
 
 
 @register.inclusion_tag("base/fb_like_iframe.html")
 def fb_like_button_iframe(url, show_faces='false', width=400, height=40):
-    from tendenci.core.site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
     site_url = get_setting('site', 'global', 'siteurl')
     url = '%s%s' % (site_url,url)
     if show_faces.lower() == 'true':

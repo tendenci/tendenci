@@ -9,12 +9,12 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.core.base.fields import EmailVerificationField, PriceField, CountrySelectField
+from tendenci.apps.base.fields import EmailVerificationField, PriceField, CountrySelectField
 from tendenci.apps.corporate_memberships.models import (
     CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.memberships.models import (
     MembershipDefault, MembershipDemographic, MembershipAppField, MembershipType,
     Notice, MembershipImport, MembershipApp, MembershipFile)

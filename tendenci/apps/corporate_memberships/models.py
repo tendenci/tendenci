@@ -23,8 +23,8 @@ from django.db.models.signals import post_delete
 from tinymce import models as tinymce_models
 
 #from completion import AutocompleteProvider, site
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipApp,
@@ -34,22 +34,22 @@ from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
 from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
                                                 CorpMembershipAppManager)
-#from tendenci.core.site_settings.utils import get_setting
+#from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
-from tendenci.core.payments.models import PaymentMethod, Payment
-from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.apps.payments.models import PaymentMethod, Payment
+from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.models import Profile
-from tendenci.core.base.fields import DictField, CountrySelectField
+from tendenci.apps.base.fields import DictField, CountrySelectField
 
 from tendenci.apps.notifications import models as notification
-from tendenci.core.base.utils import send_email_notification, day_validate, fieldify, get_salesforce_access
-from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.base.utils import send_email_notification, day_validate, fieldify, get_salesforce_access
+from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.corporate_memberships.utils import (
                                             corp_membership_update_perms,
                                             dues_rep_emails_list,
                                             create_salesforce_lead)
-from tendenci.core.imports.utils import get_unique_username
+from tendenci.apps.imports.utils import get_unique_username
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
@@ -714,7 +714,7 @@ class CorpMembership(TendenciBaseModel):
             from tendenci.apps.notifications import models as notification
         except:
             notification = None
-        from tendenci.core.perms.utils import get_notice_recipients
+        from tendenci.apps.perms.utils import get_notice_recipients
 
         # approve it
         if self.renewal:

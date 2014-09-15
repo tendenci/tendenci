@@ -2,14 +2,14 @@ import imghdr
 from os.path import splitext, basename
 
 from tendenci.apps.locations.models import Location
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
 from django.db.models import Q
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
-from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
+from tendenci.apps.files.utils import get_max_file_upload_size
 
 
 ALLOWED_LOGO_EXT = (

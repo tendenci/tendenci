@@ -1,7 +1,7 @@
 from django.template import Library, TemplateSyntaxError, Variable, Node
 from django.utils.translation import ugettext_lazy as _
-from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.core.perms.utils import get_query_filters
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.perms.utils import get_query_filters
 from django.contrib.auth.models import AnonymousUser, User
 from tendenci.apps.navs.models import Nav
 from tendenci.apps.navs.utils import get_nav, cache_nav

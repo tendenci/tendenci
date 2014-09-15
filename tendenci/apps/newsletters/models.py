@@ -2,8 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.files.models import file_directory
-from tendenci.core.newsletters.utils import extract_files
+from tendenci.apps.files.models import file_directory
+from tendenci.apps.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 

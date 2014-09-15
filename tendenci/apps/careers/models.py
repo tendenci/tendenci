@@ -4,8 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.careers.managers import CareerManager
 
 POSITION_TYPE_CHOICES = (

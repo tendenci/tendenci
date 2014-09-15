@@ -22,15 +22,15 @@ from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.middleware.csrf import get_token as csrf_get_token
 
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.base.http import Http403
-from tendenci.core.base.decorators import flash_login_required
-from tendenci.core.base.utils import checklist_update
-from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.decorators import flash_login_required
+from tendenci.apps.base.utils import checklist_update
+from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key
 from tendenci.apps.user_groups.models import Group
 from djcelery.models import TaskMeta
 
@@ -410,7 +410,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 @is_enabled('photos')
 @login_required
 def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
-    from tendenci.core.perms.object_perms import ObjectPermission
+    from tendenci.apps.perms.object_perms import ObjectPermission
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
@@ -525,7 +525,7 @@ def photos_batch_add(request, photoset_id=0):
     """
     import uuid
     from django.db.models import Max
-    from tendenci.core.perms.object_perms import ObjectPermission
+    from tendenci.apps.perms.object_perms import ObjectPermission
 
     # photoset permission required to add photos
     if not has_perm(request.user, 'photos.add_photoset'):

@@ -25,8 +25,8 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.utils import has_perm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipDefault,
                                                 MembershipDemographic,
@@ -34,10 +34,10 @@ from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipAppField,
                                                 MembershipFile,
                                                 VALID_MEMBERSHIP_STATUS_DETAIL)
-from tendenci.core.base.utils import normalize_newline, UnicodeWriter, tcurrency
+from tendenci.apps.base.utils import normalize_newline, UnicodeWriter, tcurrency
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
-from tendenci.core.emails.models import Email
+from tendenci.apps.emails.models import Email
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -304,7 +304,7 @@ def process_export(
         export_type='all',
         export_status_detail='active',
         identifier=u'', user_id=0, cp_id=0):
-    from tendenci.core.perms.models import TendenciBaseModel
+    from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
 

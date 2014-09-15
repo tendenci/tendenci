@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.robots.managers import RobotManager
+from tendenci.apps.robots.managers import RobotManager
 
 
 STATUS_CHOICES = (('active',_('Active')),('inactive',_('Inactive')),)

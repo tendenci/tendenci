@@ -8,8 +8,8 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from dateutil.relativedelta import relativedelta
-from tendenci.core.emails.models import Email
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import (RecurringPayment,
                                        PaymentProfile,
@@ -18,7 +18,7 @@ from tendenci.apps.recurring_payments.models import (RecurringPayment,
 from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from tendenci.apps.recurring_payments.authnet.utils import get_token
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
-from tendenci.core.payments.models import Payment
+from tendenci.apps.payments.models import Payment
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
 
@@ -357,7 +357,7 @@ def api_rp_setup(data):
     from decimal import Decimal
     from django.core.validators import email_re
     import dateutil.parser as dparser
-    from tendenci.core.imports.utils import get_unique_username
+    from tendenci.apps.imports.utils import get_unique_username
 
     email = data.get('email', '')
     description = data.get('description', '')
@@ -559,7 +559,7 @@ def api_add_rp(data):
     from decimal import Decimal
     from django.core.validators import email_re
     import dateutil.parser as dparser
-    from tendenci.core.imports.utils import get_unique_username
+    from tendenci.apps.imports.utils import get_unique_username
 
     email = data.get('email', '')
     payment_amount = data.get('payment_amount', '')

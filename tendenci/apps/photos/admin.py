@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.photos.models import PhotoSet, Image, Pool
 from tendenci.apps.photos.forms import PhotoSet, PhotoAdminForm, PhotoSetAddForm
 
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.utils import get_notice_recipients, update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import get_notice_recipients, update_perms_and_save
 from tendenci.apps.notifications.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):

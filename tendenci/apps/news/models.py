@@ -8,18 +8,18 @@ from django.contrib.contenttypes import generic
 from django.conf import settings
 
 from tagging.fields import TagField
-from tendenci.core.base.fields import SlugField
+from tendenci.apps.base.fields import SlugField
 from timezones.fields import TimeZoneField
 from timezones.utils import localtime_for_timezone
 from timezones.utils import adjust_datetime_to_timezone
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.categories.models import CategoryItem
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.news.managers import NewsManager
 from tinymce import models as tinymce_models
-from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.news.module_meta import NewsMeta
-from tendenci.core.files.models import File
+from tendenci.apps.files.models import File
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 class News(TendenciBaseModel):

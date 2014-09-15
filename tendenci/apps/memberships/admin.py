@@ -12,11 +12,11 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 
-from tendenci.core.base.http import Http403
+from tendenci.apps.base.http import Http403
 from tendenci.apps.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
-from tendenci.core.base.utils import tcurrency
-from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.memberships.models import (
     MembershipDefault, MembershipType, Notice,
     MembershipAppField, MembershipApp)
@@ -25,8 +25,8 @@ from tendenci.apps.memberships.forms import (
     MembershipAppForm, MembershipAppFieldAdminForm)
 from tendenci.apps.memberships.utils import get_selected_demographic_field_names
 from tendenci.apps.memberships.middleware import ExceededMaxTypes
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.utils import has_perm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import has_perm
 
 
 class MembershipStatusDetailFilter(SimpleListFilter):

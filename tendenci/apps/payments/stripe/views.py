@@ -12,13 +12,13 @@ from django.views.decorators.csrf import csrf_exempt
 
 import simplejson
 
-from tendenci.core.payments.utils import payment_processing_object_updates
-from tendenci.core.payments.utils import log_payment, send_payment_notice
-from tendenci.core.payments.models import Payment
+from tendenci.apps.payments.utils import payment_processing_object_updates
+from tendenci.apps.payments.utils import log_payment, send_payment_notice
+from tendenci.apps.payments.models import Payment
 from forms import StripeCardForm, BillingInfoForm
 import stripe
 from utils import payment_update_stripe
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 
 @csrf_exempt

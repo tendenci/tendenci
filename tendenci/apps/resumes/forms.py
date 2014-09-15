@@ -7,10 +7,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
 from tendenci.apps.resumes.models import Resume
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField
-from tendenci.core.base.fields import EmailVerificationField, CountrySelectField
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
 
 ALLOWED_FILE_EXT = (
     '.doc',

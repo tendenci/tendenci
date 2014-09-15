@@ -16,7 +16,7 @@ from tendenci.apps.recurring_payments.authnet.cim import (CIMCustomerProfile,
                                             CIMCustomerProfileTransaction)
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
-from tendenci.core.payments.models import Payment
+from tendenci.apps.payments.models import Payment
 
 BILLING_PERIOD_CHOICES = (
                         ('month', _('Month(s)')),

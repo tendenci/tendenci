@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget,
                      AppFieldSelectionWidget)
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class TypeExpMethodField(forms.MultiValueField):

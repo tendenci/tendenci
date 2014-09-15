@@ -27,15 +27,15 @@ from django.utils.translation import check_for_language
 from django.utils.translation import ugettext_lazy as _
 # local
 from tendenci import __version__ as version
-from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
-from tendenci.core.base.decorators import password_required
-from tendenci.core.base.forms import PasswordForm, AddonUploadForm
-from tendenci.core.base.models import UpdateTracker, ChecklistItem
-from tendenci.core.base.managers import SubProcessManager
-from tendenci.core.perms.decorators import superuser_required
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.theme.utils import get_theme_info
+from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
+from tendenci.apps.base.decorators import password_required
+from tendenci.apps.base.forms import PasswordForm, AddonUploadForm
+from tendenci.apps.base.models import UpdateTracker, ChecklistItem
+from tendenci.apps.base.managers import SubProcessManager
+from tendenci.apps.perms.decorators import superuser_required
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.utils import get_theme_info
 
 BASEFILE_EXTENSIONS = (
     'txt',
@@ -90,7 +90,7 @@ def image_preview(request, app_label, model, id,  size):
     original_size = size
 
     if not response:
-        from tendenci.core.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
+        from tendenci.apps.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
 
         # set sizes
         size_min = (30,30)
@@ -272,7 +272,7 @@ def feedback(request, template_name="base/feedback.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
 def homepage(request, template_name="homepage.html"):
-    from tendenci.core.event_logs.models import EventLog
+    from tendenci.apps.event_logs.models import EventLog
 
     EventLog.objects.log()
 
@@ -381,7 +381,7 @@ def checklist(request, template_name="base/checklist.html"):
 
 @superuser_required
 def addon_upload(request, template_name="base/addon_upload.html"):
-    from tendenci.core.event_logs.models import EventLog
+    from tendenci.apps.event_logs.models import EventLog
 
     form = AddonUploadForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':

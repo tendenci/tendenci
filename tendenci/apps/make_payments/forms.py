@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.make_payments.models import MakePayment
-from tendenci.core.base.fields import EmailVerificationField, PriceField
+from tendenci.apps.base.fields import EmailVerificationField, PriceField
 from captcha.fields import CaptchaField
 
 COUNTRIES = (

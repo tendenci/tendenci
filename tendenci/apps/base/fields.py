@@ -10,9 +10,9 @@ from django.utils import simplejson
 from django.core import exceptions
 from django_countries.countries import COUNTRIES
 
-from tendenci.core.base import forms
-from tendenci.core.base.widgets import SplitDateTimeWidget, EmailVerificationWidget, PriceWidget
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base import forms
+from tendenci.apps.base.widgets import SplitDateTimeWidget, EmailVerificationWidget, PriceWidget
+from tendenci.apps.site_settings.utils import get_setting
 
 
 # introspection rules for south migration for the slugfield

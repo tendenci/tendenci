@@ -15,8 +15,8 @@ from django.db.models import Q
 from django.template.response import TemplateResponse
 
 from tagging.models import TaggedItem
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.utils import update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class TendenciBaseModelAdmin(admin.ModelAdmin):

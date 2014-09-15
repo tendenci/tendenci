@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from tendenci.core.email_blocks.models import EmailBlock
+from tendenci.apps.email_blocks.models import EmailBlock
 
 class EmailBlockForm(forms.ModelForm):
     STATUS_CHOICES = (('active',_('Active')),('inactive',_('Inactive')),)

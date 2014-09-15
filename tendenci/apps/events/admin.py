@@ -14,8 +14,8 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
     CustomRegFormEntry, CustomRegFieldEntry)
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.site_settings.utils import delete_settings_cache
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import delete_settings_cache
 
 
 class EventAdmin(admin.ModelAdmin):

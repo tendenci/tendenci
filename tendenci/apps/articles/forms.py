@@ -6,12 +6,12 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from tendenci.apps.articles.models import Article
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField
-from tendenci.core.base.fields import EmailVerificationField
-from tendenci.core.perms.utils import get_query_filters
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import EmailVerificationField
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
 

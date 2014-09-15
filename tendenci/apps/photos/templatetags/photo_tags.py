@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.photos.models import Image, Pool
-from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 

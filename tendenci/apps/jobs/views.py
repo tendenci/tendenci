@@ -12,22 +12,22 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.base.http import Http403
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.core.meta.forms import MetaForm
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import (
+from tendenci.apps.base.http import Http403
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.perms.utils import (
     get_notice_recipients,
     update_perms_and_save,
     has_perm,
     get_query_filters,
     has_view_perm)
-from tendenci.core.categories.forms import CategoryForm, CategoryForm2
-from tendenci.core.categories.models import Category
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.categories.forms import CategoryForm, CategoryForm2
+from tendenci.apps.categories.models import Category
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.jobs.models import Job, JobPricing
 from tendenci.apps.jobs.forms import JobForm, JobPricingForm, JobSearchForm
 from tendenci.apps.jobs.utils import is_free_listing, job_set_inv_payment
@@ -36,7 +36,7 @@ try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
-from tendenci.core.base.utils import send_email_notification
+from tendenci.apps.base.utils import send_email_notification
 
 
 @is_enabled('jobs')

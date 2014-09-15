@@ -9,13 +9,13 @@ from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 
 from tendenci.apps.news.models import News
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField
-from tendenci.core.base.fields import EmailVerificationField
-from tendenci.core.files.utils import get_max_file_upload_size
-from tendenci.core.perms.utils import get_query_filters
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import EmailVerificationField
+from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (

@@ -8,13 +8,13 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.boxes.models import Box
-from tendenci.core.perms.utils import get_query_filters
-from tendenci.core.site_settings.models import Setting
-from tendenci.core.site_settings.forms import build_settings_form
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.forms import build_settings_form
+from tendenci.apps.site_settings.utils import get_setting
 
-from tendenci.core.theme.template_loaders import get_default_template
-from tendenci.core.theme.utils import get_theme_template
+from tendenci.apps.theme.template_loaders import get_default_template
+from tendenci.apps.theme.utils import get_theme_template
 
 register = Library()
 

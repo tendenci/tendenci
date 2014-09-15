@@ -1,5 +1,5 @@
 from django import forms
-from tendenci.core.emails.models import Email
+from tendenci.apps.emails.models import Email
 from django.utils.translation import ugettext_lazy as _
 
 class EmailForm(forms.ModelForm):

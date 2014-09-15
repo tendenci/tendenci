@@ -18,25 +18,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.base.decorators import password_required
-from tendenci.core.base.http import Http403
-from tendenci.core.base.views import file_display
-from tendenci.core.categories.models import Category
-from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import (get_notice_recipients,
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.decorators import password_required
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.views import file_display
+from tendenci.apps.categories.models import Category
+from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.core.meta.forms import MetaForm
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
 from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
-from tendenci.core.base.utils import send_email_notification
+from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.directories.utils import resize_s3_image
 from tendenci.apps.directories.forms import DirectorySearchForm
 

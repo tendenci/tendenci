@@ -9,15 +9,15 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import AnonymousUser
 
-from tendenci.core.categories.models import CategoryItem
+from tendenci.apps.categories.models import CategoryItem
 from tagging.fields import TagField
-from tendenci.core.base.fields import SlugField
-from tendenci.core.base.utils import now_localized
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.apps.base.fields import SlugField
+from tendenci.apps.base.utils import now_localized
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.jobs.managers import JobManager
 from tinymce import models as tinymce_models
-from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.jobs.module_meta import JobMeta
 from tendenci.apps.invoices.models import Invoice
 

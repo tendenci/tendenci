@@ -4,9 +4,9 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.base.fields import SlugField
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.base.fields import SlugField
 from tinymce import models as tinymce_models
 from managers import HelpFileManager
 

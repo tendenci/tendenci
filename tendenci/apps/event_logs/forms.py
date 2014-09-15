@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import SplitDateTimeField
 from form_utils.forms import BetterForm
 
 from .utils import get_app_list_choices

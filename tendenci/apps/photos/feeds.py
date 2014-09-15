@@ -1,10 +1,10 @@
 from django.contrib.syndication.views import Feed
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.rss.feedsmanager import SubFeed
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.utils import PUBLIC_FILTER
-from tendenci.core.sitemaps import TendenciSitemap
+from tendenci.apps.rss.feedsmanager import SubFeed
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import PUBLIC_FILTER
+from tendenci.apps.sitemaps import TendenciSitemap
 
 from tendenci.apps.photos.models import Image, PhotoSet
 

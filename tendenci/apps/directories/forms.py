@@ -6,23 +6,23 @@ from django import forms
 from django.forms.util import ErrorList
 from django.conf import settings
 from tinymce.widgets import TinyMCE
-from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.base.fields import SplitDateTimeField
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
-from tendenci.core.categories.forms import CategoryField
-from tendenci.core.categories.models import CategoryItem
+from tendenci.apps.categories.forms import CategoryField
+from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
-from tendenci.core.base.fields import EmailVerificationField, CountrySelectField, PriceField
-from tendenci.core.files.utils import get_max_file_upload_size
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.site_settings.utils import get_setting
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -296,7 +296,7 @@ class DirectoryForm(TendenciBaseForm):
                 self.fields.pop(f)
 
     def save(self, *args, **kwargs):
-        from tendenci.core.files.models import File
+        from tendenci.apps.files.models import File
         directory = super(DirectoryForm, self).save(*args, **kwargs)
 
         content_type = ContentType.objects.get(

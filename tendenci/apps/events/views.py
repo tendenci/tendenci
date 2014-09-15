@@ -33,28 +33,28 @@ from django.forms.models import modelformset_factory, \
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 
-from tendenci.core.base.decorators import password_required
-from tendenci.core.base.http import Http403
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.decorators import is_enabled, superuser_required
-from tendenci.core.perms.utils import (
+from tendenci.apps.base.decorators import password_required
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.decorators import is_enabled, superuser_required
+from tendenci.apps.perms.utils import (
     has_perm,
     get_notice_recipients,
     get_query_filters,
     update_perms_and_save,
     has_view_perm,
     assign_files_perms)
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.core.meta.forms import MetaForm
-from tendenci.core.files.models import File
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.imports.forms import ImportForm
-from tendenci.core.imports.models import Import
-from tendenci.core.base.utils import convert_absolute_urls, checklist_update
-from tendenci.core.imports.utils import (
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.files.models import File
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.imports.forms import ImportForm
+from tendenci.apps.imports.models import Import
+from tendenci.apps.base.utils import convert_absolute_urls, checklist_update
+from tendenci.apps.imports.utils import (
     render_excel)
-from tendenci.core.base.http import HttpCustomResponseRedirect
+from tendenci.apps.base.http import HttpCustomResponseRedirect
 
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.notifications import models as notification
@@ -3388,7 +3388,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
 @login_required
 def message_add(request, event_id, form_class=MessageAddForm, template_name='events/message/add.html'):
-    from tendenci.core.emails.models import Email
+    from tendenci.apps.emails.models import Email
     event = get_object_or_404(Event, pk=event_id)
     if not has_perm(request.user,'events.change_event',event): raise Http403
 

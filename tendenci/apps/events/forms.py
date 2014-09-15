@@ -31,15 +31,15 @@ from tendenci.apps.events.models import (
 
 from form_utils.forms import BetterModelForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.payments.models import PaymentMethod
-from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
-from tendenci.core.base.utils import tcurrency
-from tendenci.core.emails.models import Email
-from tendenci.core.files.utils import get_max_file_upload_size
-from tendenci.core.perms.utils import get_query_filters
-from tendenci.core.site_settings.models import Setting
-from tendenci.core.site_settings.utils import get_setting, get_global_setting
+from tendenci.apps.payments.models import PaymentMethod
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.emails.models import Email
+from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.utils import get_setting, get_global_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile

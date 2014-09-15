@@ -8,7 +8,7 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from captcha.fields import CaptchaField
 from tendenci.apps.discounts.models import Discount
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 from tendenci.apps.events.models import Addon, AddonOption, RegAddon, RegAddonOption
 

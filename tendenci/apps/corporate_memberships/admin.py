@@ -22,10 +22,10 @@ from tendenci.apps.corporate_memberships.forms import (
 
 from tendenci.apps.corporate_memberships.utils import get_corpapp_default_fields_list
 
-from tendenci.core.base.utils import tcurrency
+from tendenci.apps.base.utils import tcurrency
 
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):

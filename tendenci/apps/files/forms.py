@@ -5,17 +5,17 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
-from tendenci.core.categories.forms import (CategoryForm, CategoryField, category_defaults,
+from tendenci.apps.categories.forms import (CategoryForm, CategoryField, category_defaults,
     sub_category_defaults)
 
-from tendenci.core.categories.models import CategoryItem, Category
-from tendenci.core.files.fields import MultiFileField
-from tendenci.core.files.models import File, FilesCategory
-from tendenci.core.files.utils import get_max_file_upload_size
-from tendenci.core.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
-from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.utils import update_perms_and_save, get_query_filters
+from tendenci.apps.categories.models import CategoryItem, Category
+from tendenci.apps.files.fields import MultiFileField
+from tendenci.apps.files.models import File, FilesCategory
+from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
 

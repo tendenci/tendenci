@@ -13,8 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
 from django.core.cache import cache
-from tendenci.core.sitemaps import TendenciSitemap
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.sitemaps import TendenciSitemap
+from tendenci.apps.site_settings.utils import get_setting
 
 
 _sitemap_cache = []

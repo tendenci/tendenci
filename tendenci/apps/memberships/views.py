@@ -32,19 +32,19 @@ from django.utils.translation import ugettext_lazy as _
 from johnny.cache import invalidate
 from geraldo.generators import PDFGenerator
 
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.base.http import Http403
-from tendenci.core.base.decorators import password_required
-from tendenci.core.base.utils import send_email_notification
-from tendenci.core.perms.utils import has_perm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.decorators import password_required
+from tendenci.apps.base.utils import send_email_notification
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
                                                           CorpMembershipApp,
                                                           IndivEmailVerification)
 from reports import ReportNewMems
-from tendenci.core.exports.utils import render_csv
-from tendenci.core.perms.utils import get_notice_recipients
+from tendenci.apps.exports.utils import render_csv
+from tendenci.apps.perms.utils import get_notice_recipients
 
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
@@ -60,7 +60,7 @@ from tendenci.apps.memberships.forms import (
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault)
-from tendenci.core.base.forms import CaptchaForm
+from tendenci.apps.base.forms import CaptchaForm
 
 
 def membership_index(request):

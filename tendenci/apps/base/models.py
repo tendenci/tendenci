@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.libs.abstracts.models import OrderingBaseModel
-from tendenci.core.base.fields import DictField
+from tendenci.apps.base.fields import DictField
 
 
 class UpdateTracker(models.Model):

@@ -12,10 +12,10 @@ from django.db.models import Q
 from django.core.files.storage import default_storage
 
 from captcha.fields import CaptchaField
-#from tendenci.core.base.forms import SimpleMathField
+#from tendenci.apps.base.forms import SimpleMathField
 from tinymce.widgets import TinyMCE
 
-from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.memberships.fields import NoticeTimeTypeField
 from tendenci.apps.corporate_memberships.widgets import NoticeTimeTypeWidget
@@ -37,8 +37,8 @@ from tendenci.apps.corporate_memberships.utils import (
     get_notice_token_help_text,
     csv_to_dict)
 from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
-from tendenci.core.base.fields import SplitDateTimeField, PriceField
-from tendenci.core.payments.models import PaymentMethod
+from tendenci.apps.base.fields import SplitDateTimeField, PriceField
+from tendenci.apps.payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 

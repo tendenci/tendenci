@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.perms.models import TendenciBaseModel
 
 class EmailBlock(TendenciBaseModel):
     guid = models.CharField(max_length=50)

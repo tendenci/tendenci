@@ -12,8 +12,8 @@ from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
-from tendenci.core.theme.utils import get_theme_root
-from tendenci.core.theme.middleware import get_current_request
+from tendenci.apps.theme.utils import get_theme_root
+from tendenci.apps.theme.middleware import get_current_request
 
 non_theme_source_loaders = None
 

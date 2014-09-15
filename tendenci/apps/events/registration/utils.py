@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.discounts.models import Discount, DiscountUse
 
 from tendenci.apps.events.utils import get_event_spots_taken

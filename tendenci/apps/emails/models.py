@@ -3,9 +3,9 @@ from django.db import models
 
 from django.core.mail.message import EmailMessage
 from django.conf import settings
-from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 class Email(TendenciBaseModel):
     guid = models.CharField(max_length=50)

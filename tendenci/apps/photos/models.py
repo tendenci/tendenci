@@ -29,12 +29,12 @@ from tagging.fields import TagField
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.utils import get_query_filters
-from tendenci.core.base.fields import DictField
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.base.fields import DictField
 from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
-from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel

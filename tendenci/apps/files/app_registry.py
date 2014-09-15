@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.registry import site
-from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-from tendenci.core.files.models import File
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.files.models import File
 
 
 class FileRegistry(CoreRegistry):

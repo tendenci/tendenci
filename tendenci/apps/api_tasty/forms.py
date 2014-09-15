@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from tastypie.models import ApiKey
-from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.perms.models import TendenciBaseModel
 
 class ApiKeyForm(forms.ModelForm):
     """

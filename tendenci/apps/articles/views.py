@@ -19,22 +19,22 @@ from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 
 
-from tendenci.core.base.http import Http403
-from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.versions.models import Version
-from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.core.meta.forms import MetaForm
-from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.decorators import is_enabled
+from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.versions.models import Version
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.articles.models import Article
 from tendenci.apps.articles.forms import ArticleForm, ArticleSearchForm
 from tendenci.apps.notifications import models as notification
-from tendenci.core.categories.forms import CategoryForm
-from tendenci.core.categories.models import Category, CategoryItem
+from tendenci.apps.categories.forms import CategoryForm
+from tendenci.apps.categories.models import Category, CategoryItem
 
 
 @is_enabled('articles')

@@ -5,8 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.jobs.models import Job, JobPricing
 from tendenci.apps.invoices.models import Invoice
-from tendenci.core.payments.models import Payment
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def get_payment_method_choices(user):
