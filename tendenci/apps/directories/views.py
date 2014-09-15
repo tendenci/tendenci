@@ -31,14 +31,14 @@ from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 
-from tendenci.addons.directories.models import Directory, DirectoryPricing
-from tendenci.addons.directories.forms import (DirectoryForm, DirectoryPricingForm,
+from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
-from tendenci.addons.directories.utils import directory_set_inv_payment, is_free_listing
+from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
-from tendenci.addons.directories.utils import resize_s3_image
-from tendenci.addons.directories.forms import DirectorySearchForm
+from tendenci.apps.directories.utils import resize_s3_image
+from tendenci.apps.directories.forms import DirectorySearchForm
 
 
 @is_enabled('directories')

@@ -1,7 +1,7 @@
 import imghdr
 from os.path import splitext, basename
 
-from tendenci.addons.locations.models import Location
+from tendenci.apps.locations.models import Location
 from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
 from django.db.models import Q

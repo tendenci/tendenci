@@ -7,12 +7,12 @@ from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
-from tendenci.addons.resumes.managers import ResumeManager
+from tendenci.apps.resumes.managers import ResumeManager
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.addons.resumes.module_meta import ResumeMeta
+from tendenci.apps.resumes.module_meta import ResumeMeta
 
 
 def file_directory(instance, filename):

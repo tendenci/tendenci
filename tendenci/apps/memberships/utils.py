@@ -27,7 +27,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
-from tendenci.addons.memberships.models import (MembershipType,
+from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipDefault,
                                                 MembershipDemographic,
                                                 MembershipApp,
@@ -473,7 +473,7 @@ def process_export(
     if user and user.email:
         corp_profile = None
         if cp_id:
-            from tendenci.addons.corporate_memberships.models import CorpProfile
+            from tendenci.apps.corporate_memberships.models import CorpProfile
             [corp_profile] = CorpProfile.objects.filter(pk=cp_id)[:1] or [None]
         download_url = reverse('memberships.default_export_download', args=[identifier])
 
@@ -1389,7 +1389,7 @@ class ImportMembDefault(object):
         """
         Database import here - insert or update
         """
-        from tendenci.addons.corporate_memberships.models import CorpMembership
+        from tendenci.apps.corporate_memberships.models import CorpMembership
 
         user = user or User()
         username_before_assign = user.username

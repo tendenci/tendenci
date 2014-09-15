@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.news.models import News
-from tendenci.addons.news.forms import NewsForm
+from tendenci.apps.news.models import News
+from tendenci.apps.news.forms import NewsForm
 
 class NewsAdmin(TendenciBaseModelAdmin):
     list_display = ['headline', 'update_dt', 'owner_link', 'admin_perms', 'admin_status']

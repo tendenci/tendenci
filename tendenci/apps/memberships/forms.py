@@ -10,26 +10,26 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 
 from tendenci.core.base.fields import EmailVerificationField, PriceField, CountrySelectField
-from tendenci.addons.corporate_memberships.models import (
+from tendenci.apps.corporate_memberships.models import (
     CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.addons.memberships.models import (
+from tendenci.apps.memberships.models import (
     MembershipDefault, MembershipDemographic, MembershipAppField, MembershipType,
     Notice, MembershipImport, MembershipApp, MembershipFile)
-from tendenci.addons.memberships.fields import TypeExpMethodField, NoticeTimeTypeField
-from tendenci.addons.memberships.settings import UPLOAD_ROOT
-from tendenci.addons.memberships.utils import normalize_field_names
-from tendenci.addons.memberships.utils import (
+from tendenci.apps.memberships.fields import TypeExpMethodField, NoticeTimeTypeField
+from tendenci.apps.memberships.settings import UPLOAD_ROOT
+from tendenci.apps.memberships.utils import normalize_field_names
+from tendenci.apps.memberships.utils import (
     get_membership_type_choices, get_corporate_membership_choices, get_selected_demographic_fields,
     get_ud_file_instance)
-from tendenci.addons.memberships.widgets import (
+from tendenci.apps.memberships.widgets import (
     CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget)
-from tendenci.addons.memberships.utils import get_notice_token_help_text
+from tendenci.apps.memberships.utils import get_notice_token_help_text
 from tendenci.apps.notifications.utils import send_welcome_email
-from tendenci.addons.educations.models import Education
-from tendenci.addons.careers.models import Career
+from tendenci.apps.educations.models import Education
+from tendenci.apps.careers.models import Career
 from tendenci.apps.entities.models import Entity
 
 
@@ -80,9 +80,9 @@ CLASS_AND_WIDGET = {
     'first-name': ('CharField', None),
     'last-name': ('CharField', None),
     'email': ('EmailField', None),
-    'header': ('CharField', 'tendenci.addons.memberships.widgets.Header'),
-    'description': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
-    'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
+    'header': ('CharField', 'tendenci.apps.memberships.widgets.Header'),
+    'description': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
+    'horizontal-rule': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
 

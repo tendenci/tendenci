@@ -26,12 +26,12 @@ from tinymce import models as tinymce_models
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.invoices.models import Invoice
-from tendenci.addons.memberships.models import (MembershipType,
+from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipApp,
                                                 MembershipDefault)
 from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
                                                         LABEL_MAX_LENGTH)
-from tendenci.addons.corporate_memberships.managers import (
+from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
                                                 CorpMembershipAppManager)
 #from tendenci.core.site_settings.utils import get_setting
@@ -44,16 +44,16 @@ from tendenci.core.base.fields import DictField, CountrySelectField
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification, day_validate, fieldify, get_salesforce_access
 from tendenci.core.event_logs.models import EventLog
-from tendenci.addons.corporate_memberships.settings import use_search_index
-from tendenci.addons.corporate_memberships.utils import (
+from tendenci.apps.corporate_memberships.settings import use_search_index
+from tendenci.apps.corporate_memberships.utils import (
                                             corp_membership_update_perms,
                                             dues_rep_emails_list,
                                             create_salesforce_lead)
 from tendenci.core.imports.utils import get_unique_username
 from tendenci.libs.abstracts.models import OrderingBaseModel
-from tendenci.addons.industries.models import Industry
-from tendenci.addons.regions.models import Region
-from tendenci.addons.events.models import Event, Registrant
+from tendenci.apps.industries.models import Industry
+from tendenci.apps.regions.models import Region
+from tendenci.apps.events.models import Event, Registrant
 
 
 FIELD_CHOICES = (

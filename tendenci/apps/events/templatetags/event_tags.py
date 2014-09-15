@@ -18,10 +18,10 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
-from tendenci.addons.events.models import Event, Registrant, Type, RegConfPricing
-from tendenci.addons.events.utils import get_pricing, registration_earliest_time
-from tendenci.addons.events.utils import registration_has_started, get_event_spots_taken
-from tendenci.addons.events.utils import registration_has_ended
+from tendenci.apps.events.models import Event, Registrant, Type, RegConfPricing
+from tendenci.apps.events.utils import get_pricing, registration_earliest_time
+from tendenci.apps.events.utils import registration_has_started, get_event_spots_taken
+from tendenci.apps.events.utils import registration_has_ended
 
 register = Library()
 

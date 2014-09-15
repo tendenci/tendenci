@@ -5,7 +5,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
 from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.addons.events.models import Event
+from tendenci.apps.events.models import Event
 
 
 class LatestEntriesFeed(SubFeed):

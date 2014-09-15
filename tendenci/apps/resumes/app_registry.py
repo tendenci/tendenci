@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-from tendenci.addons.resumes.models import Resume
+from tendenci.apps.resumes.models import Resume
 
 class ResumeRegistry(CoreRegistry):
     version = '1.0'

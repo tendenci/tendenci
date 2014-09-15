@@ -21,7 +21,7 @@ from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 
 from captcha.fields import CaptchaField
-from tendenci.addons.events.models import (
+from tendenci.apps.events.models import (
     Event, Place, RegistrationConfiguration, Payment,
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
@@ -43,7 +43,7 @@ from tendenci.core.site_settings.utils import get_setting, get_global_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
-from tendenci.addons.events.settings import FIELD_MAX_LENGTH
+from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 
 from fields import Reg8nDtField, UseCustomRegField
 from widgets import UseCustomRegWidget
@@ -460,7 +460,7 @@ class FormForCustomRegForm(forms.ModelForm):
         return override_price
 
     def clean_use_free_pass(self):
-        from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+        from tendenci.apps.corporate_memberships.utils import get_user_corp_membership
         use_free_pass = self.cleaned_data['use_free_pass']
         email = self.cleaned_data.get('email', '')
         memberid = self.cleaned_data.get('memberid', '')
@@ -1811,7 +1811,7 @@ class RegistrantForm(forms.Form):
         return override_price
 
     def clean_use_free_pass(self):
-        from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+        from tendenci.apps.corporate_memberships.utils import get_user_corp_membership
         use_free_pass = self.cleaned_data['use_free_pass']
         email = self.cleaned_data.get('email', '')
         memberid = self.cleaned_data.get('memberid', '')

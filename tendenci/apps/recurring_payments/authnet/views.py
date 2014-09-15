@@ -8,9 +8,9 @@ from django.http import HttpResponse
 #from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson
 
-from tendenci.addons.recurring_payments.models import RecurringPayment, PaymentProfile
-from tendenci.addons.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
-from tendenci.addons.recurring_payments.authnet.utils import get_token, get_test_mode
+from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
+from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
+from tendenci.apps.recurring_payments.authnet.utils import get_token, get_test_mode
 
 from tendenci.core.base.http import Http403
 #from tendenci.core.site_settings.utils import get_setting

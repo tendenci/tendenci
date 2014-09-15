@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.jobs.models import Job, JobPricing
-from tendenci.addons.jobs.forms import JobAdminForm, JobPricingForm
+from tendenci.apps.jobs.models import Job, JobPricing
+from tendenci.apps.jobs.forms import JobAdminForm, JobPricingForm
 
 
 class JobAdmin(TendenciBaseModelAdmin):

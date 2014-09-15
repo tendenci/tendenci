@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.educations.models import Education
-from tendenci.addons.educations.forms import EducationForm
+from tendenci.apps.educations.models import Education
+from tendenci.apps.educations.forms import EducationForm
 
 
 class EducationAdmin(TendenciBaseModelAdmin):

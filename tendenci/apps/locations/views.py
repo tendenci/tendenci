@@ -21,12 +21,12 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.core.files.models import File
 from djcelery.models import TaskMeta
 
-from tendenci.addons.locations.models import Location, LocationImport
-from tendenci.addons.locations.forms import LocationForm, LocationFilterForm
-from tendenci.addons.locations.utils import get_coordinates
-from tendenci.addons.locations.importer.forms import UploadForm, ImportMapForm
-from tendenci.addons.locations.importer.utils import is_import_valid, parse_locs_from_csv
-from tendenci.addons.locations.importer.tasks import ImportLocationsTask
+from tendenci.apps.locations.models import Location, LocationImport
+from tendenci.apps.locations.forms import LocationForm, LocationFilterForm
+from tendenci.apps.locations.utils import get_coordinates
+from tendenci.apps.locations.importer.forms import UploadForm, ImportMapForm
+from tendenci.apps.locations.importer.utils import is_import_valid, parse_locs_from_csv
+from tendenci.apps.locations.importer.tasks import ImportLocationsTask
 from tendenci.core.imports.utils import render_excel
 
 

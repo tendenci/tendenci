@@ -5,7 +5,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
 from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.addons.locations.models import Location
+from tendenci.apps.locations.models import Location
 
 class LatestEntriesFeed(SubFeed):
     title = _('%(dname)s Latest Locations' % { 'dname':get_setting('site','global','sitedisplayname')})

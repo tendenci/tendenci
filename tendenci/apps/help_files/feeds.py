@@ -5,7 +5,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
 from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.addons.help_files.models import HelpFile
+from tendenci.apps.help_files.models import HelpFile
 
 class LatestEntriesFeed(SubFeed):
     title = _('%(hp)s Latest Helpfiles' % {'hp': get_setting('site','global','sitedisplayname')})

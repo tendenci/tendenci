@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import Library, TemplateSyntaxError
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.addons.articles.models import Article
+from tendenci.apps.articles.models import Article
 
 register = Library()
 

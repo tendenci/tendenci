@@ -24,8 +24,8 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.redirects.models import Redirect
 
-from tendenci.addons.resumes.models import Resume
-from tendenci.addons.resumes.forms import ResumeForm
+from tendenci.apps.resumes.models import Resume
+from tendenci.apps.resumes.forms import ResumeForm
 
 try:
     from tendenci.apps.notifications import models as notification

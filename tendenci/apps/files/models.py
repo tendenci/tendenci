@@ -159,7 +159,7 @@ class File(TendenciBaseModel):
         # Related objects
         # Import related objects here to prevent circular references
         from tendenci.apps.pages.models import Page
-        from tendenci.addons.events.models import Event
+        from tendenci.apps.events.models import Event
         from tendenci.apps.stories.models import Story
         pages = Page.objects.filter(header_image=self.pk)
         events = Event.objects.filter(image=self.pk)

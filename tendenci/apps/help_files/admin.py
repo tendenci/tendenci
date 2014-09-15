@@ -3,8 +3,8 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.help_files.models import Topic, HelpFile, Request
-from tendenci.addons.help_files.forms import HelpFileAdminForm
+from tendenci.apps.help_files.models import Topic, HelpFile, Request
+from tendenci.apps.help_files.forms import HelpFileAdminForm
 
 
 class HelpFileAdmin(TendenciBaseModelAdmin):

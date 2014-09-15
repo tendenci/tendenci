@@ -3,7 +3,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.addons.recurring_payments.models import BILLING_PERIOD_CHOICES, DUE_SORE_CHOICES
+from tendenci.apps.recurring_payments.models import BILLING_PERIOD_CHOICES, DUE_SORE_CHOICES
 
 class BillingDateSelectInput(forms.TextInput):
     def render(self, name, value, attrs=None):

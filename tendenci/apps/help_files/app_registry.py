@@ -2,7 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-from tendenci.addons.help_files.models import HelpFile
+from tendenci.apps.help_files.models import HelpFile
 
 
 class HelpFileRegistry(CoreRegistry):

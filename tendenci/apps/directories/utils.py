@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.addons.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.base.utils import UnicodeWriter
 from tendenci.core.emails.models import Email

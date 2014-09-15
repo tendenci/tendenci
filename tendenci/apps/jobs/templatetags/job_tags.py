@@ -2,7 +2,7 @@ from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.addons.jobs.models import Job
+from tendenci.apps.jobs.models import Job
 from django.db.models import Q
 
 register = Library()
@@ -59,7 +59,7 @@ def job_pricing_options(context, user, job_pricing):
 
 @register.inclusion_tag("jobs/pricing-table.html", takes_context=True)
 def job_pricing_table(context):
-    from tendenci.addons.jobs.models import JobPricing
+    from tendenci.apps.jobs.models import JobPricing
     job_pricings = JobPricing.objects.filter(status=True).order_by('duration')
     show_premium_price = False
     show_member_price = False

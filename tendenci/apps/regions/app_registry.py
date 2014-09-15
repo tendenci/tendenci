@@ -2,7 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-from tendenci.addons.regions.models import Region
+from tendenci.apps.regions.models import Region
 
 
 class RegionRegistry(CoreRegistry):

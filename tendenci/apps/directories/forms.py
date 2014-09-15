@@ -15,10 +15,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from tendenci.core.categories.forms import CategoryField
 from tendenci.core.categories.models import CategoryItem
-from tendenci.addons.directories.models import Directory, DirectoryPricing
-from tendenci.addons.directories.utils import (get_payment_method_choices,
+from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.utils import (get_payment_method_choices,
     get_duration_choices)
-from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
+from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
 from tendenci.core.base.fields import EmailVerificationField, CountrySelectField, PriceField
 from tendenci.core.files.utils import get_max_file_upload_size

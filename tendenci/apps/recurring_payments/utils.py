@@ -11,13 +11,13 @@ from dateutil.relativedelta import relativedelta
 from tendenci.core.emails.models import Email
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.profiles.models import Profile
-from tendenci.addons.recurring_payments.models import (RecurringPayment,
+from tendenci.apps.recurring_payments.models import (RecurringPayment,
                                        PaymentProfile,
                                        RecurringPaymentInvoice,
                                        PaymentTransaction)
-from tendenci.addons.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
-from tendenci.addons.recurring_payments.authnet.utils import get_token
-from tendenci.addons.recurring_payments.authnet.utils import payment_update_from_response
+from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
+from tendenci.apps.recurring_payments.authnet.utils import get_token
+from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.core.payments.models import Payment
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']

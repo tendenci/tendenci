@@ -5,7 +5,7 @@ from django.contrib.contenttypes import generic
 
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.addons.regions.managers import RegionManager
+from tendenci.apps.regions.managers import RegionManager
 
 
 class Region(TendenciBaseModel):

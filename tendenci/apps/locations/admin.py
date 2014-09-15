@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.locations.models import Location
-from tendenci.addons.locations.forms import LocationForm
+from tendenci.apps.locations.models import Location
+from tendenci.apps.locations.forms import LocationForm
 
 class LocationAdmin(TendenciBaseModelAdmin):
     list_display = ['location_name', 'owner_link', 'admin_perms', 'admin_status']

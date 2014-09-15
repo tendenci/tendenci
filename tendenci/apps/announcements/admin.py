@@ -3,8 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 
-from tendenci.addons.announcements.forms import EmergencyAnnouncementAdminForm
-from tendenci.addons.announcements.models import EmergencyAnnouncement
+from tendenci.apps.announcements.forms import EmergencyAnnouncementAdminForm
+from tendenci.apps.announcements.models import EmergencyAnnouncement
 
 
 class EmergencyAnnouncementAdmin(TendenciBaseModelAdmin):

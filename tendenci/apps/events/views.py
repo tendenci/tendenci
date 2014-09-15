@@ -58,9 +58,9 @@ from tendenci.core.base.http import HttpCustomResponseRedirect
 
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.notifications import models as notification
-from tendenci.addons.events.ics.utils import run_precreate_ics
+from tendenci.apps.events.ics.utils import run_precreate_ics
 
-from tendenci.addons.events.models import (
+from tendenci.apps.events.models import (
     Event,
     Registration,
     Registrant,
@@ -79,7 +79,7 @@ from tendenci.addons.events.models import (
     EventPhoto,
     Place,
     RecurringEvent)
-from tendenci.addons.events.forms import (
+from tendenci.apps.events.forms import (
     EventForm,
     Reg8nEditForm,
     PlaceForm,
@@ -111,7 +111,7 @@ from tendenci.addons.events.forms import (
     EventExportForm,
      EventSimpleSearchForm,
      EventReportFilterForm)
-from tendenci.addons.events.utils import (
+from tendenci.apps.events.utils import (
     email_registrants,
     render_event_email,
     get_default_reminder_template,
@@ -134,9 +134,9 @@ from tendenci.addons.events.utils import (
     create_member_registration,
     get_recurrence_dates,
     get_week_days)
-from tendenci.addons.events.addons.forms import RegAddonForm
-from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
-from tendenci.addons.events.addons.utils import get_available_addons
+from tendenci.apps.events.addons.forms import RegAddonForm
+from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
+from tendenci.apps.events.addons.utils import get_available_addons
 
 
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
@@ -405,7 +405,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 def icalendar(request):
     import os
     from tendenci.settings import MEDIA_ROOT
-    from tendenci.addons.events.utils import get_vevents
+    from tendenci.apps.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
     file_name = ''
@@ -453,7 +453,7 @@ def icalendar(request):
 
 
 def icalendar_single(request, id):
-    from tendenci.addons.events.utils import get_vevents
+    from tendenci.apps.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
 
@@ -2001,7 +2001,7 @@ def check_free_pass_eligibility(request, form_class=FreePassCheckForm):
     ret_dict = {'is_corp_member': False}
 
     if form.is_valid():
-        from tendenci.addons.corporate_memberships.utils import get_user_corp_membership
+        from tendenci.apps.corporate_memberships.utils import get_user_corp_membership
 
         member_number = form.cleaned_data['member_number'].strip()
         email = form.cleaned_data['email'].strip()
@@ -2656,7 +2656,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
 @is_enabled('events')
 def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
     from datetime import date
-    from tendenci.addons.events.utils import next_month, prev_month
+    from tendenci.apps.events.utils import next_month, prev_month
 
     if type:  # redirect to /events/month/ if type does not exist
         if not Type.objects.filter(slug=type).exists():

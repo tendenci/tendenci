@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-from tendenci.addons.events.models import Event
+from tendenci.apps.events.models import Event
 
 
 class EventRegistry(CoreRegistry):

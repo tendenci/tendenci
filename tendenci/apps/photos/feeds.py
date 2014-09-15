@@ -6,7 +6,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
 from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.addons.photos.models import Image, PhotoSet
+from tendenci.apps.photos.models import Image, PhotoSet
 
 class LatestAlbums(SubFeed):
     title =  _('%(dname)s - Latest Photo Albums' % {'dname':get_setting('site','global','sitedisplayname')})

@@ -5,7 +5,7 @@ from django.contrib.contenttypes import generic
 
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.addons.industries.managers import IndustryManager
+from tendenci.apps.industries.managers import IndustryManager
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
 

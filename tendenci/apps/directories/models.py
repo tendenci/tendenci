@@ -19,9 +19,9 @@ from tendenci.core.categories.models import CategoryItem
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.files.models import File
-from tendenci.addons.directories.module_meta import DirectoryMeta
-from tendenci.addons.directories.managers import DirectoryManager
-from tendenci.addons.directories.choices import ADMIN_DURATION_CHOICES
+from tendenci.apps.directories.module_meta import DirectoryMeta
+from tendenci.apps.directories.managers import DirectoryManager
+from tendenci.apps.directories.choices import ADMIN_DURATION_CHOICES
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 

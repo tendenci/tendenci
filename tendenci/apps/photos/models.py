@@ -33,15 +33,15 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.core.base.fields import DictField
-from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
+from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.core.meta.models import Meta as MetaTags
-from tendenci.addons.photos.module_meta import PhotoMeta
+from tendenci.apps.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
-from tendenci.addons.photos.utils import EXIF
-from tendenci.addons.photos.utils.reflection import add_reflection
-from tendenci.addons.photos.utils.watermark import apply_watermark
+from tendenci.apps.photos.utils import EXIF
+from tendenci.apps.photos.utils.reflection import add_reflection
+from tendenci.apps.photos.utils.watermark import apply_watermark
 
 # max_length setting for the ImageModel ImageField
 IMAGE_FIELD_MAX_LENGTH = getattr(settings, 'PHOTOS_IMAGE_FIELD_MAX_LENGTH', 100)

@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.industries.models import Industry
-from tendenci.addons.industries.forms import IndustryForm
+from tendenci.apps.industries.models import Industry
+from tendenci.apps.industries.forms import IndustryForm
 
 
 class IndustryAdmin(TendenciBaseModelAdmin):

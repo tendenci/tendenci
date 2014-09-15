@@ -30,7 +30,7 @@ from tendenci.core.base.fields import DictField, CountrySelectField
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.emails.models import Email
-from tendenci.addons.memberships.managers import MembershipTypeManager, \
+from tendenci.apps.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
 from tendenci.core.base.utils import fieldify
 from tinymce import models as tinymce_models
@@ -41,9 +41,9 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.core.files.models import File
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.notifications import models as notification
-from tendenci.addons.directories.models import Directory
-from tendenci.addons.industries.models import Industry
-from tendenci.addons.regions.models import Region
+from tendenci.apps.directories.models import Directory
+from tendenci.apps.industries.models import Industry
+from tendenci.apps.regions.models import Region
 from tendenci.core.base.utils import UnicodeWriter
 
 from south.modelsinspector import add_introspection_rules
@@ -665,7 +665,7 @@ class MembershipDefault(TendenciBaseModel):
         Returns corporate profile object
         else returns None type object.
         """
-        from tendenci.addons.corporate_memberships.models import CorpProfile
+        from tendenci.apps.corporate_memberships.models import CorpProfile
         [corporate_profile] = CorpProfile.objects.filter(
             pk=self.corp_profile_id) or [None]
 
@@ -676,7 +676,7 @@ class MembershipDefault(TendenciBaseModel):
         Returns corporate membership object
         else returns None type object.
         """
-        from tendenci.addons.corporate_memberships.models import CorpMembership
+        from tendenci.apps.corporate_memberships.models import CorpMembership
         [corporate_membership] = CorpMembership.objects.filter(
             pk=self.corporate_membership_id) or [None]
 
@@ -707,7 +707,7 @@ class MembershipDefault(TendenciBaseModel):
         Notify corp reps when individuals joined/renewed under a corporation.
         """
         if self.corporate_membership_id:
-            from tendenci.addons.corporate_memberships.models import CorpMembership
+            from tendenci.apps.corporate_memberships.models import CorpMembership
             [corp_membership] = CorpMembership.objects.filter(
                                 pk=self.corporate_membership_id
                                 )[:1] or [None]
@@ -1153,7 +1153,7 @@ class MembershipDefault(TendenciBaseModel):
         If a password is passed; it is only used in order to
         create a new user account.
         """
-        from tendenci.addons.memberships.utils import spawn_username
+        from tendenci.apps.memberships.utils import spawn_username
 
         un = kwargs.get('username', u'')
         pw = kwargs.get('password', u'')
@@ -1447,7 +1447,7 @@ class MembershipDefault(TendenciBaseModel):
         get the threshold price for individual memberships.
         return tuple (use_threshold, threshold_price)
         """
-        from tendenci.addons.corporate_memberships.models import CorpMembership
+        from tendenci.apps.corporate_memberships.models import CorpMembership
 
         [corporate] = CorpMembership.objects.filter(
             id=corporate_membership_id)[:1] or [None]
@@ -1589,7 +1589,7 @@ class MembershipDefault(TendenciBaseModel):
 
         if self.corporate_membership_id:
             # corp individuals expire with their corporate membership
-            from tendenci.addons.corporate_memberships.models import CorpMembership
+            from tendenci.apps.corporate_memberships.models import CorpMembership
             [corp_expiration_dt] = CorpMembership.objects.filter(
                                         id=self.corporate_membership_id
                                         ).values_list('expiration_dt',
@@ -1679,7 +1679,7 @@ class MembershipDefault(TendenciBaseModel):
         if not self.corporate_membership_id:
             return None
 
-        from tendenci.addons.corporate_memberships.models import CorpMembership
+        from tendenci.apps.corporate_memberships.models import CorpMembership
         [corp_memb] = CorpMembership.objects.filter(
                     pk=self.corporate_membership_id)[:1] or [None]
         return corp_memb
@@ -1690,7 +1690,7 @@ class MembershipDefault(TendenciBaseModel):
                         args=[self.membership_type.id]),
                         self.membership_type.name)
         if self.corporate_membership_id:
-            from tendenci.addons.corporate_memberships.models import CorpMembership
+            from tendenci.apps.corporate_memberships.models import CorpMembership
             corp_member = CorpMembership.objects.filter(id=self.corporate_membership_id)[:1] or [None]
             if corp_member:
                 link = '%s (<a href="%s">corp</a> %s)' % (

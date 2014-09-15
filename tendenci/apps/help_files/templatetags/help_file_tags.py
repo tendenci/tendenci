@@ -2,7 +2,7 @@ from django.template import Library, TemplateSyntaxError
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.addons.help_files.models import HelpFile
+from tendenci.apps.help_files.models import HelpFile
 
 register = Library()
 

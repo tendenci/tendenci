@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import PeopleRegistry, lazy_reverse
-from tendenci.addons.corporate_memberships.models import CorpMembership
+from tendenci.apps.corporate_memberships.models import CorpMembership
 
 
 class CorpMembershipRegistry(PeopleRegistry):

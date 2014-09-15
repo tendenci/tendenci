@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.addons.educations.managers import EducationManager
+from tendenci.apps.educations.managers import EducationManager
 
 
 class Education(TendenciBaseModel):

@@ -16,10 +16,10 @@ from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
 
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.addons.industries.models import Industry
-from tendenci.addons.memberships.fields import NoticeTimeTypeField
-from tendenci.addons.corporate_memberships.widgets import NoticeTimeTypeWidget
-from tendenci.addons.corporate_memberships.models import (
+from tendenci.apps.industries.models import Industry
+from tendenci.apps.memberships.fields import NoticeTimeTypeField
+from tendenci.apps.corporate_memberships.widgets import NoticeTimeTypeWidget
+from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
     CorpMembership,
     CorpProfile,
@@ -29,14 +29,14 @@ from tendenci.addons.corporate_memberships.models import (
     CorpMembershipImport,
     Creator,
     Notice)
-from tendenci.addons.corporate_memberships.utils import (
+from tendenci.apps.corporate_memberships.utils import (
     get_corpmembership_type_choices,
     get_indiv_memberships_choices,
     update_authorized_domains,
     get_payment_method_choices,
     get_notice_token_help_text,
     csv_to_dict)
-from tendenci.addons.corporate_memberships.settings import UPLOAD_ROOT
+from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.core.base.fields import SplitDateTimeField, PriceField
 from tendenci.core.payments.models import PaymentMethod
 

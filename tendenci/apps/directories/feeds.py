@@ -5,7 +5,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
 from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.addons.directories.models import Directory
+from tendenci.apps.directories.models import Directory
 
 class LatestEntriesFeed(SubFeed):
     title = _('%(sitedisplayname)s Latest Directories') % {

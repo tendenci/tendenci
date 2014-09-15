@@ -2,7 +2,7 @@ import datetime
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
-from tendenci.addons.campaign_monitor.models import Template
+from tendenci.apps.campaign_monitor.models import Template
 from tendenci.core.newsletters.models import NewsletterTemplate
 
 THIS_YEAR = datetime.date.today().year
@@ -14,7 +14,7 @@ INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
 types_list = [(u'',_(u'All'))]
 try:
-    from tendenci.addons.events.models import Type
+    from tendenci.apps.events.models import Type
     types = Type.objects.all()
     for type in types:
         types_list.append((int(type.pk),type.name))

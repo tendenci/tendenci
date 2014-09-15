@@ -38,7 +38,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.perms.utils import has_perm
-from tendenci.addons.corporate_memberships.models import (CorpMembership,
+from tendenci.apps.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
                                                           CorpMembershipApp,
                                                           IndivEmailVerification)
@@ -49,15 +49,15 @@ from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.profiles.models import Profile
-from tendenci.addons.memberships.models import (
+from tendenci.apps.memberships.models import (
     MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
     MembershipImportData, MembershipApp, MembershipAppField)
-from tendenci.addons.memberships.forms import (
+from tendenci.apps.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipDefaultForm,
     ReportForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
     DemographicsForm,
     MembershipDefault2Form)
-from tendenci.addons.memberships.utils import (prepare_chart_data,
+from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault)
 from tendenci.core.base.forms import CaptchaForm
@@ -800,7 +800,7 @@ def membership_default_add(request, slug='', membership_id=None,
     """
     Default membership application form.
     """
-    from tendenci.addons.memberships.models import Notice
+    from tendenci.apps.memberships.models import Notice
     
     user = None
     membership = None

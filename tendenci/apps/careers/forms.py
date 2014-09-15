@@ -1,4 +1,4 @@
-from tendenci.addons.careers.models import Career
+from tendenci.apps.careers.models import Career
 from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
 from django.utils.translation import ugettext_lazy as _

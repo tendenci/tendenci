@@ -8,8 +8,8 @@ from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.addons.social_auth.backends import get_backend
-from tendenci.addons.social_auth.utils import sanitize_redirect
+from tendenci.apps.social_auth.backends import get_backend
+from tendenci.apps.social_auth.utils import sanitize_redirect
 
 
 DEFAULT_REDIRECT = getattr(settings, 'SOCIAL_AUTH_LOGIN_REDIRECT_URL', '') or \

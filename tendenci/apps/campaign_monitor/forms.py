@@ -3,7 +3,7 @@ from django import forms
 from django.conf import settings
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
-from tendenci.addons.campaign_monitor.models import Template, Campaign, ListMap
+from tendenci.apps.campaign_monitor.models import Template, Campaign, ListMap
 from createsend import CreateSend
 from createsend import Campaign as CSC
 
@@ -17,7 +17,7 @@ INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
 types_list = [('',_('All'))]
 try:
-    from tendenci.addons.events.models import Type
+    from tendenci.apps.events.models import Type
     types = Type.objects.all()
     for type in types:
         types_list.append((int(type.pk),type.name))

@@ -10,9 +10,9 @@ from captcha.fields import CaptchaField
 #from tendenci.core.base.forms import SimpleMathField
 from tendenci.apps.discounts.models import Discount
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.addons.memberships.models import Membership
+from tendenci.apps.memberships.models import Membership
 
-from tendenci.addons.events.models import RegConfPricing, PaymentMethod, Registrant
+from tendenci.apps.events.models import RegConfPricing, PaymentMethod, Registrant
 
 class RegistrationForm(forms.Form):
     """

@@ -3,7 +3,7 @@ from django.template import Node, Library, TemplateSyntaxError, Variable, Variab
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.addons.photos.models import Image, Pool
+from tendenci.apps.photos.models import Image, Pool
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()

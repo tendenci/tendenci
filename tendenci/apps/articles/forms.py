@@ -5,7 +5,7 @@ from django.forms.util import ErrorList
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from tendenci.addons.articles.models import Article
+from tendenci.apps.articles.models import Article
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField

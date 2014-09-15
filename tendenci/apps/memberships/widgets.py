@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.widgets import CheckboxSelectMultiple, CheckboxInput
 
 from tendenci.apps.profiles.models import Profile
-from tendenci.addons.memberships.models import NOTICE_TYPES, MembershipDefault
+from tendenci.apps.memberships.models import NOTICE_TYPES, MembershipDefault
 
 
 PERIOD_UNIT_CHOICE = (

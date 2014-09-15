@@ -7,10 +7,10 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.discounts.models import Discount, DiscountUse
 
-from tendenci.addons.events.utils import get_event_spots_taken
-from tendenci.addons.events.models import Event, RegConfPricing, Registration, Registrant
-from tendenci.addons.events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
-from tendenci.addons.events.forms import FormForCustomRegForm
+from tendenci.apps.events.utils import get_event_spots_taken
+from tendenci.apps.events.models import Event, RegConfPricing, Registration, Registrant
+from tendenci.apps.events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+from tendenci.apps.events.forms import FormForCustomRegForm
 
 try:
     from tendenci.apps.notifications import models as notification

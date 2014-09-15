@@ -34,12 +34,12 @@ from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_ca
 from tendenci.apps.user_groups.models import Group
 from djcelery.models import TaskMeta
 
-from tendenci.addons.photos.cache import PHOTO_PRE_KEY
-#from tendenci.addons.photos.search_indexes import PhotoSetIndex
-from tendenci.addons.photos.models import Image, Pool, PhotoSet, AlbumCover, License
-from tendenci.addons.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
-from tendenci.addons.photos.utils import get_privacy_settings
-from tendenci.addons.photos.tasks import ZipPhotoSetTask
+from tendenci.apps.photos.cache import PHOTO_PRE_KEY
+#from tendenci.apps.photos.search_indexes import PhotoSetIndex
+from tendenci.apps.photos.models import Image, Pool, PhotoSet, AlbumCover, License
+from tendenci.apps.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
+from tendenci.apps.photos.utils import get_privacy_settings
+from tendenci.apps.photos.tasks import ZipPhotoSetTask
 
 
 @is_enabled('photos')

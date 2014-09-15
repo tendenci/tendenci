@@ -8,19 +8,19 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import patterns, url
 from django.shortcuts import get_object_or_404, redirect
 
-from tendenci.addons.corporate_memberships.models import (
+from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
     CorpMembershipApp,
     CorpMembershipAppField,
     CorpMembership,
     Notice)
-from tendenci.addons.corporate_memberships.forms import (
+from tendenci.apps.corporate_memberships.forms import (
     CorporateMembershipTypeForm,
     CorpMembershipAppForm,
     NoticeForm,
     CorpMembershipAppFieldAdminForm)
 
-from tendenci.addons.corporate_memberships.utils import get_corpapp_default_fields_list
+from tendenci.apps.corporate_memberships.utils import get_corpapp_default_fields_list
 
 from tendenci.core.base.utils import tcurrency
 

@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 
-from tendenci.addons.news.models import News
+from tendenci.apps.news.models import News
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField

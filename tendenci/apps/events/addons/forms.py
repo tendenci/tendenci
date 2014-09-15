@@ -10,7 +10,7 @@ from captcha.fields import CaptchaField
 from tendenci.apps.discounts.models import Discount
 from tendenci.core.site_settings.utils import get_setting
 
-from tendenci.addons.events.models import Addon, AddonOption, RegAddon, RegAddonOption
+from tendenci.apps.events.models import Addon, AddonOption, RegAddon, RegAddonOption
 
 class RegAddonForm(forms.Form):
     """RegAddon form during registration.

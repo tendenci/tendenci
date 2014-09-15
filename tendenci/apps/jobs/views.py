@@ -28,9 +28,9 @@ from tendenci.core.categories.forms import CategoryForm, CategoryForm2
 from tendenci.core.categories.models import Category
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
-from tendenci.addons.jobs.models import Job, JobPricing
-from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
-from tendenci.addons.jobs.utils import is_free_listing, job_set_inv_payment
+from tendenci.apps.jobs.models import Job, JobPricing
+from tendenci.apps.jobs.forms import JobForm, JobPricingForm, JobSearchForm
+from tendenci.apps.jobs.utils import is_free_listing, job_set_inv_payment
 
 try:
     from tendenci.apps.notifications import models as notification

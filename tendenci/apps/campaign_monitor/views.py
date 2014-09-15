@@ -15,11 +15,11 @@ from createsend import Template as CST
 from createsend import Campaign as CSC
 from createsend.createsend import BadRequest
 from tendenci.core.perms.utils import has_perm
-from tendenci.addons.campaign_monitor.models import Template, Campaign
-from tendenci.addons.campaign_monitor.forms import TemplateForm, CampaignForm
-from tendenci.addons.campaign_monitor.utils import temporary_id, extract_files
-from tendenci.addons.campaign_monitor.utils import sync_campaigns, sync_templates
-from tendenci.addons.campaign_monitor.utils import apply_template_media
+from tendenci.apps.campaign_monitor.models import Template, Campaign
+from tendenci.apps.campaign_monitor.forms import TemplateForm, CampaignForm
+from tendenci.apps.campaign_monitor.utils import temporary_id, extract_files
+from tendenci.apps.campaign_monitor.utils import sync_campaigns, sync_templates
+from tendenci.apps.campaign_monitor.utils import apply_template_media
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
 from tendenci.core.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
@@ -107,7 +107,7 @@ def template_html(request, template_id):
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
     try:
-        from tendenci.addons.events.models import Event, Type
+        from tendenci.apps.events.models import Event, Type
         events = request.GET.get('events', 1)
         events_type = request.GET.get('events_type')
         start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
@@ -197,7 +197,7 @@ def template_render(request, template_id):
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
     try:
-        from tendenci.addons.events.models import Event, Type
+        from tendenci.apps.events.models import Event, Type
         events = request.GET.get('events', 1)
         events_type = request.GET.get('events_type')
         start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
@@ -397,7 +397,7 @@ def template_update(request, template_id):
     html_url = unicode("%s%s"%(site_url, template.get_html_url()))
     html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
     try:
-        from tendenci.addons.events.models import Event, Type
+        from tendenci.apps.events.models import Event, Type
         html_url += "&events=1"
         html_url += "&events_type="
         html_url += "&event_start_dt=%s" % datetime.date.today()
@@ -524,7 +524,7 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             html_url = unicode("%s%s"%(site_url, template.get_html_url()))
             html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
             try:
-                from tendenci.addons.events.models import Event, Type
+                from tendenci.apps.events.models import Event, Type
                 html_url += "&events=%s" % form.cleaned_data.get('events')
                 html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
                 html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')

@@ -2,7 +2,7 @@ from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.addons.directories.models import Directory
+from tendenci.apps.directories.models import Directory
 
 register = Library()
 
@@ -45,7 +45,7 @@ def directory_pricing_options(context, user, directory_pricing):
 
 @register.inclusion_tag("directories/pricing-table.html", takes_context=True)
 def directory_pricing_table(context):
-    from tendenci.addons.directories.models import DirectoryPricing
+    from tendenci.apps.directories.models import DirectoryPricing
     directory_pricings =DirectoryPricing.objects.filter(status=True).order_by('duration')
     show_premium_price = False
     premium_jp = DirectoryPricing.objects.filter(status=True).filter(premium_price__gt=0)

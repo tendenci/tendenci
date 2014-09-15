@@ -30,8 +30,8 @@ from tendenci.core.meta.forms import MetaForm
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
-from tendenci.addons.articles.models import Article
-from tendenci.addons.articles.forms import ArticleForm, ArticleSearchForm
+from tendenci.apps.articles.models import Article
+from tendenci.apps.articles.forms import ArticleForm, ArticleSearchForm
 from tendenci.apps.notifications import models as notification
 from tendenci.core.categories.forms import CategoryForm
 from tendenci.core.categories.models import Category, CategoryItem

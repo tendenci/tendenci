@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.addons.careers.managers import CareerManager
+from tendenci.apps.careers.managers import CareerManager
 
 POSITION_TYPE_CHOICES = (
                 ('full time', _('Full Time')),

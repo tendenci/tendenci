@@ -19,8 +19,8 @@ from tendenci.core.perms.utils import (get_notice_recipients, has_perm,
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
-from tendenci.addons.news.models import News
-from tendenci.addons.news.forms import NewsForm
+from tendenci.apps.news.models import News
+from tendenci.apps.news.forms import NewsForm
 from tendenci.apps.notifications import models as notification
 from tendenci.core.perms.utils import assign_files_perms
 

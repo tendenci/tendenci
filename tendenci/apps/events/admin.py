@@ -11,9 +11,9 @@ from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.addons.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
+from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
     CustomRegFormEntry, CustomRegFieldEntry)
-from tendenci.addons.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
+from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import delete_settings_cache
 

@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from tinymce import models as tinymce_models
 
-from tendenci.addons.announcements.managers import EmergencyAnnouncementManager
+from tendenci.apps.announcements.managers import EmergencyAnnouncementManager
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 

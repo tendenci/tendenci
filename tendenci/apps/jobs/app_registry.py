@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.core.registry import site
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-from tendenci.addons.jobs.models import Job
+from tendenci.apps.jobs.models import Job
 
 
 class JobRegistry(CoreRegistry):

@@ -13,18 +13,18 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 
 from tendenci.core.base.http import Http403
-from tendenci.addons.memberships.forms import MembershipTypeForm
+from tendenci.apps.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import tcurrency
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.memberships.models import (
+from tendenci.apps.memberships.models import (
     MembershipDefault, MembershipType, Notice,
     MembershipAppField, MembershipApp)
-from tendenci.addons.memberships.forms import (
+from tendenci.apps.memberships.forms import (
     MembershipDefaultForm, NoticeForm,
     MembershipAppForm, MembershipAppFieldAdminForm)
-from tendenci.addons.memberships.utils import get_selected_demographic_field_names
-from tendenci.addons.memberships.middleware import ExceededMaxTypes
+from tendenci.apps.memberships.utils import get_selected_demographic_field_names
+from tendenci.apps.memberships.middleware import ExceededMaxTypes
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
 

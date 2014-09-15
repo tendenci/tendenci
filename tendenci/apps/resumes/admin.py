@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.addons.resumes.models import Resume
-from tendenci.addons.resumes.forms import ResumeForm
+from tendenci.apps.resumes.models import Resume
+from tendenci.apps.resumes.forms import ResumeForm
 
 class ResumeAdmin(TendenciBaseModelAdmin):
     list_display = ['title', 'activation_dt', 'owner_link', 'admin_perms', 'admin_status']
