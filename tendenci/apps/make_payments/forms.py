@@ -294,7 +294,7 @@ class MakePaymentForm(forms.ModelForm):
             self.fields['last_name'].initial = user.last_name
             self.fields['email'].initial = user.email
             try:
-                profile = user.get_profile()
+                profile = user.profile
                 if profile:
                     self.fields['company'].initial = profile.company
                     self.fields['address'].initial = profile.address

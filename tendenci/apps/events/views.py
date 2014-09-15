@@ -2137,7 +2137,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         initial = {}
         if request.user.is_authenticated():
             try:
-                profile = request.user.get_profile()
+                profile = request.user.profile
             except:
                 profile = None
             initial = {'first_name':request.user.first_name,
