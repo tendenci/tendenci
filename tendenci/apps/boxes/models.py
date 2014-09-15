@@ -8,12 +8,14 @@ from tagging.fields import TagField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.boxes.managers import BoxManager
+from tendenci.apps.user_groups.models import Group
 from tinymce import models as tinymce_models
 
 class Box(OrderingBaseModel, TendenciBaseModel):
     title = models.CharField(max_length=500, blank=True)
     content = tinymce_models.HTMLField()
     tags = TagField(blank=True)
+    group = models.ForeignKey(Group, default=1)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
