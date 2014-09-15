@@ -22,7 +22,7 @@ from django.core.cache import cache
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson
+import simplejson
 import requests
 
 from tagging.fields import TagField

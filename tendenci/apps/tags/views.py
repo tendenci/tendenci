@@ -6,7 +6,7 @@ from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-from django.utils import simplejson
+import simplejson
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 

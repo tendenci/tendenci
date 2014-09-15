@@ -10,7 +10,7 @@ from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.utils import simplejson
+import simplejson
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 

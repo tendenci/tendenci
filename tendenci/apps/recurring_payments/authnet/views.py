@@ -6,7 +6,7 @@ from django.conf import settings
 #from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 #from django.views.decorators.csrf import csrf_exempt
-from django.utils import simplejson
+import simplejson
 
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage

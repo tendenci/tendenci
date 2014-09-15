@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
-from django.utils import simplejson
+import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _

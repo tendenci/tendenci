@@ -14,7 +14,7 @@ from decimal import Decimal
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.utils import simplejson as json
+import simplejson as json
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
