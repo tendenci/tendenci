@@ -8,7 +8,7 @@ from tendenci.apps.search.indexes import CustomSearchIndex
 
 def is_whoosh():
     default_engine = settings.HAYSTACK_CONNECTIONS.get('default', {}).get('ENGINE', '')
-    return default_engine and default_engine.lower() == 'whoosh'
+    return default_engine and 'whoosh' in default_engine.lower()
 
 class TendenciBaseSearchIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
