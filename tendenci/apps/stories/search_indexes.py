@@ -15,14 +15,14 @@ class StoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
     content = indexes.CharField(model_attr='content')
     start_dt = indexes.DateTimeField(model_attr='start_dt', null=True)
     end_dt = indexes.DateTimeField(model_attr='end_dt', null=True)
-    expires = indexes.BooleanField(model_attr='expires')
+    expires = indexes.BooleanField(model_attr='expires', null=True)
 
     # categories
     category = indexes.CharField()
     sub_category = indexes.CharField()
 
     # RSS fields
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
 
     def get_model(self):
         return Story

@@ -13,14 +13,14 @@ class DirectoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
     body = indexes.CharField(model_attr='body')
     activation_dt = indexes.DateTimeField(model_attr='activation_dt', null=True)
     expiration_dt = indexes.DateTimeField(model_attr='expiration_dt', null=True)
-    syndicate = indexes.BooleanField(model_attr='syndicate')
+    syndicate = indexes.BooleanField(model_attr='syndicate', null=True)
 
     # categories
     category = indexes.CharField()
     sub_category = indexes.CharField()
 
     # RSS fields
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
     def get_model(self):

@@ -10,11 +10,11 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 class HelpFileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     question = indexes.CharField(model_attr='question')
     answer = indexes.CharField(model_attr='answer')
-    syndicate = indexes.BooleanField(model_attr='syndicate')
+    syndicate = indexes.BooleanField(model_attr='syndicate', null=True)
     topic = indexes.MultiValueField()
 
     # RSS field
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
     def get_model(self):

@@ -16,7 +16,7 @@ class EventIndex(TendenciBaseSearchIndex, indexes.Indexable):
     description = indexes.CharField(model_attr='description')
     start_dt = indexes.DateTimeField(model_attr='start_dt')
     end_dt = indexes.DateTimeField(model_attr='end_dt')
-    on_weekend = indexes.BooleanField(model_attr='on_weekend')
+    on_weekend = indexes.BooleanField(model_attr='on_weekend', null=True)
 
     # fields for sorting events that span multiple days
     hour = indexes.IntegerField()
@@ -32,7 +32,7 @@ class EventIndex(TendenciBaseSearchIndex, indexes.Indexable):
     number_of_days = indexes.IntegerField()
 
     # RSS fields
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
     def get_model(self):

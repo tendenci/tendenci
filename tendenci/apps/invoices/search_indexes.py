@@ -28,7 +28,7 @@ class InvoiceIndex(CustomSearchIndex, indexes.Indexable):
     creator_username = indexes.CharField(model_attr='creator_username', default='')
     owner = indexes.CharField(model_attr='owner', null=True)
     owner_username = indexes.CharField(model_attr='owner_username', default='')
-    status = indexes.BooleanField(model_attr='status')
+    status = indexes.BooleanField(model_attr='status', null=True)
     status_detail = indexes.CharField(model_attr='status_detail')
 
     # PK: needed for exclude list_tags

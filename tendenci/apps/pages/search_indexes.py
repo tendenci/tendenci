@@ -18,7 +18,7 @@ class PageIndex(TendenciBaseSearchIndex, indexes.Indexable):
     sub_category = indexes.CharField()
 
     # RSS fields
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
     def get_model(self):

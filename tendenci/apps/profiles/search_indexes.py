@@ -16,7 +16,7 @@ class ProfileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     zipcode = indexes.CharField(model_attr='zipcode')
     country = indexes.CharField(model_attr='country')
     last_name = indexes.CharField(faceted=True)
-    hide_in_search = indexes.BooleanField(model_attr='hide_in_search')
+    hide_in_search = indexes.BooleanField(model_attr='hide_in_search', null=True)
 
     def get_model(self):
         return Profile

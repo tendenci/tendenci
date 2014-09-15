@@ -12,7 +12,7 @@ class PhotoSetIndex(TendenciBaseSearchIndex, indexes.Indexable):
     description = indexes.CharField(model_attr='description')
 
     # RSS fields
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
     def get_model(self):
@@ -39,7 +39,7 @@ class PhotoIndex(TendenciBaseSearchIndex, indexes.Indexable):
     photosets = indexes.MultiValueField(null=True)
 
     # RSS fields
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
     # PK: needed for exclude list_tags

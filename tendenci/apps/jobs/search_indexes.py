@@ -13,14 +13,14 @@ class JobIndex(TendenciBaseSearchIndex, indexes.Indexable):
     list_type = indexes.CharField(model_attr='list_type')
     description = indexes.CharField(model_attr='description')
     post_dt = indexes.DateTimeField(model_attr='post_dt', null=True)
-    syndicate = indexes.BooleanField(model_attr='syndicate')
+    syndicate = indexes.BooleanField(model_attr='syndicate', null=True)
 
     # categories
     category = indexes.CharField()
     sub_category = indexes.CharField()
 
     # RSS fields
-    can_syndicate = indexes.BooleanField()
+    can_syndicate = indexes.BooleanField(null=True)
 
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')

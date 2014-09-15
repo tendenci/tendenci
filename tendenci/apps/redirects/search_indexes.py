@@ -9,8 +9,8 @@ class RedirectIndex(indexes.SearchIndex, indexes.Indexable):
     from_url = indexes.CharField(model_attr='from_url')
     to_url = indexes.CharField(model_attr='to_url')
     http_status = indexes.IntegerField(model_attr='http_status')
-    status = indexes.BooleanField(model_attr='status')
-    uses_regex = indexes.BooleanField(model_attr='uses_regex')
+    status = indexes.BooleanField(model_attr='status', null=True)
+    uses_regex = indexes.BooleanField(model_attr='uses_regex', null=True)
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     update_dt = indexes.DateTimeField(model_attr='update_dt')
 
