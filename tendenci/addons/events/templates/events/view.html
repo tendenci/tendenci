@@ -113,7 +113,7 @@
                     </div>
                     {% else %}
                         <div class="organizer-desc-short">
-                            {% blocktrans with desc=organizer.description|safe|urlize|linebreaks %}{{ desc }}{% endblock %}
+                        	{{ organizer.description|safe|urlize|linebreaks }}
                         </div>
                     {% endif %}
                     {% if organizer.description|striptags|wordcount > 50 %}
@@ -177,7 +177,7 @@
         <div class="vitals">
         {% if event.external_url %}
         <div class="external-link">
-        <h4><a href="{{ event.external_url }}" target="_blank">{% trans 'View this event's webpage' %} &raquo;</a></h4>
+        <h4><a href="{{ event.external_url }}" target="_blank">{% trans "View this event's webpage" %} &raquo;</a></h4>
         </div>
         {% endif %}
             <div class="time-period">
