@@ -6,11 +6,7 @@
         <p><strong>{% trans 'Admin Theme Preview' %}:</strong><br />
         {% blocktrans %}You are previewing the {{ request.session.theme }} theme.{% endblocktrans %}</p>
         <div class="alert-actions">
-<<<<<<< HEAD
-            <a class="btn" href="{{ request.path }}?theme=">Stop previewing</a> <a class="btn" href="{% url "theme_editor.editor" %}?theme_edit={{ request.session.theme }}">Edit this theme</a>
-=======
             <a class="btn" href="{{ request.path }}?theme=">{% trans 'Stop previewing' %}</a> <a class="btn" href="{% url theme_editor.editor %}?theme_edit={{ request.session.theme }}">{% trans 'Edit this theme' %}</a>
->>>>>>> master
         </div>
     </div>
 </div>

@@ -71,13 +71,8 @@
         {% if MODULE_MEMBERSHIPS_ENABLED %}
         {% has_perm user memberships.approve_membership as can_approve_membership %}
         {% if can_approve_membership %}
-<<<<<<< HEAD
-        <li><a href="{% url "profile.search" %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
-        	<div class="sub">
-=======
         <li><a href="{% url profile.search %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
             <div class="sub">
->>>>>>> master
                 <div class="column">
                     <ul>
                         <li><a href="{% url "membership.search" %}">{% trans "Memberships" %}</a></li>

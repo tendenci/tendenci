@@ -14,11 +14,7 @@
     </ul>
     <p>{% blocktrans %}You may be able to find what you're looking for by:{% endblocktrans %}</p>
     <ul>
-<<<<<<< HEAD
-    	<li><a href="{% url 'home' %}">{% trans "Visiting the Home Page" %}</a></li>
-=======
         <li><a href="{% url home %}">{% trans "Visiting the Home Page" %}</a></li>
->>>>>>> master
         <li>
             {% trans "Searching the site:" %}&nbsp;&nbsp;
             <form method="get" action="{% url 'haystack_search' %}">

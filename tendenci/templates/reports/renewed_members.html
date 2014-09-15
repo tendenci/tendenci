@@ -26,13 +26,8 @@
 </form>
 
 {% if members %}
-<<<<<<< HEAD
-<p><a href="{% url "reports-renewed-members" %}?output=csv">
-    Download CSV File</a></p>
-=======
 <p><a href="{% url reports-renewed-members %}?output=csv">
     {% trans 'Download CSV File' %}</a></p>
->>>>>>> master
     <table>
         <tr>
             <th>{% trans 'Member Number' %}</th>

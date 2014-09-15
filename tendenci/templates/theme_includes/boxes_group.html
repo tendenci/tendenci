@@ -10,11 +10,7 @@
                 <h3>{% blocktrans with t=box.title %}{{ t }}{% endblocktrans %}</h3>
                 <div class="box-content">{% blocktrans with c=box.safe_content %}{{ c }}{% endblocktrans %}</div>
                 {% if user.profile.is_superuser %}
-<<<<<<< HEAD
-                <a href="{% url "admin:boxes_box_change" box.pk %}?next={{ request.path }}" title="Edit Box" class="edit-box">Admin: Edit {{ box.title|title }} Box</a>
-=======
                 <a href="{% url admin:boxes_box_change box.pk %}?next={{ request.path }}" title="{% trans 'Edit Box' %}" class="edit-box">{% blocktrans with t=box.title|title %}Admin: Edit {{ t }} Box{% endblocktrans %}</a>
->>>>>>> master
                 {% endif %}
             </div>
         {% endfor %}
