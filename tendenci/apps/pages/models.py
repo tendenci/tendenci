@@ -17,6 +17,7 @@ from tendenci.core.files.models import File
 
 from tendenci.apps.pages.managers import PageManager
 from tendenci.apps.pages.module_meta import PageMeta
+from tendenci.apps.user_groups.models import Group
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
@@ -90,6 +91,7 @@ class Page(BasePage):
     CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
                            (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
+    group = models.ForeignKey(Group, default=1)
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
     google_profile = models.URLField(_('Google+ URL'), blank=True)

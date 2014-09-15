@@ -52,6 +52,7 @@ class PageAdminForm(TendenciBaseForm):
         'title',
         'slug',
         'content',
+        'group',
         'tags',
         'template',
         'meta_title',
