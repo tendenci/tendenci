@@ -4,13 +4,14 @@
 # 
 # Translators:
 # Ed Schipul <eschipul@tendenci.com>, 2014
+# oxana <oxanapastor@yahoo.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-06-27 12:38-0500\n"
-"PO-Revision-Date: 2014-09-13 23:51+0000\n"
-"Last-Translator: Ed Schipul <eschipul@tendenci.com>\n"
+"PO-Revision-Date: 2014-09-15 03:00+0000\n"
+"Last-Translator: oxana <oxanapastor@yahoo.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/tendenci/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +22,7 @@ msgstr ""
 #: addons/articles/forms.py:100 addons/articles/models.py:45
 #: addons/news/forms.py:47 addons/news/models.py:48
 msgid "Release Date/Time"
-msgstr ""
+msgstr "Дата выпуска / Время"
 
 #: addons/articles/forms.py:109 addons/corporate_memberships/forms.py:523
 #: addons/corporate_memberships/models.py:69
@@ -76,7 +77,7 @@ msgstr ""
 
 #: addons/articles/management.py:9
 msgid "Article Added"
-msgstr "Статья Добавленa"
+msgstr "Статья добавленa"
 
 #: addons/articles/management.py:9
 msgid "An article has been added."
@@ -84,7 +85,7 @@ msgstr "Статья была добавлена."
 
 #: addons/articles/management.py:11
 msgid "Article Deleted"
-msgstr "Статья Удаленные"
+msgstr "Статья удалена"
 
 #: addons/articles/management.py:11
 msgid "An article has been deleted"
