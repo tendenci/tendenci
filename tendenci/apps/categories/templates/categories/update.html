@@ -17,7 +17,7 @@
         <form action="." method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Apply Changes" />
+            <input type="submit" value="{% trans 'Apply Changes' %}" />
         </div>
         </form>
     </div>
@@ -31,7 +31,7 @@
             // delete confirmation
             $('.add-category').click(function(){
                 select_box = $(this).parent().prev().find('select');
-                var category = prompt('Category Name?','').toLowerCase();
+                var category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 category = category.replace('"','')
                 var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
                 if (category) select_box.append(option_html)
@@ -39,7 +39,7 @@
             });
             $('.add-sub-category').click(function(){
                 select_box = $(this).parent().prev().find('select');
-                var sub_category = prompt('Category Name?','').toLowerCase();
+                var sub_category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 sub_category = sub_category.replace('"','')
                 var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
                 if (sub_category) select_box.append(option_html)

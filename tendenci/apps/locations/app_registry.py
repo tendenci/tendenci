@@ -1,16 +1,17 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.registry import site
-from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
-from tendenci.apps.locations.models import Location
+from tendenci.core.registry import site
+from tendenci.core.registry.base import CoreRegistry, lazy_reverse
+from tendenci.addons.locations.models import Location
 
 
 class LocationRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'A list of locations associated with your organization' \
-        'Includes a search that sort by nearest location.'
+    description = _('A list of locations associated with your organization' \
+        'Includes a search that sort by nearest location.')
     icon = '%simages/icons/locations-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {

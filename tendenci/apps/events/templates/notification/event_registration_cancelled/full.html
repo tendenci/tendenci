@@ -30,11 +30,11 @@
 {% endif %}
 on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
 </p>
-<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registration_confirmation" event.pk registrant.registration.pk %}">{% trans "View registration details" %}</a></p>
+<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registration_confirmation event.pk registrant.registration.pk %}">{% trans "View registration details" %}</a></p>
 </div>
 
 <div style="margin-bottom:20px;">
-<p style="margin:2px;">{{ event.title }}</p>
+<p style="margin:2px;">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</p>
 <p style="margin:2px;">{{ event.dt_display }}</p>
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "View event details" %}</a></p>
 </div>

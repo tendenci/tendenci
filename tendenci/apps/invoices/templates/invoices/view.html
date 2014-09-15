@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice{% endblock %}
+{% block title %}{{ block.super }}{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %}{% endblock %}
 
 
 {% block extra_head %}
@@ -16,7 +16,7 @@
 <div class="t">
 {% invoice_nav  invoice %}
 {% has_perm request.user invoices.change_invoice as can_edit_invoice %}
-<h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice</h1>
+<h1>{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %/h1>
 
 {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
 <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
@@ -53,16 +53,16 @@
 <div class="invoice-options">
     <ul>
         {% if invoice.is_void %}
-        <li><a href="{% url "invoice.unvoid_invoice" invoice.pk %}">Un-Void Invoice</a></li>
+        <li><a href="{% url invoice.unvoid_invoice invoice.pk %}">{% trans 'Un-Void Invoice' %}</a></li>
         {% else %}
-        <li><a href="{% url "invoice.void_invoice" invoice.pk %}">Void Invoice</a></li>
+        <li><a href="{% url invoice.void_invoice invoice.pk %}">{% trans 'Void Invoice' %}</a></li>
         {% endif %}
     </ul>
 </div>
 
 <div class="invoice-options">
     <ul>
-      <li><a href="{% url "invoice.print_view" invoice.id guid %}">Print Invoice</a></li>
+      <li><a href="{% url invoice.print_view invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>
     </ul>
 </div>
 
@@ -71,7 +71,7 @@
     <form method="post" action=".">
     {% csrf_token %}
     <p>{{ form.admin_notes }}</p>
-    <input type="submit" name="submit" value="Update Notes" />
+    <input type="submit" name="submit" value="{% trans 'Update Notes' %}" />
     </form>
 </div>
 {% endif %}
@@ -81,7 +81,7 @@
     <div class="invoice-meta">
     <table border="0" cellspacing="0" cellpadding="0">
       <tr>
-        <td>Invoice #</td>
+        <td>{% trans 'Invoice #' %}</td>
         <td class="td-right">{{ invoice.id }}</td>
       </tr>
       {% if object %}
@@ -89,8 +89,8 @@
           <td>{% trans "Invoice For" %}</td>
           <td class="td-right">
       {% if object.event.pk %}
-          <a href="{% url "event.registration_confirmation" object.event.pk object.pk %}">{{ object }}</a><br>
-      <strong>Event Date:</strong> {{ object.event.start_dt }}
+          <a href="{% url event.registration_confirmation object.event.pk object.pk %}">{{ object }}</a><br>
+      <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
           {% else %}
       {{ SITE_GLOBAL_SITEDISPLAYNAME }}
       <br>
@@ -126,7 +126,7 @@
     </div>
     {% if MODULE_INVOICES_INVOICELOGO %}
     <div class="invoice-meta-logo">
-        <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" alt="invoice logo" title="invoice logo" />
+        <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
     </div>
     {% endif %}
 
@@ -138,7 +138,7 @@
     <table border="0" cellspacing="0" cellpadding="0">
       <tr class="invoice-table-header">
         <td>Description</td>
-        <td class="td-right">Line Amount</td>
+        <td class="td-right">{% trans 'Line Amount' %}</td>
       </tr>
       {% invoice_object_display request invoice %}
     </table>

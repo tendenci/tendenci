@@ -22,7 +22,9 @@
     {% endif %}
 
     <div class="alert">
+        {% blocktrans %}
         <strong>Note</strong>: An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.
+        {% endblocktrans %}
     </div>
 
     <div id="membership-export">
@@ -34,7 +36,7 @@
             {{ field }}
         {% endfor %}
 
-        <div><input class="btn" type='submit' value='Export Memberships'></div>
+        <div><input class="btn" type='submit' value='{% trans "Export Memberships" %}'></div>
 
         </form>
 

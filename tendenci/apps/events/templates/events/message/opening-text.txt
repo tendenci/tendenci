@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div>
-    <font color="#000000" face="Arial">Hello [firstname],
+    <font color="#000000" face="Arial">{% trans "Hello" %} [firstname],
         <br />
         <br />
         {% trans "This is a reminder from your event planner for an upcoming event that you are registered for." %}
@@ -13,8 +13,8 @@
     <h3>
         <font color="#000000" face="Arial">
               <span class="vevent">
-                      <a class="url" href="{{ SITE_GLOBAL_SITEURL }}{% url 'event' event.id %}">
-                        <span class="summary">{{ event.title }}</span>
+                      <a class="url" href="{{ SITE_GLOBAL_SITEURL }}{% url event event.id %}">
+                        <span class="summary">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span>
                     </a>
               </span>
          </font>

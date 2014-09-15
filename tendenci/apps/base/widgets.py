@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from time import strftime
 
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 
 
 class SplitDateTimeWidget(MultiWidget):
@@ -101,4 +101,3 @@ class PriceWidget(TextInput):
         currency_symbol = get_setting('site', 'global', 'currencysymbol') or '$'
         html = super(PriceWidget, self).render(name, value, attrs)
         return mark_safe("%s %s" %(currency_symbol, html))
-

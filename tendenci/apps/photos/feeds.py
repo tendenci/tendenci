@@ -1,16 +1,17 @@
 from django.contrib.syndication.views import Feed
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.rss.feedsmanager import SubFeed
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import PUBLIC_FILTER
-from tendenci.apps.sitemaps import TendenciSitemap
+from tendenci.core.rss.feedsmanager import SubFeed
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import PUBLIC_FILTER
+from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.apps.photos.models import Image, PhotoSet
+from tendenci.addons.photos.models import Image, PhotoSet
 
 class LatestAlbums(SubFeed):
-    title =  '%s - Latest Photo Albums' % get_setting('site','global','sitedisplayname')
+    title =  _('%(dname)s - Latest Photo Albums' % {'dname':get_setting('site','global','sitedisplayname')})
     link =  "/photos/"
-    description =  "Latest Photo Albums from %s" % get_setting('site','global','sitedisplayname')
+    description =  _("Latest Photo Albums from %(dname)s" % {'dname':get_setting('site','global','sitedisplayname')})
 
     def items(self):
         items = PhotoSet.objects.filter(**PUBLIC_FILTER).order_by('-update_dt')[:20]

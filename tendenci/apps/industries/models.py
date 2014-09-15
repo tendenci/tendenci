@@ -3,9 +3,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.industries.managers import IndustryManager
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.addons.industries.managers import IndustryManager
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
 
@@ -22,9 +22,9 @@ class Industry(OrderingBaseModel, TendenciBaseModel):
     objects = IndustryManager()
 
     class Meta:
-        permissions = (("view_industry", "Can view industry"),)
-        verbose_name = "Industry"
-        verbose_name_plural = "Industries"
+        permissions = (("view_industry", _("Can view industry")),)
+        verbose_name = _("Industry")
+        verbose_name_plural = _("Industries")
         ordering = ('position','-update_dt')
 
     def __unicode__(self):

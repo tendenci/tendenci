@@ -14,9 +14,9 @@
 {% block body %}
 
 <div class="well basic-info">
-  <div>Invoice #: {{ payment.invoice.id }}</div>
-  <div>Description: {{ payment.description }}</div>
-  <div id="total-amount">Total: {{ payment.amount|format_currency }}</div>
+  <div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
+  <div>{% trans 'Description' %}: {{ payment.description }}</div>
+  <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
 </div>
 
 
@@ -49,23 +49,23 @@
 
 <div id="card-errors"></div>
 
-<p>Please fill out the fields below</p>
+<p>{% trans 'Please fill out the fields below' %}</p>
 
 
 <form action="" method="POST" id="payment-form">
-  <h3>Payment Information</h3>
+  <h3>{% trans 'Payment Information' %}</h3>
     <p class="form-row">
-        <label for="id_card_number" class="required">Card Number:</label>
+        <label for="id_card_number" class="required">{% trans 'Card Number' %}:</label>
         {{ form.card_number }}
         <span class="error">{{ form.card_number.errors }}</span>
     </p>
     <p class="form-row">
-        <label for="id_card_cvc" class="required">Card Code:</label>
+        <label for="id_card_cvc" class="required">{% trans 'Card Code' %}:</label>
          {{ form.card_cvc }} {{ form.card_cvc.help_text|safe }}
           <span class="error">{{ form.card_cvc.errors }}</span>
     </p>
     <p class="form-row">
-        <label class="required">Expiration Date:</label>
+        <label class="required">{% trans 'Expiration Date' %}:</label>
          {{ form.card_expiry_month }}
         <span> / </span>
          {{ form.card_expiry_year }} (mm/yyyy)
@@ -96,10 +96,10 @@
 
     {# billing_info_form.as_p #}
 
-    <button type="submit" class="submit-button">Submit Payment</button>
+    <button type="submit" class="submit-button">{% trans 'Submit Payment' %}</button>
 
     <div id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
-      <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="loading" title="loading"/> loading...
+      <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
     </div>
 </form>
 </div>

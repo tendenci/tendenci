@@ -23,7 +23,7 @@
      <h1>{% trans "Corporate Membership Submission" %}</h1>
      {% if corporate_membership.is_pending %}
      <div class="alert alert-warning" role"alert" align="center">
-        <strong>Pending</strong>
+        <strong>{% trans 'Pending' %}</strong>
      </div>
      {% endif %}
 
@@ -32,7 +32,7 @@
              {{ field_labels.name }}:
          </div>
          <div class="block-inline">
-             <strong><a href="{% url "corpmembership.view" corporate_membership.id %}" target="_blank">{{ corporate_membership.corp_profile.name }}</a></strong>
+             <strong><a href="{% url corpmembership.view corporate_membership.id %}" target="_blank">{{ corporate_membership.corp_profile.name }}</a></strong>
          </div>
      </div>
      <div>
@@ -110,9 +110,9 @@
    {% if corporate_membership.renewal %}
        <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
        <div>
-        {% blocktrans with corporate_membership.renew_dt|date:"d-M-Y" as renew_date %}Renewed on {{ renew_date }} by:{% endblocktrans %} <a href="{% url 'profile' corporate_membership.creator.username %}">{{ corporate_membership.creator.get_full_name }}</a>
+        {% blocktrans with corporate_membership.renew_dt|date:"d-M-Y" as renew_date %}Renewed on {{ renew_date }} by:{% endblocktrans %} <a href="{% url profile corporate_membership.creator.username %}">{{ corporate_membership.creator.get_full_name }}</a>
         <br />
-        <a href="{% url "invoice.view" corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>
+        <a href="{% url invoice.view corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>
         <br />
         {% trans "New expiration date upon approval: " %}<b>{{ new_expiration_dt }}</b>
 
@@ -126,7 +126,7 @@
                 <tr><td width="50%" class="indiv-header">{% trans "Name" %}</td><td width="50%" class="indiv-header">{% trans "Member Number" %}</td></tr>
                 {% for indiv_renew_entry in indiv_renew_entries %}
                     <tr>
-                    <td><a href="{% url 'profile' indiv_renew_entry.membership.user.username %}">{{ indiv_renew_entry.membership.user.get_full_name }}</a></td>
+                    <td><a href="{% url profile indiv_renew_entry.membership.user.username %}">{{ indiv_renew_entry.membership.user.get_full_name }}</a></td>
                     <td>{{ indiv_renew_entry.membership.member_number }}</td>
                     </tr>
                 {% endfor %}
@@ -138,7 +138,7 @@
    {% else %}
       {% if corporate_membership.anonymous_creator  %}
       <dl class="">
-      <dt>This corporate membership was submitted by: </dt>
+      <dt>{% blocktrans %}This corporate membership was submitted by: {% endblocktrans %}</dt>
         <dd>
         {{ corporate_membership.anonymous_creator.first_name }}
         {{ corporate_membership.anonymous_creator.last_name }}

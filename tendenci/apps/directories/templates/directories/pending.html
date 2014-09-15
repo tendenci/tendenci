@@ -16,17 +16,17 @@
     <ul class="pending-directories">
     {% for directory in directories %}
         <li>
-            <a href="{{ directory.get_absolute_url }}" title="{{ directory.headline }}">{{ directory.headline|truncatewords:"10" }}</a>
+            <a href="{{ directory.get_absolute_url }}" title="{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}">{% blocktrans with headline=directory.headline|truncatewords:"10" %}{{ headline }}{% endblocktrans %}</a>
             &nbsp;&ndash;&nbsp;
             {% if directory.status_detail == 'paid - pending approval' %}
-            Paid on
+            {% trans 'Paid on' %}
             {% endif %}
             {{ directory.create_dt|date }}&nbsp;{{ directory.create_dt|time }}
             {% if directory.creator %}
             by {{ directory.creator.username }}
             {% endif %}
             &nbsp;&ndash;&nbsp;
-            <a href="{% url "directory.approve" directory.pk %}">{% trans "Approve" %}</a>
+            <a href="{% url directory.approve directory.pk %}">{% trans "Approve" %}</a>
         </li>
     {% empty %}
         <li>{% trans "There are no pending directories." %}</li>

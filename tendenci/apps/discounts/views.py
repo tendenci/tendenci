@@ -86,7 +86,7 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
             form.save_m2m()
-            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % discount)
+            messages.add_message(request, messages.SUCCESS, _('Successfully added %(d)s' % {'d': discount}))
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(user=request.user)
@@ -111,7 +111,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
             form.save_m2m()
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % discount)
+            messages.add_message(request, messages.SUCCESS, _('Successfully updated %(d)s' % {'d': discount}))
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(instance=discount, user=request.user)
@@ -135,7 +135,7 @@ def delete(request, id, template_name="discounts/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % discount)
+        messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(d)s' % {'d' : discount}))
         discount.delete()
 
         return redirect('discounts')
@@ -155,12 +155,12 @@ def discounted_price(request, form_class=DiscountCodeForm):
                     "error": False,
                     "price": unicode(form.new_price()[0]),
                     "discount": unicode(form.new_price()[1]),
-                    "message": "Your discount of $ %s has been added." % unicode(form.new_price()[1]),
+                    "message": _("Your discount of $ %(p)s has been added." % {'p': unicode(form.new_price()[1])}),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {
                 "error": True,
-                "message": "This is not a valid discount code.",
+                "message": _("This is not a valid discount code."),
             }), mimetype="text/plain")
     else:
         form = form_class()
@@ -179,7 +179,7 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                 return HttpResponse(json.dumps(
                 {
                     "error": False,
-                    "message": "A discount of $%s has been added." % (form.discount.value),
+                    "message": _("A discount of $%(d)s has been added." % { 'd': form.discount.value}),
                 }), mimetype="text/plain")
 
             price_list, discount_total, discount_list, msg = form.get_discounted_prices()
@@ -195,13 +195,15 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                     "prices": unicode(new_prices),
                     "discount_total": unicode(discount_total),
                     "total": unicode(total),
-                    "message": "%sYour discount of $%s %s has been added." % (unicode(msg), unicode(discount_total),
-                                                                               discount_detail),
+                    "message": _("%(m)sYour discount of $%(dt)s %(dd)s has been added." % {
+                        'm' : unicode(msg),
+                        'dt' : unicode(discount_total),
+                        'dd' : discount_detail }),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {
                 "error": True,
-                "message": "This is not a valid discount code.",
+                "message": _("This is not a valid discount code."),
             }), mimetype="text/plain")
     else:
         form = form_class()

@@ -13,4 +13,4 @@ class ThemeFileVersion(models.Model):
     class Meta:
         verbose_name        = _('theme archive')
         verbose_name_plural = _('theme archives')
-        permissions = (("view_themefileversion","Can view theme version"),)
+        permissions = (("view_themefileversion",_("Can view theme version")),)

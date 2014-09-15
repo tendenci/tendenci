@@ -3,9 +3,9 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ story.get_title }}{% endblock %}
-{% block meta_description %}{{ story.get_description }}{% endblock %}
-{% block meta_keywords %}{{ story.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with t=story.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=story.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=story.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ story.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -26,8 +26,8 @@
     </div>
 
     <div class="story-wrap">
-        <h2>{{ story.title }}</h2>
-        <div class="content">{{ story.content|safe }}</div>
+        <h2>{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</h2>
+        <div class="content">{% blocktrans with c=story.content|safe %}{{ c }}{% endblocktrans %}</div>
     </div>
 
 </div>

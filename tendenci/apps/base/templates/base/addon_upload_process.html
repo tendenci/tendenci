@@ -8,7 +8,7 @@
 {% block body %}
 <div class="t">
     <h1>{% trans "Module Upload" %}</h1>
-    <img src="{{ STATIC_URL }}images/loadingicon.gif" alt="loading" title="loading"/>
+    <img src="{{ STATIC_URL }}images/loadingicon.gif" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/>
     <p>{% trans "Uploading module. Please wait..." %}</p>
 </div>
 {% endblock %}
@@ -19,7 +19,7 @@
     $(document).ready(function() {
         var status_check = function(){
             $.ajax({
-                url: "{% url "addon.upload.check" sid %}",
+                url: "{% url addon.upload.check sid %}",
                 success: function(status_data){
                     if (status_data == 'True') {
                         location.reload();

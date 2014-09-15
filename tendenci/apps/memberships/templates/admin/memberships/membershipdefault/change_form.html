@@ -7,29 +7,29 @@
   <ul class="object-tools">
     {% block object-tools-items %}
 
-    <li><a href="{% url 'profile' original.user.username %}">
+    <li><a href="{% url profile original.user.username %}">
         {% trans "Go to profile" %}</a></li>
 
     {% if original.can_renew %}
         {% if original.app %}
-        <li><a href="{% url "membership_default.renew" original.app.slug original.id %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
+        <li><a href="{% url membership_default.renew original.app.slug original.id %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
         {% endif %}
     {% elif original.is_approved %}
-        <li><a href="{% url "admin:membership.admin_expire" original.pk %}" >{{ original.get_status|capfirst }} &rarr; {% trans "Expire" %}</a></li>
+        <li><a href="{% url admin:membership.admin_expire original.pk %}" >{{ original.get_status|capfirst }} &rarr; {% trans "Expire" %}</a></li>
     {% elif original.is_expired %}
         {% if original.app %}
-        <li><a href="{% url "membership_default.renew" original.app.slug original.id %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
+        <li><a href="{% url membership_default.renew original.app.slug original.id %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">{{ original.get_status|capfirst }} &rarr; {% trans "Renew" %}</a></li>
         {% endif %}
     {% elif original.is_disapproved %}
         {% has_perm user memberships.approve_membershipdefault as can_approve %}
         {% if can_approve %}
-        <li><a href="{% url "admin:membership.admin_approve" original.pk %}" >
+        <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
         {% endif %}
     {% elif original.is_pending %}
         {% has_perm user memberships.approve_membershipdefault as can_approve %}
         {% if can_approve %}
-        <li><a href="{% url "admin:membership.admin_approve" original.pk %}" >
+        <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
         {% endif %}
     {% endif %}
@@ -44,7 +44,7 @@
 {% block submit_buttons_bottom %}
 {% if original.get_status == 'archive' %}
     <div class="submit-row"><strong>
-        Editing archived memberships is not allowed</strong></div>
+        {% trans 'Editing archived memberships is not allowed' %}</strong></div>
 {% else %}
     {% submit_row %}
 {% endif %}

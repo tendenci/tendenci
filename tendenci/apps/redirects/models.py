@@ -4,13 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.redirects.managers import RedirectManager
 
 HTTP_STATUS_CHOICES = (
-    (301, '301 - Permanent Redirect'),
-    (302, '302 - Temporary Redirect'),
+    (301, _('301 - Permanent Redirect')),
+    (302, _('302 - Temporary Redirect')),
 )
 
 STATUS_CHOICES = (
-    (1,'Active'),
-    (0,'Inactive'),
+    (1,_('Active')),
+    (0,_('Inactive')),
 )
 
 uses_regex_helptext = _("Check if the From URL uses a regular expression.")

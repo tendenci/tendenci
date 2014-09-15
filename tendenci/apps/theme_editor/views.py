@@ -9,6 +9,7 @@ from django.contrib import messages
 import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.decorators import flash_login_required
 from tendenci.apps.base.http import Http403
@@ -69,7 +70,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     else:
         # if the default_file is not a directory or file within
         # the themes folder then return a 404
-        raise Http404("Custom template not found. Make sure you've copied over the themes to the THEME_DIR.")
+        raise Http404(_("Custom template not found. Make sure you've copied over the themes to the THEME_DIR."))
 
     # get the current file name
     current_file = os.path.basename(default_file)
@@ -119,11 +120,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     if request.is_ajax() and request.method == "POST":
         file_form = form_class(request.POST)
         response_status = 'FAIL'
-        response_message = 'Cannot update file.'
+        response_message = _('Cannot update file.')
         if file_form.is_valid():
             if file_form.save(request, default_file, ROOT_DIR=theme_root, ORIG_ROOT_DIR=original_theme_root):
                 response_status = 'SUCCESS'
-                response_message = 'Your changes have been saved.'
+                response_message = _('Your changes have been saved.')
                 EventLog.objects.log()
 
         response = json.dumps({'status':response_status, 'message':response_message})
@@ -207,7 +208,7 @@ def create_new_template(request, form_class=AddTemplateForm):
             ret_dict['created'] = True
             ret_dict['template_name'] = template_full_name
         else:
-            ret_dict['err'] = 'Template "%s" already exists' % template_full_name
+            ret_dict['err'] = _('Template "%(name)s" already exists' % {'name':template_full_name})
 
 
     return HttpResponse(json.dumps(ret_dict))
@@ -300,7 +301,8 @@ def copy_to_theme(request, app=None):
 
     copy(chosen_file, current_dir, full_filename)
 
-    messages.add_message(request, messages.SUCCESS, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
+    msg_string = 'Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     EventLog.objects.log()
     return redirect('theme_editor.editor')
@@ -343,7 +345,8 @@ def delete_file(request):
     if settings.USE_S3_STORAGE:
         delete_file_from_s3(file=settings.AWS_LOCATION + '/' + 'themes/' + get_theme() + '/' + current_dir + chosen_file)
 
-    messages.add_message(request, messages.SUCCESS, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
+    msg_string = 'Successfully deleted %s/%s.' % (current_dir, chosen_file)
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     EventLog.objects.log()
     return redirect('theme_editor.editor')
@@ -365,11 +368,13 @@ def upload_file(request):
             full_filename = os.path.join(file_dir, upload.name)
 
             if os.path.isfile(full_filename) and not overwrite:
-                messages.add_message(request, messages.ERROR, ('File %s already exists in that folder.' % (upload.name)))
+                msg_string = 'File %s already exists in that folder.' % (upload.name)
+                messages.add_message(request, messages.ERROR, _(msg_string))
                 return HttpResponse('invalid', mimetype="text/plain")
             else:
                 handle_uploaded_file(upload, file_dir)
-                messages.add_message(request, messages.SUCCESS, ('Successfully uploaded %s.' % (upload.name)))
+                msg_string = 'Successfully uploaded %s.' % (upload.name)
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 EventLog.objects.log()
                 # returning a response of "ok" (flash likes this)
@@ -399,7 +404,8 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
         selected_theme = request.POST.get('theme')
         call_command('set_theme', selected_theme)
         checklist_update('choose-theme')
-        messages.add_message(request, messages.SUCCESS, "Your theme has been changed to %s." % selected_theme.title())
+        msg_string = "Your theme has been changed to %s." % selected_theme.title()
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
         return redirect('home')
 
     current_theme = get_setting('module', 'theme_editor', 'theme')
@@ -426,7 +432,7 @@ def theme_color(request):
             color_setting.save()
             checklist_update('customize-color')
 
-            message = 'Successfully updated theme colors.'
+            message = _('Successfully updated theme colors.')
             response = json.dumps({'message': message})
             return HttpResponse(response, mimetype="application/json")
 
@@ -447,4 +453,3 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
         return render_to_response(template_name, context_instance=RequestContext(request))
 
     raise Http404
-

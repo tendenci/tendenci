@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.libs.abstracts.models import OrderingBaseModel
-from tendenci.apps.base.fields import DictField
+from tendenci.core.base.fields import DictField
 
 
 class UpdateTracker(models.Model):
-    is_updating = models.NullBooleanField(default=False)
+    is_updating = models.BooleanField(default=False)
 
     @classmethod
     def get_or_create_instance(cls):
@@ -41,7 +41,7 @@ class UpdateTracker(models.Model):
 class ChecklistItem(OrderingBaseModel):
     key = models.CharField(max_length=20, unique=True)
     label = models.CharField(max_length=200)
-    done = models.NullBooleanField(default=False)
+    done = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.label
@@ -49,16 +49,16 @@ class ChecklistItem(OrderingBaseModel):
 
 class BaseImport(models.Model):
     OVERRIDE_CHOICES = (
-        (0, 'Blank Fields'),
-        (1, 'All Fields (override)'),
+        (0, _('Blank Fields')),
+        (1, _('All Fields (override)')),
     )
 
     STATUS_CHOICES = (
-        ('not_started', 'Not Started'),
-        ('preprocessing', 'Pre_processing'),
-        ('preprocess_done', 'Pre_process Done'),
-        ('processing', 'Processing'),
-        ('completed', 'Completed'),
+        ('not_started', _('Not Started')),
+        ('preprocessing', _('Pre_processing')),
+        ('preprocess_done', _('Pre_process Done')),
+        ('processing', _('Processing')),
+        ('completed', _('Completed')),
     )
 
     # store the header line to assist in generating recap

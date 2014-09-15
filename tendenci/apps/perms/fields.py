@@ -6,23 +6,24 @@ from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group
 
 
 user_perm_options = {
-    'label': 'User Permissions',
-    'help_text': 'Select view/change to allow all authenticated users to view or change',
+    'label': _('User Permissions'),
+    'help_text': _('Select view/change to allow all authenticated users to view or change'),
     'required': False,
-    'choices': (('allow_user_view', 'User'), ('allow_user_edit', 'User'))
+    'choices': (('allow_user_view', _('User')), ('allow_user_edit', _('User')))
 }
 
 member_perm_options = {
-    'label': 'Member Permissions',
-    'help_text': 'Select view/change to allow all members to view or change',
+    'label': _('Member Permissions'),
+    'help_text': _('Select view/change to allow all members to view or change'),
     'required': False,
-    'choices': (('allow_member_view', 'Member'), ('allow_member_edit', 'Member'))
+    'choices': (('allow_member_view', _('Member')), ('allow_member_edit', _('Member')))
 }
 
 
@@ -39,8 +40,8 @@ def group_choices():
 
 
 group_perm_options = {
-    'label': 'Group Permissions',
-    'help_text': 'Groups who have view/change permissions',
+    'label': _('Group Permissions'),
+    'help_text': _('Groups who have view/change permissions'),
     'required': False,
 }
 

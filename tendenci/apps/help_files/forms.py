@@ -1,10 +1,11 @@
 from django import forms
 from django.forms import widgets
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.help_files.models import Request, HelpFile, Topic
+from tendenci.addons.help_files.models import Request, HelpFile, Topic
 from tinymce.widgets import TinyMCE
 from captcha.fields import CaptchaField
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.apps.user_groups.models import Group
 
 class RequestForm(forms.ModelForm):
@@ -18,7 +19,7 @@ class HelpFileAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':HelpFile._meta.app_label,
         'storme_model':HelpFile._meta.module_name.lower()}))
 
-    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
+    status_detail = forms.ChoiceField(choices=(('draft',_('Draft')),('active',_('Active'))))
 
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
@@ -58,7 +59,7 @@ class HelpFileForm(TendenciBaseForm):
         'storme_model':HelpFile._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
-        choices=(('draft','Draft'),('active','Active')))
+        choices=(('draft',_('Draft')),('active',_('Active'))))
 
     #topics = forms.MultipleChoiceField(required=True, widget=widgets.CheckboxSelectMultiple())
 
@@ -81,7 +82,7 @@ class HelpFileForm(TendenciBaseForm):
             'status_detail',
         )
 
-        fieldsets = [('Help File Information', {
+        fieldsets = [(_('Help File Information'), {
                       'fields': ['question',
                                  'slug',
                                  'answer',
@@ -90,14 +91,14 @@ class HelpFileForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Flags', {
+                      (_('Flags'), {
                       'fields': ['is_faq',
                                  'is_featured',
                                  'is_video',
                                  ],
                         'classes': ['flags'],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -105,7 +106,7 @@ class HelpFileForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],

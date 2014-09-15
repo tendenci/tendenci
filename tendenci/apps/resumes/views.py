@@ -8,23 +8,24 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.core.base.http import Http403
+from tendenci.core.perms.object_perms import ObjectPermission
 
-from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.perms.utils import (update_perms_and_save, get_notice_recipients,
+from tendenci.core.perms.decorators import is_enabled
+from tendenci.core.perms.utils import (update_perms_and_save, get_notice_recipients,
     has_perm, has_view_perm, get_query_filters)
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.meta.forms import MetaForm
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.exports.utils import run_export_task
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.core.meta.forms import MetaForm
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.redirects.models import Redirect
 
-from tendenci.apps.resumes.models import Resume
-from tendenci.apps.resumes.forms import ResumeForm
+from tendenci.addons.resumes.models import Resume
+from tendenci.addons.resumes.forms import ResumeForm
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -148,7 +149,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
             EventLog.objects.log(instance=resume)
 
             if request.user.is_authenticated():
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % resume)
+                messages.add_message(request, messages.SUCCESS, _('Successfully added %(r)s' % {'r':resume}))
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'resumes', 'resumerecipients')
@@ -187,7 +188,7 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
 
                 EventLog.objects.log(instance=resume)
 
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % resume)
+                messages.add_message(request, messages.SUCCESS, _('Successfully updated %(r)s' % {'r':resume}))
 
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
 
@@ -220,7 +221,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
             resume.meta = form.save() # save meta
             resume.save() # save relationship
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % resume)
+            messages.add_message(request, messages.SUCCESS, _('Successfully updated meta for %(r)s' % { 'r':resume}))
 
             return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
     else:
@@ -239,7 +240,7 @@ def delete(request, id, template_name="resumes/delete.html"):
         if request.method == "POST":
 
             EventLog.objects.log(instance=resume)
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % resume)
+            messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(r)s' % {'r':resume}))
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'resumes', 'resumerecipients')
@@ -293,7 +294,7 @@ def approve(request, id, template_name="resumes/approve.html"):
 
         resume.save()
 
-        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % resume)
+        messages.add_message(request, messages.SUCCESS, _('Successfully approved %(r)s' % {'r':resume}))
 
         return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
 

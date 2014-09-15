@@ -7,7 +7,7 @@ from tendenci.apps.navs.models import Nav, NavItem
 
 class NavForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     class Meta:
         model = Nav
@@ -21,14 +21,14 @@ class NavForm(TendenciBaseForm):
             'status_detail',
             )
 
-        fieldsets = [('Nav Information', {
+        fieldsets = [(_('Nav Information'), {
                       'fields': ['title',
                                  'description',
                                  # 'megamenu', # needs CSS first
                                  ],
                       'legend': ''
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -36,7 +36,7 @@ class NavForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })
@@ -135,4 +135,3 @@ class ItemAdminForm(forms.ModelForm):
             nav_item.save()
 
         return nav_item
-

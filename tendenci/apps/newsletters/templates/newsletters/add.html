@@ -37,7 +37,7 @@
                 {{ form.subject.errors }}
             {% endif %}
               <p class="headers" title="This field is required.">
-                &nbsp;<label id="title">Subject:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
+                &nbsp;<label id="title">{% trans 'Subject' %}:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
             </p>
 
             <div class="input-wrapper">
@@ -136,7 +136,7 @@
                 {% for template in templates %}
                     <li>
                     <input name="template" value="{{ template }}" type="radio"  {% if template = template_selected %}checked="checked" {% endif %} />
-                    <a href="{% url "newsletter.view_template" template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+                    <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
                     </li>
                 {% endfor %}
                 </ul>
@@ -149,7 +149,7 @@
             {% for template in default_templates %}
                 <li>
                 <input name="template" value="{{ template }}" type="radio" {% if template = template_selected %}checked="checked" {% endif %} />
-                <a href="{% url "newsletter.view_template" template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>
+                <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>
                 </li>
             {% endfor %}
             </ul>
@@ -164,7 +164,7 @@
 
 
              <div class="newsletter-submit">
-             <input name="Submit" type="submit" value="Continue to Step 2">
+             <input name="Submit" type="submit" value="{% trans 'Continue to Step 2' %}">
            </div>
         </form>
 
@@ -187,11 +187,11 @@ function clearModuleContent(o){
     var opts = document.getElementById("module-options");
     if (opts.style.display != 'none') {
         opts.style.display = 'none';
-        o.innerHTML = "Show Module Content options";
+        o.innerHTML = "{% trans 'Show Module Content options' %}";
     }
     else {
         opts.style.display = 'block';
-        o.innerHTML = "Do not include Module Content";
+        o.innerHTML = "{% trans 'Do not include Module Content' %}";
     }
 }
 

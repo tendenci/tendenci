@@ -6,9 +6,9 @@
 {% load humanize %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
-{% block meta_description %}{{ event.get_description }}{% endblock %}
-{% block meta_keywords %}{{ event.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -23,7 +23,7 @@
     {% event_nav user event %}
     <div class="speakers-wrap">
         <div class="info">
-            <h1><a href="{% url 'event' event.pk %}">{{ event.title }}</a></h1>
+            <h1><a href="{% url event event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h1>
 
             <h3>{% trans "Speaker List" %}</h3>
 
@@ -31,7 +31,7 @@
                 <div class="speaker-wrap">
                     {% if speaker.get_photo %}
                     <div class="speaker-photo">
-                      <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url 'file' speaker.get_photo.pk %}"  width="100" />
+                      <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
                     </div>
                     {% endif %}
                     <div class="speaker">
@@ -39,14 +39,14 @@
                     </div>
                     {% if speaker.description|striptags|wordcount > 50 %}
                     <div class="speaker-desc-short">
-                        {{ speaker.description|striptags|safe|truncatewords:"50" }}
+                        {% blocktrans with desc=speaker.description|striptags|safe|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
                     </div>
                     <div class="speaker-desc-long">
-                        {{ speaker.description|safe|urlize|linebreaks }}
+                        {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
                     </div>
                     {% else %}
                         <div class="speaker-desc-short">
-                            {{ speaker.description|safe|urlize|linebreaks }}
+                            {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
                         </div>
                     {% endif %}
                     {% if speaker.description|striptags|wordcount > 50 %}

@@ -12,13 +12,14 @@ from django.core.urlresolvers import reverse
 from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.base.utils import UnicodeWriter
-from tendenci.apps.emails.models import Email
-from tendenci.apps.payments.models import Payment
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.base.utils import UnicodeWriter
+from tendenci.core.emails.models import Email
+from tendenci.core.payments.models import Payment
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.libs.storage import get_default_storage
 
 
@@ -61,9 +62,9 @@ def get_duration_choices(user):
 
 def get_payment_method_choices(user):
     if user.profile.is_superuser:
-        return (('paid - check', 'User paid by check'),
-                ('paid - cc', 'User paid by credit card'),
-                ('Credit Card', 'Make online payment NOW'),)
+        return (('paid - check', _('User paid by check')),
+                ('paid - cc', _('User paid by credit card')),
+                ('Credit Card', _('Make online payment NOW')),)
     else:
         directory_payment_types = get_setting('module', 'directories', 'directoriespaymenttypes')
         if directory_payment_types:
@@ -81,7 +82,7 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.object_type = ContentType.objects.get(app_label=directory._meta.app_label,
                                               model=directory._meta.module_name)
             inv.object_id = directory.id
-            profile = user.profile
+            profile = user.get_profile()
             inv.title = "Directory Add Invoice"
             inv.bill_to = '%s %s' % (user.first_name, user.last_name)
             inv.bill_to_first_name = user.first_name
@@ -170,7 +171,7 @@ def is_free_listing(user, pricing_id, list_type):
 
 def process_export(export_fields='all_fields', export_status_detail='',
                    identifier=u'', user_id=0):
-    from tendenci.apps.perms.models import TendenciBaseModel
+    from tendenci.core.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
         field_list = [

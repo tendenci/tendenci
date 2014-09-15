@@ -11,7 +11,7 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 
 class Nav(TendenciBaseModel):
     class Meta:
-        permissions = (("view_nav","Can view nav"),)
+        permissions = (("view_nav",_("Can view nav")),)
 
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)

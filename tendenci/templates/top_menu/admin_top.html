@@ -21,10 +21,11 @@
                                 <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
                                 {% endif %}
                                 {% if app.url.search %}
-                                <li><a href="{{ app.url.search }}" class="glyph search" title="Search {{ app|title }}">&#76;</a></li>
+                                <li><a href="{{ app.url.search }}" class="glyph search" title="{% trans
+                                'Search' %} {{ app|title }}">&#76;</a></li>
                                 {% endif %}
                                 {% if app.url.add %}
-                                <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
+                                <li><a href="{{ app.url.add }}" class="glyph plus" title="{% trans 'Add' %} {{ app|title }}">&#43;</a></li>
                                 {% endif %}
                             </ul>
                             {% endif %}
@@ -44,10 +45,10 @@
                             <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
                             {% endif %}
                             {% if app.url.search %}
-                            <li><a href="{{ app.url.search }}" class="glyph search" title="Search {{ app|title }}">&#76;</a></li>
+                            <li><a href="{{ app.url.search }}" class="glyph search" title="{% trans 'Search' %} {{ app|title }}">&#76;</a></li>
                             {% endif %}
                             {% if app.url.add %}
-                            <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
+                            <li><a href="{{ app.url.add }}" class="glyph plus" title="{% trans 'Add' %} {{ app|title }}">&#43;</a></li>
                             {% endif %}
                         </ul>
                         {% endif %}
@@ -70,10 +71,10 @@
                             <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
                             {% endif %}
                             {% if app.url.search %}
-                            <li><a href="{{ app.url.search }}" class="glyph search" title="Search {{ app|title }}">&#76;</a></li>
+                            <li><a href="{{ app.url.search }}" class="glyph search" title="{% trans 'Search' %} {{ app|title }}">&#76;</a></li>
                             {% endif %}
                             {% if app.url.add %}
-                            <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
+                            <li><a href="{{ app.url.add }}" class="glyph plus" title="{% trans 'Add' %} {{ app|title }}">&#43;</a></li>
                             {% endif %}
                         </ul>
                         {% endif %}
@@ -85,7 +86,7 @@
                     <ul>
                         <li class="app"><a href="{% url "profile.admins" %}">{% trans "Administrators" %}</a></li>
                         {% if SITE_ADMIN_EMAIL %}
-                        <li><a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="Email Administrators"><i class="fa fa-envelope"></i></a></li>
+                        <li><a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="{% trans 'Email Administrators' %}"><i class="fa fa-envelope"></i></a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -192,9 +193,9 @@
         <li class="right visible-mobile"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
         <li class="right"><a href="/profiles">{{ user.username }}</a></li>
 
-		{% if USE_I18N %}
-		<li class="right visible-mobile">
-        	{% include 'top_menu/change_lang.html' %}
+        {% if USE_I18N %}
+        <li class="right visible-mobile">
+            {% include 'top_menu/change_lang.html' %}
         </li>
         {% endif %}
 

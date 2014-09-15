@@ -4,9 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
 SECTION_CHOICES = (
-    ('Events','Events'),
-    ('Getting Started','Getting Started'),
-    ('Miscellaneous','Miscellaneous'),
+    ('Events',_('Events')),
+    ('Getting Started',_('Getting Started')),
+    ('Miscellaneous',_('Miscellaneous')),
 )
 
 class Guide(OrderingBaseModel):
@@ -16,7 +16,7 @@ class Guide(OrderingBaseModel):
     section = models.CharField(max_length=50, choices=SECTION_CHOICES, default="misc")
 
     class Meta:
-        permissions = (("view_guide","Can view guide"),)
+        permissions = (("view_guide",_("Can view guide")),)
 
     def __unicode__(self):
         return self.title

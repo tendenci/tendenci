@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Import Corporate Memberships from CSV file - Preview{% endblock %}
+{% block title %}{% trans 'Import Corporate Memberships from CSV file - Preview' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -21,16 +21,16 @@
 
 
 {% if mimport.status == 'preprocess_done' %}
-<p>{% trans "You're almost done!  Please review your settings.  To complete your import, click the button"%} <strong>Import Now</strong>. </p>
+<p>{% trans "You're almost done!  Please review your settings.  To complete your import, click the button"%} <strong>{% trans 'Import Now' %}</strong>. </p>
 {% endif %}
 
 <div class="dimport-settings">
         <div>{% trans "Update" %}:
             <strong>
             {% if not mimport.override %}
-            Blank Fields
+            {% trans 'Blank Fields' %}
             {% else %}
-            All Fields (override)
+            {% trans 'All Fields (override)' %}
             {% endif %}
             </strong>
         </div>
@@ -44,28 +44,28 @@
 
 {% if mimport.status == 'preprocess_done' %}
 
-    <form class="import" method="post" action="{% url "corpmembership.import_process" mimport.id %}">{% csrf_token %}
+    <form class="import" method="post" action="{% url corpmembership.import_process mimport.id %}">{% csrf_token %}
 
     <div class="import-preview">
         <table>
             <tr>
-                <th>Row #</th>
-                <th>Action</th>
-                <th>Company Name</th>
+                <th>{% trans 'Row #' %}</th>
+                <th>{% trans  'Action' %}</th>
+                <th>{% trans 'Company Name' %}</th>
                 {% if 'email' in fieldnames %}
-                <th>Email</th>
+                <th>{% trans 'Email' %}</th>
                 {% endif %}
                 {% if 'address' in fieldnames %}
-                <th>Address</th>
+                <th>{% trans 'Address' %}</th>
                 {% endif %}
                 {% if 'city' in fieldnames %}
-                <th>City</th>
+                <th>{% trans 'City' %}</th>
                 {% endif %}
                 {% if 'state' in fieldnames %}
-                <th>State</th>
+                <th>{% trans 'State' %}</th>
                 {% endif %}
-                <th>Status</th>
-                <th>Reason if to be skipped</th>
+                <th>{% trans 'Status' %}</th>
+                <th>{% trans 'Reason if to be skipped' %}</th>
             </tr>
 
             {% for cm in corp_membs_list %}
@@ -102,9 +102,9 @@
     {% if num_pages > 1%}
     <div id="import-paginate">
         {% if prev %}
-        <a href="?page={{ prev }}">Prev</a>
+        <a href="?page={{ prev }}">{% trans 'Prev' %}</a>
         {% else %}
-        Prev
+        {% trans 'Prev' %}
          {% endif %}
 
         {% for page in page_range %}
@@ -120,15 +120,15 @@
         {% endfor %}
 
         {% if curr_page >= num_pages  %}
-        Next
+        {% trans 'Next' %}
         {% else %}
-        <a href="?page={{ next }}">Next</a>
+        <a href="?page={{ next }}">{% trans 'Next' %}</a>
          {% endif %}
     </div>
     {% endif %}
 
     <div style="margin-top: 1em;">
-    <input type="submit" class="submit-btn btn" name="submit" value="Import Now" >
+    <input type="submit" class="submit-btn btn" name="submit" value="{% trans 'Import Now' %}" >
     </div>
 
     </form>
@@ -136,7 +136,7 @@
 {% else %}
     <div style="margin: 5em;">
         <img src="{{ STATIC_URL }}images/loadingicon.gif" alt="loading">
-        <div style="color: #0D4C83;"><small>Please wait while we're processing...</small></div>
+        <div style="color: #0D4C83;"><small>{% trans 'Please wait while we're processing...' %}</small></div>
     </div>
 
 {% endif %}
@@ -157,7 +157,7 @@
     var status_check = function(){
         $.ajax({
            type: "POST",
-           url: "{% url "corpmembership.check_preprocess_status" mimport.id %}",
+           url: "{% url corpmembership.check_preprocess_status mimport.id %}",
            success: function(status_data){
                if (status_data == 'preprocess_done'){
                    clearInterval(status_check_intval);

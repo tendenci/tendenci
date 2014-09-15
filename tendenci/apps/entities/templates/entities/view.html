@@ -6,7 +6,7 @@
 {% load category_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}{{ entity.entity_name }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -26,11 +26,11 @@
              </div>
         </div>
 
-        <h2>{{ entity.entity_name }}</h2>
+        <h2>{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}</h2>
         <div class="content">
 
-         <div class="notes">{{ entity.notes|safe }}</div>
-         <div class="summary">{{ entity.summary|safe }}</div>
+         <div class="notes">{% blocktrans with n=entity.notes|safe %}{{ n }}{% endblocktrans %}</div>
+         <div class="summary">{% blocktrans with s=entity.summary|safe %}{{ s }}{% endblocktrans %}</div>
 
              <p>
              <div class="contact"><h3>{% trans "Contact:" %}</h3>
@@ -41,7 +41,7 @@
              </div>
                </p>
                <p>
-               <div class="admin_notes">{{ entity.admin_notes|safe }}</div>
+               <div class="admin_notes">{% blocktrans with n=entity.admin_notes|safe %}{{ n }}{% endblocktrans %}</div>
                 </p>
 
         </div>
@@ -71,7 +71,7 @@
         $(document).ready(function(){
             // delete confirmation
             $('.delete').click(function(){
-                var delete_entity = confirm("Permenantly delete {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
+                var delete_entity = confirm("{% trans 'Permenantly delete' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
                 if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

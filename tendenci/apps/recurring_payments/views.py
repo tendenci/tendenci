@@ -10,23 +10,24 @@ from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-import simplejson
+from django.utils import simplejson
 from django.http import HttpResponse, Http404
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.recurring_payments.models import (RecurringPayment,
+from tendenci.addons.recurring_payments.models import (RecurringPayment,
                                        PaymentProfile,
                                        PaymentTransaction,
                                        RecurringPaymentInvoice)
-from tendenci.apps.recurring_payments.authnet.utils import get_test_mode
-from tendenci.apps.recurring_payments.utils import (RecurringPaymentEmailNotices,
+from tendenci.addons.recurring_payments.authnet.utils import get_test_mode
+from tendenci.addons.recurring_payments.utils import (RecurringPaymentEmailNotices,
                                       run_a_recurring_payment)
-from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile
+from tendenci.addons.recurring_payments.authnet.cim import CIMCustomerProfile
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.base.decorators import ssl_required
-from tendenci.apps.base.utils import tcurrency
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.base.http import Http403
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.base.decorators import ssl_required
+from tendenci.core.base.utils import tcurrency
+from tendenci.core.site_settings.utils import get_setting
 
 @ssl_required
 def view_account(request, recurring_payment_id, guid=None,
@@ -312,7 +313,7 @@ def disable_account(request, rp_id,
             # log an event
             EventLog.objects.log(instance=rp)
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully disabled %s' % rp)
+            messages.add_message(request, messages.SUCCESS, _('Successfully disabled %(rp)s' % {'rp': rp}))
 
             return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
 

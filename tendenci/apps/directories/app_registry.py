@@ -1,15 +1,16 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.registry import site
-from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
-from tendenci.apps.directories.models import Directory
+from tendenci.core.registry import site
+from tendenci.core.registry.base import CoreRegistry, lazy_reverse
+from tendenci.addons.directories.models import Directory
 
 
 class DirectoryRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Create directories to list businesses'
+    description = _('Create directories to list businesses')
     icon = '%simages/icons/directories-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {

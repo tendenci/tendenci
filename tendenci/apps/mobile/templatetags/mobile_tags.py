@@ -2,6 +2,7 @@ from django import template
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import TemplateSyntaxError, Variable
+from django.utils.translation import ugettext_lazy as _
 
 register = template.Library()
 
@@ -32,6 +33,6 @@ def toggle_mobile_link(parser, token):
 
     if len(bits) > 3:
         message = "'%s' tag requires exactly 2 arguments" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     return MobileLinkNode(bits[1], bits[2][1:-1])

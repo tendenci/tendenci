@@ -2,14 +2,14 @@ from datetime import datetime, timedelta
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 from form_utils.forms import BetterForm
 
 from .utils import get_app_list_choices
 
 INITIAL_START_DT = datetime.now() - timedelta(weeks=4)
 INITIAL_END_DT = datetime.now()
-REQUEST_CHOICES = [('all', 'ALL',), ('post', 'POST',), ('get', 'GET',)]
+REQUEST_CHOICES = [('all', _('ALL'),), ('post', _('POST'),), ('get', _('GET'),)]
 APP_CHOICES = get_app_list_choices()
 
 
@@ -46,14 +46,14 @@ class EventLogSearchForm(BetterForm):
     request_method = forms.ChoiceField(
         required=False,
         choices=REQUEST_CHOICES,
-        help_text='GET = whether a page/item was viewed. POST = an item was edited or added'
+        help_text=_('GET = whether a page/item was viewed. POST = an item was edited or added')
       )
 
     object_id = forms.CharField(
         required=False,
-        help_text="This is the ID Tendenci uses for all objects. "
+        help_text=_("This is the ID Tendenci uses for all objects. "
         "This is the number you sometimes see in URLs. For example, "
-        "for the event at http://tendenci.com/events/173/, the object ID is 173.")
+        "for the event at http://tendenci.com/events/173/, the object ID is 173."))
 
     user_ip_address = forms.CharField(required=False)
     user_id = forms.IntegerField(required=False)
@@ -62,12 +62,12 @@ class EventLogSearchForm(BetterForm):
     application = forms.ChoiceField(
         required=False,
         choices=APP_CHOICES,
-        help_text="These are the different modules like Pages or Articles.")
+        help_text=_("These are the different modules like Pages or Articles."))
 
     action = forms.CharField(
       required=False,
-      help_text="These are the actions within the python commands at view.py. "
-      "Some examples of actions are search and edit, for example."
+      help_text=_("These are the actions within the python commands at view.py. "
+      "Some examples of actions are search and edit, for example.")
       )
 
     class Meta:
@@ -91,7 +91,7 @@ class EventLogSearchForm(BetterForm):
                          ],
               'legend': ''
               }),
-            ('Advanced Options',
+            (_('Advanced Options'),
             {
               'fields': ['user_id',
                          'user_name',

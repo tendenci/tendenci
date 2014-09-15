@@ -3,12 +3,13 @@ from django.core.urlresolvers import reverse
 
 from django.contrib.admin import widgets
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
-from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
+from tendenci.addons.recurring_payments.models import RecurringPayment, PaymentProfile
+from tendenci.addons.recurring_payments.forms import RecurringPaymentForm
 
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.base.utils import tcurrency
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.base.utils import tcurrency
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign
@@ -107,14 +108,14 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
     fieldsets = (
         (None, {'fields': ('user', 'url', 'description',)}),
-        ("Billing Settings", {'fields': ('payment_amount', ('taxable', 'tax_rate',),
+        (_("Billing Settings"), {'fields': ('payment_amount', ('taxable', 'tax_rate',),
                            'billing_start_dt', 'billing_cycle', 'billing_dt_select', )}),
-        ("Trial Period", {'fields': ('has_trial_period',  'trial_amount',
+        (_("Trial Period"), {'fields': ('has_trial_period',  'trial_amount',
                            'trial_period_start_dt',  'trial_period_end_dt',  ),
                           'description': '*** Note that if the trial period overlaps with ' + \
                           'the initial billing cycle start date, the trial period will end' + \
                           ' on the initial billing cycle start date.'}),
-        ('Other Options', {'fields': ('status', 'status_detail',)}),
+        (_('Other Options'), {'fields': ('status', 'status_detail',)}),
     )
 
     form = RecurringPaymentForm

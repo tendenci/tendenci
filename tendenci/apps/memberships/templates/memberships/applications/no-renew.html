@@ -18,16 +18,17 @@
 <div class="t">
 
     <h1 style="margin-bottom:15px;">{% trans "Membership Application" %}</h1>
-
-    <p>You are a member of every ({{ memberships.count }}) membership type available in this application.</p>
+    {% blocktrans with c=memberships.count %}
+    <p>You are a member of every ({{ c }}) membership type available in this application.</p>
     <p>This application will be available starting at your next renewal period.</p>
+    {% endblocktrans %}
 
 
     {% for membership in memberships %}
 
         <div class="membership-wrap">
 
-            <div><strong><a href="{% url "membership.details" membership.pk %}">
+            <div><strong><a href="{% url membership.details membership.pk %}">
                 {{ membership.member_number }} {{ membership.membership_type }}
             </a></strong></div>
 
@@ -36,7 +37,7 @@
             {% if membership.get_renewal_period_dt.1 %}
             <div class="renew-period">Renew between {{ membership.get_renewal_period_dt.0|date:"N n, Y" }} and {{ membership.get_renewal_period_dt.1|date:"N n, Y" }}</div>
             {% else %}
-            <div class="renew-period">This membership never expires. There is no renewal period.</div>
+            <div class="renew-period">{% trans 'This membership never expires. There is no renewal period' %}.</div>
             {% endif %}
 
         </div>

@@ -16,7 +16,7 @@
 <div class="t">
     {% nav_nav request.user %}
 
-    <h1>{% firstof MODULE_NAVS_LABEL "Nav" %} {% trans "Edit" %}</h1>
+    <h1>{% firstof MODULE_NAVS_LABEL trans "Nav" %} {% trans "Edit" %}</h1>
 
     <div class="nav-wrap">
         <form action="{% url "navs.edit" current_nav.id %}" method="post">{% csrf_token %}

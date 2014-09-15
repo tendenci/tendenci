@@ -30,15 +30,15 @@ class Profile(Person):
 
     # profile meta data
     salutation = models.CharField(_('salutation'), max_length=15,
-        blank=True, choices=(('Mr.', 'Mr.'),('Mrs.', 'Mrs.'),
-            ('Ms.', 'Ms.'),('Miss', 'Miss'),('Dr.', 'Dr.'),('Prof.', 'Prof.'),('Hon.', 'Hon.'),))
+        blank=True, choices=(('Mr.', _('Mr.')),('Mrs.', _('Mrs.')),
+            ('Ms.', _('Ms.')),('Miss', _('Miss')),('Dr.', _('Dr.')),('Prof.', _('Prof.')),('Hon.', _('Hon.')),))
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
     company = models.CharField(_('company'), max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=50, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
-    sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', u'Male'),('female', u'Female')))
+    sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', _(u'Male')),('female', _(u'Female'))))
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     phone2 = models.CharField(_('phone2'), max_length=50, blank=True)
     fax = models.CharField(_('fax'), max_length=50, blank=True)
@@ -74,9 +74,9 @@ class Profile(Person):
     actives = ProfileActiveManager()
 
     class Meta:
-        permissions = (("view_profile", "Can view profile"),)
-        verbose_name = "User"
-        verbose_name_plural = "Users"
+        permissions = (("view_profile", _("Can view profile")),)
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
 
     def __unicode__(self):
         if hasattr(self, 'user'):
@@ -386,8 +386,8 @@ class Profile(Person):
 
 class UserImport(BaseImport):
     INTERACTIVE_CHOICES = (
-        (True, 'Interactive'),
-        (False, 'Not Interactive (no login)'),
+        (True, _('Interactive')),
+        (False, _('Not Interactive (no login)')),
     )
 
     UPLOAD_DIR = "imports/profiles/%s" % uuid.uuid1().get_hex()[:8]
@@ -433,6 +433,3 @@ class UserImport(BaseImport):
 
 class UserImportData(BaseImportData):
     uimport = models.ForeignKey(UserImport, related_name="user_import_data")
-
-
-

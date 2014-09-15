@@ -1,1 +1,3 @@
-{% if corp_profile %}Your Roster Export for "{{ corp_profile.name|safe }}" is Ready on {{ site_url|safe }}{% else %}Your Membership Export is Ready on {{ site_url|safe }}{% endif %}
+{% load i18n %}
+
+{% if corp_profile %}{% blocktrans with cname=corp_profile.name|safe site=site_url|safe %}Your Roster Export for "{{ cname }}" is Ready on {{ site }}{% endblocktrans %}{% else %}{% blocktrans with site=site_url|safe %}Your Membership Export is Ready on {{ site }}{% endblocktrans %}{% endif %}

@@ -13,7 +13,7 @@
     </div>
     <div class="event-info" style="margin-top:10px;">
 
-        <h3><a href="{% url 'event' event.pk %}">{{ event.title }}</a></h3>
+        <h3><a href="{% url event event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">
@@ -22,14 +22,14 @@
 
         <div class="description">
         {% if event.meta.description %}
-            {{ event.meta.description }}
+            {% blocktrans with desc=event.meta.description %}{{ desc }}{% endblocktrans %}
         {% else %}
-            {{ event.get_description }}
+            {% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}
         {% endif %}
         </div>
 
         <div class="delete-form" style="margin-top:10px;">
-            <form name="directory-delete" method="POST" action="{% url "event.delete" event.pk %}">{% csrf_token %}
+            <form name="directory-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
                 <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
             </form>

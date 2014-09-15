@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_NEWS_LABEL 'News' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans 'Edit' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -20,7 +20,7 @@
 
     {% news_nav request.user news %}
 
-    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} {% trans "Edit" %}</h1>
+    <h1>{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Edit" %}</h1>
 
     <div class="news-wrap">
          <div class="options">
@@ -29,10 +29,10 @@
              </div>
         </div>
 
-        <form action="{% url "news.edit" news.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url news.edit news.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Save Changes" />
+            <input type="submit" value="{% trans 'Save Changes' %}" />
         </div>
         </form>
     </div>

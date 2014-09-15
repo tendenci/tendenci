@@ -4,7 +4,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.conf.urls import patterns, url
+from django.conf.urls.defaults import patterns, url
 from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
@@ -12,21 +12,21 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.memberships.forms import MembershipTypeForm
+from tendenci.core.base.http import Http403
+from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
-from tendenci.apps.base.utils import tcurrency
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.memberships.models import (
+from tendenci.core.base.utils import tcurrency
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.addons.memberships.models import (
     MembershipDefault, MembershipType, Notice,
     MembershipAppField, MembershipApp)
-from tendenci.apps.memberships.forms import (
+from tendenci.addons.memberships.forms import (
     MembershipDefaultForm, NoticeForm,
     MembershipAppForm, MembershipAppFieldAdminForm)
-from tendenci.apps.memberships.utils import get_selected_demographic_field_names
-from tendenci.apps.memberships.middleware import ExceededMaxTypes
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import has_perm
+from tendenci.addons.memberships.utils import get_selected_demographic_field_names
+from tendenci.addons.memberships.middleware import ExceededMaxTypes
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import has_perm
 
 
 class MembershipStatusDetailFilter(SimpleListFilter):
@@ -107,11 +107,8 @@ def renew_selected(modeladmin, request, queryset):
         membership.send_email(request, 'renewal')
 
     member_names = [m.user.profile.get_name() for m in memberships]
-
-    messages.add_message(
-        request,
-        messages.SUCCESS,
-        'Successfully renewed: %s' % u', '.join(member_names))
+    msg_string = 'Successfully renewed: %s' % u', '.join(member_names)
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
 
 renew_selected.short_description = u'Renew selected'
 
@@ -161,7 +158,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     form = MembershipDefaultForm
 
     profile = (
-        'Profile',
+        _('Profile'),
         {'fields': (
             ('first_name', 'last_name'),
             ('email', 'email2'),
@@ -178,7 +175,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     membership = (
-        'Membership',
+        _('Membership'),
         {'fields': (
             'member_number',
             'renewal',
@@ -214,7 +211,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     money = (
-        'Money',
+        _('Money'),
         {'fields': (
             'payment_method',
             'membership_type',
@@ -222,7 +219,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     extra = (
-        'Extra',
+        _('Extra'),
         {'fields': (
             'industry',
             'region',
@@ -230,7 +227,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     status = (
-        'Status',
+        _('Status'),
         {'fields': (
             'join_dt',
             'renew_dt',
@@ -280,7 +277,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         if demographics_fields:
             demographics = (
-                    'Demographics',
+                    _('Demographics'),
                     {'fields': tuple(demographics_fields)
                      }
                            )
@@ -447,7 +444,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         messages.add_message(
             request,
             messages.SUCCESS,
-            'Successfully Approved'
+            _('Successfully Approved')
         )
 
         return redirect(reverse(
@@ -467,7 +464,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         messages.add_message(
             request,
             messages.SUCCESS,
-            'Successfully Renewed'
+            _('Successfully Renewed')
         )
 
         return redirect(reverse(
@@ -487,7 +484,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         messages.add_message(
             request,
             messages.SUCCESS,
-            'Successfully Disapproved'
+            _('Successfully Disapproved')
         )
 
         return redirect(reverse(
@@ -506,7 +503,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         messages.add_message(
             request,
             messages.SUCCESS,
-            'Successfully Expired'
+            _('Successfully Expired')
         )
 
         return redirect(reverse(
@@ -520,7 +517,7 @@ class MembershipAppFieldAdmin(admin.TabularInline):
     fields = ('label', 'field_name', 'display', 'required', 'admin_only', 'position',)
     extra = 0
     can_delete = False
-    verbose_name = 'Section Break'
+    verbose_name = _('Section Break')
     ordering = ("position",)
     template = "memberships/admin/membershipapp/tabular.html"
 
@@ -543,13 +540,13 @@ class MembershipAppAdmin(admin.ModelAdmin):
                            'membership_types', 'payment_methods',
                            'include_tax', 'tax_rate',
                            'use_for_corp', 'use_captcha', 'discount_eligible')},),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
         )}),
-        ('Status', {'fields': (
+        (_('Status'), {'fields': (
             'status',
             'status_detail',
         )}),
@@ -581,13 +578,13 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
 
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
-        ('Expiration Method', {'fields': ('never_expires', 'type_exp_method',)}),
-        ('Renewal Options', {'fields': (('allow_renewal', 'renewal', 'renewal_require_approval'),
+        (_('Expiration Method'), {'fields': ('never_expires', 'type_exp_method',)}),
+        (_('Renewal Options'), {'fields': (('allow_renewal', 'renewal', 'renewal_require_approval'),
                                         'renewal_price',
                                         'renewal_period_start',
                                         'renewal_period_end',)}),
 
-        ('Other Options', {'fields': (
+        (_('Other Options'), {'fields': (
             'expiration_grace_period', ('require_approval',
             'admin_only'), 'require_payment_approval', 'position', 'status_detail')}),
     )
@@ -686,8 +683,8 @@ class NoticeAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {'fields': ('notice_name', 'notice_time_type', 'membership_type')}),
-        ('Email Fields', {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
-        ('Other Options', {'fields': ('status', 'status_detail')}),
+        (_('Email Fields'), {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
+        (_('Other Options'), {'fields': ('status', 'status_detail')}),
     )
 
     form = NoticeForm

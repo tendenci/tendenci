@@ -22,10 +22,10 @@
 
     <div class="directory-wrap">
 
-        <form action="{% url "directory.edit" directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url directory.edit directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Save Changes" />
+            <input type="submit" value="{% trans 'Save Changes' %}" />
         </div>
         </form>
     </div>

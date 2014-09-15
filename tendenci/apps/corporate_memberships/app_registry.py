@@ -1,15 +1,16 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.registry import site
-from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
-from tendenci.apps.corporate_memberships.models import CorpMembership
+from tendenci.core.registry import site
+from tendenci.core.registry.base import PeopleRegistry, lazy_reverse
+from tendenci.addons.corporate_memberships.models import CorpMembership
 
 
 class CorpMembershipRegistry(PeopleRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Corporate membership management application.'
+    description = _('Corporate membership management application.')
     icon = '%simages/icons/corporate-membership-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {

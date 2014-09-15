@@ -11,9 +11,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
+            <a href="{% url dashboard %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -31,9 +31,9 @@
             {% endif %}
 
             {% if request.user.is_superuser %}
-                <li><a href="{% url "admin:recurring_payments_recurringpayment_add" %}">{% trans "Add" %}</a></li>
-                <li><a href="{% url "recurring_payment.customers" %}">{% trans "Customers" %}</a></li>
-                <li><a href="{% url "admin:recurring_payments_recurringpayment_changelist" %}">Admin Backend</a></li>
+                <li><a href="{% url admin:recurring_payments_recurringpayment_add %}">{% trans "Add" %}</a></li>
+                <li><a href="{% url recurring_payment.customers %}">{% trans "Customers" %}</a></li>
+                <li><a href="{% url admin:recurring_payments_recurringpayment_changelist %}">Admin Backend</a></li>
             {% endif %}
 
             </ul>
@@ -45,11 +45,11 @@
                 {% if request.user.is_superuser or user.id == nav_object.user.id %}
                 <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
                 {% if request.user.is_superuser %}
-                <li><a href="{% url "admin:recurring_payments_recurringpayment_change" nav_object.id %}">{% trans "Edit" %}</a></li>
+                <li><a href="{% url admin:recurring_payments_recurringpayment_change nav_object.id %}">{% trans "Edit" %}</a></li>
                 {% endif %}
                 {% if nav_object.status_detail == 'active' %}
-                <li><a href="{% url "recurring_payment.disable_account" nav_object.id %}" class="disable">{% trans "Disable Account" %}</a></li>
-                <li><a href="{% url "recurring_payment.authnet.update_payment_info"  nav_object.id %}">{% trans "Payment Method" %}</a></li>
+                <li><a href="{% url recurring_payment.disable_account nav_object.id %}" class="disable">{% trans "Disable Account" %}</a></li>
+                <li><a href="{% url recurring_payment.authnet.update_payment_info  nav_object.id %}">{% trans "Payment Method" %}</a></li>
                 {% endif %}
                 {% endif %}
 
@@ -59,14 +59,14 @@
 
     </li>
     {% if MODULE_NEWS_ENABLED %}
-    <li><a href="{% url 'invoices' %}">{% firstof MODULE_INVOICES_LABEL trans 'Invoices' %}</a></li>
+    <li><a href="{% url invoices %}">{% firstof MODULE_INVOICES_LABEL trans 'Invoices' %}</a></li>
     {% endif %}
 </ul>
 {% endif %}
 
 {% if nav_object %}
  <!-- disable recurring payment account form -->
-    <form name="rp-disable" method="POST" action="{% url "recurring_payment.disable_account" nav_object.id  %}">{% csrf_token %}
+    <form name="rp-disable" method="POST" action="{% url recurring_payment.disable_account nav_object.id  %}">{% csrf_token %}
         <input type="hidden" name="action" value="Disable Account">
     </form>
 {% endif %}

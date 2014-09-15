@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Edit Meta Information{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Edit Meta Information' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -23,10 +23,10 @@
                 {% event_options request.user event %}
              </div>
         </div>
-        <form action="{% url "event.edit.meta" event.pk %}" method="post">{% csrf_token %}
+        <form action="{% url event.edit.meta event.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Save Changes" />
+            <input type="submit" value="{% trans 'Save Changes' %}" />
              or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
         </div>
         </form>
@@ -40,7 +40,7 @@
         $(document).ready(function(){
             // delete confirmation
             $('.delete').click(function(){
-                var delete_event = confirm('Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?');    // confirm
+                var delete_event = confirm('{% trans "Permenantly delete" %} {% firstof MODULE_EVENTS_LABEL  trans "Event" %}?');    // confirm
                 if(delete_event) $('.t').find('form[name="event-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

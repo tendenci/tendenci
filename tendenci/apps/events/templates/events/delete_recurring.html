@@ -6,7 +6,7 @@
 <div class="t">
     {% event_nav user event %}
     <div class="info">
-        <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Delete Page" %}</h1>
+        <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Delete Page" %}</h1>
         <div class="delete-prompt">
             {% trans "Are you sure you want to permanently delete this recurring event?" %}
         </div>
@@ -14,7 +14,7 @@
     <div class="event-info" style="margin-top:10px;">
 
         {% for event in events %}
-        <h3><a href="{% url 'event' event.pk %}">{{ event.title }}</a></h3>
+        <h3><a href="{% url event event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">
@@ -23,15 +23,15 @@
 
         <div class="description">
         {% if event.meta.description %}
-            {{ event.meta.description }}
+            {% blocktrans with desc=event.meta.description %}{{ desc }}{% endblocktrans %}
         {% else %}
-            {{ event.get_description }}
+            {% blockrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}
         {% endif %}
         </div>
         {% endfor %}
 
         <div class="delete-form" style="margin-top:10px;">
-            <form name="recurring-event-delete" method="POST" action="{% url "event.delete_recurring" event.pk %}">{% csrf_token %}
+            <form name="recurring-event-delete" method="POST" action="{% url event.delete_recurring event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
                 <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
             </form>

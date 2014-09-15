@@ -7,26 +7,27 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.base.decorators import password_required
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.perms.utils import (has_perm, has_view_perm,
+from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import password_required
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.decorators import is_enabled
+from tendenci.core.perms.utils import (has_perm, has_view_perm,
     update_perms_and_save, get_query_filters)
-from tendenci.apps.perms.decorators import admin_required
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.exports.utils import run_export_task
-from tendenci.apps.files.models import File
+from tendenci.core.perms.decorators import admin_required
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.exports.utils import run_export_task
+from tendenci.core.files.models import File
 from djcelery.models import TaskMeta
 
-from tendenci.apps.locations.models import Location, LocationImport
-from tendenci.apps.locations.forms import LocationForm, LocationFilterForm
-from tendenci.apps.locations.utils import get_coordinates
-from tendenci.apps.locations.importer.forms import UploadForm, ImportMapForm
-from tendenci.apps.locations.importer.utils import is_import_valid, parse_locs_from_csv
-from tendenci.apps.locations.importer.tasks import ImportLocationsTask
-from tendenci.apps.imports.utils import render_excel
+from tendenci.addons.locations.models import Location, LocationImport
+from tendenci.addons.locations.forms import LocationForm, LocationFilterForm
+from tendenci.addons.locations.utils import get_coordinates
+from tendenci.addons.locations.importer.forms import UploadForm, ImportMapForm
+from tendenci.addons.locations.importer.utils import is_import_valid, parse_locs_from_csv
+from tendenci.addons.locations.importer.tasks import ImportLocationsTask
+from tendenci.core.imports.utils import render_excel
 
 
 @is_enabled('locations')
@@ -140,8 +141,8 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                     photo = form.cleaned_data['photo_upload']
                     if photo:
                         location.save(photo=photo)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
+                msg_string = 'Successfully updated %s' % location
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('location', args=[location.slug]))
         else:
@@ -169,8 +170,8 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                     photo = form.cleaned_data['photo_upload']
                     if photo:
                         location.save(photo=photo)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
+                msg_string = 'Successfully added %s' % location
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('location', args=[location.slug]))
         else:
@@ -189,7 +190,8 @@ def delete(request, id, template_name="locations/delete.html"):
 
     if has_perm(request.user,'locations.delete_location'):
         if request.method == "POST":
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % location)
+            msg_string = 'Successfully deleted %s' % location
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
             location.delete()
 
             return HttpResponseRedirect(reverse('location.search'))

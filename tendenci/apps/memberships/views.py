@@ -20,46 +20,47 @@ from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.db.models.fields import AutoField
 from django.utils.encoding import smart_str
-import simplejson
+from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext_lazy as _
 
 from johnny.cache import invalidate
 from geraldo.generators import PDFGenerator
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.base.http import Http403
-from tendenci.apps.base.decorators import password_required
-from tendenci.apps.base.utils import send_email_notification
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.corporate_memberships.models import (CorpMembership,
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import password_required
+from tendenci.core.base.utils import send_email_notification
+from tendenci.core.perms.utils import has_perm
+from tendenci.addons.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
                                                           CorpMembershipApp,
                                                           IndivEmailVerification)
 from reports import ReportNewMems
-from tendenci.apps.exports.utils import render_csv
-from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.core.exports.utils import render_csv
+from tendenci.core.perms.utils import get_notice_recipients
 
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.memberships.models import (
+from tendenci.addons.memberships.models import (
     MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
     MembershipImportData, MembershipApp, MembershipAppField)
-from tendenci.apps.memberships.forms import (
+from tendenci.addons.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipDefaultForm,
     ReportForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
     DemographicsForm,
     MembershipDefault2Form)
-from tendenci.apps.memberships.utils import (prepare_chart_data,
+from tendenci.addons.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault)
-from tendenci.apps.base.forms import CaptchaForm
+from tendenci.core.base.forms import CaptchaForm
 
 
 def membership_index(request):
@@ -98,15 +99,15 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         if 'approve' in GET_KEYS:
             membership.approve(request_user=request.user)
             membership.send_email(request, 'approve')
-            messages.add_message(request, messages.SUCCESS, 'Successfully Approved')
+            messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in GET_KEYS:
             membership.disapprove(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, 'Successfully Disapproved')
+            messages.add_message(request, messages.SUCCESS, _('Successfully Disapproved'))
 
         if 'expire' in GET_KEYS:
             membership.expire(request_user=request.user)
-            messages.add_message(request, messages.SUCCESS, 'Successfully Expired')
+            messages.add_message(request, messages.SUCCESS, _('Successfully Expired'))
 
         if 'print' in GET_KEYS:
             template_name = 'memberships/details_print.html'
@@ -799,7 +800,7 @@ def membership_default_add(request, slug='', membership_id=None,
     """
     Default membership application form.
     """
-    from tendenci.apps.memberships.models import Notice
+    from tendenci.addons.memberships.models import Notice
     
     user = None
     membership = None
@@ -1339,7 +1340,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
             EventLog.objects.log(instance=membership)
 
             # redirect: membership edit page
-            messages.success(request, 'Successfully updated Membership Information.')
+            messages.success(request, _('Successfully updated Membership Information.'))
             return redirect(reverse('membership.details', kwargs={'id': membership.id}))
 
     context = {

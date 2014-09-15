@@ -18,12 +18,12 @@
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Headline:" %}</td>
-    <td width="75%"><b>{{ object.headline }}</b></td>
+    <td width="75%"><b>{% blocktrans with headline=object.headline %}{{ headline }}{% endblocktrans %}</b></td>
   </tr>
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Body:" %}</td>
-    <td width="75%"><b>{{ object.body|relative_to_absolute_urls|safe }}</b></td>
+    <td width="75%"><b>{% blocktrans with body=object.body|relative_to_absolute_urls|safe %}{{ body }}{% endblocktrans %}</b></td>
   </tr>
 </table>
 <p>
@@ -34,7 +34,7 @@
     {% if object.status_detail != 'active' %}
         <p>
             {% blocktrans %}To activate this directory, go to:{% endblocktrans %}
-            <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "directory.approve" object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "directory.approve" object.id %}</a></b>
+            <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url directory.approve object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url directory.approve object.id %}</a></b>
         </p>
     {% endif %}
 </p>

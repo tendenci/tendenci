@@ -32,16 +32,16 @@
         <tbody>
             {% for type in summary %}
             <tr>
-                <td><a href="{% url "admin:corporate_memberships_corporatemembershiptype_change" type.type.id %}">{{ type.type.name }}</a></td>
+                <td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change type.type.id %}">{{ type.type.name }}</a></td>
                 <td>{{ type.active }}</td>
                 <td>{{ type.pending }}</td>
                 <td>{{ type.expired }}</td>
                  <td>{{ type.in_grace_period }}</td>
-                <td><a href="{% url "corpmembership.search" %}?cm_type_id={{ type.type.id  }}">{{ type.total }}</a></td>
+                <td><a href="{% url corpmembership.search %}?cm_type_id={{ type.type.id  }}">{{ type.total }}</a></td>
             </tr>
             {% endfor %}
             <tr>
-                <td>Total</td>
+                <td>{% trans 'Total' %}</td>
                 <td>{{ total.total_active }}</td>
                 <td>{{ total.total_pending }}</td>
                 <td>{{ total.total_expired }}</td>

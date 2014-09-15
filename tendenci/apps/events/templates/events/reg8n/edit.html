@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Edit Registration Form{% endblock %}
+{% block title %}{{ block.super }}{% trans "Edit Registration Form" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,7 +14,7 @@
 <div class="t">
     {% event_nav user %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Registration Form Edit" %}</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Registration Form Edit" %}</h1>
 
     <div class="event-wrap">
         <div class="options">
@@ -22,7 +22,7 @@
                 {% event_options user event %}
              </div>
         </div>
-        <form action="{% url "event.edit.registration" event.pk %}" method="post">{% csrf_token %}
+        <form action="{% url event.edit.registration event.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
 
@@ -32,7 +32,7 @@
                 <!-- payment_period.label -->
             {# endfor #}
 
-            <input type="submit" value="Save Changes" />
+            <input type="submit" value="{% trans "Save Changes" %}" />
         </div>
         </form>
     </div>
@@ -44,7 +44,7 @@
         $(document).ready(function(){
             // delete confirmation
             $('.delete').click(function(){
-                var delete_object = confirm("Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?");    // confirm
+                var delete_object = confirm("{% trans "Permenantly delete" %} {% firstof MODULE_EVENTS_LABEL trans 'Event' %}?");    // confirm
                 if(delete_object) $('form[name="event-delete"]').submit()
                 return false;    // cancel
             });

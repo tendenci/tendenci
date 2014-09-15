@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.widgets import CheckboxSelectMultiple, CheckboxInput
 
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.memberships.models import NOTICE_TYPES, MembershipDefault
+from tendenci.addons.memberships.models import NOTICE_TYPES, MembershipDefault
 
 
 PERIOD_UNIT_CHOICE = (
@@ -24,18 +24,18 @@ PERIOD_CHOICES = (
                   ("rolling", _("Rolling")),
                   )
 MONTHS_CHOICES = (
-                    ('1', 'Jan (01)'),
-                    ('2', 'Feb (02)'),
-                    ('3', 'Mar (03)'),
-                    ('4', 'Apr (04)'),
-                    ('5', 'May (05)'),
-                    ('6', 'Jun (06)'),
-                    ('7', 'Jul (07)'),
-                    ('8', 'Aug (08)'),
-                    ('9', 'Sep (09)'),
-                    ('10', 'Oct (10)'),
-                    ('11', 'Nov (11)'),
-                    ('12', 'Dec (12)'),
+                    ('1', _('Jan (01)')),
+                    ('2', _('Feb (02)')),
+                    ('3', _('Mar (03)')),
+                    ('4', _('Apr (04)')),
+                    ('5', _('May (05)')),
+                    ('6', _('Jun (06)')),
+                    ('7', _('Jul (07)')),
+                    ('8', _('Aug (08)')),
+                    ('9', _('Sep (09)')),
+                    ('10', _('Oct (10)')),
+                    ('11', _('Nov (11)')),
+                    ('12', _('Dec (12)')),
                     )
 DAYS_CHOICES = [(day, day) for day in range(1, 32)]
 
@@ -100,7 +100,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
                                                             self.pos_d['rolling_option1_day'][0], id_)
         # expiration_method
         JOIN_EXP_METHOD_CHOICE = (
-                                  ("0", "End of full period"),
+                                  ("0", _("End of full period")),
                                   ("1", mark_safe("%s day(s) at signup month" % \
                                                   rendered_rolling_option1_day)),)
         rolling_option_widget = self.pos_d['rolling_option'][1]
@@ -123,7 +123,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
                                                            self.pos_d['rolling_renew_option2_day'][0], id_)
         # renew_expiration_method
         RENEW_EXP_METHOD_CHOICE = (
-                                  ("0", "End of full period"),
+                                  ("0", _("End of full period")),
                                   ("1", mark_safe("%s day(s) at signup month" % \
                                                   rendered_rolling_renew_option1_day)),
                                   ("2", mark_safe("%s day(s) at renewal month" % \
@@ -281,9 +281,9 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         # notice_time
         notice_time_widget = self.pos_d['notice_time'][1]
-        notice_time_widget.choices = (('after','After'),
-                                      ('before','Before'),
-                                      ('attimeof','At Time Of'))
+        notice_time_widget.choices = (('after',_('After')),
+                                      ('before',_('Before')),
+                                      ('attimeof',_('At Time Of')))
         rendered_notice_time = self.render_widget(notice_time_widget,
                                                   name, value, final_attrs, self.pos_d['notice_time'][0], id_)
 
@@ -451,32 +451,32 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                          'user_group', 'industry', 'region')
 
     all_fields = OrderedDict([
-             ('user', {'title': 'Section 1. User Information',
+             ('user', {'title': _('Section 1. User Information'),
                            'fields': user_info_tuple,
                            'options': []}),
-             ('membership', {'title': 'Section 2. Membership Information',
+             ('membership', {'title': _('Section 2. Membership Information'),
                            'fields': membeship_info_tuple,
                            'options': []}),
-             ('membership_type', {'title': 'Section 3. Membership Type',
+             ('membership_type', {'title': _('Section 3. Membership Type'),
                            'fields': ['membership_type'],
                            'options': []}),
-             ('payment', {'title': 'Section 4. Payment',
+             ('payment', {'title': _('Section 4. Payment'),
                            'fields': ['payment_method'],
                            'options': []}),
              # commenting out because education & career are
              # not in membership_default
 #             ('section5', {'title': 'Education & Career',
 #                           'fields': []}),
-             ('user_group', {'title': 'Section 5. User Groups',
+             ('user_group', {'title': _('Section 5. User Groups'),
                            'fields': ['user_group'],
                            'options': []}),
-             ('industry', {'title': 'Section 6. Industry',
+             ('industry', {'title': _('Section 6. Industry'),
                            'fields': ['industry'],
                            'options': []}),
-             ('region', {'title': 'Section 7. Region',
+             ('region', {'title': _('Section 7. Region'),
                            'fields': ['region'],
                            'options': []}),
-             ('admin', {'title': 'Section 8. Admin Only',
+             ('admin', {'title': _('Section 8. Admin Only'),
                            'fields': admin_fields_tuple,
                            'options': []}),
                                         ])

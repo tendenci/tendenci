@@ -10,7 +10,7 @@ import time as ttime
 
 from django.http import HttpResponseServerError
 from django.conf import settings
-import simplejson
+from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.template import loader
 from django.template.defaultfilters import slugify
@@ -23,20 +23,21 @@ from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.memberships.models import (MembershipType,
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import has_perm
+from tendenci.addons.memberships.models import (MembershipType,
                                                 MembershipDefault,
                                                 MembershipDemographic,
                                                 MembershipApp,
                                                 MembershipAppField,
                                                 MembershipFile,
                                                 VALID_MEMBERSHIP_STATUS_DETAIL)
-from tendenci.apps.base.utils import normalize_newline, UnicodeWriter, tcurrency
+from tendenci.core.base.utils import normalize_newline, UnicodeWriter, tcurrency
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
-from tendenci.apps.emails.models import Email
+from tendenci.core.emails.models import Email
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -303,7 +304,7 @@ def process_export(
         export_type='all',
         export_status_detail='active',
         identifier=u'', user_id=0, cp_id=0):
-    from tendenci.apps.perms.models import TendenciBaseModel
+    from tendenci.core.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
 
@@ -472,7 +473,7 @@ def process_export(
     if user and user.email:
         corp_profile = None
         if cp_id:
-            from tendenci.apps.corporate_memberships.models import CorpProfile
+            from tendenci.addons.corporate_memberships.models import CorpProfile
             [corp_profile] = CorpProfile.objects.filter(pk=cp_id)[:1] or [None]
         download_url = reverse('memberships.default_export_download', args=[identifier])
 
@@ -564,11 +565,11 @@ def is_import_valid(file_path):
     ext = os.path.splitext(file_path)[1]
 
     if ext != '.csv':
-        errs.append("Pleaes make sure you're importing a .csv file.")
+        errs.append(_("Pleaes make sure you're importing a .csv file."))
         return False, errs
 
     if has_null_byte(file_path):
-        errs.append('This .csv file has null characters, try re-saving it.')
+        errs.append(_('This .csv file has null characters, try re-saving it.'))
         return False, errs
 
     # get header column
@@ -584,7 +585,7 @@ def is_import_valid(file_path):
     if all(requirements_met):
         return True, []
     else:
-        return False, ['Please make sure there is a membership type column.']
+        return False, [_('Please make sure there is a membership type column.')]
 
 
 def count_active_memberships(date):
@@ -1167,7 +1168,7 @@ class ImportMembDefault(object):
                     is_valid = False
                     error_msg = 'No membership type. Please add one to the site.'
 
-        return is_valid, error_msg
+        return is_valid, _(error_msg)
 
     def clean_app(self, memb_data):
         """
@@ -1221,7 +1222,7 @@ class ImportMembDefault(object):
                     is_valid = False
                     error_msg = 'No membership app. Please add one to the site.'
 
-        return is_valid, error_msg
+        return is_valid, _(error_msg)
 
     def clean_corporate_membership(self, memb_data):
         if 'corporate_membership_id' in memb_data:
@@ -1388,7 +1389,7 @@ class ImportMembDefault(object):
         """
         Database import here - insert or update
         """
-        from tendenci.apps.corporate_memberships.models import CorpMembership
+        from tendenci.addons.corporate_memberships.models import CorpMembership
 
         user = user or User()
         username_before_assign = user.username
@@ -1428,7 +1429,7 @@ class ImportMembDefault(object):
 
         # process profile
         try:  # get or create
-            profile = user.profile
+            profile = user.get_profile()
         except Profile.DoesNotExist:
             profile = Profile.objects.create(
                 user=user,

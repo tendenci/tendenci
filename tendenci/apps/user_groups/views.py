@@ -141,7 +141,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
             messages.add_message(
                 request,
                 messages.SUCCESS,
-                'Successfully sent test email to yourself')
+                _('Successfully sent test email to yourself'))
 
             EventLog.objects.log(instance=email)
 
@@ -154,7 +154,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
             messages.add_message(
                 request,
                 messages.SUCCESS,
-                'Successfully sent email to all %s members in this group' % num_members)
+                _('Successfully sent email to all %(num)s members in this group' % {'num': num_members}))
 
             EventLog.objects.log(instance=email)
 
@@ -179,12 +179,12 @@ def group_add_edit(request, group_slug=None,
 
         if not has_perm(request.user,'user_groups.change_group',group):
             raise Http403
-        title = "Edit Group"
+        title = _("Edit Group")
         edit = True
     else:
         group = None
         if not has_perm(request.user,'user_groups.add_group'):raise Http403
-        title = "Add Group"
+        title = _("Add Group")
         add = True
 
     if request.method == 'POST':
@@ -309,9 +309,9 @@ def group_membership_self_add(request, slug, user_id):
 
         EventLog.objects.log(instance=group_membership)
 
-        messages.add_message(request, messages.SUCCESS, 'Successfully added yourself to group %s' % group)
+        messages.add_message(request, messages.SUCCESS, _('Successfully added yourself to group %(grp)s' % {'grp':group}))
     else:
-        messages.add_message(request, messages.INFO, 'You are already in the group %s' % group)
+        messages.add_message(request, messages.INFO, _('You are already in the group %(grp)s' % {'grp': group}))
 
     return HttpResponseRedirect(reverse('group.search'))
 
@@ -331,9 +331,9 @@ def group_membership_self_remove(request, slug, user_id):
 
             EventLog.objects.log(instance=group_membership)
             group_membership.delete()
-            messages.add_message(request, messages.SUCCESS, 'Successfully removed yourself from group %s' % group)
+            messages.add_message(request, messages.SUCCESS, _('Successfully removed yourself from group %(grp)s' % {'grp':group}))
     else:
-        messages.add_message(request, messages.INFO, 'You are not in the group %s' % group)
+        messages.add_message(request, messages.INFO, _('You are not in the group %(grp)s' % {'grp': group}))
 
     return HttpResponseRedirect(reverse('group.search'))
 
@@ -441,7 +441,13 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
 
         EventLog.objects.log(instance=group_membership)
         group_membership.delete()
-        messages.add_message(request, messages.SUCCESS, 'Successfully removed %s from group %s' % (user.get_full_name(), group))
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            _('Successfully removed %(name)s from group %(grp)s' % {
+                'name':user.get_full_name(),
+                'grp': group})
+        )
         return HttpResponseRedirect(group.get_absolute_url())
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
@@ -466,10 +472,10 @@ def users_added_report(request, kind):
 
     if kind == 'added':
         event_ids = (121000, 121100, 123001, 123103)
-        title = 'Site Users Added Report'
+        title = _('Site Users Added Report')
     elif kind == 'referral':
         event_ids = (125114, 125115)
-        title = 'Contacts Report - Referral Analysis Report (all contacts)'
+        title = _('Contacts Report - Referral Analysis Report (all contacts)')
     else:
         raise NotImplementedError('kind "%s" not supported' % kind)
 
@@ -1038,10 +1044,3 @@ def import_download_template(request, file_ext='.csv'):
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)
-
-
-
-
-
-
-

@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.perms.forms import TendenciBaseForm
@@ -6,7 +7,7 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 
 class EntityForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')),))
 
     class Meta:
         model = Entity
@@ -23,7 +24,7 @@ class EntityForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('Entity Information', {
+        fieldsets = [(_('Entity Information'), {
                       'fields': ['entity_name',
                                  'contact_name',
                                  'phone',
@@ -35,14 +36,14 @@ class EntityForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['admin_notes',
                                  'status_detail'],
                       'classes': ['admin-only'],
@@ -54,4 +55,3 @@ class EntityForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'admin_notes' in self.fields: self.fields.pop('admin_notes')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-

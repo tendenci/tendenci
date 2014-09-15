@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Import Users from CSV file - Status{% endblock %}
+{% block title %}{% trans 'Import Users from CSV file - Status' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -29,9 +29,9 @@
             <div>{% trans "Update" %}:
                 <strong>
                 {% if not uimport.override %}
-                Blank Fields
+                {% trans 'Blank Fields' %}
                 {% else %}
-                All Fields (override)
+                {% trans 'All Fields (override)' %}
                 {% endif %}
                 </strong>
                 </div>
@@ -62,29 +62,29 @@
             <span id="num-processed">{{ uimport.num_processed}}</span>
             /
            <span id="total">{{ uimport.total_rows}}</span>
-           completed
+           {% trans 'completed' %}
         </div>
 
         <div class="clear-left"></div>
          </div>
 
          <div id="summary">
-             <div><strong>Done.</strong></div>
+             <div><strong>{% trans 'Done.' %}</strong></div>
              <div>&nbsp;</div>
-             <div>Total Processed: <strong>{{ uimport.total_rows}}</strong></div>
-             <div>Inserts: <strong><span id="num-insert"></span></strong></div>
-             <div>Updates: <strong><span id="num-update"></span></strong></div>
+             <div>{% trans 'Total Processed' %}: <strong>{{ uimport.total_rows}}</strong></div>
+             <div>{% trans 'Inserts' %}: <strong><span id="num-insert"></span></strong></div>
+             <div>{% trans 'Updates' %}: <strong><span id="num-update"></span></strong></div>
 
-             <div class="status-invalid">Invalid: <strong><span id="num-invalid"></span></strong></div>
+             <div class="status-invalid">{% trans 'Invalid' %}: <strong><span id="num-invalid"></span></strong></div>
 
             <div>&nbsp;</div>
-            <div><a href="{% url "profiles.user_import_download_recap" uimport.id %}">Download Recap</a> (appended 2 extra fields: action and error)</div>
+            <div><a href="{% url profiles.user_import_download_recap uimport.id %}">{% trans 'Download Recap' %}</a> {% trans '(appended 2 extra fields: action and error)' %}</div>
              <div>&nbsp;</div>
-             <div><a href="{% url "profiles.user_import" %}">Import more users</a></div>
+             <div><a href="{% url profiles.user_import %}">{% trans 'Import more users' %}</a></div>
         </div>
 
         <div id="error-msg">
-            Oops, an error occurred. Please review your data and try again later.
+            {% trans 'Oops, an error occurred. Please review your data and try again later.' %}
         </div>
     </div>
 

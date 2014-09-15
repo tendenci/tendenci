@@ -26,7 +26,7 @@
 
                 {% if not user_this.is_active %}
                     <img class="non-interactive" src="{{ STATIC_URL }}images/icons/answer_incorrect.gif"
-                    alt="Non-Interactive" title="Non-Interactive">
+                    alt="{% trans 'Non-Interactive' %}" title="{% trans 'Non-Interactive' %}">
                 {% endif %}
 
                 <a href="{% url "profile.edit" user_this.id %}" class="option-link edit">{% trans "Edit" %}</a>
@@ -39,20 +39,20 @@
         <div class="more-options-target">
             <ul>
                 <li class="divider">
-                 <a href="{% url "profile.edit_groups" user_this.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
+                 <a href="{% url profile.edit_groups user_this.username %}" class="usergroups" title="{% trans 'Edit Groups' %}">{% trans "Edit Groups" %}</a>
                 </li>
                 <li>
-                 <a href="{% url 'auth_password_change' user_this.id %}" class="changepassword" title=="Change Password">{% trans "Change Password" %}</a>
+                 <a href="{% url auth_password_change user_this.id %}" class="changepassword" title="{% trans 'Change Password' %}">{% trans "Change Password" %}</a>
                 </li>
                 {% if request.user.is_superuser %}
                 <li>
-                <a href="{% url "profile.edit_perms" user_this.id %}" class="permissions" title=="Edit Permissions">{% trans "Permissions" %}</a>
+                <a href="{% url profile.edit_perms user_this.id %}" class="permissions" title="{% trans 'Edit Permissions' %}">{% trans "Permissions" %}</a>
                 </li>
                 <li>
-                <a href="{{ request.path }}?_impersonate={{ user_this.username }}" class="permissions" title=="Impersonate">{% trans "Impersonate" %}</a>
+                <a href="{{ request.path }}?_impersonate={{ user_this.username }}" class="permissions" title="{% trans 'Impersonate' %}">{% trans "Impersonate" %}</a>
                 </li>
                 <li>
-                 <a href="{% url "profile.delete" user_this.id %}" class="delete" title=="Delete User">{% trans "Delete" %}</a>
+                 <a href="{% url profile.delete user_this.id %}" class="delete" title="{% trans 'Delete User' %}">{% trans "Delete" %}</a>
                 </li>
                 {% endif %}
 

@@ -829,3 +829,7 @@ form.connect-with li {
     float: right;
     margin-bottom: 3px;
 }
+
+div.label {
+    text-align: left !important;
+}

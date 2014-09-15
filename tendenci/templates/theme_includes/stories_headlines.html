@@ -8,7 +8,7 @@
     {% if headline_stories %}
         {% for story in headline_stories %}
             <div class="featured-item">
-                <a href="{{ story.full_story_link }}">{{ story.title }}</a>
+                <a href="{{ story.full_story_link }}">{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a>
             </div>
         {% endfor %}
     {% else %}
@@ -17,7 +17,7 @@
             <a href="#">{% trans 'Headline' %} {{ forloop.counter }}</a>
         </div>
     {% endfor %}
-        {% if user.is_authenticated %}<p><a href="/stories/add/?tags=featured">Add a story</a> and tag it <strong>featured</strong> to have it appear as an image above.</p>{% endif %}
+        {% if user.is_authenticated %}{% blocktrans %}<p><a href="/stories/add/?tags=featured">Add a story</a> and tag it <strong>featured</strong> to have it appear as an image above.</p>{% endblocktrans %}{% endif %}
     {% endif %}
 </section><!-- /#featured-stories -->
 {% theme_setting setting_name %}

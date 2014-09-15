@@ -32,22 +32,22 @@
                 </div>
             </div>
 
-            <h2><a href="{% url "directory_pricing.view" dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
+            <h2><a href="{% url directory_pricing.view dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
 
             <div class="pricing-wrap" >
             <table width="70%">
                 <tr>
                     <th>&nbsp;</th>
-                    <th>Regular</th>
-                    <th>Premium</th>
+                    <th>{% trans 'Regular' %}</th>
+                    <th>{% trans 'Premium' %}</th>
                 </tr>
                 <tr>
-                    <td>Non-member</td>
+                    <td>{% trans 'Non-member' %}</td>
                     <td>{{ dp.regular_price|format_currency }}</td>
                     <td>{{ dp.premium_price|format_currency }}</td>
                 </tr>
                 <tr>
-                    <td>Member</td>
+                    <td>{% trans 'Member' %}</td>
                     <td>{{ dp.regular_price_member|format_currency }}</td>
                     <td>{{ dp.premium_price_member|format_currency }}</td>
                 </tr>
@@ -60,7 +60,7 @@
             </div>
 
             <!-- delete-directory form -->
-            <form name="directory-pricing-delete" method="POST" action="{% url "directory_pricing.delete" dp.pk %}">{% csrf_token %}
+            <form name="directory-pricing-delete" method="POST" action="{% url directory_pricing.delete dp.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
         </div>
@@ -82,7 +82,7 @@
 
             // delete confirmation
             $('.delete').click(function(){
-                var delete_directory_pricing = confirm('Permenantly delete this directory price?');    // confirm
+                var delete_directory_pricing = confirm({% trans 'Permenantly delete this directory price?' %});    // confirm
                 if(delete_directory_pricing) $(this).parents('.directory-wrap-search').find('form[name="directory-pricing-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

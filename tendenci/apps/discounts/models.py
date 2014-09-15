@@ -12,7 +12,7 @@ from tendenci.apps.discounts.managers import DiscountManager
 
 class Discount(TendenciBaseModel):
     class Meta:
-        permissions = (("view_discount","Can view discount"),)
+        permissions = (("view_discount",_("Can view discount")),)
 
     discount_code = models.CharField(max_length=100, unique=True, help_text=_('Discount codes must be unique.'))
     start_dt = models.DateTimeField(_('Start Date/Time'))

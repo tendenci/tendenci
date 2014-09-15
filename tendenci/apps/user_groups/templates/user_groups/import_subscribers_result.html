@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Groups{% endblock %}
+{% block title %}{% trans 'Groups' %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -30,7 +30,7 @@
         {% endfor %}
         </div>
     {% empty %}
-        <p>No valid subscriber was found in the import file.</p>
+        <p>{% trans 'No valid subscriber was found in the import file.' %}</p>
     {% endfor %}
     </div>
 

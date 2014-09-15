@@ -5,27 +5,27 @@ from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
-from django.conf.urls import patterns, url
+from django.conf.urls.defaults import patterns, url
 from django.shortcuts import get_object_or_404, redirect
 
-from tendenci.apps.corporate_memberships.models import (
+from tendenci.addons.corporate_memberships.models import (
     CorporateMembershipType,
     CorpMembershipApp,
     CorpMembershipAppField,
     CorpMembership,
     Notice)
-from tendenci.apps.corporate_memberships.forms import (
+from tendenci.addons.corporate_memberships.forms import (
     CorporateMembershipTypeForm,
     CorpMembershipAppForm,
     NoticeForm,
     CorpMembershipAppFieldAdminForm)
 
-from tendenci.apps.corporate_memberships.utils import get_corpapp_default_fields_list
+from tendenci.addons.corporate_memberships.utils import get_corpapp_default_fields_list
 
-from tendenci.apps.base.utils import tcurrency
+from tendenci.core.base.utils import tcurrency
 
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.site_settings.utils import get_setting
 
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
@@ -39,10 +39,10 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'price', 'renewal_price',
                            'membership_type', 'description')}),
-        ('Individual Pricing Options', {'fields':
+        (_('Individual Pricing Options'), {'fields':
                                     ('apply_threshold', 'individual_threshold',
                                     'individual_threshold_price',)}),
-        ('Other Options', {'fields': option_fields}),
+        (_('Other Options'), {'fields': option_fields}),
     )
 
     form = CorporateMembershipTypeForm
@@ -79,7 +79,7 @@ class CorpMembershipAppFieldAdmin(admin.TabularInline):
 #    readonly_fields = ('field_name',)
     extra = 0
     can_delete = False
-    verbose_name = 'Section Break'
+    verbose_name = _('Section Break')
     ordering = ("position",)
     template = "corporate_memberships/admin/corpmembershipapp/tabular.html"
 
@@ -97,8 +97,8 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                            'include_tax', 'tax_rate',
                            'memb_app'
                            )},),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
@@ -209,8 +209,8 @@ class NoticeAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {'fields': ('notice_name', 'notice_time_type', 'corporate_membership_type')}),
-        ('Email Fields', {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
-        ('Other Options', {'fields': ('status_detail',)}),
+        (_('Email Fields'), {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
+        (_('Other Options'), {'fields': ('status_detail',)}),
     )
 
     form = NoticeForm

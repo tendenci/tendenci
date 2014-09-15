@@ -5,17 +5,17 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
-from tendenci.apps.categories.forms import (CategoryForm, CategoryField, category_defaults,
+from tendenci.core.categories.forms import (CategoryForm, CategoryField, category_defaults,
     sub_category_defaults)
 
-from tendenci.apps.categories.models import CategoryItem, Category
-from tendenci.apps.files.fields import MultiFileField
-from tendenci.apps.files.models import File, FilesCategory
-from tendenci.apps.files.utils import get_max_file_upload_size
-from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
-from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
+from tendenci.core.categories.models import CategoryItem, Category
+from tendenci.core.files.fields import MultiFileField
+from tendenci.core.files.models import File, FilesCategory
+from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.core.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
+from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import update_perms_and_save, get_query_filters
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
 
@@ -29,7 +29,7 @@ class FileForm(TendenciBaseForm):
                                       required=False)
     file_sub_cat = forms.ModelChoiceField(label=_("Sub-Category"),
                                           queryset=FilesCategory.objects.none(),
-                                          empty_label="Please choose a category first",
+                                          empty_label=_("Please choose a category first"),
                                           required=False)
 
     class Meta:
@@ -58,7 +58,7 @@ class FileForm(TendenciBaseForm):
                       'legend': ''
                       }),
 
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -66,13 +66,13 @@ class FileForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                      ('Category', {
+                      (_('Category'), {
                         'fields': ['file_cat',
                                    'file_sub_cat'
                                    ],
                         'classes': ['boxy-grey'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -106,7 +106,7 @@ class FileForm(TendenciBaseForm):
 
         if post_data:
             file_cat = post_data.get('file_cat', '0')
-            if file_cat and file_cat != '0' and file_cat != u'': 
+            if file_cat and file_cat != '0' and file_cat != u'':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
 
@@ -161,17 +161,17 @@ class MostViewedForm(forms.Form):
     """
 
     TYPES = (
-      ('all', 'All File Types'),
-      ('pdf', 'PDF Documents'),
-      ('slides', 'Slides'),
-      ('spreadsheet', 'Spreadsheets'),
-      ('text', 'Text Documents'),
-      ('zip', 'Zip Files'),
+      ('all', _('All File Types')),
+      ('pdf', _('PDF Documents')),
+      ('slides', _('Slides')),
+      ('spreadsheet', _('Spreadsheets')),
+      ('text', _('Text Documents')),
+      ('zip', _('Zip Files')),
     )
 
-    start_dt = forms.DateField(label='Start')
-    end_dt = forms.DateField(label='End')
-    file_type = forms.ChoiceField(label='File Type', choices=TYPES)
+    start_dt = forms.DateField(label=_('Start'))
+    end_dt = forms.DateField(label=_('End'))
+    file_type = forms.ChoiceField(label=_('File Type'), choices=TYPES)
 
     def __init__(self, *args, **kwargs):
         super(MostViewedForm, self).__init__(*args, **kwargs)
@@ -186,7 +186,7 @@ class FileSearchForm(forms.Form):
                                       required=False)
     file_sub_cat = forms.ModelChoiceField(label=_("Sub-Category"),
                                           queryset=FilesCategory.objects.none(),
-                                          empty_label="Please choose a category first",
+                                          empty_label=_("Please choose a category first"),
                                           required=False)
     group = forms.ChoiceField(label=_('Group'), choices=[], required=False)
 
@@ -233,7 +233,7 @@ class FilewithCategoryForm(TendenciBaseForm):
                                       required=False)
     file_sub_cat = forms.ModelChoiceField(label=_("Sub-Category"),
                                           queryset=FilesCategory.objects.none(),
-                                          empty_label="Please choose a category first",
+                                          empty_label=_("Please choose a category first"),
                                           required=False)
 
     class Meta:
@@ -350,7 +350,7 @@ class MultiFileForm(BetterForm):
                                       required=False)
     file_sub_cat = forms.ModelChoiceField(label=_("Sub-Category"),
                                           queryset=FilesCategory.objects.none(),
-                                          empty_label="Please choose a category first",
+                                          empty_label=_("Please choose a category first"),
                                           required=False)
 
     allow_anonymous_view = forms.BooleanField(label=_("Public can View"), initial=True, required=False)
@@ -361,15 +361,15 @@ class MultiFileForm(BetterForm):
 
     class Meta:
         fieldsets = (
-            ('File Information', {
+            (_('File Information'), {
                 'fields': ('files',
                            'tags',
                            'group',
                            )
             }),
-            ('Category', {'fields': ('file_cat', 'file_sub_cat')}),
-            ('Permissions', {'fields': ('allow_anonymous_view',)}),
-            ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+            (_('Category'), {'fields': ('file_cat', 'file_sub_cat')}),
+            (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+            (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
                 'user_perms',
                 'member_perms',
                 'group_perms',
@@ -494,7 +494,7 @@ class MultiFileForm(BetterForm):
             file = File(
                 file=new_file,
                 tags=tags,
-                group=group, 
+                group=group,
                 allow_anonymous_view=is_public,
                 file_cat=file_cat,
                 file_sub_cat=file_sub_cat)
@@ -545,7 +545,7 @@ class FileCategoryForm(forms.Form):
                                       required=False)
     file_sub_cat = forms.ModelChoiceField(label=_("Sub-Category"),
                                           queryset=FilesCategory.objects.none(),
-                                          empty_label="Please choose a category first",
+                                          empty_label=_("Please choose a category first"),
                                           required=False)
 
     def __init__(self, *args, **kwargs):

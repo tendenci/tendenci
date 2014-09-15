@@ -17,7 +17,7 @@
 
     <div id="profile-export">
         <div class="alert">
-            <strong>Note</strong>: An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.
+            <strong>{% trans 'Note' %}</strong>: {% blocktrans %}An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.{% endblocktrans %}
         </div>
 
         <form method="post" action="">{% csrf_token %}
@@ -25,9 +25,8 @@
                 {{ field.errors }}
                 {{ field }}
             {% endfor %}
-            <div><input class="btn" type='submit' value="Export Profiles"></div>
+            <div><input class="btn" type='submit' value="{% trans 'Export Profiles' %}"></div>
         </form>
     </div>
 </div>
 {% endblock %}
-

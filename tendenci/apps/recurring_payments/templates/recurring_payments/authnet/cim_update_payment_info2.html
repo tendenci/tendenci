@@ -26,15 +26,15 @@
    {% rp_nav request.user rp %}
     <h1>
     {% if request.user.id == rp.user.id %}
-       Manage my Payment Info
+       {% trans 'Manage my Payment Info' %}
     {% else %}
-    {% trans "Manage Payment Info for " %} <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
     {% endif %}
     </h1>
 
  <div>
-      <div class="rp-dname">Name: <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
-      <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
+      <div class="rp-dname">{% trans 'Name' %}: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+      <div class="rp-dname">{% trans 'Description' %}: <span style="color:#669900;">{{ rp.description }}</span></div>
        <p id="dnotes" style="display:none;"></p>
   </div>
 
@@ -87,7 +87,7 @@
 
       $.ajax({
            type: "POST",
-           url: "{% url "recurring_payment.authnet.update_payment_profile_local" %}",
+           url: "{% url recurring_payment.authnet.update_payment_profile_local %}",
            data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
            success: function(result_data){
                             $('#dnotes').show();
@@ -107,7 +107,7 @@
          });
     }else{
       // go to view page
-      window.location = '{% url "recurring_payment.view_account" rp.id %}';
+      window.location = '{% url recurring_payment.view_account rp.id %}';
     }
   };
 

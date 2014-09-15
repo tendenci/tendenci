@@ -21,13 +21,13 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.perms.utils import get_notice_recipients
-from tendenci.apps.files.managers import FileManager
-from tendenci.apps.base.utils import extract_pdf
-from tendenci.apps.categories.models import CategoryItem
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import get_notice_recipients
+from tendenci.core.files.managers import FileManager
+from tendenci.core.base.utils import extract_pdf
+from tendenci.core.categories.models import CategoryItem
+from tendenci.core.site_settings.utils import get_setting
 
 
 def file_directory(instance, filename):
@@ -48,7 +48,7 @@ class File(TendenciBaseModel):
     description = models.TextField(blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
-    is_public = models.NullBooleanField(default=True)
+    is_public = models.BooleanField(default=True)
     group = models.ForeignKey(
         Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
@@ -67,7 +67,7 @@ class File(TendenciBaseModel):
     objects = FileManager()
 
     class Meta:
-        permissions = (("view_file", "Can view file"),)
+        permissions = (("view_file", _("Can view file")),)
 
     def __init__(self, *args, **kwargs):
         from django.db.models.related import RelatedObject
@@ -159,7 +159,7 @@ class File(TendenciBaseModel):
         # Related objects
         # Import related objects here to prevent circular references
         from tendenci.apps.pages.models import Page
-        from tendenci.apps.events.models import Event
+        from tendenci.addons.events.models import Event
         from tendenci.apps.stories.models import Story
         pages = Page.objects.filter(header_image=self.pk)
         events = Event.objects.filter(image=self.pk)
@@ -176,9 +176,9 @@ class File(TendenciBaseModel):
             story.save()
 
         # roll back the transaction to fix the error for postgresql
-        #"current transaction is aborted, commands ignored until 
+        #"current transaction is aborted, commands ignored until
         # end of transaction block"
-        #connection._rollback()    # comment it out because this line of code leads to IntegrityError for files that inherit File's model. 
+        #connection._rollback()    # comment it out because this line of code leads to IntegrityError for files that inherit File's model.
 
         # send notification to administrator(s) and module recipient(s)
         if self.file:
@@ -340,7 +340,7 @@ class File(TendenciBaseModel):
         """
         Returns binary in encoding base64.
         """
-        from tendenci.apps.files.utils import build_image
+        from tendenci.core.files.utils import build_image
         size = kwargs.get('size') or self.image_dimensions()
 
         binary = build_image(self.file, size, 'FILE_IMAGE_PRE_KEY')
@@ -391,7 +391,7 @@ class FilesCategory(models.Model):
     parent = models.ForeignKey('self', null=True)
 
     class Meta:
-        verbose_name_plural = "File Categories"
+        verbose_name_plural = _("File Categories")
         ordering = ('name',)
 
     def __unicode__(self):

@@ -4,11 +4,12 @@ from tendenci.apps.perms.utils import PUBLIC_FILTER
 from tendenci.apps.sitemaps import TendenciSitemap
 
 from tendenci.apps.pages.models import Page
+from django.utils.translation import ugettext_lazy as _
 
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Pages' % get_setting('site','global','sitedisplayname')
+    title =  _('%(dname)s Latest Pages' % {'dname':get_setting('site','global','sitedisplayname')})
     link =  "/pages/"
-    description =  "Latest Pages by %s" % get_setting('site','global','sitedisplayname')
+    description =  _("Latest Pages by %(dname)s" % {'dname':get_setting('site','global','sitedisplayname')})
 
     def items(self):
         items = Page.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]

@@ -15,11 +15,11 @@
 {% block body %}
 <div class="t">
     <h2>{{ app.name }}</h2>
-    <p>{{ app.description|safe|urlize }}</p>
+    <p>{% blocktrans with d=app.description|safe|urlize %}{{ d }}{% endblocktrans %}</p>
 
     {% if pending_entries %}
         <!-- <div class="pending-entries">
-            <a href="{% url "membership.application_entries_search" %}?q=status:pending">
+            <a href="{% url membership.application_entries_search %}?q=status:pending">
             {% blocktrans count pending_entries|length as pend_length %}You have {{ pend_length }} pending submission.{% plural %}You have {{ pend_length }} pending submissions.{% endblocktrans %}</a></div> -->
     {% endif %}
 

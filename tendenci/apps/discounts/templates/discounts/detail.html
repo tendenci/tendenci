@@ -33,18 +33,18 @@
                 </tr>
                 <tr>
                     <td class="label"><b>{% trans "Number of uses" %}:</b></td>
-                    <td> {{ discount.num_of_uses }} out of {{ discount.cap }} max</td>
+                    <td> {% blocktrans with num=discount.num_of_uses cap=discount.cap %}{{ num }} out of {{ cap }} max{% endblocktrans %}</td>
                 </tr>
                 <tr>
                     <td class="label"><b>{% trans "Duration" %}:</b></td>
-                    <td>{{ discount.start_dt }} to {{ discount.end_dt }}</td>
+                    <td>{% blocktrans with s=discount.start_dt e=discount.end_dt %}{{ s }} to {{ e }}{% endblocktrans %}</td>
                 </tr>
                 <tr>
                     <td class="label"><b>{% trans "Still Available" %}:</b></td>
                     <td>{% if discount.available %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</td>
                 </tr>
             </table>
-		</div>
+        </div>
 
         {% if discount.discountuse_set.count > 0 %}
         <div class="usage-report">

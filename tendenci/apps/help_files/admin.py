@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.help_files.models import Topic, HelpFile, Request
-from tendenci.apps.help_files.forms import HelpFileAdminForm
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.addons.help_files.models import Topic, HelpFile, Request
+from tendenci.addons.help_files.forms import HelpFileAdminForm
 
 
 class HelpFileAdmin(TendenciBaseModelAdmin):
@@ -14,15 +15,15 @@ class HelpFileAdmin(TendenciBaseModelAdmin):
     search_fields = ['question', 'answer']
     fieldsets = (
         (None, {'fields': ('question', 'slug', 'answer', 'group', 'level', 'topics')}),
-        ('Flags', {'fields': (
+        (_('Flags'), {'fields': (
             ('is_faq', 'is_featured', 'is_video', 'syndicate'),)}),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
         )}),
-        ('Publishing Status', {'fields': (
+        (_('Publishing Status'), {'fields': (
             'status_detail',
         )}),
     )

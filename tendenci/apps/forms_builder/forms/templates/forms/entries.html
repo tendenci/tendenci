@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Entries{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Entries' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,7 +14,7 @@
 {% block body %}
 <div class="t">
  {% forms_nav request.user form %}
-    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} Entries</h1>
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans 'Entries' %}</h1>
     <h2>{{ form.title }}</h2>
     <p><a href="{% url "admin:forms_form_export" form.pk %}">{% trans "Export All Entries" %}</a></p>
     {% if form.has_files %}
@@ -32,9 +32,9 @@
                 {{ entry.entry_time }}
                 {% for field in entry.fields.all|slice:":3" %}
                     {% if field.field.field_type == 'FileField' %}
-                        &nbsp;&ndash;&nbsp;{{ field.value|basename }}
+                        &nbsp;&ndash;&nbsp;{% blocktrans with n=field.value|basename %}{{ n }}{% endblocktrans %}
                     {% else %}
-                        &nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
+                        &nbsp;&ndash;&nbsp;{% blocktrans with v=field.value|truncatewords:"2" %}{{ v }}{% endblocktrans %}
                     {% endif %}
                 {% endfor %}
                 </a>
@@ -59,7 +59,7 @@
         $(document).ready(function(){
             // delete confirmation
             $('.delete').click(function(){
-                var delete_form = confirm('Permanently delete entry?');    // confirm
+                var delete_form = confirm('{% trans "Permanently delete entry?" %}');    // confirm
                 if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });

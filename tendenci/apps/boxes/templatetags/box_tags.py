@@ -2,6 +2,7 @@ from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import AnonymousUser, User
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -57,7 +58,7 @@ def box(parser, token):
         pk = bits[1]
     except:
         message = "Box tag must include an ID of a box."
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     return GetBoxNode(pk)
 
@@ -79,10 +80,10 @@ def list_boxes(parser, token):
 
         {% list_boxes as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``boxes_sidebar`` or 
+    Be sure the [varname] has a specific name like ``boxes_sidebar`` or
     ``boxes_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
@@ -109,11 +110,11 @@ def list_boxes(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 2" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     context_var = bits[2]
 

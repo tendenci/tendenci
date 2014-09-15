@@ -34,7 +34,7 @@ class DiscountForm(TendenciBaseForm):
             'status_detail',
             )
 
-        fieldsets = [('Discount Information', {
+        fieldsets = [(_('Discount Information'), {
                       'fields': ['discount_code',
                                  'value',
                                  'cap',
@@ -45,7 +45,7 @@ class DiscountForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -53,7 +53,7 @@ class DiscountForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })
@@ -62,7 +62,7 @@ class DiscountForm(TendenciBaseForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
@@ -81,7 +81,7 @@ class DiscountForm(TendenciBaseForm):
         except Discount.DoesNotExist:
             return data
         if not discount == self.instance:
-            raise forms.ValidationError('There a discount for this code already exists.')
+            raise forms.ValidationError(_('There a discount for this code already exists.'))
         return data
 
     def clean(self):
@@ -91,8 +91,7 @@ class DiscountForm(TendenciBaseForm):
 
         if start_dt > end_dt:
             errors = self._errors.setdefault("end_dt", ErrorList())
-            errors.append(u"This cannot be \
-                earlier than the start date.")
+            errors.append(_(u"This cannot be earlier than the start date."))
 
         # Always return the full collection of cleaned data.
         return cleaned_data
@@ -111,9 +110,9 @@ class DiscountCodeForm(forms.Form):
         try:
             discount = Discount.objects.get(discount_code=code, apps__model=model)
         except Discount.DoesNotExist:
-            raise forms.ValidationError('This is not a valid discount code.')
+            raise forms.ValidationError(_('This is not a valid discount code.'))
         if not discount.available_for(count):
-            raise forms.ValidationError('This is not a valid discount code.')
+            raise forms.ValidationError(_('This is not a valid discount code.'))
         return self.cleaned_data
 
     def new_price(self):
@@ -140,20 +139,20 @@ class DiscountHandlingForm(forms.Form):
         model = self.cleaned_data.get('model', '')
         [self.discount] = Discount.objects.filter(discount_code=code, apps__model=model)[:1] or [None]
         if not self.discount:
-            raise forms.ValidationError('This is not a valid discount code.')
+            raise forms.ValidationError(_('This is not a valid discount code.'))
 
         if not self.discount.never_expires:
             now = datetime.now()
             if self.discount.start_dt > now:
-                raise forms.ValidationError('This discount code is not in effect yet.')
+                raise forms.ValidationError(_('This discount code is not in effect yet.'))
             if self.discount.end_dt <= now:
-                raise forms.ValidationError('This discount code has expired.')
+                raise forms.ValidationError(_('This discount code has expired.'))
 
         self.limit = 0
         if self.discount.cap != 0:
             self.limit = self.discount.cap - self.discount.num_of_uses()
             if self.limit <= 0:
-                raise forms.ValidationError('This discount code has passed the limit.')
+                raise forms.ValidationError(_('This discount code has passed the limit.'))
 
         return self.cleaned_data
 

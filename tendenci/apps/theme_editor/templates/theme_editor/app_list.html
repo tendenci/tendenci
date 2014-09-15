@@ -4,7 +4,7 @@
 {% load humanize %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}Theme Editor{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Theme Editor' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -23,7 +23,7 @@
     <div class="apps-wrap">
         <div class="app">
             <!--default templates dir, will be here until all templates are moved into their app dirs -->
-            <a href="{% url "theme_editor.original_templates" %}">default templates</a>
+            <a href="{% url theme_editor.original_templates %}">{% trans 'default templates' %}</a>
         </div>
     {% for app in apps %}
         <div class="app">
@@ -33,4 +33,3 @@
     </div>
 </div>
 {% endblock %}
-

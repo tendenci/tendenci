@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load url from future %}
+{% with request.user.profile.lang as user_lang %}
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <i class="fa fa-globe"></i> {% get_language_info for user_lang as l %}{{ l.name_local }}
+    </a>
+    <ul id="lang-menu" class="dropdown-menu lang-scrollable-menu col-xs-12 col-sm-2" role="menu">
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+            <li{% if language.code == user_lang %} class="active"{% endif %}>
+            <a href="javascript:void(0);" data-lang="{{ language.code }}"> {{ language.name_local }} ({{ language.code }})</a></li>
+        {% endfor %}
+    </ul>
+    <form id="lang-form" action="{% url 'base.set_language' %}" method="post" style="display:none;">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ redirect_to }}" />
+        <input id="lang-id_language" name="language" type="hidden" value="{{ user_lang }}" />
+    </form>
+{% endwith %}

@@ -71,8 +71,13 @@
         {% if MODULE_MEMBERSHIPS_ENABLED %}
         {% has_perm user memberships.approve_membership as can_approve_membership %}
         {% if can_approve_membership %}
+<<<<<<< HEAD
         <li><a href="{% url "profile.search" %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
         	<div class="sub">
+=======
+        <li><a href="{% url profile.search %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+            <div class="sub">
+>>>>>>> master
                 <div class="column">
                     <ul>
                         <li><a href="{% url "membership.search" %}">{% trans "Memberships" %}</a></li>
@@ -128,8 +133,8 @@
         <li class="right"><a href="/profiles/">{{ user.username }}</a></li>
 
         {% if USE_I18N %}
-		<li class="right visible-mobile">
-        	{% include 'top_menu/change_lang.html' %}
+        <li class="right visible-mobile">
+            {% include 'top_menu/change_lang.html' %}
         </li>
         {% endif %}
 

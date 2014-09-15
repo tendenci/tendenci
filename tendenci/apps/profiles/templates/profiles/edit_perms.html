@@ -2,7 +2,7 @@
 {% load profile_tags %}
 {% load i18n %}
 
-{% block title %}Edit User Permissions{% endblock %}
+{% block title %}{% trans 'Edit User Permissions' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -58,7 +58,7 @@
         </div>
 
         <div style="clear:both"></div>
-        <input type="submit" value="Save" />
+        <input type="submit" value="{% trans 'Save' %}" />
         </form>
     </div>
 </div>

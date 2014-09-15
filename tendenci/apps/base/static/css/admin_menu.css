@@ -207,7 +207,7 @@ input#admin-search-submit {
 #admin-bar li li a, #admin-bar li li.app a, #admin-bar .sub { background-color: #272; }
  */
 
-	
+
 /* Old styles for deprecated bottom bar
 #bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #01437D; color: #fff; height: 26px; z-index: 99999 !important; }
 #bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #fff; background: #01437D; }
@@ -232,7 +232,7 @@ input#admin-search-submit {
 }
 */
 
-	
+
 /* Admin CSS for hover links on content */
 div.admin-links {
 	margin:0;
@@ -386,7 +386,7 @@ nav:hover div.admin-inline {
 }
 
 #logo div.admin-links {
-    bottom: 0px; 
+    bottom: 0px;
     left: 0px;
     top: auto;
 }
@@ -435,8 +435,149 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 	#admin-bar,#bottom-admin-bar {
 		display:none;
 	}
-	
+
 	body.admin-bar {
 		margin-top: 0 !important;
 	}
+}
+
+/********************************************
+* New styles for the new admin bar
+*********************************************/
+
+
+.t-top-nav {
+    min-height: 30px;
+    z-index: 9999999 !important;
+}
+
+.t-top-nav .navbar-header {
+    min-height: 30px;
+    height: 30px;
+}
+
+.t-top-nav .navbar-toggle {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 5px 10px;
+}
+
+.t-top-nav .navbar-brand {
+    height: 30px;
+}
+
+.t-top-nav .dropdown-menu {
+    max-width: 1170px;
+}
+
+.t-top-nav .yamm-content > .row > ul {
+    margin: 0 !important;
+}
+
+.t-top-nav a {
+    text-transform: none !important;
+    font-size: 12px;
+}
+
+.t-top-nav .content-head a {
+    font-weight: bold;
+    font-size: 18px;
+    padding: 4px 0;
+}
+
+.t-top-nav .nav > li > a {
+    padding: 5px 15px !important;
+}
+
+.t-top-nav .app-name {
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.t-top-nav .app-name a {
+    padding: 4px 0;
+}
+
+.t-top-nav .strong {
+    font-weight: bold;
+}
+
+.t-top-nav .app-button {
+    padding: 4px 5px;
+}
+
+.t-top-nav .app-list li {
+    padding: 0;
+}
+.t-top-nav .custom-yamm-content {
+    padding:0 20px;
+}
+
+.t-top-nav .navbar-nav {
+    margin: 0;
+}
+
+.t-top-nav .nav-logo {
+    position: relative;
+    bottom: 12px;
+}
+
+.t-top-nav .classic {
+    padding: 5px 15px;
+}
+
+.t-top-nav .lang-scrollable-menu {
+    height: auto;
+    max-height: 500px;
+    overflow-x: hidden;
+}
+
+.t-top-nav .navbar-form {
+    margin:2px 0;
+}
+
+.t-top-nav .navbar-form input.form-control {
+    height: 26px;
+}
+
+
+@media (max-width: 992px) {
+    .t-top-nav .nav > li > a {
+        padding: 5px !important;
+    }
+
+    .t-top-nav .navbar-form input.form-control {
+        width: 80%;
+    }
+}
+
+
+@media (max-width:767px) {
+    .t-top-nav  a {
+        text-shadow: none;
+        color: #999999 !important;
+    }
+
+    .t-top-nav a:hover {
+        background: none !important;
+        color: #fff !important;
+    }
+
+    .t-top-nav .content-item {
+        width: 100%;
+    }
+    .t-top-nav .app-name {
+        max-width: 100%;
+        width: 50%;
+    }
+
+    .t-top-nav .lang-scrollable-menu {
+        max-height: none;
+        width: 100% !important;
+        overflow-x: inherit !important;
+    }
+
+    .t-top-nav .navbar-form input.form-control {
+        width: 100%;
+    }
 }

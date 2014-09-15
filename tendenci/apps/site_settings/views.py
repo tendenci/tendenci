@@ -2,14 +2,15 @@ from django.shortcuts import render_to_response
 from django.http import Http404, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.site_settings.models import Setting
-from tendenci.apps.site_settings.forms import build_settings_form
-from tendenci.apps.site_settings.utils import delete_settings_cache
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.theme.utils import theme_options
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.base.http import Http403
+from tendenci.core.site_settings.models import Setting
+from tendenci.core.site_settings.forms import build_settings_form
+from tendenci.core.site_settings.utils import delete_settings_cache
+from tendenci.core.perms.utils import has_perm
+from tendenci.core.theme.utils import theme_options
+from tendenci.core.event_logs.models import EventLog
 
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
@@ -45,7 +46,8 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
                 pass
 
             EventLog.objects.log()
-            messages.add_message(request, messages.SUCCESS, 'Successfully saved %s settings' % scope_category.replace('_',' ').title())
+            msg_string = 'Successfully saved %s settings' % scope_category.replace('_',' ').title()
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:
@@ -92,7 +94,8 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
                 pass
 
             EventLog.objects.log()
-            messages.add_message(request, messages.SUCCESS, 'Successfully saved %s settings' % name.replace('_',' ').title())
+            msg_string = 'Successfully saved %s settings' % name.replace('_',' ').title()
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:

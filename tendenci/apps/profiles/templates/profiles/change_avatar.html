@@ -26,12 +26,12 @@
             <ul class="list-avatars">
                 {{ primary_avatar_form.as_ul }}
             </ul>
-            <input type="submit" value="Choose new Default" />
+            <input type="submit" value="{% trans 'Choose new Default' %}" />
         </form>
     {% endif %}
     <form enctype="multipart/form-data" method="POST" action="">{% csrf_token %}
-        <input type="file" name="avatar" value="Avatar Image" />
-        <input type="submit" value="Upload New Image" />
+        <input type="file" name="avatar" value="{% trans 'Avatar Image' %}" />
+        <input type="submit" value="{% trans 'Upload New Image' %}" />
     </form>
 </div>
 

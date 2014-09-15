@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
@@ -21,8 +22,8 @@ class NavAdmin(TendenciBaseModelAdmin):
 
     fieldsets = (
         (None, {"fields": ("title", "description")}),
-        ('Permissions', {'fields': ('status_detail', 'allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('status_detail', 'allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'group_perms',
         )}),

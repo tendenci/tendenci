@@ -5,7 +5,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} {{ event.title }} {% trans "Cancel Registration" %}{% endblock %}
+{% block title %}{{ block.super }} {% blocktrans with title=event.title %}{{ title }} Cancel Registration{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +18,7 @@
 <div class="t">
     <h1>{% trans "Cancel Event Registration" %}</h1>
     <div class="event-info">
-        <div class="event-title">{{ event.title }}</div>
+        <div class="event-title">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</div>
         <div class="event-cancel-amount">{% blocktrans with registrants|length as reglength  %}Cancelling {{ reglength }} registration(s){% endblocktrans %}</div>
         {% if cancelled_registrants %}
             <div class="event-cancel-amount light">{% blocktrans with cancelled_registrants|length as cancel_length %}{{ cancel_length }} registration(s) already cancelled{% endblocktrans %}</div>
@@ -86,12 +86,12 @@
     {% endif %}
     <div class="form-wrap">
         {% if hash %}
-            <form action="{% url "event.cancel_registration" event.pk registration.pk registration.hash %}" method="post">{% csrf_token %}
+            <form action="{% url event.cancel_registration event.pk registration.pk registration.hash %}" method="post">{% csrf_token %}
         {% else %}
-            <form action="{% url "event.cancel_registration" event.pk registration.pk  %}" method="post">{% csrf_token %}
+            <form action="{% url event.cancel_registration event.pk registration.pk  %}" method="post">{% csrf_token %}
         {%  endif %}
             <div class="forms">
-                <input type="submit" value="Cancel Event Registration" />
+                <input type="submit" value="{% trans "Cancel Event Registration" %}" />
             </div>
         </form>
     </div>

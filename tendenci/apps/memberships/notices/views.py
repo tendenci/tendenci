@@ -3,11 +3,11 @@ import time
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from tendenci.apps.memberships.models import Notice, NoticeLog
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.base.http import Http403
+from tendenci.addons.memberships.models import Notice, NoticeLog
+from tendenci.core.perms.utils import has_perm
+from tendenci.core.base.http import Http403
 
-from tendenci.apps.memberships.notices.forms import NoticeLogSearchForm
+from tendenci.addons.memberships.notices.forms import NoticeLogSearchForm
 
 
 @login_required

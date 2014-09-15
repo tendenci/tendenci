@@ -3,9 +3,9 @@ from django.db import models
 
 from django.core.mail.message import EmailMessage
 from django.conf import settings
-from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.core.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 
 class Email(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -23,17 +23,17 @@ class Email(TendenciBaseModel):
     recipient_bcc = models.CharField(max_length=255, blank=True, default='')
     attachments = models.CharField(max_length=500, blank=True, default='')
     content_type = models.CharField(max_length=255, default='text/html', choices=(('text/html','text/html'),('text','text'),))
-    
+
     #create_dt = models.DateTimeField(auto_now_add=True)
-    #status = models.NullBooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
-    
+    #status = models.BooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
+
     @models.permalink
     def get_absolute_url(self):
         return ("email", [self.pk])
 
     def __unicode__(self):
         return self.subject
-    
+
     def send(self, fail_silently=False, **kwargs):
         recipient_list = []
         recipient_bcc_list = []
@@ -59,7 +59,7 @@ class Email(TendenciBaseModel):
                                    recipient_bcc.strip() <> '']
         else:
             recipient_bcc_list = list(self.recipient_bcc)
-            
+
         if self.reply_to:
             headers['Reply-To'] = self.reply_to
         if not self.sender:
@@ -69,7 +69,7 @@ class Email(TendenciBaseModel):
         if self.priority and self.priority == 1:
             headers['X-Priority'] = '1'
             headers['X-MSMail-Priority'] = 'High'
-            
+
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
                                self.body,
@@ -82,7 +82,7 @@ class Email(TendenciBaseModel):
             if attachments:
                 msg.attachments = attachments
             msg.send(fail_silently=fail_silently)
-    
+
     def save(self, user=None):
         if not self.id:
             self.guid = uuid.uuid1()
@@ -92,16 +92,16 @@ class Email(TendenciBaseModel):
         if user and not user.is_anonymous():
             self.owner=user
             self.owner_username=user.username
-            
+
         super(Email, self).save()
-        
+
     # if this email allows view by user2_compare
     def allow_view_by(self, user2_compare):
         boo = False
-       
+
         if user2_compare.profile.is_superuser:
             boo = True
-        else: 
+        else:
             if user2_compare == self.creator or user2_compare == self.owner:
                 if self.status:
                     boo = True
@@ -110,13 +110,13 @@ class Email(TendenciBaseModel):
                     if self.status == 1 and self.status_detail=='active':
                         boo = True
         return boo
-    
+
     # if this email allows edit by user2_compare
     def allow_edit_by(self, user2_compare):
         boo = False
         if user2_compare.profile.is_superuser:
             boo = True
-        else: 
+        else:
             if user2_compare == self.user:
                 boo = True
             else:
@@ -128,32 +128,32 @@ class Email(TendenciBaseModel):
                         if self.status:
                             boo = True
         return boo
-    
-    
+
+
     def template_body(self, email_d):
-        """ 
+        """
             build the email body from the template and variables passed in by a dictionary
         """
         import os.path
         from django.template.loader import render_to_string
-        
+
         template = email_d.get('template_path_name', '')
-        
+
         # check if this template exists
         boo = False
         for dir in settings.TEMPLATE_DIRS:
             if os.path.isfile(os.path.join(dir, template)):
                 boo = True
                 break
-        
+
         if not boo:
             # log an event
-            
+
             # notify admin of missing template
-            
+
             pass
         else:
-            self.body = render_to_string(template) 
+            self.body = render_to_string(template)
             for key in email_d.keys():
                 # need to convert [blah] to %5Bblah%5D for replace line
                 tmp_value = "%5B" + key[1:-1] + "%5D"
@@ -163,8 +163,5 @@ class Email(TendenciBaseModel):
                 else:
                     self.body = self.body.replace(key, '')
                     self.body = self.body.replace(tmp_value, '')
-                
+
         return boo
-            
-        
-            

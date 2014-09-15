@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}Make a Payment{% endblock %}
+{% block title %}{% trans 'Make a Payment' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,10 +19,10 @@
 <div class="make-payment-view">
 <div class="label">{% trans "Payment Amount:" %}</div><div>{{ mp.payment_amount }}</div>
 <div class="clear-left"></div>
-<div class="label">{% trans "Invoice ID:" %}</div><div><a href="{% url "invoice.view" mp.invoice_id %}">{{ mp.invoice_id }}</a></div>
+<div class="label">{% trans "Invoice ID:" %}</div><div><a href="{% url invoice.view mp.invoice_id %}">{{ mp.invoice_id }}</a></div>
 <div class="clear-left"></div>
 {% if mp.user %}
-<div class="label">{% trans "User:" %}</div><div><a href="{% url 'profile' mp.user.username %}">{{mp.user.username }}</a></div>
+<div class="label">{% trans "User:" %}</div><div><a href="{% url profile mp.user.username %}">{{mp.user.username }}</a></div>
 <div class="clear-left"></div>
 {% endif %}
 <br />
@@ -40,7 +40,7 @@
 <br />
 <div class="label">{% blocktrans with mp.referral_source as mpref %}Referred By:</div><div>{{ mpref }}{% endblocktrans %}</div>
 <div class="clear-left"></div>
-<div class="label">{% trans "Comments:" %}</div><div>{{ mp.comments|safe }}</div>
+<div class="label">{% trans "Comments:" %}</div><div>{% blocktrans with c=mp.comments|safe %}{{ c }}{% endblocktrans %}</div>
 <div class="clear-left"></div>
 <br />
 <div class="label">{% trans "Create Date:" %}</div><div>{{ mp.create_dt|date:'long' }}</div>

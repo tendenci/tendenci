@@ -15,8 +15,8 @@
         {% for entry in rss.entries|slice:slice_limit %}
             {{ THEME_RSS_FEED_LIST_LIMIT }}
             <div class="rss-item">
-                <h4><a href="{{ entry.link }}">{{ entry.title|truncatewords:"6" }}</a></h4>
-                <p>{{ entry.summary|striptags|safe|truncatewords:"15" }}</p>
+                <h4><a href="{{ entry.link }}">{% blocktrans with t=entry.title|truncatewords:"6" %}{{ t }}{% endblocktrans %}</a></h4>
+                <p>{% blocktrans with s=entry.summary|striptags|safe|truncatewords:"15" %}{{ s }}{% endblocktrans %}</p>
                 <p><span><a class="readmore" href="{{ entry.link }}">{% trans 'Read More …' %}</a></span></p>
             </div>
         {% endfor %}

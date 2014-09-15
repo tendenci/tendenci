@@ -6,18 +6,18 @@ from django.forms import fields, ValidationError
 from django.db.models import CharField
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-import simplejson
+from django.utils import simplejson
 from django.core import exceptions
 from django_countries.countries import COUNTRIES
 
-from tendenci.apps.base import forms
-from tendenci.apps.base.widgets import SplitDateTimeWidget, EmailVerificationWidget, PriceWidget
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.base import forms
+from tendenci.core.base.widgets import SplitDateTimeWidget, EmailVerificationWidget, PriceWidget
+from tendenci.core.site_settings.utils import get_setting
 
 
 # introspection rules for south migration for the slugfield
-add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.SlugField'])
-add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.DictField'])
+add_introspection_rules([], ['^tendenci\.core\.base\.fields\.SlugField'])
+add_introspection_rules([], ['^tendenci\.core\.base\.fields\.DictField'])
 
 
 class SlugField(CharField):
@@ -67,12 +67,12 @@ class SplitDateTimeField(fields.MultiValueField):
         """
         if data_list:
             if not (data_list[0] and data_list[1]):
-                raise ValidationError("Field is missing data.")
+                raise ValidationError(_("Field is missing data."))
             try:
                 input_time = strptime("%s" % (data_list[1]), "%I:%M %p")
                 datetime_string = "%s %s" % (data_list[0], strftime('%H:%M', input_time))
             except:
-                raise ValidationError("Time Format is incorrect. Must be Hour:Minute AM|PM")
+                raise ValidationError(_("Time Format is incorrect. Must be Hour:Minute AM|PM"))
             return datetime_string
         return None
 
@@ -122,6 +122,7 @@ class EmailVerificationField(fields.MultiValueField):
             fields.EmailField(max_length=75, label=_("Verfiy Email Address")),
             )
         label = kwargs.pop('label', '') + ' (Enter twice to verify)'
+        label = _(label)
         super(EmailVerificationField, self).__init__(all_fields, label=label, *args, **kwargs)
 
     def compress(self, data_list):
@@ -132,9 +133,9 @@ class EmailVerificationField(fields.MultiValueField):
         """
         if data_list:
             if not (data_list[0] and data_list[1]):
-                raise ValidationError("Please enter the email twice to verify.")
+                raise ValidationError(_("Please enter the email twice to verify."))
             if data_list[0] != data_list[1]:
-                raise ValidationError("Please enter the same email address.")
+                raise ValidationError(_("Please enter the same email address."))
             email_data = "%s" % (data_list[0])
             return email_data
         return ''
@@ -146,9 +147,9 @@ class CountrySelectField(fields.ChoiceField):
 
         exclude_list = ['GB', 'US', 'CA']
         countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
-        initial_choices = ((_('United States'), _('United States')),
-                           (_('Canada'), _('Canada')),
-                           (_('United Kingdom'), _('United Kingdom')),
+        initial_choices = (('United States', _('United States')),
+                           ('Canada', _('Canada')),
+                           ('United Kingdom', _('United Kingdom')),
                            ('','-----------'))
         self.choices = initial_choices + tuple(countries)
         self.initial = 'United States'

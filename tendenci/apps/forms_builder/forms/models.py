@@ -24,8 +24,8 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
 STATUS_CHOICES = (
-    ('draft', "Draft"),
-    ('published', "Published"),
+    ('draft', _("Draft")),
+    ('published', _("Published")),
 )
 
 FIELD_CHOICES = (
@@ -83,9 +83,9 @@ class Form(TendenciBaseModel):
         (LAST, _("Last")),
     )
 
-    INTRO_DEFAULT_NAME = "Intro"
-    FIELDS_DEFAULT_NAME = "Fields"
-    PRICING_DEFAULT_NAME = "Pricings"
+    INTRO_DEFAULT_NAME = _("Intro")
+    FIELDS_DEFAULT_NAME = _("Fields")
+    PRICING_DEFAULT_NAME = _("Pricings")
 
     title = models.CharField(_("Title"), max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
@@ -139,7 +139,7 @@ class Form(TendenciBaseModel):
     class Meta:
         verbose_name = _("Form")
         verbose_name_plural = _("Forms")
-        permissions = (("view_form", "Can view form"),)
+        permissions = (("view_form", _("Can view form")),)
 
     def __unicode__(self):
         return self.title
@@ -156,11 +156,11 @@ class Form(TendenciBaseModel):
 
     def get_payment_type(self):
         if self.recurring_payment and self.custom_payment:
-            return "Custom Recurring Payment"
+            return _("Custom Recurring Payment")
         if self.recurring_payment:
-            return "Recurring Payment"
+            return _("Recurring Payment")
         if self.custom_payment:
-            return "Custom Payment"
+            return _("Custom Payment")
 
     def admin_link_view(self):
         url = self.get_absolute_url()
@@ -211,9 +211,9 @@ class Field(OrderingBaseModel):
     required = models.NullBooleanField(_("Required"), default=True)
     visible = models.NullBooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
-        help_text="Comma separated options where applicable")
+        help_text=_("Comma separated options where applicable"))
     default = models.CharField(_("Default"), max_length=1000, blank=True,
-        help_text="Default value of the field")
+        help_text=_("Default value of the field"))
 
     objects = FieldManager()
 
@@ -457,13 +457,13 @@ class Pricing(models.Model):
         decimal_places=2,
         blank=True,
         null=True,
-        help_text="Leaving this field blank allows visitors to set their own price"
+        help_text=_("Leaving this field blank allows visitors to set their own price")
     )
 
     # Recurring payment fields
     taxable = models.NullBooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
-                                   help_text='Example: 0.0825 for 8.25%.')
+                                   help_text=_('Example: 0.0825 for 8.25%.'))
     billing_period = models.CharField(max_length=50, choices=BILLING_PERIOD_CHOICES,
                                         default='month')
     billing_frequency = models.IntegerField(default=1)

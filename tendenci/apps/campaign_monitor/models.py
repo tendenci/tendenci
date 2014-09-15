@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
+from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.forms_builder.forms.models import FormEntry
-from tendenci.apps.files.models import file_directory
+from tendenci.core.files.models import file_directory
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
@@ -37,7 +38,7 @@ class Template(models.Model):
     This represents a Template in Campaign Monitor.
     """
     class Meta:
-        permissions = (("view_template", "Can view template"),)
+        permissions = (("view_template", _("Can view template")),)
 
     template_id = models.CharField(max_length=100, unique=True, null=True)
     name = models.CharField(max_length=100)
@@ -104,12 +105,12 @@ class Campaign(models.Model):
     """
 
     class Meta:
-        permissions = (("view_campaign", "Can view campaign"),)
+        permissions = (("view_campaign", _("Can view campaign")),)
 
     STATUS_CHOICES = (
-        ('S', 'Sent'),
-        ('C', 'Scheduled'),
-        ('D', 'Draft'),
+        ('S', _('Sent')),
+        ('C', _('Scheduled')),
+        ('D', _('Draft')),
     )
 
     campaign_id = models.CharField(max_length=100, unique=True)
@@ -248,14 +249,14 @@ if cm_api_key and cm_client_id:
         """Subscribe the subscriber to the campaign monitor list
            Check if sync_newsletters is True. Do nothing if False.
         """
-        from tendenci.apps.base.utils import validate_email
+        from django.core.validators import email_re
         from tendenci.apps.profiles.models import Profile
 
         if instance and instance.group and not instance.group.sync_newsletters:
             return
 
         (name, email) = get_name_email(instance)
-        if email and validate_email(email):
+        if email and email_re.match(email):
             add_list = False
             add_subscriber = True
             list_map = None
@@ -332,10 +333,10 @@ if cm_api_key and cm_client_id:
     def delete_cm_subscriber(sender, instance=None, **kwargs):
         """Delete the subscriber from the campaign monitor list
         """
-        from tendenci.apps.base.utils import validate_email
+        from django.core.validators import email_re
 
         (name, email) = get_name_email(instance)
-        if email and validate_email(email):
+        if email and email_re.match(email):
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id

@@ -1,11 +1,13 @@
+{% load i18n %}
+
 <div class="wrap-search-item">
     <div class="search-item article-search-item">
-        <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline 'Untitled'%}</a></h2>
+        <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline trans 'Untitled' %}</a></h2>
         <div class="item-content">
         {% if article.summary %}
-            {{ article.summary|striptags|truncatewords:40|safe  }}
+            {% blocktrans with summary=article.summary|striptags|truncatewords:40|safe %}{{ summary }}{% endblocktrans %}
         {% else %}
-            {{ article.body|striptags|truncatewords:40|safe }}
+            {% blocktrans with body=article.body|striptags|truncatewords:40|safe %}{{ body }}{% endblocktrans %}
         {% endif %}</div>
     </div>
       {% include "articles/meta.html" %}

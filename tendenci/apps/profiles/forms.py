@@ -69,15 +69,15 @@ class ProfileSearchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         mts = kwargs.pop('mts')
         super(ProfileSearchForm, self).__init__(*args, **kwargs)
-        self.fields['first_name'].widget.attrs.update({'placeholder': 'Exact Match Search'})
-        self.fields['last_name'].widget.attrs.update({'placeholder': 'Exact Match Search'})
-        self.fields['email'].widget.attrs.update({'placeholder': 'Exact Match Search'})
+        self.fields['first_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        self.fields['last_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        self.fields['email'].widget.attrs.update({'placeholder': _('Exact Match Search')})
 
         if not mts:
             del self.fields['membership_type']
             del self.fields['member_only']
         else:
-            choices = [(0, 'SELECT ONE')]
+            choices = [(0, _('SELECT ONE'))]
             choices += [(mt.id, mt.name) for mt in mts]
             self.fields['membership_type'].widget = forms.widgets.Select(
                                     choices=choices)
@@ -86,11 +86,11 @@ class ProfileSearchForm(forms.Form):
 class ProfileForm(TendenciBaseForm):
 
     first_name = forms.CharField(label=_("First Name"), max_length=100,
-                                 error_messages={'required': 'First Name is a required field.'})
+                                 error_messages={'required': _('First Name is a required field.')})
     last_name = forms.CharField(label=_("Last Name"), max_length=100,
-                                error_messages={'required': 'Last Name is a required field.'})
+                                error_messages={'required': _('Last Name is a required field.')})
     email = EmailVerificationField(label=_("Email"),
-                                error_messages={'required': 'Email is a required field.'})
+                                error_messages={'required': _('Email is a required field.')})
     email2 = EmailVerificationField(label=_("Secondary Email"), required=False)
 
     initials = forms.CharField(label=_("Initial"), max_length=100, required=False,
@@ -101,27 +101,27 @@ class ProfileForm(TendenciBaseForm):
     url = forms.CharField(label=_("Web Site"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'40'}))
     company = forms.CharField(label=_("Company"), max_length=100, required=False,
-                              error_messages={'required': 'Company is a required field.'},
+                              error_messages={'required': _('Company is a required field.')},
                                widget=forms.TextInput(attrs={'size':'45'}))
     department = forms.CharField(label=_("Department"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'35'}))
     address = forms.CharField(label=_("Address"), max_length=150, required=False,
-                              error_messages={'required': 'Address is a required field.'},
+                              error_messages={'required': _('Address is a required field.')},
                                widget=forms.TextInput(attrs={'size':'45'}))
     address2 = forms.CharField(label=_("Address2"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'40'}))
     city = forms.CharField(label=_("City"), max_length=50, required=False,
-                           error_messages={'required': 'City is a required field.'},
+                           error_messages={'required': _('City is a required field.')},
                                widget=forms.TextInput(attrs={'size':'15'}))
     state = forms.CharField(label=_("State"), max_length=50, required=False,
-                            error_messages={'required': 'State is a required field.'},
+                            error_messages={'required': _('State is a required field.')},
                                widget=forms.TextInput(attrs={'size':'5'}))
     zipcode = forms.CharField(label=_("Zipcode"), max_length=50, required=False,
-                              error_messages={'required': 'Zipcode is a required field.'},
+                              error_messages={'required': _('Zipcode is a required field.')},
                                widget=forms.TextInput(attrs={'size':'10'}))
     country = CountrySelectField(label=_("Country"), required=False)
     mailing_name = forms.CharField(label=_("Mailing Name"), max_length=120, required=False,
-                                   error_messages={'required': 'Mailing name is a required field.'},
+                                   error_messages={'required': _('Mailing name is a required field.')},
                                widget=forms.TextInput(attrs={'size':'30'}))
 
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
@@ -130,18 +130,18 @@ class ProfileForm(TendenciBaseForm):
                                 label=_(u'Username'),
                                 help_text = _("Required. Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
                                 error_messages={
-                                    'invalid': 'Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).'
+                                    'invalid': _('Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).')
                                 })
 
     password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput(attrs=attrs_dict))
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
         help_text = _("Enter the same password as above, for verification."))
-    security_level = forms.ChoiceField(initial="user", choices=(('user','User'),
-                                                                ('staff','Staff'),
-                                                                ('superuser','Superuser'),))
+    security_level = forms.ChoiceField(initial="user", choices=(('user',_('User')),
+                                                                ('staff',_('Staff')),
+                                                                ('superuser',_('Superuser')),))
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
-                                                          (0,'Not Interactive (no login)'),))
-    direct_mail =  forms.ChoiceField(initial=1, choices=((1, 'Yes'),(0, 'No'),))
+                                                          (0,_('Not Interactive (no login)')),))
+    direct_mail =  forms.ChoiceField(initial=1, choices=((1, _('Yes')),(0, _('No')),))
     notes = forms.CharField(label=_("Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, required=False,
@@ -150,7 +150,7 @@ class ProfileForm(TendenciBaseForm):
     dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(1920, THIS_YEAR)))
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     class Meta:
         model = Profile
@@ -248,7 +248,7 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['status_detail']
 
             if self.user_current.profile.is_superuser and self.user_current == self.user_this:
-                self.fields['security_level'].choices = (('superuser','Superuser'),)
+                self.fields['security_level'].choices = (('superuser',_('Superuser')),)
 
         if not self.user_current.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -324,11 +324,11 @@ class ProfileForm(TendenciBaseForm):
 class ProfileAdminForm(TendenciBaseForm):
 
     first_name = forms.CharField(label=_("First Name"), max_length=100,
-                                 error_messages={'required': 'First Name is a required field.'})
+                                 error_messages={'required': _('First Name is a required field.')})
     last_name = forms.CharField(label=_("Last Name"), max_length=100,
-                                error_messages={'required': 'Last Name is a required field.'})
+                                error_messages={'required': _('Last Name is a required field.')})
     email = EmailVerificationField(label=_("Email"),
-                                error_messages={'required': 'Email is a required field.'})
+                                error_messages={'required': _('Email is a required field.')})
     email2 = EmailVerificationField(label=_("Secondary Email"), required=False)
 
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
@@ -340,16 +340,16 @@ class ProfileAdminForm(TendenciBaseForm):
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
         help_text = _("Enter the same password as above, for verification."))
 
-    security_level = forms.ChoiceField(initial="user", choices=(('user','User'),
-                                                                ('staff','Staff'),
-                                                                ('superuser','Superuser'),))
+    security_level = forms.ChoiceField(initial="user", choices=(('user',_('User')),
+                                                                ('staff',_('Staff')),
+                                                                ('superuser',_('Superuser')),))
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
-                                                          (0,'Not Interactive (no login)'),))
+                                                          (0,_('Not Interactive (no login)')),))
 
     language = forms.ChoiceField(initial="en", choices=get_languages_with_local_name())
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     class Meta:
         model = Profile
@@ -589,6 +589,7 @@ class UserGroupsForm(forms.Form):
             }
             EventLog.objects.log(**log_defaults)
 
+
 class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
 
     def clean_new_password1(self):
@@ -603,12 +604,13 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
 
         return password1
 
+
 class UserMembershipForm(TendenciBaseForm):
     join_dt = SplitDateTimeField(label=_('Subscribe Date/Time'),
         initial=datetime.datetime.now())
     expire_dt = SplitDateTimeField(label=_('Expire Date/Time'), required=False)
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
     class Meta:
         model = MembershipDefault
@@ -626,7 +628,7 @@ class UserMembershipForm(TendenciBaseForm):
         )
 
         fieldsets = [
-            ('Membership Information', {
+            (_('Membership Information'), {
                 'fields': [
                     'member_number',
                     'membership_type',
@@ -635,7 +637,7 @@ class UserMembershipForm(TendenciBaseForm):
                 ],
                 'legend': ''
                 }),
-            ('Permissions', {
+            (_('Permissions'), {
                 'fields': [
                     'allow_anonymous_view',
                     'user_perms',
@@ -644,7 +646,7 @@ class UserMembershipForm(TendenciBaseForm):
                 ],
                 'classes': ['permissions'],
             }),
-            ('Administrator Only', {
+            (_('Administrator Only'), {
                 'fields': [
                     'status',
                     'status_detail'],
@@ -681,8 +683,8 @@ class ProfileMergeForm(forms.Form):
 class ExportForm(forms.Form):
 
     EXPORT_FIELD_CHOICES = (
-        ('main_fields', 'Export Main Fields (fastest)'),
-        ('all_fields', 'Export All Fields'),
+        ('main_fields', _('Export Main Fields (fastest)')),
+        ('all_fields', _('Export All Fields')),
     )
 
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
@@ -690,21 +692,21 @@ class ExportForm(forms.Form):
 
 
 class UserUploadForm(forms.ModelForm):
-    KEY_CHOICES = (('email', 'Email'),
-               ('first_name,last_name,email', 'First Name and Last Name and Email'),
-               ('first_name,last_name,phone', 'First Name and Last Name and Phone'),
-               ('first_name,last_name,company', 'First Name and Last Name and Company'),
+    KEY_CHOICES = (('email', _('Email')),
+               ('first_name,last_name,email', _('First Name and Last Name and Email')),
+               ('first_name,last_name,phone', _('First Name and Last Name and Phone')),
+               ('first_name,last_name,company', _('First Name and Last Name and Company')),
                ('username', 'Username'),)
-    GROUP_CHOICES = [(0, 'Select One')] + [(group.id, group.name) for group in \
+    GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in \
                      Group.objects.filter(status=True, status_detail='active'
                                           ).exclude(type='membership')]
     interactive = forms.BooleanField(widget=forms.RadioSelect(
-                                    choices=((True, 'Interactive'),
-                                            (False,'Not Interactive (no login)'),)),
+                                    choices=((True, _('Interactive')),
+                                            (False,_('Not Interactive (no login)')),)),
                                   initial=True,)
     key = forms.ChoiceField(label="Key",
                             choices=KEY_CHOICES)
-    group_id = forms.ChoiceField(label="Add Users to Group",
+    group_id = forms.ChoiceField(label=_("Add Users to Group"),
                             choices=GROUP_CHOICES, required=False)
     clear_group_membership = forms.BooleanField(initial=False, required=False)
 
@@ -727,7 +729,7 @@ class UserUploadForm(forms.ModelForm):
         key = self.cleaned_data['key']
         upload_file = self.cleaned_data['upload_file']
         if not key:
-            raise forms.ValidationError('Please specify the key to identify duplicates')
+            raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
         file_content = upload_file.read()
         upload_file.seek(0)
@@ -743,11 +745,10 @@ class UserUploadForm(forms.ModelForm):
             if not item in header_list:
                 missing_columns.append(item)
         if missing_columns:
-            raise forms.ValidationError(
+            raise forms.ValidationError(_(
                         """
-                        'Field(s) %s used to identify the duplicates
+                        'Field(s) %(fields)s used to identify the duplicates
                         should be included in the .csv file.'
-                        """ % (', '.join(missing_columns)))
+                        """ % {'fields' : ', '.join(missing_columns)}))
 
         return upload_file
-

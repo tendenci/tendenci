@@ -1,7 +1,8 @@
 from django.template import Library, TemplateSyntaxError, Variable
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.apps.jobs.models import Job
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.addons.jobs.models import Job
 from django.db.models import Q
 
 register = Library()
@@ -58,7 +59,7 @@ def job_pricing_options(context, user, job_pricing):
 
 @register.inclusion_tag("jobs/pricing-table.html", takes_context=True)
 def job_pricing_table(context):
-    from tendenci.apps.jobs.models import JobPricing
+    from tendenci.addons.jobs.models import JobPricing
     job_pricings = JobPricing.objects.filter(status=True).order_by('duration')
     show_premium_price = False
     show_member_price = False
@@ -120,11 +121,11 @@ def list_jobs(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires at least 2 parameters" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 

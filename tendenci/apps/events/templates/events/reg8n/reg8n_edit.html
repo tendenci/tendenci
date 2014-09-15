@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Edit Registration{% endblock %}
+{% block title %}{{ block.super }}{% trans "Edit Registration" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,8 +15,8 @@
 <div class="t">
     {% event_nav user reg8n.event %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Registration Edit" %}</h1>
-    <div class="event-title">Event: <a href="{% url 'event' reg8n.event.id%}">{{ reg8n.event.title }}</a></div>
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Registration Edit" %}</h1>
+    <div class="event-title">{% trans "Event" %}: <a href="{% url event reg8n.event.id%}">{% blocktrans with title=reg8n.event.title %}{{ title }}{% endblocktrans %}</a></div>
 
     <div class="event-wrap">
     {% if formset_errors %}
@@ -47,7 +47,7 @@
                 </div>
             {% endfor %}
 
-            <input type="submit" value="Save Changes" />
+            <input type="submit" value="{% trans "Save Changes" %}" />
         </div>
         </form>
     </div>

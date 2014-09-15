@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.careers.models import Career
-from tendenci.apps.careers.forms import CareerForm
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.addons.careers.models import Career
+from tendenci.addons.careers.forms import CareerForm
 
 
 class CareerAdmin(TendenciBaseModelAdmin):
@@ -29,13 +30,13 @@ class CareerAdmin(TendenciBaseModelAdmin):
                         'experience',
                 )
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        ('Status', {'fields': (
+        (_('Status'), {'fields': (
             'status',
             'status_detail',
             )}),

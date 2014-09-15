@@ -53,22 +53,22 @@
         <div class="alert alert-info alert-dismissable" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <p>
-                This is the preview{% if current_app.id == app.id%}
-                of the <a href="{% url "corpmembership.add" current_app.slug %}">current application</a>.
+                {% trasns 'This is the preview' %}{% if current_app.id == app.id%}
+                {% trans 'of the' %} <a href="{% url corpmembership.add current_app.slug %}"> {% 'current application' %}</a>.
                 {% else %}
-               . This application is NOT the current application. <a href="{% url "corpmembership.add" current_app.slug %}">Click here to view current application</a>.
+               . {%  trans 'This application is NOT the current application.'%} <a href="{% url corpmembership.add current_app.slug %}">{% trans 'Click here to view current application' %}</a>.
                 {% endif %}
             </p>
         </div>
 
-        <h1>{{ app.name }}</h1>
-        {{ app.description|safe }}
+        <h1>{% blocktrans with name=app.name %}{{ name }}{% endblocktrans %}</h1>
+        {% blocktrans with description=app.description|safe %}{{ description }}{% endblocktrans %}
 
        {% for field_obj in app_fields %}
             {% render_corpmembership_field request field_obj corpprofile_form corpmembership_form %}
         {% endfor %}
 
-        <input class="btn" type="submit" name="submit" value="Submit" disabled="true" />
+        <input class="btn" type="submit" name="submit" value="{% trans 'Submit' %}" disabled="true" />
 
 </div>
 </div>

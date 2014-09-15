@@ -6,18 +6,18 @@
     <div class="meta-left">
         {% if help_file.tags %}
         <div class="tags">
-            <strong>Tags: </strong>
+            <strong>{% trans 'Tags' %}: </strong>
             {% for tag in help_file.tags|tag_split %}
-                <a href="{% url 'help_files' %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url help_files %}?q=tag:{{ tag }}">{% blocktrans with t=tag %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
 
         {% with help_file.topics.all as topics %}
             {% if topics %}
-            <div class="topics"><strong>Topics: </strong>
+            <div class="topics"><strong>{% trans 'Topics' %}: </strong>
             {% for topic in topics %}
-                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url help_files.topic topic.pk %}">{% blocktrans with t=topic %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
             </div>
             {% endif %}
@@ -27,7 +27,7 @@
             {% if not user.profile.is_superuser %}
             {% if user == help_file.creator or user == help_file.owner %}
             <div class="categories">
-                <strong>Owned by you</strong>{% if not help_file.status_detail == "active" %} - status: {{ help_file.obj_status }}{% endif %}
+                <strong>{% trasn 'Owned by you' %}</strong>{% if not help_file.status_detail == "active" %} - status: {{ help_file.obj_status }}{% endif %}
             </div>
             {% endif %}
             {% endif %}
@@ -52,13 +52,13 @@
     </div>
     <div class="edit-links">
     <ul>
-        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ help_file.pk }}&source={{ help_file.opt_app_label }}">Eventlogs</a></li>
-        <li><a class="edit-link" href="{% url "help_files.edit" help_file.pk %}">Edit</a></li>
-        <li><a class="options-link" href="#">Options <small>&#9650;</small></a>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ help_file.pk }}&source={{ help_file.opt_app_label }}">{% trans 'Eventlogs' %}</a></li>
+        <li><a class="edit-link" href="{% url help_files.edit help_file.pk %}">{% trans 'Edit' %}</a></li>
+        <li><a class="options-link" href="#">{% trans 'Options' %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
                 <li>
-                    <a class="delete" href="{% url "admin:help_files_helpfile_change" help_file.pk %}">Delete</a>
+                    <a class="delete" href="{% url admin:help_files_helpfile_change help_file.pk %}">{% trans 'Delete' %}</a>
                 </li>
             </ul>
         </div>

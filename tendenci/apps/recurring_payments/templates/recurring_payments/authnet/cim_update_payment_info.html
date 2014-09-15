@@ -40,18 +40,18 @@
 <div class="t">
     <h1>
     {% if request.user.id == rp.user.id %}
-       Manage my Payment Info
+       {% trans 'Manage my Payment Info' %}
     {% else %}
-    {% trans "Manage Payment Info for " %} <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
     {% endif %}
     </h1>
 
  <h3>Description: {{ rp.description }}</h3>
 
    {% if payment_profile %}
-   <button onclick="AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}')">Edit Payment Method</button>
+   <button onclick="AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}')">{% trans 'Edit Payment Method' %}</button>
     {% else %}
-    <button onclick="AuthorizeNetPopup.openAddPaymentPopup()">Add a New Payment Method</button>
+    <button onclick="AuthorizeNetPopup.openAddPaymentPopup()">{% trans 'Add a New Payment Method' %}</button>
    {% endif %}
 
 <br />
@@ -84,7 +84,7 @@
         if(action_result=="successfulSave"){
             $.ajax({
                    type: "POST",
-                   url: "{% url "recurring_payment.authnet.update_payment_profile_local"%}",
+                   url: "{% url recurring_payment.authnet.update_payment_profile_local%}",
                    data: {rpid : {{ rp.id }}, ppid : {% if payment_profile %}{{ payment_profile.id }}{% endif %} },
                    success: function(msg){
                      //alert( msg );

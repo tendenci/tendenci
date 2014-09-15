@@ -9,9 +9,9 @@
 {% load i18n %}
 {% load meta_tags %}
 
-{% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
-{% block meta_description %}{{ event.get_description }}{% endblock %}
-{% block meta_keywords %}{{ event.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -42,7 +42,7 @@
             {% if event.is_recurring_event %}
                 <div class="event-recurring"></div>
             {% endif %}
-            <span itemprop="name">{{ event.title }}</span></h1>
+            <span itemprop="name">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span></h1>
 
             <div class="event-tabs">
                 <ul class="tabs">
@@ -64,14 +64,14 @@
                         <img itemprop="image" src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title|truncatechars:123 }}" alt="{{ event.title|truncatechars:123 }}" />
                     </div>
                     {% endif %}
-                    <div class="event-desc">{{ event.description|safe }}</div>
+                    <div class="event-desc">{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</div>
                 </div>
 
                 {% for speaker in speakers %}
                 <div class="speaker-wrap">
                     {% if speaker.get_photo %}
                     <div class="speaker-photo">
-                        <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url 'file' speaker.get_photo.pk %}"  width="100" />
+                        <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
                     </div>
                     {% endif %}
                     <div class="speaker">
@@ -79,14 +79,14 @@
                     </div>
                     {% if speaker.description|striptags|wordcount > 50 %}
                     <div class="speaker-desc-short">
-                        {{ speaker.description|striptags|safe|truncatewords:"50" }}
+                        {% blocktrans with desc=speaker.description|striptags|safe|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
                     </div>
                     <div class="speaker-desc-long">
-                        {{ speaker.description|safe|urlize|linebreaks }}
+                        {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
                     </div>
                     {% else %}
                     <div class="speaker-desc-short">
-                        {{ speaker.description|safe|urlize|linebreaks }}
+                        {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
                     </div>
                     {% endif %}
                     {% if speaker.description|striptags|wordcount > 50 %}
@@ -96,7 +96,7 @@
                 </div>
                 {% endfor %}
                 {% if speakers_length > 1 %}
-                <a href="{% url "event.speakers" event.pk %}">{% trans "View all speakers" %}</a>
+                <a href="{% url event.speakers event.pk %}">{% trans "View all speakers" %}</a>
                 {% endif %}
 
                 {% if organizer.name %}
@@ -106,14 +106,14 @@
                     </div>
                     {% if organizer.description|striptags|wordcount > 50 %}
                     <div class="organizer-desc-short">
-                        {{ organizer.description|striptags|truncatewords:"50" }}
+                        {% blocktrans with desc=organizer.description|striptags|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
                     </div>
                     <div class="organizer-desc-long">
-                        {{ organizer.description|safe|urlize|linebreaks }}
+                        {% blocktrans with desc=organizer.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
                     </div>
                     {% else %}
                         <div class="organizer-desc-short">
-                            {{ organizer.description|safe|urlize|linebreaks }}
+                            {% blocktrans with desc=organizer.description|safe|urlize|linebreaks %}{{ desc }}{% endblock %}
                         </div>
                     {% endif %}
                     {% if organizer.description|striptags|wordcount > 50 %}
@@ -132,7 +132,7 @@
                             <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
                             {% if addon.options.all %}
                             <tr>
-                                <td><strong>Options</strong></td>
+                                <td><strong>{% trans 'Options' %}</strong></td>
                                 <td>
                                 {% for op in addon.options.all %}
                                 {{ op.title }}{% if not forloop.last%}, {% endif %}
@@ -177,7 +177,7 @@
         <div class="vitals">
         {% if event.external_url %}
         <div class="external-link">
-        <h4><a href="{{ event.external_url }}" target="_blank">View this event's webpage &raquo;</a></h4>
+        <h4><a href="{{ event.external_url }}" target="_blank">{% trans 'View this event's webpage' %} &raquo;</a></h4>
         </div>
         {% endif %}
             <div class="time-period">
@@ -223,14 +223,14 @@
                 <div class="line" itemprop="addressCountry">{{ event.place.country }}</div>
                 {% if event.place.description|striptags|wordcount > 50 %}
                     <div class="line event-place-desc-short">
-                        {{ event.place.description|striptags|truncatewords:"50" }}
+                        {% blocktrans with desc=event.place.description|striptags|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
                     </div>
                     <div class="line event-place-desc-long">
-                        {{ event.place.description|safe|urlize|linebreaks }}
+                        {% blocktrans with desc=event.place.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
                     </div>
                 {% else %}
                         <div class="line event-place-desc-short">
-                            {{ event.place.description|safe|urlize|linebreaks }}
+                            {% blocktrans with desc=event.place.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
                         </div>
                 {% endif %}
                 {% if event.place.description|striptags|wordcount > 50 %}
@@ -242,11 +242,11 @@
 
             {% if event.place.address and event.place.city_state %}
             <div class="map">
-                <iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe><br /><small><a href="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
+                <iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe><br /><small><a href="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">{% trans 'View Larger Map' %}</a></small>
             </div>
             {% endif %}
 
-            {% url 'event' event.pk as the_url %}
+            {% url event event.pk as the_url %}
             <p class="fb-like-event">{% fb_like_button_iframe the_url %}</p>
 
             {% include 'social_media/icons.html' %}

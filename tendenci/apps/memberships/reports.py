@@ -3,14 +3,16 @@ from geraldo import Report, ReportBand, ObjectValue, SystemField,\
 from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A5
 
+from django.utils.translation import ugettext_lazy as _
+
 class ReportBandNewMems(ReportBand):
     def __init__(self, *args, **kwargs):
         days_ago = kwargs.pop('days_ago')
         super(ReportBandNewMems, self).__init__(*args, **kwargs)
 
 class ReportNewMems(Report):
-    title = "New Memberships"
-    author = "John Smith  Corporation"
+    title = _("New Memberships")
+    author = _("John Smith  Corporation")
 
     page_size = landscape(A5)
 
@@ -20,12 +22,12 @@ class ReportNewMems(Report):
     class band_page_header(ReportBand):
         height = 1.2*cm
         elements = [
-                Label(text="Name", top=0.8*cm, left=0*cm),
-                Label(text="Email", top=0.8*cm, left=2.5*cm),
-                Label(text="Type", top=0.8*cm, left=5.5*cm),
-                Label(text="Price Paid", top=0.8*cm, left=11.5*cm),
-                Label(text="Start Date", top=0.8*cm, left=14.5*cm),
-                Label(text="End Date", top=0.8*cm, left=17.5*cm),
+                Label(text=_("Name"), top=0.8*cm, left=0*cm),
+                Label(text=_("Email"), top=0.8*cm, left=2.5*cm),
+                Label(text=_("Type"), top=0.8*cm, left=5.5*cm),
+                Label(text=_("Price Paid"), top=0.8*cm, left=11.5*cm),
+                Label(text=_("Start Date"), top=0.8*cm, left=14.5*cm),
+                Label(text=_("End Date"), top=0.8*cm, left=17.5*cm),
             ]
 
     class band_detail(ReportBand):

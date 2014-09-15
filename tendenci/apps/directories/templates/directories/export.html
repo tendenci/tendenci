@@ -18,7 +18,9 @@
 
     <div id="directory-export">
         <div class="alert">
+            {% blocktrans %}
             <strong>Note</strong>: An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.
+            {% endblocktrans %}
         </div>
 
         <form method="post" action="">{% csrf_token %}
@@ -26,7 +28,7 @@
                 {{ field.errors }}
                 {{ field }}
             {% endfor %}
-            <div><input class="btn" type='submit' value="Export Directories"></div>
+            <div><input class="btn" type='submit' value="{% trans 'Export Directories' %}"></div>
         </form>
     </div>
 </div>

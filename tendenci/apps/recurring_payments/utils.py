@@ -6,18 +6,19 @@ from django.template import TemplateDoesNotExist
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 from dateutil.relativedelta import relativedelta
-from tendenci.apps.emails.models import Email
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.emails.models import Email
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.recurring_payments.models import (RecurringPayment,
+from tendenci.addons.recurring_payments.models import (RecurringPayment,
                                        PaymentProfile,
                                        RecurringPaymentInvoice,
                                        PaymentTransaction)
-from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
-from tendenci.apps.recurring_payments.authnet.utils import get_token
-from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
-from tendenci.apps.payments.models import Payment
+from tendenci.addons.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
+from tendenci.addons.recurring_payments.authnet.utils import get_token
+from tendenci.addons.recurring_payments.authnet.utils import payment_update_from_response
+from tendenci.core.payments.models import Payment
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
 
@@ -75,8 +76,8 @@ class RecurringPaymentEmailNotices(object):
                 self.email.body = email_content
                 self.email.content_type = "html"
                 self.email.priority = 1
-                self.email.subject = 'Recurring payment transaction error on %s' % (
-                                                                            self.site_display_name)
+                self.email.subject = _('Recurring payment transaction error on %(dname)s' % {
+                                                                            'dname':self.site_display_name})
 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -102,12 +103,12 @@ class RecurringPaymentEmailNotices(object):
                 self.email.body = email_content
                 self.email.content_type = "html"
                 if not success:
-                    self.email.subject = 'Recurring payment transaction failed on %s' % (
-                                                                            self.site_display_name)
+                    self.email.subject = _('Recurring payment transaction failed on %(dname)s' % {
+                                                                            'dname': self.site_display_name})
                     self.email.priority = 1
                 else:
-                    self.email.subject = 'Recurring payment transaction processed on %s' % (
-                                                                                self.site_display_name)
+                    self.email.subject = _('Recurring payment transaction processed on %(dname)s' % {
+                                                                                'dname': self.site_display_name})
 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -128,11 +129,12 @@ class RecurringPaymentEmailNotices(object):
                 self.email.body = email_content
                 self.email.content_type = "html"
                 if payment_transaction.status:
-                    self.email.subject = 'Payment received '
+                    self.email.subject = _('Payment received ')
                 else:
-                    self.email.subject = 'Payment failed '
-                self.email.subject = "%s for %s " % (self.email.subject,
-                                                   payment_transaction.recurring_payment.description)
+                    self.email.subject = _('Payment failed ')
+                self.email.subject = _("%(subj)s for %(desc)s " % {
+                            'subj': self.email.subject,
+                            'desc': payment_transaction.recurring_payment.description})
 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -152,8 +154,9 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
-                self.email.subject = 'Payment method not setup for %s on %s' % (
-                                    recurring_payment , self.site_display_name)
+                self.email.subject = _('Payment method not setup for %(rp)s on %(dname)s' % {
+                                    'rp': recurring_payment ,
+                                    'dname': self.site_display_name})
 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -173,8 +176,9 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
-                self.email.subject = 'Please update your payment method for %s on %s' % (
-                                    recurring_payment.description, self.site_display_name)
+                self.email.subject = _('Please update your payment method for %(rp)s on %(dname)s' % {
+                                    'rp': recurring_payment.description,
+                                    'dname': self.site_display_name})
 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -195,8 +199,10 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
-                self.email.subject = 'Recurring Payment Account (ID:%d) Disabled by %s on %s' % (
-                       recurring_payment.id, user_by, self.site_display_name)
+                self.email.subject = _('Recurring Payment Account (ID:%(id)d) Disabled by %(usr)s on %(dname)s' % {
+                       'id':recurring_payment.id,
+                       'usr' : user_by,
+                       'dname': self.site_display_name})
 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -349,9 +355,9 @@ def api_rp_setup(data):
         result_code
     """
     from decimal import Decimal
-    from tendenci.apps.base.utils import validate_email
+    from django.core.validators import email_re
     import dateutil.parser as dparser
-    from tendenci.apps.imports.utils import get_unique_username
+    from tendenci.core.imports.utils import get_unique_username
 
     email = data.get('email', '')
     description = data.get('description', '')
@@ -387,7 +393,7 @@ def api_rp_setup(data):
 
     direct_response_str = data.get('response_str')
 
-    if not all([validate_email(email),
+    if not all([email_re.match(email),
                 description,
                 payment_amount>0,
                 cp_id,
@@ -551,9 +557,9 @@ def api_add_rp(data):
                       'trial_amount',
                       )
     from decimal import Decimal
-    from tendenci.apps.base.utils import validate_email
+    from django.core.validators import email_re
     import dateutil.parser as dparser
-    from tendenci.apps.imports.utils import get_unique_username
+    from tendenci.core.imports.utils import get_unique_username
 
     email = data.get('email', '')
     payment_amount = data.get('payment_amount', '')
@@ -563,7 +569,7 @@ def api_add_rp(data):
         payment_amount = 0
 
 
-    if not all([validate_email(email),
+    if not all([email_re.match(email),
                 data.has_key('description'),
                 payment_amount>0]):
         return False, {}
@@ -784,14 +790,3 @@ def api_verify_rp_payment_profile(data):
         d['invalid_cpp_id']= invalid_cpp_ids[0]
 
     return is_valid, d
-
-
-
-
-
-
-
-
-
-
-

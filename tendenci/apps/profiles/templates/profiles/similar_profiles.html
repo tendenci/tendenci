@@ -18,7 +18,7 @@
 {% users_nav request.user user_this %}
     <form class="search-form" action="" method="get">
     <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-    <input type="submit" value="Search" />
+    <input type="submit" value="{% trans 'Search' %}" />
     </form>
 
     {% if users_with_duplicate_name %}
@@ -46,9 +46,9 @@
     {% if num_pages > 1%}
     <div id="import-paginate">
         {% if prev %}
-        <a href="?page={{ prev }}">Prev</a>
+        <a href="?page={{ prev }}">{% trans 'Prev' %}</a>
         {% else %}
-        Prev
+        {% trans 'Prev' %}
          {% endif %}
 
         {% for page in page_range %}
@@ -64,9 +64,9 @@
         {% endfor %}
 
         {% if curr_page >= num_pages  %}
-        Next
+        {% trans 'Next' %}
         {% else %}
-        <a href="?page={{ next }}">Next</a>
+        <a href="?page={{ next }}">{% trans 'Next' %}</a>
          {% endif %}
     </div>
     {% endif %}

@@ -27,7 +27,7 @@
 
         {% if nonhash_tags or hash_tags %}
                     <div class="tags">
-                      {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
+                      {% if nonhash_tags or can_edit %}<strong>{% trans 'Tags' %}: </strong>{% endif %}
                       {% for tag in nonhash_tags %}
                         <a href="{% url "page.search" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
                       {% endfor %}

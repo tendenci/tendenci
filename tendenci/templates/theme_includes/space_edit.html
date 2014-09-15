@@ -1,9 +1,14 @@
+{% load i18n %}
 {% if user.profile.is_superuser %}
 <div class="admin-inline">
     <div class="admin-border admin-border-top"></div>
     <div class="admin-border admin-border-right"></div>
     <div class="admin-border admin-border-bottom"></div>
     <div class="admin-border admin-border-left"></div>
+<<<<<<< HEAD
     <div class="admin-links clear-block"><a href="{% url "settings.index" "module" "theme" %}?next={{ request.path }}" title="Change Space Content" class="edit-setting">Change Space Content</a></div>
+=======
+    <div class="admin-links clear-block"><a href="{% url settings.index "module" "theme" %}?next={{ request.path }}" title="{% trans 'Change Space Content' %}" class="edit-setting">{% trans 'Change Space Content' %}</a></div>
+>>>>>>> master
 </div>
 {% endif %}

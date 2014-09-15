@@ -1,19 +1,20 @@
 import datetime
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
-from tendenci.apps.campaign_monitor.models import Template
-from tendenci.apps.newsletters.models import NewsletterTemplate
+from django.utils.translation import ugettext_lazy as _
+from tendenci.addons.campaign_monitor.models import Template
+from tendenci.core.newsletters.models import NewsletterTemplate
 
 THIS_YEAR = datetime.date.today().year
 DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
                 (14,'14'), (30,'30'), (60,'60'), (90,'90'),
                 (120,'120'), (0,'ALL'),
                 )
-INCLUDE_CHOICES = ((1, 'Include'),(0, 'Skip'),)
+INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
-types_list = [(u'',u'All')]
+types_list = [(u'',_(u'All'))]
 try:
-    from tendenci.apps.events.models import Type
+    from tendenci.addons.events.models import Type
     types = Type.objects.all()
     for type in types:
         types_list.append((int(type.pk),type.name))
@@ -27,6 +28,7 @@ class TemplateForm(forms.ModelForm):
         exclude = ["template_id", "create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
 
     zip_file = forms.FileField(required=False)
+
 
 class GenerateForm(forms.Form):
     # module content
@@ -46,5 +48,3 @@ class GenerateForm(forms.Form):
 
     #Campaign Monitor Template
     template = forms.ModelChoiceField(queryset=NewsletterTemplate.objects.all())
-
-

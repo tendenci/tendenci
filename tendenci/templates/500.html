@@ -1,11 +1,11 @@
 {% extends "default.html" %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Error{% endblock%}
+{% block title %}{{ block.super }}{% trans 'Error' %}{% endblock%}
 
 {% block body %}
     <h1>{% if user.is_authenticated %}{% blocktrans with user.username as use %}Oops {{ use }}, we caused a problem{% endblocktrans %}
-    {% else %}Oops, we caused a problem
+    {% else %}{% trans 'Oops, we caused a problem' %}
     {% endif %}
       </h1>
     <p>{% trans "We have been notified of this and will be working on it quickly." %}</p>

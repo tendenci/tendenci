@@ -16,7 +16,7 @@
 
     <div class="jobs-wrap">
 
-        <h1>{% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "Export" %}</h1>
+        <h1>{% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} {% trans "Export" %}</h1>
 
         <div class="content">
             <form action="." method="POST" >{% csrf_token %}

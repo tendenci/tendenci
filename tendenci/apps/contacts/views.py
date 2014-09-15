@@ -9,6 +9,7 @@ from django.core.mail.message import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import create_salesforce_contact

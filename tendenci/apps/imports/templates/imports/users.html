@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load dashboard_tags %}
 
-{% block title %}Import Users{% endblock %}
+{% block title %}{% trans 'Import Users' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,7 +22,7 @@
 <div class="download-csv">
     <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
     <div class="item-right">
-        <p style="margin-bottom:0;"><a href="{% url "import.download_user_upload_template_csv" %}">{% trans "Download template" %}</a></p>
+        <p style="margin-bottom:0;"><a href="{% url import.download_user_upload_template_csv %}">{% trans "Download template" %}</a></p>
         <p style="margin-top:0;">{% trans "Fill in with your user information."%}</p>
     </div>
     <div class="clear-both"></div>
@@ -73,7 +73,7 @@
 <div class="clear-both"></div>
 
 <div>
-    <input type="submit" class="submit-btn"  name="submit" value="Preview Import">
+    <input type="submit" class="submit-btn"  name="submit" value="{% trans 'Preview Import' %}">
 </div>
 <div class="clear-both"></div>
 </div>

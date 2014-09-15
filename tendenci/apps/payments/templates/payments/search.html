@@ -5,7 +5,7 @@
 {% load payments_tags %}
 {% load search_tags %}
 
-{% block title %}Payment Search{% endblock %}
+{% block title %}{% trans 'Payment Search' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,7 +17,7 @@
     {% payment_nav  %}
     <h1>{% trans "Search Payments" %}</h1>
 
-    <form class="search-form" action="{% url "payment.search" %}" method="get">
+    <form class="search-form" action="{% url payment.search %}" method="get">
         {% trans 'Search By'%} : {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
         <input type="submit" value="Search" />
     </form>

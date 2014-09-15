@@ -15,6 +15,7 @@ from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
@@ -107,7 +108,7 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    'Payment successfully made')
+                    _('Payment successfully made'))
 
             return redirect(invoice)
 
@@ -140,7 +141,7 @@ def mark_as_paid_old(request, id):
         messages.add_message(
             request,
             messages.SUCCESS,
-            'Successfully marked invoice %s as paid.' % invoice.pk)
+            _('Successfully marked invoice %(pk)s as paid.' % {'pk':invoice.pk}))
 
     return redirect(invoice)
 
@@ -156,7 +157,7 @@ def void_payment(request, id):
 
     EventLog.objects.log(instance=invoice)
 
-    messages.add_message(request, messages.SUCCESS, 'Successfully voided payment for Invoice %s.' % invoice.id)
+    messages.add_message(request, messages.SUCCESS, _('Successfully voided payment for Invoice %(pk)s.' % {'pk':invoice.id}))
     return redirect(invoice)
 
 @superuser_required
@@ -563,4 +564,3 @@ def export_download(request, identifier):
     response['Content-Disposition'] = 'attachment; filename=invoice_export_%s' % file_name
     response.content = default_storage.open(file_path).read()
     return response
-

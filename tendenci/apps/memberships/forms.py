@@ -9,27 +9,27 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.apps.base.fields import EmailVerificationField, PriceField
-from tendenci.apps.corporate_memberships.models import (
+from tendenci.core.base.fields import EmailVerificationField, PriceField, CountrySelectField
+from tendenci.addons.corporate_memberships.models import (
     CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.memberships.models import (
+from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.addons.memberships.models import (
     MembershipDefault, MembershipDemographic, MembershipAppField, MembershipType,
     Notice, MembershipImport, MembershipApp, MembershipFile)
-from tendenci.apps.memberships.fields import TypeExpMethodField, NoticeTimeTypeField
-from tendenci.apps.memberships.settings import UPLOAD_ROOT
-from tendenci.apps.memberships.utils import normalize_field_names
-from tendenci.apps.memberships.utils import (
+from tendenci.addons.memberships.fields import TypeExpMethodField, NoticeTimeTypeField
+from tendenci.addons.memberships.settings import UPLOAD_ROOT
+from tendenci.addons.memberships.utils import normalize_field_names
+from tendenci.addons.memberships.utils import (
     get_membership_type_choices, get_corporate_membership_choices, get_selected_demographic_fields,
     get_ud_file_instance)
-from tendenci.apps.memberships.widgets import (
+from tendenci.addons.memberships.widgets import (
     CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget)
-from tendenci.apps.memberships.utils import get_notice_token_help_text
+from tendenci.addons.memberships.utils import get_notice_token_help_text
 from tendenci.apps.notifications.utils import send_welcome_email
-from tendenci.apps.educations.models import Education
-from tendenci.apps.careers.models import Career
+from tendenci.addons.educations.models import Education
+from tendenci.addons.careers.models import Career
 from tendenci.apps.entities.models import Entity
 
 
@@ -80,9 +80,9 @@ CLASS_AND_WIDGET = {
     'first-name': ('CharField', None),
     'last-name': ('CharField', None),
     'email': ('EmailField', None),
-    'header': ('CharField', 'tendenci.apps.memberships.widgets.Header'),
-    'description': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
-    'horizontal-rule': ('CharField', 'tendenci.apps.memberships.widgets.Description'),
+    'header': ('CharField', 'tendenci.addons.memberships.widgets.Header'),
+    'description': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
+    'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
 
@@ -127,16 +127,16 @@ def get_suggestions(entry):
 
 
 class MembershipTypeForm(TendenciBaseForm):
-    type_exp_method = TypeExpMethodField(label='Period Type')
+    type_exp_method = TypeExpMethodField(label=_('Period Type'))
     description = forms.CharField(label=_('Notes'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows': '3'}))
-    price = PriceField(decimal_places=2, help_text="Set 0 for free membership.")
+    price = PriceField(decimal_places=2, help_text=_("Set 0 for free membership."))
     renewal_price = PriceField(decimal_places=2, required=False,
-                                 help_text="Set 0 for free membership.")
+                                 help_text=_("Set 0 for free membership."))
     admin_fee = PriceField(decimal_places=2, required=False,
-                           help_text="Admin fee for the first time processing")
+                           help_text=_("Admin fee for the first time processing"))
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'), ('inactive', 'Inactive'))
+        choices=(('active', _('Active')), ('inactive', _('Inactive')))
     )
 
     class Meta:
@@ -287,7 +287,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
          'member_number/email/first_name,last_name,phone'),
         )
     interactive = forms.HiddenInput()
-    key = forms.ChoiceField(label="Key",
+    key = forms.ChoiceField(label=_("Key"),
                             choices=KEY_CHOICES)
 
     class Meta:
@@ -309,7 +309,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
         key = self.cleaned_data['key']
         upload_file = self.cleaned_data['upload_file']
         if not key:
-            raise forms.ValidationError('Please specify the key to identify duplicates')
+            raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
         file_content = upload_file.read()
         upload_file.seek(0)
@@ -328,11 +328,11 @@ class MembershipDefaultUploadForm(forms.ModelForm):
             if not item in header_list:
                 missing_columns.append(item)
         if missing_columns:
-            raise forms.ValidationError(
-                        """
+            msg_string = """
                         'Field(s) %s used to identify the duplicates
                         should be included in the .csv file.'
-                        """ % (', '.join(missing_columns)))
+                        """ % (', '.join(missing_columns))
+            raise forms.ValidationError(_(msg_string))
 
         return upload_file
 
@@ -351,8 +351,8 @@ class MembershipAppForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(
-            ('draft', 'Draft'),
-            ('published', 'Published')
+            ('draft', _('Draft')),
+            ('published', _('Published'))
         ),
         initial='published'
     )
@@ -585,7 +585,7 @@ class UserForm(forms.ModelForm):
                                 label=_(u'Username'),
                                 help_text = _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
                                 error_messages = {
-                                    'invalid' : "Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."
+                                    'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
 
         self.field_names = [name for name in self.fields.keys()]
@@ -699,6 +699,7 @@ class UserForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
+    country = CountrySelectField(label=_('Country'), required=False)
     class Meta:
         model = Profile
 
@@ -824,16 +825,16 @@ class DemographicsForm(forms.ModelForm):
 
 class MembershipDefault2Form(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
-            ('active', 'Active'),
-            ('pending', 'Pending'),
-            ('admin_hold', 'Admin Hold'),
-            ('inactive', 'Inactive'),
-            ('expired', 'Expired'),
-            ('archive', 'Archive'),
+            ('active', _('Active')),
+            ('pending', _('Pending')),
+            ('admin_hold', _('Admin Hold')),
+            ('inactive', _('Inactive')),
+            ('expired', _('Expired')),
+            ('archive', _('Archive')),
                              )
     STATUS_CHOICES = (
-        (1, 'Active'),
-        (0, 'Inactive'))
+        (1, _('Active')),
+        (0, _('Inactive')))
 
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
 
@@ -1001,17 +1002,17 @@ class MembershipDefault2Form(forms.ModelForm):
 class MembershipExportForm(forms.Form):
 
     STATUS_DETAIL_CHOICES = (
-        ('active', ' Export Active Memberships'),
-        ('pending', 'Export Pending Memberships'),
-        ('expired', 'Export Expired Memberships'),
+        ('active', _('Export Active Memberships')),
+        ('pending', _('Export Pending Memberships')),
+        ('expired', _('Export Expired Memberships')),
     )
 
     EXPORT_FIELD_CHOICES = (
-        ('main_fields', 'Export Main Fields (fastest)'),
-        ('all_fields', 'Export All Fields'),
+        ('main_fields', _('Export Main Fields (fastest)')),
+        ('all_fields', _('Export All Fields')),
     )
 
-    EXPORT_TYPE_CHOICES = [(u'all', 'Export All Types')] + list(MembershipType.objects.values_list('pk', 'name'))
+    EXPORT_TYPE_CHOICES = [(u'all', _('Export All Types'))] + list(MembershipType.objects.values_list('pk', 'name'))
 
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
     export_status_detail = forms.ChoiceField(choices=STATUS_DETAIL_CHOICES)
@@ -1020,11 +1021,11 @@ class MembershipExportForm(forms.Form):
 
 
 class NoticeForm(forms.ModelForm):
-    notice_time_type = NoticeTimeTypeField(label='When to Send',
+    notice_time_type = NoticeTimeTypeField(label=_('When to Send'),
                                           widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(widget=TinyMCE(attrs={'style': 'width:70%'},
         mce_attrs={'storme_app_label': Notice._meta.app_label,
-        'storme_model': Notice._meta.module_name.lower()}), help_text="Click here to view available tokens")
+        'storme_model': Notice._meta.module_name.lower()}), help_text=_("Click here to view available tokens"))
 
     class Meta:
         model = Notice
@@ -1079,13 +1080,13 @@ class AppCorpPreForm(forms.Form):
                         max_length=50)
     email = EmailVerificationField(
                     label=_('Verify Your Email Address'),
-                    help_text="""Your email address will help us to identify
+                    help_text=_("""Your email address will help us to identify
                                  your corporate. You will receive an email to
                                  the address you entered for us to verify
                                  your email address. Please follow the
                                  instruction in the email to continue signing
                                  up for the membership.
-                                  """)
+                                  """))
 
     def __init__(self, *args, **kwargs):
         super(AppCorpPreForm, self).__init__(*args, **kwargs)
@@ -1124,9 +1125,9 @@ class AppCorpPreForm(forms.Form):
 
 class ReportForm(forms.Form):
     STATUS_CHOICES = (
-        ('', 'All Statuses'),
-        ('active', 'Active'),
-        ('expired', 'Expired'),
+        ('', _('All Statuses')),
+        ('active', _('Active')),
+        ('expired', _('Expired')),
     )
 
     start_date = forms.DateField(

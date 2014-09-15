@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_PAGES_LABEL 'Page' %} Change version{% endblock %}
+{% block title %}{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans 'Change version' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,7 +17,7 @@
 
     {% page_nav request.user page %}
 
-    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Change version" %}</h1>
+    <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Change version" %}</h1>
 
     <div class="page-wrap">
         <form action="{% url "page.change_version" page.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}

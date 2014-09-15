@@ -12,7 +12,7 @@
 {% block body %}
 <div class="t">
  {% forms_nav request.user %}
-    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} {% trans "Entries Export" %}</h1>
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans "Entries Export" %}</h1>
 
     <div id="wait">
         <p>{% trans "Please wait." %}. <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="loading" title="loading"></p>

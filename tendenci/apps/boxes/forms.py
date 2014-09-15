@@ -1,6 +1,7 @@
 from tendenci.apps.boxes.models import Box
 from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from tinymce.widgets import TinyMCE
 
 class BoxForm(TendenciBaseForm):
@@ -10,7 +11,7 @@ class BoxForm(TendenciBaseForm):
         'storme_model':Box._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')),))
 
     class Meta:
         model = Box

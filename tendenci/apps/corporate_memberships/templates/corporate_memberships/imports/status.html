@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Import Corporate Memberships from CSV file - Status{% endblock %}
+{% block title %}{% trans 'Import Corporate Memberships from CSV file - Status' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -28,9 +28,9 @@
             <div>{% trans "Update" %}:
                 <strong>
                 {% if not mimport.override %}
-                Blank Fields
+                {% trans 'Blank Fields'% }
                 {% else %}
-                All Fields (override)
+                {% 'All Fields (override)' %}
                 {% endif %}
                 </strong>
                 </div>
@@ -49,29 +49,29 @@
             <span id="num-processed">{{ mimport.num_processed}}</span>
             /
            <span id="total">{{ mimport.total_rows}}</span>
-           completed
+           {% trans 'completed' %}
         </div>
 
         <div class="clear-left"></div>
          </div>
 
          <div id="summary">
-             <div><strong>Done.</strong></div>
+             <div><strong>{% trans 'Done.' %}</strong></div>
              <div>&nbsp;</div>
-             <div>Total Processed: <strong>{{ mimport.total_rows}}</strong></div>
-             <div>Inserts: <strong><span id="num-insert"></span></strong></div>
-             <div>Updates: <strong><span id="num-update"></span></strong></div>
-             <div>Mixed (corp profile update, corp membership insert):
+             <div>{% trans 'Total Processed' %}: <strong>{{ mimport.total_rows}}</strong></div>
+             <div>{% trans 'Inserts' %}: <strong><span id="num-insert"></span></strong></div>
+             <div>{% trans 'Updates' %}: <strong><span id="num-update"></span></strong></div>
+             <div>{% trans 'Mixed (corp profile update, corp membership insert)' %}:
                  <strong><span id="num-update-insert"></span></strong></div>
-             <div class="status-invalid">Invalid: <strong><span id="num-invalid"></span></strong></div>
+             <div class="status-invalid">{% trans 'Invalid' %}: <strong><span id="num-invalid"></span></strong></div>
 
 
              <div>&nbsp;</div>
-             <div><a href="{% url "corpmembership.import" %}">Import more corporate memberships</a></div>
+             <div><a href="{% url corpmembership.import %}">{% trans 'Import more corporate memberships' %}</a></div>
         </div>
 
         <div id="error-msg">
-            Oops, an error occurred. Please review your data and try again later.
+            {% trans 'Oops, an error occurred. Please review your data and try again later.' %}
         </div>
     </div>
 
@@ -94,7 +94,7 @@
     var status_check = function(){
         $.ajax({
            type: "POST",
-           url: "{% url "corpmembership.import_get_status" mimport.id %}",
+           url: "{% url corpmembership.import_get_status mimport.id %}",
            success: function(status_data){
                var obj = $.parseJSON(status_data);
                //var obj = status_data;

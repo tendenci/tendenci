@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
-from tendenci.apps.memberships.models import MembershipDefault
-from tendenci.apps.api_tasty.forms import TendenciForm
+from django.utils.translation import ugettext_lazy as _
+from tendenci.addons.memberships.models import MembershipDefault
+from tendenci.core.api_tasty.forms import TendenciForm
 
 class MembershipForm(TendenciForm):
     create_user = forms.BooleanField(required=False)
@@ -22,14 +23,14 @@ class MembershipForm(TendenciForm):
             username = data.get('username', None)
             password = data.get('password', None)
             if not (username and password):
-                raise forms.ValidationError("username and password are required to create a user")
+                raise forms.ValidationError(_("username and password are required to create a user"))
             if User.objects.filter(username=username).exists():
-                raise forms.ValidationError('username already taken')
+                raise forms.ValidationError(_('username already taken'))
         else:
             username = data.get('username', None)
             if not username:
-                raise forms.ValidationError("username required if not creating a user")
+                raise forms.ValidationError(_("username required if not creating a user"))
             else:
                 if not User.objects.filter(username=username).exists():
-                    raise forms.ValidationError("username does not belong to any user")
+                    raise forms.ValidationError(_("username does not belong to any user"))
         return data

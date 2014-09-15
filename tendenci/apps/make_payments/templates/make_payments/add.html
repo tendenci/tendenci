@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Make a Payment{% endblock %}
+{% block title %}{% trans 'Make a Payment' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,11 +15,11 @@
 
 <h1>{% trans "Make a Payment" %}</h1>
 
-<form method="post" action="{% url "make_payment.add" %}">{% csrf_token %}
+<form method="post" action="{% url make_payment.add %}">{% csrf_token %}
     <div class="forms">
     {{ form|styled_form }}
     <div class="submitbutton">
-        <input type="submit" name="submit" value="Make a Payment" />
+        <input type="submit" name="submit" value="{% 'Make a Payment' %}" />
     </div>
     </div>
 </form>

@@ -8,14 +8,14 @@ from django.utils.safestring import mark_safe
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 
-from tendenci.apps.news.models import News
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.addons.news.models import News
+from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
-from tendenci.apps.base.fields import EmailVerificationField
-from tendenci.apps.files.utils import get_max_file_upload_size
-from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import EmailVerificationField
+from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (
@@ -39,7 +39,7 @@ class NewsForm(TendenciBaseForm):
         'storme_model': News._meta.module_name.lower()}))
     release_dt = SplitDateTimeField(label=_('Release Date/Time'), initial=datetime.now())
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending')))
+        choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))
     email = EmailVerificationField(label=_("Email"), required=False)
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
@@ -81,7 +81,7 @@ class NewsForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('News Information', {
+        fieldsets = [(_('News Information'), {
                       'fields': ['headline',
                                  'slug',
                                  'summary',
@@ -96,12 +96,12 @@ class NewsForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Contributor', {
+                      (_('Contributor'), {
                        'fields': ['contributor_type',
                                   'google_profile'],
                        'classes': ['boxy-grey'],
                       }),
-                      ('Author', {
+                      (_('Author'), {
                       'fields': ['first_name',
                                  'last_name',
                                  'phone',
@@ -110,7 +110,7 @@ class NewsForm(TendenciBaseForm):
                                  ],
                         'classes': ['contact'],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -118,7 +118,7 @@ class NewsForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
@@ -131,12 +131,12 @@ class NewsForm(TendenciBaseForm):
 
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
+                raise forms.ValidationError(_('The photo must be of jpg, gif, or png image type.'))
 
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
-                raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
+                raise forms.ValidationError(_('The photo is an invalid image. Try uploading another photo.'))
 
             max_upload_size = get_max_file_upload_size()
             if photo_upload.size > max_upload_size:

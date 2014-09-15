@@ -1,8 +1,9 @@
 {% extends "site_base.html" %}
 {% load i18n %}
 
-{% block title %}{% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} for  {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
-{% block meta_description %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
-{% block meta_keywords %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %},  {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
+{% block title %}{% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} {% blocktrans with name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %} for {{ name }} in {{ location }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} {% blocktrans with name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %} for {{ name }} in {{ location }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %},
+{% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %}  {{location  }}, {{ name }}, white papers, {{ keys }}{% endblocktrans %}{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

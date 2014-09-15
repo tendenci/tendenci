@@ -3,8 +3,9 @@
 {% load perm_tags %}
 {% load forms_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}{{ grp_sub.name }} - Subscriber{% endblock %}
+{% block title %}{{ grp_sub.name }} - {% trans 'Subscriber' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -27,9 +28,9 @@
             </p>
         {% endif %}
     {% endfor %}
-    <div style="color:red;font-weight:bold;">Are you sure you want to delete this Subscriber?</div>
-    <form action="{% url 'subscriber_delete' grp_sub.id %}" method="post">{% csrf_token %}
-        <input type="submit" value="Delete Subscriber" />
+    <div style="color:red;font-weight:bold;">{% trans 'Are you sure you want to delete this Subscriber?' %}</div>
+    <form action="{% url subscriber_delete grp_sub.id %}" method="post">{% csrf_token %}
+        <input type="submit" value="{% trans 'Delete Subscriber' %}" />
     </form>
 </div>
 {% endblock %}

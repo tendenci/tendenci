@@ -9,11 +9,12 @@ from django.contrib.sites.models import get_current_site
 from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.http import Http404
 from django.template.response import TemplateResponse
+from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
 from django.core.cache import cache
-from tendenci.apps.sitemaps import TendenciSitemap
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.sitemaps import TendenciSitemap
+from tendenci.core.site_settings.utils import get_setting
 
 
 _sitemap_cache = []
@@ -50,7 +51,7 @@ def sitemap(request, sitemaps, section=None,
 
     if section is not None:
         if section not in sitemaps:
-            raise Http404("No sitemap available for section: %r" % section)
+            raise Http404(_("No sitemap available for section: %r" % section))
         maps = [sitemaps[section]]
     else:
         maps = sitemaps.values()

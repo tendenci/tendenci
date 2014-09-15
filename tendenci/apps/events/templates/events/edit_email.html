@@ -37,13 +37,15 @@
     <h1>{% trans "Edit Email to Event Registrants" %}</h1>
 
     <div class="well">
+        {% blocktrans %}
         This Email is used for:
         <ul>
         <li>The event reminders to the registrants </li>
         </ul>
+        {% endblocktrans %}
     </div>
 
-    <h3>{% trans "Event: " %}<a href="{% url 'event' event.id %}">{{ event.title }}</a></h3>
+    <h3>{% trans "Event: " %}<a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
 
     <div class="forms">
 
@@ -64,9 +66,9 @@
 
         <form action="." method="post" name="form1">{% csrf_token %}
             <div class="form-field">
-                <div class="label">To:
-                ALL Attendees
-                <a href="{% url "event.registrant.roster" event.id %}">{% trans "View all registrant(s)" %}</a>
+                <div class="label">{% trans 'To' %}:
+                {% trans 'ALL Attendees' %}
+                <a href="{% url event.registrant.roster event.id %}">{% trans "View all registrant(s)" %}</a>
                 </div>
             </div>
 
@@ -75,16 +77,16 @@
                 <div class="error">{{ field.errors }}</div>
                 <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                 <div class="field"> {{ field }}</div>
-                <div class="help-text">{{ field.help_text|safe }}</div>
+                <div class="help-text">{% blocktrans with help_text=field.help_text|safe %}{{ help_text }}{% endblocktrans %}</div>
             </div>
             {% endfor %}
 
             <div style="float:right;">
-            <input class="btn btn-secondary" type="submit" name="submit" value="Save & Test" title="Save and receive a test email" />
+            <input class="btn btn-secondary" type="submit" name="submit" value="{% trans 'Save &amp; Test' %}" title="{% trans 'Save and receive a test email' %}" />
             </div>
 
             <div>
-            <input class="btn btn-primary btn-large" name="submit" type="submit" value="Save" />
+            <input class="btn btn-primary btn-large" name="submit" type="submit" value="{% trans 'Save' %}" />
             </div>
             <div style="clear: right;"></div>
 

@@ -21,10 +21,10 @@
         <li>{{ profile.obj_perms }}</li>
         <li>{{ profile.obj_status }}</li>
         {% if profile.user.is_superuser %}
-        <li><span class="role-superuser">Superuser</span></li>
+        <li><span class="role-superuser">{% trans 'Superuser' %}</span></li>
         {% else %}
             {% if profile.user.is_staff %}
-            <li><span class="role-staff">Staff</span></li>
+            <li><span class="role-staff">{% trans 'Staff' %}</span></li>
             {% endif %}
         {% endif %}
 

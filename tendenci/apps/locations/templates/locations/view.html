@@ -19,13 +19,13 @@
             <h1>{% firstof location.location_name "Untitled" %}</h1>
             {% if location.logo %}
             <div class="logo">
-                <img src="{% image_url location.logo size=200x200 crop=true quality=84 %}" title="{% firstof location.location_name 'Untitled' %}" alt="Location Logo" />
+                <img src="{% image_url location.logo size=200x200 crop=true quality=84 %}" title="{% firstof location.location_name 'Untitled' %}" alt="{% trans 'Location Logo' %}" />
             </div>
             {% endif %}
 
             <div class="image">
-                <a title="Google Directions" href="http://maps.google.com/maps?q={{ location.get_address }}">
-                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false" alt="Google Maps view of the Location" title="Google Maps view"></a>
+                <a title="{% trans 'Google Directions' %}" href="http://maps.google.com/maps?q={{ location.get_address }}">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false" alt="{% trans 'Google Maps view of the Location' %}" title="{% trans 'Google Maps view' %}"></a>
             </div>
 
             <div class="details">
@@ -41,7 +41,7 @@
             </div>
 
             <div style="clear:both;"><!--ie-bug--></div>
-            <div class="content">{{ location.description|safe|linebreaks }}</div>
+            <div class="content">{% blocktrans with d=location.description|safe|linebreaks %}{{ d }}{% endblocktrans %}</div>
 
     </div>
 

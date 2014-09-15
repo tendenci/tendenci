@@ -45,7 +45,9 @@
         {% if event.is_recurring_event %}
             <div class="event-recurring"></div>
         {% endif %}
-        <a href="{% url 'event' event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
+        <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">
+        {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}
+        </span></a>
         </h3>
         {% if event.place %}
         <div class="place" itemprop="location">{{ event.place }}</div>
@@ -57,7 +59,7 @@
         </div>
 
         <div class="description" itemprop="description">
-            {{ event.description|striptags|safe|truncatewords:40 }}
+            {% blocktrans with desc=event.description|striptags|safe|truncatewords:40 %}{{ desc }}{% endblocktrans %}
         </div>
 
         {% if event.registration_configuration.enabled %}
@@ -76,13 +78,13 @@
             {% if registered_user %}
             <div class="attend-wrap registered">
                 {% include "events/include/search-result-spots-taken.html" %}
-                <div class="attend"><a href="{% url "event.myevents" %}">{% trans "You are registered" %}</a></div>
+                <div class="attend"><a href="{% url event.myevents %}">{% trans "You are registered" %}</a></div>
                 <div style="clear:both;"></div>
             </div>
             {% else %}
             <div class="attend-wrap">
                 {% include "events/include/search-result-spots-taken.html" %}
-                <div class="attend"><a href="{% url 'event' event.pk %}">{% trans "Attend this event" %}</a></div>
+                <div class="attend"><a href="{% url event event.pk %}">{% trans "Attend this event" %}</a></div>
                 <div style="clear:both;"></div>
             </div>
             {% endif %}
@@ -95,7 +97,7 @@
     <div style="clear:both;"></div>
     {% include 'events/meta.html' %}
     <!-- delete-event form -->
-    <form name="event-delete" method="POST" action="{% url "event.delete" event.pk %}">{% csrf_token %}
+    <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>
 </div>

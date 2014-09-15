@@ -8,25 +8,25 @@ from django.contrib.contenttypes import generic
 from django.conf import settings
 
 from tagging.fields import TagField
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from timezones.fields import TimeZoneField
 from timezones.utils import localtime_for_timezone
 from timezones.utils import adjust_datetime_to_timezone
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.categories.models import CategoryItem
-from tendenci.apps.news.managers import NewsManager
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.categories.models import CategoryItem
+from tendenci.addons.news.managers import NewsManager
 from tinymce import models as tinymce_models
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.news.module_meta import NewsMeta
-from tendenci.apps.files.models import File
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.addons.news.module_meta import NewsMeta
+from tendenci.core.files.models import File
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 class News(TendenciBaseModel):
     CONTRIBUTOR_AUTHOR = 1
     CONTRIBUTOR_PUBLISHER = 2
-    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, 'Author'),
-                           (CONTRIBUTOR_PUBLISHER, 'Publisher'))
+    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
+                           (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
@@ -48,7 +48,7 @@ class News(TendenciBaseModel):
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     # used for better performance when retrieving a list of released news
     release_dt_local = models.DateTimeField(null=True, blank=True)
-    syndicate = models.NullBooleanField(_('Include in RSS feed'), default=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
@@ -58,7 +58,7 @@ class News(TendenciBaseModel):
     enclosure_type = models.CharField(_('Enclosure Type'),max_length=120, blank=True) # for podcast feeds
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0) # for podcast feeds
 
-    use_auto_timestamp = models.NullBooleanField(_('Auto Timestamp'))
+    use_auto_timestamp = models.BooleanField(_('Auto Timestamp'))
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
@@ -74,8 +74,8 @@ class News(TendenciBaseModel):
     objects = NewsManager()
 
     class Meta:
-        permissions = (("view_news","Can view news"),)
-        verbose_name_plural = "News"
+        permissions = (("view_news",_("Can view news")),)
+        verbose_name_plural = _("News")
 
     def get_meta(self, name):
         """

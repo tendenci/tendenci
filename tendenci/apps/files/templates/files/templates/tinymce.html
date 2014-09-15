@@ -98,7 +98,7 @@
                     <div class="options">
                         <table cellpadding=5 style="width:100%;" border="0">
                             <tr>
-                                <td>Title Text &amp; Alt Text:</td>
+                                <td>{% trans 'Title Text &amp; Alt Text' %}:</td>
                             </tr>
                             <tr>
                                 <td><input style="width:100%;" type="text" name="edit_title" value="" /></td>
@@ -452,7 +452,7 @@
                     type: 'post',
                     dataType: 'json',
                     data: {'page_num': current_page},
-                    url: '{% url "file.tinymce_get_files" %}',
+                    url: '{% url file.tinymce_get_files %}',
                     success: function(response) {
                         gallery.append(response.content);
                         // Reapply handler for adding styling in selected file

@@ -17,7 +17,7 @@
         <h2>{{ theme.name }}</h2>
         <div class="description">
             {% if theme.description %}
-                {{ theme.description }}
+                {% blocktrans with d=theme.description %}{{ d }}{% endblocktrans %}
             {% else %}
                 {% trans "No information available." %}
             {% endif %}
@@ -34,7 +34,7 @@
 
         <form class="theme_picker_form" method="post" action="">{% csrf_token %}
             <input type="hidden" id="id_theme_choices" name="theme" value="{{theme.orig_name}}">
-            <input class="theme_picker_submit" type="submit" value="Make this my active theme"/>
+            <input class="theme_picker_submit" type="submit" value="{% trans 'Make this my active theme' %}"/>
         </form>
 
         <div class="extra-info">

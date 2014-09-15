@@ -16,11 +16,11 @@
     <ul class="pending-resumes">
     {% for resume in resumes %}
         <li>
-            <a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title|truncatewords:"10" }}</a>
+            <a href="{{ resume.get_absolute_url }}" title="{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=resume.title|truncatewords:"10" %}{{ t }}{% endblocktrans %}</a>
             &nbsp;&ndash;&nbsp;
             {{ resume.create_dt|date }}&nbsp;{{ resume.create_dt|time }}
             &nbsp;&ndash;&nbsp;
-            <a href="{% url "resume.approve" resume.pk %}">{% trans "Approve" %}</a>
+            <a href="{% url resume.approve resume.pk %}">{% trans "Approve" %}</a>
         </li>
     {% empty %}
         <li>{% trans "There are no pending resumes." %}</li>

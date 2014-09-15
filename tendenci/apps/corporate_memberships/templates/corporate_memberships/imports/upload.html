@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+{% block title %}{% trans 'Import Corporate Memberships from CSV file' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -66,7 +66,10 @@
 
     {% if not corp_memb_type_exists %}
     <div class="alert">
-        Please <a href="{% url "admin:corporate_memberships_corporatemembershiptype_add" %}">set up corporate membership types</a> before proceeding.
+        {% url admin:corporate_memberships_corporatemembershiptype_add  as corp_add %}
+        {% blocktrans %}
+        Please <a href="{{ corp_add }}">set up corporate membership types</a> before proceeding.
+        {% endblocktrans %}
     </div>
     {% endif %}
 
@@ -75,27 +78,35 @@
         <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
 
 
-        <h3>How to prepare the spreadsheet (.csv file)?</h3>
+        <h3>{% trans 'How to prepare the spreadsheet (.csv file)?' %}</h3>
         <ul>
            <li>
-               The required fields are the field(s) in the selected key (see the second field below).
+               {% trans 'The required fields are the field(s) in the selected key (see the second field below).' %}
            </li>
            <li>
+            {% blocktrans %}
                Both <strong>authorized_domains</strong> and <strong>dues_rep</strong> are comma separated. Use username for <strong>dues_rep</strong>.
+            {% endblocktrans %}
            </li>
            <li>
+            {% blocktrans %}
                If the <strong>corporate_membership_type</strong> is not present in the spreadsheet, the first corporate membership type
                in the system will be used.
+            {% endblocktrans %}
            </li>
            <li>
+           {% blocktrans %}
                The data type of ForeignKey fields (ex: corporate_membership_type) is <strong>integer</strong>. So, please fill the ForeignKey fields with IDs.
+            {% endblocktrans %}
            </li>
             <li>
+            {% blocktrans %}
                Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.
+            {% endblocktrans %}
            </li>
         </ul>
         <div id="fk-list-wrap">
-            <h3>List of ForeignKey Fields:</h3>
+            <h3>{% trans 'List of ForeignKey Fields' %}:</h3>
             <div id="fk-list">
                 {{ foreign_keys}}
             </div>
@@ -104,12 +115,12 @@
     </div>
 
     <div class="template-download">
-        <a href="{% url "corpmembership.download_template" %}">
-        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+        <a href="{% url corpmembership.download_template %}">
+        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="{% trans 'Download CSV Template' %}"/>
         </a>
 
         <div class="link">
-            <a href="{% url "corpmembership.download_template" %}">{% trans "Download Template" %}</a>
+            <a href="{% url corpmembership.download_template %}">{% trans "Download Template" %}</a>
 
         </div>
     </div>
@@ -123,15 +134,18 @@
 
         {% if form.errors.values %}
         <div class="errors">
-        There were some problems in the form. Please review. Thanks!
+        {% trans 'There were some problems in the form. Please review. Thanks!' %}
         {% for error in form.non_field_errors %}
-            <p><a href="#">{{ error }}</a></p>
+            <p><a href="#">{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</a></p>
         {% endfor %}
 
         {% for field in form %}
             {% if field.errors %}
                   {% for error in field.errors %}
-                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
+                    {% blocktrans with label=field.label err=error %}
+                    {{ label }} - {{ err }}
+                    </a></p>
                   {% endfor %}
             {% endif %}
         {% endfor %}
@@ -143,26 +157,26 @@
             {% if form.override.errors %}
             <div class="error">
                 {% for error in form.override.errors %}
-                <p>{{ error }}</p>
+                <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
             <div class="import-field">
-                <div class="field-label">Update</div>
+                <div class="field-label">{% trans 'Update' %}</div>
                 <div>{{ form.override }}</div>
             </div>
 
             {% if form.key.errors %}
             <div class="error">
                 {% for error in form.key.errors %}
-                <p>{{ error }}</p>
+                <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
             <div class="import-field">
-                 <div class="field-label">Identify duplicates by</div>
+                 <div class="field-label">{% trans 'Identify duplicates by' %}</div>
                 <div>{{ form.key }}</div>
             </div>
 
@@ -170,7 +184,7 @@
             {% if form.bind_members.errors %}
             <div class="error">
                 {% for error in form.bind_members.errors %}
-                <p>{{ error }}</p>
+                <p>{% blocktrans  with err=error %}{{ err }}{% endblocktrans %}</p>
                 {% endfor %}
             </div>
             {% endif %}
@@ -182,14 +196,14 @@
             {% if form.upload_file.errors %}
             <div class="error">
                 {% for error in form.upload_file.errors %}
-                <p>{{ error }}</p>
+                <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
              <div class="import-field">{{ form.upload_file }}</div>
 
-            <div class="prev-btn"><input type="submit" value="Preview Import" class="btn"></div>
+            <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn"></div>
         </div>
 
      </div>

@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}Import Users from CSV file{% endblock %}
+{% block title %}{% trans 'Import Users from CSV file' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -70,7 +70,7 @@
 
     <div id="import-instruction">
         <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
-
+        {% blocktrans %}
         <h3>How to prepare the spreadsheet (.csv file)?</h3>
         <ul>
            <li>
@@ -82,12 +82,13 @@
                Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.
            </li>
         </ul>
+        {% endblocktrans %}
 
     </div>
 
     <div class="template-download">
-        <a href="{% url "profiles.download_user_template" %}">
-        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+        <a href="{% url profiles.download_user_template %}">
+        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
         </a>
 
         <div class="link">
@@ -105,7 +106,7 @@
 
         {% if form.errors.values %}
         <div class="errors well">
-        There were some problems in the form. Please review. Thanks!
+        {% trans 'There were some problems in the form. Please review. Thanks!' %}
         {% for error in form.non_field_errors %}
             <p><a href="#">{{ error }}</a></p>
         {% endfor %}
@@ -170,7 +171,7 @@
 
 
 
-            <div class="prev-btn"><input type="submit" value="Preview Import" class="btn btn-primary"></div>
+            <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn btn-primary"></div>
         </div>
 
      </div>

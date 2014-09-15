@@ -4,9 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.educations.managers import EducationManager
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.addons.educations.managers import EducationManager
 
 
 class Education(TendenciBaseModel):
@@ -25,9 +25,9 @@ class Education(TendenciBaseModel):
     objects = EducationManager()
 
     class Meta:
-        permissions = (("view_education", "Can view education"),)
-        verbose_name = "Education"
-        verbose_name_plural = "Educations"
+        permissions = (("view_education", _("Can view education")),)
+        verbose_name = _("Education")
+        verbose_name_plural = _("Educations")
 
     def __unicode__(self):
         return '%s - %s' %  (self.school, self.user)

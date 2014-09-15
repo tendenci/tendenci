@@ -1,1 +1,3 @@
-{{ obj.content }}
+{% load i18n %}
+
+{% blocktrans with c=obj.content %}{{ c }}{% endblocktrans %}

@@ -12,26 +12,29 @@ from django.contrib import messages
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404, redirect, Http404
 from django.template import RequestContext
+
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.versions.models import Version
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.meta.forms import MetaForm
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.exports.utils import run_export_task
 
-from tendenci.apps.articles.models import Article
-from tendenci.apps.articles.forms import ArticleForm, ArticleSearchForm
+from tendenci.core.base.http import Http403
+from tendenci.core.perms.decorators import is_enabled
+from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.versions.models import Version
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.core.meta.forms import MetaForm
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.exports.utils import run_export_task
+
+from tendenci.addons.articles.models import Article
+from tendenci.addons.articles.forms import ArticleForm, ArticleSearchForm
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.categories.forms import CategoryForm
-from tendenci.apps.categories.models import Category, CategoryItem
+from tendenci.core.categories.forms import CategoryForm
+from tendenci.core.categories.models import Category, CategoryItem
 
 
 @is_enabled('articles')
@@ -43,7 +46,8 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
         version = get_object_or_404(Version, hash=hash)
         current_article = get_object_or_404(Article, pk=version.object_id)
         article = version.get_version_object()
-        messages.add_message(request, messages.WARNING, 'You are viewing a previous version of this article. View the <a href="%s%s">Current Version</a>.' % (get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url()))
+        msg_string = 'You are viewing a previous version of this article. View the <a href="%s%s">Current Version</a>.' % (get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url())
+        messages.add_message(request, messages.WARNING, _(msg_string))
     else:
         article = get_object_or_404(Article, slug=slug)
 
@@ -140,8 +144,7 @@ def search(request, template_name="articles/search.html"):
             pass
 
     # don't use order_by with "whoosh"
-    default_engine = settings.HAYSTACK_CONNECTIONS.get('default', {}).get('ENGINE', '')
-    if not query or "whoosh" not in default_engine:
+    if not query or settings.HAYSTACK_SEARCH_ENGINE.lower() != "whoosh":
         articles = articles.order_by('-release_dt')
     else:
         articles = articles.order_by('-create_dt')
@@ -202,8 +205,8 @@ def edit(request, id, form_class=ArticleForm,
 
                 # update all permissions and save the model
                 update_perms_and_save(request, form, article)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % article)
+                msg_string = 'Successfully updated %s' % article
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
@@ -252,8 +255,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         if form.is_valid():
             article.meta = form.save()  # save meta
             article.save()  # save relationship
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % article)
+            msg_string = 'Successfully updated meta for %s' % article
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('article', args=[article.slug]))
     else:
@@ -286,8 +289,8 @@ def add(request, form_class=ArticleForm,
 
                 # add all permissions and save the model
                 update_perms_and_save(request, form, article)
-
-                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % article)
+                msg_string = 'Successfully added %s' % article
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
@@ -324,8 +327,8 @@ def delete(request, id, template_name="articles/delete.html"):
 
     if has_perm(request.user, 'articles.delete_article'):
         if request.method == "POST":
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % article)
+            msg_string = 'Successfully deleted %s' % article
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'articles', 'articlerecipients')

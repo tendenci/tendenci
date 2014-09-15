@@ -90,7 +90,7 @@ class FileForm(forms.Form):
 
 
 class AddTemplateForm(forms.Form):
-    template_name = forms.RegexField(label="Template Name",
+    template_name = forms.RegexField(label=_("Template Name"),
                                      regex=r'^[a-z][0-9a-z_-]+$',
                                      max_length=20)
 
@@ -116,5 +116,5 @@ class UploadForm(forms.Form):
     def clean_upload(self):
         data = self.cleaned_data['upload']
         if not data.name.lower().endswith(FILE_EXTENTIONS):
-            raise forms.ValidationError("This is not a valid file type to upload.")
+            raise forms.ValidationError(_("This is not a valid file type to upload."))
         return data

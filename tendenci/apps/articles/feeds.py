@@ -1,20 +1,25 @@
 from datetime import datetime
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.rss.feedsmanager import SubFeed
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import PUBLIC_FILTER
-from tendenci.apps.sitemaps import TendenciSitemap
+from tendenci.core.rss.feedsmanager import SubFeed
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import PUBLIC_FILTER
+from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.apps.articles.models import Article
+from tendenci.addons.articles.models import Article
 
 
 class LatestEntriesFeed(SubFeed):
-    title = '%s Latest Articles' % get_setting('site', 'global', 'sitedisplayname')
+    title = _('%(sitedisplayname)s Latest Articles') % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
     link = "/articles/"
-    description = "Latest Articles by %s" % get_setting('site', 'global', 'sitedisplayname')
+    description = _("Latest Articles by %(sitedisplayname)s") % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
 
     def items(self):
-        items = Article.objects.filter(**PUBLIC_FILTER).filter(syndicate=True, release_dt__lte=datetime.now()).order_by('-release_dt')[:20]
+        items = Article.objects.filter(**PUBLIC_FILTER).filter(
+                syndicate=True,
+                release_dt__lte=datetime.now()).order_by('-release_dt')[:20]
         return items
 
     def item_title(self, item):
@@ -36,7 +41,8 @@ class ArticleSitemap(TendenciSitemap):
     priority = 0.5
 
     def items(self):
-        items = Article.objects.filter(**PUBLIC_FILTER).filter(release_dt__lte=datetime.now()).order_by('-release_dt')
+        items = Article.objects.filter(**PUBLIC_FILTER).filter(
+            release_dt__lte=datetime.now()).order_by('-release_dt')
         return items
 
     def lastmod(self, obj):

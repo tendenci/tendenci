@@ -1,12 +1,13 @@
 {% load styled_forms %}
 {% load base_filters %}
+{% load i18n %}
 
 {% if field_obj.field_name == '' %}
     {% if field_obj.field_name == '' %}
         <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
-            <h2>{{ field_obj.label  }}</h2>
+            <h2>{% blocktrans with label=field_obj.label %}{{ label  }}{% endblocktrans %}</h2>
             {% if field_obj.description %}
-            <div>{{ field_obj.description }}</div>
+            <div>{% blocktrans with description=field_obj.description %}{{ description }}{% endblocktrans %}</div>
             {% endif %}
         </div>
     {% endif %}
@@ -14,7 +15,7 @@
    {% if field_obj.display_only %}
    <div class="form-field">
        <div>
-           <b>{{ field_obj.label }}</b>: {{ field_obj.display_content|safe }}
+           {% blocktrans with label=field_obj.label content=field_obj.display_content|safe %}<b>{{ label }}</b>: {{ content }}{% endblocktrans %}
        </div>
 
 
@@ -28,19 +29,19 @@
                         {% if field.errors %}
                             <div class="error">
                                 {% for error in field.errors %}
-                                <p>{{ error }}</p>
+                                <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
                                 {% endfor %}
                             </div>
                         {% endif %}
                         <div class="field">
                             {{ field }}
                             <span class="label{% if field.field.required %} required{% endif %}">
-                                {{ field.label_tag }}
+                                {% blocktrans with label_tag=field.label_tag %}{{ label_tag }}{% endblocktrans %}
                             </span>
                         </div>
 
                         {% if field.help_text %}
-                            <div class="help-text">{{ field.help_text|safe }}</div>
+                            <div class="help-text">{% blocktrans with help_text=field.help_text|safe %}{{ help_text }}{% endblocktrans %}</div>
                         {% endif %}
                     </div>
                     <div style="clear: both"><!-- IE7 --></div>
@@ -49,14 +50,14 @@
                         {% if field.errors %}
                              <div class="error">
                                  {% for error in field.errors %}
-                                    <p>{{ error }}</p>
+                                    <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
                                  {% endfor %}
                              </div>
                             {% endif %}
                         {% endif %}
 
                         <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
-                            {{ field_obj.label }}
+                            {% blocktrans with label=field_obj.label %}{{ label }}{% endblocktrans %}
                         </div>
 
                         <div class="field {{ field_obj.field_div_class }}">
@@ -65,18 +66,18 @@
                             {% if field.errors %}
                              <span class="error">
                                  {% for error in field.errors %}
-                                    {{ error }}
+                                    {% blocktrans with err=error %}{{ err }}{% endblocktrans %}
                                  {% endfor %}
                              </span>
                             {% endif %}
                             {% endif %}
 
                             {% if field.help_text %}
-                                <div class="help-text"><small>{{ field.help_text|safe }}</small></div>
+                                <div class="help-text"><small>{% blocktrans with help_text=field.help_text|safe %}{{ help_text }}{% endblocktrans %}</small></div>
                             {% endif %}
 
                             {% if field_obj.field_type == 'FileField' and field.value %}
-                            <div><small>Currently: {{ field.value|basename }}</small></div>
+                            <div><small>{% trans 'Currently' %}: {{ field.value|basename }}</small></div>
                             {% endif %}
                         </div>
 

@@ -4,9 +4,9 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 
 from tendenci.apps.user_groups.models import Group
-from tendenci.apps.photos.models import Image, PhotoSet, License
-from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.perms.utils import get_query_filters
+from tendenci.addons.photos.models import Image, PhotoSet, License
+from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
 class LicenseField(forms.ModelChoiceField):
@@ -17,7 +17,7 @@ class LicenseField(forms.ModelChoiceField):
 
 class PhotoAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
     class Meta:
@@ -33,14 +33,14 @@ class PhotoAdminForm(TendenciBaseForm):
             'status_detail',
             'license',
         )
-        fieldsets = [('Photo Set Information', {
+        fieldsets = [(_('Photo Set Information'), {
             'fields': ['description',
                        'tags',
                        'group',
                        ],
             'legend': ''
         }),
-            ('Permissions', {
+            (_('Permissions'), {
                 'fields': ['allow_anonymous_view',
                            'user_perms',
                            'member_perms',
@@ -48,7 +48,7 @@ class PhotoAdminForm(TendenciBaseForm):
                            ],
                 'classes': ['permissions'],
                 }),
-            ('Administrator Only', {
+            (_('Administrator Only'), {
                 'fields': ['status_detail'],
                 'classes': ['admin-only'],
                 })]
@@ -99,8 +99,8 @@ class PhotoBatchEditForm(TendenciBaseForm):
 class PhotoEditForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'),
-                ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')),
+                ('pending',_('Pending')),))
     license = LicenseField(queryset=License.objects.all(),
                 widget = forms.RadioSelect(), empty_label=None)
     group = forms.ChoiceField(required=True, choices=[])
@@ -122,7 +122,7 @@ class PhotoEditForm(TendenciBaseForm):
         )
 
         fieldsets = [
-                ('Photo Information', {
+                (_('Photo Information'), {
                       'fields': [
                           'title',
                           'caption',
@@ -132,7 +132,7 @@ class PhotoEditForm(TendenciBaseForm):
                           'license',
                       ], 'legend': '',
                   }),
-                ('Permissions', {
+                (_('Permissions'), {
                       'fields': [
                           'allow_anonymous_view',
                           'user_perms',
@@ -141,7 +141,7 @@ class PhotoEditForm(TendenciBaseForm):
                       ], 'classes': ['permissions'],
                   }),
 
-                ('Administrator Only', {
+                (_('Administrator Only'), {
                       'fields': [
                           'syndicate',
                           'status_detail',
@@ -184,7 +184,7 @@ class PhotoSetAddForm(TendenciBaseForm):
     """ Photo-Set Add-Form """
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
     group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
@@ -201,7 +201,7 @@ class PhotoSetAddForm(TendenciBaseForm):
             'status_detail',
         )
 
-        fieldsets = [('Photo Set Information', {
+        fieldsets = [(_('Photo Set Information'), {
                       'fields': ['name',
                                  'description',
                                  'group',
@@ -209,7 +209,7 @@ class PhotoSetAddForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -217,7 +217,7 @@ class PhotoSetAddForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -261,7 +261,7 @@ class PhotoSetEditForm(TendenciBaseForm):
     """ Photo-Set Edit-Form """
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
     group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
@@ -278,7 +278,7 @@ class PhotoSetEditForm(TendenciBaseForm):
             'status_detail',
         )
 
-        fieldsets = [('Photo Set Information', {
+        fieldsets = [(_('Photo Set Information'), {
                       'fields': ['name',
                                  'description',
                                  'group',
@@ -286,7 +286,7 @@ class PhotoSetEditForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -294,7 +294,7 @@ class PhotoSetEditForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -328,4 +328,3 @@ class PhotoSetEditForm(TendenciBaseForm):
             return group
         except Group.DoesNotExist:
             raise forms.ValidationError(_('Invalid group selected.'))
-

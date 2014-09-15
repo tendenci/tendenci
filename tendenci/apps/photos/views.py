@@ -6,7 +6,7 @@ from subprocess import Popen
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
-import simplejson as json
+from django.utils import simplejson as json
 from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -22,24 +22,24 @@ from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.middleware.csrf import get_token as csrf_get_token
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.base.http import Http403
-from tendenci.apps.base.decorators import flash_login_required
-from tendenci.apps.base.utils import checklist_update
-from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import flash_login_required
+from tendenci.core.base.utils import checklist_update
+from tendenci.core.perms.decorators import is_enabled
+from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
 from tendenci.apps.user_groups.models import Group
 from djcelery.models import TaskMeta
 
-from tendenci.apps.photos.cache import PHOTO_PRE_KEY
-#from tendenci.apps.photos.search_indexes import PhotoSetIndex
-from tendenci.apps.photos.models import Image, Pool, PhotoSet, AlbumCover, License
-from tendenci.apps.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
-from tendenci.apps.photos.utils import get_privacy_settings
-from tendenci.apps.photos.tasks import ZipPhotoSetTask
+from tendenci.addons.photos.cache import PHOTO_PRE_KEY
+#from tendenci.addons.photos.search_indexes import PhotoSetIndex
+from tendenci.addons.photos.models import Image, Pool, PhotoSet, AlbumCover, License
+from tendenci.addons.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
+from tendenci.addons.photos.utils import get_privacy_settings
+from tendenci.addons.photos.tasks import ZipPhotoSetTask
 
 
 @is_enabled('photos')
@@ -331,7 +331,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, form, photo)
 
-                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%s'") % photo.title)
+                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': photo.title}) )
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
             form = form_class(instance=photo, user=request.user)
@@ -359,11 +359,11 @@ def delete(request, id, set_id=0):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%s'") % photo.title)
+        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title':photo.title}))
 
         photo.delete()
 
-        messages.add_message(request, messages.SUCCESS, 'Photo %s deleted' % id)
+        messages.add_message(request, messages.SUCCESS, _('Photo %(id)s deleted' % {'id' : id}))
 
         try:
             photo_set = PhotoSet.objects.get(id=set_id)
@@ -397,7 +397,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 photo_set = update_perms_and_save(request, form, photo_set)
                 checklist_update('add-album')
 
-                messages.add_message(request, messages.SUCCESS, 'Successfully added photo set!')
+                messages.add_message(request, messages.SUCCESS, _('Successfully added photo set!'))
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
         form = form_class(user=request.user)
@@ -410,7 +410,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 @is_enabled('photos')
 @login_required
 def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
-    from tendenci.apps.perms.object_perms import ObjectPermission
+    from tendenci.core.perms.object_perms import ObjectPermission
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
@@ -465,7 +465,7 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
         # soft delete all images in photo set
         Image.objects.filter(photoset=photo_set).delete()
 
-        messages.add_message(request, messages.SUCCESS, 'Photo Set %s deleted' % photo_set)
+        messages.add_message(request, messages.SUCCESS, _('Photo Set %(set)s deleted' % {'set':photo_set}))
 
         if "delete" in request.META.get('HTTP_REFERER', None):
             #if the referer is the get page redirect to the photo set search
@@ -525,7 +525,7 @@ def photos_batch_add(request, photoset_id=0):
     """
     import uuid
     from django.db.models import Max
-    from tendenci.apps.perms.object_perms import ObjectPermission
+    from tendenci.core.perms.object_perms import ObjectPermission
 
     # photoset permission required to add photos
     if not has_perm(request.user, 'photos.add_photoset'):

@@ -15,7 +15,7 @@
 {% corpmemb_nav request.user corporate_membership %}
      <h1>{% trans "Corporate Membership Add Confirmation" %}</h1>
     <p>{% if app.confirmation_text %}
-        {{ app.confirmation_text|safe }}
+        {% blocktrans with conf_text=app.confirmation_text|safe %}{{ conf_text }}{% endblocktrans %}
     {% else %}
         {% trans "Thank you for your submitting! " %}<br /><br />
         {% if not request.user.is_superuser %}
@@ -27,11 +27,11 @@
     {% has_perm request.user corporate_memberships.change_corpemembership as can_edit %}
 
     {% if can_view %}
-    <p><a href="{% url "corpmembership.view" corporate_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
+    <p><a href="{% url corpmembership.view corporate_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
     {% endif %}
     {% if can_edit %}
-    <p><a href="{% url "corpmembership.edit" corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
-    <p><a href="{% url "corpmembership.edit_corp_reps" corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
+    <p><a href="{% url corpmembership.edit corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
+    <p><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
     {% endif %}
 </div>
 {% endblock %}

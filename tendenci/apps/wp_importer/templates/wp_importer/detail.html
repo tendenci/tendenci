@@ -1,5 +1,6 @@
 {% extends "wp_importer/base.html" %}
+{% load i18n %}
 
 {% block main %}
-<p>{{ message }}</p>
+<p>{% blocktrans with m=message %}{{ m }}{% endblocktrans %}</p>
 {% endblock %}

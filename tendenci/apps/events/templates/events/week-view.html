@@ -5,13 +5,13 @@
 {% load category_tags %}
 {% load i18n %}
 
-{% block title %}{{ cur_date|date:"F j, Y" }} - Weekly Calendar {% endblock %}
+{% block title %}{{ cur_date|date:"F j, Y" }} - {% trans 'Weekly Calendar' %} {% endblock %}
 {% block meta_description %} {% endblock %}
 {% block meta_keywords %} {% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 {% endblock %}
@@ -45,7 +45,7 @@
         <div class="month-grid">
         {% for day in week %}
             <div class="day{% if today.date == day %} today{% endif %}">
-                <div class="date-numeral"><a href="{% url "event.day" day.year day.month day.day %}">{{ day.day }}</a></div>
+                <div class="date-numeral"><a href="{% url event.day day.year day.month day.day %}">{{ day.day }}</a></div>
                 {% event_list day 'single_day' as events %}
                 {% if events %}
                     {% for event in events %}

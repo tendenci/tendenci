@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_PAGES_LABEL 'Page' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans 'Edit' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -78,7 +78,7 @@
             // delete confirmation
             $('.add-category').click(function(){
                 select_box = $(this).parent().prev().find('select');
-                var category = prompt('Category Name?','').toLowerCase();
+                var category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 category = category.replace('"','')
                 var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
                 if (category) select_box.append(option_html)
@@ -86,7 +86,7 @@
             });
             $('.add-sub-category').click(function(){
                 select_box = $(this).parent().prev().find('select');
-                var sub_category = prompt('Category Name?','').toLowerCase();
+                var sub_category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 sub_category = sub_category.replace('"','')
                 var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
                 if (sub_category) select_box.append(option_html)

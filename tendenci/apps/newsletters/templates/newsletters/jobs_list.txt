@@ -19,8 +19,8 @@
         <table width="100%"  border="0" cellpadding="0" cellspacing="0" class="body_copy">
         <tr><td>&nbsp;</td></tr>
         <tr><td align="left" valign="top">
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'job' job.slug %}" >
-        <font face="Arial" size="2"><b> {{job.title}}
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url job job.slug %}" >
+        <font face="Arial" size="2"><b> {% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}
         </b></font></a>
 
     {% if job.activation_dt|date_diff < 7 %}
@@ -41,8 +41,9 @@
         <tr><td align="left" valign="top"><div>
         <font face="Arial" size="2" color="#000000">
 
-        {{job.description|striptags|truncatewords:60 }}
-         <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'job' job.slug %}">[More Info]</a>
+        {% blocktrans with d=job.description|striptags|truncatewords:60 %}{{ d }}{% endblocktrans %}
+         <a href="{{ SITE_GLOBAL_SITEURL }}{% url job job.slug %}">[More Info]</a>
+        }
         </font>
 
         {#  posted by #}

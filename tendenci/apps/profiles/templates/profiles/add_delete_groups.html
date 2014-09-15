@@ -1,7 +1,8 @@
 {% extends "profiles/base.html" %}
 {% load profile_tags %}
+{% load i18n %}
 
-{% block title %}Join/Leave User Groups{% endblock %}
+{% block title %}{% trans 'Join/Leave User Groups' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,7 +14,7 @@
 {% block body %}
     <div class="t">
         {% users_nav request.user user_this %}
-        <h1>Join/Leave User Groups</h1>
+        <h1>{% trans 'Join/Leave User Groups' %}</h1>
         <h2>User: <a href="{{ user_this.get_absolute_url}}">
         {{ user_this.get_full_name }} ({{ user_this.username}})</a></h2>
         <div class="clear-right"></div>
@@ -38,7 +39,7 @@
                     <div style="clear:left;"></div>
                 </div>
                 <div class="submit-row">
-                    <input id='add_groups_submit' type="submit" value="Save" class="default" />
+                    <input id='add_groups_submit' type="submit" value="{% trans 'Save' %}" class="default" />
                 </div>
             </form>
         </div>

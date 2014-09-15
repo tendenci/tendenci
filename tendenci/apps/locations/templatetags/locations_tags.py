@@ -1,6 +1,8 @@
 from django.template import Library, TemplateSyntaxError
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.apps.locations.models import Location
+from django.utils.translation import ugettext_lazy as _
+
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.addons.locations.models import Location
 
 register = Library()
 
@@ -72,11 +74,11 @@ def list_locations(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires at least 2 parameters" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 

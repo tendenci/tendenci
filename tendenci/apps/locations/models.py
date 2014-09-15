@@ -5,12 +5,12 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
-from tendenci.apps.base.fields import SlugField
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.locations.managers import LocationManager
-from tendenci.apps.locations.utils import get_coordinates
-from tendenci.apps.files.models import File
+from tendenci.core.base.fields import SlugField
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.addons.locations.managers import LocationManager
+from tendenci.addons.locations.utils import get_coordinates
+from tendenci.core.files.models import File
 
 
 class Location(TendenciBaseModel):
@@ -36,7 +36,7 @@ class Location(TendenciBaseModel):
     longitude = models.FloatField(blank=True, null=True)
     logo = models.ForeignKey(File, null=True, default=None,
                              help_text=_('Only jpg, gif, or png images.'))
-    hq = models.NullBooleanField(_('Headquarters'))
+    hq = models.BooleanField(_('Headquarters'))
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -45,7 +45,7 @@ class Location(TendenciBaseModel):
     objects = LocationManager()
 
     class Meta:
-        permissions = (("view_location","Can view location"),)
+        permissions = (("view_location",_("Can view location")),)
 
     def __unicode__(self):
         return self.location_name

@@ -27,7 +27,7 @@
 
     <form method="POST" action="">{% csrf_token %}
     {{ form }}
-    <input type="submit" value="Merge">
+    <input type="submit" value="{% trans 'Merge' %}">
     </form>
 </div>
 {% endblock %}

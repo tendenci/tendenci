@@ -1,7 +1,8 @@
 from django.template import Library, TemplateSyntaxError, Variable
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.apps.directories.models import Directory
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.addons.directories.models import Directory
 
 register = Library()
 
@@ -44,7 +45,7 @@ def directory_pricing_options(context, user, directory_pricing):
 
 @register.inclusion_tag("directories/pricing-table.html", takes_context=True)
 def directory_pricing_table(context):
-    from tendenci.apps.directories.models import DirectoryPricing
+    from tendenci.addons.directories.models import DirectoryPricing
     directory_pricings =DirectoryPricing.objects.filter(status=True).order_by('duration')
     show_premium_price = False
     premium_jp = DirectoryPricing.objects.filter(status=True).filter(premium_price__gt=0)
@@ -71,10 +72,10 @@ def list_directories(parser, token):
 
         {% list_directories as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``directories_sidebar`` or 
+    Be sure the [varname] has a specific name like ``directories_sidebar`` or
     ``directories_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
@@ -101,11 +102,11 @@ def list_directories(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 3" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 

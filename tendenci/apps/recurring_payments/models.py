@@ -10,13 +10,13 @@ from django.db.models import Sum
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.recurring_payments.managers import RecurringPaymentManager
-from tendenci.apps.recurring_payments.authnet.cim import (CIMCustomerProfile,
+from tendenci.addons.recurring_payments.managers import RecurringPaymentManager
+from tendenci.addons.recurring_payments.authnet.cim import (CIMCustomerProfile,
                                             CIMCustomerPaymentProfile,
                                             CIMCustomerProfileTransaction)
-from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
-from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
-from tendenci.apps.payments.models import Payment
+from tendenci.addons.recurring_payments.authnet.utils import payment_update_from_response
+from tendenci.addons.recurring_payments.authnet.utils import direct_response_dict
+from tendenci.core.payments.models import Payment
 
 BILLING_PERIOD_CHOICES = (
                         ('month', _('Month(s)')),
@@ -44,7 +44,7 @@ class RecurringPayment(models.Model):
     user = models.ForeignKey(User, related_name="recurring_payment_user",
                              verbose_name=_('Customer'),  null=True, on_delete=models.SET_NULL)
     url = models.CharField(_('Website URL'), max_length=100, default='', blank=True, null=True)
-    description = models.CharField(_('Description'), max_length=100, help_text="Use a short term, example: web hosting")
+    description = models.CharField(_('Description'), max_length=100, help_text=_("Use a short term, example: web hosting"))
     # with object_content_type and object_content_id, we can apply the recurring
     # payment to other modules such as memberships, jobs, etc.
     object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
@@ -66,11 +66,11 @@ class RecurringPayment(models.Model):
     #billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"))
     #billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=15, decimal_places=2)
-    tax_exempt =models.NullBooleanField(default=1)
-    taxable = models.NullBooleanField(default=0)
+    tax_exempt =models.BooleanField(default=1)
+    taxable = models.BooleanField(default=0)
     tax_rate = models.DecimalField(blank=True, max_digits=7, decimal_places=6, default=0,
-                                   help_text='Example: 0.0825 for 8.25%.')
-    has_trial_period = models.NullBooleanField(default=0)
+                                   help_text=_('Example: 0.0825 for 8.25%.'))
+    has_trial_period = models.BooleanField(default=0)
     trial_period_start_dt = models.DateTimeField(_('Trial period start date'), blank=True, null=True)
     trial_period_end_dt = models.DateTimeField(_('Trial period end date'), blank=True, null=True)
     trial_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
@@ -91,7 +91,7 @@ class RecurringPayment(models.Model):
     owner = models.ForeignKey(User, related_name="recurring_payment_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active', choices=STATUS_DETAIL_CHOICES)
-    status = models.NullBooleanField(default=True)
+    status = models.BooleanField(default=True)
 
     objects = RecurringPaymentManager()
 
@@ -117,10 +117,10 @@ class RecurringPayment(models.Model):
 
     @property
     def user_profile(self):
-        """Insteading of using user.profile, this function traps the error.
+        """Insteading of using user.get_profile(), this function traps the error.
         """
         try:
-            profile = self.user.profile
+            profile = self.user.get_profile()
         except Profile.DoesNotExist:
             profile = Profile.objects.create_profile(user=self.user)
         return profile
@@ -376,7 +376,7 @@ class RecurringPayment(models.Model):
         Create an invoice and update the next_billing_dt for this recurring payment.
         """
         try:
-            profile = self.user.profile
+            profile = self.user.get_profile()
         except Profile.DoesNotExist:
             profile = Profile.objects.create_profile(user=self.user)
 
@@ -500,7 +500,7 @@ class PaymentProfile(models.Model):
     owner = models.ForeignKey(User, related_name="payment_profile_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active')
-    status = models.NullBooleanField(default=True)
+    status = models.BooleanField(default=True)
 
     def update_local(self, request):
         cim_payment_profile = CIMCustomerPaymentProfile(
@@ -530,7 +530,7 @@ class RecurringPaymentInvoice(models.Model):
     billing_dt = models.DateTimeField(blank=True, null=True)
     payment_received_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
-    #is_paid = models.NullBooleanField(default=False)
+    #is_paid = models.BooleanField(default=False)
 
     def make_payment_transaction(self, payment_profile_id):
         """
@@ -630,7 +630,7 @@ class PaymentTransaction(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, related_name="payment_transaction_creator",  null=True, on_delete=models.SET_NULL)
     # True=success or False=failed
-    status = models.NullBooleanField()
+    status = models.BooleanField()
     #status_detail = models.CharField(max_length=50,  null=True)
 
 

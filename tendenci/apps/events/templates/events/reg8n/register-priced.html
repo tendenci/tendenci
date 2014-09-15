@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Register{% endblock %}
+{% block title %}{{ block.super }}{% trans "Register" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -26,7 +26,7 @@
     {% endfor %}
 
     <div class="form-wrap">
-        <form action="{% url "event.register" event.pk %}" method="post">{% csrf_token %}
+        <form action="{% url event.register event.pk %}" method="post">{% csrf_token %}
         <div class="forms">
 
             {{ form.price }}
@@ -87,7 +87,7 @@
                 </div>
             {% endif %}
 
-               <input type="submit" value="Register for this Event" />
+               <input type="submit" value="{% trans "Register for this Event" %}" />
         </div>
         </form>
     </div>

@@ -4,7 +4,7 @@
 {% load i18n %}
 
 {% if search_line_display %}
-  {{ search_line_display|safe }}
+  {% blocktrans with d=search_line_display|safe %}{{ d }}{% endblocktrans %}
 {% else %}
        <table width="100%">
           {% invoices_search_line_header request invoice '#000000' %}#}

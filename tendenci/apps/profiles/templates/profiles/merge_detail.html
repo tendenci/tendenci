@@ -16,7 +16,7 @@
             {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
         {% endif %}({{ profile.user.username }})</a>
         {% if profile.is_member %}
-        <span style="font-size: 12px;">Member</span> <!-- replace with Icon -->
+        <span style="font-size: 12px;">{% trans 'Member' %}</span> <!-- replace with Icon -->
         {% endif %}
     </h2>
 
@@ -46,7 +46,7 @@
         {% if profile.is_member %}
             {% if profile|allow_edit_by:user %}
                 <div style="float: right;">
-                <span class="member-icon">Member ID: {{ profile.member_number }}</span>
+                <span class="member-icon">{% trans 'Member ID' %}: {{ profile.member_number }}</span>
                 </div>
             {% endif %}
 

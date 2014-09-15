@@ -84,6 +84,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'tendenci.apps.profiles.middleware.ForceLogoutProfileMiddleware',
     'tendenci.apps.profiles.middleware.ProfileMiddleware',
     'tendenci.apps.base.middleware.Http403Middleware',
     'tendenci.apps.redirects.middleware.RedirectMiddleware',
@@ -278,7 +279,7 @@ AUTHENTICATION_BACKENDS = (
 #--------------------------------------------------
 # DEBUG TOOLBAR
 #--------------------------------------------------
-INTERNAL_IPS = ('127.0.0.1', '192.168.0.1',)
+INTERNAL_IPS = ('127.0.0.1', '192.168.0.1', '10.1.0.0', '10.1.4.0',)
 DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False,}
 
 # -------------------------------------- #

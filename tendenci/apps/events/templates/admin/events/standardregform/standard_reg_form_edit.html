@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
 {% load i18n admin_static admin_modify %}
+{% load url from future %}
 {% load admin_urls %}
 
 {% block extrahead %}{{ block.super }}
@@ -53,101 +54,101 @@
             <tbody>
               <tr class="form-row row1">
                 <td>{% trans 'First Name' %}</td>
-                <td>{{ adminform.first_name_type }}</td>
-                <td>{{ adminform.first_name_choices }}</td>
-                <td>{{ adminform.first_name_required }}</td>
-                <td>{{ adminform.first_name_visible }}</td>
+                <td>{% blocktrans with first_name_type=adminform.first_name_type %}{{ first_name_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with first_name_choices=adminform.first_name_choices %}{{ first_name_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with first_name_required=adminform.first_name_required %}{{ first_name_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with first_name_visible=adminform.first_name_visible %}{{ first_name_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row2">
                 <td>{% trans 'Last Name' %}</td>
-                <td>{{ adminform.last_name_type }}</td>
-                <td>{{ adminform.last_name_choices }}</td>
-                <td>{{ adminform.last_name_required }}</td>
-                <td>{{ adminform.last_name_visible }}</td>
+                <td>{% blocktrans with last_name_type=adminform.last_name_type %}{{ last_name_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with last_name_choices=adminform.last_name_choices %}{{ last_name_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with last_name_required=adminform.last_name_required %}{{ last_name_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with last_name_visible=adminform.last_name_visible %}{{ last_name_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row1">
                 <td>{% trans 'Mail Name' %}</td>
-                <td>{{ adminform.mail_name_type }}</td>
-                <td>{{ adminform.mail_name_choices }}</td>
-                <td>{{ adminform.mail_name_required }}</td>
-                <td>{{ adminform.mail_name_visible }}</td>
+                <td>{% blocktrans with mail_name_type=adminform.mail_name_type %}{{ mail_name_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with mail_name_choices=adminform.mail_name_choices %}{{ mail_name_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with mail_name_required=adminform.mail_name_required %}{{ mail_name_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with mail_name_visible=adminform.mail_name_visible %}{{ mail_name_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row2">
                 <td>{% trans 'Email' %}</td>
-                <td>{{ adminform.email_type }}</td>
-                <td>{{ adminform.email_choices }}</td>
-                <td>{{ adminform.email_required }}</td>
-                <td>{{ adminform.email_visible }}</td>
+                <td>{% blocktrans with email_type=adminform.email_type %}{{ email_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with email_choices=adminform.email_choices %}{{ email_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with email_required=adminform.email_required %}{{ email_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with email_visible=adminform.email_visible %}{{ email_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row1">
                 <td>{% trans 'Position Title' %}</td>
-                <td>{{ adminform.position_title_type }}</td>
-                <td>{{ adminform.position_title_choices }}</td>
-                <td>{{ adminform.position_title_required }}</td>
-                <td>{{ adminform.position_title_visible }}</td>
+                <td>{% blocktrans with position_title_type=adminform.position_title_type %}{{ position_title_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with position_title_choices=adminform.position_title_choices %}{{ position_title_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with position_title_required=adminform.position_title_required %}{{ position_title_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with position_title_visible=adminform.position_title_visible %}{{ position_title_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row2">
                 <td>{% trans 'Company Name' %}</td>
-                <td>{{ adminform.company_name_type }}</td>
-                <td>{{ adminform.company_name_choices }}</td>
-                <td>{{ adminform.company_name_required }}</td>
-                <td>{{ adminform.company_name_visible }}</td>
+                <td>{% blocktrans with company_name_type=adminform.company_name_type %}{{ company_name_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with company_name_choices=adminform.company_name_choices %}{{ company_name_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with company_name_required=adminform.company_name_required %}{{ company_name_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with company_name_visible=adminform.company_name_visible %}{{ company_name_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row1">
                 <td>{% trans 'Phone' %}</td>
-                <td>{{ adminform.phone_type }}</td>
-                <td>{{ adminform.phone_choices }}</td>
-                <td>{{ adminform.phone_required }}</td>
-                <td>{{ adminform.phone_visible }}</td>
+                <td>{% blocktrans with phone_type=adminform.phone_type %}{{ phone_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with phone_choices=adminform.phone_choices %}{{ phone_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with phone_required=adminform.phone_required %}{{ phone_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with phone_visible=adminform.phone_visible %}{{ phone_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row2">
                 <td>{% trans 'Address' %}</td>
-                <td>{{ adminform.address_type }}</td>
-                <td>{{ adminform.address_choices }}</td>
-                <td>{{ adminform.address_required }}</td>
-                <td>{{ adminform.address_visible }}</td>
+                <td>{% blocktrans with address_type=adminform.address_type %}{{ address_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with address_choices=adminform.address_choices %}{{ address_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with address_required=adminform.address_required %}{{ address_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with address_visible=adminform.address_visible %}{{ address_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row1">
                 <td>{% trans 'City' %}</td>
-                <td>{{ adminform.city_type }}</td>
-                <td>{{ adminform.city_choices }}</td>
-                <td>{{ adminform.city_required }}</td>
-                <td>{{ adminform.city_visible }}</td>
+                <td>{% blocktrans with city_type=adminform.city_type %}{{ city_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with city_choices=adminform.city_choices %}{{ city_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with city_required=adminform.city_required %}{{ city_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with city_visible=adminform.city_visible %}{{ city_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row2">
                 <td>{% trans 'State' %}</td>
-                <td>{{ adminform.state_type }}</td>
-                <td>{{ adminform.state_choices }}</td>
-                <td>{{ adminform.state_required }}</td>
-                <td>{{ adminform.state_visible }}</td>
+                <td>{% blocktrans with state_type=adminform.state_type %}{{ state_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with state_choices=adminform.state_choices %}{{ state_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with state_required=adminform.state_required %}{{ state_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with state_visible=adminform.state_visible %}{{ state_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row1">
                 <td>{% trans 'Zip Code' %}</td>
-                <td>{{ adminform.zip_code_type }}</td>
-                <td>{{ adminform.zip_code_choices }}</td>
-                <td>{{ adminform.zip_code_required }}</td>
-                <td>{{ adminform.zip_code_visible }}</td>
+                <td>{% blocktrans with zip_code_type=adminform.zip_code_type %}{{ zip_code_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with zip_code_choices=adminform.zip_code_choices %}{{ zip_code_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with zip_code_required=adminform.zip_code_required %}{{ zip_code_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with zip_code_visible=adminform.zip_code_visible %}{{ zip_code_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row2">
                 <td>{% trans 'Country' %}</td>
-                <td>{{ adminform.country_type }}</td>
-                <td>{{ adminform.country_choices }}</td>
-                <td>{{ adminform.country_required }}</td>
-                <td>{{ adminform.country_visible }}</td>
+                <td>{% blocktrans with country_type=adminform.country_type %}{{ country_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with country_choices=adminform.country_choices %}{{ country_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with country_required=adminform.country_required %}{{ country_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with country_visible=adminform.country_visible %}{{ country_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row1">
                 <td>{% trans 'Meal Option' %}</td>
-                <td>{{ adminform.meal_option_type }}</td>
-                <td>{{ adminform.meal_option_choices }}</td>
-                <td>{{ adminform.meal_option_required }}</td>
-                <td>{{ adminform.meal_option_visible }}</td>
+                <td>{% blocktrans with meal_option_type=adminform.meal_option_type %}{{ meal_option_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with meal_option_choices=adminform.meal_option_choices %}{{ meal_option_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with meal_option_required=adminform.meal_option_required %}{{ meal_option_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with meal_option_visible=adminform.meal_option_visible %}{{ meal_option_visible }}{% endblocktrans %}</td>
               </tr>
               <tr class="form-row row2">
                 <td>{% trans 'Comments' %}</td>
-                <td>{{ adminform.comments_type }}</td>
-                <td>{{ adminform.comments_choices }}</td>
-                <td>{{ adminform.comments_required }}</td>
-                <td>{{ adminform.comments_visible }}</td>
+                <td>{% blocktrans with comments_type=adminform.comments_type %}{{ comments_type }}{% endblocktrans %}</td>
+                <td>{% blocktrans with comments_choices=adminform.comments_choices %}{{ comments_choices }}{% endblocktrans %}</td>
+                <td>{% blocktrans with comments_required=adminform.comments_required %}{{ comments_required }}{% endblocktrans %}</td>
+                <td>{% blocktrans with comments_visible=adminform.comments_visible %}{{ comments_visible }}{% endblocktrans %}</td>
               </tr>
             </tbody>
           </table>

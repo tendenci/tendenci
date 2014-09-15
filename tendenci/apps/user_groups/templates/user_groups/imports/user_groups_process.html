@@ -5,7 +5,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL 'User Groups' %} {% trans "Import" %}{% endblock %}
+{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL trans 'User Groups' %} {% trans "Import" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}

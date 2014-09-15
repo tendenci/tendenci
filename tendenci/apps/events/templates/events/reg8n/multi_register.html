@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Registration {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Registration" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +18,7 @@
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
     <div class="event-info">
-        <div class="event-title"><a href="{% url 'event' event.id %}">{{ event.title }}</a></div>
+        <div class="event-title"><a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></div>
         <div class="event-price">{{ event_price|format_currency }}</div>
         <div class="event-time">
             {% for span in event.date_spans %}
@@ -81,7 +81,7 @@
                     <div class="summary-payment">
                         <noscript>
                         <div>
-                            <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+                            <input title="{% trans "Update Summary" %}" type="submit" id="update_summary" name="update_summary" value="{% trans "Update Summary" %}" />
                         </div>
                         </noscript>
                         {% if reg_form.amount_for_admin %}
@@ -97,7 +97,7 @@
                                 <div id="discount-message" class="error">{{ reg_form.discount_code.errors }}</div>
                                 <div class="required">{% trans "Discount Code" %}</div>
                                 <div class="field">{{ reg_form.discount_code }}</div>
-                                <button type="button" id="discount_check">Check Discount</button>
+                                <button type="button" id="discount_check">{% trans "Check Discount" %}</button>
                             </div>
                         {% endif %}
 
@@ -301,7 +301,7 @@
                     <div class="field">{{ reg_form.captcha }}</div>
                 </div>
             {% endif %}
-            <input type="submit" name="submit" id="register-button" class="registration-green-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
+            <input type="submit" name="submit" id="register-button" class="registration-green-button" value="{% if free_event %}{% trans "Register" %}{%else%}{% trans "Register &amp; Pay" %}{%endif%}" />
 
             <div class="clear"></div>
         </div>

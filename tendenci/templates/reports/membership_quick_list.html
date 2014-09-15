@@ -5,8 +5,13 @@
 <h1>{% trans "Current Members Quick List" %}</h1>
 <div class="mems-wrap quick-list">
 {% if members %}
+<<<<<<< HEAD
 <p><a href="{% url "reports-members-quick-list" %}?output=csv">
     Download CSV File</a></p>
+=======
+<p><a href="{% url reports-members-quick-list %}?output=csv">
+    {% trans 'Download CSV File' %}</a></p>
+>>>>>>> master
     <table>
         <tr>
             <th>{% trans "Last Name" %}</th>

@@ -42,12 +42,13 @@
                     </div>
               </form>
             {% if current_file not in non_deletable_files  %}
-            <a id="delete-btn" href="{% url "theme_editor.delete" %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
+
+            <a id="delete-btn" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">{% trans 'Delete this File' %}</a>
             {% endif %}
             <div style="clear:both"></div>
 
           <div id="file_version_box">
-              <h2>{% trans "Previous Versions" %} <span class="tooltip" title="Click a version below to load it in the editor. The version will not be restored until you save your changes."><sup><a href="#">?</a></sup></span></h2>
+              <h2>{% trans "Previous Versions" %} <span class="tooltip" title="{% trans 'Click a version below to load it in the editor. The version will not be restored until you save your changes.' %}"><sup><a href="#">?</a></sup></span></h2>
               {% if archives %}
                   <div id="file_versions">
                       {% for archive in archives %}
@@ -67,7 +68,7 @@
         <td width="20%" valign="top">
             {# if theme_count > 1 #}
             <div class="theme-selection well well-small">
-                <h4>{% trans 'Currently editing:' %}</h4>
+                <h4>{% trans 'Currently editing' %}:</h4>
                 <form method="GET" action="">
                     {{ theme_form.theme_edit }}<input class="btn btn-mini" type="submit" value="Change"/>
                 </form>
@@ -147,16 +148,16 @@
                 {% endcomment %}
                 </div>
                                <div class="well well-small">
-                               <h4>Customize more templates:</h4>
-                               Copy down one of Tendenci's built-in app templates and customize it.
-                               <a href="{% url "theme_editor.app_list" %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
+                               <h4>{% trans 'Customize more templates' %}:</h4>
+                               {% trans "Copy down one of Tendenci's built-in app templates and customize it." %}
+                               <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
 
                                </div>
 
                                <div class="well well-small">
-                                 <h4>Create a new template:</h4>
-                                   Click the button below to add a new template.
-                                   <button class="btn btn-mini new-template-btn">New Template</button>
+                                 <h4>{% trans 'Create a new template' %}:</h4>
+                                   {% trans 'Click the button below to add a new template.' %}
+                                   <button class="btn btn-mini new-template-btn">{% trans 'New Template' %}</button>
                                </div>
 
            </div>
@@ -165,11 +166,11 @@
 </table>
 
 
-<div id="create-tform" title="Create new template">
-  <p class="validateTips">Please enter template name.</p>
+<div id="create-tform" title="{% trans 'Create new template' %}">
+  <p class="validateTips">{% trans 'Please enter template name.' %}</p>
   <form>
     <fieldset>
-    <div><label for="tname">Template Name:</label></div>
+    <div><label for="tname">{% trans 'Template Name' %}:</label></div>
     <div>
     default-<input type="text" name="tname" id="tname" class="text ui-widget-content ui-corner-all" />
     .html
@@ -249,7 +250,7 @@ function open_archive(id)
     $(document).ready(function(){
         //bind the modified one
         $('.delete').click(function(){
-            if(window.confirm("Are you sure you want to delete this file from your theme?")){
+            if(window.confirm("{% trans 'Are you sure you want to delete this file from your theme?' %}")){
                 return true;
             } else {
                 return false;
@@ -339,7 +340,7 @@ $('.non-editable-file').hover(function() {
    $(this).children('.links').toggle();
 });
     $('#delete-btn').click(function() {
-      return window.confirm(this.title || 'Are you sure you want to delete the following file? {{ pwd }}/{{ current_file }}');
+      return window.confirm(this.title || '{% trans "Are you sure you want to delete the following file?" %} {{ pwd }}/{{ current_file }}');
     });
 </script>
 {% endblock %}

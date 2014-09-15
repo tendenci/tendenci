@@ -1,5 +1,7 @@
+{% load i18n %}
+
 {% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="search-form" id="job-search-form" action="{% if my_job %}{% url 'myjobs' %}{% else %}{% url 'jobs' %}{% endif %}" method="get">
+<form class="search-form" id="job-search-form" action="{% if my_job %}{% url myjobs %}{% else %}{% url jobs %}{% endif %}" method="get">
     <div class="fieldWrapper">
         {{ form.q }}
     </div>
@@ -11,6 +13,6 @@
         {{ form.subcategories }}
     </div>
     </div>
-    <input type="submit" value="Search" />
+    <input type="submit" value="{% trans 'Search' %}" />
 </form>
 {% endif %}

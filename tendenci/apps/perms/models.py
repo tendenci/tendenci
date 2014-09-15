@@ -1,22 +1,22 @@
-from django.db import models, transaction
+from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.entities.models import Entity
-from tendenci.apps.versions.models import Version
-from tendenci.apps.categories.models import Category
+from tendenci.core.versions.models import Version
+from tendenci.core.categories.models import Category
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
     # authority fields
-    allow_anonymous_view = models.NullBooleanField(_("Public can view"), default=True)
-    allow_user_view = models.NullBooleanField(_("Signed in user can view"))
-    allow_member_view = models.NullBooleanField()
-    allow_user_edit = models.NullBooleanField(_("Signed in user can change"))
-    allow_member_edit = models.NullBooleanField()
+    allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
+    allow_user_view = models.BooleanField(_("Signed in user can view"))
+    allow_member_view = models.BooleanField()
+    allow_user_edit = models.BooleanField(_("Signed in user can change"))
+    allow_member_edit = models.BooleanField()
     entity = models.ForeignKey(Entity, blank=True, null=True, default=None,
         on_delete=models.SET_NULL, related_name="%(app_label)s_%(class)s_entity")
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
@@ -27,7 +27,7 @@ class TendenciBaseModel(models.Model):
     owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
         related_name="%(app_label)s_%(class)s_owner")
     owner_username = models.CharField(max_length=50)
-    status = models.NullBooleanField("Active", default=True)
+    status = models.BooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')
 
     @property
@@ -46,7 +46,7 @@ class TendenciBaseModel(models.Model):
 
     @property
     def obj_perms(self):
-        from tendenci.apps.perms.fields import has_groups_perms
+        from tendenci.core.perms.fields import has_groups_perms
         t = '<span class="perm-%s">%s</span>'
 
         if self.allow_anonymous_view:
@@ -80,23 +80,22 @@ class TendenciBaseModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        with transaction.atomic():
-            if self.pk:
-                log = kwargs.get('log', True)
-                if log:
-                    application = self.__module__
-                    EventLog.objects.log(instance=self, application=application)
+        if self.pk:
+            log = kwargs.get('log', True)
+            if log:
+                application = self.__module__
+                EventLog.objects.log(instance=self, application=application)
 
-                # Save a version of this content.
-                try:
-                    Version.objects.save_version(self.__class__.objects.get(pk=self.pk), self)
-                except Exception as e:
-                    pass
-                    #print "version error: ", e
+            # Save a version of this content.
+            try:
+                Version.objects.save_version(self.__class__.objects.get(pk=self.pk), self)
+            except Exception as e:
+                pass
+                #print "version error: ", e
 
-            if "log" in kwargs:
-                kwargs.pop('log')
-            super(TendenciBaseModel, self).save(*args, **kwargs)
+        if "log" in kwargs:
+            kwargs.pop('log')
+        super(TendenciBaseModel, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         if self.pk:
@@ -115,7 +114,11 @@ class TendenciBaseModel(models.Model):
         # an object w/ the same slug is added
         for f in self._meta.fields:
             if 'SlugField' == f.get_internal_type():
-                setattr(self, f.name, '%s@%s' % (getattr(self, f.name), self.pk))
+                # the length of slug field is 100. make sure the length of modified slug <= 100
+                if len(getattr(self, f.name)) == 100:
+                    setattr(self, f.name, '%s@%s' % (getattr(self, f.name)[:99-len(str(self.pk))], self.pk))
+                else:
+                    setattr(self, f.name, '%s@%s' % (getattr(self, f.name), self.pk))
 
         try:
             self.save(**{'log': False})

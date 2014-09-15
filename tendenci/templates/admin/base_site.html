@@ -3,7 +3,7 @@
 {% load base_filters %}
 {% load base_tags %}
 
-{% block title %}{{ title }} | {{ SITE_GLOBAL_SITEDISPLAYNAME }} Tendenci&reg;{% endblock %}
+{% block title %}{% blocktrans with t=title %}{{ t }}{% endblocktrans %} | {{ SITE_GLOBAL_SITEDISPLAYNAME }} Tendenci&reg;{% endblock %}
 
 {% block extrastyle %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/admin.css" />

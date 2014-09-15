@@ -6,9 +6,9 @@ from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-import simplejson
+from django.utils import simplejson
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
 
 
 @login_required
@@ -41,4 +41,3 @@ def autocomplete(request):
         tag_list = [{'id':tag.pk, 'label':tag.name, 'value':tag.name} for tag in tags]
         return HttpResponse(simplejson.dumps(tag_list),mimetype='application/json')
     raise Http404
-

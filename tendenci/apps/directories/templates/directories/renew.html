@@ -23,16 +23,21 @@
     <div class="directory-wrap">
     {% if directory.renew_window %}
         <div>
-            You are renewing: {{ directory.headline }}. Click submit below to complete your renewal.
+            {% blocktrans with headline=directory.headline %}
+            You are renewing: {{ headline }}. Click submit below to complete your renewal.
+            {% endblocktrans %}
+
         </div>
-        <form action="{% url "directory.renew" directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url directory.renew directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Submit Renewal" />
+            <input type="submit" value="{% trans 'Submit Renewal' %}" />
         </div>
         </form>
     {% else %}
+        {% blocktrans %}
         <p>Sorry, this directory isn't available for renewal right now. Please contact your site administrator with any questions.</p>
+        {% endblocktrans %}
     {% endif %}
     </div>
 </div>

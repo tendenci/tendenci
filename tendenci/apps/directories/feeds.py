@@ -1,14 +1,18 @@
-from tendenci.apps.rss.feedsmanager import SubFeed
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import PUBLIC_FILTER
-from tendenci.apps.sitemaps import TendenciSitemap
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.directories.models import Directory
+from tendenci.core.rss.feedsmanager import SubFeed
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import PUBLIC_FILTER
+from tendenci.core.sitemaps import TendenciSitemap
+
+from tendenci.addons.directories.models import Directory
 
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Directories' % get_setting('site','global','sitedisplayname')
+    title = _('%(sitedisplayname)s Latest Directories') % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
     link =  "/directories/"
-    description =  "Latest Directories by %s" % get_setting('site','global','sitedisplayname')
+    description = _("Latest Directories by %(sitedisplayname)s") % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
 
     def items(self):
         items = Directory.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]

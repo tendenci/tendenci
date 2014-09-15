@@ -15,8 +15,8 @@ from django.db.models import Q
 from django.template.response import TemplateResponse
 
 from tagging.models import TaggedItem
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import update_perms_and_save
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.utils import update_perms_and_save
 
 
 class TendenciBaseModelAdmin(admin.ModelAdmin):
@@ -48,7 +48,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
 
     def edit_link(self, obj):
         return "Edit"
-    edit_link.short_description = 'edit'
+    edit_link.short_description = _('edit')
 
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
@@ -59,7 +59,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         )
         return link
     view_on_site.allow_tags = True
-    view_on_site.short_description = 'view'
+    view_on_site.short_description = _('view')
 
     def owner_link(self, obj):
         link = ''
@@ -71,17 +71,17 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
             )
         return link
     owner_link.allow_tags = True
-    owner_link.short_description = 'owner'
+    owner_link.short_description = _('owner')
 
     def admin_status(self, obj):
         return obj.obj_status
     admin_status.allow_tags = True
-    admin_status.short_description = 'status'
+    admin_status.short_description = _('status')
 
     def admin_perms(self, obj):
         return obj.obj_perms
     admin_perms.allow_tags = True
-    admin_perms.short_description = 'permission'
+    admin_perms.short_description = _('permission')
 
     def save_model(self, request, object, form, change):
         """

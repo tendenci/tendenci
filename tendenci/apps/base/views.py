@@ -24,17 +24,18 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.views.i18n import set_language as dj_set_language
 from django.utils.translation import check_for_language
+from django.utils.translation import ugettext_lazy as _
 # local
 from tendenci import __version__ as version
-from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
-from tendenci.apps.base.decorators import password_required
-from tendenci.apps.base.forms import PasswordForm, AddonUploadForm
-from tendenci.apps.base.models import UpdateTracker, ChecklistItem
-from tendenci.apps.base.managers import SubProcessManager
-from tendenci.apps.perms.decorators import superuser_required
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.utils import get_theme_info
+from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
+from tendenci.core.base.decorators import password_required
+from tendenci.core.base.forms import PasswordForm, AddonUploadForm
+from tendenci.core.base.models import UpdateTracker, ChecklistItem
+from tendenci.core.base.managers import SubProcessManager
+from tendenci.core.perms.decorators import superuser_required
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.theme.utils import get_theme_info
 
 BASEFILE_EXTENSIONS = (
     'txt',
@@ -81,7 +82,7 @@ def image_preview(request, app_label, model, id,  size):
         content_type = ContentType.objects.get(app_label=app_label, model=model)
         instance = content_type.get_object_for_this_type(id=id)
     except:
-        return HttpResponseNotFound("Image not found.", mimetype="text/plain")
+        return HttpResponseNotFound(_("Image not found."), mimetype="text/plain")
 
     keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
     key = '.'.join(keys)
@@ -89,7 +90,7 @@ def image_preview(request, app_label, model, id,  size):
     original_size = size
 
     if not response:
-        from tendenci.apps.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
+        from tendenci.core.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
 
         # set sizes
         size_min = (30,30)
@@ -130,7 +131,7 @@ def image_preview(request, app_label, model, id,  size):
             return response
 
         else: # raise http 404 error (returns page not found)
-            return HttpResponseNotFound("Image not found.", mimetype="text/plain")
+            return HttpResponseNotFound(_("Image not found."), mimetype="text/plain")
     else:
         return response
 
@@ -191,7 +192,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     if os.path.isdir(fullpath):
         if show_indexes:
             return directory_index(newpath, fullpath)
-        raise Http404("Directory indexes are not allowed here.")
+        raise Http404(_("Directory indexes are not allowed here."))
     if not os.path.exists(fullpath):
         raise Http404('"%s" does not exist' % fullpath)
 
@@ -271,7 +272,7 @@ def feedback(request, template_name="base/feedback.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
 def homepage(request, template_name="homepage.html"):
-    from tendenci.apps.event_logs.models import EventLog
+    from tendenci.core.event_logs.models import EventLog
 
     EventLog.objects.log()
 
@@ -380,7 +381,7 @@ def checklist(request, template_name="base/checklist.html"):
 
 @superuser_required
 def addon_upload(request, template_name="base/addon_upload.html"):
-    from tendenci.apps.event_logs.models import EventLog
+    from tendenci.core.event_logs.models import EventLog
 
     form = AddonUploadForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
@@ -435,7 +436,7 @@ def addon_upload_process(request, sid, template_name="base/addon_upload_process.
     path = request.session[sid]
 
     if not default_storage.exists(path):
-        messages.add_message(request, messages.SUCCESS, 'Addon upload complete.')
+        messages.add_message(request, messages.SUCCESS, _('Addon upload complete.'))
         del request.session[sid]
         return redirect('dashboard')
 
@@ -481,4 +482,3 @@ def update_tendenci(request, template_name="base/update.html"):
 @password_required
 def update_tendenci_confirmation(request, template_name="base/update_confirmation.html"):
     return render_to_response(template_name, context_instance=RequestContext(request))
-

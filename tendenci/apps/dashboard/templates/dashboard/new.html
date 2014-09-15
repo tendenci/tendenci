@@ -7,7 +7,7 @@
 {% load i18n %}
 {% theme_extends "base-wide.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}{% trans 'Dashboard' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -47,9 +47,17 @@
             {% if not has_paid and activate_url %}
             <div class=" alert-message block-message fade in" data-alert="alert">
                 <a class="close" href="#">×</a>
-                Your free trial period {% if expired %}expired{% else %}expires{% endif %} on {{ expiration_dt }}.
+                {% if expired %}
+                    {% blocktrans with dt=expiration_dt %}
+                    Your free trial period expired on {{ expiration_dt }}.
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans with dt=expiration_dt %}
+                    Your free trial period expires on {{ expiration_dt }}.
+                    {% endblocktrans %}
+                {% endif %}
                 <div class="alert-actions">
-                    <a class="btn" href="{{ activate_url }}">Activate Your Account</a>
+                    <a class="btn" href="{{ activate_url }}">{% trans 'Activate Your Account' %}</a>
                 </div>
             </div>
             {% endif %}
@@ -57,10 +65,10 @@
 
         <div class="alert-message block-message fade in success" data-alert="alert">
         <a class="close" href="#">×</a>
-        <p><strong>Welcome to the Tendenci Dashboard!</strong></p>
-        <p>Your Tendenci site comes with a built-in guide to get you started. In includes basic concepts like adding pages and other content, editing your navigation, uploading photos, and other general topics.</p>
+        <p><strong>{% trans 'Welcome to the Tendenci Dashboard!' %}</strong></p>
+        <p>{% trans 'Your Tendenci site comes with a built-in guide to get you started. In includes basic concepts like adding pages and other content, editing your navigation, uploading photos, and other general topics.' %}</p>
         <div class="alert-actions">
-            <a class="btn" href="{% url "tendenci_guide.guide_page" "getting-started-with-tendenci" %}">Go to the Guide</a>
+            <a class="btn" href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">{% trans 'Go to the Guide' %}</a>
         </div>
     </div>
 
@@ -69,9 +77,9 @@
 
 
     {% if user.is_superuser %}
-        <p style="text-align:left;"><a href="#" class="dashboard-icons-toggle readmorelarge">Toggle Dashboard Icons</a></p>
- 	{% endif %}
- 
+        <p style="text-align:left;"><a href="#" class="dashboard-icons-toggle readmorelarge">{% trans 'Toggle Dashboard Icons' %}</a></p>
+    {% endif %}
+
         <div class="modules">
         <ul>
 
@@ -159,11 +167,11 @@
             <div style="clear: both"><!-- IE7 --></div>
         </ul>
         </div> <!-- modules -->
-        
-        
+
+
     {% if user.is_superuser %}
         <div class="dashboard-stats">
-        <a href="{% url 'dashboard_customize' %}" class="readmorelarge">Customize Dashboard Statistics</a>
+        <a href="{% url dashboard_customize %}" class="readmorelarge">{% trans 'Customize Dashboard Statistics' %}</a>
         {% for stat_type in statistics %}
             {% dashboard_stat stat_type %}
         {% endfor %}
@@ -219,7 +227,7 @@
         <h3>{% trans "Tendenci Blog" %}</h3>
         <ul>
             <li>
-                <a href="http://blog.tendenci.com/">View latest posts</a>
+                <a href="http://blog.tendenci.com/">{% trans 'View latest posts' %}</a>
             </li>
         </ul>
 
@@ -232,7 +240,9 @@
             <ul>
             {% for entry in rss.entries|slice:":3" %}
                 <li>
-                    <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
+                    <div class="rss-title"><a href="{{ entry.link }}">
+                    {% blocktrans with t=entry.title %}{{ t }}{% endblocktrans %}
+                    </a></div>
                     <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
                 </li>
             {% endfor %}
@@ -256,7 +266,7 @@ $(function(){
     var pending = $("#members-info").attr('pending');
     var expired = $("#members-info").attr('expired');
     var d = [parseInt(active, 10), parseInt(pending, 10), parseInt(expired, 10)];
-    var c = ["New","Pending","Expired"];
+    var c = ["{% trans 'New' %}","{% trans 'Pending' %}","{% trans 'Expired' %}"];
     var h = "Last 30 days";
     $("#members-graph").graph({data:d,categories:c,legend:h,width:400});
 

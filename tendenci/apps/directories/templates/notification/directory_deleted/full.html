@@ -16,7 +16,7 @@
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Headline:" %}</td>
-    <td width="75%"><b>{{ object.headline }}</b></td>
+    <td width="75%"><b>{% blocktrans with headline=object.headline %}{{ headline }}{% endblocktrans %}</b></td>
   </tr>
   <tr>
     <td width="2%">&nbsp;</td>
@@ -26,7 +26,7 @@
   </tr>
 </table>
 <p>{% blocktrans %}If you would like view all
-  recently deleted directories, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event_log.search" %}?q=443000">{{ SITE_GLOBAL_SITEURL }}{% url "event_log.search" %}?q=443000</a></b><br>
+  recently deleted directories, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=443000">{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=443000</a></b><br>
   <br>
   </p>
 

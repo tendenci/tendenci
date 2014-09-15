@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupAdminForm
@@ -12,9 +13,9 @@ class GroupAdmin(TendenciBaseModelAdmin):
     list_editable = ['name', 'label', 'entity']
     fieldsets = (
         (None, {'fields': ('name', 'label', 'entity', 'email_recipient', 'permissions')}),
-        ('Flags', {'fields': (
+        (_('Flags'), {'fields': (
             'show_as_option', 'allow_self_add', 'allow_self_remove', 'sync_newsletters')}),
-        ('Administrative', {'fields': (
+        (_('Administrative'), {'fields': (
             'allow_anonymous_view', 'user_perms', 'member_perms', 'group_perms', 'status_detail')}),
     )
     form = GroupAdminForm

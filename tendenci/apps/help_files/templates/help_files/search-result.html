@@ -1,7 +1,9 @@
-<div class="help-file-wrap">  
+{% load i18n %}
+
+<div class="help-file-wrap">
     <div class="search-item">
-        <h2><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file.question|striptags|safe }}">{{ help_file.question|striptags|safe }}</a></h2>
-        <p>{{ help_file.answer|striptags|safe|truncatewords:60 }}</p>
+        <h2><a href="{{ help_file.get_absolute_url }}" alt="{% blockrans with q=help_file.question|striptags|safe %}{{ q }}{% endblocktrans %}">{% blockrans with q=help_file.question|striptags|safe %}{{ q }}{% endblocktrans %}</a></h2>
+        <p>{% blockrans with q=help_file.question|striptags|safe|truncatewords:60 %}{{ q }}{% endblocktrans %}</p>
     </div>
     {% include "help_files/meta.html" %}
 </div>

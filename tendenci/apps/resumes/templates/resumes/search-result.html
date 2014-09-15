@@ -1,8 +1,10 @@
 {% load resume_tags %}
+{% load i18n %}
+
 <div class="wrap-search-item">
     <div class="search-item resume-search-item">
         <h2><a href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h2>
-        <div class="item-content">{{ resume.description|striptags|truncatewords:20|safe }}</div>
+        <div class="item-content">{% blocktrans with d=resume.description|striptags|truncatewords:20|safe %}{{ d }}{% endblocktrans %}</div>
     </div>
     {% include "resumes/meta.html" %}
 </div>

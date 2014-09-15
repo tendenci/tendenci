@@ -8,11 +8,12 @@ from django.contrib.sites.models import Site
 from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
 from timezones import zones
 
-from tendenci.apps.base.utils import checklist_update
-from tendenci.apps.site_settings.utils import (get_form_list,
+from tendenci.core.base.utils import checklist_update
+from tendenci.core.site_settings.utils import (get_form_list,
                                                get_box_list,
                                                get_group_list)
-from tendenci.apps.base.utils import get_languages_with_local_name
+from tendenci.core.base.utils import get_languages_with_local_name
+from django.utils.translation import ugettext_lazy as _
 
 
 def clean_settings_form(self):
@@ -24,15 +25,15 @@ def clean_settings_form(self):
             field_value = self.cleaned_data[setting.name]
             if setting.data_type == "boolean":
                 if field_value != 'true' and field_value != 'false':
-                    raise forms.ValidationError("'%s' must be true or false" % setting.label)
+                    raise forms.ValidationError(_("'%(l)s' must be true or false" % {'l':setting.label}))
             if setting.data_type == "int":
                 if field_value != ' ':
                     if not field_value.isdigit():
-                        raise forms.ValidationError("'%s' must be a whole number" % setting.label)
+                        raise forms.ValidationError(_("'%(l)s' must be a whole number" % {'l':setting.label}))
             if setting.data_type == "file":
                 if field_value:
                     if not isinstance(field_value, File):
-                        raise forms.ValidationError("'%s' must be a file" % setting.label)
+                        raise forms.ValidationError(_("'%(l)s' must be a file" % {'l':setting.label}))
 
             if setting.name == "siteurl" and setting.scope == "site":
                 field_value = self.cleaned_data["siteurl"]
@@ -59,7 +60,7 @@ def save_settings_form(self):
             if setting.input_type == "file":
                 if field_value:
                     # save a file object and set the value at that file object's id.
-                    from tendenci.apps.files.models import File as TendenciFile
+                    from tendenci.core.files.models import File as TendenciFile
                     uploaded_file = TendenciFile()
                     uploaded_file.owner = self.user
                     uploaded_file.owner_username = self.user.username
@@ -179,7 +180,7 @@ def build_settings_form(user, settings):
                     fields.update({"%s" % setting.name: forms.ChoiceField(**options)})
 
         elif setting.input_type == 'file':
-            from tendenci.apps.files.models import File as TendenciFile
+            from tendenci.core.files.models import File as TendenciFile
             file_display = ''
             try:
                 try:

@@ -1,14 +1,15 @@
-from tendenci.apps.careers.models import Career
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.addons.careers.models import Career
+from tendenci.core.perms.forms import TendenciBaseForm
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 
 class CareerForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
-        choices=(('active', 'Active'),
-                 ('inactive', 'Inactive'),
-                 ('pending', 'Pending'),))
+        choices=(('active', _('Active')),
+                 ('inactive', _('Inactive')),
+                 ('pending', _('Pending')),))
 
     class Meta:
         model = Career
@@ -30,7 +31,7 @@ class CareerForm(TendenciBaseForm):
         'status_detail',
         )
 
-        fieldsets = [('Career Information', {
+        fieldsets = [(_('Career Information'), {
                       'fields': ['user',
                                 'company',
                                 'company_description',
@@ -42,7 +43,7 @@ class CareerForm(TendenciBaseForm):
                                 'experience',
                                  ],
                       }),
-                      ('Permissions', {
+                      (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
                                  'member_perms',
@@ -50,7 +51,7 @@ class CareerForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                     ('Administrator Only', {
+                     (_('Administrator Only'), {
                       'fields': ['status',
                                  'status_detail'],
                       'classes': ['admin-only'],

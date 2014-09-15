@@ -9,22 +9,22 @@ from timezones.utils import adjust_datetime_to_timezone
 from django.conf import settings
 
 from tagging.fields import TagField
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from timezones.fields import TimeZoneField
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.categories.models import CategoryItem
-from tendenci.apps.articles.managers import ArticleManager
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.categories.models import CategoryItem
+from tendenci.addons.articles.managers import ArticleManager
 from tinymce import models as tinymce_models
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.articles.module_meta import ArticleMeta
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.addons.articles.module_meta import ArticleMeta
 
 
 class Article(TendenciBaseModel):
     CONTRIBUTOR_AUTHOR = 1
     CONTRIBUTOR_PUBLISHER = 2
-    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, 'Author'),
-                           (CONTRIBUTOR_PUBLISHER, 'Publisher'))
+    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
+                           (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
@@ -45,8 +45,8 @@ class Article(TendenciBaseModel):
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     # used for better performance when retrieving a list of released articles
     release_dt_local = models.DateTimeField(null=True, blank=True)
-    syndicate = models.NullBooleanField(_('Include in RSS feed'), default=True)
-    featured = models.NullBooleanField()
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
+    featured = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
@@ -56,7 +56,7 @@ class Article(TendenciBaseModel):
     enclosure_type = models.CharField(_('Enclosure Type'), max_length=120, blank=True)
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
 
-    not_official_content = models.NullBooleanField(_('Official Content'), blank=True)
+    not_official_content = models.BooleanField(_('Official Content'), blank=True)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
@@ -71,9 +71,9 @@ class Article(TendenciBaseModel):
     objects = ArticleManager()
 
     class Meta:
-        permissions = (("view_article", "Can view article"),)
-        verbose_name = "Article"
-        verbose_name_plural = "Articles"
+        permissions = (("view_article", _("Can view article")),)
+        verbose_name = _("Article")
+        verbose_name_plural = _("Articles")
 
     def get_meta(self, name):
         """

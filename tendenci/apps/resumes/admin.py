@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.resumes.models import Resume
-from tendenci.apps.resumes.forms import ResumeForm
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.addons.resumes.models import Resume
+from tendenci.addons.resumes.forms import ResumeForm
 
 class ResumeAdmin(TendenciBaseModelAdmin):
     list_display = ['title', 'activation_dt', 'owner_link', 'admin_perms', 'admin_status']
@@ -10,7 +11,7 @@ class ResumeAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['title', 'description']
     fieldsets = (
-        ('Resume Information', {
+        (_('Resume Information'), {
             'fields': ('title',
                        'slug',
                        'description',
@@ -22,13 +23,13 @@ class ResumeAdmin(TendenciBaseModelAdmin):
                        'activation_dt',
                 )
         }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        ('Status', {'fields': (
+        (_('Status'), {'fields': (
             'status_detail',
             )}),
         )

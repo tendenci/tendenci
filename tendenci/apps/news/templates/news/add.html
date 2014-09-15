@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{% firstof MODULE_NEWS_LABEL 'News' %} Add{% endblock %}
+{% block title %}{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans 'Add' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -23,10 +23,10 @@
     <h1>{% firstof MODULE_NEWS_LABEL 'News' %} {% trans "Add" %}</h1>
 
     <div class="news-wrap">
-        <form action="{% url "news.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url news.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Add {% firstof MODULE_NEWS_LABEL 'News' %}" />
+            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_NEWS_LABEL trans 'News' %}" />
         </div>
         </form>
     </div>

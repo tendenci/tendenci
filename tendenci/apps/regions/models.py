@@ -3,9 +3,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.regions.managers import RegionManager
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.addons.regions.managers import RegionManager
 
 
 class Region(TendenciBaseModel):
@@ -21,9 +21,9 @@ class Region(TendenciBaseModel):
     objects = RegionManager()
 
     class Meta:
-        permissions = (("view_region", "Can view region"),)
-        verbose_name = "Region"
-        verbose_name_plural = "Regions"
+        permissions = (("view_region", _("Can view region")),)
+        verbose_name = _("Region")
+        verbose_name_plural = _("Regions")
 
     def __unicode__(self):
         return self.region_name

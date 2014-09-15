@@ -35,25 +35,27 @@ name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
 <div class="t">
     <h1>
     {% if request.user.id == rp.user.id %}
-       Manage my Payment Info
+       {% trans 'Manage my Payment Info' %}
     {% else %}
-    {% trans "Manage Payment Info for " %} <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
     {% endif %}
     </h1>
 
-    <button onclick="AuthorizeNetPopup.openManagePopup()">Click to start</button>
+    <button onclick="AuthorizeNetPopup.openManagePopup()">{% trans 'Click to start' %}</button>
 
     {% if gateway_error  %}
 
     <div>
+    {% blocktrans %}
     Oops, we're not able to process your request at the moment due to an error from payment gateway. Please try again later or
     contact your site administrator for assistance. Thanks!
+    {% endblocktrans %}
     </div>
 
     {% else %}
 
     <noscript>
-        <div style="font-size: 1.2em; color:red; margin-top: 1em;">JavaScript must be enabled in order for you to add/edit payment methods. Please enable Javascript and try again </div>
+        <div style="font-size: 1.2em; color:red; margin-top: 1em;">{% blocktrans %}JavaScript must be enabled in order for you to add/edit payment methods. Please enable Javascript and try again{% endblocktrans %} </div>
      </noscript>
      <br />
 
@@ -61,14 +63,14 @@ name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
       <div class="AuthorizeNetPopupOuter">
         <div class="AuthorizeNetPopupTop">
           <div class="AuthorizeNetPopupClose">
-            <a href="javascript:;" onclick="AuthorizeNetPopup.closePopup();" title="Close"> </a>
+            <a href="javascript:;" onclick="AuthorizeNetPopup.closePopup();" title="{% trans 'Close' %}"> </a>
           </div>
         </div>
         <div class="AuthorizeNetPopupInner">
           <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/recurring_payments/authnet/empty/" frameborder="0" scrolling="no"></iframe>
         </div>
         <div class="AuthorizeNetPopupBottom">
-          <div class="AuthorizeNetPopupLogo" title="Powered by Authorize.Net"></div>
+          <div class="AuthorizeNetPopupLogo" title="{% trans 'Powered by Authorize.Net' %}"></div>
         </div>
       </div>
       <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>

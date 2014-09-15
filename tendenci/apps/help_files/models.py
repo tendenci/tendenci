@@ -4,9 +4,9 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.base.fields import SlugField
 from tinymce import models as tinymce_models
 from managers import HelpFileManager
 
@@ -35,10 +35,10 @@ class HelpFile(TendenciBaseModel):
     question = models.CharField(max_length=500)
     answer = tinymce_models.HTMLField()
     level = models.CharField(choices=LEVEL_CHOICES, max_length=100, default='basic')
-    is_faq = models.NullBooleanField()
-    is_featured = models.NullBooleanField()
-    is_video = models.NullBooleanField()
-    syndicate = models.NullBooleanField(_('Include in RSS feed'), default=True)
+    is_faq = models.BooleanField()
+    is_featured = models.BooleanField()
+    is_video = models.BooleanField()
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     view_totals = models.PositiveIntegerField(default=0)
 
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
@@ -49,7 +49,7 @@ class HelpFile(TendenciBaseModel):
     objects = HelpFileManager()
 
     class Meta:
-        permissions = (("view_helpfile","Can view help file"),)
+        permissions = (("view_helpfile",_("Can view help file")),)
 
     @models.permalink
     def get_absolute_url(self):

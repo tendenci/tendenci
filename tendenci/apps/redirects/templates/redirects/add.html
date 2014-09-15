@@ -3,7 +3,7 @@
 {% load redirect_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Add' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,7 +19,7 @@
         <form action="{% url "redirect.add" %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Add Redirect" />
+            <input type="submit" value="{% trans 'Add Redirect' %}" />
         </div>
         </form>
     </div>

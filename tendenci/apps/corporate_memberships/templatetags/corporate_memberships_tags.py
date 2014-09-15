@@ -4,11 +4,12 @@ import random
 from django.contrib.auth.models import AnonymousUser, User
 from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.corporate_memberships.models import CorpMembership
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.utils import tcurrency
+from tendenci.addons.corporate_memberships.models import CorpMembership
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.base.utils import tcurrency
 
 
 register = Library()
@@ -319,11 +320,11 @@ def list_corporate_memberships(parser, token):
 
     if len(bits) < 3:
         message = "'%s' tag requires at least 2 parameters" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 

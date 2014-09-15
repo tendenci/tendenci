@@ -7,34 +7,36 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
-import simplejson
+from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
-from tendenci.apps.base.http import Http403
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.meta.forms import MetaForm
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.perms.utils import (
+from django.utils.translation import ugettext_lazy as _
+
+from tendenci.core.base.http import Http403
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.core.meta.forms import MetaForm
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.decorators import is_enabled
+from tendenci.core.perms.utils import (
     get_notice_recipients,
     update_perms_and_save,
     has_perm,
     get_query_filters,
     has_view_perm)
-from tendenci.apps.categories.forms import CategoryForm, CategoryForm2
-from tendenci.apps.categories.models import Category
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.exports.utils import run_export_task
-from tendenci.apps.jobs.models import Job, JobPricing
-from tendenci.apps.jobs.forms import JobForm, JobPricingForm, JobSearchForm
-from tendenci.apps.jobs.utils import is_free_listing, job_set_inv_payment
+from tendenci.core.categories.forms import CategoryForm, CategoryForm2
+from tendenci.core.categories.models import Category
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.exports.utils import run_export_task
+from tendenci.addons.jobs.models import Job, JobPricing
+from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
+from tendenci.addons.jobs.utils import is_free_listing, job_set_inv_payment
 
 try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.core.base.utils import send_email_notification
 
 
 @is_enabled('jobs')
@@ -244,9 +246,8 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             #save relationships
             job.save()
-
-            messages.add_message(request, messages.SUCCESS,
-                                    'Successfully added %s' % job)
+            msg_string = 'Successfully added %s' % job
+            messages.add_message(request, messages.SUCCESS,_(msg_string))
 
             # send notification to administrators
             recipients = get_notice_recipients(
@@ -279,7 +280,8 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
         # Redirect user w/perms to create pricing if none exist
         pricings = JobPricing.objects.all()
         if not pricings and has_perm(request.user, 'jobs.add_jobpricing'):
-            messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label')))
+            msg_string = 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label'))
+            messages.add_message(request, messages.WARNING, _(msg_string))
             return HttpResponseRedirect(reverse('job_pricing.add'))
 
         initial_category_form_data = {
@@ -387,9 +389,8 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
 
             #save relationships
             job.save()
-
-            messages.add_message(request, messages.SUCCESS,
-                            'Successfully updated %s' % job)
+            msg_string = 'Successfully updated %s' % job
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(
                 reverse(success_redirect, args=[job.slug]))
@@ -424,9 +425,8 @@ def edit_meta(request, id, form_class=MetaForm,
         if form.is_valid():
             job.meta = form.save()  # save meta
             job.save()  # save relationship
-
-            messages.add_message(request, messages.SUCCESS,
-                            'Successfully updated meta for %s' % job)
+            msg_string = 'Successfully updated meta for %s' % job
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
     else:
@@ -443,7 +443,8 @@ def delete(request, id, template_name="jobs/delete.html"):
 
     if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job)
+            msg_string = 'Successfully deleted %s' % job
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
             recipients = get_notice_recipients(
@@ -622,9 +623,8 @@ def approve(request, id, template_name="jobs/approve.html"):
                 'job_approved_user_notice', recipients, extra_context)
             #except:
             #    pass
-
-        messages.add_message(request, messages.SUCCESS,
-                                'Successfully approved %s' % job)
+        msg_string = 'Successfully approved %s' % job
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))
 

@@ -15,13 +15,13 @@
 
     {% contact_nav request.user %}
 
-    <h1>{% trans "Add:" %} {% firstof MODULE_CONTACTS_LABEL 'Conacts' %}</h1>
+    <h1>{% trans "Add:" %} {% firstof MODULE_CONTACTS_LABEL trans 'Conacts' %}</h1>
 
     <div class="contact-wrap">
         <form action="{% url "contact.add" %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="Add {{ {% firstof MODULE_CONTACTS_LABEL 'Contact' %}}}" />
+            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_CONTACTS_LABEL trans 'Contact' %}" />
         </div>
         </form>
     </div>

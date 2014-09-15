@@ -22,26 +22,26 @@ from django.core.cache import cache
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
-import simplejson
+from django.utils import simplejson
 import requests
 
 from tagging.fields import TagField
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.base.fields import DictField
-from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.photos.module_meta import PhotoMeta
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.base.fields import DictField
+from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.addons.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
-from tendenci.apps.photos.utils import EXIF
-from tendenci.apps.photos.utils.reflection import add_reflection
-from tendenci.apps.photos.utils.watermark import apply_watermark
+from tendenci.addons.photos.utils import EXIF
+from tendenci.addons.photos.utils.reflection import add_reflection
+from tendenci.addons.photos.utils.watermark import apply_watermark
 
 # max_length setting for the ImageModel ImageField
 IMAGE_FIELD_MAX_LENGTH = getattr(settings, 'PHOTOS_IMAGE_FIELD_MAX_LENGTH', 100)
@@ -483,10 +483,10 @@ class PhotoSize(models.Model):
     width = models.PositiveIntegerField(_('width'), default=0, help_text=_('If width is set to "0" the image will be scaled to the supplied height.'))
     height = models.PositiveIntegerField(_('height'), default=0, help_text=_('If height is set to "0" the image will be scaled to the supplied width'))
     quality = models.PositiveIntegerField(_('quality'), choices=JPEG_QUALITY_CHOICES, default=70, help_text=_('JPEG image quality.'))
-    upscale = models.NullBooleanField(_('upscale images?'), default=False, help_text=_('If selected the image will be scaled up if necessary to fit the supplied dimensions. Cropped sizes will be upscaled regardless of this setting.'))
-    crop = models.NullBooleanField(_('crop to fit?'), default=False, help_text=_('If selected the image will be scaled and cropped to fit the supplied dimensions.'))
-    pre_cache = models.NullBooleanField(_('pre-cache?'), default=False, help_text=_('If selected this photo size will be pre-cached as photos are added.'))
-    increment_count = models.NullBooleanField(_('increment view count?'), default=False, help_text=_('If selected the image\'s "view_count" will be incremented when this photo size is displayed.'))
+    upscale = models.BooleanField(_('upscale images?'), default=False, help_text=_('If selected the image will be scaled up if necessary to fit the supplied dimensions. Cropped sizes will be upscaled regardless of this setting.'))
+    crop = models.BooleanField(_('crop to fit?'), default=False, help_text=_('If selected the image will be scaled and cropped to fit the supplied dimensions.'))
+    pre_cache = models.BooleanField(_('pre-cache?'), default=False, help_text=_('If selected this photo size will be pre-cached as photos are added.'))
+    increment_count = models.BooleanField(_('increment view count?'), default=False, help_text=_('If selected the image\'s "view_count" will be incremented when this photo size is displayed.'))
     effect = models.ForeignKey('PhotoEffect', null=True, blank=True, related_name='photo_sizes', verbose_name=_('photo effect'))
     watermark = models.ForeignKey('Watermark', null=True, blank=True, related_name='photo_sizes', verbose_name=_('watermark image'))
 
@@ -512,7 +512,7 @@ class PhotoSize(models.Model):
     def save(self, *args, **kwargs):
         if self.crop is True:
             if self.width == 0 or self.height == 0:
-                raise ValueError("PhotoSize width and/or height can not be zero if crop=True.")
+                raise ValueError(_("PhotoSize width and/or height can not be zero if crop=True."))
         super(PhotoSize, self).save(*args, **kwargs)
         PhotoSizeCache().reset()
         self.clear_cache()
@@ -557,7 +557,7 @@ class PhotoSet(TendenciBaseModel):
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
-    tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
+    tags = TagField(blank=True, help_text=_("Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3"))
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     perms = generic.GenericRelation(ObjectPermission,
@@ -567,7 +567,7 @@ class PhotoSet(TendenciBaseModel):
     class Meta:
         verbose_name = _('Photo Album')
         verbose_name_plural = _('Photo Album')
-        permissions = (("view_photoset", "Can view photoset"),)
+        permissions = (("view_photoset", _("Can view photoset")),)
 
     objects = PhotoSetManager()
 
@@ -698,11 +698,11 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     title_slug = models.SlugField(_('slug'))
     caption = models.TextField(_('caption'), blank=True)
     date_added = models.DateTimeField(_('date added'), auto_now_add=True, editable=False)
-    is_public = models.NullBooleanField(_('public'), default=True, help_text=_('Public photographs will be displayed in the default views.'))
+    is_public = models.BooleanField(_('public'), default=True, help_text=_('Public photographs will be displayed in the default views.'))
     member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True, on_delete=models.SET_NULL)
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
-    tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
+    tags = TagField(blank=True, help_text=_("Comma delimited (eg. mickey, donald, goofy)"))
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
     exif_data = DictField(_('exif'), null=True)
@@ -1000,7 +1000,7 @@ class Pool(models.Model):
 
     class Meta:
         # Enforce unique associations per object
-        permissions = (("view_photopool","Can view photopool"),)
+        permissions = (("view_photopool",_("Can view photopool")),)
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')

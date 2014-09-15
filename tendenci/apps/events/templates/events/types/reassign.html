@@ -2,7 +2,7 @@
 {% load event_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Types{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Types' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,7 +22,7 @@
                     <ul class="associated-events">
                     {% for event in type.event_set.all %}
                         <li>
-                        <a href="{% url 'event' event.pk %}">{{ event }}</a>
+                        <a href="{% url event event.pk %}">{{ event }}</a>
                         ({{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }})
                         </li>
                     {% endfor %}
@@ -31,14 +31,14 @@
             </div>
         </div>
         <div class="forms">
-        <form action="{% url "event.reassign_type" type.pk %}" method="post">{% csrf_token %}
+        <form action="{% url event.reassign_type type.pk %}" method="post">{% csrf_token %}
             <div class="item">
                 <div class="errs">{{ form.type.errors }}</div>
                 <div class="label">{{ form.type.label }}</div>
                 <div class="field" style="margin-left:150px">{{ form.type }}</div>
                 <div class="clear"></div>
             </div>
-            <input type="Submit" value="Reassign Events" />
+            <input type="Submit" value="{% trans 'Reassign Events' %}" />
         </form>
         </div>
     </div>

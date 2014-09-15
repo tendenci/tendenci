@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db.models import Q
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.rss.feedsmanager import SubFeed
 from tendenci.apps.site_settings.utils import get_setting
@@ -10,9 +11,9 @@ from tendenci.apps.sitemaps import TendenciSitemap
 from tendenci.apps.stories.models import Story
 
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Stories' % get_setting('site','global','sitedisplayname')
+    title = _('%(dname)s Latest Stories' % {'dname': get_setting('site','global','sitedisplayname')})
     link =  "/stories/"
-    description =  "Latest Stories by %s" % get_setting('site','global','sitedisplayname')
+    description = _("Latest Stories by %(dname)s" % {'dname': get_setting('site','global','sitedisplayname')})
 
     def items(self):
         items = Story.objects.filter(Q(expires=False) | Q(start_dt__lte=datetime.now()), Q(end_dt__gte=datetime.now())).filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]

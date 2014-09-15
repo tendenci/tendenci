@@ -2,7 +2,7 @@
 {% load forms_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Entry Delete{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Entry Delete' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,7 +13,7 @@
 
 <div class="t">
     {% forms_nav request.user %}
-    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} {% trans "Entry Delete" %}</h1>
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans "Entry Delete" %}</h1>
 
     <div class="form-builder-wrap">
         <div class="delete-prompt">
@@ -22,13 +22,13 @@
         <h3>
             {{ entry.entry_time }}
             {% for field in entry.fields.all|slice:":3" %}
-                &nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
+                &nbsp;&ndash;&nbsp;{% blocktrans with v=field.value|truncatewords:"2" %}{{ v }}{% endblocktrans %}
             {% endfor %}
         </h3>
 
         <div class="delete-form">
-            <form action="{% url 'form_entry_delete' entry.pk %}" method="post">{% csrf_token %}
-                <input type="submit" value="Delete Entry" />
+            <form action="{% url form_entry_delete entry.pk %}" method="post">{% csrf_token %}
+                <input type="submit" value="{% trans 'Delete Entry' %}" />
             </form>
         </div>
     </div>

@@ -43,8 +43,8 @@ class Entity(models.Model):
     objects = EntityManager()
 
     class Meta:
-        permissions = (("view_entity","Can view entity"),)
-        verbose_name_plural = "entities"
+        permissions = (("view_entity",_("Can view entity")),)
+        verbose_name_plural = _("entities")
         ordering = ("entity_name",)
 
     def __unicode__(self):

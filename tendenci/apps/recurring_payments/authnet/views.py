@@ -6,15 +6,15 @@ from django.conf import settings
 #from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 #from django.views.decorators.csrf import csrf_exempt
-import simplejson
+from django.utils import simplejson
 
-from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
-from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
-from tendenci.apps.recurring_payments.authnet.utils import get_token, get_test_mode
+from tendenci.addons.recurring_payments.models import RecurringPayment, PaymentProfile
+from tendenci.addons.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
+from tendenci.addons.recurring_payments.authnet.utils import get_token, get_test_mode
 
-from tendenci.apps.base.http import Http403
-#from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.decorators import ssl_required
+from tendenci.core.base.http import Http403
+#from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.base.decorators import ssl_required
 
 @login_required
 def manage_payment_info(request, recurring_payment_id,
@@ -145,6 +145,7 @@ def update_payment_profile_local(request):
 
     return HttpResponse(simplejson.dumps(ret_d))
 
+
 def retrieve_token(request):
     """
     retrieve a token for a given recurring payment.
@@ -161,8 +162,3 @@ def retrieve_token(request):
                                      is_secure=request.is_secure())
 
     return HttpResponse(token)
-
-
-
-
-

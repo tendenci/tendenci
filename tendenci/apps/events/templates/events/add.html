@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Add' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -21,10 +21,10 @@
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
 
     <div class="event-wrap">
-        <form action="{% url "event.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url event.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ multi_event_forms|styled_multi_forms }}
-            <input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
+            <input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL trans 'Event' %}" />
         </div>
         </form>
     </div>

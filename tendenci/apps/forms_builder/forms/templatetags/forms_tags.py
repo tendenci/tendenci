@@ -1,6 +1,7 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
 from django.contrib.auth.models import AnonymousUser
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.forms_builder.forms.forms import FormForForm
 from tendenci.apps.forms_builder.forms.models import Form
@@ -98,7 +99,7 @@ def embed_form(parser, token):
         kwargs["pk"] = bits[1]
     except:
         message = "Form tag must include an ID of a form."
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
     try:
         kwargs["template_name"] = bits[2]
     except:

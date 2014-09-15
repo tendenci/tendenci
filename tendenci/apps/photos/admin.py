@@ -1,31 +1,32 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.photos.models import PhotoSet, Image, Pool
-from tendenci.apps.photos.forms import PhotoSet, PhotoAdminForm, PhotoSetAddForm
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.addons.photos.models import PhotoSet, Image, Pool
+from tendenci.addons.photos.forms import PhotoSet, PhotoAdminForm, PhotoSetAddForm
 
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import get_notice_recipients, update_perms_and_save
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.utils import get_notice_recipients, update_perms_and_save
 from tendenci.apps.notifications.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('update_dt', 'create_dt', 'tags',)
 
     fieldsets = (
-        ('Photo Set Information', {
+        (_('Photo Set Information'), {
                       'fields': ('name',
                                  'description',
                                  'group',
                                  'tags',
                                  ),
                       }),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+        (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
+        (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        ('Photo Set Status', {'fields': (
+        (_('Photo Set Status'), {'fields': (
             'status_detail',
         )}),
     )

@@ -4,16 +4,16 @@
 </p>
 
 <p>
-{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk  %}</a>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk  %}</a>
 </p>
 
 <p>
-	{% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
-	</p>
+    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+    </p>
 
 <p>
 {% blocktrans %}To add individual memberships under your corporate, go to:
-{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}</a>
+{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url membership_default.add_under_corp object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url membership_default.add_under_corp object.id %}</a>
 </p>
 
 {% if object.authentication_method == 'secret_code' %}
@@ -26,14 +26,14 @@
 {% if object.anonymous_creator %}
 <p>
 	{% if created %}
-	Your login account:<br />
-	Username: <strong>{{ username }}</strong><br />
-	Password: <strong>{{ password }}</strong>
+	{% trans 'Your login account' %}:<br />
+	{% trans 'Username' %}: <strong>{{ username }}</strong><br />
+	{% trans 'Password' %}: <strong>{{ password }}</strong>
 	{% else %}
-	Your login username: <strong>{{ object.creator_username }}</strong>
+	{% trans 'Your login username' %}: <strong>{{ object.creator_username }}</strong>
 	{% endif %}
 	<br />
-	To log into the site, visit <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'auth_login' %}">{{ SITE_GLOBAL_SITEURL }}{% url 'auth_login' %}</a>
+	{% trans 'To log into the site, visit' %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}">{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}</a>
 </p>
 {% endif %}
 <p>{% trans "Thanks!" %}</p>

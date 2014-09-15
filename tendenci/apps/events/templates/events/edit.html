@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Edit{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Edit' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,27 +18,27 @@
 <div class="t">
     {% event_nav request.user event %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %}{% trans " Edit" %}</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %}{% trans " Edit" %}</h1>
 
     <div class="event-tabs">
         <ul class="tabs">
             <li class="dropdown {% if label == 'overview' %}active{% endif %}">
-                <a href="{% url "event.edit" event.pk %}">{% trans "Overview" %}</a>
+                <a href="{% url event.edit event.pk %}">{% trans "Overview" %}</a>
             </li>
             <li class="dropdown {% if label == 'location' %}active{% endif %}">
-                <a href="{% url "event.location_edit" event.pk %}">{% trans "Location" %}</a>
+                <a href="{% url event.location_edit event.pk %}">{% trans "Location" %}</a>
             </li>
             <li class="dropdown {% if label == 'organizer' %}active{% endif %}">
-                <a href="{% url "event.organizer_edit" event.pk %}">{% trans "Organizer" %}</a>
+                <a href="{% url event.organizer_edit event.pk %}">{% trans "Organizer" %}</a>
             </li>
             <li class="dropdown {% if label == 'speakers' %}active{% endif %}">
-                <a href="{% url "event.speaker_edit" event.pk %}">{% trans "Speaker(s)" %}</a>
+                <a href="{% url event.speaker_edit event.pk %}">{% trans "Speaker(s)" %}</a>
             </li>
             <li class="dropdown {% if label == 'regconf' %}active{% endif %}">
-                <a href="{% url "event.regconf_edit" event.pk %}">{% trans "Registration" %}</a>
+                <a href="{% url event.regconf_edit event.pk %}">{% trans "Registration" %}</a>
             </li>
             <li class="dropdown {% if label == 'pricing' %}active{% endif %}">
-                <a href="{% url "event.pricing_edit" event.pk %}">{% trans "Pricing(s)" %}</a>
+                <a href="{% url event.pricing_edit event.pk %}">{% trans "Pricing(s)" %}</a>
             </li>
         </ul>
     </div>
@@ -48,13 +48,13 @@
         <div class="forms">
             {{ multi_event_forms|styled_multi_forms }}
             {% if label != "pricing" %}
-            <input type="submit" value="Save and Continue Editing" name="_continue"/>
+            <input type="submit" value="{% trans 'Save and Continue Editing' %}" name="_continue"/>
             {% endif %}
-            <input type="submit" value="Save Changes" name="_save"/>
+            <input type="submit" value="{% trans 'Save Changes' %}" name="_save"/>
         </div>
         </form>
 
-        <div id="confirm-dialog" title="Apply changes to all events?">
+        <div id="confirm-dialog" title="{% trans 'Apply changes to all events?' %}">
             <p>{% blocktrans %}
             These changes would be applied to every event part of this series, including past events. Are you sure?
             {% endblocktrans %}</p>

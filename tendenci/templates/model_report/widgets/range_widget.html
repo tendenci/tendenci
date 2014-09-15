@@ -6,7 +6,7 @@
         {{ field }}
         <span class="info{% if field.errors %} error{% else %}{% endif %}">
           {{ field.errors|join:" " }}</span>
-        <span class="help-text">{{ field.help_text|safe }}</span>
+        <span class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</span>
     {% endwith %}
     </div>
     <div class="row end">
@@ -15,7 +15,7 @@
         {{ field }}
         <span class="info{% if field.errors %} error{% else %}{% endif %}">
           {{ field.errors|join:" " }}</span>
-        <span class="help-text">{{ field.help_text|safe }}</span>
+        <span class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</span>
     {% endwith %}
     </div>
 </div>

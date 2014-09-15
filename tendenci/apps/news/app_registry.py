@@ -1,15 +1,16 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.registry import site
-from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
-from tendenci.apps.news.models import News
+from tendenci.core.registry import site
+from tendenci.core.registry.base import CoreRegistry, lazy_reverse
+from tendenci.addons.news.models import News
 
 
 class NewsRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Create news to let your vistors keep current'
+    description = _('Create news to let your vistors keep current')
     icon = '%simages/icons/news-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {

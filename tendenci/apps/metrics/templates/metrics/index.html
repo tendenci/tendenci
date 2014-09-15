@@ -57,11 +57,11 @@
 
 <table>
     <tr>
-        <th>Date</th>
-        <th>Users</th>
-        <th>Members</th>
-        <th>Visits</th>
-        <th>Storage</th>
+        <th>{% trans 'Date' %}</th>
+        <th>{% trans 'Users' %}</th>
+        <th>{% trans 'Members' %}</th>
+        <th>{% trans 'Visits' %}</th>
+        <th>{% trans 'Storage' %}</th>
     </tr>
 {% for metric in last_week %}
 {% if not forloop.last %}
@@ -74,14 +74,14 @@
     </tr>
 {% else %}
     <tr>
-        <th>Last 7 days</th>
+        <th>{% trans 'Last 7 days' %}</th>
         <th>{{ metric.users }}</th>
         <th>{{ metric.members }}</th>
         <th>{{ week_sums.total_visits }}</th>
         <th>{{ metric.disk_usage|filesizeformat }}</th>
     </tr>
     <tr>
-        <th>Last 30 days</th>
+        <th>{% trans 'Last 30 days' %}</th>
         <th>{{ metric.users }}</th>
         <th>{{ metric.members }}</th>
         <th>{{ month_sums.total_visits }}</th>
@@ -93,21 +93,21 @@
 
 
 <div id="users-wrap">
-    <p>Users over the last 7 days</p>
+    <p>{% trans'Users over the last 7 days' %}</p>
     <div id="users-chart"></div>
 </div>
 
 <div id="members-wrap">
-    <p>Members over the last 7 days</p>
+    <p>{% trans 'Members over the last 7 days' %}</p>
     <div id="members-chart"></div>
 
 </div>
 
 <div id="traffic-wrap">
-    <p>Web traffic for the last 7 days</p>
+    <p>{% trans 'Web traffic for the last 7 days' %}</p>
     <div id="traffic-chart"></div>
-    <p>Last 7 days Total {{ week_sums.total_visits }}<br />
-    Last 30 days Total {{ month_sums.total_visits }}</p>
-    <p>Storage: {{ yesterday.disk_usage|filesizeformat }}</p>
+    <p>{% trans 'Last 7 days Total' %} {{ week_sums.total_visits }}<br />
+    {% trans 'Last 30 days Total' %} {{ month_sums.total_visits }}</p>
+    <p>{% trans 'Storage' %}: {{ yesterday.disk_usage|filesizeformat }}</p>
 </div>
 {% endblock body %}

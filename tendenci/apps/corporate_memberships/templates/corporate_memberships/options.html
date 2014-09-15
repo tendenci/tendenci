@@ -20,7 +20,7 @@
                  <span class="status-{{ opt_object.status_detail }}">{% trans "This is Archive" %}</span>
                  {% with opt_object.corp_profile.corp_membership as current_corp_membership %}
                  {% if current_corp_membership %}
-                 <a href="{% url "corpmembership.view" current_corp_membership.id %}">View Current</a>
+                 <a href="{% url corpmembership.view current_corp_membership.id %}">{% trans 'View Current' %}</a>
                  {% endif %}
                  {% endwith %}
                  {% else %}
@@ -31,21 +31,21 @@
     {% else %}
          {% if opt_object.status_detail == 'archive'%}
          <span class="status-{{ opt_object.status_detail }}">{% trans "This is Archive" %}</span>
-         <a href="">View Current</a>
+         <a href="">{% trans 'View Current' %}</a>
          {% endif %}
     {% endif %}
 
     {% if opt_object.status and opt_object.status_detail != 'archive' %}
     {% if  allow_edit %}
-        <a class="opt-link" href="{% url "corpmembership.edit" opt_object.pk %}" title="Edit">Edit</a>
+        <a class="opt-link" href="{% url corpmembership.edit opt_object.pk %}" title="{% trans 'Edit' %}">{% trans 'Edit' %}</a>
     {% endif %}
 
     {% if can_edit or allow_edit %}
         {% if request.user.is_authenticated %}
-            <a class="opt-link" href="{% url "corpmembership.roster_search" %}?cm_id={{opt_object.id}}&active_only=1" title="Roster">{% trans "Roster" %}</a>
+            <a class="opt-link" href="{% url corpmembership.roster_search %}?cm_id={{opt_object.id}}&active_only=1" title="{% trans 'Roster' %}">{% trans "Roster" %}</a>
         {% endif %}
         {% if can_delete %}
-            <a class="opt-link" href="{% url "corpmembership.delete" opt_object.pk %}" title="delete">{% trans "Delete" %}</a>
+            <a class="opt-link" href="{% url corpmembership.delete opt_object.pk %}" title="{% trans 'delete' %}">{% trans "Delete" %}</a>
         {% endif %}
   {% endif %}
   {% endif %}
@@ -58,23 +58,23 @@
     {% blocktrans with opt_object.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
     {% trans "Status of Renewal: " %}<span class="status-pending">{{ opt_object.status_detail }}</span><br />
     {% if request.user.is_superuser %}
-        <b>{% trans "Admin" %}</b>: <a href="{% url "corpmembership.approve" opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
+        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
     {% endif %}
     </span>
     </div>
 {% else %}
     {% if request.user.is_superuser and opt_object.is_join_pending %}
         <div><span class="pending-info-box">
-        <b>{% trans "Admin" %}</b>: <a href="{% url "corpmembership.approve" opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
+        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
         </span>
         </div>
     {% endif %}
 
     {% if opt_object.can_renew %}
-        <a href="{% url "corpmembership.renew" opt_object.id %}" style="background-color:yellow;" title="Renew">{% trans "Renew" %}</a>
+        <a href="{% url corpmembership.renew opt_object.id %}" style="background-color:yellow;" title="Renew">{% trans "Renew" %}</a>
     {% else %}
         {% if opt_object.is_expired and request.user.is_superuser %}
-         <a href="{% url "corpmembership.renew" opt_object.id %}" style="background-color:yellow;" title="Admin: Renew">{% trans "Admin: Renew" %}</a>
+         <a href="{% url corpmembership.renew opt_object.id %}" style="background-color:yellow;" title="Admin: Renew">{% trans "Admin: Renew" %}</a>
 
         {% endif %}
     {% endif %}
@@ -82,7 +82,7 @@
 
 {% if request.user.is_superuser and  opt_object.status_detail == 'disapproved' %}
     <div><span>
-        <b>{% trans "Admin" %}</b>: <a href="{% url "corpmembership.approve" opt_object.pk %}" title="Approve">{% trans "approve it" %}</a>
+        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve">{% trans "approve it" %}</a>
         </span>
     </div>
 {% endif %}

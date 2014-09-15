@@ -11,17 +11,17 @@ from django.contrib.auth.models import AnonymousUser
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from tinymce import models as tinymce_models
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.base.fields import SlugField
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.categories.models import CategoryItem
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.core.base.fields import SlugField
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.categories.models import CategoryItem
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.files.models import File
-from tendenci.apps.directories.module_meta import DirectoryMeta
-from tendenci.apps.directories.managers import DirectoryManager
-from tendenci.apps.directories.choices import ADMIN_DURATION_CHOICES
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.files.models import File
+from tendenci.addons.directories.module_meta import DirectoryMeta
+from tendenci.addons.directories.managers import DirectoryManager
+from tendenci.addons.directories.choices import ADMIN_DURATION_CHOICES
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
@@ -59,7 +59,7 @@ class Directory(TendenciBaseModel):
     email2 = models.CharField(_('Email 2'), max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
 
-    renewal_notice_sent = models.NullBooleanField(default=False)
+    renewal_notice_sent = models.BooleanField(default=False)
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
     pricing = models.ForeignKey('DirectoryPricing', null=True)
@@ -68,7 +68,7 @@ class Directory(TendenciBaseModel):
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
 
-    syndicate = models.NullBooleanField(_('Include in RSS feed'), default=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
     tags = TagField(blank=True)
@@ -91,9 +91,9 @@ class Directory(TendenciBaseModel):
     objects = DirectoryManager()
 
     class Meta:
-        permissions = (("view_directory","Can view directory"),)
-        verbose_name = "Directory"
-        verbose_name_plural = "Directories"
+        permissions = (("view_directory",_("Can view directory")),)
+        verbose_name = _("Directory")
+        verbose_name_plural = _("Directories")
 
     def get_meta(self, name):
         """
@@ -223,17 +223,17 @@ class DirectoryPricing(models.Model):
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    show_member_pricing = models.NullBooleanField()
+    show_member_pricing = models.BooleanField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="directory_pricing_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
-    status = models.NullBooleanField(default=True)
+    status = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (("view_directorypricing", "Can view directory pricing"),)
+        permissions = (("view_directorypricing", _("Can view directory pricing")),)
 
     def __unicode__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')

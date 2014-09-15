@@ -12,20 +12,21 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.template_tags import parse_tag_kwargs
-from tendenci.apps.base.utils import url_exists
+from tendenci.core.base.template_tags import parse_tag_kwargs
+from tendenci.core.base.utils import url_exists
 from tendenci.apps.profiles.models import Profile
 
-from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
-from tendenci.apps.files.utils import generate_image_cache_key
+from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
+from tendenci.core.files.utils import generate_image_cache_key
 
 register = Library()
 
 
 @register.inclusion_tag("base/fb_like_iframe.html")
 def fb_like_button_iframe(url, show_faces='false', width=400, height=40):
-    from tendenci.apps.site_settings.utils import get_setting
+    from tendenci.core.site_settings.utils import get_setting
     site_url = get_setting('site', 'global', 'siteurl')
     url = '%s%s' % (site_url,url)
     if show_faces.lower() == 'true':
@@ -111,7 +112,7 @@ def fan_count(parser, token):
     """
     bits = token.contents.split()
     if len(bits) < 3:
-        raise TemplateSyntaxError("'%s' tag takes two arguments" % bits[0])
+        raise TemplateSyntaxError(_("'%(b)s' tag takes two arguments" % {'b':bits[0]}))
     service = bits[1]
     service_id = bits[2]
     return FanCountNode(service, service_id)
@@ -121,7 +122,7 @@ def callMethod(obj, methodName):
         callMethod and args are used so that we can call a method with parameters in template
         Example:
             if you want to call: user_this.allow_view_by(user_current)
-            in template: {{ user_this.profile|args:user_current|call:'allow_edit_by' }}
+            in template: {{ user_this.get_profile|args:user_current|call:'allow_edit_by' }}
     """
     method = getattr(obj, methodName)
 
@@ -165,7 +166,7 @@ def do_assign(parser, token):
     """
     bits = token.contents.split()
     if len(bits) != 3:
-        raise TemplateSyntaxError("'%s' tag takes two arguments" % bits[0])
+        raise TemplateSyntaxError(_("'%(b)s' tag takes two arguments" % {'b': bits[0]}))
     value = parser.compile_filter(bits[2])
     return AssignNode(bits[1], value)
 
@@ -189,7 +190,7 @@ class GetProfileNode(Node):
         var_name = self.resolve(self.var_name, context)
         if isinstance(user_obj, User):
             try:
-                profile = user_obj.profile
+                profile = user_obj.get_profile()
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=user_obj)
             context[var_name] = profile
@@ -205,7 +206,7 @@ def get_or_create_profile_for(parser, token):
     """
     bits = token.contents.split()
     if len(bits) < 2:
-        raise TemplateSyntaxError("'%s' tag takes at least two arguments" % bits[0])
+        raise TemplateSyntaxError(_("'%(b)s' tag takes at least two arguments" % {'b':bits[0]}))
 
     args = {
         'obj': bits[1],
@@ -249,10 +250,10 @@ def reset(parser, token):
     try:
         variable = bits[1]
     except:
-        raise TemplateSyntaxError, "'%s' requires at least three arguments." % bits[0]
+        raise TemplateSyntaxError, _("'%(b)s' requires at least three arguments." % {'b':bits[0]})
 
     if bits[1] == 'as':
-        raise TemplateSyntaxError, "'%s' first argument must be a context var." % bits[0]
+        raise TemplateSyntaxError, _("'%(b)s' first argument must be a context var." % {'b':bits[0]})
 
     # get the user
     try:
@@ -263,7 +264,7 @@ def reset(parser, token):
         context = None
 
     if not variable and not context:
-        raise TemplateSyntaxError, "'%s' missing arguments. Syntax {% reset var1 as var2 %}" % bits[0]
+        raise TemplateSyntaxError, _("'%(b)s' missing arguments. Syntax {% reset var1 as var2 %}" % {'b':bits[0]})
 
     return ResetNode(variable, context=context)
 
@@ -307,12 +308,12 @@ def image_preview(parser, token):
     try:
         instance = bits[1]
     except:
-        raise TemplateSyntaxError, "'%s' requires at least 2 arguments" % bits[0]
+        raise TemplateSyntaxError, _("'%(b)s' requires at least 2 arguments" % {'b':bits[0]})
 
     try:
         size = bits[2]
     except:
-        raise TemplateSyntaxError, "'%s' requires at least 2 arguments" % bits[0]
+        raise TemplateSyntaxError, _("'%(b)s' requires at least 2 arguments" % {'b':bits[0]})
 
     try:
         context = bits[4]
@@ -398,11 +399,11 @@ def get_rss(parser, token):
 
     if len(bits) < 4:
         message = "'%s' tag requires more than 3" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     if bits[2] != "as":
         message = "'%s' third argument must be 'as" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     kwargs = parse_tag_kwargs(bits)
 
@@ -435,7 +436,7 @@ def md5_hash(parser, token):
 
     if len(kwargs["bits"]) < 2:
         message = "'%s' tag requires more than 2" % kwargs["bits"][0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     return Md5Hash(*args, **kwargs)
 
@@ -523,7 +524,7 @@ def photo_image_url(parser, token):
 
     if len(bits) < 1:
         message = "'%s' tag requires more than 1 argument" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     return PhotoImageURL(photo, *args, **kwargs)
 
@@ -607,7 +608,7 @@ def image_url(parser, token):
 
     if len(bits) < 1:
         message = "'%s' tag requires more than 1 argument" % bits[0]
-        raise TemplateSyntaxError(message)
+        raise TemplateSyntaxError(_(message))
 
     return ImageURL(file, *args, **kwargs)
 

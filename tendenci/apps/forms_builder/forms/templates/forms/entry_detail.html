@@ -3,7 +3,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}Entry - {{ entry.form.title }}{% endblock %}
+{% block title %}{% blocktrans with t=entry.form.title %}Entry - {{ t }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,26 +14,26 @@
 <div class="t">
     {% forms_nav request.user %}
     <div class="form-builder-wrap">
-        <h2>Entry - {{ entry.form.title }}</h2>
+        <h2>{% blocktrans with t=entry.form.title %}Entry - {{ t }}{% endblocktrans %}</h2>
          <div class="quick-options">
             {% forms_entry_options request.user entry %}
          </div>
         {% for field in entry.entry_fields %}
             {% if field.field.field_type == 'FileField' %}
             <p>
-                <strong>{{ field.field.label }}</strong><br />
-                <a href="{{ field|media_url }}">{{ field.value|basename }}</a>
+                <strong>{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</strong><br />
+                <a href="{{ field|media_url }}">{% blocktrans with n=field.value|basename %}{{ n }}{% endblocktrans %}</a>
             </p>
             {% else %}
             <p>
-                <strong>{{ field.field.label }}</strong><br />
-                <em>{{ field.value }}</em>
+                <strong>{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</strong><br />
+                <em>{% blocktrans with v=field.value %}{{ v }}{% endblocktrans %}</em>
             </p>
             {% endif %}
         {% endfor %}
         {% if entry.entry_path %}
             <p>
-                <strong>Entry Path</strong><br />
+                <strong>{% trans 'Entry Path' %}</strong><br />
                 <em>{{ entry.entry_path }}</em>
             </p>
         {% endif %}

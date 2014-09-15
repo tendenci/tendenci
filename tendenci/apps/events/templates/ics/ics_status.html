@@ -3,7 +3,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}ICS Status{% endblock %}
+{% block title %}{% trans 'ICS Status' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,7 +19,7 @@
         {% if ics.status == "completed" %}
             <h1>{% trans "ICS Creation Completed!" %}</h1>
             <p class="timestamp">{{ datetime.now }}</p>
-            <p class="msg">{% trans "Download" %} <a href="{% url "ics.download" ics.pk %}">{% trans "here" %}</a></p>
+            <p class="msg">{% trans "Download" %} <a href="{% url ics.download ics.pk %}">{% trans "here" %}</a></p>
         {% else %}
             <h1>{% trans "Processing ICS Creation!" %}</h1>
             <p class="timestamp">{{ datetime.now }}</p>

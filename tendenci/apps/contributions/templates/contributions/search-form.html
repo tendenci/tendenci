@@ -1,4 +1,5 @@
-<form class="search-form" action="{% url "contribution.search" %}" method="get">
+{% load i18n %}
+<form class="search-form" action="{% url contribution.search %}" method="get">
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="Search" />
+<input type="submit" value="{% trans 'Search' %}" />
 </form>

@@ -5,11 +5,11 @@ from django.conf import settings
 #from django.http import Http404
 from django.core.urlresolvers import reverse
 from forms import FirstDataPaymentForm
-from tendenci.apps.payments.models import Payment
-from tendenci.apps.payments.utils import payment_processing_object_updates
-from tendenci.apps.payments.utils import log_payment, send_payment_notice
+from tendenci.core.payments.models import Payment
+from tendenci.core.payments.utils import payment_processing_object_updates
+from tendenci.core.payments.utils import log_payment, send_payment_notice
 
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 
 currency_number_d = {'USD': '840',
                    'EUR': '978',
@@ -146,7 +146,3 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
         payment.save()
-
-
-
-

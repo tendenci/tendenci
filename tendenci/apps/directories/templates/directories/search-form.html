@@ -1,6 +1,8 @@
-<form class="search-form" action="{% url 'directories' %}" method="get">
+{% load i18n %}
+
+<form class="search-form" action="{% url directories %}" method="get">
     <div class="first-row" id="form-row">
-        <span>Search by: </span>
+        <span>{% trans 'Search by' %}: </span>
         <div class="search-category">
             {{ form.search_category}}
             {{ form.search_category.errors }}
@@ -13,7 +15,7 @@
 
     <div class="category-wrap">
         <select name="category" onchange="this.form.submit();">
-        <option value="">All Categories ({{ categories|length }})</option>
+        <option value="">{% trans 'All Categories' %} ({{ categories|length }})</option>
         {% for cat in categories %}
             {% if request.GET.category == cat.pk|slugify %}
             <option selected value="{{ cat.pk }}">{{ cat.name }}</option>
@@ -24,7 +26,7 @@
         </select>
 
         <select name="sub_category" onchange="this.form.submit();">
-        <option value="">All Subcategories ({{ sub_categories|length }})</option>
+        <option value="">{% trans 'All Subcategories' %} ({{ sub_categories|length }})</option>
         {% for subcat in sub_categories %}
             {% if request.GET.sub_category == subcat.pk|slugify %}
             <option selected value="{{ subcat.pk }}">{{ subcat.name }}</option>
@@ -35,5 +37,5 @@
         </select>
     </div>
 
-    <input type="submit" value="Search" />
+    <input type="submit" value="{% trans 'Search' %}" />
 </form>

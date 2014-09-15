@@ -5,7 +5,7 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Event Added - Notification</title>
+<title>{% trans 'Event Added - Notification' %}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
@@ -14,14 +14,14 @@
 <p>{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }} just added the following event from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</p>
 
 <div style="margin-bottom:20px;">
-<p style="margin:2px">{{ event.title }}</p>
+<p style="margin:2px">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</p>
 <p style="margin:2px">{{ event.dt_display }}</p>
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "View event details" %}</a></p>
 </div>
 
 {% if event.is_recurring_event %}
 <p style="margin:2px">{% trans "This is a recurring event, you can view the rest of the events here" %}:
-<a href="{% url "event.recurring" event.pk %}">{% trans "View recurring event list" %}</a></p>
+<a href="{% url event.recurring event.pk %}">{% trans "View recurring event list" %}</a></p>
 {% endif %}
 
 <p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">

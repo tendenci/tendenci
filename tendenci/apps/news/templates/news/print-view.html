@@ -3,9 +3,9 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ news.get_title }}{% endblock %}
-{% block meta_description %}{{ news.get_description }}{% endblock %}
-{% block meta_keywords %}{{ news.get_keywords }}{% endblock %}
+{% block title %}{% blocktrans with t=news.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=news.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=news.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -26,8 +26,8 @@
     </div>
 
     <div class="news-wrap">
-        <h2>{{ news.headline }}</h2>
-        <div class="content">{{ news.body|safe }}</div>
+        <h2>{% blocktrans with h=news.headline %}{{ h }}{%  endblocktrans %}</h2>
+        <div class="content">{% blocktrans with b=news.body|safe %}{{ b }}{% endblocktrans %}</div>
         <div class="meta">
             <div class="submitted">{% blocktrans with news.create_dt|date:"long" as news_create and news.creator as news_creator %}Submitted on {{ news_create }} by {{ news_creator }}{% endblocktrans %}</div>
         </div>

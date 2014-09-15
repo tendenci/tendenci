@@ -6,14 +6,14 @@
 {% load search_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} Search{% endblock %}
+{% block title %}{{ block.super }} {% trans 'Search' %}{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
-<link rel="alternate" type="application/rss+xml" title="Latest Pages" href="{% url "page.feed" %}" />
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Pages' %}" href="{% url page.feed %}" />
 {% endblock %}
 
 {% block body %}

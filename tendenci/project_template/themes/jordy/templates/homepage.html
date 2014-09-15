@@ -1,4 +1,3 @@
-{% load i18n %}
 {% load base_filters %}
 {% load base_tags %}
 {% load theme_tags %}
@@ -9,6 +8,7 @@
 {% load news_tags %}
 {% load case_study_tags %}
 {% theme_extends "base.html" %}
+{% load i18n %}
 
 
 <!-- Tendenci Specific Load Tags (Delete as Needed)
@@ -68,7 +68,7 @@
 {% block body_ids %}home{% endblock body_ids %}
 {% block body_classes %}home{% endblock body_classes %}
 {% block html_body %}
-<a class="sr-only" href="#content">Skip to main content</a>
+<a class="sr-only" href="#content">{% trans 'Skip to main content' %}</a>
 
 
 
@@ -97,7 +97,7 @@
     {% for story in stories_list %}
     <div class="item {% if forloop.first %}active{% endif %}">
       {% if story.image %}
-      <img src="{% image_url story.image size=960x300 crop=true quality=90 %}" alt="image for {{ story.title }}" class="image-wide"/>
+      <img src="{% image_url story.image size=960x300 crop=true quality=90 %}" alt="{% blocktrans with t=story.title %}image for {{ t }}{% endblocktrans %}" class="image-wide"/>
       {% endif %}
       <div class="carousel-caption">
         <h1>{% blocktrans with title=story.title %}{{ title }}{% endblocktrans %}</h1>
@@ -190,7 +190,7 @@
         <div class="more"><a href="{{ news_item.get_absolute_url }}">{% trans 'Read More' %} »</a></div>
       </div>
       {% empty %}
-        No news to show now. Start adding news now!
+        {% trans 'No news to show now. Start adding news now!' %}
       {% endfor %}
      </div><!-- /news container -->
   </div> <!-- /row -->

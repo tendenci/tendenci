@@ -20,19 +20,21 @@ name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
 
 
 <div class="t">
-    <h1>{% trans "Manage Payment Info for " %} <a href="{% url 'profile' rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></h1>
+    <h1>{% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></h1>
 
     {% if gateway_error  %}
 
     <div>
+    {% blocktrans %}
     Oops, we're not able to process your request at the moment due to an error from payment gateway. Please try again later or
     contact your site administrator for assistance. Thanks!
+    {% endblocktrans %}
     </div>
 
     {% else %}
 
     <noscript>
-        <div style="font-size: 1.2em; color:red; margin-top: 1em;">JavaScript must be enabled in order for you to add/edit payment methods. Please enable Javascript and try again </div>
+        <div style="font-size: 1.2em; color:red; margin-top: 1em;">{% blocktrans %}JavaScript must be enabled in order for you to add/edit payment methods. Please enable Javascript and try again{% endblocktrans %} </div>
      </noscript>
      <br />
 

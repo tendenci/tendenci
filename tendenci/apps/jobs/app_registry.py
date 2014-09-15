@@ -1,16 +1,18 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.registry import site
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
-from tendenci.apps.jobs.models import Job
+from tendenci.core.registry import site
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.registry.base import CoreRegistry, lazy_reverse
+from tendenci.addons.jobs.models import Job
 
 
 class JobRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
+    author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = 'Create and Manage a %s Bank to offer free and paid postings' % get_setting('module', 'jobs', 'label')
+    description = _('Create and Manage a %(label)s Bank to offer free and paid postings' % {
+        'label': get_setting('module', 'jobs', 'label')})
     icon = '%simages/icons/jobs-color-64x64.png' % settings.STATIC_URL
 
     # jobs - GREEN base - complement is DEEP RED

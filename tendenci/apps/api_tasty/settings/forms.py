@@ -1,5 +1,6 @@
 from django import forms
-from tendenci.apps.site_settings.models import Setting
+from tendenci.core.site_settings.models import Setting
+from django.utils.translation import ugettext_lazy as _
 
 class SettingForm(forms.ModelForm):
     """
@@ -49,7 +50,7 @@ class SettingForm(forms.ModelForm):
 
     def clean(self):
         """
-        Clean method is based on clean_settings_form from tendenci.apps.site_settings.forms.
+        Clean method is based on clean_settings_form from tendenci.core.site_settings.forms.
         """
         setting = self.instance
         cleaned_data = super(SettingForm, self).clean()
@@ -61,23 +62,23 @@ class SettingForm(forms.ModelForm):
 
             if setting.data_type == "boolean":
                 if field_value != 'true' and field_value != 'false':
-                    raise forms.ValidationError("'%s' must be true or false" % setting.label)
+                    raise forms.ValidationError(_("'%(label)s' must be true or false" % {'label': setting.label}))
             if setting.data_type == "int":
                 if field_value != ' ':
                     if not field_value.isdigit():
-                        raise forms.ValidationError("'%s' must be a whole number" % setting.label)
+                        raise forms.ValidationError(_("'%(label)s' must be a whole number" % {'label':setting.label}))
             if setting.data_type == "file":
                 #API can't support file uploads without a workaround to another view.
                 if field_value:
                     #file fields will be considered as id fields for Files
                     if not field_value.isdigit():
-                        raise forms.ValidationError("'%s' must be a File pk" % setting.label)
+                        raise forms.ValidationError(_("'%(label)s' must be a File pk" % {'label':setting.label}))
 
                     #if the value is an int use it as pk to get a File
-                    from tendenci.apps.files.models import File as TendenciFile
+                    from tendenci.core.files.models import File as TendenciFile
                     try:
                         tfile = TendenciFile.objects.get(pk=field_value)
                     except TendenciFile.DoesNotExist:
-                        raise forms.ValidationError("File entry does not exist.")
+                        raise forms.ValidationError(_("File entry does not exist."))
 
         return cleaned_data

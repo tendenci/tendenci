@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load dashboard_tags %}
 
-{% block title %}Import Users{% endblock %}
+{% block title %}{% trans 'Import Users' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -54,7 +54,7 @@
 
 </div> <!-- import settings -->
 
-    <form class="import" method="post" action="{% url "import.user_upload_process" id %}">{% csrf_token %}
+    <form class="import" method="post" action="{% url import.user_upload_process id %}">{% csrf_token %}
 
     <div class="results">
     {% for u in users_list %}
@@ -73,15 +73,15 @@
             {% endif %}
 
             <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#CCCCCC">
-              <tr> 
-                 <td> 
+              <tr>
+                 <td>
                    <table width="100%" border="0" cellspacing="1" cellpadding="1">
-                     <tr bgcolor="#F2F2F2"> 
+                     <tr bgcolor="#F2F2F2">
                        <td width="5%" bgcolor="#F2F2F2" class="body_copy">&nbsp;</td>
                        <td width="61%" class="body_copy">
                             <font face="Arial, Helvetica, sans-serif" size="2" class="subtitles">
                                 {% if u.ACTION == 'update' %}
-                                    <a href="{% url 'profile' u.username %}">{{ u.first_name }} {{u.last_name }}</a>
+                                    <a href="{% url profile u.username %}">{{ u.first_name }} {{u.last_name }}</a>
                                 {% else %}
                                     {{ u.first_name }} {{u.last_name }}
                                 {% endif %}
@@ -113,7 +113,7 @@
     </div>
 
     <div align="right">
-    <input type="submit" class="submit-btn" name="submit" value="Import Users" >
+    <input type="submit" class="submit-btn" name="submit" value="{% trans 'Import Users' %}" >
     </div>
 
     </form>

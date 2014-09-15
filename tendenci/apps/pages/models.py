@@ -87,8 +87,8 @@ class BasePage(TendenciBaseModel):
 class Page(BasePage):
     CONTRIBUTOR_AUTHOR = 1
     CONTRIBUTOR_PUBLISHER = 2
-    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, 'Author'),
-                           (CONTRIBUTOR_PUBLISHER, 'Publisher'))
+    CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
+                           (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
@@ -99,7 +99,7 @@ class Page(BasePage):
     objects = PageManager()
 
     class Meta:
-        permissions = (("view_page", "Can view page"),)
+        permissions = (("view_page", _("Can view page")),)
 
     def get_meta(self, name):
         """
