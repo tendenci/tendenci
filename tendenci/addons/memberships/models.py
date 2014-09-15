@@ -2121,7 +2121,7 @@ class Notice(models.Model):
                     'content': notice.get_content(membership=membership),
                     'membership_total': MembershipDefault.objects.filter(status=True, status_detail='active').count(),
                     'reply_to': notice.sender,
-                    'sender': notice.sender,
+                    'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
                     'sender_display': notice.sender_display,
                 })
 
