@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin, messages
 from django.core.urlresolvers import reverse

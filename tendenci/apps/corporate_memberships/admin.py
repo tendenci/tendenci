@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.shortcuts import get_object_or_404, redirect
 
 from tendenci.addons.corporate_memberships.models import (

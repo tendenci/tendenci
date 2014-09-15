@@ -4,7 +4,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse

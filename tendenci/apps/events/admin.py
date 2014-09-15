@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib import admin, messages
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.encoding import iri_to_uri
