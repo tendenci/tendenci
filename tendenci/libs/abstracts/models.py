@@ -24,11 +24,7 @@ class TendenciBaseModel(models.Model):
     creator_username = models.CharField(max_length=50)
     owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
     owner_username = models.CharField(max_length=50)
-<<<<<<< HEAD
     status = models.NullBooleanField("Active", default=True)
-=======
-    status = models.BooleanField(_("Active"), default=True)
->>>>>>> master
     status_detail = models.CharField(max_length=50, default='active')
 
     class Meta:
@@ -93,6 +89,7 @@ class TendenciBaseModel(models.Model):
         if "log" in kwargs:
             kwargs.pop('log')
         super(TendenciBaseModel, self).delete(*args, **kwargs)
+
 
 
 class Person(TendenciBaseModel):
