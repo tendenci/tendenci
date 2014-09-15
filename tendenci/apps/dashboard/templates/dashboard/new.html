@@ -68,7 +68,7 @@
         <p><strong>{% trans 'Welcome to the Tendenci Dashboard!' %}</strong></p>
         <p>{% trans 'Your Tendenci site comes with a built-in guide to get you started. In includes basic concepts like adding pages and other content, editing your navigation, uploading photos, and other general topics.' %}</p>
         <div class="alert-actions">
-            <a class="btn" href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">{% trans 'Go to the Guide' %}</a>
+            <a class="btn" href="{% url "tendenci_guide.guide_page" "getting-started-with-tendenci" %}">{% trans 'Go to the Guide' %}</a>
         </div>
     </div>
 
@@ -171,7 +171,7 @@
 
     {% if user.is_superuser %}
         <div class="dashboard-stats">
-        <a href="{% url dashboard_customize %}" class="readmorelarge">{% trans 'Customize Dashboard Statistics' %}</a>
+        <a href="{% url "dashboard_customize" %}" class="readmorelarge">{% trans 'Customize Dashboard Statistics' %}</a>
         {% for stat_type in statistics %}
             {% dashboard_stat stat_type %}
         {% endfor %}

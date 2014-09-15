@@ -11,7 +11,7 @@
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos-photo-set.css">
-<link rel="alternate" type="application/rss+xml" title="Latest photo albums" href="{% url photo.feed.latest-albums %}" />
+<link rel="alternate" type="application/rss+xml" title="Latest photo albums" href="{% url "photo.feed.latest-albums" %}" />
 {% endblock %}
 
 {% block body %}

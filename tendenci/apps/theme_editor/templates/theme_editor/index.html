@@ -43,7 +43,7 @@
               </form>
             {% if current_file not in non_deletable_files  %}
 
-            <a id="delete-btn" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">{% trans 'Delete this File' %}</a>
+            <a id="delete-btn" href="{% url "theme_editor.delete" %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">{% trans 'Delete this File' %}</a>
             {% endif %}
             <div style="clear:both"></div>
 
@@ -150,7 +150,7 @@
                                <div class="well well-small">
                                <h4>{% trans 'Customize more templates' %}:</h4>
                                {% trans "Copy down one of Tendenci's built-in app templates and customize it." %}
-                               <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
+                               <a href="{% url "theme_editor.app_list" %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
 
                                </div>
 

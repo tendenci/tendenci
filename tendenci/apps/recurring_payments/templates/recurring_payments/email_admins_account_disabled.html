@@ -3,7 +3,7 @@
 {% trans "Greetings:" %} <br /><br />
 
 <div>
-{% url profile user_by.username as profile_url %}
+{% url "profile" user_by.username as profile_url %}
 {% blocktrans %}
 The recurring payment account for {{ rp }} has been disabled by <a href="{{ profile_url }}">{{ user_by.get_full_name }}</a>{% endblocktrans %}.
 
@@ -12,7 +12,7 @@ The recurring payment account for {{ rp }} has been disabled by <a href="{{ prof
 
 {% trans 'To view this recurring payment account, go to' %}:
 <br />
-<a href="{{ site_url }}{% url recurring_payment.view_account rp.id %}">{{ site_url }}{% url recurring_payment.view_account rp.id %}</a>
+<a href="{{ site_url }}{% url "recurring_payment.view_account" rp.id %}">{{ site_url }}{% url "recurring_payment.view_account" rp.id %}</a>
 
 </div>
 

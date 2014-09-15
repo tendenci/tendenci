@@ -6,7 +6,7 @@
 <ul>
     {% if obj.is_pending and request.user.profile.is_superuser %}
     <li>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url admin:memberships_membershipdefault_change obj.id %}">{% trans 'Admin: Click here to edit and approve this membership ' %}</a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "admin:memberships_membershipdefault_change" obj.id %}">{% trans 'Admin: Click here to edit and approve this membership ' %}</a>
     </li>
     {% endif %}
 
@@ -14,14 +14,14 @@
     {% with obj.corpmembership as corpmembership %}
     {% if corpmembership %}
     <li>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url membership_default.add_under_corp obj.corporate_membership_id %}">{% trans 'Add <strong>More</strong> Members Under' %} "{{ corpmembership.corp_profile.name }}"  </a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" obj.corporate_membership_id %}">{% trans 'Add <strong>More</strong> Members Under' %} "{{ corpmembership.corp_profile.name }}"  </a>
     </li>
-    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view obj.corporate_membership_id %}">{% trans 'Back to Corporate Membership' %} - {{ corpmembership.corp_profile.name }}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" obj.corporate_membership_id %}">{% trans 'Back to Corporate Membership' %} - {{ corpmembership.corp_profile.name }}</a></li>
     {% endif %}
     {% endwith %}
 
     {% endif %}
 
-    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile obj.user.username %}" class="links">{% trans "Go to my profile" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "profile" obj.user.username %}" class="links">{% trans "Go to my profile" %}</a></li>
 </ul>
 {% endif %}

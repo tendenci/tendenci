@@ -28,7 +28,7 @@
             {% endblocktrans %}
 
         </div>
-        <form action="{% url directory.renew directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url "directory.renew" directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="{% trans 'Submit Renewal' %}" />

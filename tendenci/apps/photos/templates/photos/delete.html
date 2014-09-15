@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="delete-form">
-        <form name="photo-delete" method="POST" action="{% url photo_destroy photo.id %}">{% csrf_token %}
+        <form name="photo-delete" method="POST" action="{% url "photo_destroy" photo.id %}">{% csrf_token %}
             <input type="hidden" name="action" value="delete">
             <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
         </form>

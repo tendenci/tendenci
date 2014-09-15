@@ -13,9 +13,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -24,20 +24,20 @@
             <div>
             <ul class="dropdown-menu">
             {% if can_edit_setting %}
-                <li><a href="{% url settings.index "module" "users" %}">{% trans "Settings" %}</a></li>
+                <li><a href="{% url "settings.index" "module" "users" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url profile.search %}">{% trans "Search Users" %}</a></li>
+            <li><a href="{% url "profile.search" %}">{% trans "Search Users" %}</a></li>
             {% if can_add_user %}
-                <li><a href="{% url profile.add %}">{% trans "Add User" %}</a></li>
+                <li><a href="{% url "profile.add" %}">{% trans "Add User" %}</a></li>
             {% endif %}
             {% if user.profile.is_superuser %}
             <li class="divider"></li>
-            <li><a href="{% url import.user_upload_add %}">{% trans "Import" %}</a></li>
+            <li><a href="{% url "import.user_upload_add" %}">{% trans "Import" %}</a></li>
 
             {% endif %}
         </ul>
         </div>
     </li>
-    <li><a href="{% url groups %}">{% trans "Groups" %}</a></li>
+    <li><a href="{% url "groups" %}">{% trans "Groups" %}</a></li>
 </ul>
 {% endif %}

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% url event event.id as event_url %}
+{% url "event" event.id as event_url %}
 {% trans 'Greetings' %} {{ event.organizer.user.get_full_name }},
 <br /><br />
 {% blocktrans with title=event.title  dt=event.start_dt|date:"M j, Y" t1=event.start_dt|date:"P" t2=event.end_dt|date:"P" %}

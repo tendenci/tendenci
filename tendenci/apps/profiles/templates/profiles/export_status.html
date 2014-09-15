@@ -20,7 +20,7 @@
         <div{% if not download_ready %} class="display-hide"{% endif %}>
             <p>{% trans 'The export file is ready, click the download link below to download.' %}</p>
             <div>
-                <a href="{% url profile.export_download identifier %}">{% trans 'Download Now' %}</a>
+                <a href="{% url "profile.export_download" identifier %}">{% trans 'Download Now' %}</a>
             </div>
         </div>
 

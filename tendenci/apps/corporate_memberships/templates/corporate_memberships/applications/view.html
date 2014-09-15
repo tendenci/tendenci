@@ -79,7 +79,7 @@
             {% corpmemb_options request.user corporate_membership %}
          </div>
          {% if corporate_membership.is_active %}
-        <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a>
+        <div><a href="{% url "membership_default.add_under_corp" corporate_membership.id %}">{% trans "Join under this corporation" %}</a>
            <br /> <span class="small">({% individual_pricing_desp corporate_membership %})</span>
         </div>
         {% endif %}
@@ -106,7 +106,7 @@
                                 </tr>
                                 {% for rep in field_obj.value.all %}
                                     <tr class="corp-rep">
-                                    <td><a href="{% url profile rep.user.username %}">
+                                    <td><a href="{% url "profile" rep.user.username %}">
                                         {{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
 
                                     </td>
@@ -125,13 +125,13 @@
                                 </table>
                                 <div>&nbsp;</div>
                                  {% if corporate_membership.status_detail != 'archive' %}
-                                <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></div>
+                                <div><a href="{% url "corpmembership.edit_corp_reps" corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></div>
                                 {% endif %}
                             {% else %}
                                 <div>{% trans "No representatives available" %}</div>
                                 <div>&nbsp;</div>
                                 {% if corporate_membership.status_detail != 'archive' %}
-                                <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add Representatives" %}</a></div>
+                                <div><a href="{% url "corpmembership.edit_corp_reps" corporate_membership.pk %}">{% trans "Add Representatives" %}</a></div>
                                 {% endif %}
                             {% endif %}
 
@@ -149,14 +149,14 @@
                                 {{ field_obj.value|safe|urlize }}
                                 {% else %}
                                     {% if field_obj.field_type == 'FileField' %}
-                                    <a href="{% url corpmembership.download_file corporate_membership.id  field_obj.id %}">{{ field_obj.value|basename }}</a>
+                                    <a href="{% url "corpmembership.download_file" corporate_membership.id  field_obj.id %}">{{ field_obj.value|basename }}</a>
                                     {% else %}
                                     {{ field_obj.value }}
                                     {% endif %}
                                 {% endif %}
                                 {% if field_obj.field_name == 'payment_method' %}
                                     {% if corporate_membership.invoice %}
-                                     - <a href="{% url invoice.view corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
+                                     - <a href="{% url "invoice.view" corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -180,7 +180,7 @@
       <div class="label short-label inline-block"><strong>{% trans "Total Allowed:" %}</strong></div>
       <div class="field-value inline-block">{{ corporate_membership.free_pass_total }}
         {% if request.user.is_superuser %}
-        <span style="padding-left: 1.5em;"><a href="{% url corpmembership.free_passes_edit corporate_membership.id %}">{% trans 'Edit' %}</a></span>
+        <span style="padding-left: 1.5em;"><a href="{% url "corpmembership.free_passes_edit" corporate_membership.id %}">{% trans 'Edit' %}</a></span>
         {% endif %}
       </div>
     </div>
@@ -207,7 +207,7 @@
         <tr>
           <td>
             {% if fp.user %}
-            <a href="{% url profile fp.user.username %}">
+            <a href="{% url "profile" fp.user.username %}">
               {{ fp.user.username }}
               </a>
             {% else %}
@@ -219,13 +219,13 @@
           </td>
           <td>
             {% if fp.event %}
-            <a href="{% url event fp.event.id %}">{% blocktrans with title=fp.event.title|truncatechars:30 %}{{ title }}{% endblocktrans %}</a>
+            <a href="{% url "event" fp.event.id %}">{% blocktrans with title=fp.event.title|truncatechars:30 %}{{ title }}{% endblocktrans %}</a>
             {% endif %}
           </td>
           <td>{{ fp.create_dt|date:'n/j/Y P' }}</td>
           <td>
             {% if fp.creator %}
-            <a href="{% url profile fp.creator.username %}">{{ fp.creator_username }}</a>
+            <a href="{% url "profile" fp.creator.username %}">{{ fp.creator_username }}</a>
             {% endif %}
             </td>
         </tr>
@@ -270,7 +270,7 @@
                {% endblocktrans %}
                {% endif %}
                {% if corp_memb.id != corporate_membership.id %}
-               <a href="{% url corpmembership.view corp_memb.id %}">{% trans 'View' %}</a>
+               <a href="{% url "corpmembership.view" corp_memb.id %}">{% trans 'View' %}</a>
                {% endif %}
            </li>
            {% endfor %}

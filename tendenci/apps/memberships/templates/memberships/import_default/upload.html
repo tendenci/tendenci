@@ -66,7 +66,7 @@
 
     {% if not memb_type_exists %}
     <div class="alert">
-        {% url admin:memberships_membershiptype_add as memtype_url %}
+        {% url "admin:memberships_membershiptype_add" as memtype_url %}
         {% blocktrans %}
         Please <a href="{{ memtype_url }}">set up membership types</a> before proceeding.
         {% endblocktrans %}
@@ -75,7 +75,7 @@
 
     {% if not memb_app_exists %}
     <div class="alert">
-        {% url admin:memberships_membershipapp_add as app_add_url %}
+        {% url "admin:memberships_membershipapp_add" as app_add_url %}
         {% blocktrans %}
         Please <a href="{{ app_add_url }}">set up membership applications</a> before proceeding.
         {% endblocktrans %}
@@ -85,7 +85,7 @@
 
     <div id="import-instruction">
         <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
-        {% url settings.index 'module' 'memberships' as mem_settings_url %}
+        {% url "settings.index" 'module' 'memberships' as mem_settings_url %}
         {% blocktrans %}
         <p style="margin-top:0;">Please review your membership <a href="{{ mem_settings_url }}">privacy settings</a> before importing.</p>
         {%% blocktrans }
@@ -118,19 +118,19 @@
     </div>
 
     <div class="template-download">
-        <a href="{% url memberships.download_default_template %}">
+        <a href="{% url "memberships.download_default_template" %}">
         <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
         </a>
 
         <div class="link">
-            <a href="{% url memberships.download_default_template %}">{% trans "Download Template" %}</a>
+            <a href="{% url "memberships.download_default_template" %}">{% trans "Download Template" %}</a>
 
         </div>
     </div>
 
     <div class="clear"></div>
 
-    <form method='post' action='{% url memberships.default_import %}' enctype="multipart/form-data">
+    <form method='post' action='{% url "memberships.default_import" %}' enctype="multipart/form-data">
     {% csrf_token %}
     <div id="upload-form-wrap">
         <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>

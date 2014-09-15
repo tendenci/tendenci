@@ -4,7 +4,7 @@
 <tr>
     <td>
         {% if obj %}
-            {% trans 'Job' %} #<a href="{% url job obj.slug %}">{{ obj.pk }}</a> {% blocktrans with t=obj.title|truncatewords:5 %}{{ t }}{% endblocktrans %}
+            {% trans 'Job' %} #<a href="{% url "job" obj.slug %}">{{ obj.pk }}</a> {% blocktrans with t=obj.title|truncatewords:5 %}{{ t }}{% endblocktrans %}
         {% else %}
             {% trans 'Job information not available' %}
         {% endif%}

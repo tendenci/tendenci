@@ -54,9 +54,9 @@
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <p>
                 {% trasns 'This is the preview' %}{% if current_app.id == app.id%}
-                {% trans 'of the' %} <a href="{% url corpmembership.add current_app.slug %}"> {% 'current application' %}</a>.
+                {% trans 'of the' %} <a href="{% url "corpmembership.add" current_app.slug %}"> {% 'current application' %}</a>.
                 {% else %}
-               . {%  trans 'This application is NOT the current application.'%} <a href="{% url corpmembership.add current_app.slug %}">{% trans 'Click here to view current application' %}</a>.
+               . {%  trans 'This application is NOT the current application.'%} <a href="{% url "corpmembership.add" current_app.slug %}">{% trans 'Click here to view current application' %}</a>.
                 {% endif %}
             </p>
         </div>

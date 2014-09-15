@@ -24,7 +24,7 @@
 
     <h2>{{ date|date:"l, F j Y" }}</h2>
 
-<form class="search-form" action="{% url event.today %}" method="get">
+<form class="search-form" action="{% url "event.today" %}" method="get">
 
 <div class="form-field clearfix">
     <div class="id_start_dt">
@@ -85,7 +85,7 @@
                 <h3>{% if event.priority %}
                         <div class="event-priority"></div>
                     {% endif %}
-                    <a href="{% url event event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
+                    <a href="{% url "event" event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
                 </h3>
                 <div class="description" itemprop="description">
                 {% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}
@@ -105,12 +105,12 @@
                     {% is_registered_user user event as registered_user %}
                     {% if registered_user %}
                     <div class="attend-wrap registered">
-                        <div class="attend"><a href="{% url event event.pk %}">{% trans "You are registered" %}</a></div>
+                        <div class="attend"><a href="{% url "event" event.pk %}">{% trans "You are registered" %}</a></div>
                         <div style="clear:both;"></div>
                     </div>
                     {% else %}
                     <div class="attend-wrap">
-                        <div class="attend"><a href="{% url event event.pk %}">{% trans "Attend this event" %}</a></div>
+                        <div class="attend"><a href="{% url "event" event.pk %}">{% trans "Attend this event" %}</a></div>
                         <div style="clear:both;"></div>
                     </div>
                     {% endif %}
@@ -123,13 +123,13 @@
             <div style="clear:both;"></div>
 
             <!-- delete-event form -->
-            <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
+            <form name="event-delete" method="POST" action="{% url "event.delete" event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
         </div>
     {% empty %}
         <div class="no-events">{% trans "No events here, yet. " %}
-            <a href="{% url event.add date.year date.month date.day %}">
+            <a href="{% url "event.add" date.year date.month date.day %}">
             {% trans "I would like to add one." %}</a></div>
     {% endfor %}
 

@@ -11,7 +11,7 @@
             </div>
             {% endif %}
             <div class="search-text">
-                <h2><a href="{% if can_edit %}{% url story story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title 'Untitled'%}</a></h2>
+                <h2><a href="{% if can_edit %}{% url "story" story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title 'Untitled'%}</a></h2>
                 {% blocktrans with c=story.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}
 
                 {% if can_edit %}

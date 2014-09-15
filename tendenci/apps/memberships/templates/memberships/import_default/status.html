@@ -64,9 +64,9 @@
              <div class="status-invalid">{% trans 'Invalid' %}: <strong><span id="num-invalid"></span></strong></div>
 
             <div>&nbsp;</div>
-            <div><a href="{% url memberships.default_import_download_recap mimport.id %}">{% trans 'Download Recap' %}</a> (appended 2 extra fields: action and error)</div>
+            <div><a href="{% url "memberships.default_import_download_recap" mimport.id %}">{% trans 'Download Recap' %}</a> (appended 2 extra fields: action and error)</div>
              <div>&nbsp;</div>
-             <div><a href="{% url memberships.default_import %}">{% trans 'Import more memberships' %}</a></div>
+             <div><a href="{% url "memberships.default_import" %}">{% trans 'Import more memberships' %}</a></div>
         </div>
 
         <div id="error-msg">
@@ -93,7 +93,7 @@
     var status_check = function(){
         $.ajax({
            type: "POST",
-           url: "{% url memberships.default_import_get_status mimport.id %}",
+           url: "{% url "memberships.default_import_get_status" mimport.id %}",
            success: function(status_data){
                var obj = $.parseJSON(status_data);
                //var obj = status_data;

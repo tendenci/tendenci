@@ -14,7 +14,7 @@
     <div class="event-info" style="margin-top:10px;">
 
         {% for event in events %}
-        <h3><a href="{% url event event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+        <h3><a href="{% url "event" event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">
@@ -31,7 +31,7 @@
         {% endfor %}
 
         <div class="delete-form" style="margin-top:10px;">
-            <form name="recurring-event-delete" method="POST" action="{% url event.delete_recurring event.pk %}">{% csrf_token %}
+            <form name="recurring-event-delete" method="POST" action="{% url "event.delete_recurring" event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
                 <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
             </form>

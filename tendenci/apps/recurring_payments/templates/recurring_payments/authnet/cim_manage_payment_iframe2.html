@@ -37,7 +37,7 @@ name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
     {% if request.user.id == rp.user.id %}
        {% trans 'Manage my Payment Info' %}
     {% else %}
-    {% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% trans "Manage Payment Info for " %} <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
     {% endif %}
     </h1>
 

@@ -9,7 +9,7 @@
 {% endif %}
 {% if user.profile.is_superuser %}
 <div class="admin-inline">
-  <div class="admin-links clear-block"><a href="{% url navs.edit_items nav_id %}?next={{ request.path }}" title="{% trans 'Edit Nav' %}" class="edit-nav">{% trans 'Edit Nav' %}</a></div>
+  <div class="admin-links clear-block"><a href="{% url "navs.edit_items" nav_id %}?next={{ request.path }}" title="{% trans 'Edit Nav' %}" class="edit-nav">{% trans 'Edit Nav' %}</a></div>
 </div>
 {% endif %}
 </nav>

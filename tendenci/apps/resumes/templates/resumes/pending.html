@@ -20,7 +20,7 @@
             &nbsp;&ndash;&nbsp;
             {{ resume.create_dt|date }}&nbsp;{{ resume.create_dt|time }}
             &nbsp;&ndash;&nbsp;
-            <a href="{% url resume.approve resume.pk %}">{% trans "Approve" %}</a>
+            <a href="{% url "resume.approve" resume.pk %}">{% trans "Approve" %}</a>
         </li>
     {% empty %}
         <li>{% trans "There are no pending resumes." %}</li>

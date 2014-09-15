@@ -72,7 +72,7 @@
         {% blocktrans with d=app.description|safe %}{{ d }}{% endblocktrans %}
 
         {% if is_edit %}
-        {% url membership.details membership.pk as mem_url %}
+        {% url "membership.details" membership.pk as mem_url %}
         {% blocktrans %}
         <p>Update your membership information.</p>
         <span> Go back to your <a href="{{ mem_url }}">Membership Info</a></span>
@@ -194,7 +194,7 @@
                 var prices = '0';
 
                 $.post(
-                    '{% url discount.check_discount %}',
+                    '{% url "discount.check_discount" %}',
                     {
                         'code':code,
                         'prices':prices,

@@ -25,12 +25,12 @@
         {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}?
     </div>
     <div class="delete-form">
-        <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">{% csrf_token %}
+        <form name="job-delete" method="POST" action="{% url "job.delete" job.pk %}">{% csrf_token %}
             <input type="hidden" name="action" value="delete">
             <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
         </form>
     </div>
     <div class="back-item"><a href="{{ job.get_absolute_url }}">&laquo; {% trans "Back to this" %} {% firstof MODULE_JOBS_LABEL 'Job' %} - {% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}</a></div>
-    <div class="back-search"><a href="{% url job.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} </a></div>
+    <div class="back-search"><a href="{% url "job.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} </a></div>
 </div>
 {% endblock %}

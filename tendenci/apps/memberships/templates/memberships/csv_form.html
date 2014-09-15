@@ -16,7 +16,7 @@
 
     <h1>{% trans "Import Memberships from CSV file" %}</h1>
 
-    <form method='post' action='{% url membership_import %}' enctype="multipart/form-data">{% csrf_token %}
+    <form method='post' action='{% url "membership_import" %}' enctype="multipart/form-data">{% csrf_token %}
     {{ form.as_p }}
     <input type='submit' value="{% trans 'Submit' %}">
     </form>

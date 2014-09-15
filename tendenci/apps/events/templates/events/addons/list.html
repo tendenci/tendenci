@@ -24,13 +24,13 @@
         {% for addon in addons %}
             <div class="addon-title">
             <strong>{% blocktrans with title=addon.title %}{{ title }}{% endblocktrans %}</strong>
-            <a href="{% url event.delete_addon event.id addon.id %}">{% trans "Delete" %}</a>
+            <a href="{% url "event.delete_addon" event.id addon.id %}">{% trans "Delete" %}</a>
             {% if addon.status %}
-                <a href="{% url event.disable_addon event.id addon.id %}">{% trans "Disable" %}</a>
+                <a href="{% url "event.disable_addon" event.id addon.id %}">{% trans "Disable" %}</a>
             {% else %}
-                <a href="{% url event.enable_addon event.id addon.id %}">{% trans "Enable" %}</a>
+                <a href="{% url "event.enable_addon" event.id addon.id %}">{% trans "Enable" %}</a>
             {% endif %}
-            <a href="{% url event.edit_addon event.id addon.id %}">{% trans "Edit" %}</a>
+            <a href="{% url "event.edit_addon" event.id addon.id %}">{% trans "Edit" %}</a>
             </div>
             <table class="addon-detail">
             <tr><td><strong>{% trans "Price" %}</strong></td><td>{% blocktrans with keys=SITE_GLOBAL_CURRENCYSYMBOL %}{{ keys }}{% endblocktrans %}{{ addon.price }}</td></tr>

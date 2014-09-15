@@ -5,9 +5,9 @@
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
   <ul class="object-tools">
-  <li><a href="{% url admin:forms_form_export object_id %}">{% trans 'Export entries' %}</a></li>
+  <li><a href="{% url "admin:forms_form_export" object_id %}">{% trans 'Export entries' %}</a></li>
   {% if has_files %}
-  <li><a href="{% url form_entries_export_full object_id %}">{% trans 'Export entries (including uploaded files)' %}</a></li>
+  <li><a href="{% url "form_entries_export_full" object_id %}">{% trans 'Export entries (including uploaded files)' %}</a></li>
   {% endif %}
   <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
   {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}

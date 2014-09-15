@@ -21,9 +21,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -39,17 +39,17 @@
             <ul class="dropdown-menu">
         {% endif %}
             {% if can_edit_setting %}
-                <li><a href="{% url settings.index "module" "help_files" %}">{% trans "Settings" %}</a></li>
+                <li><a href="{% url "settings.index" "module" "help_files" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url help_files %}">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans 'Topics' %}</a></li>
+            <li><a href="{% url "help_files" %}">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans 'Topics' %}</a></li>
             {% if user.profile.is_staff and can_add_helpfile %}
-                <li><a href="{% url admin:help_files_helpfile_add %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
+                <li><a href="{% url "admin:help_files_helpfile_add" %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
             {% elif can_add_helpfile %}
-                <li><a href="{% url help_files.add %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
+                <li><a href="{% url "help_files.add" %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
             {% endif %}
             {% if user.profile.is_superuser %}
-                <li><a href="{% url admin:help_files_request_changelist %}">{% trans "Requests List" %}</a></li>
-                <li><a href="{% url help_files.export %}">{% trans "Export" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
+                <li><a href="{% url "admin:help_files_request_changelist" %}">{% trans "Requests List" %}</a></li>
+                <li><a href="{% url "help_files.export" %}">{% trans "Export" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -61,13 +61,13 @@
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
                 {% endif %}
                 {% if user.profile.is_staff and can_edit_helpfile %}
-                    <li><a href="{% url admin:help_files_helpfile_change nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+                    <li><a href="{% url "admin:help_files_helpfile_change" nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
                 {% elif can_edit_helpfile %}
-                    <li><a href="{% url help_files.edit nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+                    <li><a href="{% url "help_files.edit" nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
                 {% endif %}
                 {% if can_delete_helpfile %}
                     <li class="divider"></li>
-                    <li><a class="delete" href="{% url admin:help_files_helpfile_delete nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+                    <li><a class="delete" href="{% url "admin:help_files_helpfile_delete" nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}
@@ -75,10 +75,10 @@
         </div>
     </li>
     {% if MODULE_NEWS_ENABLED %}
-    <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    <li><a href="{% url "news" %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
     {% endif %}
     {% if MODULE_ARTICLES_ENABLED %}
-    <li><a href="{% url news %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
+    <li><a href="{% url "news" %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
     {% endif %}
 </ul>
 {% endif %}

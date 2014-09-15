@@ -71,7 +71,7 @@
                 <div class="speaker-wrap">
                     {% if speaker.get_photo %}
                     <div class="speaker-photo">
-                        <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
+                        <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url "file" speaker.get_photo.pk %}"  width="100" />
                     </div>
                     {% endif %}
                     <div class="speaker">
@@ -96,7 +96,7 @@
                 </div>
                 {% endfor %}
                 {% if speakers_length > 1 %}
-                <a href="{% url event.speakers event.pk %}">{% trans "View all speakers" %}</a>
+                <a href="{% url "event.speakers" event.pk %}">{% trans "View all speakers" %}</a>
                 {% endif %}
 
                 {% if organizer.name %}
@@ -246,7 +246,7 @@
             </div>
             {% endif %}
 
-            {% url event event.pk as the_url %}
+            {% url "event" event.pk as the_url %}
             <p class="fb-like-event">{% fb_like_button_iframe the_url %}</p>
 
             {% include 'social_media/icons.html' %}

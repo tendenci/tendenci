@@ -24,7 +24,7 @@
             {% if entry.membership.approved %}
                 <div class="approved_dt">{% blocktrans with entry.decision_dt|date_short as decision_date %}{% trans 'Approved on' %}
                     {{ decision_date }}
-                    by:{% endblocktrans %} <a href="{% url profile entry.membership.approved_denied_user %}">
+                    by:{% endblocktrans %} <a href="{% url "profile" entry.membership.approved_denied_user %}">
                     {{ entry.membership.approved_denied_user }}</a></div>
             {% else %}
                 <div class="denied_dt">{% blocktrans with entry.decision_dt|date_short as decision_date %}{% {% trans 'Denied on' %}

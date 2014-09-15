@@ -22,7 +22,7 @@
     <p>{% trans 'Adding events are subject to the approval of the Administrators.' %}</p>
 
     <div class="event-wrap">
-        <form action="{% url event.minimal_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url "event.minimal_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             {{ form_place|styled_form }}

@@ -20,7 +20,7 @@
 
     <h1>{% trans "Nearest"%} {% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %}</h1>
 
-    <form class="search-form" action="{% url location.nearest %}" method="get">
+    <form class="search-form" action="{% url "location.nearest" %}" method="get">
     <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
     <input style="vertical-align:top;" class="btn" type="submit" value="{% trans 'Find Nearest' %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}" />
     </form>

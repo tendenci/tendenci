@@ -102,7 +102,7 @@ div.forms{
 <div id="main-forms">
 <div class="forms">
     <p>
-     <a href="{% url corpmembership.view corp_membership.id %}" target="_blank">{{ corp_profile.name }}</a><br />
+     <a href="{% url "corpmembership.view" corp_membership.id %}" target="_blank">{{ corp_profile.name }}</a><br />
         {% if corp_profile.address %}
             {{ corp_profile.address }}
         {% endif %}

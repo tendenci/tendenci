@@ -9,7 +9,7 @@
         </div>
 
         {% if news.source %}
-            <div class="submitted"><strong>{% trans "Source:" %}</strong> <a href="{% url news %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></div>
+            <div class="submitted"><strong>{% trans "Source:" %}</strong> <a href="{% url "news" %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></div>
         {% endif %}
 
         {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %}
@@ -35,9 +35,9 @@
         {% with news.category_set as news_cat %}
         {% if news_cat %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url news %}?q=category:{{ news_cat.category }}">{% blocktrans with cat=news_cat.category %}{{ cat }}{% endblocktrans %}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url "news" %}?q=category:{{ news_cat.category }}">{% blocktrans with cat=news_cat.category %}{{ cat }}{% endblocktrans %}</a>
         {% if news_cat.sub_category %}
-            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url news %}?q=sub_category:{{ news_cat.sub_category }}">{% blocktrans with sub_cat=news_cat.sub_category %}{{ sub_cat }}{% endblocktrans %}</a>
+            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url "news" %}?q=sub_category:{{ news_cat.sub_category }}">{% blocktrans with sub_cat=news_cat.sub_category %}{{ sub_cat }}{% endblocktrans %}</a>
         {% endif %}
         </div>
         {% endif %}
@@ -46,13 +46,13 @@
         {% if news.tags %}
         <div class="tags"><strong>{% trans "Tags:" %} </strong>
             {% for tag in news.tags|tag_split %}
-                <a href="{% url news %}?q=tag:{{ tag|lower }}">{% blocktrans with t=tag %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url "news" %}?q=tag:{{ tag|lower }}">{% blocktrans with t=tag %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
     </div>
     <div class="meta-right">
-        {% if news.slug %}<a class="print-link" href="{% url news.print_view news.slug %}">{% trans 'Print' %}</a>{% endif %}
+        {% if news.slug %}<a class="print-link" href="{% url "news.print_view" news.slug %}">{% trans 'Print' %}</a>{% endif %}
     </div>
 </div>
 {% if user.profile.is_superuser %}
@@ -66,16 +66,16 @@
     </div>
     <div class="edit-links">
     <ul>
-        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ news.pk }}&source={{ news.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-        <li><a class="edit-link" href="{% url news.edit news.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ news.pk }}&source={{ news.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url "news.edit" news.pk %}">{% trans "Edit" %}</a></li>
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
             <li>
-                <a class="delete" href="{% url news.delete news.pk %}">{% trans "Delete" %}</a>
+                <a class="delete" href="{% url "news.delete" news.pk %}">{% trans "Delete" %}</a>
             </li>
-                <li><a href="{% url news.edit.meta news.pk %}">{% trans "Edit Meta" %}</a></li>
-                <li><a href="{% url category.update news.opt_app_label news.opt_module_name news.pk %}">{% trans "Edit Categories" %}</a></li>
+                <li><a href="{% url "news.edit.meta" news.pk %}">{% trans "Edit Meta" %}</a></li>
+                <li><a href="{% url "category.update" news.opt_app_label news.opt_module_name news.pk %}">{% trans "Edit Categories" %}</a></li>
 
             </ul>
         </div>

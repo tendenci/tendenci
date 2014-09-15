@@ -13,7 +13,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
-<link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url article.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url "article.feed" %}" />
 {% endblock %}
 
 {% block extra_body %}
@@ -36,7 +36,7 @@
         {% search_result article %}
     {% empty %}
         {% if user.profile.is_superuser %}
-        <p><a href="{% url article.add %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %}</a></p>
+        <p><a href="{% url "article.add" %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %}</a></p>
         {% endif %}
     {% endfor %}
     </div>

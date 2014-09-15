@@ -20,7 +20,7 @@
     <h1>{% trans "File Edit" %}</h1>
 
     <div class="forms">
-        <form action="{% url file.edit file.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form action="{% url "file.edit" file.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
             {{ form|styled_form }}
             <input type="submit" value="{% trans 'Save changes' %}" />
         </form>

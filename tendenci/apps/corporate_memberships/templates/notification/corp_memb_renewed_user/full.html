@@ -5,20 +5,20 @@
 
 {% if invoice.balance <= 0 %}
     <p>
-    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
     </p>
 {% else %}
     {% if object.payment_method.is_online %}
     <p>
         {% blocktrans %}To make online credit card payment, go to invoice view page and make online payment from there:{% endblocktrans %}
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
 
     </p>
     {% endif %}
 {% endif %}
 
 <p>
-{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk  %}</a>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk  %}</a>
 </p>
 {% if object.status_detail == "pending" %}
     <p>

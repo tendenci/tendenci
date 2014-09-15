@@ -29,7 +29,7 @@
                      {% emails_options email %}
                 </div>
 
-            <h2><a href="{% url email.view email.pk %}">{% blocktrans with s=email.subject %}{{ s }}{% endblocktrans %}</a></h2>
+            <h2><a href="{% url "email.view" email.pk %}">{% blocktrans with s=email.subject %}{{ s }}{% endblocktrans %}</a></h2>
             <div class="clear-right"></div>
 
             <div class="content-type">{% blocktrans with email.content_type as emailco %}Content type: {{ emailco }}{% endblocktrans %}</div>
@@ -39,7 +39,7 @@
             </div>
 
             <!-- delete-email form -->
-            <form name="email-delete" method="POST" action="{% url email.delete email.pk %}">{% csrf_token %}
+            <form name="email-delete" method="POST" action="{% url "email.delete" email.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

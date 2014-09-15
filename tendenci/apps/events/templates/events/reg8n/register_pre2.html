@@ -17,7 +17,7 @@
 <div class="t">
     {% event_nav user event %}
     <div>
-        <div class="event-title"><a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></div>
+        <div class="event-title"><a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></div>
         <div class="event-time">
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
@@ -43,7 +43,7 @@
                     <p>{{ pricing.description|safe }}</p>
                     <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
                 </div>
-                <form action="{% url event.register_individual event.id pricing.id %}" method="get">
+                <form action="{% url "event.register_individual" event.id pricing.id %}" method="get">
                     <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />
                 </form>
             </div>
@@ -66,7 +66,7 @@
                     <p>{{ pricing.description|safe }}</p>
                     <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
                 </div>
-                <form action="{% url event.register_table event.id pricing.id %}" method="get">
+                <form action="{% url "event.register_table" event.id pricing.id %}" method="get">
                     <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />
                 </form>
             </div>

@@ -15,7 +15,7 @@
 <div class="t">
     {% help_file_nav request.user help_file %}
     {% help_file_search %}
-    <div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a> > {% blocktrans with question=help_file.question|striptags|safe %}{{ question }}{% endblocktrans %}</p></div>
+    <div class="breadcrumbs"><p><a href="{% url "help_files" %}">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a> > {% blocktrans with question=help_file.question|striptags|safe %}{{ question }}{% endblocktrans %}</p></div>
     <div class="help-file-wrap">
         <h1>{% blocktrans with question=help_file.question|striptags|safe %}{{ question }}{% endblocktrans %}</h1>
 

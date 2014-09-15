@@ -42,7 +42,7 @@
 
             <div class="registration-info">
                 {% if is_registrant %}
-                    <div class="registration-notice"><a href="{% url event.registrant.search event.pk %}?q={{ user.email }}">{% trans "You are already registered for this event" %}</a></div>
+                    <div class="registration-notice"><a href="{% url "event.registrant.search" event.pk %}?q={{ user.email }}">{% trans "You are already registered for this event" %}</a></div>
                 {% else %}
                     {% if reg_ended %}
                         <div class="registration-red">{% trans "We are unable to register you for this event as the event deadline has already passed" %}</div>

@@ -66,7 +66,7 @@
 
     {% if not corp_memb_type_exists %}
     <div class="alert">
-        {% url admin:corporate_memberships_corporatemembershiptype_add  as corp_add %}
+        {% url "admin:corporate_memberships_corporatemembershiptype_add"  as corp_add %}
         {% blocktrans %}
         Please <a href="{{ corp_add }}">set up corporate membership types</a> before proceeding.
         {% endblocktrans %}
@@ -115,12 +115,12 @@
     </div>
 
     <div class="template-download">
-        <a href="{% url corpmembership.download_template %}">
+        <a href="{% url "corpmembership.download_template" %}">
         <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="{% trans 'Download CSV Template' %}"/>
         </a>
 
         <div class="link">
-            <a href="{% url corpmembership.download_template %}">{% trans "Download Template" %}</a>
+            <a href="{% url "corpmembership.download_template" %}">{% trans "Download Template" %}</a>
 
         </div>
     </div>

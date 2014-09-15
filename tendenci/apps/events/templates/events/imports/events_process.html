@@ -22,7 +22,7 @@
     <p><strong>{% trans "File" %}:</strong> {% blocktrans with name=import_i.file.name %}{{ name }}{% endblocktrans %}</p>
     <p><strong>{% trans "Status" %}:</strong> {% blocktrans with status=import_i.status %}{{ status }}{% endblocktrans %}</p>
     {% if import_i.status == "completed" %}
-    <p><strong>{% trans "Import complete!" %}</strong> <a href="{% url events %}">{% trans "View your events calendar." %}</a>
+    <p><strong>{% trans "Import complete!" %}</strong> <a href="{% url "events" %}">{% trans "View your events calendar." %}</a>
     {% endif %}
     {% if import_i.status == "failed" %}
     <p><strong>{% trans "Failure Reason" %}</strong> {% blocktrans with failure_reason=import_i.failure_reason %}{{ failure_reason }}{% endblocktrans %}</p>

@@ -25,7 +25,7 @@
     {% for page in pages %}
         <div class="wrap-search-item">
             <div class="search-item page-search-item">
-                <h2><a href="{% url page.inactive page.pk %}">{% firstof page.title 'Untitled'%}</a></h2>
+                <h2><a href="{% url "page.inactive" page.pk %}">{% firstof page.title 'Untitled'%}</a></h2>
                 <div class="item-content">{% blocktrans with c=page.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}</div>
             </div>
         </div>

@@ -42,7 +42,7 @@
     {% if request.user.id == rp.user.id %}
        {% trans 'Manage my Payment Info' %}
     {% else %}
-    {% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% trans "Manage Payment Info for " %} <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
     {% endif %}
     </h1>
 
@@ -84,7 +84,7 @@
         if(action_result=="successfulSave"){
             $.ajax({
                    type: "POST",
-                   url: "{% url recurring_payment.authnet.update_payment_profile_local%}",
+                   url: "{% url "recurring_payment.authnet.update_payment_profile_local" %}",
                    data: {rpid : {{ rp.id }}, ppid : {% if payment_profile %}{{ payment_profile.id }}{% endif %} },
                    success: function(msg){
                      //alert( msg );

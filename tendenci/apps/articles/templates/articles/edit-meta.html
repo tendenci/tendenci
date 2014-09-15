@@ -18,7 +18,7 @@
     {{ article_headline }}{% endblocktrans %}</h1>
 
     <div class="article-wrap">
-        <form action="{% url article.edit.meta article.pk %}" method="post">{% csrf_token %}
+        <form action="{% url "article.edit.meta" article.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="{% trans 'Save Changes' %}" />

@@ -138,9 +138,9 @@
 
         <h2>{% trans 'Memberships' %}
         {% if membership_apps %}
-            <a title="{% trans 'Join membership' %}" href="{% url membership_default.add membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+            <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
         {% else %}
-            <a title="{% trans 'Create a membership application' %}" href="{% url admin:memberships_membershipapp_add %}" class="glyph plus">+</a>
+            <a title="{% trans 'Create a membership application' %}" href="{% url "admin:memberships_membershipapp_add" %}" class="glyph plus">+</a>
         {% endif %}
         </h2>
 
@@ -148,7 +148,7 @@
           <div class="app-links">
           {% for app in membership_apps %}
               <div>
-                  <a title="{% trans 'Join membership' %}" href="{% url membership_default.add app.slug %}?username={{ user_this.username }}">{% trans 'Join' %}</a>
+                  <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" app.slug %}?username={{ user_this.username }}">{% trans 'Join' %}</a>
                   {{ app.name }}
               </div>
           {% endfor %}
@@ -181,20 +181,20 @@
 
                         {% if membership.can_renew %}
                             {% if membership.corporate_membership_id %}
-                                <a href="{% url membership_default.renew_under_corp membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
+                                <a href="{% url "membership_default.renew_under_corp" membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
                             {% else %}
                                 {% if membership.app %}
-                                <a href="{% url membership_default.renew membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
+                                <a href="{% url "membership_default.renew" membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
 
                         {% if user.is_superuser and membership.past_renewal %}
                             {% if membership.corporate_membership_id %}
-                                <a href="{% url membership_default.renew_under_corp membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
+                                <a href="{% url "membership_default.renew_under_corp" membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
                             {% else %}
                                 {% if membership.app %}
-                                <a href="{% url membership_default.renew membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
+                                <a href="{% url "membership_default.renew" membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
@@ -203,7 +203,7 @@
                     <td>
                         {% with membership.get_invoice as invoice %}
                         {% if invoice %}
-                        <a href="{% url invoice.view invoice.pk %}">
+                        <a href="{% url "invoice.view" invoice.pk %}">
                             {% trans 'Balance' %} {{ invoice.balance|format_currency }}
                         </a>
                         {% endif %}
@@ -225,7 +225,7 @@
 
         <h2>{% trans 'Groups' %}
         {% if request.user = user_this or admin %}
-        <a title="{% trans 'Join or leave group' %}" href="{% url profile.edit_groups user_this.username %}" class="glyph gears">S</a>
+        <a title="{% trans 'Join or leave group' %}" href="{% url "profile.edit_groups" user_this.username %}" class="glyph gears">S</a>
         {% endif %}
         </h2>
 
@@ -290,7 +290,7 @@
         <div class="contribution info">
 
         <h2>{% trans "Contributions" %}</h2>
-        <span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">{% trans 'more' %} &raquo;</a></span>
+        <span class="more"> <a href="{% url "contribution.search" %}?q={{ user_this.username }}">{% trans 'more' %} &raquo;</a></span>
         <div class="clear"></div>
 
         {% for contribution in contributions|slice:":5" %}

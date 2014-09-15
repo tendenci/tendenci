@@ -20,13 +20,13 @@
             {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %} ?
         </div>
         <div class="delete-form">
-            <form name="article-delete" method="POST" action="{% url article.delete article.pk %}">{% csrf_token %}
+            <form name="article-delete" method="POST" action="{% url "article.delete" article.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
                 <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
             </form>
         </div>
         <div class="back-item"><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</a></div>
-        <div class="back-search"><a href="{% url article.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %} </a></div>
+        <div class="back-search"><a href="{% url "article.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %} </a></div>
     </div>
 </div>
 {% endblock %}

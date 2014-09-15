@@ -22,7 +22,7 @@
                     <ul class="associated-events">
                     {% for event in type.event_set.all %}
                         <li>
-                        <a href="{% url event event.pk %}">{{ event }}</a>
+                        <a href="{% url "event" event.pk %}">{{ event }}</a>
                         ({{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }})
                         </li>
                     {% endfor %}
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="forms">
-        <form action="{% url event.reassign_type type.pk %}" method="post">{% csrf_token %}
+        <form action="{% url "event.reassign_type" type.pk %}" method="post">{% csrf_token %}
             <div class="item">
                 <div class="errs">{{ form.type.errors }}</div>
                 <div class="label">{{ form.type.label }}</div>

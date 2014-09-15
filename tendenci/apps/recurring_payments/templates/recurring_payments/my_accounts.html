@@ -28,7 +28,7 @@
         <div class="item-left account-header">{% trans 'Account #' %} {{ forloop.counter }}: </div>
 
         <div class="item-right">
-            <div class="account-header"><a href="{% url recurring_payment.view_account rp.id %}">{% blocktrans with d=rp.description %}{{ d }}{% endblocktrans %}</a></div>
+            <div class="account-header"><a href="{% url "recurring_payment.view_account" rp.id %}">{% blocktrans with d=rp.description %}{{ d }}{% endblocktrans %}</a></div>
             <div >{% trans 'Payment Amount' %}: <span class="body-bold"><b>{{ rp.payment_amount|format_currency }}</b></span></div>
 
             <div>{% trans 'Initial Billing Cycle Start Date' %}: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>

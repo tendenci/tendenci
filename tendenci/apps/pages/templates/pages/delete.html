@@ -26,7 +26,7 @@
             </form>
         </div>
         <div class="back-item"><a href="{{ page.get_absolute_url }}">&laquo; {% trans "Back to page" %} {{ page.title }}</a></div>
-        <div class="back-search"><a href="{% url page.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_PAGES_LABEL trans 'pages' %} </a></div>
+        <div class="back-search"><a href="{% url "page.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_PAGES_LABEL trans 'pages' %} </a></div>
     </div>
 </div>
 {% endblock %}

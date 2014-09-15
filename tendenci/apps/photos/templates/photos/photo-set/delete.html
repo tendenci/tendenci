@@ -19,7 +19,7 @@
         <div style="margin: 10px 0px 10px 0px;">
             <div class="cover-photo">
             {% if photo_set.get_cover_photo %}
-                <a href="{% url photo photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" /></a>
+                <a href="{% url "photo" photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" /></a>
             {% else %}
                 <img src="{{ photo_set.get_default_cover_photo_small }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
             {% endif %}
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="delete-form">
-        <form name="photo_set-delete" method="POST" action="{% url photoset_delete photo_set.pk %}">{% csrf_token %}
+        <form name="photo_set-delete" method="POST" action="{% url "photoset_delete" photo_set.pk %}">{% csrf_token %}
             <input type="hidden" name="action" value="delete">
             <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
         </form>

@@ -15,7 +15,7 @@
     {% event_nav user event %}
     <h1>{% trans "Member Registration" %}</h1>
     <div class="form-wrap">
-        <form action="{% url event.member_register event.pk %}" method="post">{% csrf_token %}
+        <form action="{% url "event.member_register" event.pk %}" method="post">{% csrf_token %}
             <div class="forms">
                 {{ form|styled_form }}
                 <input type="submit" value="{% trans "Register Members" %}"/>

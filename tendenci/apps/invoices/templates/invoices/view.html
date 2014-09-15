@@ -53,16 +53,16 @@
 <div class="invoice-options">
     <ul>
         {% if invoice.is_void %}
-        <li><a href="{% url invoice.unvoid_invoice invoice.pk %}">{% trans 'Un-Void Invoice' %}</a></li>
+        <li><a href="{% url "invoice.unvoid_invoice" invoice.pk %}">{% trans 'Un-Void Invoice' %}</a></li>
         {% else %}
-        <li><a href="{% url invoice.void_invoice invoice.pk %}">{% trans 'Void Invoice' %}</a></li>
+        <li><a href="{% url "invoice.void_invoice" invoice.pk %}">{% trans 'Void Invoice' %}</a></li>
         {% endif %}
     </ul>
 </div>
 
 <div class="invoice-options">
     <ul>
-      <li><a href="{% url invoice.print_view invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>
+      <li><a href="{% url "invoice.print_view" invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>
     </ul>
 </div>
 
@@ -89,7 +89,7 @@
           <td>{% trans "Invoice For" %}</td>
           <td class="td-right">
       {% if object.event.pk %}
-          <a href="{% url event.registration_confirmation object.event.pk object.pk %}">{{ object }}</a><br>
+          <a href="{% url "event.registration_confirmation" object.event.pk object.pk %}">{{ object }}</a><br>
       <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
           {% else %}
       {{ SITE_GLOBAL_SITEDISPLAYNAME }}

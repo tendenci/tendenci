@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 {% load perm_tags %}
-{% url article.export_download identifier as dl_url %}
+{% url "article.export_download" identifier as dl_url %}
 
 {% block extra_head %}
 {{ block.super }}

@@ -78,9 +78,9 @@
              <div class="status-invalid">{% trans 'Invalid' %}: <strong><span id="num-invalid"></span></strong></div>
 
             <div>&nbsp;</div>
-            <div><a href="{% url profiles.user_import_download_recap uimport.id %}">{% trans 'Download Recap' %}</a> {% trans '(appended 2 extra fields: action and error)' %}</div>
+            <div><a href="{% url "profiles.user_import_download_recap" uimport.id %}">{% trans 'Download Recap' %}</a> {% trans '(appended 2 extra fields: action and error)' %}</div>
              <div>&nbsp;</div>
-             <div><a href="{% url profiles.user_import %}">{% trans 'Import more users' %}</a></div>
+             <div><a href="{% url "profiles.user_import" %}">{% trans 'Import more users' %}</a></div>
         </div>
 
         <div id="error-msg">

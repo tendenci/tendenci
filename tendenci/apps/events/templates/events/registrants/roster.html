@@ -28,15 +28,15 @@
     <h1>{{ event.title }} - {% trans "Registrant Roster" %} {{ roster_view|capfirst }}</h1>
     <div class="attendees-export-links">
     {% if roster_view == 'non-paid' %}
-        <div><a href="{% url event.registrant.export.non_paid event.pk %}">{% trans "Export Only Non-Paid Registrants" %}</a></div>
+        <div><a href="{% url "event.registrant.export.non_paid" event.pk %}">{% trans "Export Only Non-Paid Registrants" %}</a></div>
     {% endif %}
 
     {% if roster_view == 'paid' %}
-        <div><a href="{% url event.registrant.export.paid event.pk %}">{% trans "Export Only Paid Registrants" %} </a></div>
+        <div><a href="{% url "event.registrant.export.paid" event.pk %}">{% trans "Export Only Paid Registrants" %} </a></div>
     {% endif %}
 
     {% if roster_view == 'total' %}
-        <div><a href="{% url event.registrant.export.total event.pk %}">{% trans "Export Non-Paid and Paid Registrants (one file)" %}</a></div>
+        <div><a href="{% url "event.registrant.export.total" event.pk %}">{% trans "Export Non-Paid and Paid Registrants (one file)" %}</a></div>
     {% endif %}
     </div>
     <h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
@@ -122,9 +122,9 @@
 
     </td>
 
-    <td>{% if registrant.invoice_dict.id %}<a href="{% url invoice.view registrant.invoice_dict.id %}">I-{{ registrant.invoice_dict.id }}</a>{% endif %}</td> <!-- invoice number -->
+    <td>{% if registrant.invoice_dict.id %}<a href="{% url "invoice.view" registrant.invoice_dict.id %}">I-{{ registrant.invoice_dict.id }}</a>{% endif %}</td> <!-- invoice number -->
     <td>${{ registrant.invoice_dict.total }}</td> <!-- invoice amount -->
-    <td><a href="{% url event.registration_confirmation event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
+    <td><a href="{% url "event.registration_confirmation" event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
 
     {% if discount_available %}
         <td>${{ registrant.amount|add_decimal:registrant.discount_amount|floatformat:"2" }}</td> <!-- registration amount -->
@@ -221,7 +221,7 @@
 
     {% if additionals %}
         {% if registrant.invoice_dict.id %}
-        <a href="{% url invoice.view registrant.invoice_dict.id %}">{% trans "Additional registrants on this invoice:" %}</a>
+        <a href="{% url "invoice.view" registrant.invoice_dict.id %}">{% trans "Additional registrants on this invoice:" %}</a>
         {% else %}
         {% trans "Additional registrants:" %}
         {% endif %}
@@ -307,9 +307,9 @@
     {% endif %}
 
     <div>
-        <a href="{% url event.registrant.roster.paid event.pk %}">{% blocktrans %}Show only <strong>paid</strong>{% endblocktrans %}</a>
-        <a href="{% url event.registrant.roster.non_paid event.pk %}">{% blocktrans %}Show only <strong>non-paid</strong>{% endblocktrans %}</a>
-        <a href="{% url event.registrant.roster.total event.pk %}">{% blocktrans %}Show <strong>total</strong>{% endblocktrans %}</a>
+        <a href="{% url "event.registrant.roster.paid" event.pk %}">{% blocktrans %}Show only <strong>paid</strong>{% endblocktrans %}</a>
+        <a href="{% url "event.registrant.roster.non_paid" event.pk %}">{% blocktrans %}Show only <strong>non-paid</strong>{% endblocktrans %}</a>
+        <a href="{% url "event.registrant.roster.total" event.pk %}">{% blocktrans %}Show <strong>total</strong>{% endblocktrans %}</a>
     </div>
 </div>
 
@@ -346,7 +346,7 @@
                 }
 
                 $.post(
-                    '{% url event.registrant_check_in %}',
+                    '{% url "event.registrant_check_in" %}',
                     {
                         'id':id,
                         'action':action

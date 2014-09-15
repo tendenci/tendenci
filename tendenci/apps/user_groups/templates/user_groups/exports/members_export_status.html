@@ -25,7 +25,7 @@
        <div id="display-content"{% if not download_ready %} class="display-hide"{% endif %}>
        <p>{% trans 'The export file is ready, click the download link below to download.' %}</p>
        <div>
-           <a href="{% url group.members_export_download group.slug, export_target, identifier %}">{% trans 'Download Now' %}</a>
+           <a href="{% url "group.members_export_download" group.slug, export_target, identifier %}">{% trans 'Download Now' %}</a>
        </div>
        <div>&nbsp;</div>
        <div>&nbsp;</div>

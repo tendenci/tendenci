@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<form method="post" action="{% url auth_login %}">{% csrf_token %}
+<form method="post" action="{% url "auth_login" %}">{% csrf_token %}
 <div class="login-fields">
 {{form.as_p}}
 </div>

@@ -23,7 +23,7 @@
     <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Add" %}</h1>
 
     <div class="article-wrap">
-        <form action="{% url article.add %}" method="post">{% csrf_token %}
+        <form action="{% url "article.add" %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <fieldset class="boxy-grey" >

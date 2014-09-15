@@ -13,7 +13,7 @@
 
 <h2>{% trans "Are you sure you want to delete this corporate membership?" %}</h2>
 <br />
-<h3>{% trans "Corporate Name: " %}<a href="{% url corpmembership.view corp_memb.pk %}">{{ corp_memb.corp_profile.name }}</a></h3>
+<h3>{% trans "Corporate Name: " %}<a href="{% url "corpmembership.view" corp_memb.pk %}">{{ corp_memb.corp_profile.name }}</a></h3>
 <br />
 <div><b>{% trans "Corporate Address:" %}</b> </div>
         {% if corp_memb.corp_profile.address or corp_memb.corp_profile.address2 %}
@@ -34,7 +34,7 @@
     {% endif %}
 </div>
 <br />
-<form action="{% url corpmembership.delete corp_memb.pk %}" method="post">{% csrf_token %}
+<form action="{% url "corpmembership.delete" corp_memb.pk %}" method="post">{% csrf_token %}
 <input type="hidden" name="id" value="{{ corp_memb.pk }}" />
 <input type="submit" value="{% trans 'Delete Corporate' %}" />
 </form>

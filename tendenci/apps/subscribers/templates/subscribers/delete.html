@@ -29,7 +29,7 @@
         {% endif %}
     {% endfor %}
     <div style="color:red;font-weight:bold;">{% trans 'Are you sure you want to delete this Subscriber?' %}</div>
-    <form action="{% url subscriber_delete grp_sub.id %}" method="post">{% csrf_token %}
+    <form action="{% url "subscriber_delete" grp_sub.id %}" method="post">{% csrf_token %}
         <input type="submit" value="{% trans 'Delete Subscriber' %}" />
     </form>
 </div>

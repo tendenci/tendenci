@@ -28,7 +28,7 @@
 
         <div class="membership-wrap">
 
-            <div><strong><a href="{% url membership.details membership.pk %}">
+            <div><strong><a href="{% url "membership.details" membership.pk %}">
                 {{ membership.member_number }} {{ membership.membership_type }}
             </a></strong></div>
 

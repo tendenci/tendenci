@@ -7,7 +7,7 @@
 <body>
 <p>{% trans 'Processing...please wait.' %}</p>
 <script language="javascript">
-    window.location = "{{ SITE_GLOBAL_SITEURL }}{% url payment.receipt payment.id payment.guid %}";
+    window.location = "{{ SITE_GLOBAL_SITEURL }}{% url "payment.receipt" payment.id payment.guid %}";
 </script>
 
 

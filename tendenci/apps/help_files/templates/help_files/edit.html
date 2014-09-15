@@ -20,7 +20,7 @@
     <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Edit" %}</h1>
 
     <div class="article-wrap">
-        <form action="{% url help_files.edit help_file.pk %}" method="post">{% csrf_token %}
+        <form action="{% url "help_files.edit" help_file.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="{% trans 'Save' %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}" />

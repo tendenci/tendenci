@@ -17,7 +17,7 @@
     {% event_nav user event %}
     <div id="reg-form-list">
         <h1>{% trans 'Manage Custom Registration Form(s)' %}</h1>
-        <h3>{% trans 'Event' %}: <a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+        <h3>{% trans 'Event' %}: <a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
         <div id="reg-form-list-body">
 
             {% if reg_conf.use_custom_reg_form %}
@@ -27,7 +27,7 @@
                         <div class="reg-form-title">{{ reg_conf.reg_form.name }} </div>
                         <div class="reg-form-btns">
                         <a href="javascript:;" class="preview-btn">Preview</a>
-                        <a href="{% url admin:events_customregform_change reg_conf.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
+                        <a href="{% url "admin:events_customregform_change" reg_conf.reg_form.id %}?next={% url "event.event_custom_reg_form_list" event.id %}" class="edit-btn">Edit</a></div>
 
                         <div class="form-wrap" style="display: none;">
                             <div class="form-builder-wrap">
@@ -44,8 +44,8 @@
                     <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
                         {% trans 'This event uses a separate custom registrations form for each pricing. %}
                         <div class="alert-actions">
-                            <a class="btn small" href="{% url event event.id %}">{% trans 'View Event' %}</a>
-                            <a class="btn small" href="{% url event.edit event.id %}">{% trans 'Edit Event' %}</a>
+                            <a class="btn small" href="{% url "event" event.id %}">{% trans 'View Event' %}</a>
+                            <a class="btn small" href="{% url "event.edit" event.id %}">{% trans 'Edit Event' %}</a>
                         </div>
                         </div>
                     {% for price in regconfpricings %}
@@ -54,7 +54,7 @@
                         <div class="reg-price">(For <strong>{{ price.price|format_currency }}</strong> {{ price.title }})</div>
                         <div class="reg-form-btns">
                         <a href="javascript:;" class="preview-btn">Preview</a>
-                        <a href="{% url admin:events_customregform_change price.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
+                        <a href="{% url "admin:events_customregform_change" price.reg_form.id %}?next={% url "event.event_custom_reg_form_list" event.id %}" class="edit-btn">Edit</a></div>
 
                         <div class="form-wrap" style="display: none;">
                             <div class="form-builder-wrap">

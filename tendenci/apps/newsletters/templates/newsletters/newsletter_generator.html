@@ -42,7 +42,7 @@
 
        {% if request.user.is_superuser %}
        {% blocktrans %}
-       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href="{% url admin:newsletters_newslettertemplate_changelist %}">Newsletter Templates</a> see your templates and generate new email newsletters.</p>
+       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href="{% url "admin:newsletters_newslettertemplate_changelist" %}">Newsletter Templates</a> see your templates and generate new email newsletters.</p>
        {% endblocktrans %}
        {% endif %}
 
@@ -59,7 +59,7 @@
 
                <br /><br />
                MailChimp is not integrated with Tendenci. To start, you can
-               <a href="{% url profile.export %}">export users</a>
+               <a href="{% url "profile.export" %}">export users</a>
                to MailChimp.
            </div>
            {% endblocktrans %}
@@ -79,7 +79,7 @@
 
            <br /><br />
                Constant Contact is not integrated with Tendenci. To start, you can
-               <a href="{% url profile.export %}">export users</a>
+               <a href="{% url "profile.export" %}">export users</a>
                to Constant Contact.
            </div>
            {% endblocktrans %}
@@ -101,7 +101,7 @@
 
                {% if CAMPAIGNMONITOR_ENABLED %}
                <div class="campaign-monitor-link">
-               <a href="{% url campaign_monitor.template_index%}">Go to Campaign Monitor</a>
+               <a href="{% url "campaign_monitor.template_index%}">Go" to Campaign Monitor</a>
                 </div>
                 {% else %}
                 <div class="campaign-monitor-msg">

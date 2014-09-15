@@ -45,7 +45,7 @@
         {% endblocktrans %}
     </div>
 
-    <h3>{% trans "Event: " %}<a href="{% url event event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+    <h3>{% trans "Event: " %}<a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
 
     <div class="forms">
 
@@ -68,7 +68,7 @@
             <div class="form-field">
                 <div class="label">{% trans 'To' %}:
                 {% trans 'ALL Attendees' %}
-                <a href="{% url event.registrant.roster event.id %}">{% trans "View all registrant(s)" %}</a>
+                <a href="{% url "event.registrant.roster" event.id %}">{% trans "View all registrant(s)" %}</a>
                 </div>
             </div>
 

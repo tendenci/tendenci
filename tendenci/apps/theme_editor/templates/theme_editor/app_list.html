@@ -23,7 +23,7 @@
     <div class="apps-wrap">
         <div class="app">
             <!--default templates dir, will be here until all templates are moved into their app dirs -->
-            <a href="{% url theme_editor.original_templates %}">{% trans 'default templates' %}</a>
+            <a href="{% url "theme_editor.original_templates" %}">{% trans 'default templates' %}</a>
         </div>
     {% for app in apps %}
         <div class="app">

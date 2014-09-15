@@ -20,9 +20,9 @@
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
-            <a href="{% url dashboard %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
-            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
-            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
         </ul>
     </li>
     {% endif %}
@@ -38,17 +38,17 @@
             <ul class="dropdown-menu">
         {% endif %}
             {% if can_edit_setting %}
-                <li><a href="{% url settings.index "module" "locations" %}">{% trans "Settings" %}</a></li>
+                <li><a href="{% url "settings.index" "module" "locations" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url locations %}">{% trans "List of " %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}</a></li>
-            <li><a href="{% url location.nearest %}">{% trans "Nearest" %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}</a></li>
+            <li><a href="{% url "locations" %}">{% trans "List of " %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}</a></li>
+            <li><a href="{% url "location.nearest" %}">{% trans "Nearest" %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}</a></li>
             {% if can_add_location %}
-                <li><a href="{% url location.add %}">{% trans "Add" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a></li>
+                <li><a href="{% url "location.add" %}">{% trans "Add" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a></li>
                 <li class="divider"></li>
-                <li><a href="{% url locations_import_upload_file %}">{% trans "Import" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %}</a></li>
+                <li><a href="{% url "locations_import_upload_file" %}">{% trans "Import" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %}</a></li>
             {% endif %}
             {% if user.profile.is_superuser %}
-                <li><a href="{% url locations_export %}">{% trans "Export" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %}</a></li>
+                <li><a href="{% url "locations_export" %}">{% trans "Export" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -60,11 +60,11 @@
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a></li>
                 {% endif %}
                 {% if can_edit_location %}
-                    <li><a href="{% url location.edit nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a></li>
+                    <li><a href="{% url "location.edit" nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a></li>
                 {% endif %}
                 {% if can_delete_location %}
                     <li class="divider"></li>
-                    <li><a class="delete" href="{% url location.delete nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a></li>
+                    <li><a class="delete" href="{% url "location.delete" nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}
