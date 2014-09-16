@@ -78,5 +78,10 @@ span.member-icon{
   -moz-box-sizing: content-box;
   box-sizing: content-box;  
 }
+.list-unstyled {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;  
+}
 
 
