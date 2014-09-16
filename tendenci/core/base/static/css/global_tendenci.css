@@ -73,6 +73,8 @@ span.member-icon{
     }
 }
 
+/* override some undesired bootstrap behaviors */
+
 * {
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
@@ -84,4 +86,9 @@ span.member-icon{
   box-sizing: border-box;  
 }
 
-
+.radio input[type="radio"],
+.radio-inline input[type="radio"],
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+  margin-left: 10px;
+}
