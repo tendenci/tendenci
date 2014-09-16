@@ -113,8 +113,8 @@ var ImageDialog = {
 		var n = ed.selection.getNode();
 
 		n = this.n;
-        
-		var img_src = $(".edit_src").attr("src");
+
+		var img_src = $('input[name="file_url"]').val();
 		var img_title = nl.edit_title.value;
 		var img_align = nl.edit_align.value;
 		var img_vspace = nl.edit_vspace.value;
@@ -122,17 +122,17 @@ var ImageDialog = {
 		var img_width = parseInt(nl.edit_width.value);
 		var img_height = parseInt(nl.edit_height.value);
         var img_ratio = $(nl.edit_ratio).is(':checked');
-        
+
         var url_parts = img_src.split('/');
         var img_id = url_parts[2];
-        
+
         if(img_ratio){
             // get original dimensions of image from image list
             var orig_height = $('#file_'+img_id+'_height').val();
             var orig_width = $('#file_'+img_id+'_width').val();
             var old_height = this.getAttrib(n, 'height');
             var old_width = this.getAttrib(n, 'width');
-            
+
             // maintain proportions
             if(img_width != old_width){
                 // Resize with width
@@ -142,14 +142,14 @@ var ImageDialog = {
                 img_width = parseInt(orig_width * img_height / orig_height);
             }
         }
-        
+
         // update url to correct size
         img_src = url_parts[0] + '/' + url_parts[1] + '/' + url_parts[2] + '/' + img_width + 'x' + img_height;
-        
+
         // update img_width and img_height
         $(nl.edit_width).val(img_width);
         $(nl.edit_height).val(img_height);
-        
+
 		// set the styles
 		ed.dom.setStyle(n, 'float', nl.edit_float.value);
 		ed.dom.setStyle(n, 'margin-top', nl.edit_top_margin.value + 'px');
@@ -167,7 +167,7 @@ var ImageDialog = {
 			height : img_height,
 			align : img_align
 		});
-		
+
 		if(args.src.length > 0){
 			ed.dom.setAttribs(n, args);
 			ed.undoManager.add();
@@ -186,14 +186,14 @@ var ImageDialog = {
 		var file_download_url = $(item_wrap).find("input[name='file_download_url']").val();
 
 		if(icon_url != 'None'){
-			var file_element = '<div class="t5_file"> '+ 
+			var file_element = '<div class="t5_file"> '+
 				'<a href="'+ file_download_url +'">'+
 				'<img src="'+ icon_url +'" />' + '</a> ' +
-				'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';	
+				'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';
 		}
 		else {
-			var file_element = '<div class="t5_file"> '+ 
-				'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';	
+			var file_element = '<div class="t5_file"> '+
+				'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';
 		}
 
 		ed.execCommand('mceInsertContent', false, file_element);
