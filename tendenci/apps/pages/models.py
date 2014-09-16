@@ -14,7 +14,7 @@ from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.files.models import File
-
+from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.apps.pages.managers import PageManager
 from tendenci.apps.pages.module_meta import PageMeta
 from tendenci.apps.user_groups.models import Group
@@ -91,7 +91,7 @@ class Page(BasePage):
     CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
                            (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
-    group = models.ForeignKey(Group, default=1)
+    group = models.ForeignKey(Group, null=True, default=get_default_group)
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
     google_profile = models.URLField(_('Google+ URL'), blank=True)

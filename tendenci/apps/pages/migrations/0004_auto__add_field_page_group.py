@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Page.group'
         db.add_column('pages_page', 'group',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['user_groups.Group']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['user_groups.Group'], null=True),
                       keep_default=False)
 
 
@@ -163,7 +163,7 @@ class Migration(SchemaMigration):
             'design_notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'pages_page_entity'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': "orm['entities.Entity']", 'blank': 'True', 'null': 'True'}),
             'google_profile': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['user_groups.Group']"}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'header_image': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['pages.HeaderImage']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
