@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Box.group'
         db.add_column('boxes_box', 'group',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['user_groups.Group']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['user_groups.Group'], null=True),
                       keep_default=False)
 
 
@@ -79,7 +79,7 @@ class Migration(SchemaMigration):
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'boxes_box_creator'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'boxes_box_entity'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': "orm['entities.Entity']", 'blank': 'True', 'null': 'True'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['user_groups.Group']"}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'boxes_box_owner'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
