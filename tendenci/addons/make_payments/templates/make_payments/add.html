@@ -1,7 +1,6 @@
 {% extends "make_payments/base.html" %}
 {% load i18n %}
 {% load styled_forms %}
-{% load i18n %}
 
 {% block title %}{% trans 'Make a Payment' %}{% endblock %}
 
@@ -19,7 +18,7 @@
     <div class="forms">
     {{ form|styled_form }}
     <div class="submitbutton">
-        <input type="submit" name="submit" value="{% 'Make a Payment' %}" />
+        <input type="submit" name="submit" value="{% trans 'Make a Payment' %}" />
     </div>
     </div>
 </form>
