@@ -121,7 +121,7 @@
                             {% else %}
                                 {% if membership.app %}
                                     {% if membership.is_expired %}
-                                    <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Oh no you're expired, sign up for membership.' %}</a>
+                                    <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans "Oh no you're expired, sign up for membership." %}</a>
                                     {% else %}
                                         <div>{% trans 'No pending actions required, good job!' %}</div>
                                     {% endif %}
