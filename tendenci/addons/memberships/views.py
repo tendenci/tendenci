@@ -113,11 +113,28 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         if 'print' in GET_KEYS:
             template_name = 'memberships/details_print.html'
 
+    # get the membership app for this membership
+    app = membership.app
+     # get the fields for the app
+    app_fields = app.fields.filter(display=True)
+
+    if not request.user.profile.is_superuser:
+        app_fields = app_fields.filter(admin_only=False)
+
+    app_fields = app_fields.order_by('position')
+    app_fields = app_fields.exclude(field_name='corporate_membership_id')
+
+    profile_form = ProfileForm(app_fields, instance=membership.user.profile)
+
+    education_form = EducationForm(app_fields, request.POST or None, user=membership.user)
+
     EventLog.objects.log(instance=membership)
 
     return render_to_response(
         template_name, {
             'membership': membership,
+            'profile_form': profile_form,
+            'education_form': education_form,
             'member_can_edit_records' : member_can_edit_records
         }, context_instance=RequestContext(request))
 

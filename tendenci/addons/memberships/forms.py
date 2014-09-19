@@ -768,7 +768,7 @@ class EducationForm(forms.Form):
 
         if self.user:
             education_list = self.user.educations.all().order_by('pk')[0:4]
-            if education_list:
+            if education_list.exists():
                 cnt = 1
                 for education in education_list:
                     field_key = 'school%s' % cnt
@@ -783,6 +783,7 @@ class EducationForm(forms.Form):
                     field_key = 'graduation_dt%s' % cnt
                     if field_key in self.keys:
                         self.fields[field_key].initial = education.graduation_dt
+                    cnt += 1
 
 
     def save(self, user):
