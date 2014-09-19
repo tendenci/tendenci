@@ -171,6 +171,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             ('url', 'url2'),
             ('dob', 'sex', 'spouse'),
             ('hide_in_search', 'hide_address', 'hide_email', 'hide_phone'),
+            ('address_2', 'address2_2'),
+            ('city_2', 'state_2', 'zipcode_2', 'country_2'),
         )}
     )
 

@@ -700,6 +700,7 @@ class UserForm(forms.ModelForm):
 
 class ProfileForm(forms.ModelForm):
     country = CountrySelectField(label=_('Country'), required=False)
+    country_2 = CountrySelectField(label=_('Country'), required=False)
     class Meta:
         model = Profile
 
@@ -1271,6 +1272,14 @@ class MembershipDefaultForm(TendenciBaseForm):
     hide_email = forms.BooleanField(required=False)
     hide_phone = forms.BooleanField(required=False)
 
+    # alternate address goes here
+    address_2 = forms.CharField(initial=u'', required=False, max_length=64)
+    address2_2 = forms.CharField(initial=u'', required=False, max_length=64)
+    city_2 = forms.CharField(initial=u'', required=False, max_length=35)
+    state_2 = forms.CharField(initial=u'', required=False, max_length=35)
+    zipcode_2 = forms.CharField(initial=u'', required=False, max_length=16)
+    country_2 = forms.CharField(initial=u'', required=False)
+
     dob = forms.DateTimeField(required=False)
     education_grad_dt = forms.DateTimeField(required=False)
     career_start_dt = forms.DateTimeField(required=False)
@@ -1500,6 +1509,13 @@ class MembershipDefaultForm(TendenciBaseForm):
                 'hide_address',
                 'hide_email',
                 'hide_phone',
+                # alternate address fields here
+                'address_2',
+                'address2_2',
+                'city_2',
+                'state_2',
+                'zipcode_2',
+                'country_2',
             ]
 
             # initialize user fields

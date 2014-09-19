@@ -483,6 +483,62 @@
     "admin_only": "false"
     },
     {
+    "label": "Alternate Address",
+    "field_name": "",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+        {
+    "label": "Address",
+    "field_name": "address_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Address2",
+    "field_name": "address2_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "City",
+    "field_name": "city_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "State",
+    "field_name": "state_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Zip Code",
+    "field_name": "zipcode_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "County",
+    "field_name": "county_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+   {
+    "label": "Country",
+    "field_name": "country_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
     "label": "Section 2. Membership Information",
     "field_name": "",
     "display": "true",

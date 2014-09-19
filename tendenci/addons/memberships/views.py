@@ -551,6 +551,8 @@ def download_default_template(request):
                   'position_title', 'sex',  'address',
                   'address2', 'city', 'state',
                   'zipcode', 'county', 'country',
+                  'address_2', 'address2_2', 'city_2', 'state_2',
+                  'zipcode_2', 'county_2', 'country_2',
                   'url', 'url2', 'address_type', 'fax',
                   'work_phone', 'home_phone', 'mobile_phone',
                   'dob', 'ssn', 'spouse',
@@ -975,6 +977,14 @@ def membership_default_add(request, slug='', membership_id=None,
             'dob': user.profile.dob,
             'spouse': user.profile.spouse,
             'department': user.profile.department,
+            # alternate address fields goes here
+            'address_2': user.profile.address_2,
+            'address2_2': user.profile.address2_2,
+            'city_2': user.profile.city_2,
+            'state_2': user.profile.state_2,
+            'zipcode_2': user.profile.zipcode_2,
+            'county_2': user.profile.county_2,
+            'country_2': user.profile.country_2,
         }
 
     profile_form = ProfileForm(
