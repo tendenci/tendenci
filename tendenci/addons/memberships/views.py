@@ -55,6 +55,7 @@ from tendenci.addons.memberships.models import (
 from tendenci.addons.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipDefaultForm,
     ReportForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
+    EducationForm,
     DemographicsForm,
     MembershipDefault2Form)
 from tendenci.addons.memberships.utils import (prepare_chart_data,
@@ -760,6 +761,7 @@ def membership_default_preview(
 
     user_form = UserForm(app_fields, request=request)
     profile_form = ProfileForm(app_fields)
+    education_form = EducationForm(app_fields)
     demographics_form = DemographicsForm(app_fields)
     membership_form = MembershipDefault2Form(app_fields,
                                              request_user=request.user,
@@ -770,6 +772,7 @@ def membership_default_preview(
                "app_fields": app_fields,
                'user_form': user_form,
                'profile_form': profile_form,
+               'education_form': education_form,
                'demographics_form': demographics_form,
                'membership_form': membership_form}
     return render_to_response(template, context, RequestContext(request))
@@ -801,12 +804,12 @@ def membership_default_add(request, slug='', membership_id=None,
     Default membership application form.
     """
     from tendenci.addons.memberships.models import Notice
-    
+
     user = None
     membership = None
     username = request.GET.get('username', u'')
     is_renewal = False
-    
+
     if membership_id:
         # it's renewal - make sure they are logged in
         membership = get_object_or_404(MembershipDefault, id=membership_id)
@@ -861,16 +864,16 @@ def membership_default_add(request, slug='', membership_id=None,
 
         # check if they have verified their email or entered the secret code
         corp_membership = get_object_or_404(CorpMembership, id=cm_id)
-        
+
         authentication_method = corp_app.authentication_method
 
         if not is_renewal:
             # imv = individual membership verification
             imv_id = kwargs.get('imv_id', 0)
             imv_guid = kwargs.get('imv_guid')
-    
+
             secret_hash = kwargs.get('secret_hash', '')
-    
+
             is_verified = False
 
             if request.user.profile.is_superuser or authentication_method == 'admin':
@@ -880,17 +883,17 @@ def membership_default_add(request, slug='', membership_id=None,
                     indiv_veri = IndivEmailVerification.objects.get(
                         pk=imv_id, guid=imv_guid)
                     is_verified = indiv_veri.verified
-    
+
                 except IndivEmailVerification.DoesNotExist:
                     pass
-    
+
             elif authentication_method == 'secret_code':
                 tmp_secret_hash = md5('%s%s' % (corp_membership.corp_profile.secret_code,
                             request.session.get('corp_hash_random_string', ''))
                                       ).hexdigest()
                 if secret_hash == tmp_secret_hash:
                     is_verified = True
-    
+
             if not is_verified:
                 return redirect(reverse('membership_default.corp_pre_add',
                                         args=[cm_id]))
@@ -992,6 +995,8 @@ def membership_default_add(request, slug='', membership_id=None,
     if join_under_corporate:
         params['authentication_method'] = authentication_method
 
+    education_form = EducationForm(app_fields, request.POST or None)
+
     demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None)
 
     if user and (not is_renewal):
@@ -1053,6 +1058,7 @@ def membership_default_add(request, slug='', membership_id=None,
             forms_validate = (
                 user_form.is_valid(),
                 profile_form.is_valid(),
+                education_form.is_valid(),
                 demographics_form.is_valid(),
                 membership_form2.is_valid(),
                 captcha_form.is_valid()
@@ -1072,6 +1078,8 @@ def membership_default_add(request, slug='', membership_id=None,
 
                 profile_form.instance = customer.profile
                 profile_form.save(request_user=customer)
+
+                education_form.save(user=customer)
 
                 # save demographics
                 demographics = demographics_form.save(commit=False)
@@ -1219,6 +1227,7 @@ def membership_default_add(request, slug='', membership_id=None,
         'app_fields': app_fields,
         'user_form': user_form,
         'profile_form': profile_form,
+        'education_form': education_form,
         'demographics_form': demographics_form,
         'membership_form': membership_form,
         'captcha_form': captcha_form
@@ -1279,6 +1288,8 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         'membership_app': app,
     }
 
+    education_form = EducationForm(app_fields, request.POST or None, user=user or request.user)
+
     demographics_form = DemographicsForm(
         app_fields,
         request.POST or None,
@@ -1303,6 +1314,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         forms_validate = (
             user_form.is_valid(),
             profile_form.is_valid(),
+            education_form.is_valid(),
             demographics_form.is_valid(),
             membership_form2.is_valid()
         )
@@ -1320,6 +1332,8 @@ def membership_default_edit(request, id, template='memberships/applications/add.
 
             profile_form.instance = customer.profile
             profile_form.save(request_user=customer)
+
+            education_form.save(user=customer)
 
             # save demographics
             demographics = demographics_form.save(commit=False)

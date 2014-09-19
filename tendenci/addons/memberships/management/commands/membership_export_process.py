@@ -66,17 +66,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.addons.memberships.utils import process_export
 
-        export_fields = options['export_fields']
-        export_type = options['export_type']
-        export_status_detail = options['export_status_detail']
-        identifier = options['identifier']
+        export_fields = options.get('export_fields', 'main_fields')
+        export_type = options.get('export_type', 'all')
+        export_status_detail = options.get('export_status_detail', 'active')
+        identifier = options.get('identifier', None)
 
         if not identifier:
             identifier = int(time.time())
 
-        cp_id = int(options.get('cp_id')) or 0
+        cp_id = int(options.get('cp_id', 0)) or 0
 
-        user_id = options['user']
+        user_id = options.get('user', '1')
         process_export(
             export_fields=export_fields,
             export_type=export_type,
