@@ -21,7 +21,7 @@
   <tr>
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Body:" %}</td>
-    <td width="75%"><b>{% blocktrans with body=directory.body|relative_to_absolute_urls|safe %}{{ body }}{% endblock %}</b></td>
+    <td width="75%"><b>{% blocktrans with body=directory.body|relative_to_absolute_urls|safe %}{{ body }}{% endblocktrans %}</b></td>
   </tr>
 </table>
 <p>

@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{% blocktrans with s=subject %}{{ s }}{% endblock %}
+{% blocktrans with s=subject %}{{ s }}{% endblocktrans %}

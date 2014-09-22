@@ -12,7 +12,7 @@
 
 {% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% blocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}

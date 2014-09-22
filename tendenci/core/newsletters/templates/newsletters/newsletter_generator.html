@@ -41,8 +41,10 @@
         <h1>{% trans 'Email Newsletters'%}</h1>
 
        {% if request.user.is_superuser %}
-       {% blocktrans %}
-       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href="{% url admin:newsletters_newslettertemplate_changelist %}">Newsletter Templates</a> see your templates and generate new email newsletters.</p>
+       {% url admin:newsletters_newslettertemplate_changelist as newsletter_changelist_url %}
+
+       {% blocktrans with newsletter_changelist_url=newsletter_changelist_url %}
+       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href="{{ newsletter_changelist_url }}">Newsletter Templates</a> see your templates and generate new email newsletters.</p>
        {% endblocktrans %}
        {% endif %}
 
@@ -51,7 +53,8 @@
           <a href="http://mailchimp.com" target="_blank">
           <img src="{{ STATIC_URL }}images/newsletters/mailchimp_logo.jpg" class="provider-logo" alt="mailchimp logo" title="mailchimp" />
            </a>
-           {% blocktrans %}
+           {% url profile.export as profile_export_url %}
+           {% blocktrans with profile_export_url=profile_export_url %}
            <div class="tpn-detail">
                <a href="http://mailchimp.com" target="_blank">MailChimp</a> helps you to design email
                campaigns, share them on social networks, integrate with
@@ -59,7 +62,7 @@
 
                <br /><br />
                MailChimp is not integrated with Tendenci. To start, you can
-               <a href="{% url profile.export %}">export users</a>
+               <a href="{{ profile_export_url }}">export users</a>
                to MailChimp.
            </div>
            {% endblocktrans %}
@@ -72,14 +75,15 @@
           <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">
           <img src="{{ STATIC_URL }}images/newsletters/constant_contact_logo.jpg" class="provider-logo" alt="constant contact logo" title="constant contact" />
            </a>
-           {% blocktrans %}
+           {% url profile.export as profile_export_url %}
+           {% blocktrans with profile_export_url=profile_export_url %}
            <div class="tpn-detail">
                <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">Constant Contact</a>'s email marketing is easy for you to connect with your customers,
                and for customers to share your message with their networks. <a href="" target="_blank">More...</a>
 
            <br /><br />
                Constant Contact is not integrated with Tendenci. To start, you can
-               <a href="{% url profile.export %}">export users</a>
+               <a href="{{ profile_export_url }}">export users</a>
                to Constant Contact.
            </div>
            {% endblocktrans %}
@@ -91,27 +95,25 @@
           <a href="http://www.campaignmonitor.com/" target="_blank">
           <img src="{{ STATIC_URL }}images/newsletters/campaign_monitor_logo.jpg" class="provider-logo" alt="campaign monitor logo" title="campaign monitor" />
            </a>
-           {% blocktrans %}
            <div class="tpn-detail">
+             {% blocktrans %}
                <a href="http://www.campaignmonitor.com/" target="_blank">Campaign Monitor</a>
                makes it easy for your to send beautiful email newsletters and
                manage your subscribers. <a href="" target="_blank">More...</a>
-
-
+           {% endblocktrans %}
 
                {% if CAMPAIGNMONITOR_ENABLED %}
                <div class="campaign-monitor-link">
-               <a href="{% url campaign_monitor.template_index%}">Go to Campaign Monitor</a>
+               <a href="{% url campaign_monitor.template_index%}">{% trans "Go to Campaign Monitor" %}</a>
                 </div>
                 {% else %}
                 <div class="campaign-monitor-msg">
-                To set up campaign monitor, please contact support at 281-497-6567 ext. 411.
+                {% trans "To set up campaign monitor, please contact support at 281-497-6567 ext. 411." %}
                 </div>
                 {% endif %}
 
 
            </div>
-           {% endblocktrans %}
        </div>
 </div>
 </div>
