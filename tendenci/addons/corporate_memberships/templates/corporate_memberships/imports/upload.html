@@ -145,6 +145,7 @@
                     <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
                     {% blocktrans with label=field.label err=error %}
                     {{ label }} - {{ err }}
+                    {% endblocktrans %}
                     </a></p>
                   {% endfor %}
             {% endif %}

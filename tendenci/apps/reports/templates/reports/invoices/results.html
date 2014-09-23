@@ -161,7 +161,7 @@
                 9
 
                 {% else %}8{% endif %}
-                ">{% blocktrans with c=item.count t=item.object_type %}Summary of {{ c }} invoices for {{ t }}</th>
+                ">{% blocktrans with c=item.count t=item.object_type %}Summary of {{ c }} invoices for {{ t }}{% endblocktrans %}</th>
                 <th>{{ item.total__sum|format_currency }}</th>
                 <th>{{ item.payments_credits__sum|format_currency }}</th>
                 <th>{{ item.balance__sum|format_currency }}</th>

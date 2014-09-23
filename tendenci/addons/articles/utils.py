@@ -85,7 +85,8 @@ def process_export(identifier, user_id):
             'download_url': download_url,
             'user': user,
             'site_url': site_url,
-            'site_display_name': site_display_name}
+            'site_display_name': site_display_name,
+            'date_today': datetime.now()}
 
         subject = render_to_string(
             'articles/notices/export_ready_subject.html', parms)
