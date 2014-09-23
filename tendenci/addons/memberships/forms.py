@@ -734,7 +734,7 @@ class ProfileForm(forms.ModelForm):
         return profile
 
 
-YEAR_CHOICES = [(i, i) for i in range(1990, THIS_YEAR + 50)]
+YEAR_CHOICES = [(i, i) for i in range(1900, THIS_YEAR + 50)]
 YEAR_CHOICES = [('', '?')] + YEAR_CHOICES
 class EducationForm(forms.Form):
 
