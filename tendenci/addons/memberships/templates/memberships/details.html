@@ -287,7 +287,7 @@
                     {% trans 'School' %}: {{ education_form.school1.value }}<br>
                     {% trans 'Major' %}: {{ education_form.major1.value }}<br>
                     {% trans 'Degree' %}: {{ education_form.degree1.value }}<br>
-                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt1.value|date:"M j, Y" }}
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt1.value }}
                 </div>
                 {% endif %}
                 {% if  education_form.school2.value or education_form.degree2.value or education_form.major2.value or education_form.graduation_dt2.value %}
@@ -295,7 +295,7 @@
                     {% trans 'School' %}: {{ education_form.school2.value }}<br>
                     {% trans 'Major' %}: {{ education_form.major2.value }}<br>
                     {% trans 'Degree' %}: {{ education_form.degree2.value }}<br>
-                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt2.value|date:"M j, Y" }}
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt2.value }}
                 </div>
                 {% endif %}
                 {% if  education_form.school3.value or education_form.degree3.value or education_form.major3.value or education_form.graduation_dt3.value %}
@@ -303,7 +303,7 @@
                     {% trans 'School' %}: {{ education_form.school3.value }}<br>
                     {% trans 'Major' %}: {{ education_form.major3.value }}<br>
                     {% trans 'Degree' %}: {{ education_form.degree3.value }}<br>
-                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt3.value|date:"M j, Y" }}
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt3.value }}
                 </div>
                 {% endif %}
                 {% if  education_form.school4.value or education_form.degree4.value or education_form.major4.value or education_form.graduation_dt4.value %}
@@ -311,7 +311,7 @@
                     {% trans 'School' %}: {{ education_form.school4.value }}<br>
                     {% trans 'Major' %}: {{ education_form.major4.value }}<br>
                     {% trans 'Degree' %}: {{ education_form.degree4.value }}<br>
-                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt4.value|date:"M j, Y" }}
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt4.value }}
                 </div>
                 {% endif %}
             </div>

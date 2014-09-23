@@ -734,23 +734,26 @@ class ProfileForm(forms.ModelForm):
         return profile
 
 
+YEAR_CHOICES = [(i, i) for i in range(1990, THIS_YEAR + 50)]
+YEAR_CHOICES = [('', '?')] + YEAR_CHOICES
 class EducationForm(forms.Form):
+
     school1 = forms.CharField(label=_('School'), max_length=200, required=False, initial='')
     major1 = forms.CharField(label=_('Major'), max_length=200, required=False, initial='')
     degree1 = forms.CharField(label=_('Degree'), max_length=200, required=False, initial='')
-    graduation_dt1 = forms.DateField(label=_('Graduation Date'), required=False)
+    graduation_dt1 = forms.ChoiceField(label=_('Graduation Date'), required=False, choices=YEAR_CHOICES)
     school2 = forms.CharField(label=_('School 2'), max_length=200, required=False, initial='')
     major2 = forms.CharField(label=_('Major 2'), max_length=200, required=False, initial='')
     degree2 = forms.CharField(label=_('Degree 2'), max_length=200, required=False, initial='')
-    graduation_dt2 = forms.DateField(label=_('Graduation Date 2'), required=False)
+    graduation_dt2 = forms.ChoiceField(label=_('Graduation Date 2'), required=False, choices=YEAR_CHOICES)
     school3 = forms.CharField(label=_('School 3'), max_length=200, required=False, initial='')
     major3 = forms.CharField(label=_('Major 3'), max_length=200, required=False, initial='')
     degree3 = forms.CharField(label=_('Degree 3'), max_length=200, required=False, initial='')
-    graduation_dt3 = forms.DateField(label=_('Graduation Date 3'), required=False)
+    graduation_dt3 = forms.ChoiceField(label=_('Graduation Date 3'), required=False, choices=YEAR_CHOICES)
     school4 = forms.CharField(label=_('School 4'), max_length=200, required=False, initial='')
     major4 = forms.CharField(label=_('Major 4'), max_length=200, required=False, initial='')
     degree4 = forms.CharField(label=_('Degree 4'), max_length=200, required=False, initial='')
-    graduation_dt4 = forms.DateField(label=_('Graduation Date 4'), required=False)
+    graduation_dt4 = forms.ChoiceField(label=_('Graduation Date 4'), required=False, choices=YEAR_CHOICES)
 
     def __init__(self, app_field_objs, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -762,9 +765,6 @@ class EducationForm(forms.Form):
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
         self.keys = self.fields.keys()
-        for key in self.keys:
-            if 'graduation_dt' in key:
-                self.fields[key].widget.attrs = {'class': 'datepicker'}
 
         if self.user:
             education_list = self.user.educations.all().order_by('pk')[0:4]
@@ -782,7 +782,7 @@ class EducationForm(forms.Form):
                         self.fields[field_key].initial = education.degree
                     field_key = 'graduation_dt%s' % cnt
                     if field_key in self.keys:
-                        self.fields[field_key].initial = education.graduation_dt
+                        self.fields[field_key].initial = education.graduation_year
                     cnt += 1
 
 
@@ -796,15 +796,15 @@ class EducationForm(forms.Form):
                     school = data.get('school%s' % cnt, '')
                     major = data.get('major%s' % cnt, '')
                     degree = data.get('degree%s' % cnt, '')
-                    graduation_dt = data.get('graduation_dt%s' % cnt, None)
+                    graduation_year = data.get('graduation_dt%s' % cnt, 0)
 
-                    if any([school, major, degree, graduation_dt]):
+                    if any([school, major, degree, graduation_year]):
                         Education.objects.create(
                             user=user,
                             school=school,
                             major=major,
                             degree=degree,
-                            graduation_dt=graduation_dt)
+                            graduation_year=int(graduation_year))
 
         else: # meaning edit
             education_list = self.user.educations.all().order_by('pk')[0:4]
@@ -813,12 +813,12 @@ class EducationForm(forms.Form):
                 school = data.get('school%s' % cnt, '')
                 major = data.get('major%s' % cnt, '')
                 degree = data.get('degree%s' % cnt, '')
-                graduation_dt = data.get('graduation_dt%s' % cnt, None)
+                graduation_year = data.get('graduation_dt%s' % cnt, 0)
 
                 education.school =school
                 education.major = major
                 education.degree = degree
-                education.graduation_dt = graduation_dt
+                education.graduation_year = int(graduation_year)
                 education.save()
 
 
@@ -1311,19 +1311,19 @@ class MembershipDefaultForm(TendenciBaseForm):
     school1 = forms.CharField(initial=u'', required=False)
     major1 = forms.CharField(initial=u'', required=False)
     degree1 = forms.CharField(initial=u'', required=False)
-    graduation_dt1 = forms.DateField(required=False)
+    graduation_dt1 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
     school2 = forms.CharField(initial=u'', required=False)
     major2 = forms.CharField(initial=u'', required=False)
     degree2 = forms.CharField(initial=u'', required=False)
-    graduation_dt2 = forms.DateField(required=False)
+    graduation_dt2 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
     school3 = forms.CharField(initial=u'', required=False)
     major3 = forms.CharField(initial=u'', required=False)
     degree3 = forms.CharField(initial=u'', required=False)
-    graduation_dt3 = forms.DateField(required=False)
+    graduation_dt3 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
     school4 = forms.CharField(initial=u'', required=False)
     major4 = forms.CharField(initial=u'', required=False)
     degree4 = forms.CharField(initial=u'', required=False)
-    graduation_dt4 = forms.DateField(initial=u'', required=False)
+    graduation_dt4 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
 
     # manually add ud fields here because admin.site.register requires it
     ud1 = forms.CharField(widget=forms.TextInput, required=False)
@@ -1437,10 +1437,6 @@ class MembershipDefaultForm(TendenciBaseForm):
             self.fields['education_grad_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
             self.fields['career_start_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
             self.fields['career_end_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
-            self.fields['graduation_dt1'].widget = forms.widgets.DateInput(attrs={'class': 'datepicker'})
-            self.fields['graduation_dt2'].widget = forms.widgets.DateInput(attrs={'class': 'datepicker'})
-            self.fields['graduation_dt3'].widget = forms.widgets.DateInput(attrs={'class': 'datepicker'})
-            self.fields['graduation_dt4'].widget = forms.widgets.DateInput(attrs={'class': 'datepicker'})
 
         self.fields['corporate_membership_id'].widget = forms.widgets.Select(
                                         choices=get_corporate_membership_choices())
@@ -1539,7 +1535,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                     self.fields['school%s' % cnt].initial = education.school
                     self.fields['major%s' % cnt].initial = education.major
                     self.fields['degree%s' % cnt].initial = education.degree
-                    self.fields['graduation_dt%s' % cnt].initial = education.graduation_dt
+                    self.fields['graduation_dt%s' % cnt].initial = education.graduation_year
                     cnt += 1
 
         # demographic fields - include only those selected on app
@@ -1718,13 +1714,13 @@ class MembershipDefaultForm(TendenciBaseForm):
                 school = request.POST.get('school%s' % cnt, '')
                 major = request.POST.get('major%s' % cnt, '')
                 degree = request.POST.get('degree%s' %cnt, '')
-                graduation_dt = request.POST.get('graduation_dt%s' % cnt, None)
+                graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
 
-                if any([school, major, degree, graduation_dt]):
+                if any([school, major, degree, graduation_year]):
                     education.school = school
                     education.major = major
                     education.degree =degree
-                    education.graduation_dt = graduation_dt
+                    education.graduation_year = int(graduation_year)
                     education.save()
 
                 cnt += 1
@@ -1735,15 +1731,15 @@ class MembershipDefaultForm(TendenciBaseForm):
                     school = request.POST.get('school%s' % cnt, '')
                     major = request.POST.get('major%s' % cnt, '')
                     degree = request.POST.get('degree%s' %cnt, '')
-                    graduation_dt = request.POST.get('graduation_dt%s' % cnt, None)
+                    graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
 
-                    if any([school, major, degree, graduation_dt]):
+                    if any([school, major, degree, graduation_year]):
                         Education.objects.create(
                             user=membership.user,
                             school=school,
                             major=major,
                             degree=degree,
-                            graduation_dt=graduation_dt
+                            graduation_year=int(graduation_year)
                         )
 
         else:   # create education instances here
@@ -1751,15 +1747,15 @@ class MembershipDefaultForm(TendenciBaseForm):
                 school = request.POST.get('school%s' % cnt, '')
                 major = request.POST.get('major%s' % cnt, '')
                 degree = request.POST.get('degree%s' %cnt, '')
-                graduation_dt = request.POST.get('graduation_dt%s' % cnt, None)
+                graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
 
-                if any([school, major, degree, graduation_dt]):
+                if any([school, major, degree, graduation_year]):
                     Education.objects.create(
                         user=membership.user,
                         school=school,
                         major=major,
                         degree=degree,
-                        graduation_dt=graduation_dt
+                        graduation_year=int(graduation_year)
                     )
 
 

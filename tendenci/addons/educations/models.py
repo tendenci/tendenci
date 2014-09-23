@@ -1,4 +1,7 @@
 import uuid
+
+from datetime import datetime
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
@@ -16,6 +19,7 @@ class Education(TendenciBaseModel):
     degree = models.CharField(_('Degree'), max_length=250)
     graduation_dt = models.DateTimeField(_('Graduation Date/Time'),
                                          null=True, blank=True)
+    graduation_year = models.IntegerField(_('Graduation Year'), null=True, blank=True)
     user = models.ForeignKey(User, related_name="educations")
 
     perms = generic.GenericRelation(ObjectPermission,
@@ -38,5 +42,8 @@ class Education(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or unicode(uuid.uuid1())
+        if self.graduation_year and not self.graduation_dt:
+            # placeholder to contain value for the datetime graduation field
+            self.graduation_dt = datetime(year=self.graduation_year, month=1, day=1)
 
         super(Education, self).save(*args, **kwargs)

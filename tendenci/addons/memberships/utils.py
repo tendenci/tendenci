@@ -283,7 +283,7 @@ def get_membership_rows(
                 row_dict[education_field_list[cnt]] = education.school
                 row_dict[education_field_list[cnt+1]] = education.major
                 row_dict[education_field_list[cnt+2]] = education.degree
-                row_dict[education_field_list[cnt+3]] = education.graduation_dt.date()
+                row_dict[education_field_list[cnt+3]] = education.graduation_year
                 cnt += 4
 
         if demographic:
@@ -339,7 +339,7 @@ def process_export(
             'city',
             'state',
             'zipcode',
-            'country'
+            'country',
             'address_2',
             'address2_2',
             'city_2',
