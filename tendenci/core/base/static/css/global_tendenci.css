@@ -92,3 +92,7 @@ span.member-icon{
 .checkbox-inline input[type="checkbox"] {
   margin-left: 10px;
 }
+
+.form-field .label{
+	color: #333;
+}
