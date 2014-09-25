@@ -1,5 +1,6 @@
 import os
 from optparse import make_option
+from random import randint
 from boto.s3.connection import S3Connection
 
 from django.contrib.contenttypes.models import ContentType
@@ -42,6 +43,14 @@ class Command(BaseCommand):
             self.copy_to_s3()
         else:
             self.copy_to_local()
+            
+    def get_random_stock(self, bucket):
+        """
+        Return a key from a random stock image
+        """
+        stock_bucket_list = bucket.list('stock')
+        stock_keys = [k for k in stock_bucket_list]
+        return stock_keys[randint(1, len(stock_keys)) - 1]
 
     def copy_to_local(self):
         """
@@ -64,6 +73,10 @@ class Command(BaseCommand):
                     os.makedirs(dir_path)
 
                 print dst
+
+                if 'story/521214a8' in source_key.name:
+                    source_key = self.get_random_stock(bucket)
+
                 with open(dst, 'wb') as f:
                     f.write(source_key.read())
 
