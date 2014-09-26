@@ -129,6 +129,7 @@ class PageForm(TendenciBaseForm):
         'content',
         'tags',
         'template',
+        'group',
         'contributor_type',
         'google_profile',
         'allow_anonymous_view',
@@ -146,6 +147,7 @@ class PageForm(TendenciBaseForm):
                                  'tags',
                                  'header_image',
                                  'template',
+                                 'group'
                                  ],
                       'legend': ''
                       }),
