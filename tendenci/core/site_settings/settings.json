@@ -814,5 +814,22 @@
         "scope_category": "global",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If True, ancient menu admin/user top menu will be shown instead of bootstrap megemenu version",
+        "data_type": "boolean",
+        "update_dt": "2014-09-26 03:47:02",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "showancientmenu",
+        "value": "false",
+        "label": "Show Ancient Admin/User Top menu",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
     }
 ]

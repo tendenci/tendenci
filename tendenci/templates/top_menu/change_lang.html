@@ -1,18 +1,6 @@
 {% load i18n %}
 {% load url from future %}
 
-<style>
-    .lang-scrollable-menu {
-        height: auto;
-        max-height: 500px;
-        max-width: 150px;
-        overflow-x: hidden;
-    }
-    #lang-menu a{
-        text-shadow: none !important;
-    }
-</style>
-
 <div class="dropdown">
 {% with request.user.profile.lang as user_lang %}
   <a class="dropdown-toggle" data-toggle="dropdown" role="button" href="#">
@@ -39,16 +27,3 @@
   </div>
  {% endwith %}
  </div>
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script>var jq211 = jQuery.noConflict( true );</script>
-<script>
-  (function(jQuery){
-      var $ = jQuery;
-    $('#lang-menu a').click(function(e){
-      var lang = $(this).data('lang');
-      $('#lang-form #lang-id_language').attr('value', lang);
-      $('#lang-form').submit();
-    });
-  })(jq211);
-</script>
