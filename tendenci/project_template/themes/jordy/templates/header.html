@@ -1,33 +1,31 @@
 {% load nav_tags %}
 {% load base_tags %}
 {% load theme_tags %}
+{% load box_tags %}
 {% load i18n %}
 
-<nav id="topnav" class="navbar navbar-default" role="navigation">
+ <nav id="topnav" class="navbar navbar-default" role="navigation">
+
 <!-- Utility navbar -->
-  <ul class="nav nav-pills utility-navigation">
-    <li><a href="#"><i class="utilnav fa fa-google-plus-square"></i></a></li>
-    <li><a href="#"><i class="utilnav fa fa-pinterest-square"></i></a></li>
-    <li><a href="#"><i class="utilnav fa fa-linkedin-square"></i></a></li>
-    <li><a href="#"><i class="utilnav fa fa-twitter-square"></i></a></li>
-    <li><a href="#"><i class="utilnav fa fa-facebook-square"></i></a></li>
-    <li><a href="/contact">{% trans 'Contact' %}</a></li>
-    <li><a href="/donate">{% trans 'Donate' %}</a></li>
-    <li><a href="/login">{% trans 'Member Login' %}</a></li>
-  </ul>
+  <div class= "container utility-container">
+  <div class="row">
+   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
+             <div class="logo" id="logo">
+               <a href="/"> <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/60x30/crop/90/{% else %}http://placehold.it/60x30{% endif %}" /> </a>
+        </div>
+        {% theme_include 'theme_includes/logo_edit_form.html' %}
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-9 jordy-utility-nav">
+    {% box 3 %}
+    </div>
+    </div>
 
 <!-- Fixed navbar -->
+
   <div class="container pull-left col-lg-12 col-md-12 col-sm-12">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/">
-        <div class="logo" id="logo">
-        <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/60x30/crop/90/{% else %} http://placehold.it/60x30 {% endif %}" />
-        </div>
-      </a>
-      {% theme_include 'theme_includes/logo_edit_form.html' %}
-    </div>
     <div class="mainnav">
       {% nav 1 %}
     </div>
   </div>
 </nav>
+​
