@@ -38,7 +38,7 @@ class Profile(Person):
     company = models.CharField(_('company'), max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=50, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
-    sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', _(u'Male')),('female', _(u'Female'))))
+    sex = models.CharField(_('gender'), max_length=50, blank=True, choices=(('male', _(u'Male')),('female', _(u'Female'))))
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     phone2 = models.CharField(_('phone2'), max_length=50, blank=True)
     fax = models.CharField(_('fax'), max_length=50, blank=True)

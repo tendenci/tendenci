@@ -1286,7 +1286,7 @@ class MembershipDefaultForm(TendenciBaseForm):
     career_start_dt = forms.DateTimeField(required=False)
     career_end_dt = forms.DateTimeField(required=False)
 
-    sex = forms.CharField(initial=u'', required=False)
+    sex = forms.CharField(label=_('Gender'), initial=u'', required=False)
     spouse = forms.CharField(initial=u'', required=False)
     profession = forms.CharField(initial=u'', required=False)
     custom1 = forms.CharField(initial=u'', required=False)

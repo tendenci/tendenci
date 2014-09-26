@@ -28,6 +28,13 @@
     "admin_only": "false"
     },
     {
+    "label": "Gender",
+    "field_name": "sex",
+    "display": "true",
+    "required": "true",
+    "admin_only": "false"
+    },
+    {
     "label": "Salutation",
     "field_name": "salutation",
     "display": "true",
