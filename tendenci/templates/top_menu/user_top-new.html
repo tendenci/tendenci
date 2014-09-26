@@ -7,7 +7,7 @@
         </div>
         <div id="navbar-collapse-0" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
                     <ul class="dropdown-menu">
                         {% if SITE_GLOBAL_SEARCHINDEX %}
                         <li><a href="/search"><span class="glyph search">&#76;</span>&nbsp;&nbsp;{% trans "Search All Content" %}</a></li>
@@ -44,7 +44,7 @@
                 {% if MODULE_MEMBERSHIPS_ENABLED %}
                 {% has_perm user memberships.approve_membership as can_approve_membership %}
                 {% if can_approve_membership %}
-                <li class="dropdown"><a href="{% url profile.search %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+                <li class="dropdown"><a href="{% url profile.search %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url membership.search %}">{% trans "Memberships" %}</a></li>
                     </ul>
@@ -52,13 +52,13 @@
                 {% endif %}
                 {% endif %}
                 {% if MODULE_USERS_ALLOWUSERSEARCH %}
-                <li class="dropdown"><a href="{% url profile.search %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+                <li class="dropdown"><a href="{% url profile.search %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url profile.search %}">{% trans "Users Search" %}</a></li>
                     </ul>
                 </li>
                 {% endif %}
-                <li class="dropdown"><a href="{% url profile request.user.username %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "My Links" %}</a>
+                <li class="dropdown"><a href="{% url profile request.user.username %}" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#75;</span>&nbsp;&nbsp;{% trans "My Links" %}</a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url profile request.user.username %}" >{% trans "My User Profile" %}</a></li>
                         <li><a href="{% url invoice.search %}?bill_to_email={{ request.user.email }}">{% trans "My Invoices" %}</a></li>
@@ -69,7 +69,7 @@
                         <li><a href="{% url contribution.search %}">{% trans "My Content" %}</a></li>
                     </ul>
                 </li>
-                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph heading">&#87;</span>&nbsp;&nbsp;{% trans "Support" %}</a>
+                <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#87;</span>&nbsp;&nbsp;{% trans "Support" %}</a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url help_files.search %}">{% trans 'Help Files' %}</a></li>
                         <li><a href="/contact/">{% trans "Contact" %}</a></li>
@@ -77,7 +77,7 @@
                     </ul>
                 </li>
                 {% if request.user.is_staff %}
-                <li><a href="/admin/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Admin Area" %}</a></li>
+                <li><a href="/admin/"><span class="glyph">&#83;</span>&nbsp;&nbsp;{% trans "Admin Area" %}</a></li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -94,7 +94,7 @@
                 </li>
                 {% endif %}
                 <li><a href="{% url profile.index %}">{{ user.username }}</a></li>
-                <li><a href="{% url auth_logout %}"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
+                <li><a href="{% url auth_logout %}"><span class="glyph">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
             </ul>
         </div>
     </div>
