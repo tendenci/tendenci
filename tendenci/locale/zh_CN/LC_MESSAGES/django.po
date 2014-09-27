@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-25 22:18+0000\n"
-"PO-Revision-Date: 2014-09-25 12:44+0000\n"
+"POT-Creation-Date: 2014-09-26 22:41+0000\n"
+"PO-Revision-Date: 2014-09-26 16:08+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -37,7 +37,7 @@ msgstr ""
 #: apps/discounts/forms.py:48 apps/entities/forms.py:39
 #: apps/forms_builder/forms/admin.py:81 apps/forms_builder/forms/forms.py:367
 #: apps/navs/admin.py:25 apps/navs/forms.py:31 apps/pages/admin.py:32
-#: apps/pages/forms.py:157 apps/profiles/admin.py:116
+#: apps/pages/forms.py:159 apps/profiles/admin.py:116
 #: apps/profiles/forms.py:667 apps/profiles/templates/profiles/meta.html:52
 #: apps/profiles/templates/profiles/options.html:49 apps/stories/admin.py:31
 #: apps/stories/forms.py:81 apps/stories/forms.py:209
@@ -442,7 +442,7 @@ msgid "Email"
 msgstr "电子邮件"
 
 #: addons/articles/forms.py:154 addons/news/admin.py:27
-#: addons/news/forms.py:99 apps/pages/forms.py:152
+#: addons/news/forms.py:99 apps/pages/forms.py:154
 msgid "Contributor"
 msgstr ""
 
@@ -456,7 +456,7 @@ msgstr ""
 #: addons/regions/forms.py:41 addons/resumes/forms.py:146
 #: apps/discounts/forms.py:56 apps/entities/forms.py:46
 #: apps/forms_builder/forms/forms.py:375 apps/navs/forms.py:39
-#: apps/pages/forms.py:165 apps/profiles/forms.py:676 apps/stories/admin.py:37
+#: apps/pages/forms.py:167 apps/profiles/forms.py:676 apps/stories/admin.py:37
 #: apps/stories/forms.py:89 apps/stories/forms.py:217
 #: apps/user_groups/forms.py:151 core/files/forms.py:75
 msgid "Administrator Only"
@@ -912,8 +912,8 @@ msgstr "删除"
 #: addons/events/templates/notification/event_deleted/full.html:17
 #: addons/events/templates/notification/event_registration_cancelled/full.html:37
 #: addons/help_files/templates/help_files/details.html:6
-#: project_template/themes/jordy/templates/homepage.html:103
-#: project_template/themes/jordy/templates/homepage.html:136
+#: project_template/themes/jordy/templates/homepage.html:99
+#: project_template/themes/jordy/templates/homepage.html:129
 #, python-format
 msgid "%(title)s"
 msgstr ""
@@ -937,7 +937,7 @@ msgstr ""
 #: addons/directories/templates/notification/directory_edited/full.html:7
 #: addons/directories/templates/notification/directory_renewal_eligible/full.html:19
 #: addons/directories/templates/notification/directory_renewed/full.html:21
-#: project_template/themes/jordy/templates/homepage.html:187
+#: project_template/themes/jordy/templates/homepage.html:184
 #, python-format
 msgid "%(headline)s"
 msgstr ""
@@ -1949,7 +1949,7 @@ msgstr ""
 #: addons/articles/templates/articles/search-result.html:8
 #: addons/directories/templates/directories/search-result.html:10
 #: addons/directories/templates/directories/search-result.html:12
-#: project_template/themes/jordy/templates/homepage.html:189
+#: project_template/themes/jordy/templates/homepage.html:186
 #, python-format
 msgid "%(summary)s"
 msgstr ""
@@ -6010,7 +6010,6 @@ msgstr ""
 #: addons/resumes/forms.py:117
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:207
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:240
-#: project_template/themes/jordy/templates/header.html:14
 #: templates/form.html:29 templates/top_menu/user_top-new.html:75
 #: templates/top_menu/user_top.html:117
 msgid "Contact"
@@ -6149,7 +6148,6 @@ msgstr ""
 #: addons/directories/models.py:95 addons/memberships/models.py:76
 #: addons/memberships/templates/memberships/details.html:587
 #: addons/memberships/templates/memberships/details_print.html:425
-#: project_template/themes/jordy/templates/homepage.html:128
 msgid "Directory"
 msgstr ""
 
@@ -7684,7 +7682,7 @@ msgstr "可见"
 
 #: addons/events/models.py:1445 apps/forms_builder/forms/forms.py:30
 #: apps/forms_builder/forms/models.py:215 apps/pages/forms.py:16
-#: apps/pages/forms.py:82 apps/pages/forms.py:224
+#: apps/pages/forms.py:82 apps/pages/forms.py:226
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:124
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:133
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:142
@@ -12629,7 +12627,6 @@ msgstr ""
 #: addons/memberships/templates/memberships/details_print.html:82
 #: addons/memberships/templates/memberships/invoice_search_result_line.html:9
 #: addons/memberships/templates/memberships/invoice_search_result_line2.html:9
-#: project_template/themes/jordy/templates/homepage.html:124
 msgid "Membership"
 msgstr ""
 
@@ -12876,6 +12873,16 @@ msgstr ""
 
 #: addons/memberships/forms.py:1217
 msgid "All Statuses"
+msgstr ""
+
+#: addons/memberships/forms.py:1289
+#: addons/memberships/migrations/0036_add_gender_to_existing_apps.py:12
+#: addons/memberships/templates/memberships/applications/detail_default.html:105
+#: apps/profiles/templates/notification/user_edited/full.html:639
+#: apps/profiles/templates/profiles/add.html:456
+#: apps/profiles/templates/profiles/edit.html:446
+#: apps/profiles/templates/profiles/edit_notice.txt:658
+msgid "Gender"
 msgstr ""
 
 #: addons/memberships/models.py:65
@@ -14085,14 +14092,6 @@ msgstr ""
 msgid "Web Site 2"
 msgstr ""
 
-#: addons/memberships/templates/memberships/applications/detail_default.html:105
-#: apps/profiles/templates/notification/user_edited/full.html:639
-#: apps/profiles/templates/profiles/add.html:456
-#: apps/profiles/templates/profiles/edit.html:446
-#: apps/profiles/templates/profiles/edit_notice.txt:658
-msgid "Gender"
-msgstr ""
-
 #: addons/memberships/templates/memberships/applications/detail_default.html:109
 msgid "User Name"
 msgstr ""
@@ -14681,7 +14680,7 @@ msgstr ""
 
 #: addons/news/templates/news/search.html:18
 #: project_template/themes/academic-bootstrap3/templates/sidebar.html:13
-#: project_template/themes/jordy/templates/homepage.html:182
+#: project_template/themes/jordy/templates/homepage.html:179
 #: project_template/themes/jordy/templates/sidebar.html:26
 msgid "Latest News"
 msgstr ""
@@ -16546,7 +16545,7 @@ msgstr ""
 #: apps/dashboard/templates/dashboard/new.html:124
 #: apps/dashboard/templates/dashboard/stats.html:201
 #: apps/wp_exporter/forms.py:29
-#: project_template/themes/jordy/templates/homepage.html:132
+#: project_template/themes/jordy/templates/homepage.html:125
 #: templates/reports/user_activity_table.html:42
 #: templates/reports/user_activity_table.html:44
 #: templates/top_menu/user_top-new.html:22 templates/top_menu/user_top.html:30
@@ -19272,8 +19271,8 @@ msgstr ""
 msgid "Latest Pages by %(dname)s"
 msgstr ""
 
-#: apps/pages/forms.py:95 apps/pages/forms.py:100 apps/pages/forms.py:180
-#: apps/pages/forms.py:185
+#: apps/pages/forms.py:95 apps/pages/forms.py:100 apps/pages/forms.py:182
+#: apps/pages/forms.py:187
 msgid "Duplicate value for slug."
 msgstr ""
 
@@ -19285,26 +19284,26 @@ msgstr ""
 msgid "Open All Tags list in a new window"
 msgstr ""
 
-#: apps/pages/forms.py:142
+#: apps/pages/forms.py:143
 msgid "Page Information"
 msgstr ""
 
-#: apps/pages/forms.py:197
+#: apps/pages/forms.py:199
 msgid "The header image must be of jpg, gif, or png image type."
 msgstr ""
 
-#: apps/pages/forms.py:202
+#: apps/pages/forms.py:204
 msgid "The header image is an invalid image. Try uploading another image."
 msgstr ""
 
-#: apps/pages/forms.py:206
+#: apps/pages/forms.py:208
 #, python-format
 msgid ""
 "Please keep filesize under %(max_upload_size)s. Current filesize "
 "%(header_image)s"
 msgstr ""
 
-#: apps/pages/forms.py:215
+#: apps/pages/forms.py:217
 msgid "Remove current image"
 msgstr ""
 
@@ -19773,7 +19772,7 @@ msgid "position assignment"
 msgstr ""
 
 #: apps/profiles/models.py:41
-msgid "sex"
+msgid "gender"
 msgstr ""
 
 #: apps/profiles/models.py:41
@@ -25128,8 +25127,8 @@ msgstr ""
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:79
 #: project_template/themes/developer-bootstrap3/templates/default.html:64
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:77
-#: project_template/themes/jordy/templates/default.html:66
-#: project_template/themes/jordy/templates/homepage.html:71
+#: project_template/themes/jordy/templates/default.html:60
+#: project_template/themes/jordy/templates/homepage.html:67
 msgid "Skip to main content"
 msgstr ""
 
@@ -25148,7 +25147,7 @@ msgstr ""
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:106
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:177
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:102
-#: project_template/themes/jordy/templates/homepage.html:190
+#: project_template/themes/jordy/templates/homepage.html:187
 #: templates/theme_includes/events_list_daybox.html:14
 msgid "Read More"
 msgstr ""
@@ -25331,47 +25330,31 @@ msgstr ""
 msgid "60%% Complete"
 msgstr ""
 
-#: project_template/themes/jordy/templates/header.html:15
-#: project_template/themes/jordy/templates/homepage.html:120
-msgid "Donate"
-msgstr ""
-
-#: project_template/themes/jordy/templates/header.html:16
-msgid "Member Login"
-msgstr ""
-
-#: project_template/themes/jordy/templates/homepage.html:100
+#: project_template/themes/jordy/templates/homepage.html:96
 #, python-format
 msgid "image for %(t)s"
 msgstr ""
 
-#: project_template/themes/jordy/templates/homepage.html:138
-msgid "Events will be shown here. Start adding events now!"
+#: project_template/themes/jordy/templates/homepage.html:131
+msgid ""
+"Events will be shown here. <a href=\"/events/add/\">Start adding events "
+"now!</a>"
 msgstr ""
 
-#: project_template/themes/jordy/templates/homepage.html:142
+#: project_template/themes/jordy/templates/homepage.html:135
 msgid "View more events"
 msgstr ""
 
-#: project_template/themes/jordy/templates/homepage.html:156
-msgid "Testimonials"
+#: project_template/themes/jordy/templates/homepage.html:152
+msgid "<a href=\"/photos\">Photos</a>"
 msgstr ""
 
-#: project_template/themes/jordy/templates/homepage.html:159
-#, python-format
-msgid "%(overview)s"
-msgstr ""
-
-#: project_template/themes/jordy/templates/homepage.html:163
-msgid "More testimonials"
-msgstr ""
-
-#: project_template/themes/jordy/templates/homepage.html:178
+#: project_template/themes/jordy/templates/homepage.html:175
 msgid "About the Organization"
 msgstr ""
 
-#: project_template/themes/jordy/templates/homepage.html:193
-msgid "No news to show now. Start adding news now!"
+#: project_template/themes/jordy/templates/homepage.html:190
+msgid "No news to show now. <a href=\"/news/add/\">Start adding news now!</a>"
 msgstr ""
 
 #: project_template/themes/jordy/templates/sidebar.html:22
