@@ -562,11 +562,12 @@ class UserForm(forms.ModelForm):
                 self.fields.pop('password')
 
         if 'password' in self_fields_keys:
-
+            passwd = app_field_objs.filter(field_name='password')[0]
             self.fields['password'] = forms.CharField(
                 initial=u'',
                 widget=forms.PasswordInput,
                 required=False,
+                help_text=help_text=passwd.help_text
             )
             self.fields['password'].widget.attrs.update({'size': 28})
 

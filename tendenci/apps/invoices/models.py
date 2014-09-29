@@ -170,7 +170,7 @@ class Invoice(models.Model):
     def get_absolute_url(self):
         return ('invoice.view', [self.id])
 
-     @models.permalink
+    @models.permalink
     def get_absolute_url_with_guid(self):
         return ('invoice.view', [self.id, self.guid])
 
