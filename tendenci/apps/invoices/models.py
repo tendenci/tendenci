@@ -170,6 +170,10 @@ class Invoice(models.Model):
     def get_absolute_url(self):
         return ('invoice.view', [self.id])
 
+     @models.permalink
+    def get_absolute_url_with_guid(self):
+        return ('invoice.view', [self.id, self.guid])
+
     @models.permalink
     def get_discount_url(self):
         from tendenci.apps.discounts.models import Discount

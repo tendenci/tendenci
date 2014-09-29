@@ -558,7 +558,7 @@ def email_registrants(event, email, **kwargs):
             email.body = email.body.replace('[firstname]', first_name)
             email.body = email.body.replace('[lastname]', last_name)
             invoice = registrant.registration.get_invoice()
-            invoicelink = invoice.get_absolute_url()
+            invoicelink = invoice.get_absolute_url_with_guid()
             invoicelink = '<a href="%s%s">%s%s</a>' % (site_url, invoicelink, site_url, invoicelink)
             email.body = email.body.replace('[invoicelink]', invoicelink)
             email.send()
