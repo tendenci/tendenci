@@ -163,7 +163,6 @@ h1, h2, h3, h4 {
 
 .carousel {
   height: 50%;
-  top: -40px;
 }
 
 .item,
@@ -282,6 +281,36 @@ footer {
     height: 70%;
  /* increases the carousel height so it looks good on phones */
   }
+
+  .carousel-caption h1 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .carousel-caption {
+    bottom: 5px;
+  }
+ 
+  .carousel-caption h1 {
+    font-size:20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .carousel-caption h1 {
+    font-size: 16px;
+  }
+
+  .carousel-caption p {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-caption > p.story {
+    display: none;
+  }
 }
 
 @media (max-width: 420px) {
@@ -293,4 +322,3 @@ footer {
 
 
 
-​

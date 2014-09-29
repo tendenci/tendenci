@@ -97,6 +97,8 @@
       {% endif %}
       <div class="carousel-caption">
         <h1>{% blocktrans with title=story.title %}{{ title }}{% endblocktrans %}</h1>
+        <p class="story">{{ story.content|striptags|truncatewords:"30"|safe }}</p>
+        <p class="no-margin"><a href="{{ story.full_story_link }}">{% trans 'LEARN MORE' %}</a></p>
       </div>
     </div>
     {% endfor %}
@@ -141,27 +143,21 @@
 =========================================================== -->
 <div class="section-colored text-center">
   <!--example-->
-     <div class="col-lg-12 col-md-12">
-
-      {% box 6 %}
-    </div>
   <div class="container">
     <div class="row">
 
       <div class="col-lg-12 col-xs-12">
-        <h3 style="text-align: center;">{% trans '<a href="/photos">Photos</a>' %}</h3>
+        <h3 style="text-align: center;"><a href="/photos">{% trans 'Photos' %}</a></h3>
         <br />
-   {% list_photos as photos_list limit=6 random=True %}
-             {% for photo in photos_list %}
-   <div class="col-lg-2 col-md-4 col-sm-4 col-xs-6">
-     <div class="thumbnail">
-       <a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=144x132 crop=True %}" /></a>
-     </div>
-   </div>
-   {% endfor %}
-   </div>
-
-
+        {% list_photos as photos_list limit=6 random=True %}
+        {% for photo in photos_list %}
+        <div class="col-lg-2 col-md-4 col-sm-4 col-xs-6">
+          <div class="thumbnail">
+            <a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=144x132 crop=True %}" /></a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div><!-- /.row -->
   </div><!-- /.container -->
 </div>
@@ -235,4 +231,3 @@
 {% endblock extra_body %}
 
 
-​
