@@ -567,7 +567,7 @@ class UserForm(forms.ModelForm):
                 initial=u'',
                 widget=forms.PasswordInput,
                 required=False,
-                help_text=help_text=passwd.help_text
+                help_text=passwd.help_text
             )
             self.fields['password'].widget.attrs.update({'size': 28})
 
