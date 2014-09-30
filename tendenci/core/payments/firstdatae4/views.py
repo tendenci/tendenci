@@ -7,11 +7,13 @@ from tendenci.core.payments.utils import log_silent_post
 
 
 @csrf_exempt
-def thank_you(request, payment_id,
+def thank_you(request,
                   template_name='payments/authorizenet/thankyou.html'):
     payment = firstdatae4_thankyou_processing(
                                         request,
                                         dict(request.POST.items()))
+    if not payment:
+        return HttpResponse('Not Valid')
 
     return render_to_response(template_name, {'payment': payment},
                               context_instance=RequestContext(request))
@@ -21,6 +23,9 @@ def thank_you(request, payment_id,
 def silent_post(request):
     payment = firstdatae4_thankyou_processing(
         request, dict(request.POST.items()))
+
+    if not payment:
+        return HttpResponse('Not Valid')
 
     log_silent_post(request, payment)
 

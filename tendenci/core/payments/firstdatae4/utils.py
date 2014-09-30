@@ -38,7 +38,7 @@ def prepare_firstdatae4_form(request, payment):
               'x_relay_url':payment.response_page,
               'x_invoice_num':payment.invoice_num,
               'x_description':payment.description,
-              'x_email_customer':"True",
+              'x_email_customer':"TRUE",
               'x_email':payment.email,
               'x_cust_id':payment.cust_id,
               'x_first_name':payment.first_name,
@@ -59,7 +59,7 @@ def prepare_firstdatae4_form(request, payment):
               'x_ship_to_country':payment.ship_to_country,
               'x_fax':payment.fax,
               'x_phone':payment.phone,
-              'x_show_form':'payment_form',
+              'x_show_form':'PAYMENT_FORM',
               'x_logo_URL':x_logo_URL,
         }
     
@@ -68,7 +68,7 @@ def prepare_firstdatae4_form(request, payment):
     return form
 
 def firstdatae4_thankyou_processing(request, response_d, **kwargs):
-    from django.shortcuts import get_object_or_404
+    #from django.shortcuts import get_object_or_404
 
     x_invoice_num = response_d.get('x_invoice_num', 0)
     try:
@@ -76,7 +76,10 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
     except:
         x_invoice_num = 0
 
-    payment = get_object_or_404(Payment, pk=x_invoice_num)
+    #payment = get_object_or_404(Payment, pk=x_invoice_num)
+    [payment] = Payment.objects.filter(pk=x_invoice_num)[:1] or [None]
+    if not payment:
+        return None
 
     # authenticate with md5 hash to make sure the response is securely received from authorize.net.
     # client needs to set up the MD5 Hash Value in their account
