@@ -202,8 +202,7 @@ class Payment(models.Model):
                 self.response_page = reverse('firstdata.thank_you',
                                              args=[self.id])
             elif merchant_account == "firstdatae4":
-                self.response_page = reverse('firstdatae4.thank_you',
-                                             args=[self.id])
+                self.response_page = reverse('firstdatae4.thank_you')
             elif merchant_account == "paypalpayflowlink":
                 self.response_page = reverse('payflowlink.thank_you')
             elif merchant_account == "paypal":
