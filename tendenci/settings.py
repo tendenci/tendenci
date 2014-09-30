@@ -398,6 +398,7 @@ AUTHNET_MD5_HASH_VALUE = ''
 FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay'
 FIRSTDATAE4_POST_URL = 'https://checkout.globalgatewaye4.firstdata.com/payment'
 #FIRSTDATAE4_POST_URL = 'https://globalgatewaye4.firstdata.com/pay'
+FIRSTDATA_RESPONSE_KEY = ''
 
 AUTHNET_CIM_API_TEST_URL = "https://apitest.authorize.net/xml/v1/request.api"
 AUTHNET_CIM_API_URL = "https://api.authorize.net/xml/v1/request.api"

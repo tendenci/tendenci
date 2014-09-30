@@ -34,8 +34,8 @@ def prepare_firstdatae4_form(request, payment):
               'x_amount':x_amount,
               'x_version':'3.1',
               'x_login':settings.MERCHANT_LOGIN,
-              'x_relay_response':'TRUE',
-              'x_relay_url':payment.response_page,
+              #'x_relay_response':'TRUE',
+              #'x_relay_url':payment.response_page,
               'x_invoice_num':payment.invoice_num,
               'x_description':payment.description,
               'x_email_customer':"TRUE",
@@ -81,22 +81,20 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
     if not payment:
         return None
 
-    # authenticate with md5 hash to make sure the response is securely received from authorize.net.
-    # client needs to set up the MD5 Hash Value in their account
-    # and add this value to the local_settings.py AUTHNET_MD5_HASH_VALUE
+    # authenticate with md5 hash to make sure the response is securely received from firstdata.
     md5_hash = response_d.get('x_MD5_Hash', '')
     # calculate our md5_hash
-    md5_hash_value = settings.AUTHNET_MD5_HASH_VALUE
+    response_key = settings.FIRSTDATA_RESPONSE_KEY
     api_login_id = settings.MERCHANT_LOGIN
     t_id = response_d.get('x_trans_id', '')
     amount = response_d.get('x_amount', 0)
 
-    s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
+    s = '%s%s%s%s' % (response_key, api_login_id, t_id, amount)
     my_md5_hash = hashlib.md5(s).hexdigest()
 
     # commenting it out for now because it's causing some problem on some sites (nadr).
-    #if my_md5_hash.lower() <> md5_hash.lower():
-    #    raise Http404
+    if my_md5_hash.lower() <> md5_hash.lower():
+        raise Http404
 
     if payment.invoice.balance > 0:     # if balance==0, it means already processed
         payment_update_firstdatae4(request, response_d, payment)

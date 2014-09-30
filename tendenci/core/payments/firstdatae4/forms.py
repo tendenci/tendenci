@@ -1,10 +1,11 @@
 from django import forms
 from django.conf import settings
+from tendenci.core.site_settings.utils import get_setting
 
 class PaymentForm(forms.Form):
     x_login = forms.CharField(max_length=20, required=True, widget=forms.HiddenInput, initial=settings.MERCHANT_LOGIN)
-    x_relay_response = forms.CharField(max_length=8, widget=forms.HiddenInput, initial="TRUE")
-    x_relay_url = forms.CharField(max_length=55, widget=forms.HiddenInput)
+    #x_relay_response = forms.CharField(max_length=8, widget=forms.HiddenInput, initial="TRUE")
+    #x_relay_url = forms.CharField(max_length=55, widget=forms.HiddenInput)
     x_amount = forms.DecimalField(max_digits=15, decimal_places=2, widget=forms.HiddenInput)
     x_invoice_num = forms.CharField(max_length=55, required=False, widget=forms.HiddenInput)
     x_description = forms.CharField(max_length=255, required=False, widget=forms.HiddenInput)
@@ -24,8 +25,8 @@ class PaymentForm(forms.Form):
     x_show_form = forms.CharField(max_length=20, widget=forms.HiddenInput, initial="PAYMENT_FORM")
     #x_logo_URL = getSetting("global", "MerchantLogo")
     x_type = forms.CharField(max_length=20, widget=forms.HiddenInput, initial="AUTH_CAPTURE")
-    #if getSetting("global", "MerchantAuthorizeOnly"):
-    #    x_type = forms.CharField(max_length=20, widget=forms.HiddenInput, initial="AUTH_ONLY")
+    if (get_setting("site", "global", "merchantauthorizeonly")).lower():
+        x_type = forms.CharField(max_length=20, widget=forms.HiddenInput, initial="AUTH_ONLY")
 
     x_method = forms.CharField(max_length=10, widget=forms.HiddenInput, initial="CC")
     x_fp_sequence = forms.CharField(max_length=10, widget=forms.HiddenInput, initial="CC")
