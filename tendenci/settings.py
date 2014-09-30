@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'captcha',
     'south',
     'tastypie',
+    'tendenci',
     'tendenci.libs.model_report',
 
     'tendenci.apps.entities',
