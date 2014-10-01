@@ -1,5 +1,8 @@
 import os.path
 
+from django.conf import global_settings
+import django.conf.locale
+
 # Paths
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
 SITE_ADDONS_PATH = ''
@@ -40,7 +43,7 @@ LANGUAGE_CODE = 'en'
 # )
 
 LOCALE_PATHS = (
-    os.path.join(TENDENCI_ROOT, 'themes'),
+    os.path.join(TENDENCI_ROOT, 'locale'),
 )
 
 SITE_ID = 1
@@ -277,6 +280,27 @@ AUTHENTICATION_BACKENDS = (
     'tendenci.addons.social_auth.backends.facebook.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+#--------------------------------------------------
+# LANGUAGE
+# From: http://stackoverflow.com/questions/12946830/how-to-add-new-languages-into-django-my-language-uyghur-or-uighur-is-not-su
+#--------------------------------------------------
+EXTRA_LANG_INFO = {
+    'tl': {
+        'bidi': False, # right-to-left
+        'code': 'tl',
+        'name': 'Tagalog',
+        'name_local': u'Tagalog', #unicode codepoints here
+    },
+}
+
+# Add custom languages not provided by Django
+LANG_INFO = dict(django.conf.locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
+django.conf.locale.LANG_INFO = LANG_INFO
+
+# Languages using BiDi (right-to-left) layout
+LANGUAGES_BIDI = global_settings.LANGUAGES_BIDI + ('tl',)
+LANGUAGES = global_settings.LANGUAGES + (('tl', u'Tagalog'),)
 
 #--------------------------------------------------
 # DEBUG TOOLBAR
