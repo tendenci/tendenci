@@ -4,8 +4,9 @@ from tendenci.core.site_settings.utils import get_setting
 
 class PaymentForm(forms.Form):
     x_login = forms.CharField(max_length=20, required=True, widget=forms.HiddenInput, initial=settings.MERCHANT_LOGIN)
-    #x_relay_response = forms.CharField(max_length=8, widget=forms.HiddenInput, initial="TRUE")
-    #x_relay_url = forms.CharField(max_length=55, widget=forms.HiddenInput)
+    if settings.FIRSTDATA_USE_RELAY_RESPONSE:
+        x_relay_response = forms.CharField(max_length=8, widget=forms.HiddenInput, initial="TRUE")
+        x_relay_url = forms.CharField(max_length=55, widget=forms.HiddenInput)
     x_amount = forms.DecimalField(max_digits=15, decimal_places=2, widget=forms.HiddenInput)
     x_invoice_num = forms.CharField(max_length=55, required=False, widget=forms.HiddenInput)
     x_description = forms.CharField(max_length=255, required=False, widget=forms.HiddenInput)
