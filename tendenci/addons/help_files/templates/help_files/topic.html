@@ -5,7 +5,7 @@
 
 {% block title %}{{ block.super }}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} - {% blocktrans with t=topic %}{{ t }} Topic{% endblocktrans %}{% endblock %}
 
-{% block meta_description %}{% blocktrans desc=topic.content|striptags|safe|truncatewords:40 %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{{ topic.content|striptags|safe|truncatewords:40 }}}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
