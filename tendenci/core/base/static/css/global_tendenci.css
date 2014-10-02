@@ -93,6 +93,6 @@ span.member-icon{
   margin-left: 10px;
 }
 
-.form-field .label{
+.form-field .label, .profile-wrap .label{
 	color: #333;
 }
