@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-30 20:44+0000\n"
-"PO-Revision-Date: 2014-09-30 15:21+0000\n"
+"POT-Creation-Date: 2014-10-02 00:04+0000\n"
+"PO-Revision-Date: 2014-10-02 00:06+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/tendenci/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -1495,6 +1495,7 @@ msgstr ""
 
 #: addons/articles/templates/articles/meta.html:54
 #: addons/directories/templates/directories/meta.html:31
+#: addons/help_files/templates/help_files/meta.html:30
 #: addons/jobs/templates/jobs/meta.html:31
 #: addons/locations/templates/locations/meta.html:11
 #: addons/photos/templates/photos/meta.html:16
@@ -6605,7 +6606,6 @@ msgstr ""
 #: addons/events/templates/events/view.html:233
 #: addons/events/templates/notification/event_registration_confirmation/full.html:148
 #: addons/help_files/templates/help_files/details.html:7
-#: addons/help_files/templates/help_files/topic.html:8
 #: addons/jobs/templates/jobs/delete.html:21
 #, python-format
 msgid "%(desc)s"
@@ -8422,6 +8422,10 @@ msgstr ""
 msgid "Manage Custom Registration Form(s)"
 msgstr ""
 
+#: addons/events/templates/events/event_custom_reg_form_list.html:45
+msgid "This event uses a separate custom registrations form for each pricing."
+msgstr ""
+
 #: addons/events/templates/events/event_custom_reg_form_list.html:47
 #: addons/events/templates/events/nav.html:83
 msgid "View Event"
@@ -8433,7 +8437,7 @@ msgid "Edit Event"
 msgstr "Éditer l'évènement"
 
 #: addons/events/templates/events/event_custom_reg_form_list.html:73
-msgid "This event doesn"
+msgid "This event doesn't use custom registration forms."
 msgstr ""
 
 #: addons/events/templates/events/export.html:27
