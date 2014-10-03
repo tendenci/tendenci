@@ -29,6 +29,7 @@ class GroupManager(TendenciBaseManager):
             if not entity:
                 entity = Entity.objects.get_or_create_default(user)
             params = {'name': get_global_setting('sitedisplayname') or 'Tendenci',
+                  'dashboard_url': '',
                   'entity': entity,
                   'type': 'distribution',
                   'email_recipient': get_global_setting('sitecontactemail'),

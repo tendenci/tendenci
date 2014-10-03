@@ -5,13 +5,11 @@ from south.v2 import DataMigration
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        from tendenci.apps.entities.models import Entity
-        from tendenci.apps.user_groups.models import Group
         # trap db errors so migrations can continue
         try:
-            groups = Group.objects.all()
+            groups = orm['user_groups.Group'].objects.all()
             if groups:
-                first_entity = Entity.objects.first()
+                first_entity = orm['entities.entity'].objects.first()
                 for ugroup in groups:
                     if not ugroup.entity:
                         ugroup.entity = first_entity

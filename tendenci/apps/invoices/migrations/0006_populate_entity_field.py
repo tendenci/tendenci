@@ -5,10 +5,12 @@ from django.core.management import call_command
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        try:
-            call_command('refresh_invoice_entity_field')
-        except:
-            pass
+        for invoice in orm['invoices.invoice'].objects.all():
+            entity = invoice.entity
+            new_entity = invoice.get_entity()
+            if entity != new_entity:
+                invoice.entity = new_entity
+                invoice.save()
 
     def backwards(self, orm):
         pass

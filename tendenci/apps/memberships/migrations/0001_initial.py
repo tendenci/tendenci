@@ -6,6 +6,7 @@ from django.db import models
 
 class Migration(SchemaMigration):
     depends_on = (
+        ('user_groups', '0001_initial'),
         ('invoices', '0001_initial'),
         ('payments', '0001_initial'),
     )

@@ -45,32 +45,32 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
 
     def prepare_allow_anonymous_view(self, obj):
         if is_whoosh():
-            return int(obj.allow_anonymous_view)
+            return int(obj.allow_anonymous_view or 0)
         return obj.allow_anonymous_view
 
     def prepare_allow_user_view(self, obj):
         if is_whoosh():
-            return int(obj.allow_user_view)
+            return int(obj.allow_user_view or 0)
         return obj.allow_user_view
 
     def prepare_allow_member_view(self, obj):
         if is_whoosh():
-            return int(obj.allow_member_view)
+            return int(obj.allow_member_view or 0)
         return obj.allow_member_view
 
     def prepare_allow_user_edit(self, obj):
         if is_whoosh():
-            return int(obj.allow_user_edit)
+            return int(obj.allow_user_edit or 0)
         return obj.allow_user_edit
 
     def prepare_allow_member_edit(self, obj):
         if is_whoosh():
-            return int(obj.allow_member_edit)
+            return int(obj.allow_member_edit or 0)
         return obj.allow_member_edit
 
     def prepare_status(self, obj):
         if is_whoosh():
-            return int(obj.status)
+            return int(obj.status or 0)
         return obj.status
 
     def prepare_order(self, obj):

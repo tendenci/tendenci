@@ -5,12 +5,79 @@ from django.core.management import call_command
 class Migration(DataMigration):
     depends_on = (
         ('campaign_monitor', '0001_initial'),
-        ('user_groups', '0001_initial'),
+        ('user_groups', '0009_auto__chg_field_group_auto_respond__chg_field_group_allow_self_add__ch'),
         ('entities', '0001_initial'),
+        ('site_settings', '0001_initial'),
     )
 
     def forwards(self, orm):
-        call_command('update_corp_reps_group')
+
+        cmrg_setting, created = orm['site_settings.Setting'].objects.get_or_create(
+                        name='corpmembershiprepsgroupid')
+        description = 'This Group is for all corporate membership representatives. ' + \
+                    'Adding or deleting a representative will automatically ' + \
+                    'add (or remove) the user to (or from) this group.'
+        if created:
+            cmrg_setting.label = 'Corporate Membership Representatives Group Id'
+            cmrg_setting.description = description
+            cmrg_setting.data_type = 'int'
+            cmrg_setting.value = '0'
+            cmrg_setting.default_value = '0'
+            cmrg_setting.input_type = 'text'
+            cmrg_setting.input_value = ''
+            cmrg_setting.client_editable = False
+            cmrg_setting.store = True
+            cmrg_setting.scope = 'module'
+            cmrg_setting.scope_category = 'corporate_memberships'
+            cmrg_setting.save()
+
+        group = None
+        group_id = int(cmrg_setting.value)
+        if group_id:
+            [group] = orm['user_groups.Group'].objects.filter(id=group_id)[:1] or [None]
+
+        if not group:
+            # first check if we have a default group. if not, create one
+            # so that this reps group won't become the one with id=1
+            from tendenci.apps.user_groups.models import Group
+            Group.objects.get_or_create_default()
+
+            group = orm['user_groups.Group'](
+                      name='Corporate Membership Representatives',
+                      slug='corporate-membership-representatives',
+                      label='Corporate Membership Representatives',
+                      dashboard_url='',
+                      type='system_generated',
+                      show_as_option=False,
+                      allow_self_add=False,
+                      allow_self_remove=False,
+                      description=description,
+                      allow_anonymous_view=False,
+                      allow_user_view=False,
+                      allow_member_view=False,
+                      allow_user_edit=False,
+                      allow_member_edit=False)
+            group.save()
+            cmrg_setting.value = str(group.id)
+            cmrg_setting.save()
+        else:
+            # remove all non-reps from group
+            for user in group.members.all():
+                if not orm['corporate_memberships.CorpMembershipRep'].objects.filter(user=user).exists():
+                    if verbosity >= 2:
+                        print('Removing user "%s" from group' % user.username)
+                    gm = GroupMembership.objects.get(group=group,
+                                                 member=user)
+                    gm.delete()
+
+        # add reps to group
+        for rep in orm['corporate_memberships.CorpMembershipRep'].objects.all():
+            user = rep.user
+            if not group.is_member(user):
+                if verbosity >= 2:
+                    print('Adding user "%s" to group' % user.username)
+                group.add_user(user)
+
 
     def backwards(self, orm):
         pass
@@ -1283,58 +1350,79 @@ class Migration(DataMigration):
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
-        'user_groups.group': {
+        'site_settings.setting': {
+            'Meta': {'object_name': 'Setting'},
+            'client_editable': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'data_type': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'default_value': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'input_type': ('django.db.models.fields.CharField', [], {'max_length': '25'}),
+            'input_value': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'is_secure': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'label': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'parent_id': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'}),
+            'scope': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'scope_category': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'store': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
+            'updated_by': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'value': ('django.db.models.fields.TextField', [], {'blank': 'True'})
+        },
+        u'user_groups.group': {
             'Meta': {'ordering': "('name',)", 'object_name': 'Group'},
-            'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_self_add': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'allow_self_remove': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'auto_respond': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'allow_anonymous_view': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
+            'allow_member_edit': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'allow_member_view': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'allow_self_add': ('django.db.models.fields.NullBooleanField', [], {'default': '1', 'null': 'True', 'blank': 'True'}),
+            'allow_self_remove': ('django.db.models.fields.NullBooleanField', [], {'default': '1', 'null': 'True', 'blank': 'True'}),
+            'allow_user_edit': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'allow_user_view': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'auto_respond': ('django.db.models.fields.NullBooleanField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'auto_respond_priority': ('django.db.models.fields.FloatField', [], {'default': '0', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_creator'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': "orm['auth.User']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "u'user_groups_group_creator'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': u"orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'dashboard_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'email_recipient': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_groups_group_entity'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': "orm['entities.Entity']", 'blank': 'True', 'null': 'True'}),
-            'group': ('django.db.models.fields.related.OneToOneField', [], {'default': 'None', 'to': "orm['auth.Group']", 'unique': 'True', 'null': 'True'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'user_groups_group_entity'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': u"orm['entities.Entity']", 'blank': 'True', 'null': 'True'}),
+            'group': ('django.db.models.fields.related.OneToOneField', [], {'default': 'None', 'to': u"orm['auth.Group']", 'unique': 'True', 'null': 'True'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'members': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'through': "orm['user_groups.GroupMembership']", 'symmetrical': 'False'}),
+            'members': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'through': u"orm['user_groups.GroupMembership']", 'symmetrical': 'False'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_owner'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': "orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "u'user_groups_group_owner'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': u"orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
-            'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': u"orm['auth.Permission']"}),
+            'show_as_option': ('django.db.models.fields.NullBooleanField', [], {'default': '1', 'null': 'True', 'blank': 'True'}),
             'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
-            'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'status': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
-            'sync_newsletters': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'sync_newsletters': ('django.db.models.fields.NullBooleanField', [], {'default': '1', 'null': 'True', 'blank': 'True'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
-        'user_groups.groupmembership': {
+        u'user_groups.groupmembership': {
             'Meta': {'unique_together': "(('group', 'member'),)", 'object_name': 'GroupMembership'},
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator_id': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'member': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'group_member'", 'to': "orm['auth.User']"}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['user_groups.Group']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'member': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'group_member'", 'to': u"orm['auth.User']"}),
             'owner_id': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'role': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
             'sort_order': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'}),
-            'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'status': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
-        }
+        },
     }
 
-    complete_apps = ['corporate_memberships']
+    complete_apps = ['corporate_memberships', 'site_settings']
     symmetrical = True
