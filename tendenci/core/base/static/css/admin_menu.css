@@ -545,10 +545,6 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
   margin-bottom: 0;
   list-style: none;
 }
-.t-top-nav .nav > li {
-  position: relative;
-  display: block;
-}
 .t-top-nav .nav > li > a {
   position: relative;
   display: block;
@@ -557,7 +553,6 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 .t-top-nav .nav > li > a:hover,
 .t-top-nav .nav > li > a:focus {
   text-decoration: none;
-  background-color: #eee;
 }
 .t-top-nav .nav > li.disabled > a {
   color: #777;
@@ -572,7 +567,6 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 .t-top-nav .nav .open > a,
 .t-top-nav .nav .open > a:hover,
 .t-top-nav .nav .open > a:focus {
-  background-color: #eee;
   border-color: #428bca;
 }
 .t-top-nav .nav .nav-divider {
