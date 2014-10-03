@@ -620,3 +620,13 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
         width: 100%;
     }
 }
+
+@media (min-width: 768px) {
+    .content-dropdown {
+        width: 510px;
+    }
+
+    .people-dropdown {
+        width: 275px;
+    }
+}

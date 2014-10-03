@@ -11,7 +11,7 @@
                 <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
                     <ul class="dropdown-menu">
                         <li>
-                            <div class="yamm-content custom-yamm-content">
+                            <div class="yamm-content custom-yamm-content content-dropdown">
                                 <div class="row">
                                     <ul class="list-unstyled col-sm-6 col-xs-12">
                                         <li><span class="content-head"><a href="{% url dashboard %}">{% trans 'Apps' %}</a></span></li>
@@ -67,7 +67,7 @@
                     <ul class="dropdown-menu">
                         {% if registered_apps.people %}
                         <li>
-                            <div class="yamm-content custom-yamm-content">
+                            <div class="yamm-content custom-yamm-content people-dropdown">
                                 <div class="row">
                                     <ul class="list-unstyled col-sm-12 col-xs-12">
                                         {% for app in registered_apps.people %}
