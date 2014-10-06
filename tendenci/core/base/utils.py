@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal
 import codecs
 import cStringIO
 import csv
@@ -158,6 +159,19 @@ def tcurrency(mymoney):
         return fmt % (currency_symbol, mymoney)
     else:
         return mymoney
+
+
+def currency_check(mymoney):
+    """
+    Clear out dollar symbols and commas, and convert it to Decimal
+    """
+    if mymoney:
+        mymoney = mymoney.replace('$', '').replace(',', '')
+    else:
+        mymoney = 0
+    mymoney = Decimal(mymoney)
+    
+    return mymoney
 
 
 def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_time='%I:%M %p'):
