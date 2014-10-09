@@ -15,7 +15,7 @@
       <tr>
         <td>{% for membership in obj.memberships %}
            <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">
-            {{ membership.pk }}</a>{% if not forloop.last %}, {% endif %}
+            {{ membership.member_number }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </td>
          <td colspan="2">{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }}</td>

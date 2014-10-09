@@ -16,7 +16,7 @@
     {% if obj %}
       <tr>
          <td><a href="{% url admin:memberships_membershipdefault_change obj.pk %}">
-            {{ obj.pk }}</a></td>
+            {{ obj.member_number }}</a></td>
          <td>{{ invoice.bill_to_first_name }}</td>
         <td>{{ invoice.bill_to_last_name }}</td>
         <td colspan="2">{{ obj.payment_method.human_name }}</td>
