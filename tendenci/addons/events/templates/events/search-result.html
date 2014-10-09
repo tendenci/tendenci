@@ -54,8 +54,13 @@
 		 {% endif %}
 
         <div class="time-period">
-            <span itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span> -
-            <span itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y P" }}</span>
+            {% if event.all_day %}
+            <span itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y" }}</span> -
+            <span itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y" }}</span>
+            {% else %}
+             <span itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span> -
+             <span itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y P" }}</span>
+            {% endif %}
         </div>
 
         <div class="description" itemprop="description">

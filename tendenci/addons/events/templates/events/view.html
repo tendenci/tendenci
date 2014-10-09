@@ -199,8 +199,13 @@
 
                 {% endfor %}
 
-                <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
-                <div class="line">{{ event.timezone.zone|timezone_label }}</div>
+                <div class="line">
+                {% if not event.all_day %}
+                {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
+                </div>
+                {% if not event.all_day %}
+                 <div class="line">{{ event.timezone.zone|timezone_label }}</div>
+                {% endif %}
 
             </div>
 
