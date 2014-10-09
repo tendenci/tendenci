@@ -6,7 +6,7 @@
         {% if obj %}
 
             {% trans "Membership #" %}<a href="{% url admin:memberships_membershipdefault_change obj.pk %}" title="Membership">
-            {{ obj.pk }}</a>
+            {{ obj.member_number }}</a>
 
             {{ obj.membership_type.name|truncatewords:30 }}
             ({{ obj.payment_method.human_name }})
