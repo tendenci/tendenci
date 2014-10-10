@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-08 13:46+0000\n"
-"PO-Revision-Date: 2014-10-08 14:23+0000\n"
+"POT-Creation-Date: 2014-10-09 23:47+0000\n"
+"PO-Revision-Date: 2014-10-09 22:13+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Tagalog (http://www.transifex.com/projects/p/tendenci/language/tl/)\n"
 "MIME-Version: 1.0\n"
@@ -21,8 +21,8 @@ msgstr ""
 #: addons/articles/forms.py:168 addons/careers/admin.py:33
 #: addons/careers/forms.py:46 addons/corporate_memberships/admin.py:100
 #: addons/directories/forms.py:214 addons/educations/admin.py:25
-#: addons/educations/forms.py:38 addons/events/forms.py:665
-#: addons/events/forms.py:2076 addons/help_files/admin.py:20
+#: addons/educations/forms.py:38 addons/events/forms.py:681
+#: addons/events/forms.py:2107 addons/help_files/admin.py:20
 #: addons/help_files/forms.py:101 addons/industries/admin.py:23
 #: addons/industries/forms.py:32 addons/jobs/admin.py:56
 #: addons/jobs/forms.py:196 addons/locations/admin.py:38
@@ -289,8 +289,8 @@ msgstr "Petsa ng Paglabas / Oras"
 #: addons/directories/forms.py:258
 #: addons/directories/templates/directories/pricing-view.html:70
 #: addons/educations/forms.py:10 addons/events/forms.py:168
-#: addons/events/forms.py:608
-#: addons/events/templates/events/registrants/search.html:68
+#: addons/events/forms.py:618
+#: addons/events/templates/events/registrants/search.html:69
 #: addons/help_files/forms.py:22 addons/help_files/forms.py:62
 #: addons/industries/forms.py:9 addons/jobs/forms.py:36
 #: addons/jobs/forms.py:43 addons/jobs/forms.py:77
@@ -326,7 +326,7 @@ msgstr "Aktibo"
 #: addons/directories/forms.py:259
 #: addons/directories/templates/directories/pricing-view.html:70
 #: addons/educations/forms.py:11 addons/events/forms.py:168
-#: addons/events/forms.py:608 addons/industries/forms.py:10
+#: addons/events/forms.py:618 addons/industries/forms.py:10
 #: addons/jobs/forms.py:37 addons/jobs/forms.py:44 addons/jobs/forms.py:77
 #: addons/locations/forms.py:29 addons/memberships/forms.py:139
 #: addons/memberships/forms.py:921 addons/memberships/forms.py:927
@@ -356,7 +356,7 @@ msgstr "Hindi aktibo"
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:71
 #: addons/directories/forms.py:119 addons/directories/forms.py:260
 #: addons/directories/templates/directories/nav.html:48
-#: addons/educations/forms.py:12 addons/events/forms.py:608
+#: addons/educations/forms.py:12 addons/events/forms.py:618
 #: addons/events/ics/models.py:12 addons/industries/forms.py:11
 #: addons/jobs/forms.py:38 addons/jobs/forms.py:77
 #: addons/jobs/templates/jobs/my_pending_jobs.html:25
@@ -385,8 +385,8 @@ msgstr "Nakabinbing"
 #: addons/corporate_memberships/models.py:1364
 #: addons/corporate_memberships/templates/corporate_memberships/imports/preview.html:56
 #: addons/directories/forms.py:128 addons/directories/models.py:58
-#: addons/events/forms.py:1433 addons/events/forms.py:1585
-#: addons/events/forms.py:2115 addons/events/forms.py:2142
+#: addons/events/forms.py:1464 addons/events/forms.py:1616
+#: addons/events/forms.py:2146 addons/events/forms.py:2173
 #: addons/events/models.py:1378 addons/events/settings.py:14
 #: addons/events/settings.py:31
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:77
@@ -395,8 +395,8 @@ msgstr "Nakabinbing"
 #: addons/events/templates/events/reg8n/register-priced.html:69
 #: addons/events/templates/events/reg8n/registrant_summary_preview.html:6
 #: addons/events/templates/events/registration/base_forms.html:71
-#: addons/events/templates/events/registration/multi_register.html:216
-#: addons/events/templates/events/registration/multi_register.html:279
+#: addons/events/templates/events/registration/multi_register.html:219
+#: addons/events/templates/events/registration/multi_register.html:282
 #: addons/locations/forms.py:31
 #: addons/locations/templates/locations/import-preview.html:45
 #: addons/make_payments/forms.py:262 addons/memberships/models.py:64
@@ -447,7 +447,7 @@ msgstr "Nag-aambag"
 
 #: addons/articles/forms.py:176 addons/careers/forms.py:54
 #: addons/directories/forms.py:222 addons/educations/forms.py:46
-#: addons/events/forms.py:675 addons/help_files/forms.py:109
+#: addons/events/forms.py:691 addons/help_files/forms.py:109
 #: addons/industries/forms.py:40 addons/jobs/forms.py:205
 #: addons/locations/forms.py:96 addons/news/forms.py:121
 #: addons/photos/forms.py:51 addons/photos/forms.py:144
@@ -461,8 +461,8 @@ msgstr "Nag-aambag"
 msgid "Administrator Only"
 msgstr "Administrator lamang"
 
-#: addons/articles/forms.py:218 addons/events/forms.py:770
-#: addons/events/forms.py:1132 addons/news/forms.py:156
+#: addons/articles/forms.py:218 addons/events/forms.py:790
+#: addons/events/forms.py:1163 addons/news/forms.py:156
 #: addons/photos/forms.py:180 addons/photos/forms.py:257
 #: addons/photos/forms.py:330 apps/stories/forms.py:124
 #: core/files/forms.py:130 core/files/forms.py:305 core/files/forms.py:480
@@ -513,16 +513,16 @@ msgid "Time Zone"
 msgstr "Sona ng Oras"
 
 #: addons/articles/models.py:36 addons/corporate_memberships/forms.py:515
-#: addons/directories/models.py:47 addons/events/forms.py:2113
-#: addons/events/forms.py:2138 addons/events/models.py:1369
+#: addons/directories/models.py:47 addons/events/forms.py:2144
+#: addons/events/forms.py:2169 addons/events/models.py:1369
 #: addons/events/settings.py:22
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:56
 #: addons/events/templates/events/reg8n/multi_register.html:186
 #: addons/events/templates/events/reg8n/register-free.html:37
 #: addons/events/templates/events/reg8n/register-priced.html:37
-#: addons/events/templates/events/registrants/roster.html:51
+#: addons/events/templates/events/registrants/roster.html:52
 #: addons/events/templates/events/registration/base_forms.html:43
-#: addons/events/templates/events/registration/multi_register.html:188
+#: addons/events/templates/events/registration/multi_register.html:191
 #: addons/make_payments/templates/make_payments/invoice_search_result_line.html:11
 #: addons/memberships/models.py:62
 #: addons/memberships/templates/memberships/invoice_search_result_line.html:10
@@ -550,16 +550,16 @@ msgid "First Name"
 msgstr "Pangalan"
 
 #: addons/articles/models.py:37 addons/corporate_memberships/forms.py:518
-#: addons/directories/models.py:48 addons/events/forms.py:2114
-#: addons/events/forms.py:2139 addons/events/models.py:1370
+#: addons/directories/models.py:48 addons/events/forms.py:2145
+#: addons/events/forms.py:2170 addons/events/models.py:1370
 #: addons/events/settings.py:23
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:63
 #: addons/events/templates/events/reg8n/multi_register.html:194
 #: addons/events/templates/events/reg8n/register-free.html:45
 #: addons/events/templates/events/reg8n/register-priced.html:45
-#: addons/events/templates/events/registrants/roster.html:52
+#: addons/events/templates/events/registrants/roster.html:53
 #: addons/events/templates/events/registration/base_forms.html:50
-#: addons/events/templates/events/registration/multi_register.html:195
+#: addons/events/templates/events/registration/multi_register.html:198
 #: addons/make_payments/templates/make_payments/invoice_search_result_line.html:12
 #: addons/memberships/models.py:63
 #: addons/memberships/templates/memberships/invoice_search_result_line.html:11
@@ -671,7 +671,7 @@ msgstr "Magdagdag ng %(name)s"
 #: addons/events/templates/events/wizard.html:6
 #: addons/events/templates/events/addons/add.html:29
 #: addons/events/templates/events/message/add.html:7
-#: addons/events/templates/events/registration/multi_register.html:269
+#: addons/events/templates/events/registration/multi_register.html:272
 #: addons/help_files/templates/help_files/add.html:7
 #: addons/help_files/templates/help_files/add.html:20
 #: addons/help_files/templates/help_files/add.html:26
@@ -802,11 +802,11 @@ msgstr "%(location)s, %(display_name)s, white paper, %(keys)s"
 #: addons/events/templates/events/addons/list.html:27
 #: addons/events/templates/events/reg8n/multi_register.html:239
 #: addons/events/templates/events/reg8n/multi_register.html:243
-#: addons/events/templates/events/reg8n/register.html:266
-#: addons/events/templates/events/reg8n/register.html:270
+#: addons/events/templates/events/reg8n/register.html:267
+#: addons/events/templates/events/reg8n/register.html:271
 #: addons/events/templates/events/registration/base_forms.html:14
 #: addons/events/templates/events/registration/base_forms.html:114
-#: addons/events/templates/events/registration/multi_register.html:240
+#: addons/events/templates/events/registration/multi_register.html:243
 #: addons/help_files/templates/help_files/meta.html:61
 #: addons/help_files/templates/help_files/nav.html:70
 #: addons/help_files/templates/help_files/options.html:13
@@ -965,8 +965,8 @@ msgstr "Sigurado ka bang gusto mong permanenteng tanggalin ang"
 #: addons/articles/templates/articles/delete.html:25
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:38
 #: addons/directories/templates/directories/delete.html:32
-#: addons/events/templates/events/delete.html:34
-#: addons/events/templates/events/delete_recurring.html:36
+#: addons/events/templates/events/delete.html:38
+#: addons/events/templates/events/delete_recurring.html:40
 #: addons/jobs/templates/jobs/delete.html:30
 #: addons/locations/templates/locations/delete.html:24
 #: addons/news/templates/news/delete.html:25
@@ -1792,7 +1792,7 @@ msgstr "Mag-log Off"
 #: addons/directories/templates/directories/nav.html:34
 #: addons/directories/templates/directories/nav.html:43
 #: addons/directories/templates/directories/pricing-nav.html:41
-#: addons/events/forms.py:1968
+#: addons/events/forms.py:1999
 #: addons/events/templates/events/notices/export_ready_body.html:17
 #: addons/help_files/templates/help_files/details.html:18
 #: addons/help_files/templates/help_files/nav.html:35
@@ -2648,7 +2648,7 @@ msgstr "Kontrata"
 #: addons/events/templates/events/reg8n/register-free.html:53
 #: addons/events/templates/events/reg8n/register-priced.html:53
 #: addons/events/templates/events/registration/base_forms.html:57
-#: addons/events/templates/events/registration/multi_register.html:202
+#: addons/events/templates/events/registration/multi_register.html:205
 #: addons/memberships/templates/memberships/details_print.html:148
 #: addons/memberships/templates/memberships/applications/confirmation_default.html:50
 #: addons/memberships/templates/memberships/applications/detail_default.html:56
@@ -2687,16 +2687,16 @@ msgid "Position Type"
 msgstr "Uri ng Posisyon"
 
 #: addons/careers/models.py:35 addons/events/forms.py:98
-#: addons/events/forms.py:577 addons/events/forms.py:1078
-#: addons/events/forms.py:2282 apps/discounts/forms.py:62
+#: addons/events/forms.py:578 addons/events/forms.py:1109
+#: addons/events/forms.py:2313 apps/discounts/forms.py:62
 #: apps/discounts/models.py:18 apps/discounts/models.py:19
 #: apps/stories/forms.py:29 apps/stories/forms.py:160
 #: apps/stories/models.py:43 core/event_logs/forms.py:37
 msgid "Start Date/Time"
 msgstr "Petsa ng Pagsisimula / Oras"
 
-#: addons/careers/models.py:37 addons/events/forms.py:579
-#: addons/events/forms.py:1079 addons/events/forms.py:2283
+#: addons/careers/models.py:37 addons/events/forms.py:580
+#: addons/events/forms.py:1110 addons/events/forms.py:2314
 #: apps/discounts/forms.py:63 apps/stories/forms.py:30
 #: apps/stories/forms.py:161 apps/stories/models.py:44
 #: core/event_logs/forms.py:42
@@ -2913,7 +2913,7 @@ msgstr "Username"
 
 #: addons/corporate_memberships/forms.py:501
 #: addons/corporate_memberships/templates/corporate_memberships/applications/approve.html:126
-#: addons/events/forms.py:2154
+#: addons/events/forms.py:2185
 #: addons/memberships/templates/memberships/search-result.html:7
 #: addons/memberships/templates/memberships/applications/confirmation_default.html:87
 #: addons/memberships/templates/memberships/import_default/preview.html:63
@@ -2927,14 +2927,14 @@ msgid "Member Number"
 msgstr "Bilang ng Miyembro"
 
 #: addons/corporate_memberships/forms.py:502
-#: addons/corporate_memberships/models.py:294 addons/events/forms.py:2141
+#: addons/corporate_memberships/models.py:294 addons/events/forms.py:2172
 #: addons/events/models.py:1377 addons/events/settings.py:30
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:98
 #: addons/events/templates/events/reg8n/multi_register.html:210
 #: addons/events/templates/events/reg8n/register-free.html:61
 #: addons/events/templates/events/reg8n/register-priced.html:61
 #: addons/events/templates/events/registration/base_forms.html:64
-#: addons/events/templates/events/registration/multi_register.html:209
+#: addons/events/templates/events/registration/multi_register.html:212
 #: addons/locations/templates/locations/import-preview.html:43
 #: addons/memberships/templates/memberships/details_print.html:106
 #: addons/memberships/templates/memberships/applications/confirmation_default.html:60
@@ -3014,7 +3014,7 @@ msgstr "Zip Code"
 
 #: addons/corporate_memberships/forms.py:506
 #: addons/corporate_memberships/models.py:292 addons/directories/forms.py:130
-#: addons/directories/models.py:54 addons/events/forms.py:880
+#: addons/directories/models.py:54 addons/events/forms.py:911
 #: addons/events/models.py:1376 addons/events/settings.py:29
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:133
 #: addons/locations/forms.py:32
@@ -3038,21 +3038,21 @@ msgid "Country"
 msgstr "Bansa"
 
 #: addons/corporate_memberships/forms.py:509
-#: addons/corporate_memberships/forms.py:540 addons/events/forms.py:2133
+#: addons/corporate_memberships/forms.py:540 addons/events/forms.py:2164
 #: apps/invoices/forms.py:32 apps/profiles/forms.py:52
 #: core/payments/forms.py:76
 msgid "Starts With"
 msgstr "Nagsisimula Sa"
 
 #: addons/corporate_memberships/forms.py:510
-#: addons/corporate_memberships/forms.py:541 addons/events/forms.py:2134
+#: addons/corporate_memberships/forms.py:541 addons/events/forms.py:2165
 #: apps/invoices/forms.py:33 apps/profiles/forms.py:53
 #: core/payments/forms.py:77
 msgid "Contains"
 msgstr "Naglalaman ng"
 
 #: addons/corporate_memberships/forms.py:511
-#: addons/corporate_memberships/forms.py:542 addons/events/forms.py:2135
+#: addons/corporate_memberships/forms.py:542 addons/events/forms.py:2166
 #: apps/invoices/forms.py:34 apps/profiles/forms.py:54
 #: core/payments/forms.py:78
 msgid "Exact"
@@ -3063,9 +3063,9 @@ msgstr "Eksaktong"
 #: addons/corporate_memberships/forms.py:591
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:12
 #: addons/corporate_memberships/templates/corporate_memberships/imports/preview.html:54
-#: addons/events/forms.py:2140 addons/events/settings.py:33
+#: addons/events/forms.py:2171 addons/events/settings.py:33
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:91
-#: addons/events/templates/events/registrants/roster.html:53
+#: addons/events/templates/events/registrants/roster.html:54
 msgid "Company Name"
 msgstr "Pangalan ng Kumpanya"
 
@@ -3094,8 +3094,8 @@ msgstr "I-export ang Format"
 msgid "csv (Export)"
 msgstr "csv (I-export)"
 
-#: addons/corporate_memberships/forms.py:644 addons/events/forms.py:1434
-#: addons/events/forms.py:1517 addons/events/registration/forms.py:24
+#: addons/corporate_memberships/forms.py:644 addons/events/forms.py:1465
+#: addons/events/forms.py:1548 addons/events/registration/forms.py:24
 #: addons/jobs/forms.py:57 addons/make_payments/forms.py:253
 #: addons/resumes/forms.py:48 apps/accounts/forms.py:47
 #: apps/contacts/forms.py:39 apps/forms_builder/forms/forms.py:171
@@ -3371,12 +3371,12 @@ msgstr "Pangalan"
 #: addons/corporate_memberships/models.py:107
 #: addons/directories/templates/directories/pricing-table.html:14
 #: addons/directories/templates/directories/pricing-table.html:21
-#: addons/events/forms.py:1080 addons/events/models.py:248
+#: addons/events/forms.py:1111 addons/events/models.py:248
 #: addons/events/models.py:1578
 #: addons/events/templates/events/invoice_search_result_line.html:13
 #: addons/events/templates/events/addons/list.html:36
-#: addons/events/templates/events/reg8n/register_pre2.html:44
-#: addons/events/templates/events/reg8n/register_pre2.html:67
+#: addons/events/templates/events/reg8n/register_pre2.html:47
+#: addons/events/templates/events/reg8n/register_pre2.html:70
 #: addons/events/templates/events/reg8n/registrant_summary_preview.html:7
 #: addons/jobs/templates/jobs/invoice_search_result_line.html:14
 #: addons/jobs/templates/jobs/pricing-table.html:23
@@ -3395,7 +3395,7 @@ msgid "Bind individual memberships to this membership type."
 msgstr "Magbigkis indibidwal na pagiging miyembro sa ganitong uri ng pagiging kasapi."
 
 #: addons/corporate_memberships/models.py:116
-#: addons/corporate_memberships/models.py:1386 addons/events/forms.py:805
+#: addons/corporate_memberships/models.py:1386 addons/events/forms.py:836
 #: addons/events/models.py:1058 addons/memberships/models.py:127
 #: addons/memberships/models.py:2265
 msgid "Admin Only"
@@ -3517,8 +3517,8 @@ msgstr "Naaprubahan o Tinanggihan Gumagamit"
 
 #: addons/corporate_memberships/models.py:429 addons/directories/models.py:69
 #: addons/events/templates/events/reg8n/multi_register.html:292
-#: addons/events/templates/events/reg8n/register.html:347
-#: addons/events/templates/events/registration/multi_register.html:293
+#: addons/events/templates/events/reg8n/register.html:348
+#: addons/events/templates/events/registration/multi_register.html:296
 #: addons/memberships/models.py:69
 #: addons/memberships/templates/memberships/details.html:448
 #: addons/memberships/templates/memberships/details_print.html:286
@@ -3846,7 +3846,7 @@ msgstr "Tandaan na kung hindi mo pinili ang isang corporate uri ng pagsapi, ang 
 msgid "Content Type"
 msgstr "Uri ng Nilalaman"
 
-#: addons/corporate_memberships/models.py:1666 addons/events/forms.py:1962
+#: addons/corporate_memberships/models.py:1666 addons/events/forms.py:1993
 #: addons/memberships/models.py:1921
 msgid "Email Content"
 msgstr "Nilalaman ng Email"
@@ -4139,7 +4139,7 @@ msgstr "Halaga"
 #: addons/directories/templates/directories/invoice_search_result_line.html:15
 #: addons/events/templates/events/invoice_search_result_line.html:14
 #: addons/events/templates/events/reg8n/register-confirm.html:246
-#: addons/events/templates/events/registrants/roster.html:86
+#: addons/events/templates/events/registrants/roster.html:87
 #: addons/jobs/templates/jobs/invoice_search_result_line.html:15
 #: addons/make_payments/templates/make_payments/invoice_search_result_line.html:15
 #: addons/memberships/templates/memberships/invoice_search_result_line.html:13
@@ -4405,7 +4405,7 @@ msgstr "%(err)s"
 #: addons/corporate_memberships/templates/corporate_memberships/applications/render_corpmembership_field.html:76
 #: addons/events/templates/events/edit_email.html:80
 #: addons/events/templates/events/registration/base_forms.html:32
-#: addons/events/templates/events/registration/multi_register.html:177
+#: addons/events/templates/events/registration/multi_register.html:180
 #, python-format
 msgid "%(help_text)s"
 msgstr "%(help_text)s"
@@ -4448,12 +4448,12 @@ msgstr "Mga Indibidwal"
 #: addons/events/templates/events/reg8n/multi_register.html:131
 #: addons/events/templates/events/reg8n/multi_register.html:145
 #: addons/events/templates/events/reg8n/register-confirm.html:245
-#: addons/events/templates/events/reg8n/register.html:156
-#: addons/events/templates/events/reg8n/register.html:170
-#: addons/events/templates/events/registrants/roster.html:259
-#: addons/events/templates/events/registrants/roster.html:290
-#: addons/events/templates/events/registration/multi_register.html:132
-#: addons/events/templates/events/registration/multi_register.html:146
+#: addons/events/templates/events/reg8n/register.html:157
+#: addons/events/templates/events/reg8n/register.html:171
+#: addons/events/templates/events/registrants/roster.html:260
+#: addons/events/templates/events/registrants/roster.html:291
+#: addons/events/templates/events/registration/multi_register.html:135
+#: addons/events/templates/events/registration/multi_register.html:149
 #: addons/recurring_payments/templates/recurring_payments/transaction_receipt.html:54
 #: apps/invoices/templates/invoices/detail.html:58
 #: apps/reports/templates/reports/invoices/results-extended.html:11
@@ -4481,8 +4481,8 @@ msgstr "Kabuuang"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:270
 #: addons/events/templates/events/reg8n/multi_register.html:84
-#: addons/events/templates/events/reg8n/register.html:115
-#: addons/events/templates/events/registration/multi_register.html:86
+#: addons/events/templates/events/reg8n/register.html:116
+#: addons/events/templates/events/registration/multi_register.html:89
 msgid "Update Summary"
 msgstr "I-update ang Buod"
 
@@ -4567,7 +4567,7 @@ msgstr "Huwag kailanman e-expire"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:119
 #: addons/directories/templates/directories/pricing-search.html:50
-#: addons/events/templates/events/registrants/roster.html:106
+#: addons/events/templates/events/registrants/roster.html:107
 #: addons/jobs/templates/jobs/pricing-table.html:11
 #: addons/memberships/templates/memberships/details.html:59
 #: addons/memberships/templates/memberships/details_print.html:48
@@ -4604,7 +4604,7 @@ msgstr "Katayuan:"
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search.html:66
 #: addons/directories/templates/directories/pricing-search.html:70
 #: addons/events/templates/events/registrants/global-search.html:112
-#: addons/events/templates/events/registrants/search.html:154
+#: addons/events/templates/events/registrants/search.html:155
 #: addons/jobs/templates/jobs/pricing-search.html:57
 #: addons/locations/templates/locations/nearest.html:35
 #: apps/contacts/templates/contacts/search.html:47
@@ -5116,7 +5116,7 @@ msgstr "Magbigkis miyembro sa korporasyon"
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/preview.html:38
 #: addons/corporate_memberships/templates/corporate_memberships/imports/status.html:38
-#: addons/events/forms.py:1084
+#: addons/events/forms.py:1115
 #: addons/locations/templates/locations/import-preview.html:75
 #: addons/memberships/templates/memberships/applications/detail_default.html:93
 #: addons/memberships/templates/memberships/applications/detail_default.html:95
@@ -5145,7 +5145,7 @@ msgstr "Oo"
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/preview.html:38
 #: addons/corporate_memberships/templates/corporate_memberships/imports/status.html:38
-#: addons/events/forms.py:1084
+#: addons/events/forms.py:1115
 #: addons/memberships/templates/memberships/applications/detail_default.html:94
 #: addons/memberships/templates/memberships/applications/detail_default.html:96
 #: addons/memberships/templates/memberships/applications/detail_default.html:98
@@ -6578,16 +6578,16 @@ msgid ""
 msgstr "Ang iyong direktoryo ay nasa ilalim ng pagsusuri at maaprubahan ng isang administrator"
 
 #: addons/directories/templates/directories/view.html:8
-#: addons/events/templates/events/approve.html:27
-#: addons/events/templates/events/approve.html:29
+#: addons/events/templates/events/approve.html:31
+#: addons/events/templates/events/approve.html:33
 #: addons/events/templates/events/attendees.html:14
-#: addons/events/templates/events/day-view.html:91
-#: addons/events/templates/events/delete.html:25
-#: addons/events/templates/events/delete.html:27
-#: addons/events/templates/events/delete_recurring.html:26
+#: addons/events/templates/events/day-view.html:94
+#: addons/events/templates/events/delete.html:29
+#: addons/events/templates/events/delete.html:31
+#: addons/events/templates/events/delete_recurring.html:30
 #: addons/events/templates/events/print-view.html:7
 #: addons/events/templates/events/print-view.html:29
-#: addons/events/templates/events/search-result.html:62
+#: addons/events/templates/events/search-result.html:67
 #: addons/events/templates/events/speakers.html:10
 #: addons/events/templates/events/speakers.html:42
 #: addons/events/templates/events/speakers.html:45
@@ -6599,9 +6599,9 @@ msgstr "Ang iyong direktoryo ay nasa ilalim ng pagsusuri at maaprubahan ng isang
 #: addons/events/templates/events/view.html:89
 #: addons/events/templates/events/view.html:109
 #: addons/events/templates/events/view.html:112
-#: addons/events/templates/events/view.html:226
-#: addons/events/templates/events/view.html:229
-#: addons/events/templates/events/view.html:233
+#: addons/events/templates/events/view.html:231
+#: addons/events/templates/events/view.html:234
+#: addons/events/templates/events/view.html:238
 #: addons/events/templates/notification/event_registration_confirmation/full.html:148
 #: addons/help_files/templates/help_files/details.html:7
 #: addons/jobs/templates/jobs/delete.html:21
@@ -6977,359 +6977,78 @@ msgstr "ID ng Kaganapan"
 msgid "IDs must be an integer"
 msgstr "Mga ID ay dapat na isang integer"
 
-#: addons/events/forms.py:302 addons/events/forms.py:1641
+#: addons/events/forms.py:303 addons/events/forms.py:1672
 #: addons/events/models.py:741
 msgid "Receive event reminders"
 msgstr "Tumanggap ng mga paalala ng kaganapan"
 
-#: addons/events/forms.py:309
+#: addons/events/forms.py:310
 msgid "Price Options"
 msgstr "Mga Pagpipilian Presyo"
 
-#: addons/events/forms.py:321 addons/events/forms.py:1670
+#: addons/events/forms.py:322 addons/events/forms.py:1701
 #: addons/events/models.py:735 addons/events/registration/forms.py:89
 #: addons/events/templates/events/registration/base_forms.html:79
-#: addons/events/templates/events/registration/multi_register.html:223
-#: addons/events/templates/events/registration/multi_register.html:281
+#: addons/events/templates/events/registration/multi_register.html:226
+#: addons/events/templates/events/registration/multi_register.html:284
 #: apps/profiles/templates/profiles/index.html:59
 #: apps/profiles/templates/profiles/merge_detail.html:49
 msgid "Member ID"
 msgstr "Miyembro ID"
 
-#: addons/events/forms.py:322 addons/events/forms.py:1671
+#: addons/events/forms.py:323 addons/events/forms.py:1702
 msgid "Please enter a member ID if a member price is selected."
 msgstr "Mangyaring magpasok ng isang miyembro ng ID kung ang isang presyo miyembro ay pinili."
 
-#: addons/events/forms.py:328 addons/events/forms.py:1550
-#: addons/events/forms.py:1675 addons/events/models.py:405
+#: addons/events/forms.py:329 addons/events/forms.py:1581
+#: addons/events/forms.py:1706 addons/events/models.py:405
 #: addons/events/models.py:719
 msgid "Admin Price Override?"
 msgstr "Override Admin Presyo?"
 
-#: addons/events/forms.py:330 addons/events/forms.py:1552
-#: addons/events/forms.py:1677 addons/events/models.py:406
+#: addons/events/forms.py:331 addons/events/forms.py:1583
+#: addons/events/forms.py:1708 addons/events/models.py:406
 #: addons/events/models.py:721
 #: addons/memberships/templates/memberships/details.html:462
 #: addons/memberships/templates/memberships/details_print.html:300
 msgid "Override Price"
 msgstr "Override Presyo"
 
-#: addons/events/forms.py:339 addons/events/forms.py:1683
+#: addons/events/forms.py:340 addons/events/forms.py:1714
 msgid "Use Free Pass"
 msgstr "Gamitin ang libreng Pass"
 
-#: addons/events/forms.py:440
+#: addons/events/forms.py:441
 msgid "We don't detect you as a member. Please choose another price option. "
 msgstr "Hindi namin makita ka bilang isang kasapi. Mangyaring pumili ng isa pang opsyon sa presyo."
 
-#: addons/events/forms.py:445
+#: addons/events/forms.py:446
 msgid ""
 "You have entered a member id but have selected an option that does not "
 "require membership.Please either choose the member option or remove your "
 "member id."
 msgstr "Nagpasok ka ng isang miyembro id ngunit na napili ang isang opsyon na hindi nangangailangan membership.Please alinman sa piliin ang pagpipilian na miyembro o alisin ang iyong mga miyembro id."
 
-#: addons/events/forms.py:459 addons/events/forms.py:1580
-#: addons/events/forms.py:1810
+#: addons/events/forms.py:460 addons/events/forms.py:1611
+#: addons/events/forms.py:1841
 msgid "Override price must be a positive number."
 msgstr "Dapat ay isang positibong numero presyo Override."
 
-#: addons/events/forms.py:472 addons/events/forms.py:1823
+#: addons/events/forms.py:473 addons/events/forms.py:1854
 msgid "Not a corporate member for free pass"
 msgstr "Hindi isang corporate miyembro para sa libreng pass"
 
-#: addons/events/forms.py:474 addons/events/forms.py:1825
+#: addons/events/forms.py:475 addons/events/forms.py:1856
 #, python-format
 msgid "Free pass not available for \"%s\"."
 msgstr "Hindi magagamit para sa &quot;% s&quot; libreng pass."
 
-#: addons/events/forms.py:582 addons/photos/templates/photos/details.html:16
-#: apps/stories/forms.py:39 apps/stories/forms.py:170
-msgid "Photo"
-msgstr "Larawan"
+#: addons/events/forms.py:582
+msgid "All Day"
+msgstr ""
 
-#: addons/events/forms.py:583 addons/news/forms.py:50 apps/stories/forms.py:40
-#: apps/stories/forms.py:171
-msgid "Remove the current photo"
-msgstr "Alisin ang kasalukuyang larawan"
-
-#: addons/events/forms.py:598
-msgid "Is Recurring?"
-msgstr "Ay paulit-ulit na?"
-
-#: addons/events/forms.py:599 addons/events/models.py:998
-msgid "Repeats"
-msgstr "Pag-ulit"
-
-#: addons/events/forms.py:600
-msgid "Repeats Every"
-msgstr "Pag-uulit Bawat"
-
-#: addons/events/forms.py:602
-msgid "Ends On"
-msgstr "Nagtatapos Sa"
-
-#: addons/events/forms.py:604
-msgid "Recurs On"
-msgstr "Sa Recurs"
-
-#: addons/events/forms.py:605
-msgid "the same day of the week"
-msgstr "ang parehong araw ng linggo"
-
-#: addons/events/forms.py:605
-msgid "the same date"
-msgstr "sa parehong petsa"
-
-#: addons/events/forms.py:640 addons/events/forms.py:653
-#: addons/events/forms.py:2023
-msgid "Event Information"
-msgstr "Impormasyon sa Kaganapan"
-
-#: addons/events/forms.py:707
-msgid "Changes here would be ignored if applied to other events in series."
-msgstr "Mga Pagbabago dito ay binabalewala kung inilapat sa iba pang mga kaganapan sa mga serye."
-
-#: addons/events/forms.py:748 addons/news/forms.py:134
-#: apps/stories/forms.py:102 apps/stories/forms.py:230
-msgid "The photo must be of jpg, gif, or png image type."
-msgstr "Ang larawan ay dapat na ng jpg, gif, o png uri ng imahe."
-
-#: addons/events/forms.py:753 addons/news/forms.py:139
-#: apps/stories/forms.py:107 apps/stories/forms.py:235
-msgid "The photo is an invalid image. Try uploading another photo."
-msgstr "Ang larawan ay isang hindi wastong imahe. Subukan ang pag-upload ng isa pang larawan."
-
-#: addons/events/forms.py:757 addons/locations/forms.py:129
-#: addons/news/forms.py:143 apps/stories/forms.py:111
-#: apps/stories/forms.py:239
-#, python-format
-msgid ""
-"Please keep filesize under %(max_upload_size)s. Current filesize "
-"%(upload_size)s"
-msgstr "Mangyaring panatilihin ang filesize sa ilalim ng %(max_upload_size)s. Kasalukuyang filesize %(upload_size)s"
-
-#: addons/events/forms.py:785
-msgid "This cannot be                 earlier than the start date."
-msgstr "Ito ay hindi maaaring maging mas maaga kaysa sa petsa ng pagsisimula."
-
-#: addons/events/forms.py:802 addons/events/models.py:1055
-msgid "Everyone"
-msgstr "Ang bawat tao&#39;y"
-
-#: addons/events/forms.py:803 addons/events/models.py:1056
-msgid "Users Only"
-msgstr "Ang mga gumagamit lamang"
-
-#: addons/events/forms.py:804 addons/events/models.py:1057
-msgid "Members Only"
-msgstr "Mga miyembro lamang"
-
-#: addons/events/forms.py:813
-msgid "This event only"
-msgstr "Ang kaganapang ito lamang"
-
-#: addons/events/forms.py:814
-msgid "This and the following events in series"
-msgstr "Ito at ang mga sumusunod na kaganapan sa serye"
-
-#: addons/events/forms.py:815
-msgid "All events in series"
-msgstr "Lahat ng mga kaganapan sa serye"
-
-#: addons/events/forms.py:863
-msgid "Reassign To"
-msgstr "Upang Reassign"
-
-#: addons/events/forms.py:875
-#: addons/events/templates/events/imports/events_preview.html:55
-msgid "Place"
-msgstr "Lugar"
-
-#: addons/events/forms.py:881 addons/locations/admin.py:14
-#: addons/locations/forms.py:62
-msgid "Location Information"
-msgstr "Impormasyon ng Lokasyon"
-
-#: addons/events/forms.py:942
-msgid "Sponsor"
-msgstr "Sponsor"
-
-#: addons/events/forms.py:959
-#, python-format
-msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "Mga Speaker sa isang kaganapan ay dapat na mayroong natatanging pangalan. &#39;% S&#39; ay ginagamit na."
-
-#: addons/events/forms.py:991 addons/events/forms.py:1004
-#: addons/events/templates/events/speakers.html:38
-#: addons/events/templates/events/view.html:78
-#: addons/events/templates/events/registrants/search.html:51
-msgid "Speaker"
-msgstr "Tagapagsalita"
-
-#: addons/events/forms.py:1027 core/files/forms.py:117 core/files/forms.py:292
-#: core/files/forms.py:421
-#, python-format
-msgid ""
-"Please keep filesize under %(max_upload_size)s. Current filesize "
-"%(data_size)s"
-msgstr "Mangyaring panatilihin ang filesize sa ilalim ng %(max_upload_size)s. Kasalukuyang filesize %(data_size)s"
-
-#: addons/events/forms.py:1039
-msgid "Speaker name is required if a speaker file is given."
-msgstr "Pangalan ng Tagapagsalita ay kinakailangan kung ang isang speaker file ay ibinibigay."
-
-#: addons/events/forms.py:1043
-msgid ""
-"Speaker details missing. Please add speaker name or delete the speaker."
-msgstr "Mga detalye ng Tagapagsalita nawawala. Mangyaring magdagdag ng pangalan ng speaker o tanggalin ang mga speaker."
-
-#: addons/events/forms.py:1081
-msgid "Start and End"
-msgstr "Simulan at Tapusin"
-
-#: addons/events/forms.py:1084
-msgid "Inherit from event"
-msgstr "Manahin mula sa kaganapan"
-
-#: addons/events/forms.py:1148
-msgid "Start Date/Time should come after End Date/Time"
-msgstr "Petsa ng Pagsisimula / oras ay dapat dumating pagkatapos ng Petsa ng Pagtatapos / Oras"
-
-#: addons/events/forms.py:1172
-msgid "Registration Pricing"
-msgstr "Pagpepresyo Pagpaparehistro"
-
-#: addons/events/forms.py:1190
-msgid "Note: the registrants will be verified (for users, "
-msgstr "Tandaan: ang registrants mabe-verify (para sa mga gumagamit,"
-
-#: addons/events/forms.py:1218 addons/events/templates/events/edit.html:38
-#: addons/events/templates/events/reg8n/multi_register.html:7
-#: addons/events/templates/events/reg8n/multi_register.html:19
-#: addons/events/templates/events/reg8n/register-confirm.html:20
-#: addons/events/templates/events/reg8n/register.html:7
-#: addons/events/templates/events/reg8n/register.html:26
-#: addons/events/templates/events/reg8n/register_pre.html:19
-#: addons/events/templates/events/registration/multi_register.html:20
-#: apps/profiles/templates/profiles/index.html:288
-msgid "Registration"
-msgstr "Pagpaparehistro"
-
-#: addons/events/forms.py:1220 addons/events/models.py:147
-msgid "Registration Limit"
-msgstr "Hangganan ng Pagpaparehistro"
-
-#: addons/events/forms.py:1222
-msgid ""
-"Enter the maximum number of registrants. Use 0 for unlimited registrants"
-msgstr "Ipasok ang maximum na bilang ng mga registrants. Gumamit ng 0 para sa walang limitasyong mga registrants"
-
-#: addons/events/forms.py:1255
-msgid "Registration Configuration"
-msgstr "Configuration ng Pagpaparehistro"
-
-#: addons/events/forms.py:1354
-msgid "Please choose a custom registration form"
-msgstr "Mangyaring pumili ng custom na form sa pagrerehistro"
-
-#: addons/events/forms.py:1362
-msgid "Please specify when to send email reminders"
-msgstr "Mangyaring tukuyin kapag upang magpadala ng mga paalala ng email"
-
-#: addons/events/forms.py:1373
-#, python-format
-msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "Hindi wastong halaga ng &#39;% s&#39;. (Mga) integer lamang."
-
-#: addons/events/forms.py:1462 addons/events/forms.py:1694
-#: addons/events/registration/forms.py:151
-#: addons/events/registration/forms.py:170
-msgid "Markup is not allowed in the name field"
-msgstr "Markup ay hindi pinapayagan sa patlang na Pangalan"
-
-#: addons/events/forms.py:1469 addons/events/forms.py:1701
-#: addons/events/registration/forms.py:158
-#: addons/events/registration/forms.py:177
-msgid "URL's and Emails are not allowed in the name field"
-msgstr "Mga Email na mga URL at hindi pinapayagan sa field ng pangalan"
-
-#: addons/events/forms.py:1475
-msgid "Individual registration(s)"
-msgstr "(Mga) indibidwal na pagpaparehistro"
-
-#: addons/events/forms.py:1476
-msgid "Table registration"
-msgstr "Pagpaparehistro ng Talahanayan"
-
-#: addons/events/forms.py:1508
-msgid "Please choose a price for table registration."
-msgstr "Mangyaring pumili ng isang presyo para sa pagpaparehistro ng talahanayan."
-
-#: addons/events/forms.py:1516 addons/events/registration/forms.py:23
-#: addons/events/templates/events/reg8n/multi_register.html:98
-#: addons/events/templates/events/reg8n/register.html:334
-#: addons/events/templates/events/registration/multi_register.html:100
-#: addons/memberships/forms.py:929
-#: addons/memberships/templates/memberships/applications/add.html:178
-#: apps/discounts/templates/discounts/detail.html:27
-#: apps/invoices/models.py:43
-msgid "Discount Code"
-msgstr "Discount Code"
-
-#: addons/events/forms.py:1794
-msgid "We don't detect you as a member. "
-msgstr "Hindi namin makita ka bilang isang kasapi."
-
-#: addons/events/forms.py:1798
-msgid "You have entered a member id but "
-msgstr "Nagpasok ka ng isang miyembro id ngunit"
-
-#: addons/events/forms.py:1969
-#: addons/events/templates/events/include/search-result-spots-taken.html:7
-#: addons/events/templates/events/include/search-result-spots-taken.html:11
-#: addons/events/templates/events/registrants/roster.html:276
-#: apps/dashboard/templates/dashboard/stats.html:12
-#: templates/reports/mem_join_table.html:10
-#: templates/reports/membership_joins.html:26
-msgid "Paid"
-msgstr "Bayad"
-
-#: addons/events/forms.py:1970
-msgid "Not Paid"
-msgstr "Hindi Bayad"
-
-#: addons/events/forms.py:1989 apps/contacts/templates/contacts/view.html:68
-msgid "Message"
-msgstr "Mensahe"
-
-#: addons/events/forms.py:1989
-msgid "Available tokens: <br />"
-msgstr "Magagamit na mga token: <br />"
-
-#: addons/events/forms.py:2069
-msgid "Addon Information"
-msgstr "Addon Impormasyon"
-
-#: addons/events/forms.py:2086
-msgid "Option"
-msgstr "Pagpipilian"
-
-#: addons/events/forms.py:2106
-#: addons/events/templates/events/event_custom_reg_form_list.html:20
-#: addons/events/templates/events/reg8n/reg8n_edit.html:19
-#: addons/events/templates/notification/event_registration_end_recap/full.html:8
-msgid "Event"
-msgstr "Kaganapan"
-
-#: addons/events/forms.py:2108
-#: addons/events/templates/events/month-view.html:100
-#: addons/events/templates/events/nav.html:38 apps/invoices/forms.py:70
-#: core/newsletters/templates/newsletters/events_list.txt:10
-msgid "All Events"
-msgstr "Lahat ng Mga Kaganapan"
-
-#: addons/events/forms.py:2109 addons/events/models.py:260
+#: addons/events/forms.py:584 addons/events/forms.py:2140
+#: addons/events/models.py:260
 #: addons/events/templates/events/search-form.html:7
 #: addons/memberships/reports.py:29
 #: addons/memberships/templates/memberships/applications/detail_default.html:491
@@ -7341,64 +7060,350 @@ msgstr "Lahat ng Mga Kaganapan"
 msgid "Start Date"
 msgstr "Petsa ng Pagsisimula"
 
-#: addons/events/forms.py:2110 addons/events/models.py:261
-#: addons/memberships/reports.py:30
+#: addons/events/forms.py:588 addons/events/forms.py:2141
+#: addons/events/models.py:261 addons/memberships/reports.py:30
 #: addons/memberships/templates/memberships/applications/detail_default.html:497
 #: addons/memberships/templates/memberships/applications/detail_default.html:555
 #: apps/invoices/templates/invoices/export.html:35
 msgid "End Date"
 msgstr "Petsa ng Pagtatapos"
 
-#: addons/events/forms.py:2112
+#: addons/events/forms.py:592 addons/photos/templates/photos/details.html:16
+#: apps/stories/forms.py:39 apps/stories/forms.py:170
+msgid "Photo"
+msgstr "Larawan"
+
+#: addons/events/forms.py:593 addons/news/forms.py:50 apps/stories/forms.py:40
+#: apps/stories/forms.py:171
+msgid "Remove the current photo"
+msgstr "Alisin ang kasalukuyang larawan"
+
+#: addons/events/forms.py:608
+msgid "Is Recurring?"
+msgstr "Ay paulit-ulit na?"
+
+#: addons/events/forms.py:609 addons/events/models.py:998
+msgid "Repeats"
+msgstr "Pag-ulit"
+
+#: addons/events/forms.py:610
+msgid "Repeats Every"
+msgstr "Pag-uulit Bawat"
+
+#: addons/events/forms.py:612
+msgid "Ends On"
+msgstr "Nagtatapos Sa"
+
+#: addons/events/forms.py:614
+msgid "Recurs On"
+msgstr "Sa Recurs"
+
+#: addons/events/forms.py:615
+msgid "the same day of the week"
+msgstr "ang parehong araw ng linggo"
+
+#: addons/events/forms.py:615
+msgid "the same date"
+msgstr "sa parehong petsa"
+
+#: addons/events/forms.py:653 addons/events/forms.py:669
+#: addons/events/forms.py:2054
+msgid "Event Information"
+msgstr "Impormasyon sa Kaganapan"
+
+#: addons/events/forms.py:725
+msgid "Changes here would be ignored if applied to other events in series."
+msgstr "Mga Pagbabago dito ay binabalewala kung inilapat sa iba pang mga kaganapan sa mga serye."
+
+#: addons/events/forms.py:768 addons/news/forms.py:134
+#: apps/stories/forms.py:102 apps/stories/forms.py:230
+msgid "The photo must be of jpg, gif, or png image type."
+msgstr "Ang larawan ay dapat na ng jpg, gif, o png uri ng imahe."
+
+#: addons/events/forms.py:773 addons/news/forms.py:139
+#: apps/stories/forms.py:107 apps/stories/forms.py:235
+msgid "The photo is an invalid image. Try uploading another photo."
+msgstr "Ang larawan ay isang hindi wastong imahe. Subukan ang pag-upload ng isa pang larawan."
+
+#: addons/events/forms.py:777 addons/locations/forms.py:129
+#: addons/news/forms.py:143 apps/stories/forms.py:111
+#: apps/stories/forms.py:239
+#, python-format
+msgid ""
+"Please keep filesize under %(max_upload_size)s. Current filesize "
+"%(upload_size)s"
+msgstr "Mangyaring panatilihin ang filesize sa ilalim ng %(max_upload_size)s. Kasalukuyang filesize %(upload_size)s"
+
+#: addons/events/forms.py:807 addons/events/forms.py:812
+msgid "This cannot be                 earlier than the start date."
+msgstr "Ito ay hindi maaaring maging mas maaga kaysa sa petsa ng pagsisimula."
+
+#: addons/events/forms.py:833 addons/events/models.py:1055
+msgid "Everyone"
+msgstr "Ang bawat tao&#39;y"
+
+#: addons/events/forms.py:834 addons/events/models.py:1056
+msgid "Users Only"
+msgstr "Ang mga gumagamit lamang"
+
+#: addons/events/forms.py:835 addons/events/models.py:1057
+msgid "Members Only"
+msgstr "Mga miyembro lamang"
+
+#: addons/events/forms.py:844
+msgid "This event only"
+msgstr "Ang kaganapang ito lamang"
+
+#: addons/events/forms.py:845
+msgid "This and the following events in series"
+msgstr "Ito at ang mga sumusunod na kaganapan sa serye"
+
+#: addons/events/forms.py:846
+msgid "All events in series"
+msgstr "Lahat ng mga kaganapan sa serye"
+
+#: addons/events/forms.py:894
+msgid "Reassign To"
+msgstr "Upang Reassign"
+
+#: addons/events/forms.py:906
+#: addons/events/templates/events/imports/events_preview.html:55
+msgid "Place"
+msgstr "Lugar"
+
+#: addons/events/forms.py:912 addons/locations/admin.py:14
+#: addons/locations/forms.py:62
+msgid "Location Information"
+msgstr "Impormasyon ng Lokasyon"
+
+#: addons/events/forms.py:973
+msgid "Sponsor"
+msgstr "Sponsor"
+
+#: addons/events/forms.py:990
+#, python-format
+msgid "Speakers in an event must have distinct names. '%s' is already used."
+msgstr "Mga Speaker sa isang kaganapan ay dapat na mayroong natatanging pangalan. &#39;% S&#39; ay ginagamit na."
+
+#: addons/events/forms.py:1022 addons/events/forms.py:1035
+#: addons/events/templates/events/speakers.html:38
+#: addons/events/templates/events/view.html:78
+#: addons/events/templates/events/registrants/search.html:52
+msgid "Speaker"
+msgstr "Tagapagsalita"
+
+#: addons/events/forms.py:1058 core/files/forms.py:117 core/files/forms.py:292
+#: core/files/forms.py:421
+#, python-format
+msgid ""
+"Please keep filesize under %(max_upload_size)s. Current filesize "
+"%(data_size)s"
+msgstr "Mangyaring panatilihin ang filesize sa ilalim ng %(max_upload_size)s. Kasalukuyang filesize %(data_size)s"
+
+#: addons/events/forms.py:1070
+msgid "Speaker name is required if a speaker file is given."
+msgstr "Pangalan ng Tagapagsalita ay kinakailangan kung ang isang speaker file ay ibinibigay."
+
+#: addons/events/forms.py:1074
+msgid ""
+"Speaker details missing. Please add speaker name or delete the speaker."
+msgstr "Mga detalye ng Tagapagsalita nawawala. Mangyaring magdagdag ng pangalan ng speaker o tanggalin ang mga speaker."
+
+#: addons/events/forms.py:1112
+msgid "Start and End"
+msgstr "Simulan at Tapusin"
+
+#: addons/events/forms.py:1115
+msgid "Inherit from event"
+msgstr "Manahin mula sa kaganapan"
+
+#: addons/events/forms.py:1179
+msgid "Start Date/Time should come after End Date/Time"
+msgstr "Petsa ng Pagsisimula / oras ay dapat dumating pagkatapos ng Petsa ng Pagtatapos / Oras"
+
+#: addons/events/forms.py:1203
+msgid "Registration Pricing"
+msgstr "Pagpepresyo Pagpaparehistro"
+
+#: addons/events/forms.py:1221
+msgid "Note: the registrants will be verified (for users, "
+msgstr "Tandaan: ang registrants mabe-verify (para sa mga gumagamit,"
+
+#: addons/events/forms.py:1249 addons/events/templates/events/edit.html:38
+#: addons/events/templates/events/reg8n/multi_register.html:7
+#: addons/events/templates/events/reg8n/multi_register.html:19
+#: addons/events/templates/events/reg8n/register-confirm.html:20
+#: addons/events/templates/events/reg8n/register.html:7
+#: addons/events/templates/events/reg8n/register.html:26
+#: addons/events/templates/events/reg8n/register_pre.html:19
+#: addons/events/templates/events/registration/multi_register.html:20
+#: apps/profiles/templates/profiles/index.html:288
+msgid "Registration"
+msgstr "Pagpaparehistro"
+
+#: addons/events/forms.py:1251 addons/events/models.py:147
+msgid "Registration Limit"
+msgstr "Hangganan ng Pagpaparehistro"
+
+#: addons/events/forms.py:1253
+msgid ""
+"Enter the maximum number of registrants. Use 0 for unlimited registrants"
+msgstr "Ipasok ang maximum na bilang ng mga registrants. Gumamit ng 0 para sa walang limitasyong mga registrants"
+
+#: addons/events/forms.py:1286
+msgid "Registration Configuration"
+msgstr "Configuration ng Pagpaparehistro"
+
+#: addons/events/forms.py:1385
+msgid "Please choose a custom registration form"
+msgstr "Mangyaring pumili ng custom na form sa pagrerehistro"
+
+#: addons/events/forms.py:1393
+msgid "Please specify when to send email reminders"
+msgstr "Mangyaring tukuyin kapag upang magpadala ng mga paalala ng email"
+
+#: addons/events/forms.py:1404
+#, python-format
+msgid "Invalid value '%s'. Integer(s) only. "
+msgstr "Hindi wastong halaga ng &#39;% s&#39;. (Mga) integer lamang."
+
+#: addons/events/forms.py:1493 addons/events/forms.py:1725
+#: addons/events/registration/forms.py:151
+#: addons/events/registration/forms.py:170
+msgid "Markup is not allowed in the name field"
+msgstr "Markup ay hindi pinapayagan sa patlang na Pangalan"
+
+#: addons/events/forms.py:1500 addons/events/forms.py:1732
+#: addons/events/registration/forms.py:158
+#: addons/events/registration/forms.py:177
+msgid "URL's and Emails are not allowed in the name field"
+msgstr "Mga Email na mga URL at hindi pinapayagan sa field ng pangalan"
+
+#: addons/events/forms.py:1506
+msgid "Individual registration(s)"
+msgstr "(Mga) indibidwal na pagpaparehistro"
+
+#: addons/events/forms.py:1507
+msgid "Table registration"
+msgstr "Pagpaparehistro ng Talahanayan"
+
+#: addons/events/forms.py:1539
+msgid "Please choose a price for table registration."
+msgstr "Mangyaring pumili ng isang presyo para sa pagpaparehistro ng talahanayan."
+
+#: addons/events/forms.py:1547 addons/events/registration/forms.py:23
+#: addons/events/templates/events/reg8n/multi_register.html:98
+#: addons/events/templates/events/reg8n/register.html:335
+#: addons/events/templates/events/registration/multi_register.html:103
+#: addons/memberships/forms.py:929
+#: addons/memberships/templates/memberships/applications/add.html:178
+#: apps/discounts/templates/discounts/detail.html:27
+#: apps/invoices/models.py:43
+msgid "Discount Code"
+msgstr "Discount Code"
+
+#: addons/events/forms.py:1825
+msgid "We don't detect you as a member. "
+msgstr "Hindi namin makita ka bilang isang kasapi."
+
+#: addons/events/forms.py:1829
+msgid "You have entered a member id but "
+msgstr "Nagpasok ka ng isang miyembro id ngunit"
+
+#: addons/events/forms.py:2000
+#: addons/events/templates/events/include/search-result-spots-taken.html:7
+#: addons/events/templates/events/include/search-result-spots-taken.html:11
+#: addons/events/templates/events/registrants/roster.html:277
+#: apps/dashboard/templates/dashboard/stats.html:12
+#: templates/reports/mem_join_table.html:10
+#: templates/reports/membership_joins.html:26
+msgid "Paid"
+msgstr "Bayad"
+
+#: addons/events/forms.py:2001
+msgid "Not Paid"
+msgstr "Hindi Bayad"
+
+#: addons/events/forms.py:2020 apps/contacts/templates/contacts/view.html:68
+msgid "Message"
+msgstr "Mensahe"
+
+#: addons/events/forms.py:2020
+msgid "Available tokens: <br />"
+msgstr "Magagamit na mga token: <br />"
+
+#: addons/events/forms.py:2100
+msgid "Addon Information"
+msgstr "Addon Impormasyon"
+
+#: addons/events/forms.py:2117
+msgid "Option"
+msgstr "Pagpipilian"
+
+#: addons/events/forms.py:2137
+#: addons/events/templates/events/event_custom_reg_form_list.html:20
+#: addons/events/templates/events/reg8n/reg8n_edit.html:19
+#: addons/events/templates/notification/event_registration_end_recap/full.html:8
+msgid "Event"
+msgstr "Kaganapan"
+
+#: addons/events/forms.py:2139
+#: addons/events/templates/events/month-view.html:100
+#: addons/events/templates/events/nav.html:38 apps/invoices/forms.py:70
+#: core/newsletters/templates/newsletters/events_list.txt:10
+msgid "All Events"
+msgstr "Lahat ng Mga Kaganapan"
+
+#: addons/events/forms.py:2143
 msgid "User ID"
 msgstr "ID ng Gumagamit"
 
-#: addons/events/forms.py:2155
+#: addons/events/forms.py:2186
 msgid "comma separated if multiple"
 msgstr "comma separated kung maramihang"
 
-#: addons/events/forms.py:2172
+#: addons/events/forms.py:2203
 #, python-format
 msgid "Member #%s does not exists!"
 msgstr "Miyembro #% s ay hindi umiiral!"
 
-#: addons/events/forms.py:2179
+#: addons/events/forms.py:2210
 msgid "Export by Date Range"
 msgstr "I-export sa pamamagitan ng Hanay ng Petsa"
 
-#: addons/events/forms.py:2183
+#: addons/events/forms.py:2214
 #: addons/recurring_payments/templates/recurring_payments/index.html:141
 #: apps/invoices/forms.py:52 apps/user_groups/forms.py:226
 msgid "From"
 msgstr "Mula sa"
 
-#: addons/events/forms.py:2187
+#: addons/events/forms.py:2218
 #: addons/events/templates/events/edit_email.html:69 apps/invoices/forms.py:53
 #: apps/user_groups/forms.py:225
 msgid "To"
 msgstr "Upang"
 
-#: addons/events/forms.py:2191
+#: addons/events/forms.py:2222
 msgid "Export by Type"
 msgstr "I-export sa pamamagitan ng Uri"
 
-#: addons/events/forms.py:2193
+#: addons/events/forms.py:2224
 msgid "Don't filter by type"
 msgstr "Huwag i-filter ayon sa uri"
 
-#: addons/events/forms.py:2202
+#: addons/events/forms.py:2233
 msgid "Start date is required if exporting by date range"
 msgstr "Ang petsa ng pagsisimula ay kinakailangan kung ang pag-export sa pamamagitan ng hanay ng petsa"
 
-#: addons/events/forms.py:2215
+#: addons/events/forms.py:2246
 msgid "End date is required if exporting by date range"
 msgstr "Ang petsa ng pagtatapos ay kailangan kung e-export sa pamamagitan ng hanay ng petsa"
 
-#: addons/events/forms.py:2217
+#: addons/events/forms.py:2248
 msgid "End date must be greater than start date"
 msgstr "Ang petsa ng pagtatapos ay dapat mas malaki kaysa sa petsa ng pagsisimula"
 
-#: addons/events/forms.py:2302
+#: addons/events/forms.py:2333
 msgid "End Date/Time should be greater than Start Date/Time."
 msgstr "End Petsa / Oras ay dapat na mas mababa sa Start Petsa / Oras."
 
@@ -7521,7 +7526,7 @@ msgid "Number of registrants for a table"
 msgstr "Bilang ng mga registrants para sa isang talahanayan"
 
 #: addons/events/models.py:410
-#: addons/events/templates/events/registrants/search.html:69
+#: addons/events/templates/events/registrants/search.html:70
 msgid "Canceled"
 msgstr "Kinansela"
 
@@ -7534,7 +7539,7 @@ msgid "Is primary registrant"
 msgstr "Ay pangunahing registrant"
 
 #: addons/events/models.py:728
-#: addons/events/templates/events/registrants/roster.html:84
+#: addons/events/templates/events/registrants/roster.html:85
 #: apps/invoices/models.py:44
 msgid "Discount Amount"
 msgstr "Halaga ng Diskwento"
@@ -8201,55 +8206,55 @@ msgstr "%(comments_visible)s"
 msgid "Are you sure you want to approve this event?"
 msgstr "Sigurado ka bang nais mong aprubahan ang kaganapang ito?"
 
-#: addons/events/templates/events/approve.html:36
+#: addons/events/templates/events/approve.html:40
 msgid "Confirm Approve"
 msgstr "Kumpirmahin ang Aprubahan"
 
-#: addons/events/templates/events/attendees.html:45
+#: addons/events/templates/events/attendees.html:53
 msgid "You are already registered for this event"
 msgstr "Naka-nakarehistro para sa kaganapang ito"
 
-#: addons/events/templates/events/attendees.html:48
+#: addons/events/templates/events/attendees.html:56
 msgid ""
 "We are unable to register you for this event as the event deadline has "
 "already passed"
 msgstr "Hindi namin upang iparehistro ka para sa kaganapang ito bilang ang deadline ng kaganapan ay lumipas"
 
-#: addons/events/templates/events/attendees.html:52
+#: addons/events/templates/events/attendees.html:60
 #: addons/events/templates/events/reg8n/registration_pricing.html:24
 msgid "Registration starts on "
 msgstr "Nagsisimula Pagpaparehistro sa"
 
-#: addons/events/templates/events/attendees.html:56
+#: addons/events/templates/events/attendees.html:64
 msgid "Event registration is currently ongoing"
 msgstr "Pagpaparehistro ng Kaganapan ay kasalukuyang patuloy na"
 
-#: addons/events/templates/events/attendees.html:57
+#: addons/events/templates/events/attendees.html:65
 #: addons/events/templates/events/reg8n/multi_register.html:304
 #: addons/events/templates/events/reg8n/register-free.html:6
 #: addons/events/templates/events/reg8n/register-priced.html:6
-#: addons/events/templates/events/reg8n/register.html:359
-#: addons/events/templates/events/reg8n/register.html:374
+#: addons/events/templates/events/reg8n/register.html:360
+#: addons/events/templates/events/reg8n/register.html:375
 #: addons/events/templates/events/reg8n/registration_pricing.html:43
 #: templates/default.html:69 templates/homepage.html:53
 msgid "Register"
 msgstr "Magrehistro"
 
-#: addons/events/templates/events/attendees.html:63
+#: addons/events/templates/events/attendees.html:71
 msgid "Total Seats"
 msgstr "Kabuuang Mga Upuan"
 
-#: addons/events/templates/events/attendees.html:64
+#: addons/events/templates/events/attendees.html:72
 msgid "Reserved"
 msgstr "Nakareserba ang"
 
-#: addons/events/templates/events/attendees.html:72
+#: addons/events/templates/events/attendees.html:80
 #: addons/events/templates/events/include/search-result-spots-taken.html:8
 #: addons/events/templates/events/include/search-result-spots-taken.html:12
 msgid "Attendee"
 msgstr "Dadalo sa"
 
-#: addons/events/templates/events/attendees.html:80
+#: addons/events/templates/events/attendees.html:88
 msgid "(Anonymous)"
 msgstr "(Anonymous)"
 
@@ -8267,30 +8272,30 @@ msgstr "\n<p class=\"preview-reminder\"> Ito lang ang <span style=\"color:#000;\
 msgid "Event List for"
 msgstr "Listahan ng Kaganapan para"
 
-#: addons/events/templates/events/day-view.html:63
+#: addons/events/templates/events/day-view.html:66
 msgid "Multi-day Event"
 msgstr "Multi-araw na Kaganapan"
 
-#: addons/events/templates/events/day-view.html:99
-#: addons/events/templates/events/search-result.html:71
+#: addons/events/templates/events/day-view.html:102
+#: addons/events/templates/events/search-result.html:76
 msgid "Registration Closed"
 msgstr "Isinara Pagpaparehistro"
 
-#: addons/events/templates/events/day-view.html:108
-#: addons/events/templates/events/search-result.html:81
+#: addons/events/templates/events/day-view.html:111
+#: addons/events/templates/events/search-result.html:86
 msgid "You are registered"
 msgstr "Ikaw ay nakarehistro"
 
-#: addons/events/templates/events/day-view.html:113
-#: addons/events/templates/events/search-result.html:87
+#: addons/events/templates/events/day-view.html:116
+#: addons/events/templates/events/search-result.html:92
 msgid "Attend this event"
 msgstr "Dumalo sa kaganapang ito"
 
-#: addons/events/templates/events/day-view.html:131
+#: addons/events/templates/events/day-view.html:134
 msgid "No events here, yet. "
 msgstr "Walang mga kaganapan dito, gayon pa man."
 
-#: addons/events/templates/events/day-view.html:133
+#: addons/events/templates/events/day-view.html:136
 msgid "I would like to add one."
 msgstr "Gusto kong magdagdag ng isa."
 
@@ -8352,7 +8357,7 @@ msgstr "Lokasyon"
 
 #: addons/events/templates/events/edit.html:32
 #: addons/events/templates/events/view.html:105
-#: addons/events/templates/events/registrants/search.html:60
+#: addons/events/templates/events/registrants/search.html:61
 msgid "Organizer"
 msgstr "Tagapag-ayos"
 
@@ -8809,7 +8814,7 @@ msgstr "Listahan ng Tagapagsalita"
 #: addons/events/templates/events/speakers.html:53
 #: addons/events/templates/events/view.html:93
 #: addons/events/templates/events/view.html:120
-#: addons/events/templates/events/view.html:237
+#: addons/events/templates/events/view.html:242
 #: addons/events/templates/events/reg8n/register-confirm.html:80
 msgid "Full Description"
 msgstr "Buong Paglalarawan"
@@ -8857,15 +8862,15 @@ msgstr "Tingnan ang webpage sa kaganapan na ito"
 msgid "When?"
 msgstr "Kailan?"
 
-#: addons/events/templates/events/view.html:211
+#: addons/events/templates/events/view.html:216
 msgid "How Much?"
 msgstr "Magkano?"
 
-#: addons/events/templates/events/view.html:219
+#: addons/events/templates/events/view.html:224
 msgid "Where?"
 msgstr "Saan?"
 
-#: addons/events/templates/events/view.html:245
+#: addons/events/templates/events/view.html:250
 msgid "View Larger Map"
 msgstr "Tingnan ang Mas Malaking Mapa"
 
@@ -8873,7 +8878,7 @@ msgstr "Tingnan ang Mas Malaking Mapa"
 msgid "Week of "
 msgstr "Linggo ng"
 
-#: addons/events/templates/events/week-view.html:78
+#: addons/events/templates/events/week-view.html:81
 msgid "Legend"
 msgstr "Legend"
 
@@ -9260,7 +9265,7 @@ msgid ""
 msgstr "Tanging ang unang </strong> registrant impormasyon ay kinakailangan. Ang iba pang bahagi ng registrants maaaring iwanang blangko kung hindi mo alam ang impormasyon."
 
 #: addons/events/templates/events/reg8n/multi_register.html:90
-#: addons/events/templates/events/registration/multi_register.html:92
+#: addons/events/templates/events/registration/multi_register.html:95
 msgid "Admin Override"
 msgstr "Admin Override"
 
@@ -9270,29 +9275,29 @@ msgid "Check Discount"
 msgstr "Suriin ang Discount"
 
 #: addons/events/templates/events/reg8n/multi_register.html:112
-#: addons/events/templates/events/reg8n/register.html:136
-#: addons/events/templates/events/registration/multi_register.html:113
+#: addons/events/templates/events/reg8n/register.html:137
+#: addons/events/templates/events/registration/multi_register.html:116
 msgid "registrant"
 msgstr "registrant"
 
 #: addons/events/templates/events/reg8n/multi_register.html:121
-#: addons/events/templates/events/reg8n/register.html:146
-#: addons/events/templates/events/registration/multi_register.html:122
+#: addons/events/templates/events/reg8n/register.html:147
+#: addons/events/templates/events/registration/multi_register.html:125
 msgid "addon"
 msgstr "addon"
 
 #: addons/events/templates/events/reg8n/multi_register.html:138
 #: addons/events/templates/events/reg8n/register-confirm.html:243
-#: addons/events/templates/events/reg8n/register.html:163
-#: addons/events/templates/events/registration/multi_register.html:139
+#: addons/events/templates/events/reg8n/register.html:164
+#: addons/events/templates/events/registration/multi_register.html:142
 msgid "Discount"
 msgstr "Diskwento"
 
 #: addons/events/templates/events/reg8n/multi_register.html:162
 #: addons/events/templates/events/reg8n/reg8n_edit.html:42
-#: addons/events/templates/events/reg8n/register.html:190
+#: addons/events/templates/events/reg8n/register.html:191
 #: addons/events/templates/events/registration/base_forms.html:19
-#: addons/events/templates/events/registration/multi_register.html:165
+#: addons/events/templates/events/registration/multi_register.html:168
 #: addons/events/templates/notification/event_registration_confirmation/full.html:21
 #: addons/events/templates/notification/event_registration_confirmation/full.html:59
 #: addons/events/templates/notification/event_registration_confirmation/full.html:95
@@ -9315,12 +9320,12 @@ msgid "Add another set of %(quant)s additional registrants"
 msgstr "Magdagdag ng isa pang hanay ng mga %(quant)s karagdagang registrants"
 
 #: addons/events/templates/events/reg8n/multi_register.html:300
-#: addons/events/templates/events/registration/multi_register.html:300
+#: addons/events/templates/events/registration/multi_register.html:303
 msgid "Type the Code Below"
 msgstr "I-type ang Code ibaba"
 
 #: addons/events/templates/events/reg8n/multi_register.html:304
-#: addons/events/templates/events/registration/multi_register.html:304
+#: addons/events/templates/events/registration/multi_register.html:307
 msgid "Register &amp; Pay"
 msgstr "Magparehistro &amp; amp; Magbayad"
 
@@ -9469,63 +9474,63 @@ msgstr "Magparehistro para sa Kaganapan"
 msgid "%(price)s %(title)s for a Table/Team of %(quantity)s"
 msgstr "%(price)s %(title)s para sa isang Table / Koponan ng %(quantity)s"
 
-#: addons/events/templates/events/reg8n/register.html:45
+#: addons/events/templates/events/reg8n/register.html:46
 msgid ""
 " <strong> Only the first</strong> registrant information is required. The "
 "rest of the registrants can be left blank if you don't know the information."
 " "
 msgstr "<strong> Tanging ang unang </strong> registrant impormasyon ay kinakailangan. Ang iba pang bahagi ng registrants maaaring iwanang blangko kung hindi mo alam ang impormasyon."
 
-#: addons/events/templates/events/reg8n/register.html:50
+#: addons/events/templates/events/reg8n/register.html:51
 msgid ""
 "The first one is the primary registrant and responsible for the billing if "
 "applicable.  "
 msgstr "Ang unang isa ay ang pangunahing registrant at responsable para sa pagsingil kung naaangkop."
 
-#: addons/events/templates/events/reg8n/register.html:57
+#: addons/events/templates/events/reg8n/register.html:58
 #, python-format
 msgid ""
 "JavaScript must be enabled in order for you to use this page. Please enable\n"
 "            javascript and <a href=\"%(request.path)s\">try again</a>."
 msgstr "Dapat na pinagana ang JavaScript upang para sa iyo upang magamit ang pahinang ito. Mangyaring paganahin ang             javascript at <a href=\"%(request.path)s\"> subukan muli </a>."
 
-#: addons/events/templates/events/reg8n/register.html:66
+#: addons/events/templates/events/reg8n/register.html:67
 #, python-format
 msgid ""
 "Only %(spots_available)s spot%(spots_available|pluralize)s available. No "
 "more %(spots_available)s registrant%(spots_available|pluralize)s please!"
 msgstr "% Lamang (spots_available) s spot% (spots_available | pluralize) s magagamit. Wala nang% (spots_available) s registrant% (spots_available | pluralize) s mangyaring!"
 
-#: addons/events/templates/events/reg8n/register.html:125
+#: addons/events/templates/events/reg8n/register.html:126
 msgid "Table of "
 msgstr "Talaan ng"
 
-#: addons/events/templates/events/reg8n/register.html:256
+#: addons/events/templates/events/reg8n/register.html:257
 msgid "Check Free Pass Eligibility"
 msgstr "Lagyan ng check ang libreng Pass Pagiging Karapat-dapat"
 
-#: addons/events/templates/events/reg8n/register.html:278
+#: addons/events/templates/events/reg8n/register.html:279
 msgid ""
 "Auto fill guest(s) infomation\n"
 "                            <br /><small>Guests' company name, phone, etc are the same as mine</small>"
 msgstr "(Mga) auto fill guest infomation                              <br /> <small> pangalan ng mga bisita ang &#39;kumpanya, telepono, atbp ay katulad ng sa minahan </small>"
 
-#: addons/events/templates/events/reg8n/register.html:290
+#: addons/events/templates/events/reg8n/register.html:291
 msgid "Add another one before pressing Register & Pay"
 msgstr "Magdagdag ng isa pang isa bago pagpindot Magrehistro &amp; Pay"
 
-#: addons/events/templates/events/reg8n/register.html:290
-#: addons/events/templates/events/reg8n/register.html:372
+#: addons/events/templates/events/reg8n/register.html:291
+#: addons/events/templates/events/reg8n/register.html:373
 msgid "Add Another Registrant"
 msgstr "Magdagdag ng isa pang Registrant"
 
-#: addons/events/templates/events/reg8n/register.html:359
-#: addons/events/templates/events/reg8n/register.html:374
+#: addons/events/templates/events/reg8n/register.html:360
+#: addons/events/templates/events/reg8n/register.html:375
 #: addons/events/templates/events/reg8n/registration_pricing.html:33
 msgid "RSVP"
 msgstr "RSVP"
 
-#: addons/events/templates/events/reg8n/register.html:366
+#: addons/events/templates/events/reg8n/register.html:367
 msgid "Please review the following"
 msgstr "Mangyaring suriin ang sumusunod na"
 
@@ -9544,22 +9549,22 @@ msgstr "Ang kaganapan na iyong pinili ay nagbibigay-daan indibidwal at ng talaha
 msgid "Please select a price:"
 msgstr "Mangyaring pumili ng isang presyo:"
 
-#: addons/events/templates/events/reg8n/register_pre2.html:33
+#: addons/events/templates/events/reg8n/register_pre2.html:36
 msgid "For Individuals"
 msgstr "Para sa Mga Indibidwal"
 
-#: addons/events/templates/events/reg8n/register_pre2.html:41
-#: addons/events/templates/events/reg8n/register_pre2.html:64
+#: addons/events/templates/events/reg8n/register_pre2.html:44
+#: addons/events/templates/events/reg8n/register_pre2.html:67
 msgid "Available Before"
 msgstr "Magagamit Bago"
 
-#: addons/events/templates/events/reg8n/register_pre2.html:47
-#: addons/events/templates/events/reg8n/register_pre2.html:70
+#: addons/events/templates/events/reg8n/register_pre2.html:50
+#: addons/events/templates/events/reg8n/register_pre2.html:73
 #: apps/accounts/templates/accounts/login.html:34
 msgid "Register Now"
 msgstr "Magparehistro Ngayon"
 
-#: addons/events/templates/events/reg8n/register_pre2.html:56
+#: addons/events/templates/events/reg8n/register_pre2.html:59
 msgid "For Table/Team"
 msgstr "Para sa Table / Team"
 
@@ -9601,20 +9606,20 @@ msgstr "Anonymous Guest"
 
 #: addons/events/templates/events/registrants/global-search.html:76
 #: addons/events/templates/events/registrants/global-search.html:80
-#: addons/events/templates/events/registrants/search.html:119
-#: addons/events/templates/events/registrants/search.html:123
+#: addons/events/templates/events/registrants/search.html:120
+#: addons/events/templates/events/registrants/search.html:124
 #, python-format
 msgid "%(postitle)s"
 msgstr "%(postitle)s"
 
 #: addons/events/templates/events/registrants/global-search.html:77
-#: addons/events/templates/events/registrants/search.html:120
+#: addons/events/templates/events/registrants/search.html:121
 #, python-format
 msgid " at %(regcomp)s"
 msgstr "sa %(regcomp)s"
 
 #: addons/events/templates/events/registrants/global-search.html:83
-#: addons/events/templates/events/registrants/search.html:126
+#: addons/events/templates/events/registrants/search.html:127
 #, python-format
 msgid "Works at %(regcomp)s"
 msgstr "Gumagana sa %(regcomp)s"
@@ -9666,173 +9671,173 @@ msgstr "I-export ang Tanging Bayad na Registrants"
 msgid "Export Non-Paid and Paid Registrants (one file)"
 msgstr "I-export ang Mga Di-Bayad at Bayad na Registrants (isa file)"
 
-#: addons/events/templates/events/registrants/roster.html:56
+#: addons/events/templates/events/registrants/roster.html:57
 msgid "Ascending"
 msgstr "Pataas"
 
-#: addons/events/templates/events/registrants/roster.html:58
+#: addons/events/templates/events/registrants/roster.html:59
 msgid "Descending"
 msgstr "Pababa"
 
-#: addons/events/templates/events/registrants/roster.html:62
+#: addons/events/templates/events/registrants/roster.html:63
 msgid "Registrants without names (if any) are listed at the bottom"
 msgstr "Registrants walang pangalan (kung mayroon) ay nakalista sa ibaba"
 
-#: addons/events/templates/events/registrants/roster.html:74
+#: addons/events/templates/events/registrants/roster.html:75
 msgid "Name and Phone Number"
 msgstr "Pangalan at telepono Numero"
 
-#: addons/events/templates/events/registrants/roster.html:74
+#: addons/events/templates/events/registrants/roster.html:75
 msgid "Name & Phone"
 msgstr "Pangalan &amp; Telepono"
 
-#: addons/events/templates/events/registrants/roster.html:75
+#: addons/events/templates/events/registrants/roster.html:76
 msgid "Company and Title"
 msgstr "Kumpanya at Pamagat"
 
-#: addons/events/templates/events/registrants/roster.html:75
+#: addons/events/templates/events/registrants/roster.html:76
 msgid "Title &amp; Company"
 msgstr "Pamagat &amp; amp; Kumpanya"
 
-#: addons/events/templates/events/registrants/roster.html:76
+#: addons/events/templates/events/registrants/roster.html:77
 msgid "Invoice Number"
 msgstr "Numero ng Invoice"
 
-#: addons/events/templates/events/registrants/roster.html:76
+#: addons/events/templates/events/registrants/roster.html:77
 msgid "Inv#"
 msgstr "Inv #"
 
-#: addons/events/templates/events/registrants/roster.html:77
+#: addons/events/templates/events/registrants/roster.html:78
 #: apps/invoices/templates/invoices/mark-as-paid.html:60
 #: apps/invoices/templates/invoices/print_view.html:48
 #: apps/invoices/templates/invoices/view.html:122
 msgid "Invoice Amount"
 msgstr "Halaga ng Invoice"
 
-#: addons/events/templates/events/registrants/roster.html:77
+#: addons/events/templates/events/registrants/roster.html:78
 msgid "Inv$"
 msgstr "Inv $"
 
-#: addons/events/templates/events/registrants/roster.html:78
+#: addons/events/templates/events/registrants/roster.html:79
 msgid "Registration Number"
 msgstr "Numero ng Pagpaparehistro"
 
-#: addons/events/templates/events/registrants/roster.html:78
+#: addons/events/templates/events/registrants/roster.html:79
 msgid "Reg#"
 msgstr "Reg #"
 
-#: addons/events/templates/events/registrants/roster.html:79
+#: addons/events/templates/events/registrants/roster.html:80
 msgid "Registration Amount"
 msgstr "Halaga ng Pagpaparehistro"
 
-#: addons/events/templates/events/registrants/roster.html:79
+#: addons/events/templates/events/registrants/roster.html:80
 msgid "Reg$"
 msgstr "Reg $"
 
-#: addons/events/templates/events/registrants/roster.html:81
+#: addons/events/templates/events/registrants/roster.html:82
 msgid "Addon Amount"
 msgstr "Halaga Addon"
 
-#: addons/events/templates/events/registrants/roster.html:81
+#: addons/events/templates/events/registrants/roster.html:82
 msgid "Addon$"
 msgstr "Addon $"
 
-#: addons/events/templates/events/registrants/roster.html:84
+#: addons/events/templates/events/registrants/roster.html:85
 msgid "Discount$"
 msgstr "$ Diskwento"
 
-#: addons/events/templates/events/registrants/roster.html:87
+#: addons/events/templates/events/registrants/roster.html:88
 msgid "Attendance Checkbox"
 msgstr "Pagdalo Checkbox"
 
-#: addons/events/templates/events/registrants/roster.html:87
+#: addons/events/templates/events/registrants/roster.html:88
 msgid "Attend"
 msgstr "Dumalo"
 
-#: addons/events/templates/events/registrants/roster.html:114
-#: addons/events/templates/events/registrants/roster.html:234
+#: addons/events/templates/events/registrants/roster.html:115
+#: addons/events/templates/events/registrants/roster.html:235
 msgid "Guest#"
 msgstr "Guest #"
 
-#: addons/events/templates/events/registrants/roster.html:170
+#: addons/events/templates/events/registrants/roster.html:171
 #, python-format
 msgid " %(c)s"
 msgstr "%(c)s"
 
-#: addons/events/templates/events/registrants/roster.html:175
+#: addons/events/templates/events/registrants/roster.html:176
 msgid "admin notes: "
 msgstr "admin tala:"
 
-#: addons/events/templates/events/registrants/roster.html:182
+#: addons/events/templates/events/registrants/roster.html:183
 msgid "Registered as"
 msgstr "Nakarehistro bilang"
 
-#: addons/events/templates/events/registrants/roster.html:187
+#: addons/events/templates/events/registrants/roster.html:188
 msgid "TENDERED: "
 msgstr "TENDERED:"
 
-#: addons/events/templates/events/registrants/roster.html:189
+#: addons/events/templates/events/registrants/roster.html:190
 msgid "Not Tendered"
 msgstr "Hindi Tendered"
 
-#: addons/events/templates/events/registrants/roster.html:196
+#: addons/events/templates/events/registrants/roster.html:197
 msgid "discount code"
 msgstr "diskwento code"
 
-#: addons/events/templates/events/registrants/roster.html:224
+#: addons/events/templates/events/registrants/roster.html:225
 msgid "Additional registrants on this invoice:"
 msgstr "Karagdagang registrants sa invoice na ito:"
 
-#: addons/events/templates/events/registrants/roster.html:226
+#: addons/events/templates/events/registrants/roster.html:227
 msgid "Additional registrants:"
 msgstr "Karagdagang registrants:"
 
-#: addons/events/templates/events/registrants/roster.html:243
+#: addons/events/templates/events/registrants/roster.html:244
 msgid "addons:"
 msgstr "addons:"
 
-#: addons/events/templates/events/registrants/roster.html:283
+#: addons/events/templates/events/registrants/roster.html:284
 msgid "Non-Paid"
 msgstr "Non-Bayad"
 
-#: addons/events/templates/events/registrants/roster.html:298
+#: addons/events/templates/events/registrants/roster.html:299
 msgid "Showing only non-paid registrants."
 msgstr "Ipinapakita lamang ang di-bayad na registrants."
 
-#: addons/events/templates/events/registrants/roster.html:302
+#: addons/events/templates/events/registrants/roster.html:303
 msgid "Showing only paid registrants."
 msgstr "Ipinapakita lamang ang mga bayad na registrants."
 
-#: addons/events/templates/events/registrants/roster.html:306
+#: addons/events/templates/events/registrants/roster.html:307
 msgid "Showing paid and non-paid registrants."
 msgstr "Ipinapakita ang mga bayad at hindi-bayad na registrants."
 
-#: addons/events/templates/events/registrants/roster.html:310
+#: addons/events/templates/events/registrants/roster.html:311
 msgid "Show only <strong>paid</strong>"
 msgstr "Ipakita lamang <strong> nabayaran </strong>"
 
-#: addons/events/templates/events/registrants/roster.html:311
+#: addons/events/templates/events/registrants/roster.html:312
 msgid "Show only <strong>non-paid</strong>"
 msgstr "Ipakita lamang <strong> di-bayad na </strong>"
 
-#: addons/events/templates/events/registrants/roster.html:312
+#: addons/events/templates/events/registrants/roster.html:313
 msgid "Show <strong>total</strong>"
 msgstr "Ipakita <strong> kabuuang </strong>"
 
-#: addons/events/templates/events/registrants/search.html:67
+#: addons/events/templates/events/registrants/search.html:68
 msgid "Filters"
 msgstr "Mga Filter"
 
-#: addons/events/templates/events/registrants/search.html:76
+#: addons/events/templates/events/registrants/search.html:77
 msgid "Event Registrant Search"
 msgstr "Registrant Kaganapan Paghahanap"
 
-#: addons/events/templates/events/registrants/search.html:143
+#: addons/events/templates/events/registrants/search.html:144
 #, python-format
 msgid "Registered on %(reg_date)s"
 msgstr "Nakarehistrong sa %(reg_date)s"
 
-#: addons/events/templates/events/registrants/search.html:145
+#: addons/events/templates/events/registrants/search.html:146
 #, python-format
 msgid "Canceled on %(cancel_date)s"
 msgstr "Kinansela sa %(cancel_date)s"
@@ -9842,7 +9847,7 @@ msgstr "Kinansela sa %(cancel_date)s"
 msgid "Registration %(title)s %(dt)s"
 msgstr "Pagpaparehistro ng %(title)s %(dt)s"
 
-#: addons/events/templates/events/registration/multi_register.html:29
+#: addons/events/templates/events/registration/multi_register.html:32
 msgid ""
 "\n"
 "                <strong>Only the first</strong>\n"
@@ -9851,31 +9856,31 @@ msgid ""
 "            "
 msgstr "\n<strong> Tanging ang unang </strong>                 registrant impormasyon ay kinakailangan. Ang iba pang bahagi ng registrants maaaring iwanang blangko                 kung hindi mo alam ang impormasyon."
 
-#: addons/events/templates/events/registration/multi_register.html:39
+#: addons/events/templates/events/registration/multi_register.html:42
 msgid "There were some problems in the forms. Please review. Thanks!"
 msgstr "Nagkaroon ng mga problema sa mga form. Mangyaring suriin. Salamat!"
 
-#: addons/events/templates/events/registration/multi_register.html:256
+#: addons/events/templates/events/registration/multi_register.html:259
 msgid "Choose a pricing to add another set of registrants"
 msgstr "Pumili ng isang pricing upang magdagdag ng isa pang hanay ng mga registrants"
 
-#: addons/events/templates/events/registration/multi_register.html:265
+#: addons/events/templates/events/registration/multi_register.html:268
 msgid "No pricings available."
 msgstr "Walang available na pricings."
 
-#: addons/events/templates/events/registration/multi_register.html:269
+#: addons/events/templates/events/registration/multi_register.html:272
 msgid "How many?"
 msgstr "Gaano karaming?"
 
-#: addons/events/templates/events/registration/multi_register.html:278
+#: addons/events/templates/events/registration/multi_register.html:281
 msgid "Enable more pricings"
 msgstr "Paganahin ang higit pang mga pricings"
 
-#: addons/events/templates/events/registration/multi_register.html:278
+#: addons/events/templates/events/registration/multi_register.html:281
 msgid "and addons"
 msgstr "at addons"
 
-#: addons/events/templates/events/registration/multi_register.html:284
+#: addons/events/templates/events/registration/multi_register.html:287
 msgid "Get More"
 msgstr "Kumuha ng Higit"
 
@@ -9887,7 +9892,7 @@ msgstr "isumite"
 msgid "Reassign Event Types"
 msgstr "Reassign Mga Uri ng Kaganapan"
 
-#: addons/events/templates/events/types/reassign.html:41
+#: addons/events/templates/events/types/reassign.html:45
 msgid "Reassign Events"
 msgstr "Reassign Mga Kaganapan"
 
