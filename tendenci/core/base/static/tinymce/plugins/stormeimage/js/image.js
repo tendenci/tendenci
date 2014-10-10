@@ -114,7 +114,7 @@ var ImageDialog = {
 
 		n = this.n;
 
-		var img_src = $('input[name="file_url"]').val();
+		var img_src = $(f).find('.edit_src').attr('src');
 		var img_title = nl.edit_title.value;
 		var img_align = nl.edit_align.value;
 		var img_vspace = nl.edit_vspace.value;
