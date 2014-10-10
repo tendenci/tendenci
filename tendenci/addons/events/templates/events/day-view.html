@@ -57,7 +57,10 @@
     {% for event in events %}
         <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
             <div class="event-sidebar">
-                <div class="time-stamp">{{ event.start_dt|date:"f A" }}</div>
+                <div class="time-stamp">
+                {% if not event.all_day %}
+                {{ event.start_dt|date:"f a" }}{% endif %}
+                </div>
                 <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
             {% if event.start_dt|date:"D, M. j, Y" != event.end_dt|date:"D, M. j, Y" %}
                 <div class="ongoing-event">{% trans 'Multi-day Event' %}</div>

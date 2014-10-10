@@ -190,6 +190,7 @@ class CustomRegFormAdminForm(forms.ModelForm):
             'comments',
         )
 
+
 class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
@@ -578,6 +579,15 @@ class EventForm(TendenciBaseForm):
                                   initial=datetime.now()+timedelta(days=30))
     end_dt = SplitDateTimeField(label=_('End Date/Time'),
                                 initial=datetime.now()+timedelta(days=30, hours=2))
+    all_day = forms.BooleanField(label=_('All Day'), required=False, initial=False)
+    start_event_date = forms.DateField(
+        label=_('Start Date'),
+        initial=datetime.now().date()+timedelta(days=30),
+        widget=forms.DateInput(attrs={'class':'datepicker'}))
+    end_event_date = forms.DateField(
+        label=_('End Date'),
+        initial=datetime.now().date()+timedelta(days=30),
+        widget=forms.DateInput(attrs={'class':'datepicker'}))
 
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
@@ -618,6 +628,9 @@ class EventForm(TendenciBaseForm):
             'repeat_type',
             'frequency',
             'end_recurring',
+            'all_day',
+            'start_event_date',
+            'end_event_date',
             'on_weekend',
             'timezone',
             'priority',
@@ -643,8 +656,11 @@ class EventForm(TendenciBaseForm):
                                  'is_recurring_event',
                                  'frequency',
                                  'repeat_type',
+                                 'all_day',
                                  'start_dt',
                                  'end_dt',
+                                 'start_event_date',
+                                 'end_event_date',
                                  'recurs_on',
                                  'end_recurring',
                                  ],
@@ -687,6 +703,8 @@ class EventForm(TendenciBaseForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if 'private_slug' in self.fields.keys():
                 self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
+            self.fields['start_event_date'].initial = self.instance.start_dt.date()
+            self.fields['end_event_date'].initial = self.instance.end_dt.date()
         else:
             # kwargs['instance'] always trumps initial
             if 'private_slug' in self.fields.keys():
@@ -718,6 +736,8 @@ class EventForm(TendenciBaseForm):
         if edit_mode and recurring_mode:
             self.fields.pop('start_dt')
             self.fields.pop('end_dt')
+            self.fields.pop('start_event_date')
+            self.fields.pop('end_event_date')
             self.fields.pop('photo_upload')
 
         default_groups = Group.objects.filter(status=True, status_detail="active")
@@ -779,9 +799,16 @@ class EventForm(TendenciBaseForm):
         cleaned_data = self.cleaned_data
         start_dt = cleaned_data.get("start_dt")
         end_dt = cleaned_data.get("end_dt")
+        start_event_date = cleaned_data.get('start_event_date')
+        end_event_date = cleaned_data.get('end_event_date')
 
         if start_dt > end_dt:
             errors = self._errors.setdefault("end_dt", ErrorList())
+            errors.append(_(u"This cannot be \
+                earlier than the start date."))
+
+        if start_event_date > end_event_date:
+            errors = self._errors.setdefault("end_event_date", ErrorList())
             errors.append(_(u"This cannot be \
                 earlier than the start date."))
 
@@ -791,6 +818,10 @@ class EventForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         event = super(EventForm, self).save(*args, **kwargs)
+        # Reset time if All Day is selected
+        if event.all_day:
+            event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time())
+            event.end_dt = datetime.combine(self.cleaned_data.get('end_event_date'), datetime.max.time())
 
         if self.cleaned_data.get('remove_photo'):
             event.image = None

@@ -21,6 +21,7 @@ from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import get_template_list, tcurrency
 from tendenci.core.base.fields import EmailVerificationField, PriceField
+from tendenci.core.base.utils import currency_check
 
 from tendenci.addons.recurring_payments.fields import BillingCycleField
 from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
@@ -183,8 +184,8 @@ class FormForForm(forms.ModelForm):
                 raise forms.ValidationError(_("Please set your price."))
 
             try:  # custom price is valid amount
-                custom_price = Decimal(custom_price)
-            except ValueError:
+                custom_price = currency_check(custom_price)
+            except:
                 raise forms.ValidationError(_("Price must be a valid amount"))
 
         self.cleaned_data['custom_price'] = custom_price

@@ -31,10 +31,18 @@
             <div class="event-date">
                 {% for span in event.date_spans %}
                     {% if span.same_date %}
-                        <div class=""><h2>{{ span.start_dt|date:"l, j-M-Y" }} {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }} {{ event.timezone.zone|timezone_label }}</h2></div>
-                        {% if not forloop.last %} and {% endif %}
+                        <div class=""><h2>{{ span.start_dt|date:"l, j-M-Y" }}
+                        {% if not event.all_day %}
+                        {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
+                        {% if not event.all_day %}{{ event.timezone.zone|timezone_label }}{% endif%}</h2></div>
                     {% else %}
-                        <div class=""><h2>{{ span.start_dt|date:"l, j-M-Y" }} {{ event.start_dt|date:"P" }} - {{ span.end_dt|date:"l, j-M-Y" }} {{ event.end_dt|date:"P" }} {{ event.timezone.zone|timezone_label }}</h2></div>
+                        <div class=""><h2>
+                        {% if event.all_day %}
+                        {{ span.start_dt|date:"l, j-M-Y" }} - {{ span.end_dt|date:"l, j-M-Y" }}
+                        {% else %}
+                        {{ span.start_dt|date:"l, j-M-Y" }} {{ event.start_dt|date:"P" }} - {{ span.end_dt|date:"l, j-M-Y" }} {{ event.end_dt|date:"P" }}
+                        {% endif %}
+                        {% if not event.all_day %}{{ event.timezone.zone|timezone_label }}{% endif %}</h2></div>
                         {% if not forloop.last %} and {% endif %}
                     {% endif %}
                 {% endfor %}
