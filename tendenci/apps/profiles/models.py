@@ -70,6 +70,10 @@ class Profile(Person):
 
     sf_contact_id = models.CharField(max_length=100, blank=True, null=True)
 
+    # includes all invoice totals
+    total_spend = models.DecimalField(_('total spend'), max_digits=16, decimal_places=4,
+        default=0, editable=False)
+
     objects = ProfileManager()
     actives = ProfileActiveManager()
 
