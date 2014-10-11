@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-09 23:47+0000\n"
-"PO-Revision-Date: 2014-10-09 22:13+0000\n"
+"POT-Creation-Date: 2014-10-10 19:25+0000\n"
+"PO-Revision-Date: 2014-10-10 14:33+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -3754,7 +3754,7 @@ msgid "Completed"
 msgstr "已完成"
 
 #: addons/corporate_memberships/models.py:1583
-#: addons/memberships/models.py:1811 apps/profiles/models.py:395
+#: addons/memberships/models.py:1811 apps/profiles/models.py:399
 msgid "Upload File"
 msgstr "上传文件"
 
@@ -7299,7 +7299,7 @@ msgstr "请选择一个价格表登记。"
 #: addons/memberships/forms.py:929
 #: addons/memberships/templates/memberships/applications/add.html:178
 #: apps/discounts/templates/discounts/detail.html:27
-#: apps/invoices/models.py:43
+#: apps/invoices/models.py:45
 msgid "Discount Code"
 msgstr "折扣代码"
 
@@ -7541,7 +7541,7 @@ msgstr "主要是登记"
 
 #: addons/events/models.py:728
 #: addons/events/templates/events/registrants/roster.html:85
-#: apps/invoices/models.py:44
+#: apps/invoices/models.py:46
 msgid "Discount Amount"
 msgstr "折扣金额"
 
@@ -12925,7 +12925,7 @@ msgstr "公司会籍编号"
 
 #: addons/memberships/models.py:74 apps/profiles/admin.py:105
 #: apps/profiles/forms.py:152 apps/profiles/forms.py:363
-#: apps/profiles/models.py:78
+#: apps/profiles/models.py:82
 #: apps/profiles/templates/profiles/edit_role.html:19 core/perms/fields.py:19
 msgid "User"
 msgstr "用户"
@@ -13075,7 +13075,7 @@ msgid "Can approve memberships"
 msgstr "可以批准会员资格"
 
 #: addons/memberships/models.py:1791 apps/profiles/forms.py:731
-#: apps/profiles/models.py:389
+#: apps/profiles/models.py:393
 #: apps/profiles/templates/notification/user_edited/full.html:535
 #: apps/profiles/templates/profiles/add.html:394
 #: apps/profiles/templates/profiles/edit.html:381
@@ -13086,11 +13086,11 @@ msgstr "互动"
 
 #: addons/memberships/models.py:1792 apps/profiles/forms.py:156
 #: apps/profiles/forms.py:367 apps/profiles/forms.py:732
-#: apps/profiles/models.py:390 core/imports/forms.py:17
+#: apps/profiles/models.py:394 core/imports/forms.py:17
 msgid "Not Interactive (no login)"
 msgstr "没有互动（没有登录）"
 
-#: addons/memberships/models.py:1814 apps/profiles/models.py:398
+#: addons/memberships/models.py:1814 apps/profiles/models.py:402
 msgid "Recap File"
 msgstr "回顾文件"
 
@@ -16979,7 +16979,7 @@ msgstr "转至指南"
 
 #: apps/dashboard/templates/dashboard/index.html:81
 #: apps/dashboard/templates/dashboard/new.html:87
-#: apps/metrics/templates/metrics/index.html:61 apps/profiles/models.py:79
+#: apps/metrics/templates/metrics/index.html:61 apps/profiles/models.py:83
 msgid "Users"
 msgstr "用户"
 
@@ -18138,14 +18138,14 @@ msgstr "职位"
 msgid "Show All"
 msgstr "显示全部"
 
-#: apps/invoices/forms.py:38 apps/invoices/models.py:18
+#: apps/invoices/forms.py:38 apps/invoices/models.py:20
 #: apps/invoices/templates/invoices/search_line_header.html:21
 #: apps/notifications/templates/notification/invoice_edited/full.html:18
 #: libs/model_report/report.py:555
 msgid "Tendered"
 msgstr "招标"
 
-#: apps/invoices/forms.py:39 apps/invoices/models.py:17
+#: apps/invoices/forms.py:39 apps/invoices/models.py:19
 #: apps/invoices/templates/invoices/mark-as-paid.html:56
 #: apps/invoices/templates/invoices/print_view.html:44
 #: libs/model_report/report.py:554
@@ -18184,7 +18184,7 @@ msgstr "业主"
 msgid "All events"
 msgstr "所有活动"
 
-#: apps/invoices/models.py:99
+#: apps/invoices/models.py:101
 msgid "Can view invoice"
 msgstr "可以查看发票"
 
@@ -19884,7 +19884,11 @@ msgstr "第一个响应"
 msgid "agrees to tos"
 msgstr "同意服务条款"
 
-#: apps/profiles/models.py:77
+#: apps/profiles/models.py:74
+msgid "total spend"
+msgstr ""
+
+#: apps/profiles/models.py:81
 msgid "Can view profile"
 msgstr "可以查看个人资料"
 
@@ -26149,8 +26153,8 @@ msgid "No members in this date range."
 msgstr "在此日期范围内没有成员。"
 
 #: templates/reports/top_spenders.html:7
-msgid "Lists the top 20 users with the highest expenses."
-msgstr "列出了前20名用户提供最高费用。"
+msgid "Lists the top 10 users with the highest expenses."
+msgstr ""
 
 #: templates/reports/top_spenders.html:12
 msgid "UserID"

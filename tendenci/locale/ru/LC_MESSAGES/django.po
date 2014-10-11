@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-09 23:47+0000\n"
-"PO-Revision-Date: 2014-10-09 22:13+0000\n"
+"POT-Creation-Date: 2014-10-10 19:25+0000\n"
+"PO-Revision-Date: 2014-10-10 14:33+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/tendenci/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -3755,7 +3755,7 @@ msgid "Completed"
 msgstr "Завершено"
 
 #: addons/corporate_memberships/models.py:1583
-#: addons/memberships/models.py:1811 apps/profiles/models.py:395
+#: addons/memberships/models.py:1811 apps/profiles/models.py:399
 msgid "Upload File"
 msgstr "Загрузить файл"
 
@@ -7300,7 +7300,7 @@ msgstr "Пожалуйста, выберите цену за регистрац�
 #: addons/memberships/forms.py:929
 #: addons/memberships/templates/memberships/applications/add.html:178
 #: apps/discounts/templates/discounts/detail.html:27
-#: apps/invoices/models.py:43
+#: apps/invoices/models.py:45
 msgid "Discount Code"
 msgstr "Код скидки"
 
@@ -7542,7 +7542,7 @@ msgstr "Является первичным регистраций"
 
 #: addons/events/models.py:728
 #: addons/events/templates/events/registrants/roster.html:85
-#: apps/invoices/models.py:44
+#: apps/invoices/models.py:46
 msgid "Discount Amount"
 msgstr "Сумма скидки"
 
@@ -12934,7 +12934,7 @@ msgstr "Корпоративное членство ID"
 
 #: addons/memberships/models.py:74 apps/profiles/admin.py:105
 #: apps/profiles/forms.py:152 apps/profiles/forms.py:363
-#: apps/profiles/models.py:78
+#: apps/profiles/models.py:82
 #: apps/profiles/templates/profiles/edit_role.html:19 core/perms/fields.py:19
 msgid "User"
 msgstr "Пользователь"
@@ -13084,7 +13084,7 @@ msgid "Can approve memberships"
 msgstr "Может одобрить членство"
 
 #: addons/memberships/models.py:1791 apps/profiles/forms.py:731
-#: apps/profiles/models.py:389
+#: apps/profiles/models.py:393
 #: apps/profiles/templates/notification/user_edited/full.html:535
 #: apps/profiles/templates/profiles/add.html:394
 #: apps/profiles/templates/profiles/edit.html:381
@@ -13095,11 +13095,11 @@ msgstr "Интерактивная"
 
 #: addons/memberships/models.py:1792 apps/profiles/forms.py:156
 #: apps/profiles/forms.py:367 apps/profiles/forms.py:732
-#: apps/profiles/models.py:390 core/imports/forms.py:17
+#: apps/profiles/models.py:394 core/imports/forms.py:17
 msgid "Not Interactive (no login)"
 msgstr "Не Интерактивная (НЕТ Войти)"
 
-#: addons/memberships/models.py:1814 apps/profiles/models.py:398
+#: addons/memberships/models.py:1814 apps/profiles/models.py:402
 msgid "Recap File"
 msgstr "Резюме файла"
 
@@ -16994,7 +16994,7 @@ msgstr "Вернуться в руководстве"
 
 #: apps/dashboard/templates/dashboard/index.html:81
 #: apps/dashboard/templates/dashboard/new.html:87
-#: apps/metrics/templates/metrics/index.html:61 apps/profiles/models.py:79
+#: apps/metrics/templates/metrics/index.html:61 apps/profiles/models.py:83
 msgid "Users"
 msgstr "Пользователи"
 
@@ -18153,14 +18153,14 @@ msgstr "рабочих мест"
 msgid "Show All"
 msgstr "Показать все"
 
-#: apps/invoices/forms.py:38 apps/invoices/models.py:18
+#: apps/invoices/forms.py:38 apps/invoices/models.py:20
 #: apps/invoices/templates/invoices/search_line_header.html:21
 #: apps/notifications/templates/notification/invoice_edited/full.html:18
 #: libs/model_report/report.py:555
 msgid "Tendered"
 msgstr "Поданы Заявки"
 
-#: apps/invoices/forms.py:39 apps/invoices/models.py:17
+#: apps/invoices/forms.py:39 apps/invoices/models.py:19
 #: apps/invoices/templates/invoices/mark-as-paid.html:56
 #: apps/invoices/templates/invoices/print_view.html:44
 #: libs/model_report/report.py:554
@@ -18199,7 +18199,7 @@ msgstr "Владелец"
 msgid "All events"
 msgstr "Все события"
 
-#: apps/invoices/models.py:99
+#: apps/invoices/models.py:101
 msgid "Can view invoice"
 msgstr "Можно просматривать счета-фактуры"
 
@@ -19899,7 +19899,11 @@ msgstr "первый ответчик"
 msgid "agrees to tos"
 msgstr "соглашается TOS"
 
-#: apps/profiles/models.py:77
+#: apps/profiles/models.py:74
+msgid "total spend"
+msgstr ""
+
+#: apps/profiles/models.py:81
 msgid "Can view profile"
 msgstr "Может просмотреть профиль"
 
@@ -26166,8 +26170,8 @@ msgid "No members in this date range."
 msgstr "Нет члены в этом диапазоне дат."
 
 #: templates/reports/top_spenders.html:7
-msgid "Lists the top 20 users with the highest expenses."
-msgstr "Списки 20 лучших пользователей с самыми высокими расходами."
+msgid "Lists the top 10 users with the highest expenses."
+msgstr ""
 
 #: templates/reports/top_spenders.html:12
 msgid "UserID"

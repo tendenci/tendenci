@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-09 23:47+0000\n"
-"PO-Revision-Date: 2014-10-09 21:59+0000\n"
+"POT-Creation-Date: 2014-10-10 19:25+0000\n"
+"PO-Revision-Date: 2014-10-10 14:11+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/tendenci/language/pa/)\n"
 "MIME-Version: 1.0\n"
@@ -3753,7 +3753,7 @@ msgid "Completed"
 msgstr "ਮੁਕੰਮਲ"
 
 #: addons/corporate_memberships/models.py:1583
-#: addons/memberships/models.py:1811 apps/profiles/models.py:395
+#: addons/memberships/models.py:1811 apps/profiles/models.py:399
 msgid "Upload File"
 msgstr "ਫਾਇਲ ਅੱਪਲੋਡ"
 
@@ -7298,7 +7298,7 @@ msgstr ""
 #: addons/memberships/forms.py:929
 #: addons/memberships/templates/memberships/applications/add.html:178
 #: apps/discounts/templates/discounts/detail.html:27
-#: apps/invoices/models.py:43
+#: apps/invoices/models.py:45
 msgid "Discount Code"
 msgstr "ਛੂਟ ਕੋਡ"
 
@@ -7540,7 +7540,7 @@ msgstr "ਪ੍ਰਾਇਮਰੀ registrant ਹੈ"
 
 #: addons/events/models.py:728
 #: addons/events/templates/events/registrants/roster.html:85
-#: apps/invoices/models.py:44
+#: apps/invoices/models.py:46
 msgid "Discount Amount"
 msgstr "ਛੂਟ ਰਕਮ"
 
@@ -12928,7 +12928,7 @@ msgstr "ਕਾਰਪੋਰੇਟ Membership ID"
 
 #: addons/memberships/models.py:74 apps/profiles/admin.py:105
 #: apps/profiles/forms.py:152 apps/profiles/forms.py:363
-#: apps/profiles/models.py:78
+#: apps/profiles/models.py:82
 #: apps/profiles/templates/profiles/edit_role.html:19 core/perms/fields.py:19
 msgid "User"
 msgstr "ਯੂਜ਼ਰ"
@@ -13078,7 +13078,7 @@ msgid "Can approve memberships"
 msgstr ""
 
 #: addons/memberships/models.py:1791 apps/profiles/forms.py:731
-#: apps/profiles/models.py:389
+#: apps/profiles/models.py:393
 #: apps/profiles/templates/notification/user_edited/full.html:535
 #: apps/profiles/templates/profiles/add.html:394
 #: apps/profiles/templates/profiles/edit.html:381
@@ -13089,11 +13089,11 @@ msgstr "ਇੰਟਰਐਕਟਿਵ"
 
 #: addons/memberships/models.py:1792 apps/profiles/forms.py:156
 #: apps/profiles/forms.py:367 apps/profiles/forms.py:732
-#: apps/profiles/models.py:390 core/imports/forms.py:17
+#: apps/profiles/models.py:394 core/imports/forms.py:17
 msgid "Not Interactive (no login)"
 msgstr ""
 
-#: addons/memberships/models.py:1814 apps/profiles/models.py:398
+#: addons/memberships/models.py:1814 apps/profiles/models.py:402
 msgid "Recap File"
 msgstr "ਖਬਰ ਫਾਇਲ"
 
@@ -16985,7 +16985,7 @@ msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:81
 #: apps/dashboard/templates/dashboard/new.html:87
-#: apps/metrics/templates/metrics/index.html:61 apps/profiles/models.py:79
+#: apps/metrics/templates/metrics/index.html:61 apps/profiles/models.py:83
 msgid "Users"
 msgstr "ਉਪਭੋਗੀ,"
 
@@ -18144,14 +18144,14 @@ msgstr ""
 msgid "Show All"
 msgstr "ਸਾਰੇ ਵਿਖਾਓ"
 
-#: apps/invoices/forms.py:38 apps/invoices/models.py:18
+#: apps/invoices/forms.py:38 apps/invoices/models.py:20
 #: apps/invoices/templates/invoices/search_line_header.html:21
 #: apps/notifications/templates/notification/invoice_edited/full.html:18
 #: libs/model_report/report.py:555
 msgid "Tendered"
 msgstr "ਦਿੱਤੀ ਗਈ"
 
-#: apps/invoices/forms.py:39 apps/invoices/models.py:17
+#: apps/invoices/forms.py:39 apps/invoices/models.py:19
 #: apps/invoices/templates/invoices/mark-as-paid.html:56
 #: apps/invoices/templates/invoices/print_view.html:44
 #: libs/model_report/report.py:554
@@ -18190,7 +18190,7 @@ msgstr "ਦੇ ਮਾਲਕ"
 msgid "All events"
 msgstr ""
 
-#: apps/invoices/models.py:99
+#: apps/invoices/models.py:101
 msgid "Can view invoice"
 msgstr ""
 
@@ -19890,7 +19890,11 @@ msgstr "ਪਹਿਲੇ ਜਵਾਬ"
 msgid "agrees to tos"
 msgstr "ਇਕਰਾਰਨਾਮੇ ਨੂੰ ਕਰਨ ਲਈ ਸਹਿਮਤ ਹੈ"
 
-#: apps/profiles/models.py:77
+#: apps/profiles/models.py:74
+msgid "total spend"
+msgstr ""
+
+#: apps/profiles/models.py:81
 msgid "Can view profile"
 msgstr ""
 
@@ -26156,8 +26160,8 @@ msgid "No members in this date range."
 msgstr "ਇਸ ਤਾਰੀਖ਼ ਲੜੀ ਵਿੱਚ ਕੋਈ ਜੀਅ."
 
 #: templates/reports/top_spenders.html:7
-msgid "Lists the top 20 users with the highest expenses."
-msgstr "ਸਭ ਖਰਚੇ ਦੇ ਨਾਲ ਚੋਟੀ ਦੇ 20 ਉਪਭੋਗੀ ਦੀ ਸੂਚੀ ਹੈ."
+msgid "Lists the top 10 users with the highest expenses."
+msgstr ""
 
 #: templates/reports/top_spenders.html:12
 msgid "UserID"
