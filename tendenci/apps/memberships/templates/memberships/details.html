@@ -45,8 +45,7 @@
             <div class="membership-details-inner-wrap">
 
                 <div class="membership-details-name">
-                    <h1>{% blocktrans with membership.user.get_full_name as memname %}
-                    {{ memname }}{% endblocktrans %}</h1>
+                    <h1>{% if membership.user.salutation %}{{ saluration }}{% endif %}{{ membership.user.get_full_name }}</h1>
 
                     {% if membership.get_invoice %}
                         <div class="membership-details-balance"><a href="{% url "invoice.view" membership.get_invoice.pk membership.get_invoice.guid %}">{% trans 'Balance Due' %}: ${{ membership.get_invoice.balance|floatformat:"2" }}</a></div>
@@ -121,7 +120,7 @@
                             {% else %}
                                 {% if membership.app %}
                                     {% if membership.is_expired %}
-                                    <a href="{% url "membership_default.add" membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Oh no you're expired, sign up for membership.' %}</a>
+                                    <a href="{% url "membership_default.add" membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans "Oh no you're expired, sign up for membership." %}</a>
                                     {% else %}
                                         <div>{% trans 'No pending actions required, good job!' %}</div>
                                     {% endif %}
@@ -140,6 +139,183 @@
         <fieldset>
             <div class="fieldset-label">{% trans 'More Details' %}</div>
             <div style="clear:both;"></div>
+
+            {% if profile_form.display_name.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.display_name.label }}</div>
+                <div class="value">{{ profile_form.display_name.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.mailing_name.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.mailing_name.label }}</div>
+                <div class="value">{{ profile_form.mailing.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.position_title.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.position_title.label }}</div>
+                <div class="value">{{ profile_form.position_title.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.address.value or profile_form.address2.value or profile_form.city.value or profile_form.state.value or profile_form.zipcode.value or profile_form.county.value or profile_form.country.value %}
+            <div class="field">
+                <div class="label">{% trans 'Address' %}</div>
+                <div class="value">{{ membership.user.profile.get_address }}</div>
+            </div>
+            {% endif %}
+            {% if profile_form.address_2.value or profile_form.address2_2.value or profile_form.city_2.value or profile_form.state_2.value or profile_form.zipcode_2.value or profile_form.county_2.value or profile_form.country_2.value %}
+            <div class="field">
+                <div class="label">{% trans 'Alternate Address' %}</div>
+                <div class="value">{{ membership.user.profile.get_alternate_address }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.phone.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.phone.label }}</div>
+                <div class="value">{{ profile_form.phone.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.phone2.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.phone2.label }}</div>
+                <div class="value">{{ profile_form.phone2.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.home_phone.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.home_phone.label }}</div>
+                <div class="value">{{ profile_form.home_phone.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.work_phone.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.work_phone.label }}</div>
+                <div class="value">{{ profile_form.work_phone.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.fax.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.fax.label }}</div>
+                <div class="value">{{ profile_form.fax.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.mobile_phone.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.mobile_phone.label }}</div>
+                <div class="value">{{ profile_form.mobile_phone.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.email %}
+            <div class="field">
+                <div class="label">{% trans 'Email' %}</div>
+                <div class="value">{{ membership.user.email }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.email2.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.email2.label }}</div>
+                <div class="value">{{ profile_form.email2.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.url.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.url.label }}</div>
+                <div class="value">{{ profile_form.url.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.url2.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.url2.label }}</div>
+                <div class="value">{{ profile_form.url2.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.company.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.company.label }}</div>
+                <div class="value">{{ profile_form.company.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.department.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.department.label }}</div>
+                <div class="value">{{ profile_form.department.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.position_assignment.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.position_assignment.label }}</div>
+                <div class="value">{{ profile_form.position_assignment.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.spouse.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.spouse.label }}</div>
+                <div class="value">{{ profile_form.spouse.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if profile_form.dob.value %}
+            <div class="field">
+                <div class="label">{{ profile_form.dob.label }}</div>
+                <div class="value">{{ profile_form.dob.value }}</div>
+            </div>
+            {% endif %}
+
+            {% if education_form.school1.value or education_form.degree1.value or education_form.major1.value or education_form.graduation_dt1.value or education_form.school2.value or education_form.degree2.value or education_form.major2.value or education_form.graduation_dt2.value or  education_form.school3.value or education_form.degree3.value or education_form.major3.value or education_form.graduation_dt3.value or education_form.school4.value or education_form.degree4.value or education_form.major4.value or education_form.graduation_dt4.value %}
+            <div class="field">
+                <div class="label">{% trans 'Education History' %}</div>
+                {% if  education_form.school1.value or education_form.degree1.value or education_form.major1.value or education_form.graduation_dt1.value %}
+                <div class="value">
+                    {% trans 'School' %}: {{ education_form.school1.value }}<br>
+                    {% trans 'Major' %}: {{ education_form.major1.value }}<br>
+                    {% trans 'Degree' %}: {{ education_form.degree1.value }}<br>
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt1.value }}
+                </div>
+                {% endif %}
+                {% if  education_form.school2.value or education_form.degree2.value or education_form.major2.value or education_form.graduation_dt2.value %}
+                <div class="value">
+                    {% trans 'School' %}: {{ education_form.school2.value }}<br>
+                    {% trans 'Major' %}: {{ education_form.major2.value }}<br>
+                    {% trans 'Degree' %}: {{ education_form.degree2.value }}<br>
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt2.value }}
+                </div>
+                {% endif %}
+                {% if  education_form.school3.value or education_form.degree3.value or education_form.major3.value or education_form.graduation_dt3.value %}
+                <div class="value">
+                    {% trans 'School' %}: {{ education_form.school3.value }}<br>
+                    {% trans 'Major' %}: {{ education_form.major3.value }}<br>
+                    {% trans 'Degree' %}: {{ education_form.degree3.value }}<br>
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt3.value }}
+                </div>
+                {% endif %}
+                {% if  education_form.school4.value or education_form.degree4.value or education_form.major4.value or education_form.graduation_dt4.value %}
+                <div class="value">
+                    {% trans 'School' %}: {{ education_form.school4.value }}<br>
+                    {% trans 'Major' %}: {{ education_form.major4.value }}<br>
+                    {% trans 'Degree' %}: {{ education_form.degree4.value }}<br>
+                    {% trans 'Graduation Date' %}: {{ education_form.graduation_dt4.value }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
 
             {% if membership.certifications %}
             <div class="field">

@@ -120,6 +120,19 @@ class ProfileForm(TendenciBaseForm):
                               error_messages={'required': _('Zipcode is a required field.')},
                                widget=forms.TextInput(attrs={'size':'10'}))
     country = CountrySelectField(label=_("Country"), required=False)
+
+    address_2 = forms.CharField(label=_("Address"), max_length=64, required=False,
+                               widget=forms.TextInput(attrs={'size':'45'}))
+    address2_2 = forms.CharField(label=_("Address2"), max_length=64, required=False,
+                               widget=forms.TextInput(attrs={'size':'40'}))
+    city_2 = forms.CharField(label=_("City"), max_length=35, required=False,
+                               widget=forms.TextInput(attrs={'size':'15'}))
+    state_2 = forms.CharField(label=_("State"), max_length=35, required=False,
+                               widget=forms.TextInput(attrs={'size':'5'}))
+    zipcode_2 = forms.CharField(label=_("Zipcode"), max_length=16, required=False,
+                               widget=forms.TextInput(attrs={'size':'10'}))
+    country_2 = CountrySelectField(label=_("Country"), required=False)
+
     mailing_name = forms.CharField(label=_("Mailing Name"), max_length=120, required=False,
                                    error_messages={'required': _('Mailing name is a required field.')},
                                widget=forms.TextInput(attrs={'size':'30'}))
@@ -186,6 +199,13 @@ class ProfileForm(TendenciBaseForm):
                   'zipcode',
                   'county',
                   'country',
+                  'address_2',
+                  'address2_2',
+                  'city_2',
+                  'state_2',
+                  'zipcode_2',
+                  'county_2',
+                  'country_2',
                   'url',
                   'dob',
                   'ssn',
@@ -385,6 +405,13 @@ class ProfileAdminForm(TendenciBaseForm):
                   'zipcode',
                   'county',
                   'country',
+                  'address_2',
+                  'address2_2',
+                  'city_2',
+                  'state_2',
+                  'zipcode_2',
+                  'county_2',
+                  'country_2',
                   'url',
                   'dob',
                   'ssn',

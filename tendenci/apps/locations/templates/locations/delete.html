@@ -14,7 +14,7 @@
     <div class="location-wrap">
         <h1>{% firstof MODULE_LOCATIONS_LABEL trans 'Location' %} {% trans "Delete Page" %}</h1>
         <h2>{{ location.location_name }} - <a href="{{ location.get_absolute_url }}">{{ location.get_absolute_url }}</a></h2>
-        <div class="content">{% blocktrans with l=location.description|safe|truncatewords_html:"60" %}{{ l }}</div>
+        <div class="content">{% blocktrans with l=location.description|safe|truncatewords_html:"60" %}{{ l }}{% endblocktrans %}</div>
         <div class="delete-prompt">
             {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_LOCATIONS_LABEL trans 'location' %}?
         </div>

@@ -113,7 +113,7 @@
                     </div>
                     {% else %}
                         <div class="organizer-desc-short">
-                            {% blocktrans with desc=organizer.description|safe|urlize|linebreaks %}{{ desc }}{% endblock %}
+                        	{{ organizer.description|safe|urlize|linebreaks }}
                         </div>
                     {% endif %}
                     {% if organizer.description|striptags|wordcount > 50 %}
@@ -177,7 +177,7 @@
         <div class="vitals">
         {% if event.external_url %}
         <div class="external-link">
-        <h4><a href="{{ event.external_url }}" target="_blank">{% trans 'View this event's webpage' %} &raquo;</a></h4>
+        <h4><a href="{{ event.external_url }}" target="_blank">{% trans "View this event's webpage" %} &raquo;</a></h4>
         </div>
         {% endif %}
             <div class="time-period">
@@ -199,8 +199,13 @@
 
                 {% endfor %}
 
-                <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
-                <div class="line">{{ event.timezone.zone|timezone_label }}</div>
+                <div class="line">
+                {% if not event.all_day %}
+                {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
+                </div>
+                {% if not event.all_day %}
+                 <div class="line">{{ event.timezone.zone|timezone_label }}</div>
+                {% endif %}
 
             </div>
 

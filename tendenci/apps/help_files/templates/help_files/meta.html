@@ -27,7 +27,7 @@
             {% if not user.profile.is_superuser %}
             {% if user == help_file.creator or user == help_file.owner %}
             <div class="categories">
-                <strong>{% trasn 'Owned by you' %}</strong>{% if not help_file.status_detail == "active" %} - status: {{ help_file.obj_status }}{% endif %}
+                <strong>{% trans 'Owned by you' %}</strong>{% if not help_file.status_detail == "active" %} - status: {{ help_file.obj_status }}{% endif %}
             </div>
             {% endif %}
             {% endif %}

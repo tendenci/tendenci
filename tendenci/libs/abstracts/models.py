@@ -104,6 +104,16 @@ class Person(TendenciBaseModel):
     county = models.CharField(_('county'), max_length=50, blank=True)
     country = models.CharField(_('country'), max_length=50, blank=True)
 
+    # fields to be used for the alternate address
+    address_2 = models.CharField(_('address'), max_length=150, blank=True)
+    address2_2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
+    member_number_2 = models.CharField(_('member number'), max_length=50, blank=True)
+    city_2 = models.CharField(_('city'), max_length=50, blank=True)
+    state_2 = models.CharField(_('state'), max_length=50, blank=True)
+    zipcode_2 = models.CharField(_('zipcode'), max_length=50, blank=True)
+    county_2 = models.CharField(_('county'), max_length=50, blank=True)
+    country_2 = models.CharField(_('country'), max_length=50, blank=True)
+
     url = models.CharField(_('url'), max_length=100, blank=True)
 
     time_zone = TimeZoneField(_('timezone'))
@@ -123,6 +133,15 @@ class Person(TendenciBaseModel):
         city_state_zip = ', '.join([s for s in (self.city, state_zip, self.country) if s])
 
         return '%s %s %s' % (self.address, self.address2, city_state_zip)
+
+    def get_alternate_address(self):
+        """
+        Returns full alternate address depending on which attributes are available.
+        """
+        state_zip = ' '.join([s for s in (self.state_2, self.zipcode_2) if s])
+        city_state_zip = ', '.join([s for s in (self.city_2, state_zip, self.country_2) if s])
+
+        return '%s %s %s' % (self.address_2, self.address2_2, city_state_zip)
 
 
 class Address(models.Model):

@@ -9,7 +9,7 @@
 
     {% if featured_news %}
     {% for news_item in featured_news %}
-        <p>{% blocktrans with b=news_item.body|striptags|truncatewords:30|safe %}{{ b }}</p> <a class="readmore" href="{{ news_item.get_absolute_url }}">{% trans 'Read more' %}</a>
+        <p>{% blocktrans with b=news_item.body|striptags|truncatewords:30|safe %}{{ b }}{% endblocktrans %}</p> <a class="readmore" href="{{ news_item.get_absolute_url }}">{% trans 'Read more' %}</a>
     {% endfor %}
     {% else %}
         <p>{% trans 'Tendenci supports great news updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side.' %} {% if request.user.is_authenticated %}{% blocktrans %}<a href="/news/add/">Add your first news item</a> to take the place of these examples.{% endblocktrans %}{% endif %}</p> <a class="readmore" href="/">{% trans 'Read more' %}</a>

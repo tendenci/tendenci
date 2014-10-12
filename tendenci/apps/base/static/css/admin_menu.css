@@ -11,7 +11,7 @@ html {
 	background:#01437D;
 	color:#fff;
 	height:30px;
-	z-index:99999!important;
+	z-index:9999999!important;
 	opacity: .95;
 }
 
@@ -540,6 +540,45 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     height: 26px;
 }
 
+.t-top-nav .nav {
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+.t-top-nav .nav > li > a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+}
+.t-top-nav .nav > li > a:hover,
+.t-top-nav .nav > li > a:focus {
+  text-decoration: none;
+}
+.t-top-nav .nav > li.disabled > a {
+  color: #777;
+}
+.t-top-nav .nav > li.disabled > a:hover,
+.t-top-nav .nav > li.disabled > a:focus {
+  color: #777;
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+.t-top-nav .nav .open > a,
+.t-top-nav .nav .open > a:hover,
+.t-top-nav .nav .open > a:focus {
+  border-color: #428bca;
+}
+.t-top-nav .nav .nav-divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+.t-top-nav .nav > li > a > img {
+  max-width: none;
+}
+
 
 @media (max-width: 992px) {
     .t-top-nav .nav > li > a {
@@ -579,5 +618,15 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 
     .t-top-nav .navbar-form input.form-control {
         width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .content-dropdown {
+        width: 510px;
+    }
+
+    .people-dropdown {
+        width: 275px;
     }
 }

@@ -24,7 +24,7 @@
         {% if prev_dir %}
            <p class="prev_dir">
                <a href="{% if app %}{% url "theme_editor.original_templates" app %}{% else %}{% url "theme_editor.original_templates" %}{% endif %}?dir={{ prev_dir }}">
-               &laquo;&nbsp;{% blocktrans %}{% trans 'back to' %} {{ prev_dir_name }}{% endblocktrans %}
+               &laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}
                </a>
            </p>
         {% endif %}

@@ -232,6 +232,7 @@ def get_ud_file_instance(demographics, field_name):
 def get_membership_rows(
         user_field_list,
         profile_field_list,
+        education_field_list,
         demographic_field_list,
         membership_field_list,
         invoice_field_list,
@@ -265,6 +266,7 @@ def get_membership_rows(
         invoice = membership.get_invoice()
 
         [profile] = Profile.objects.filter(user=user)[:1] or [None]
+        education_list = user.educations.all().order_by('pk')[0:4]
         [demographic] = MembershipDemographic.objects.filter(user=user)[:1] or [None]
 
         for field_name in user_field_list:
@@ -274,6 +276,15 @@ def get_membership_rows(
             for field_name in profile_field_list:
                 row_dict[field_name] = get_obj_field_value(
                     field_name, profile, field_name in foreign_keys)
+
+        if education_list:
+            cnt = 0
+            for education in education_list:
+                row_dict[education_field_list[cnt]] = education.school
+                row_dict[education_field_list[cnt+1]] = education.major
+                row_dict[education_field_list[cnt+2]] = education.degree
+                row_dict[education_field_list[cnt+3]] = education.graduation_year
+                cnt += 4
 
         if demographic:
             for field_name in demographic_field_list:
@@ -328,7 +339,13 @@ def process_export(
             'city',
             'state',
             'zipcode',
-            'country']
+            'country',
+            'address_2',
+            'address2_2',
+            'city_2',
+            'state_2',
+            'zipcode_2',
+            'country_2']
 
         demographic_field_list = []
 
@@ -384,9 +401,29 @@ def process_export(
         # invoice ---------
         invoice_field_list = ['total', 'balance']
 
+    education_field_list = [
+        'school1',
+        'major1',
+        'degree1',
+        'graduation_dt1',
+        'school2',
+        'major2',
+        'degree2',
+        'graduation_dt2',
+        'school3',
+        'major3',
+        'degree3',
+        'graduation_dt3',
+        'school4',
+        'major4',
+        'degree4',
+        'graduation_dt4',
+    ]
+
     title_list = (
         user_field_list +
         profile_field_list +
+        education_field_list +
         membership_field_list +
         invoice_field_list +
         demographic_field_list)
@@ -427,6 +464,7 @@ def process_export(
         membership_rows = get_membership_rows(
             user_field_list,
             profile_field_list,
+            education_field_list,
             demographic_field_list,
             membership_field_list,
             invoice_field_list,

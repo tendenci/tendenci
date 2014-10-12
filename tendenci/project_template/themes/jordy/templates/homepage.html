@@ -6,6 +6,7 @@
 {% load box_tags %}
 {% load nav_tags %}
 {% load news_tags %}
+{% load photo_tags %}
 {% load case_study_tags %}
 {% theme_extends "base.html" %}
 {% load i18n %}
@@ -37,12 +38,7 @@
 
     <!-- Bootstrap core CSS
 =========================================================== -->
-    <link href="{{ THEME_URL }}media/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap theme
-=========================================================== -->
-    <link href="{{ THEME_URL }}media/css/bootstrap-theme.min.css" rel="stylesheet">
-
-
+    <link href="{{ STATIC_URL }}bootstrap3/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- navigation dropdowns
 =========================================================== -->
@@ -51,7 +47,7 @@
 
     <!-- Custom styles for this template
 =========================================================== -->
-  <link href="{{ THEME_URL }}media/css/jordy.css" rel="stylesheet">
+  <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and
     media queries
@@ -101,6 +97,8 @@
       {% endif %}
       <div class="carousel-caption">
         <h1>{% blocktrans with title=story.title %}{{ title }}{% endblocktrans %}</h1>
+        <p class="story">{{ story.content|striptags|truncatewords:"30"|safe }}</p>
+        <p class="no-margin"><a href="{{ story.full_story_link }}">{% trans 'LEARN MORE' %}</a></p>
       </div>
     </div>
     {% endfor %}
@@ -116,26 +114,23 @@
 =========================================================== -->
 <div class="container">
   <div class="page-header">
-    <div class="col-lg-3 col-md-3">
-      <h3><i class="fa fa-money" style=" color:#00a3d8"></i> {% trans 'Donate' %}</h3>
+    <div class="col-lg-4 col-md-4">
+      <h3><i class="fa fa-money" style=" color:#00a3d8"></i> {% box_title 12 %}</h3>
       {% box 12 %}
     </div>
-    <div class="col-lg-3 col-md-3">
-      <h3><i class="fa fa-users" style=" color:#00a3d8"></i> {% trans 'Membership' %}</h3>
+    <div class="col-lg-4 col-md-4">
+      <h3><i class="fa fa-users" style=" color:#00a3d8"></i> {% box_title 13 %}</h3>
       {% box 13 %}
     </div>
-    <div class="col-lg-3 col-md-3">
-      <h3><i class="fa fa-user" style=" color:#00a3d8"></i> {% trans 'Directory' %}</h3>
-      {% box 14 %}
-    </div>
-    <div class="col-lg-3 col-md-3">
+
+    <div class="col-lg-4 col-md-4">
       <h3><i class="fa fa-calendar" style=" color:#00a3d8"></i> {% trans 'Events' %}</h3>
       {% list_events as events_list limit=3 %}
       <ul class="list-unstyled">
       {% for event in events_list %}
         <li><a href="{{ event.get_absolute_url }}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></li>
-      {% empty %}
-        {% trans 'Events will be shown here. Start adding events now!' %}
+        {% empty %}
+        {% trans 'Events will be shown here. <a href="/events/add/">Start adding events now!</a>' %}
       {% endfor %}
       </ul>
       {% if event_list %}
@@ -147,23 +142,21 @@
          <!-- Quote
 =========================================================== -->
 <div class="section-colored text-center">
+  <!--example-->
   <div class="container">
     <div class="row">
-      <div class="col-lg-3 col-xs-3">
-        <h2><i class="fa fa-quote-left"  style="color:#ffffff"></i></h2>
-      </div>
-      <div class="col-lg-6 col-xs-6">
-        <h2><i class="fa fa-bullhorn" style=" color:#95cb03"></i> {% trans 'Testimonials' %}</h2>
-        {% list_case_studies as case_studies_list limit=1 tags="home" %}
-        {% for cs in case_studies_list %}
-          {% blocktrans with overview=cs.overview|safe %}{{ overview }}{% endblocktrans %}
-          <hr>
-          {{ cs.client }}
+
+      <div class="col-lg-12 col-xs-12">
+        <h3 style="text-align: center;"><a href="/photos">{% trans 'Photos' %}</a></h3>
+        <br />
+        {% list_photos as photos_list limit=6 random=True %}
+        {% for photo in photos_list %}
+        <div class="col-lg-2 col-md-4 col-sm-4 col-xs-6">
+          <div class="thumbnail">
+            <a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=144x132 crop=True %}" /></a>
+          </div>
+        </div>
         {% endfor %}
-        <p><a href="/">{% trans 'More testimonials' %} <i class="fa fa-plus-circle"></i></a></p>
-      </div>
-      <div class="col-lg-3 col-xs-3">
-        <h2><i class="fa fa-quote-right" style="color:#ffffff"></i></h2>
       </div>
     </div><!-- /.row -->
   </div><!-- /.container -->
@@ -173,16 +166,16 @@
 
 <div class="container about-and-news">
   <div class="row">
-    <div class="col-lg-4 col-md-4 col-sm-4">
+    <div class="col-lg-6 col-md-6 col-sm-6">
       {% box 15 %}
       <h4><i class="fa fa-globe" style=" color:#95cb03"></i> {% trans 'About the Organization' %}</h4>
       {% box 16 %}
     </div>
-    <div class="col-lg-8 col-md-8 col-sm-8">  <!-- /news container -->
+    <div class="col-lg-6 col-md-6 col-sm-6">  <!-- /news container -->
       <h2><i class="fa fa-compass" style=" color:#95cb03"></i>  {% trans 'Latest News' %}</h2>
       {% list_news as news_list limit=4 %}
       {% for news_item in news_list|slice:":4" %}
-      <div class="col-lg-3 col-md-3 col-sm-12">
+      <div class="col-lg-12 col-md-12 col-sm-12">
         <h4><a href="{{ news_item.get_absolute_url }}">
           {% blocktrans with headline=news_item.headline|truncatewords:6 %}{{ headline }}{% endblocktrans %}
         </a></h4>
@@ -190,7 +183,7 @@
         <div class="more"><a href="{{ news_item.get_absolute_url }}">{% trans 'Read More' %} »</a></div>
       </div>
       {% empty %}
-        {% trans 'No news to show now. Start adding news now!' %}
+      {% trans 'No news to show now. <a href="/news/add/">Start adding news now!</a>' %}
       {% endfor %}
      </div><!-- /news container -->
   </div> <!-- /row -->

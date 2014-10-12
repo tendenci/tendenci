@@ -126,7 +126,7 @@
             "creator": null,
             "allow_member_view": false,
             "entity": null,
-            "content": "<p><a href=\"/login/\">Log in</a> | <a href=\"/sitemap/\">Site Map</a> | <a href=\"/rss/\">Feed</a> | <a href=\"http://schipul.com/\">Schipul Web Design</a> | <a href=\"http://tendenci.com/\">Tendenci &reg; - Open Source CMS for Your Association</a></p>",
+            "content": "<p><a href=\"/login/\">Log in</a> | <a href=\"/sitemap/\">Site Map</a> | <a href=\"/rss/\">Feed</a> | <a href=\"http://schipul.com/\">Schipul Web Design</a> | <a href=\"http://tendenci.com/\" target=\"_blank\">Tendenci &reg; - Open Source&nbsp;For Associations and Nonprofits</a></p>",
             "tags": "tendencidemo",
             "owner_username": "",
             "owner": null,

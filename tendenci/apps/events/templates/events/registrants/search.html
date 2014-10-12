@@ -40,7 +40,8 @@
 
             <div class="event-date">
                 <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
-                <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+                <div class="line">{% if not event.all_day %}
+               {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}</div>
             </div>
 
             <div class="hr"></div>
@@ -140,9 +141,9 @@
 
                     <div class="content"></div>
                     <div class="meta">
-                        <div class="submitted">{% blocktrans with registrant.registration.create_dt|date_short as reg_date %}{% trans "Registered on" %} {{ reg_date }}{% endblocktrans %}</div>
+                        <div class="submitted">{% blocktrans with registrant.registration.create_dt|date_short as reg_date %}Registered on {{ reg_date }}{% endblocktrans %}</div>
                         {% if registrant.cancel_dt %}
-                        <div class="canceled">{% blocktrans with registrant.cancel_dt|date_short as cancel_date %}{% trans "Canceled on" %} {{ cancel_date }}{% endblocktrans %}</div>
+                        <div class="canceled">{% blocktrans with registrant.cancel_dt|date_short as cancel_date %}Canceled on {{ cancel_date }}{% endblocktrans %}</div>
                         {% endif %}
                         <div style="clear:both;"></div>
                     </div>

@@ -174,7 +174,7 @@ div.forms{
                   {{ form.corporate_membership_type }}
               </div>
               {% if form.corporate_membership_type.help_text %}
-              <div class="help-text">{% blocktrans with help_text=form.corporate_membership_type.help_text %}{{ help_text }}</div>
+              <div class="help-text">{% blocktrans with help_text=form.corporate_membership_type.help_text %}{{ help_text }}{% endblocktrans %}</div>
               {% endif %}
            </div>
         </div>
@@ -208,7 +208,7 @@ div.forms{
                   {{ form.members }}
               </div>
               {% if form.members.help_text %}
-              <div class="help-text">{% blocktrans with help_text=form.members.help_text %}{{ help_text }}</div>
+              <div class="help-text">{% blocktrans with help_text=form.members.help_text %}{{ help_text }}{% endblocktrans %}</div>
               {% endif %}
            </div>
         <div style="clear: both"></div>
@@ -283,7 +283,7 @@ div.forms{
                       {{ form.payment_method }}
                   </div>
                   {% if form.payment_method.help_text %}
-                  <div class="help-text">{% blocktrans with help_text=form.payment_method.help_text %}{{ help_text }}</div>
+                  <div class="help-text">{% blocktrans with help_text=form.payment_method.help_text %}{{ help_text }}{% endblocktrans %}</div>
                   {% endif %}
                </div>
             </div>

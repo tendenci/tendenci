@@ -6,9 +6,11 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.db.models.signals import post_save
 
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
+from tendenci.apps.invoices.listeners import update_profiles_total_spend
 from tendenci.apps.accountings.utils import (make_acct_entries,
                                     make_acct_entries_reversing)
 from tendenci.apps.entities.models import Entity
@@ -169,6 +171,10 @@ class Invoice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('invoice.view', [self.id])
+
+    @models.permalink
+    def get_absolute_url_with_guid(self):
+        return ('invoice.view', [self.id, self.guid])
 
     @models.permalink
     def get_discount_url(self):
@@ -366,3 +372,7 @@ class Invoice(models.Model):
         """
         [payment] = self.payment_set.filter(status_detail='approved')[:1] or [None]
         return payment
+
+# add signals
+post_save.connect(update_profiles_total_spend, sender=Invoice,
+    dispatch_uid='tendenci.apps.invoices.models.update_profiles_total_spend')

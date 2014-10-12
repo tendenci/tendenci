@@ -70,7 +70,7 @@ var LinkDialog = {
 				href : href,
 				title : f.linktitle.value
 			});
-	
+
 			if (f.target_list) {
 				ed.dom.setAttrib(e, 'target', getSelectValue(f, "target_list"));
 			}

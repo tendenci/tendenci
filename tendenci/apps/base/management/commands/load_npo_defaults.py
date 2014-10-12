@@ -1,5 +1,6 @@
 import os
 from optparse import make_option
+from random import randint
 from boto.s3.connection import S3Connection
 
 from django.contrib.contenttypes.models import ContentType
@@ -27,6 +28,7 @@ class Command(BaseCommand):
         """
         reset_nav = options.get('reset_nav', None)
         skip_media = options.get('skip_media', None)
+        self.number_used = []
 
         if not skip_media:
             self.copy_files()
@@ -42,6 +44,24 @@ class Command(BaseCommand):
             self.copy_to_s3()
         else:
             self.copy_to_local()
+            
+    def next_rand_number(self, top=30):
+        """
+        Get the next unused random number
+        """
+        x = randint(1, top)
+        while x in self.number_used:
+            x = randint(1, top)
+        self.number_used.append(x)
+        return x
+         
+    def get_random_stock(self, bucket):
+        """
+        Return a key from a random stock image
+        """
+        stock_bucket_list = bucket.list('stock')
+        stock_keys = [k for k in stock_bucket_list]
+        return stock_keys[self.next_rand_number(len(stock_keys)) - 1]
 
     def copy_to_local(self):
         """
@@ -64,6 +84,10 @@ class Command(BaseCommand):
                     os.makedirs(dir_path)
 
                 print dst
+
+                if '/story/' in source_key.name:
+                    source_key = self.get_random_stock(bucket)
+
                 with open(dst, 'wb') as f:
                     f.write(source_key.read())
 

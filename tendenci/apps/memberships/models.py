@@ -2121,7 +2121,7 @@ class Notice(models.Model):
                     'content': notice.get_content(membership=membership),
                     'membership_total': MembershipDefault.objects.filter(status=True, status_detail='active').count(),
                     'reply_to': notice.sender,
-                    'sender': notice.sender,
+                    'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
                     'sender_display': notice.sender_display,
                 })
 
@@ -2271,7 +2271,7 @@ class MembershipAppField(OrderingBaseModel):
                                    blank=True,
                                    default='')
     help_text = models.CharField(_("Help Text"),
-                                 max_length=200,
+                                 max_length=300,
                                  blank=True,
                                  default='')
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,

@@ -32,7 +32,8 @@
         {% endif %}
         <div class="event-time">
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
-            <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+            <div class="line"> {% if not event.all_day %}
+            {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}</div>
         </div>
          {% include "events/include/spots_status.html" %}
 

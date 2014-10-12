@@ -18,10 +18,12 @@ except:
 
 class PageAdmin(admin.ModelAdmin):
     list_display = ('view_on_site', 'edit_link', 'title', 'link', 'syndicate',
-                    'allow_anonymous_view','status_detail', 'tags')
+                    'allow_anonymous_view','status_detail', 'group', 'tags')
     search_fields = ('title','content',)
+    list_editable = ['title', 'tags', 'status_detail', 'group']
+    list_filter = ('group', )
     fieldsets = (
-        (None, {'fields': ('title', 'slug', 'content', 'tags', 'template')}),
+        (None, {'fields': ('title', 'slug', 'content', 'group', 'tags', 'template')}),
         (_('Meta'), {'fields': (
             'meta_title',
             'meta_keywords',

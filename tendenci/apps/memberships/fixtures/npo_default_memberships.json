@@ -1955,5 +1955,25 @@
             "field_name": "application_approved_denied_dt",
             "display": false
         }
+    },
+    {
+        "pk": 91,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "Gender",
+            "position": 90,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "sex",
+            "display": true
+        }
     }
 ]

@@ -18,6 +18,7 @@ class BoxForm(TendenciBaseForm):
         fields = (
             'title',
             'content',
+            'group',
             'tags',
             'allow_anonymous_view',
             'user_perms',

@@ -1,5 +1,6 @@
-{% load base_filters %}
 {% load i18n %}
+{% load base_filters %}
+
 {% if user.profile.is_superuser %}
 <div class="admin-inline">
     <div class="admin-border admin-border-top"></div>
@@ -10,6 +11,7 @@
     <a href="#" data-controls-modal="modal_{{ setting_name }}" data-backdrop="true">{% blocktrans with t=setting_name|underscore_space|title %} Edit {{ t }}{% endblocktrans %}</a>
     </div>
 </div>
+
 
 <div id="modal_{{ setting_name }}" class="modal hide fade">
     <div class="modal-header">
@@ -24,7 +26,7 @@
         <p>{% blocktrans %}You can change this space's content by choosing one of the content options or any <a href="/boxes/add/?next={{ request.path }}">boxes</a> you have added.{% endblocktrans %}</p>
         </form>
         <a href="{{ request.path }}" class="btn secondary">{% trans 'Cancel' %}</a>
-        <a href="javascript:document.getElementById('change_form_{{ setting_name }}').submit();" class="btn success">{% blocktrans with t= setting_name|underscore_space|title%}Update {{ t }}{% endblocktrans %}</a>
+        <a href="javascript:document.getElementById('change_form_{{ setting_name }}').submit();" class="btn success">{% blocktrans with t=setting_name|underscore_space|title %}Update {{ t }}{% endblocktrans %}</a>
     </div>
 
     {% if setting_value_form.fields %}
@@ -43,5 +45,6 @@
     <div class="modal-footer"></div>
     {% endif %}
 </div>
+
 
 {% endif %}

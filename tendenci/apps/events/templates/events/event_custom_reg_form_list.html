@@ -42,7 +42,7 @@
                         </div>
                 {% else %}
                     <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
-                        {% trans 'This event uses a separate custom registrations form for each pricing. %}
+                        {% trans "This event uses a separate custom registrations form for each pricing." %}
                         <div class="alert-actions">
                             <a class="btn small" href="{% url "event" event.id %}">{% trans 'View Event' %}</a>
                             <a class="btn small" href="{% url "event.edit" event.id %}">{% trans 'Edit Event' %}</a>
@@ -70,7 +70,7 @@
                 {% endif %}
 
             {% else %}
-                <p class="reg-form-list-notes">{% trans 'This event doesn't use custom registration forms.' %} </p>
+                <p class="reg-form-list-notes">{% trans "This event doesn't use custom registration forms." %} </p>
             {% endif %}
 
 

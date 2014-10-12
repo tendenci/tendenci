@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load url from future %}
+
 {% with request.user.profile.lang as user_lang %}
     <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
         <i class="fa fa-globe"></i> {% get_language_info for user_lang as l %}{{ l.name_local }}

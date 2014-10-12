@@ -124,7 +124,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         if file_form.is_valid():
             if file_form.save(request, default_file, ROOT_DIR=theme_root, ORIG_ROOT_DIR=original_theme_root):
                 response_status = 'SUCCESS'
-                response_message = _('Your changes have been saved.')
+                response_message = unicode(_('Your changes have been saved.'))
                 EventLog.objects.log()
 
         response = json.dumps({'status':response_status, 'message':response_message})

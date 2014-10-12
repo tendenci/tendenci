@@ -28,6 +28,13 @@
     "admin_only": "false"
     },
     {
+    "label": "Gender",
+    "field_name": "sex",
+    "display": "true",
+    "required": "true",
+    "admin_only": "false"
+    },
+    {
     "label": "Salutation",
     "field_name": "salutation",
     "display": "true",
@@ -483,6 +490,62 @@
     "admin_only": "false"
     },
     {
+    "label": "Alternate Address",
+    "field_name": "",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+        {
+    "label": "Address",
+    "field_name": "address_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Address2",
+    "field_name": "address2_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "City",
+    "field_name": "city_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "State",
+    "field_name": "state_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Zip Code",
+    "field_name": "zipcode_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "County",
+    "field_name": "county_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+   {
+    "label": "Country",
+    "field_name": "country_2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
     "label": "Section 2. Membership Information",
     "field_name": "",
     "display": "true",
@@ -665,7 +728,126 @@
     "admin_only": "false"
     },
     {
-    "label": "Section 5. Join User Groups",
+    "label": "Section 5. Education History",
+    "field_name": "",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "School",
+    "field_name": "school1",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Major",
+    "field_name": "major1",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Degree",
+    "field_name": "degree1",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Graduation Date",
+    "field_name": "graduation_dt1",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "School 2",
+    "field_name": "school2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Major 2",
+    "field_name": "major2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Degree 2",
+    "field_name": "degree2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Graduation Date 2",
+    "field_name": "graduation_dt2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "School 3",
+    "field_name": "school3",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Major 3",
+    "field_name": "major3",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Degree 3",
+    "field_name": "degree3",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Graduation Date 3",
+    "field_name": "graduation_dt3",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "School 4",
+    "field_name": "school4",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Major 4",
+    "field_name": "major4",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Degree 4",
+    "field_name": "degree4",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Graduation Date 4",
+    "field_name": "graduation_dt4",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Section 6. Join User Groups",
     "field_name": "",
     "display": "true",
     "required": "false",
@@ -679,7 +861,7 @@
     "admin_only": "false"
     },
     {
-    "label": "Section 6. Industry",
+    "label": "Section 7. Industry",
     "field_name": "",
     "display": "true",
     "required": "false",
@@ -693,7 +875,7 @@
     "admin_only": "false"
     },
     {
-    "label": "Section 7. Region",
+    "label": "Section 8. Region",
     "field_name": "",
     "display": "true",
     "required": "false",
@@ -707,7 +889,7 @@
     "admin_only": "false"
     },
     {
-    "label": "Section 8. Admin Only",
+    "label": "Section 9. Admin Only",
     "field_name": "",
     "display": "false",
     "required": "false",

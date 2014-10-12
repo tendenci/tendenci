@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{# bootstrap css must be removed on print view #}
+{% block includebootstrap3css %}{% endblock %}
+
 {% block top_bar %}
 <style type="text/css">
 html {margin-top: 0 !important;}

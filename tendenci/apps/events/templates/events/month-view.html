@@ -64,8 +64,8 @@
                                 {% if event.is_recurring_event %}
                                 <div class="event-recurring"></div>
                                 {% endif %}
-                                <a href="{{ event.get_absolute_url }}"
-                                    class="time-stamp">{{ event.start_dt|date:"f a" }}</a>
+                                <a href="{{ event.get_absolute_url }}"class="time-stamp">
+                                {% if not event.all_day %}{{ event.start_dt|date:"f a" }}{% endif %}</a>
                                 <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
                                 <a href="{{ event.get_absolute_url }}"
                                     class="event-title" itemprop="url">

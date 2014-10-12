@@ -36,9 +36,9 @@ class Profile(Person):
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
     company = models.CharField(_('company'), max_length=100, blank=True)
-    position_title = models.CharField(_('position title'), max_length=50, blank=True)
+    position_title = models.CharField(_('position title'), max_length=250, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
-    sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', _(u'Male')),('female', _(u'Female'))))
+    sex = models.CharField(_('gender'), max_length=50, blank=True, choices=(('male', _(u'Male')),('female', _(u'Female'))))
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     phone2 = models.CharField(_('phone2'), max_length=50, blank=True)
     fax = models.CharField(_('fax'), max_length=50, blank=True)
@@ -69,6 +69,10 @@ class Profile(Person):
     original_username = models.CharField(max_length=50)
 
     sf_contact_id = models.CharField(max_length=100, blank=True, null=True)
+
+    # includes all invoice totals
+    total_spend = models.DecimalField(_('total spend'), max_digits=16, decimal_places=4,
+        default=0, editable=False)
 
     objects = ProfileManager()
     actives = ProfileActiveManager()

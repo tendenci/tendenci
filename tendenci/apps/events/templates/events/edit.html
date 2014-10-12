@@ -111,6 +111,36 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
+            allDay = $('#id_all_day');
+            start_dt_field = $('.id_start_dt').parent();
+            end_dt_field = $('.id_end_dt').parent();
+            start_event_dt_field = $('.id_start_event_date').parent();
+            end_event_dt_field = $('.id_end_event_date').parent();
+            if (allDay.prop('checked')) {
+                start_dt_field.hide();
+                end_dt_field.hide();
+                start_event_dt_field.show();
+                end_event_dt_field.show();
+            } else {
+                start_dt_field.show();
+                end_dt_field.show();
+                start_event_dt_field.hide();
+                end_event_dt_field.hide();
+            }
+            $('#id_all_day').change(function() {
+                if($(this).prop('checked')) {
+                    start_dt_field.hide();
+                    end_dt_field.hide();
+                    start_event_dt_field.show();
+                    end_event_dt_field.show();
+                } else {
+                    start_dt_field.show();
+                    end_dt_field.show();
+                    start_event_dt_field.hide();
+                    end_event_dt_field.hide();
+                }
+            });
+
             $('.regconfpricing_formset .section-description').addClass('well');
         });
     </script>

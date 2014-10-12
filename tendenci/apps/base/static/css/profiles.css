@@ -76,6 +76,13 @@
     padding-right: 10px;
 }
 
+.education.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
 .membership.info h2 {
     position: absolute;
     top: -38px;
@@ -253,7 +260,7 @@
     border: 1px solid #CCC;
 }
 
-.t .profiles-wrap .profile-wrap {	
+.t .profiles-wrap .profile-wrap {
 	padding: 10px 10px 0px 10px;
 	position: relative;
 	background-color: white;

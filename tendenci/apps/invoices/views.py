@@ -459,14 +459,7 @@ def report_top_spenders(request, template_name="reports/top_spenders.html"):
     if not request.user.is_superuser:
         raise Http403
 
-    entry_list = []
-    users = User.objects.all()
-    for user in users:
-        invoices = Invoice.objects.filter(Q(creator=user) | Q(owner=user) | Q(bill_to_email=user.email)).aggregate(Sum('total'))
-        if invoices['total__sum'] is not None and invoices['total__sum'] > 0:
-            entry_list.append({'user':user, 'invoices':invoices})
-
-    entry_list = sorted(entry_list, key=lambda entry:entry['invoices']['total__sum'], reverse=True)[:20]
+    entry_list = User.objects.order_by('-profile__total_spend')[:10]
 
     return render_to_response(template_name, {
         'entry_list': entry_list,

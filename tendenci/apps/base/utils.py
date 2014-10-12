@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal
 import codecs
 import cStringIO
 import csv
@@ -15,15 +16,13 @@ from django.conf import settings
 from django.utils import translation
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
-from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 from django.contrib.admin.util import NestedObjects
-from django.utils.functional import allow_lazy
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.text import capfirst, Truncator
+from django.utils.text import capfirst
 from django.utils.encoding import force_unicode
 from django.db import router
 
@@ -58,8 +57,8 @@ def get_languages_with_local_name():
     """
     return [(ll['code'], '%s (%s)' % (ll['name_local'], ll['code'])) for ll in
             [translation.get_language_info(l[0])
-             for l in settings.LANGUAGES]]
-
+             for l in settings.LANGUAGES]] 
+    
 
 def get_deleted_objects(obj, user):
     """
@@ -160,6 +159,19 @@ def tcurrency(mymoney):
         return fmt % (currency_symbol, mymoney)
     else:
         return mymoney
+
+
+def currency_check(mymoney):
+    """
+    Clear out dollar symbols and commas, and convert it to Decimal
+    """
+    if mymoney:
+        mymoney = mymoney.replace('$', '').replace(',', '')
+    else:
+        mymoney = 0
+    mymoney = Decimal(mymoney)
+    
+    return mymoney
 
 
 def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_time='%I:%M %p'):
@@ -783,7 +795,7 @@ def create_salesforce_contact(profile):
                 # update field Company_Name__c
                 if profile.company and contact.has_key('Company_Name__c'):
                     sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
-
+                        
                 profile.sf_contact_id = contact['id']
                 profile.save()
                 return contact['id']
@@ -847,19 +859,3 @@ def normalize_field_names(fieldnames):
         fieldnames[i] = fieldnames[i].lower().replace(' ', '_')
 
     return fieldnames
-
-
-def truncate_words(s, num, end_text='...'):
-    truncate = end_text and ' %s' % end_text or ''
-    return Truncator(s).words(num, truncate=truncate)
-truncate_words = allow_lazy(truncate_words, unicode)
-
-
-def validate_email(s, quiet=True):
-    try:
-        _validate_email(s)
-        return True
-    except Exception, e:
-        if not quiet:
-            raise e
-    return False

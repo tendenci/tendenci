@@ -521,7 +521,7 @@ def prev_month(month, year):
 
 
 def email_registrants(event, email, **kwargs):
-
+    site_url = get_setting('site', 'global', 'siteurl')
     reg8ns = Registration.objects.filter(event=event)
 
     payment_status = kwargs.get('payment_status', 'all')
@@ -557,6 +557,10 @@ def email_registrants(event, email, **kwargs):
         if email.recipient:
             email.body = email.body.replace('[firstname]', first_name)
             email.body = email.body.replace('[lastname]', last_name)
+            invoice = registrant.registration.get_invoice()
+            invoicelink = invoice.get_absolute_url_with_guid()
+            invoicelink = '<a href="%s%s">%s%s</a>' % (site_url, invoicelink, site_url, invoicelink)
+            email.body = email.body.replace('[invoicelink]', invoicelink)
             email.send()
 
         email.body = tmp_body  # restore to the original

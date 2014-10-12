@@ -17,7 +17,11 @@
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">
-            {{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }}
+            {% if event.all_day %}
+            {{ event.start_dt|date:"l, M j, Y" }} - {{ event.end_dt|date:"l, M j, Y" }}
+            {% else %}
+             {{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }}
+            {% endif %}
         </div>
 
         <div class="description">

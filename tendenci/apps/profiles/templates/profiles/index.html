@@ -132,6 +132,28 @@
     </div>
     {% endif %}
 
+    {% if user_this.educations.all  %}
+    <div class="education info">
+        <h2>{% trans 'Education History' %}</h2>
+        <table>
+            {% for education in user_this.educations.all %}
+            <tr>
+                <td width="1%">{% trans 'School' %}:</td>
+                <td width="1%">{{ education.school }}</td>
+                <td width="1%">{% trans 'Major' %}:</td>
+                <td width="1%">{{ education.major }}</td>
+            </tr>
+            <tr>
+                <td width="1%">{% trans 'Degree' %}:</td>
+                <td width="1%">{{ education.degree }}</td>
+                <td width="1%">{% trans 'Graduation Date' %}:</td>
+                <td width="1%">{{ education.graduation_year }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
     {% if request.user == user_this or request.user.profile.is_superuser %}
     {% if MODULE_MEMBERSHIPS_ENABLED %}
     <div class="membership info">

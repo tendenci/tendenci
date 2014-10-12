@@ -66,6 +66,50 @@ def box(parser, token):
 box.safe = True
 
 
+class GetBoxTitleNode(Node):
+    def __init__(self, pk):
+        self.pk = pk
+
+    def render(self, context):
+        user = AnonymousUser()
+
+        if 'user' in context:
+            if isinstance(context['user'], User):
+                user = context['user']
+
+        try:
+            pk = Variable(self.pk)
+            pk = pk.resolve(context)
+        except:
+            pk = self.pk
+
+        try:
+            filters = get_query_filters(user, 'boxes.view_box')
+            box = Box.objects.filter(filters).filter(pk=pk)
+            if user.is_authenticated():
+                if not user.profile.is_superuser:
+                    box = box.distinct()
+            box = box[0]
+            return box.title
+        except:
+            return unicode()
+@register.tag
+def box_title(parser, token):
+    """
+    Example {% box_title 123 %}
+    """
+    bits = token.split_contents()
+
+    try:
+        pk = bits[1]
+    except:
+        message = "Box tag must include an ID of a box."
+        raise TemplateSyntaxError(_(message))
+
+    return GetBoxTitleNode(pk)
+
+
+
 class ListBoxesNode(ListNode):
     model = Box
     perms = 'boxes.view_box'

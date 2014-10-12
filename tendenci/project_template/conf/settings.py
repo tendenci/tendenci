@@ -116,7 +116,7 @@ THEMES_DIR = os.path.join(PROJECT_ROOT, 'themes')
 
 # ORIGINAL_THEMES_DIR is used when USE_S3_STORAGE==True
 ORIGINAL_THEMES_DIR = THEMES_DIR
-LOCALE_PATHS = (os.path.join(PROJECT_ROOT, 'themes'),)
+LOCALE_PATHS += (os.path.join(PROJECT_ROOT, 'themes'),)
 
 
 # Remote Deploy URL Allows you to pass a URL into the environment

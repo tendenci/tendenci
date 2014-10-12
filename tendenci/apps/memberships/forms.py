@@ -562,11 +562,12 @@ class UserForm(forms.ModelForm):
                 self.fields.pop('password')
 
         if 'password' in self_fields_keys:
-
+            passwd = app_field_objs.filter(field_name='password')[0]
             self.fields['password'] = forms.CharField(
                 initial=u'',
                 widget=forms.PasswordInput,
                 required=False,
+                help_text=passwd.help_text
             )
             self.fields['password'].widget.attrs.update({'size': 28})
 
@@ -700,6 +701,7 @@ class UserForm(forms.ModelForm):
 
 class ProfileForm(forms.ModelForm):
     country = CountrySelectField(label=_('Country'), required=False)
+    country_2 = CountrySelectField(label=_('Country'), required=False)
     class Meta:
         model = Profile
 
@@ -731,6 +733,94 @@ class ProfileForm(forms.ModelForm):
         profile.save()
 
         return profile
+
+
+YEAR_CHOICES = [(i, i) for i in range(1900, THIS_YEAR + 50)]
+YEAR_CHOICES = [('', '?')] + YEAR_CHOICES
+class EducationForm(forms.Form):
+
+    school1 = forms.CharField(label=_('School'), max_length=200, required=False, initial='')
+    major1 = forms.CharField(label=_('Major'), max_length=200, required=False, initial='')
+    degree1 = forms.CharField(label=_('Degree'), max_length=200, required=False, initial='')
+    graduation_dt1 = forms.ChoiceField(label=_('Graduation Date'), required=False, choices=YEAR_CHOICES)
+    school2 = forms.CharField(label=_('School 2'), max_length=200, required=False, initial='')
+    major2 = forms.CharField(label=_('Major 2'), max_length=200, required=False, initial='')
+    degree2 = forms.CharField(label=_('Degree 2'), max_length=200, required=False, initial='')
+    graduation_dt2 = forms.ChoiceField(label=_('Graduation Date 2'), required=False, choices=YEAR_CHOICES)
+    school3 = forms.CharField(label=_('School 3'), max_length=200, required=False, initial='')
+    major3 = forms.CharField(label=_('Major 3'), max_length=200, required=False, initial='')
+    degree3 = forms.CharField(label=_('Degree 3'), max_length=200, required=False, initial='')
+    graduation_dt3 = forms.ChoiceField(label=_('Graduation Date 3'), required=False, choices=YEAR_CHOICES)
+    school4 = forms.CharField(label=_('School 4'), max_length=200, required=False, initial='')
+    major4 = forms.CharField(label=_('Major 4'), max_length=200, required=False, initial='')
+    degree4 = forms.CharField(label=_('Degree 4'), max_length=200, required=False, initial='')
+    graduation_dt4 = forms.ChoiceField(label=_('Graduation Date 4'), required=False, choices=YEAR_CHOICES)
+
+    def __init__(self, app_field_objs, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(EducationForm, self).__init__(*args, **kwargs)
+        if user:
+            self.user = user
+        else:
+            self.user = None
+        assign_fields(self, app_field_objs)
+        self.field_names = [name for name in self.fields.keys()]
+        self.keys = self.fields.keys()
+
+        if self.user:
+            education_list = self.user.educations.all().order_by('pk')[0:4]
+            if education_list.exists():
+                cnt = 1
+                for education in education_list:
+                    field_key = 'school%s' % cnt
+                    if field_key in self.keys:
+                        self.fields[field_key].initial = education.school
+                    field_key = 'major%s' % cnt
+                    if field_key in self.keys:
+                        self.fields[field_key].initial = education.major
+                    field_key = 'degree%s' % cnt
+                    if field_key in self.keys:
+                        self.fields[field_key].initial = education.degree
+                    field_key = 'graduation_dt%s' % cnt
+                    if field_key in self.keys:
+                        self.fields[field_key].initial = education.graduation_year
+                    cnt += 1
+
+
+    def save(self, user):
+        data = self.cleaned_data
+
+        if not self.user: # meaning add
+            education_list = user.educations.all().order_by('pk')[0:4]
+            if not education_list:
+                for cnt in range(1, 5):
+                    school = data.get('school%s' % cnt, '')
+                    major = data.get('major%s' % cnt, '')
+                    degree = data.get('degree%s' % cnt, '')
+                    graduation_year = data.get('graduation_dt%s' % cnt, 0)
+
+                    if any([school, major, degree, graduation_year]):
+                        Education.objects.create(
+                            user=user,
+                            school=school,
+                            major=major,
+                            degree=degree,
+                            graduation_year=int(graduation_year))
+
+        else: # meaning edit
+            education_list = self.user.educations.all().order_by('pk')[0:4]
+            cnt = 1
+            for education in education_list:
+                school = data.get('school%s' % cnt, '')
+                major = data.get('major%s' % cnt, '')
+                degree = data.get('degree%s' % cnt, '')
+                graduation_year = data.get('graduation_dt%s' % cnt, 0)
+
+                education.school =school
+                education.major = major
+                education.degree = degree
+                education.graduation_year = int(graduation_year)
+                education.save()
 
 
 class DemographicsForm(forms.ModelForm):
@@ -1184,12 +1274,20 @@ class MembershipDefaultForm(TendenciBaseForm):
     hide_email = forms.BooleanField(required=False)
     hide_phone = forms.BooleanField(required=False)
 
+    # alternate address goes here
+    address_2 = forms.CharField(initial=u'', required=False, max_length=64)
+    address2_2 = forms.CharField(initial=u'', required=False, max_length=64)
+    city_2 = forms.CharField(initial=u'', required=False, max_length=35)
+    state_2 = forms.CharField(initial=u'', required=False, max_length=35)
+    zipcode_2 = forms.CharField(initial=u'', required=False, max_length=16)
+    country_2 = forms.CharField(initial=u'', required=False)
+
     dob = forms.DateTimeField(required=False)
     education_grad_dt = forms.DateTimeField(required=False)
     career_start_dt = forms.DateTimeField(required=False)
     career_end_dt = forms.DateTimeField(required=False)
 
-    sex = forms.CharField(initial=u'', required=False)
+    sex = forms.CharField(label=_('Gender'), initial=u'', required=False)
     spouse = forms.CharField(initial=u'', required=False)
     profession = forms.CharField(initial=u'', required=False)
     custom1 = forms.CharField(initial=u'', required=False)
@@ -1209,6 +1307,24 @@ class MembershipDefaultForm(TendenciBaseForm):
     extra_zip_code = forms.CharField(initial=u'', required=False)
     extra_country = forms.CharField(initial=u'', required=False)
     extra_address_type = forms.CharField(initial=u'', required=False)
+
+    #education fields here
+    school1 = forms.CharField(initial=u'', required=False)
+    major1 = forms.CharField(initial=u'', required=False)
+    degree1 = forms.CharField(initial=u'', required=False)
+    graduation_dt1 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
+    school2 = forms.CharField(initial=u'', required=False)
+    major2 = forms.CharField(initial=u'', required=False)
+    degree2 = forms.CharField(initial=u'', required=False)
+    graduation_dt2 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
+    school3 = forms.CharField(initial=u'', required=False)
+    major3 = forms.CharField(initial=u'', required=False)
+    degree3 = forms.CharField(initial=u'', required=False)
+    graduation_dt3 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
+    school4 = forms.CharField(initial=u'', required=False)
+    major4 = forms.CharField(initial=u'', required=False)
+    degree4 = forms.CharField(initial=u'', required=False)
+    graduation_dt4 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
 
     # manually add ud fields here because admin.site.register requires it
     ud1 = forms.CharField(widget=forms.TextInput, required=False)
@@ -1391,6 +1507,13 @@ class MembershipDefaultForm(TendenciBaseForm):
                 'hide_address',
                 'hide_email',
                 'hide_phone',
+                # alternate address fields here
+                'address_2',
+                'address2_2',
+                'city_2',
+                'state_2',
+                'zipcode_2',
+                'country_2',
             ]
 
             # initialize user fields
@@ -1404,6 +1527,17 @@ class MembershipDefaultForm(TendenciBaseForm):
                 self.fields[profile_attr].initial = \
                     getattr(self.instance.user.profile, profile_attr)
         # -----------------------------------------------------
+
+            # initialize education fields
+            self.education_list = self.instance.user.educations.all().order_by('pk')[0:4]
+            cnt = 1
+            if self.education_list:
+                for education in self.education_list:
+                    self.fields['school%s' % cnt].initial = education.school
+                    self.fields['major%s' % cnt].initial = education.major
+                    self.fields['degree%s' % cnt].initial = education.degree
+                    self.fields['graduation_dt%s' % cnt].initial = education.graduation_year
+                    cnt += 1
 
         # demographic fields - include only those selected on app
         demographic_field_names = [field.name \
@@ -1489,6 +1623,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             Membership
             Membership.user
             Membership.user.profile
+            Membership.user.education
             Membership.invoice
             Membership.user.group_set()
         """
@@ -1574,24 +1709,56 @@ class MembershipDefaultForm(TendenciBaseForm):
             membership.save()
 
             # save education fields ----------------------------
-            educations = zip(
-                request.POST.getlist('education_school'),
-                request.POST.getlist('education_degree'),
-                request.POST.getlist('education_major'),
-                request.POST.getlist('education_grad_dt'),
-            )
+        if self.education_list: # meaning education instances exists already
+            cnt = 1
+            for education in self.education_list:
+                school = request.POST.get('school%s' % cnt, '')
+                major = request.POST.get('major%s' % cnt, '')
+                degree = request.POST.get('degree%s' %cnt, '')
+                graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
 
-            for education in educations:
-                if any(education):
-                    school, degree, major, grad_dt = education
+                if any([school, major, degree, graduation_year]):
+                    education.school = school
+                    education.major = major
+                    education.degree =degree
+                    education.graduation_year = int(graduation_year)
+                    education.save()
+
+                cnt += 1
+
+            current_count = cnt
+            if current_count < 4: # not all education fields have entries before
+                for cnt in range(current_count, 5):
+                    school = request.POST.get('school%s' % cnt, '')
+                    major = request.POST.get('major%s' % cnt, '')
+                    degree = request.POST.get('degree%s' %cnt, '')
+                    graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
+
+                    if any([school, major, degree, graduation_year]):
+                        Education.objects.create(
+                            user=membership.user,
+                            school=school,
+                            major=major,
+                            degree=degree,
+                            graduation_year=int(graduation_year)
+                        )
+
+        else:   # create education instances here
+            for cnt in range(1,5):
+                school = request.POST.get('school%s' % cnt, '')
+                major = request.POST.get('major%s' % cnt, '')
+                degree = request.POST.get('degree%s' %cnt, '')
+                graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
+
+                if any([school, major, degree, graduation_year]):
                     Education.objects.create(
                         user=membership.user,
                         school=school,
-                        degree=degree,
                         major=major,
-                        graduation_dt=grad_dt,
+                        degree=degree,
+                        graduation_year=int(graduation_year)
                     )
-            # --------------------------------------------------
+
 
             # save career fields -------------------------------
             careers = zip(

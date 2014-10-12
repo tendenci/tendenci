@@ -49,6 +49,10 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
                 from tendenci.apps.payments.firstdata.utils import prepare_firstdata_form
                 form = prepare_firstdata_form(request, payment)
                 post_url = settings.FIRSTDATA_POST_URL
+            elif merchant_account == 'firstdatae4':
+                from tendenci.apps.payments.firstdatae4.utils import prepare_firstdatae4_form
+                form = prepare_firstdatae4_form(request, payment)
+                post_url = settings.FIRSTDATAE4_POST_URL
             elif merchant_account == 'paypalpayflowlink':
                 from tendenci.apps.payments.payflowlink.utils import prepare_payflowlink_form
                 form = prepare_payflowlink_form(request, payment)
