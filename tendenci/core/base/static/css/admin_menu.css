@@ -473,6 +473,7 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 
 .t-top-nav .dropdown-menu {
     max-width: 1170px;
+    top: 100%;
 }
 
 .t-top-nav .yamm-content > .row > ul {
