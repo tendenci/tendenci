@@ -451,6 +451,11 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     z-index: 9999999 !important;
 }
 
+.t-top-nav li {
+    margin: 0;
+    font-size: 14px;
+}
+
 .t-top-nav .navbar-header {
     min-height: 30px;
     height: 30px;
