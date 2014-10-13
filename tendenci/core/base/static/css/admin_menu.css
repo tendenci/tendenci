@@ -456,6 +456,10 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     font-size: 14px;
 }
 
+.t-top-nav .row {
+    margin: 0 -15px;
+}
+
 .t-top-nav .navbar-header {
     min-height: 30px;
     height: 30px;
