@@ -3674,6 +3674,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('state', 'state'),
         ('zip', 'zip'),
         ('country', 'country'),
+        ('meal_option', 'meal_option'),
         ('date', 'create_dt'),
         ('registration_id', 'registration__pk'),
         ('addons', 'registration__addons_added'),
@@ -3685,6 +3686,10 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('payment method', 'registration__payment_method__machine_name'),
         ('balance', 'registration__invoice__balance'),
     ])
+    
+    if not registrants.exclude(meal_option='').exists():
+        # remove meal_option if the field is empty for every registrant
+        del registrant_mappings['meal_option']
 
     RegistrantTuple = namedtuple('Registrant', registrant_mappings.values())
 
