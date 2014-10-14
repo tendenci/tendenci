@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-13 03:49+0000\n"
-"PO-Revision-Date: 2014-10-13 04:02+0000\n"
-"Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
+"POT-Creation-Date: 2014-10-13 18:42+0000\n"
+"PO-Revision-Date: 2014-10-13 20:11+0000\n"
+"Last-Translator: Jayjay Montalbo <jayjay@bixly.com>\n"
 "Language-Team: Tagalog (http://www.transifex.com/projects/p/tendenci/language/tl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1182,7 +1182,7 @@ msgid ""
 "                <p>The export file is ready, click the download link below to download.</p>\n"
 "                <div><a href=\"%(dl_url)s\">Download Now</a></div>\n"
 "                "
-msgstr "\n<p> Ang export file ay handa na, i-click ang download link sa ibaba upang i-download. </p>                  <div> <a href=\"%(dl_url)s\">-download na Ngayon </a> </div>"
+msgstr "\n\n                <p>The export file is ready, click the download link below to download.</p>\n                <div><a href=\"%(dl_url)s\">Download Now</a></div>\n                "
 
 #: addons/articles/templates/articles/export-status.html:32
 msgid ""
@@ -2047,7 +2047,7 @@ msgid ""
 "    </p>\n"
 "    <P>Time submitted:  %(date_today)s</P>\n"
 "    "
-msgstr "\n<p>         Kumusta% (user.first_name) s, <br /> <br />         Ang iyong mga artikulo sa pag-export ay handa na.          <br /> <br />         Upang i-download ang pag-export ng file, pumunta sa: <br />          <a href=\"%(site_url)s%(download_url)s\">% (SITE_URL) s% (DOWNLOAD_URL) s </a>          <br /> <br />         Tandaan na ang download link ay mawawalan ng bisa sa isang linggo.          <br /> <br />         Salamat, <br />         % (Site_display_name) s          <br /> <br />      </p>      <P> Oras isinumite:% (date_today) s </P>"
+msgstr "\n\n    <p>\n        Hello %(user.first_name)s,<br /><br />\n        Your articles export is ready.\n        <br /><br />\n\n        To download the export file, go to: <br />\n        <a href=\"%(site_url)s%(download_url)s\">%(site_url)s%(download_url)s</a>\n        <br /><br />\n        Note that the download link will expire in one week.\n        <br /><br />\n        Thanks,<br />\n        %(site_display_name)s\n        <br /><br />\n    </p>\n    <P>Time submitted:  %(date_today)s</P>\n    "
 
 #: addons/articles/templates/notification/article_added/full.html:7
 msgid "Article Add Notice"
@@ -2603,7 +2603,7 @@ msgid ""
 "                    Click <a href=\"%(template.cm_preview_url)s\">here</a>\n"
 "                    to view the rendered version on Campaign Monitor.\n"
 "                    "
-msgstr "\nMag-click <a href=\"%(template.cm_preview_url)s\"> dito </a>                     upang tingnan ang nai-render na bersyon sa Kampanya Monitor."
+msgstr "\n\n                    Click <a href=\"%(template.cm_preview_url)s\">here</a>\n                    to view the rendered version on Campaign Monitor.\n                    "
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:53
 #, python-format
@@ -2612,7 +2612,7 @@ msgid ""
 "                    Click <a href=\"%(rendered_url)s\">here</a>\n"
 "                    to view a rendered version of the html with the latest data.\n"
 "                    "
-msgstr "\nMag-click <a href=\"%(rendered_url)s\"> dito </a>                     upang tingnan ang isang render na bersyon ng html sa pinakabagong data."
+msgstr "\n\n                    Click <a href=\"%(rendered_url)s\">here</a>\n                    to view a rendered version of the html with the latest data.\n                    "
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:60
 #, python-format
@@ -2621,7 +2621,7 @@ msgid ""
 "                    Click <a href=\"%(update_url)s\">here</a>\n"
 "                    to use the same files to update this template.\n"
 "                    "
-msgstr "\nMag-click <a href=\"%(update_url)s\"> dito </a>                     gamitin ang parehong mga file upang i-update ang template na ito."
+msgstr "\n\n                    Click <a href=\"%(update_url)s\">here</a>\n                    to use the same files to update this template.\n                    "
 
 #: addons/careers/forms.py:34
 msgid "Career Information"
@@ -2754,7 +2754,7 @@ msgstr "Corp. Memb. App"
 #: addons/corporate_memberships/admin.py:376 addons/memberships/admin.py:1041
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
-msgstr "Ang% (pangalan) s &quot;(obj)% s&quot; ay matagumpay na nabago."
+msgstr "The %(name)s \"%(obj)s\" was changed successfully."
 
 #: addons/corporate_memberships/app_registry.py:13
 msgid "Corporate membership management application."
@@ -4378,7 +4378,7 @@ msgid ""
 "\n"
 "                        %(label)s - %(error)s\n"
 "                        "
-msgstr "\n                         % (Label) s - (error)% s                         "
+msgstr "\n\n                        %(label)s - %(error)s\n                        "
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:169
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:193
@@ -5300,7 +5300,7 @@ msgid ""
 "\n"
 "        Please <a href=\"%(corp_add)s\">set up corporate membership types</a> before proceeding.\n"
 "        "
-msgstr "\nMangyaring <a href=\"%(corp_add)s\">-set up ang mga uri ng korporasyon pagiging kasapi </a> bago magpatuloy."
+msgstr "\n\n        Please <a href=\"%(corp_add)s\">set up corporate membership types</a> before proceeding.\n        "
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:78
 #: addons/memberships/templates/memberships/import_default/upload.html:87
@@ -6294,7 +6294,7 @@ msgid ""
 "                <a href=\"%(dl_url)s\">Download Now</a>\n"
 "            </div>\n"
 "            "
-msgstr "\n<p> Ang export file ay handa na, i-click ang download link sa ibaba upang i-download. </p>              <div>                  <a href=\"%(dl_url)s\"> I-download Ngayon </a>              </div>"
+msgstr "\n\n            <p>The export file is ready, click the download link below to download.</p>\n            <div>\n                <a href=\"%(dl_url)s\">Download Now</a>\n            </div>\n            "
 
 #: addons/directories/templates/directories/export_status.html:33
 #: apps/profiles/templates/profiles/export_status.html:30
@@ -6457,12 +6457,12 @@ msgstr "Tagal"
 #: addons/directories/templates/directories/pricing-table.html:26
 #, python-format
 msgid "%(dp_duration)s days"
-msgstr "% S araw (dp_duration)"
+msgstr "%(dp_duration)s days"
 
 #: addons/directories/templates/directories/pricing-table.html:36
 #, python-format
 msgid "%(dp_duration)s days Member"
-msgstr "% S araw (dp_duration) Miyembro"
+msgstr "%(dp_duration)s days Member"
 
 #: addons/directories/templates/directories/pricing-view.html:7
 #: addons/directories/templates/directories/pricing-view.html:19
@@ -6804,7 +6804,7 @@ msgstr "Upang tingnan direktoryong ito pumunta sa: %(SITE_GLOBAL_SITEURL)s %(obj
 msgid ""
 "Your directory listing on %(SITE_GLOBAL_SITEDISPLAYNAME)s is eligible for "
 "renewal. It will expire on %(directory.expiration_dt)s."
-msgstr "Ang iyong paglilista sa% direktoryo (SITE_GLOBAL_SITEDISPLAYNAME) s ay karapat-dapat para sa renewal. Ito ay magtatapos sa% (directory.expiration_dt) s."
+msgstr "Your directory listing on %(SITE_GLOBAL_SITEDISPLAYNAME)s is eligible for renewal. It will expire on %(directory.expiration_dt)s."
 
 #: addons/directories/templates/notification/directory_renewal_eligible/full.html:32
 msgid ""
@@ -8785,7 +8785,7 @@ msgid ""
 "<br /><br />\n"
 "To view the details of this event, go to <a href=\"%(site_url)s%(event_url)s\">%(title)s\n"
 "</a>\n"
-msgstr "\nMga paalala ng kaganapan para sa% (title) s na kung saan ay paparating na sa % (Dt) s% (T1) s -% (T2) s Na-ipinamamahagi sa lahat ng registrants humihiling ng mga paalala. <br /> <br /> Upang tingnan ang mga detalye ng kaganapang ito, pumunta sa <a href=\"%(site_url)s%(event_url)s\">% (title) s </a>\n"
+msgstr "\n\nEvent reminders for %(title)s which is coming up on\n%(dt)s %(t1)s - %(t2)s\nhave been distributed to all registrants requesting reminders.\n<br /><br />\nTo view the details of this event, go to <a href=\"%(site_url)s%(event_url)s\">%(title)s\n</a>\n\n"
 
 #: addons/events/templates/events/search-form.html:30
 msgid "Events I'm Registered"
@@ -9142,7 +9142,7 @@ msgid ""
 " Start:\n"
 "            <abbr class=\"dtstart\" title=\"%(event_start)s\"><b>%(event_starts)s%(event_tz)s</b></abbr>\n"
 "            to <abbr class=\"dtend\" title=\"%(event_end)s\"><b>%(event_ends)s%(event_tz)s</b></abbr><br />"
-msgstr "Simulan ang:              <abbr class=\"dtstart\" title=\"%(event_start)s\"> <b>% (event_starts) s% (event_tz) s </b> </abbr>             sa <abbr class=\"dtend\" title=\"%(event_end)s\"> <b>% (event_ends) s% (event_tz) s </b> </abbr> <br />"
+msgstr " Start:\n            <abbr class=\"dtstart\" title=\"%(event_start)s\"><b>%(event_starts)s%(event_tz)s</b></abbr>\n            to <abbr class=\"dtend\" title=\"%(event_end)s\"><b>%(event_ends)s%(event_tz)s</b></abbr><br />"
 
 #: addons/events/templates/events/message/opening-text.txt:29
 msgid "Location: "
@@ -9217,7 +9217,7 @@ msgstr "Halaga:"
 #: addons/events/templates/events/reg8n/cancel_registration.html:22
 #, python-format
 msgid "Cancelling %(reglength)s registration(s)"
-msgstr "Pagkansela ng% s (mga) registration (reglength)"
+msgstr "Cancelling %(reglength)s registration(s)"
 
 #: addons/events/templates/events/reg8n/cancel_registration.html:24
 #, python-format
@@ -9492,14 +9492,14 @@ msgstr "Ang unang isa ay ang pangunahing registrant at responsable para sa pagsi
 msgid ""
 "JavaScript must be enabled in order for you to use this page. Please enable\n"
 "            javascript and <a href=\"%(request.path)s\">try again</a>."
-msgstr "Dapat na pinagana ang JavaScript upang para sa iyo upang magamit ang pahinang ito. Mangyaring paganahin ang             javascript at <a href=\"%(request.path)s\"> subukan muli </a>."
+msgstr "JavaScript must be enabled in order for you to use this page. Please enable\n            javascript and <a href=\"%(request.path)s\">try again</a>."
 
 #: addons/events/templates/events/reg8n/register.html:67
 #, python-format
 msgid ""
 "Only %(spots_available)s spot%(spots_available|pluralize)s available. No "
 "more %(spots_available)s registrant%(spots_available|pluralize)s please!"
-msgstr "% Lamang (spots_available) s spot% (spots_available | pluralize) s magagamit. Wala nang% (spots_available) s registrant% (spots_available | pluralize) s mangyaring!"
+msgstr "Only %(spots_available)s spot%(spots_available|pluralize)s available. No more %(spots_available)s registrant%(spots_available|pluralize)s please!"
 
 #: addons/events/templates/events/reg8n/register.html:126
 msgid "Table of "
@@ -10041,7 +10041,7 @@ msgstr "Tingnan ang mga detalye ng pagpaparehistro"
 msgid ""
 "We now have %(eventreg)s registrants, %(regpaid)s paid\n"
 "    ($%(eventmoney)s) and %(regpend)s pending (%(eventout)s)"
-msgstr "Mayroon% (eventreg) s registrants,% (regpaid) s bayad na kami ngayon     ($% (Eventmoney) s) at% (regpend) s nakabinbing (% (mga eventout))"
+msgstr "We now have %(eventreg)s registrants, %(regpaid)s paid\n    ($%(eventmoney)s) and %(regpend)s pending (%(eventout)s)"
 
 #: addons/events/templates/notification/event_registration_cancelled/short.txt:3
 #, python-format
@@ -10415,7 +10415,7 @@ msgstr "Mga Kahilingan"
 #: addons/help_files/templates/help_files/request_new.html:6
 #, python-format
 msgid "%(t)s Request"
-msgstr "% Request (t) s"
+msgstr "%(t)s Request"
 
 #: addons/help_files/templates/help_files/request_new.html:18
 msgid "Please provide as much detail as possible."
@@ -11026,7 +11026,7 @@ msgstr "Mga Kasanayan"
 #: templates/theme_includes/rss_feed_list.html:19
 #, python-format
 msgid "%(s)s"
-msgstr "(Mga)% s"
+msgstr "%(s)s"
 
 #: addons/jobs/templates/jobs/print-view.html:103
 #: addons/jobs/templates/jobs/view.html:123
@@ -13840,7 +13840,7 @@ msgid ""
 "        <p>Update your membership information.</p>\n"
 "        <span> Go back to your <a href=\"%(mem_url)s\">Membership Info</a></span>\n"
 "        "
-msgstr "\n<p> I-update ang iyong impormasyon sa pagiging miyembro. </p>          <span> Pumunta pabalik sa iyong <a href=\"%(mem_url)s\"> Impormasyon ng Pagiging Kasapi </a> </span>"
+msgstr "\n\n        <p>Update your membership information.</p>\n        <span> Go back to your <a href=\"%(mem_url)s\">Membership Info</a></span>\n        "
 
 #: addons/memberships/templates/memberships/applications/confirmation.html:20
 #, python-format
@@ -14259,7 +14259,7 @@ msgid ""
 "\n"
 "            This is the preview of \"%(n)s\". Back to <a href=\"%(app_url)s\">App Edit</a>.\n"
 "            "
-msgstr "\nIto ang preview ng &quot;% (n) s&quot;. Bumalik sa <a href=\"%(app_url)s\"> App I-edit </a>."
+msgstr "\n\n            This is the preview of \"%(n)s\". Back to <a href=\"%(app_url)s\">App Edit</a>.\n            "
 
 #: addons/memberships/templates/memberships/import_default/preview.html:8
 msgid "Import Memberships from CSV file - Preview"
@@ -14302,7 +14302,7 @@ msgid ""
 "\n"
 "        Please <a href=\"%(memtype_url)s\">set up membership types</a> before proceeding.\n"
 "        "
-msgstr "\nMangyaring <a href=\"%(memtype_url)s\">-set up ang mga uri ng pagiging kasapi </a> bago magpatuloy."
+msgstr "\n\n        Please <a href=\"%(memtype_url)s\">set up membership types</a> before proceeding.\n        "
 
 #: addons/memberships/templates/memberships/import_default/upload.html:79
 #, python-format
@@ -14310,7 +14310,7 @@ msgid ""
 "\n"
 "        Please <a href=\"%(app_add_url)s\">set up membership applications</a> before proceeding.\n"
 "        "
-msgstr "\nMangyaring <a href=\"%(app_add_url)s\">-set up ng mga application ng pagiging miyembro </a> bago magpatuloy."
+msgstr "\n\n        Please <a href=\"%(app_add_url)s\">set up membership applications</a> before proceeding.\n        "
 
 #: addons/memberships/templates/memberships/import_default/upload.html:89
 #, python-format
@@ -14318,7 +14318,7 @@ msgid ""
 "\n"
 "        <p style=\"margin-top:0;\">Please review your membership <a href=\"%(mem_settings_url)s\">privacy settings</a> before importing.</p>\n"
 "        "
-msgstr "\n<p style=\"margin-top:0;\"> Mangyaring suriin ang iyong pagiging miyembro setting ng privacy <a href=\"%(mem_settings_url)s\"> </a> bago i-import </p>."
+msgstr "\n\n        <p style=\"margin-top:0;\">Please review your membership <a href=\"%(mem_settings_url)s\">privacy settings</a> before importing.</p>\n        "
 
 #: addons/memberships/templates/memberships/import_default/upload.html:93
 msgid ""
@@ -14376,7 +14376,7 @@ msgid ""
 "        %(SITE_GLOBAL_SITEDISPLAYNAME)s\n"
 "        <br /><br />\n"
 "        "
-msgstr "\nUpang tingnan ang mga profile ng kasapi na ito, pumunta sa <a href=\"%(SITE_GLOBAL_SITEURL)s%(profile_url)s\">% (SITE_GLOBAL_SITEURL) s% (PROFILE_URL) s </a>.          <br /> <br />          Upang tingnan at pamahalaan ang mga corporate pagiging miyembro, pumunta sa <a href=\"%(SITE_GLOBAL_SITEURL)s%(corp_mem_url)s\">% (SITE_GLOBAL_SITEURL) s% (corp_url) s </a>.          <br /> <br />         Salamat, <br />         % (SITE_GLOBAL_SITEDISPLAYNAME) s          <br /> <br />"
+msgstr "\n\n        To view the profile of this member, go to <a href=\"%(SITE_GLOBAL_SITEURL)s%(profile_url)s\">%(SITE_GLOBAL_SITEURL)s%(profile_url)s</a>.\n        <br /> <br />\n\n         To view and manage the corporate membership, go to <a href=\"%(SITE_GLOBAL_SITEURL)s%(corp_mem_url)s\">%(SITE_GLOBAL_SITEURL)s%(corp_url)s</a>.\n        <br /> <br />\n\n        Thanks,<br />\n        %(SITE_GLOBAL_SITEDISPLAYNAME)s\n        <br /><br />\n        "
 
 #: addons/memberships/templates/memberships/notices/email_corp_reps_subject.html:3
 #: apps/dashboard/templates/dashboard/new.html:269
@@ -15217,7 +15217,7 @@ msgstr "Matagumpay na natanggal ang larawan &#39; %(title)s&#39;"
 #: addons/photos/views.py:366
 #, python-format
 msgid "Photo %(id)s deleted"
-msgstr "Mga tinanggal na larawan% (id)"
+msgstr "Photo %(id)s deleted"
 
 #: addons/photos/views.py:400
 msgid "Successfully added photo set!"
@@ -15363,7 +15363,7 @@ msgid ""
 "Licensed under\n"
 "                        <a rel=\"license\" href=\"%(photo_deed)s\">\n"
 "                            %(photo_name)s</a>."
-msgstr "Lisensyado sa ilalim ng                          <a rel=\"license\" href=\"%(photo_deed)s\">                             % (PHOTO_NAME) s </a>."
+msgstr "Licensed under\n                        <a rel=\"license\" href=\"%(photo_deed)s\">\n                            %(photo_name)s</a>."
 
 #: addons/photos/templates/photos/details.html:96
 msgid "Taken on:"
@@ -15423,7 +15423,7 @@ msgid ""
 "Licensed under\n"
 "                    <a rel=\"license\" href=\"%(phodeed)s\">\n"
 "                        %(phoname)s</a>."
-msgstr "Lisensyado sa ilalim ng                      <a rel=\"license\" href=\"%(phodeed)s\">                         % (Phoname) s </a>."
+msgstr "Licensed under\n                    <a rel=\"license\" href=\"%(phodeed)s\">\n                        %(phoname)s</a>."
 
 #: addons/photos/templates/photos/search-result.html:16
 msgid "search photo"
@@ -15853,7 +15853,7 @@ msgstr "Nabigo ang bilang ng ikot ng pagsingil"
 #: addons/recurring_payments/templates/recurring_payments/disable.html:37
 #, python-format
 msgid "Are you sure you want to disable <a href=\"%(acc_url)s\">this account</a>?"
-msgstr "Sigurado ka bang gusto mong huwag paganahin ang <a href=\"%(acc_url)s\"> ang account na ito </a>?"
+msgstr "Are you sure you want to disable <a href=\"%(acc_url)s\">this account</a>?"
 
 #: addons/recurring_payments/templates/recurring_payments/disable.html:42
 #: addons/recurring_payments/templates/recurring_payments/nav.html:51
@@ -15865,7 +15865,7 @@ msgstr "Huwag paganahin ang Account"
 msgid ""
 "\n"
 "The recurring payment account for %(rp)s has been disabled by <a href=\"%(profile_url)s\">%(user_by.get_full_name)s</a>"
-msgstr "\nAng paulit-ulit na account sa pagbabayad para sa% (rp) s ay hindi pinapagana ng <a href=\"%(profile_url)s\">% (user_by.get_full_name) s </a>"
+msgstr "\n\nThe recurring payment account for %(rp)s has been disabled by <a href=\"%(profile_url)s\">%(user_by.get_full_name)s</a>"
 
 #: addons/recurring_payments/templates/recurring_payments/email_admins_account_disabled.html:13
 msgid "To view this recurring payment account, go to"
@@ -16034,7 +16034,7 @@ msgid ""
 "A transaction\n"
 "was failed for the recurring payment (%(rp)s)\n"
 "on <a href=\"%(site_url)s\">%(site_display_name)s</a>.\n"
-msgstr "\nAng isang transaksyon Nabigo ay para sa umuulit na pagbabayad (% (rp) s) sa <a href=\"%(site_url)s\">% (site_display_name) s </a>.\n"
+msgstr "\n\nA transaction\nwas failed for the recurring payment (%(rp)s)\non <a href=\"%(site_url)s\">%(site_display_name)s</a>.\n\n"
 
 #: addons/recurring_payments/templates/recurring_payments/email_script_support_transaction.html:24
 msgid "Error code"
@@ -18561,7 +18561,7 @@ msgstr "Hanay ng Petsa Update"
 #: apps/invoices/templates/invoices/notices/export_ready_subject.html:3
 #, python-format
 msgid "Your Invoice Export is Ready on %(s)s"
-msgstr "Ang iyong export ng Invoice ay Handa sa (mga)% s"
+msgstr "Your Invoice Export is Ready on %(s)s"
 
 #: apps/metrics/models.py:10
 msgid "users"
@@ -18890,7 +18890,7 @@ msgstr "Natanggap mo ang sumusunod na abiso mula sa %(site)s: %(m)s Upang makita
 #: apps/notifications/templates/notification/email_subject.txt:1
 #, python-format
 msgid "[%(s)s] %(m)s"
-msgstr "[(Mga)% s]% (m) s"
+msgstr "[%(s)s] %(m)s"
 
 #: apps/notifications/templates/notification/notices.html:22
 msgid "Primary email"
@@ -18910,7 +18910,7 @@ msgstr "Tandaan"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr "Wala kang na-verify na email address kung saan abiso ay maaaring maipadala. Maaari kang magdagdag ng isa sa pamamagitan ng pagpunta sa <a href=\"%(email_url)s\"> </a> Account."
+msgstr "You do not have a verified email address to which notices can be sent. You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #: apps/notifications/templates/notification/notices.html:36
 msgid "Notification Type"
@@ -19066,7 +19066,7 @@ msgid ""
 "Deleted\n"
 "      by:</td>\n"
 "    <td width=\"75%%\"><b>%(requser)s (%(requsername)s)"
-msgstr "Tinanggal       sa pamamagitan ng: </td>      <td width=\"75%%\"> <b>% (requser) s (% (mga requsername))"
+msgstr "Deleted\n      by:</td>\n    <td width=\"75%%\"><b>%(requser)s (%(requsername)s)"
 
 #: apps/notifications/templates/notification/group_deleted/full.html:29
 msgid ""
@@ -19149,7 +19149,7 @@ msgid ""
 "Total Processed = %(act_sent)s <br /><br />\n"
 "\n"
 "For details of this submission, go to:"
-msgstr "Pagbati% (act_create) s: <br /> <br /> Ang pagsusumite ng iyong newsletter% (act_name) s ay nakumpleto na. <br /> <br /> Kabuuang Tinangkang i Magpadala =% (act_attempt) s <br /> <br /> Kabuuang Inasikaso =% (act_sent) s <br /> <br /> Para sa mga detalye ng isinumiteng ito, pumunta sa:"
+msgstr "Greetings %(act_create)s: <br /><br />\n\nThe submission of your newsletter %(act_name)s has been completed.<br /><br />\n\nTotal Attempted to Send = %(act_attempt)s <br />\nBad Address or E-mail Blocked = %(act_fail)s <br />\nTotal Processed = %(act_sent)s <br /><br />\n\nFor details of this submission, go to:"
 
 #: apps/notifications/templates/notification/newsletter_recap/full.html:18
 msgid "Time Submitted:"
@@ -19393,7 +19393,7 @@ msgid ""
 "<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a></b><br>\n"
 "To approve this page and make it visible to the public, go to\n"
 "<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a>"
-msgstr "Upang tingnan ang mga detalye ng pahinang ito, pumunta sa: <b> <a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">% (SITE_GLOBAL_SITEURL) s% (objget) s </a> </b> <br> Upang maaprubahan ang pahinang ito at gawin itong makikita ng publiko, pumunta sa <a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">% (SITE_GLOBAL_SITEURL) s% (objget) s </a>"
+msgstr "To view the detail of this page, go to: <b>\n<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a></b><br>\nTo approve this page and make it visible to the public, go to\n<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a>"
 
 #: apps/pages/templates/notification/page_added/short.txt:3
 #, python-format
@@ -22266,7 +22266,7 @@ msgstr "view sa pamamagitan ng"
 #: apps/user_groups/templates/user_groups/member_add_edit.html:21
 #, python-format
 msgid "Edit Member <a href=\"%(urlz)s\">%(group_member)s</a> in Group"
-msgstr "I-edit ang Miyembro <a href=\"%(urlz)s\">% (group_member) s </a> sa Grupo"
+msgstr "Edit Member <a href=\"%(urlz)s\">%(group_member)s</a> in Group"
 
 #: apps/user_groups/templates/user_groups/member_add_edit.html:21
 msgid "Add Member to Group"
@@ -22343,7 +22343,7 @@ msgstr "Ang iyong mga miyembro ng pangkat i-export para sa &quot; %(g)s&quot; ay
 #: apps/user_groups/templates/user_groups/exports/export_ready_subject.html:3
 #, python-format
 msgid "Your Group Members Export is Ready on %(s)s"
-msgstr "Ang iyong Pangkat ng Mga Miyembro Mag-export ay Handa sa (mga) s%"
+msgstr "Your Group Members Export is Ready on %(s)s"
 
 #: apps/user_groups/templates/user_groups/exports/members_export_status.html:6
 msgid "Export Group Members - Status"
@@ -24013,7 +24013,7 @@ msgid ""
 "Your login information is listed below.\n"
 "    To log into the site, visit <a href=\"%(SITE_GLOBAL_SITEURL)s\">%(SITE_GLOBAL_SITEURL)s</a>\n"
 "     and enter your Username and Password. "
-msgstr "Ang iyong impormasyon sa pag-login ay nakalista sa ibaba.     Upang mag-log in sa site, bisitahin ang <a href=\"%(SITE_GLOBAL_SITEURL)s\">% (SITE_GLOBAL_SITEURL) s </a>      at ipasok ang iyong username at password."
+msgstr "Your login information is listed below.\n    To log into the site, visit <a href=\"%(SITE_GLOBAL_SITEURL)s\">%(SITE_GLOBAL_SITEURL)s</a>\n     and enter your Username and Password. "
 
 #: core/newsletters/templates/newsletters/login.txt:12
 msgid "If you have any questions, please contact the Site Administrator."
@@ -24042,7 +24042,7 @@ msgid ""
 "\n"
 "       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href=\"%(newsletter_changelist_url)s\">Newsletter Templates</a> see your templates and generate new email newsletters.</p>\n"
 "       "
-msgstr "\n<p> Sinusuportahan ng Tendenci pagbuo ng mga newsletter na HTML na maaaring makopya ang karamihan sa mga 3rd party na email newsletter provider. Pumunta sa <a href=\"%(newsletter_changelist_url)s\"> Newsletter Template Tendenci ang </a> makita ang iyong mga template at makabuo ng bagong mga newsletter sa email. </p>"
+msgstr "\n\n       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href=\"%(newsletter_changelist_url)s\">Newsletter Templates</a> see your templates and generate new email newsletters.</p>\n       "
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:51
 msgid "MailChimp"
@@ -24063,7 +24063,7 @@ msgid ""
 "               to MailChimp.\n"
 "           </div>\n"
 "           "
-msgstr "\n<div class=\"tpn-detail\">                 <a href=\"http://mailchimp.com\" target=\"_blank\"> MailChimp </a> ay tumutulong sa iyo upang magdisenyo ng email                mga kampanya, ibahagi ang mga ito sa mga social network, ipagsama sa                mga serbisyo sa web, pamahalaan ang mga subscriber, at subaybayan ang iyong mga resulta. <a href=\"\" target=\"_blank\"> Higit pa ... </a>                 <br /> <br />                MailChimp ay hindi isinama sa Tendenci. Upang magsimula, maaari kang                mga user <a href=\"%(profile_export_url)s\"> export </a>                sa MailChimp.             </div>"
+msgstr "\n\n           <div class=\"tpn-detail\">\n               <a href=\"http://mailchimp.com\" target=\"_blank\">MailChimp</a> helps you to design email\n               campaigns, share them on social networks, integrate with\n               web services, manage subscribers, and track your results. <a href=\"\" target=\"_blank\">More...</a>\n\n               <br /><br />\n               MailChimp is not integrated with Tendenci. To start, you can\n               <a href=\"%(profile_export_url)s\">export users</a>\n               to MailChimp.\n           </div>\n           "
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:73
 msgid "Constant Contact"
@@ -24083,7 +24083,7 @@ msgid ""
 "               to Constant Contact.\n"
 "           </div>\n"
 "           "
-msgstr "\n<div class=\"tpn-detail\">                 <a href=\"http://search.constantcontact.com/mainpage.jsp\" target=\"_blank\"> marketing sa email ni patuloy Makipag-ugnay sa </a> ay madali para sa iyo upang kumonekta sa iyong mga customer,                at para sa mga customer na ibahagi ang iyong mensahe sa kanilang mga network. <a href=\"\" target=\"_blank\"> Higit pa ... </a>             <br /> <br />                Makipag-ugnay sa pare-pareho ay hindi isinama sa Tendenci. Upang magsimula, maaari kang                mga user <a href=\"%(profile_export_url)s\"> export </a>                upang patuloy na Contact.             </div>"
+msgstr "\n\n           <div class=\"tpn-detail\">\n               <a href=\"http://search.constantcontact.com/mainpage.jsp\" target=\"_blank\">Constant Contact</a>'s email marketing is easy for you to connect with your customers,\n               and for customers to share your message with their networks. <a href=\"\" target=\"_blank\">More...</a>\n\n           <br /><br />\n               Constant Contact is not integrated with Tendenci. To start, you can\n               <a href=\"%(profile_export_url)s\">export users</a>\n               to Constant Contact.\n           </div>\n           "
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:99
 msgid ""
@@ -24092,7 +24092,7 @@ msgid ""
 "               makes it easy for your to send beautiful email newsletters and\n"
 "               manage your subscribers. <a href=\"\" target=\"_blank\">More...</a>\n"
 "           "
-msgstr "\n                &lt;a href=&quot;http://www.campaignmonitor.com/&quot; Monitor &lt;/a&gt; target=&quot;_blank&quot;&gt; Kampanya                Ginagawang madali para sa iyong upang magpadala ng magagandang mga newsletter na email at                pamahalaan ang iyong mga subscriber. &lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt; Higit pa ... &lt;/a&gt;            "
+msgstr "\n\n               <a href=\"http://www.campaignmonitor.com/\" target=\"_blank\">Campaign Monitor</a>\n               makes it easy for your to send beautiful email newsletters and\n               manage your subscribers. <a href=\"\" target=\"_blank\">More...</a>\n           "
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:111
 msgid ""
@@ -25440,7 +25440,7 @@ msgid ""
 "This page requires a login. Please <a "
 "href=\"/accounts/login/?next=%(full_path)s\">log in</a> if you have an "
 "account"
-msgstr "Nangangailangan ang pahinang ito ng pag-login. Mangyaring <a href=\"/accounts/login/?next=%(full_path)s\"> mag-log in </a> kung mayroon kang isang account"
+msgstr "This page requires a login. Please <a href=\"/accounts/login/?next=%(full_path)s\">log in</a> if you have an account"
 
 #: templates/403.html:14
 msgid ""
@@ -25508,7 +25508,7 @@ msgstr "Inabisuhan kami ng mga ito at nagtatrabaho sa ito mabilis."
 msgid ""
 "You may want to <a href=\"%(reqpath)s\">try this page again</a> in a little "
 "bit."
-msgstr "Baka gusto mong <a href=\"%(reqpath)s\"> subukan muli </a> ang pahinang ito sa ilang sandali."
+msgstr "You may want to <a href=\"%(reqpath)s\">try this page again</a> in a little bit."
 
 #: templates/default.html:18 templates/homepage.html:21
 msgid "Website tagline"
@@ -25777,7 +25777,7 @@ msgid ""
 "<div>\n"
 "    <p>You can <a href=\"%(hist_logs_url)s\">view historical reports</a> or go to the <a href=\"%(logs_search)s\">Event log search</a> to see the latest event logs.</p>\n"
 "</div>\n"
-msgstr "\n<div>      <p> Maaari mong <a href=\"%(hist_logs_url)s\"> makasaysayang mga ulat </a> o pumunta sa <a href=\"%(logs_search)s\"> paghahanap ng log ng Kaganapan </a> upang makita ang pinakabagong mga log ng kaganapan. </p> </div>\n"
+msgstr "\n\n<div>\n    <p>You can <a href=\"%(hist_logs_url)s\">view historical reports</a> or go to the <a href=\"%(logs_search)s\">Event log search</a> to see the latest event logs.</p>\n</div>\n\n"
 
 #: templates/reports/grace_period_members.html:6
 msgid "Members in Grace Period"
@@ -26401,7 +26401,7 @@ msgstr "I-edit ang %(t)s"
 #: templates/theme_includes/setting_edit_form.html:19
 #, python-format
 msgid "Change %(t)s Content "
-msgstr "Baguhin ang% s Nilalaman (t)"
+msgstr "Change %(t)s Content "
 
 #: templates/theme_includes/setting_edit_form.html:26
 #, python-format
@@ -26409,7 +26409,7 @@ msgid ""
 "You can change this space's content by choosing one of the content options "
 "or any <a href=\"/boxes/add/?next=%(request.path)s\">boxes</a> you have "
 "added."
-msgstr "Maaari mong baguhin ang nilalaman ng puwang na ito sa pamamagitan ng pagpili ng isa sa mga pagpipilian ng nilalaman o anumang <a href=\"/boxes/add/?next=%(request.path)s\"> mga kahon </a> na iyong idinagdag."
+msgstr "You can change this space's content by choosing one of the content options or any <a href=\"/boxes/add/?next=%(request.path)s\">boxes</a> you have added."
 
 #: templates/theme_includes/setting_edit_form.html:29
 #: templates/theme_includes/setting_edit_form.html:43
@@ -26453,7 +26453,7 @@ msgid ""
 "<p><a href=\"/stories/add/?tags=%(TEMPLATE_STORIES_SPONSORS_TAG)s\">Add a "
 "story</a> and tag it <strong>%(TEMPLATE_STORIES_SPONSORS_TAG)s</strong> to "
 "have it appear as an image above.</p>"
-msgstr "<p> <a href=\"/stories/add/?tags=%(TEMPLATE_STORIES_SPONSORS_TAG)s\"> Magdagdag ng isang kuwento </a> at i-tag ito <strong>% (TEMPLATE_STORIES_SPONSORS_TAG) s </strong> upang magkaroon ito lilitaw bilang isang imahe sa itaas. </p>"
+msgstr "<p><a href=\"/stories/add/?tags=%(TEMPLATE_STORIES_SPONSORS_TAG)s\">Add a story</a> and tag it <strong>%(TEMPLATE_STORIES_SPONSORS_TAG)s</strong> to have it appear as an image above.</p>"
 
 #: templates/theme_includes/stories_tagged_featured.html:15
 msgid "Business Strategy"

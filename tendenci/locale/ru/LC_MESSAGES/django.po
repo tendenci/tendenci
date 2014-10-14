@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-13 03:49+0000\n"
-"PO-Revision-Date: 2014-10-13 04:02+0000\n"
-"Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
+"POT-Creation-Date: 2014-10-13 18:42+0000\n"
+"PO-Revision-Date: 2014-10-13 20:01+0000\n"
+"Last-Translator: Jayjay Montalbo <jayjay@bixly.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/tendenci/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -258,7 +258,7 @@ msgid ""
 "Additional Options for Authorship <i class=\"gauthor-help fa fa-lg fa-"
 "question-circle\"></i><br>Additional Options for Publisher <i class=\"gpub-"
 "help fa fa-lg fa-question-circle\"></i>"
-msgstr "Дополнительные параметры для Авторство &lt;Класс I = &quot;gauthor-помочь фа фа-LG FA-вопрос-круг&quot;&gt; &lt;/ I&gt; инструменты Дополнительные параметры для Publisher &lt;класс я = &quot;gpub-помочь фа фа-LG FA-question- Круг &quot;&gt; &lt;/ I&gt;"
+msgstr "Additional Options for Authorship <i class=\"gauthor-help fa fa-lg fa-question-circle\"></i><br>Additional Options for Publisher <i class=\"gpub-help fa fa-lg fa-question-circle\"></i>"
 
 #: addons/articles/forms.py:79 addons/events/forms.py:126
 #: addons/events/forms.py:155 apps/user_groups/forms.py:43
@@ -473,7 +473,7 @@ msgstr "Неверный группу, выбранную."
 
 #: addons/articles/management.py:9
 msgid "Article Added"
-msgstr "Статья добавленa"
+msgstr "Статья Добавлено"
 
 #: addons/articles/management.py:9
 msgid "An article has been added."
@@ -481,7 +481,7 @@ msgstr "Статья была добавлена."
 
 #: addons/articles/management.py:11
 msgid "Article Deleted"
-msgstr "Статья удалена"
+msgstr "Статья Удаленные"
 
 #: addons/articles/management.py:11
 msgid "An article has been deleted"
@@ -962,7 +962,7 @@ msgstr "%(body)s"
 #: addons/jobs/templates/jobs/delete.html:25
 #: addons/locations/templates/locations/delete.html:19
 msgid "Are you sure you want to permanently delete this"
-msgstr "Вы уверены, что хотите временно удалить этот"
+msgstr "Вы уверены, что хотите удалить этот"
 
 #: addons/articles/templates/articles/delete.html:25
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:38
@@ -979,7 +979,7 @@ msgstr "Вы уверены, что хотите временно удалить
 #: apps/pages/templates/pages/delete.html:25
 #: apps/stories/templates/stories/delete.html:31
 msgid "Confirm Delete"
-msgstr "Подтвердить удаление"
+msgstr "Confirm Delete"
 
 #: addons/articles/templates/articles/delete.html:28
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:41
@@ -1184,7 +1184,7 @@ msgid ""
 "                <p>The export file is ready, click the download link below to download.</p>\n"
 "                <div><a href=\"%(dl_url)s\">Download Now</a></div>\n"
 "                "
-msgstr "\n\n<p> Файл экспорта готова, нажмите на ссылку ниже, чтобы загрузить. </p>                  <div> <a href=\"%(dl_url)s\"> Загрузить </a> </div>"
+msgstr "\n\n                <p>The export file is ready, click the download link below to download.</p>\n                <div><a href=\"%(dl_url)s\">Download Now</a></div>\n                "
 
 #: addons/articles/templates/articles/export-status.html:32
 msgid ""
@@ -1192,7 +1192,7 @@ msgid ""
 "                <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>\n"
 "                <p>In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!</p>\n"
 "                "
-msgstr "\n\n<p> Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий эту страницу </strong>. </p>                  <p> В то же время, мы сообщим вам по электронной почте после того, как экспорт готов. Спасибо за ваше терпение! </p>"
+msgstr "\n<p> Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий эту страницу </strong>. </p>                  <p> В то же время, мы сообщим вам по электронной почте после того, как экспорт готов. Спасибо за ваше терпение! </p>"
 
 #: addons/articles/templates/articles/export.html:20
 msgid "Articles Export"
@@ -1638,7 +1638,7 @@ msgstr "Изменение категорий"
 #: core/payments/templates/payments/nav.html:14
 #: core/site_settings/templates/site_settings/nav.html:9
 msgid "Tendenci"
-msgstr "Tendenci"
+msgstr "Тенденция"
 
 #: addons/articles/templates/articles/nav.html:23
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:14
@@ -1998,7 +1998,7 @@ msgstr "Найдено"
 #: addons/jobs/templates/jobs/my_pending_jobs.html:33
 #: addons/jobs/templates/jobs/search.html:34
 msgid "Add a new"
-msgstr "Добавить новую"
+msgstr "Добавить новый"
 
 #: addons/articles/templates/articles/view.html:29
 #: addons/news/templates/news/view.html:38
@@ -2049,7 +2049,7 @@ msgid ""
 "    </p>\n"
 "    <P>Time submitted:  %(date_today)s</P>\n"
 "    "
-msgstr "\n\n<p>         Здравствуйте% (user.first_name) с, <br /> <br />         Ваше экспорт статьи готов.          <br /> <br />         Чтобы скачать файл экспорта, перейдите по ссылке: <br />          <a href=\"%(site_url)s%(download_url)s\">% (site_url) S% (download_url) с </a>          <br /> <br />         Обратите внимание, что ссылка для скачивания истекает в течение одной недели.          <br /> <br />         Спасибо, <br />         % (site_display_name) с          <br /> <br />      </p>      <P> Время представлены:% (date_today) с </P>"
+msgstr "\n\n    <p>\n        Hello %(user.first_name)s,<br /><br />\n        Your articles export is ready.\n        <br /><br />\n\n        To download the export file, go to: <br />\n        <a href=\"%(site_url)s%(download_url)s\">%(site_url)s%(download_url)s</a>\n        <br /><br />\n        Note that the download link will expire in one week.\n        <br /><br />\n        Thanks,<br />\n        %(site_display_name)s\n        <br /><br />\n    </p>\n    <P>Time submitted:  %(date_today)s</P>\n    "
 
 #: addons/articles/templates/notification/article_added/full.html:7
 msgid "Article Add Notice"
@@ -2567,7 +2567,7 @@ msgstr "Скриншот:"
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:39
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:33
 msgid " Not Available"
-msgstr "Не доступно"
+msgstr " Недоступен"
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:41
 #: addons/campaign_monitor/templates/campaign_monitor/templates/options.html:10
@@ -2605,7 +2605,7 @@ msgid ""
 "                    Click <a href=\"%(template.cm_preview_url)s\">here</a>\n"
 "                    to view the rendered version on Campaign Monitor.\n"
 "                    "
-msgstr "\n\nНажмите <a href=\"%(template.cm_preview_url)s\"> здесь </a>                     Чтобы смотреть оказанное версию на мониторе кампании."
+msgstr "\n\n                    Click <a href=\"%(template.cm_preview_url)s\">here</a>\n                    to view the rendered version on Campaign Monitor.\n                    "
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:53
 #, python-format
@@ -2614,7 +2614,7 @@ msgid ""
 "                    Click <a href=\"%(rendered_url)s\">here</a>\n"
 "                    to view a rendered version of the html with the latest data.\n"
 "                    "
-msgstr "\n\nНажмите <a href=\"%(rendered_url)s\"> здесь </a>                     для просмотра вынесенное версию HTML с последними данными."
+msgstr "\n\n                    Click <a href=\"%(rendered_url)s\">here</a>\n                    to view a rendered version of the html with the latest data.\n                    "
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:60
 #, python-format
@@ -2623,7 +2623,7 @@ msgid ""
 "                    Click <a href=\"%(update_url)s\">here</a>\n"
 "                    to use the same files to update this template.\n"
 "                    "
-msgstr "\n\nНажмите <a href=\"%(update_url)s\"> здесь </a>                     использовать те же файлы для обновления этого шаблона."
+msgstr "\n\n                    Click <a href=\"%(update_url)s\">here</a>\n                    to use the same files to update this template.\n                    "
 
 #: addons/careers/forms.py:34
 msgid "Career Information"
@@ -2631,7 +2631,7 @@ msgstr "Карьера Информация"
 
 #: addons/careers/models.py:12
 msgid "Full Time"
-msgstr "Полная"
+msgstr "Полный рабочий день"
 
 #: addons/careers/models.py:13
 msgid "Part Time"
@@ -2682,7 +2682,7 @@ msgstr "Должность"
 
 #: addons/careers/models.py:27
 msgid "Position Description"
-msgstr "Описание должности"
+msgstr "Положение Описание"
 
 #: addons/careers/models.py:30 addons/jobs/templates/jobs/print-view.html:39
 msgid "Position Type"
@@ -2844,7 +2844,7 @@ msgstr "Пожалуйста, выберите общественности ко
 
 #: addons/corporate_memberships/forms.py:336
 msgid "This secret code is already taken. Please use a different one."
-msgstr "Этот секретный код уже занят. Пожалуйста, используйте другой."
+msgstr "Этот секретный код уже занято. Пожалуйста, используйте другой."
 
 #: addons/corporate_memberships/forms.py:380 addons/directories/forms.py:261
 #: addons/jobs/forms.py:39
@@ -3003,7 +3003,7 @@ msgstr "Город"
 #: templates/reports/renewal_period_members.html:16
 #: templates/reports/renewed_members.html:36
 msgid "State"
-msgstr "Штат"
+msgstr "Государство"
 
 #: addons/corporate_memberships/forms.py:505 addons/directories/models.py:53
 #: addons/events/settings.py:28
@@ -3058,7 +3058,7 @@ msgstr "Содержит"
 #: apps/invoices/forms.py:34 apps/profiles/forms.py:54
 #: core/payments/forms.py:78
 msgid "Exact"
-msgstr "Точный"
+msgstr "Точное"
 
 #: addons/corporate_memberships/forms.py:513
 #: addons/corporate_memberships/forms.py:544
@@ -3073,7 +3073,7 @@ msgstr "Название компании"
 
 #: addons/corporate_memberships/forms.py:527
 msgid "Show Active Only"
-msgstr "Показать только активные"
+msgstr "Показать активность только"
 
 #: addons/corporate_memberships/forms.py:564
 #: addons/corporate_memberships/models.py:637
@@ -3313,7 +3313,7 @@ msgstr "Электронная почта домена"
 #: addons/corporate_memberships/models.py:90
 #: addons/photos/templates/photos/sizes.html:48
 msgid "Small"
-msgstr "Маленький"
+msgstr "Малый"
 
 #: addons/corporate_memberships/models.py:91 addons/photos/models.py:67
 msgid "Medium"
@@ -4380,7 +4380,7 @@ msgid ""
 "\n"
 "                        %(label)s - %(error)s\n"
 "                        "
-msgstr "\n\n%(label)s - %(error)s"
+msgstr "\n%(label)s - %(error)s"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:169
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:193
@@ -4418,7 +4418,7 @@ msgid ""
 "\n"
 "                  %(label_tag)s\n"
 "                "
-msgstr "\n\n%(label_tag)s"
+msgstr "\n%(label_tag)s"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:202
 msgid "Renew all individuals"
@@ -4430,7 +4430,7 @@ msgstr "Кол-во"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:234
 msgid "Unit Price"
-msgstr "Цена за штуку"
+msgstr "Цена за единицу"
 
 #: addons/corporate_memberships/templates/corporate_memberships/renewal.html:235
 msgid "Sub-total"
@@ -4558,7 +4558,7 @@ msgstr "Тип пользователей:"
 #: addons/corporate_memberships/templates/corporate_memberships/applications/delete.html:30
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search-result.html:50
 msgid "Expiration Date:"
-msgstr "Дата окончания срока действия:"
+msgstr "Срок годности:"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:82
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:145
@@ -4596,7 +4596,7 @@ msgstr "Регистрация:"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:142
 msgid "Expiration Date: "
-msgstr "Дата окончания срока действия:"
+msgstr "Срок годности:"
 
 #: addons/corporate_memberships/templates/corporate_memberships/roster_search.html:149
 msgid "Status: "
@@ -4711,7 +4711,7 @@ msgstr "%(name)s"
 #: apps/profiles/templates/profiles/import/upload.html:109
 #: libs/styled_forms/templates/styled_forms/form.html:7
 msgid "There were some problems in the form. Please review. Thanks!"
-msgstr "Были некоторые проблемы в виде. Пожалуйста, ознакомьтесь. Благодаря!"
+msgstr "Были некоторые проблемы в виде. Пожалуйста, ознакомьтесь. Спасибо!"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add.html:90
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add.html:101
@@ -4721,7 +4721,7 @@ msgid ""
 "\n"
 "                        %(label)s - %(err)s\n"
 "                        "
-msgstr "\n\n%(label)s - %(err)s"
+msgstr "\n%(label)s - %(err)s"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add.html:117
 #: addons/corporate_memberships/templates/corporate_memberships/applications/edit.html:102
@@ -4786,7 +4786,7 @@ msgid ""
 "        once your corporate membership gets approved. Please make sure it's correct.\n"
 "        Thank you!\n"
 "        "
-msgstr "\n\n         Давайте начнем ... контактный адрес электронной почты будет использоваться только для         Написать вам по электронной почте         как только ваш корпоративный членство будет принят. Пожалуйста, убедитесь, что это правильно.         Спасибо!         "
+msgstr "\n         Давайте начнем ... контактный адрес электронной почты будет использоваться только для         Написать вам по электронной почте         как только ваш корпоративный членство будет принят. Пожалуйста, убедитесь, что это правильно.         Спасибо!         "
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/add_pre.html:32
 msgid "Continue to add corporate membership"
@@ -4941,7 +4941,7 @@ msgid ""
 "\n"
 "                    %(mcount)s Member%(mcount|pluralize)s\n"
 "                    "
-msgstr "\n\n%(mcount)s пользователей %(mcount|pluralize)s"
+msgstr "\n%(mcount)s пользователей %(mcount|pluralize)s"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search.html:9
 #: addons/corporate_memberships/templates/corporate_memberships/applications/search.html:36
@@ -5007,7 +5007,7 @@ msgid ""
 "\n"
 "               <strong>Joined</strong> on %(join_dt)s,\n"
 "               "
-msgstr "\n\n<strong> Регистрация </strong> на %(join_dt)s,"
+msgstr "\n<strong> Регистрация </strong> на %(join_dt)s,"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:250
 #, python-format
@@ -5015,7 +5015,7 @@ msgid ""
 "\n"
 "               <strong>Renewed</strong> on %(renew_dt)s,\n"
 "               "
-msgstr "\n\n<strong> Обновлено </strong> на %(renew_dt)s,"
+msgstr "\n<strong> Обновлено </strong> на %(renew_dt)s,"
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:256
 #, python-format
@@ -5023,7 +5023,7 @@ msgid ""
 "\n"
 "               <strong>expired</strong> on %(exp_dt)s.\n"
 "               "
-msgstr "\n\n<strong> истек </strong> на %(exp_dt)s."
+msgstr "\n<strong> истек </strong> на %(exp_dt)s."
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:260
 #, python-format
@@ -5031,7 +5031,7 @@ msgid ""
 "\n"
 "               <strong>expires</strong> on %(exp_dt)s.\n"
 "               "
-msgstr "\n\n<strong> истекает </strong> на %(exp_dt)s."
+msgstr "\n<strong> истекает </strong> на %(exp_dt)s."
 
 #: addons/corporate_memberships/templates/corporate_memberships/applications/view.html:265
 #: addons/events/ics/models.py:18 apps/boxes/admin.py:42
@@ -5051,7 +5051,7 @@ msgid ""
 "\n"
 "               status: <strong>%(stat)s</strong>\n"
 "               "
-msgstr "\n\nСтатус: <strong> %(stat)s </strong>"
+msgstr "\nСтатус: <strong> %(stat)s </strong>"
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/preview.html:8
 msgid "Import Corporate Memberships from CSV file - Preview"
@@ -5302,7 +5302,7 @@ msgid ""
 "\n"
 "        Please <a href=\"%(corp_add)s\">set up corporate membership types</a> before proceeding.\n"
 "        "
-msgstr "\n\nПожалуйста, <a href=\"%(corp_add)s\"> настроить корпоративные виды членства </a> прежде чем продолжить."
+msgstr "\n\n        Please <a href=\"%(corp_add)s\">set up corporate membership types</a> before proceeding.\n        "
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:78
 #: addons/memberships/templates/memberships/import_default/upload.html:87
@@ -5328,7 +5328,7 @@ msgid ""
 "\n"
 "               Both <strong>authorized_domains</strong> and <strong>dues_rep</strong> are comma separated. Use username for <strong>dues_rep</strong>.\n"
 "            "
-msgstr "\n\nОба <strong> authorized_domains </strong> и <strong> dues_rep </strong> разделяются запятыми. Используйте имя пользователя для <strong> dues_rep </strong>."
+msgstr "\nОба <strong> authorized_domains </strong> и <strong> dues_rep </strong> разделяются запятыми. Используйте имя пользователя для <strong> dues_rep </strong>."
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:92
 msgid ""
@@ -5336,21 +5336,21 @@ msgid ""
 "               If the <strong>corporate_membership_type</strong> is not present in the spreadsheet, the first corporate membership type\n"
 "               in the system will be used.\n"
 "            "
-msgstr "\n\nЕсли <strong> corporate_membership_type </strong> не присутствует в таблице, первый корпоративного типа членства                в системе будет использоваться."
+msgstr "\nЕсли <strong> corporate_membership_type </strong> не присутствует в таблице, первый корпоративного типа членства                в системе будет использоваться."
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:98
 msgid ""
 "\n"
 "               The data type of ForeignKey fields (ex: corporate_membership_type) is <strong>integer</strong>. So, please fill the ForeignKey fields with IDs.\n"
 "            "
-msgstr "\n\nТип данных ForeignKey полей (например: corporate_membership_type) является <strong> целое </strong>. Поэтому, пожалуйста, заполните ForeignKey поля с идентификаторами."
+msgstr "\nТип данных ForeignKey полей (например: corporate_membership_type) является <strong> целое </strong>. Поэтому, пожалуйста, заполните ForeignKey поля с идентификаторами."
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:103
 msgid ""
 "\n"
 "               Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.\n"
 "            "
-msgstr "\n\nИспользуйте имена полей в <strong> Шаблон </strong>. Порядок имен полей не имеет значения."
+msgstr "\nИспользуйте имена полей в <strong> Шаблон </strong>. Порядок имен полей не имеет значения."
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:109
 #: addons/memberships/templates/memberships/import_default/upload.html:112
@@ -5384,7 +5384,7 @@ msgid ""
 "\n"
 "                    %(label)s - %(err)s\n"
 "                    "
-msgstr "\n\n%(label)s - %(err)s"
+msgstr "\n%(label)s - %(err)s"
 
 #: addons/corporate_memberships/templates/corporate_memberships/imports/upload.html:180
 #: addons/memberships/templates/memberships/import_default/upload.html:181
@@ -5432,7 +5432,7 @@ msgid ""
 "\n"
 "This e-mail was generated by Tendenci&reg; Software - a web based membership management software solution\n"
 "<a href=\"http://www.tendenci.com\">www.tendenci.com</a> developed by <a href=\"http://schipul.com\">Schipul - The Web Marketing Company</a>\n"
-msgstr "\n\nЭто электронная почта была порождена Tendenci &amp; обл; Программное обеспечение - веб-решение для управления программным обеспечением членство <a href=\"http://www.tendenci.com\"> www.tendenci.com </a> разработан <a href=\"http://schipul.com\"> Schipul - Веб-маркетинг компании </a>\n\n"
+msgstr "\nЭто электронная почта была порождена Tendenci &amp; обл; Программное обеспечение - веб-решение для управления программным обеспечением членство <a href=\"http://www.tendenci.com\"> www.tendenci.com </a> разработан <a href=\"http://schipul.com\"> Schipul - Веб-маркетинг компании </a>\n"
 
 #: addons/corporate_memberships/templates/corporate_memberships/notices/log_view.html:7
 #: addons/corporate_memberships/templates/corporate_memberships/notices/log_view.html:19
@@ -5741,7 +5741,7 @@ msgstr "Ваша корпоративная членство &quot; %(objname)s&
 
 #: addons/corporate_memberships/templates/notification/corp_memb_join_approved/full.html:15
 msgid "To add individual memberships under your corporate, go to:\n"
-msgstr "Чтобы добавить отдельные членство в ваш корпоративный, перейдите по ссылке: \n\n"
+msgstr "Чтобы добавить отдельные членство в ваш корпоративный, перейдите по ссылке: \n"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_join_approved/full.html:21
 msgid "<b>secret code</b>:"
@@ -5787,7 +5787,7 @@ msgid ""
 "(The authorized e-mail domain will authenticate prospective\n"
 "        members as they apply for membership under this corporation)<br />\n"
 "<b>\n"
-msgstr "\n\n<b> Уполномоченный домен электронной почты </b>: <br /> (Уполномоченное домена электронной почты будет аутентификации перспективным         Участники, как они применяются на членство в этой корпорации) <br /> <b>\n\n"
+msgstr "\n<b> Уполномоченный домен электронной почты </b>: <br /> (Уполномоченное домена электронной почты будет аутентификации перспективным         Участники, как они применяются на членство в этой корпорации) <br /> <b>\n"
 
 #: addons/corporate_memberships/templates/notification/corp_memb_notice_email/full.html:4
 #, python-format
@@ -6225,7 +6225,7 @@ msgstr "для %(name)s в %(location)s"
 #: addons/directories/templates/directories/base.html:7
 #, python-format
 msgid "  %(location)s, %(name)s, white papers, %(keys)s"
-msgstr "  % (расположение) с,% (имя), официальные документы,% (ключей) с с"
+msgstr "  %(location)s, %(name)s, white papers, %(keys)s"
 
 #: addons/directories/templates/directories/delete.html:8
 #: addons/events/templates/events/delete.html:9
@@ -6247,7 +6247,7 @@ msgid ""
 "\n"
 "                %(summary)s\n"
 "                "
-msgstr "\n\n%(summary)s"
+msgstr "\n%(summary)s"
 
 #: addons/directories/templates/directories/edit-meta.html:17
 #: apps/pages/templates/pages/edit-meta.html:17
@@ -6276,7 +6276,7 @@ msgid ""
 "\n"
 "            <strong>Note</strong>: An email will be sent to you at <strong>%(request.user.email)s</strong> once the export is ready.\n"
 "            "
-msgstr "\n\n<strong> Примечание </strong>: адрес электронной почты будет отправлено Вам на <strong> %(request.user.email)s </strong>, как только экспорт готов."
+msgstr "\n<strong> Примечание </strong>: адрес электронной почты будет отправлено Вам на <strong> %(request.user.email)s </strong>, как только экспорт готов."
 
 #: addons/directories/templates/directories/export_status.html:8
 msgid "Export Directories - Status"
@@ -6296,7 +6296,7 @@ msgid ""
 "                <a href=\"%(dl_url)s\">Download Now</a>\n"
 "            </div>\n"
 "            "
-msgstr "\n\n<p> Файл экспорта готова, нажмите на ссылку ниже, чтобы загрузить. </p>              <div>                  <a href=\"%(dl_url)s\"> Скачать сейчас </a>              </div>"
+msgstr "\n\n            <p>The export file is ready, click the download link below to download.</p>\n            <div>\n                <a href=\"%(dl_url)s\">Download Now</a>\n            </div>\n            "
 
 #: addons/directories/templates/directories/export_status.html:33
 #: apps/profiles/templates/profiles/export_status.html:30
@@ -6305,7 +6305,7 @@ msgid ""
 "    <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>\n"
 "    <p>In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!</p>\n"
 "    "
-msgstr "\n\n<p> Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий эту страницу </strong>. </p>      <p> В то же время, мы сообщим вам по электронной почте после того, как экспорт готов. Спасибо за ваше терпение! </p>"
+msgstr "\n<p> Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий эту страницу </strong>. </p>      <p> В то же время, мы сообщим вам по электронной почте после того, как экспорт готов. Спасибо за ваше терпение! </p>"
 
 #: addons/directories/templates/directories/invoice_search_result_line.html:10
 #: apps/invoices/forms.py:88
@@ -6535,7 +6535,7 @@ msgid ""
 "\n"
 "                Submitted on %(dt)s by %(creator)s\n"
 "                "
-msgstr "\n\nПредставленные на %(dt)s помощью %(creator)s"
+msgstr "\nПредставленные на %(dt)s помощью %(creator)s"
 
 #: addons/directories/templates/directories/renew.html:26
 #, python-format
@@ -6543,7 +6543,7 @@ msgid ""
 "\n"
 "            You are renewing: %(headline)s. Click submit below to complete your renewal.\n"
 "            "
-msgstr "\n\nВы продлеваете: %(headline)s. Нажмите на кнопку расположенную ниже, чтобы завершить обновление."
+msgstr "\nВы продлеваете: %(headline)s. Нажмите на кнопку расположенную ниже, чтобы завершить обновление."
 
 #: addons/directories/templates/directories/renew.html:34
 msgid "Submit Renewal"
@@ -6554,7 +6554,7 @@ msgid ""
 "\n"
 "        <p>Sorry, this directory isn't available for renewal right now. Please contact your site administrator with any questions.</p>\n"
 "        "
-msgstr "\n\n<p> К сожалению, этот каталог не доступен для обновления прямо сейчас. Пожалуйста, обратитесь к администратору сайта с любыми вопросами. </p>"
+msgstr "\n<p> К сожалению, этот каталог не доступен для обновления прямо сейчас. Пожалуйста, обратитесь к администратору сайта с любыми вопросами. </p>"
 
 #: addons/directories/templates/directories/search-form.html:5
 msgid "Search by"
@@ -6690,7 +6690,7 @@ msgstr "Обратите внимание, что ссылка для скачи
 #: apps/profiles/templates/profiles/notices/export_ready_body.html:23
 #: apps/user_groups/templates/user_groups/exports/export_ready_body.html:21
 msgid "Thanks"
-msgstr "Благодаря"
+msgstr "Спасибо"
 
 #: addons/directories/templates/directories/notices/export_ready_body.html:28
 #: addons/events/templates/events/notices/export_ready_body.html:28
@@ -6740,7 +6740,7 @@ msgstr "Телосложение:"
 msgid ""
 "\n"
 "    To view the details of this directory, go to:"
-msgstr "\n\n     Для просмотра сведений о данном каталоге, перейдите по ссылке:"
+msgstr "\n     Для просмотра сведений о данном каталоге, перейдите по ссылке:"
 
 #: addons/directories/templates/notification/directory_added/full.html:36
 #: addons/directories/templates/notification/directory_renewed/full.html:36
@@ -6812,7 +6812,7 @@ msgstr "Ваш списка каталогов на %(SITE_GLOBAL_SITEDISPLAYNAM
 msgid ""
 "\n"
 "    To renew this directory, go to:"
-msgstr "\n\n     Чтобы продлить этот каталог, перейдите по ссылке:"
+msgstr "\n     Чтобы продлить этот каталог, перейдите по ссылке:"
 
 #: addons/directories/templates/notification/directory_renewal_eligible/short.txt:3
 #, python-format
@@ -8268,7 +8268,7 @@ msgid ""
 "             if it is\n"
 "            associated with an event.</p>\n"
 "        "
-msgstr "\n\n<p class=\"preview-reminder\"> Это просто <span style=\"color:#000;\"> Предварительный </span>.             Реальный взгляд можно рассматривать только через регистрацию событий              если это             связана с событием. </p>"
+msgstr "\n<p class=\"preview-reminder\"> Это просто <span style=\"color:#000;\"> Предварительный </span>.             Реальный взгляд можно рассматривать только через регистрацию событий              если это             связана с событием. </p>"
 
 #: addons/events/templates/events/day-view.html:32
 msgid "Event List for"
@@ -8308,7 +8308,7 @@ msgid ""
 "<p>Form more information click here %(event_link)s</p>\n"
 "\n"
 "<p>You're receiving this email because you have registered for this event.</p>\n"
-msgstr "\n\n<p> Форма получения дополнительной информации нажмите здесь %(event_link)s </p> <p> Вы получили это письмо, потому что вы зарегистрировались на этом мероприятии. </p>\n\n"
+msgstr "\n<p> Форма получения дополнительной информации нажмите здесь %(event_link)s </p> <p> Вы получили это письмо, потому что вы зарегистрировались на этом мероприятии. </p>\n"
 
 #: addons/events/templates/events/delete.html:11
 msgid "Are you sure you want to permanently delete this event?"
@@ -8376,7 +8376,7 @@ msgid ""
 "\n"
 "            These changes would be applied to every event part of this series, including past events. Are you sure?\n"
 "            "
-msgstr "\n\n             Эти изменения будут применяться к каждой части событий этой серии, в том числе прошлых событий. Вы уверены?             "
+msgstr "\n             Эти изменения будут применяться к каждой части событий этой серии, в том числе прошлых событий. Ты уверен?             "
 
 #: addons/events/templates/events/edit_email.html:7
 msgid "Edit Email for Registration Confirmation and Reminders"
@@ -8394,7 +8394,7 @@ msgid ""
 "        <li>The event reminders to the registrants </li>\n"
 "        </ul>\n"
 "        "
-msgstr "\n\nЭто E-mail используется для:          <ul>          <li> В напоминаний о событиях регистрантов </li>          </ul>"
+msgstr "\nЭто E-mail используется для:          <ul>          <li> В напоминаний о событиях регистрантов </li>          </ul>"
 
 #: addons/events/templates/events/edit_email.html:48
 #: addons/events/templates/events/registrants/global-search.html:95
@@ -8461,7 +8461,7 @@ msgid ""
 "        <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>\n"
 "        <p>In the meantime, we'll notify you via email at <strong>%(request.user.email)s</strong> once the export is ready. Thank you for your patience!</p>\n"
 "        "
-msgstr "\n\n<p> Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий эту страницу </strong>. </p>          <p> В то же время, мы сообщим вам по электронной почте в <strong> %(request.user.email)s </strong>, как только экспорт готов. Спасибо за ваше терпение! </p>"
+msgstr "\n<p> Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий эту страницу </strong>. </p>          <p> В то же время, мы сообщим вам по электронной почте в <strong> %(request.user.email)s </strong>, как только экспорт готов. Спасибо за ваше терпение! </p>"
 
 #: addons/events/templates/events/financial_reports.html:9
 #: addons/events/templates/events/financial_reports.html:21
@@ -8787,7 +8787,7 @@ msgid ""
 "<br /><br />\n"
 "To view the details of this event, go to <a href=\"%(site_url)s%(event_url)s\">%(title)s\n"
 "</a>\n"
-msgstr "\n\nНапоминания для% (название) с которой идет вверх на % (Дт) с% (T1) с -% (T2) с были распространены среди всех зарегистрировавшихся просьбой напоминания. <br /> <br /> Для просмотра сведений о данном событии, перейдите в <a href=\"%(site_url)s%(event_url)s\">% (титул) с </a>\n\n"
+msgstr "\n\nEvent reminders for %(title)s which is coming up on\n%(dt)s %(t1)s - %(t2)s\nhave been distributed to all registrants requesting reminders.\n<br /><br />\nTo view the details of this event, go to <a href=\"%(site_url)s%(event_url)s\">%(title)s\n</a>\n\n"
 
 #: addons/events/templates/events/search-form.html:30
 msgid "Events I'm Registered"
@@ -9059,7 +9059,7 @@ msgid ""
 "\n"
 "        You (%(requser)s) are importing the following file at (time)\n"
 "    "
-msgstr "\n\nВы ( %(requser)sы) импортируем следующий файл в (время)"
+msgstr "\nВы ( %(requser)sы) импортируем следующий файл в (время)"
 
 #: addons/events/templates/events/imports/events_status.html:28
 msgid ""
@@ -9144,7 +9144,7 @@ msgid ""
 " Start:\n"
 "            <abbr class=\"dtstart\" title=\"%(event_start)s\"><b>%(event_starts)s%(event_tz)s</b></abbr>\n"
 "            to <abbr class=\"dtend\" title=\"%(event_end)s\"><b>%(event_ends)s%(event_tz)s</b></abbr><br />"
-msgstr "Старт:              <abbr class=\"dtstart\" title=\"%(event_start)s\"> <b>% (event_starts) S% (event_tz) с </b> </abbr>             до <abbr class=\"dtend\" title=\"%(event_end)s\"> <b>% (event_ends) с% (event_tz) с </b> </abbr> <br />"
+msgstr " Start:\n            <abbr class=\"dtstart\" title=\"%(event_start)s\"><b>%(event_starts)s%(event_tz)s</b></abbr>\n            to <abbr class=\"dtend\" title=\"%(event_end)s\"><b>%(event_ends)s%(event_tz)s</b></abbr><br />"
 
 #: addons/events/templates/events/message/opening-text.txt:29
 msgid "Location: "
@@ -9314,7 +9314,7 @@ msgid ""
 "                    <a class=\"add-registrants-link\" title='Add registrant(s)' onClick=\"add_registrants(this, 'registrant'); return false;\">\n"
 "                    Add More registrants</a>.\n"
 "                "
-msgstr "\n\nДобавить <input class=\"extra-registrants\" type=\"text\" name=\"extra-registrant-amount\" value=\"1\" />                     дополнительная регистратор (ы). Нажмите, чтобы                      <a class=\"add-registrants-link\" title='Add registrant(s)' onClick=\"add_registrants(this, 'registrant'); return false;\">                     Добавить еще регистраций </a>."
+msgstr "\nДобавить <input class=\"extra-registrants\" type=\"text\" name=\"extra-registrant-amount\" value=\"1\" />                     дополнительная регистратор (ы). Нажмите, чтобы                      <a class=\"add-registrants-link\" title='Add registrant(s)' onClick=\"add_registrants(this, 'registrant'); return false;\">                     Добавить еще регистраций </a>."
 
 #: addons/events/templates/events/reg8n/multi_register.html:276
 #, python-format
@@ -9494,7 +9494,7 @@ msgstr "Первый является основным регистраций и
 msgid ""
 "JavaScript must be enabled in order for you to use this page. Please enable\n"
 "            javascript and <a href=\"%(request.path)s\">try again</a>."
-msgstr "JavaScript должен быть включен для того, чтобы использовать эту страницу. Пожалуйста, включите             JavaScript и <a href=\"%(request.path)s\"> попробуйте снова </a>."
+msgstr "JavaScript must be enabled in order for you to use this page. Please enable\n            javascript and <a href=\"%(request.path)s\">try again</a>."
 
 #: addons/events/templates/events/reg8n/register.html:67
 #, python-format
@@ -9856,11 +9856,11 @@ msgid ""
 "                registrant information is required. The rest of the registrants can be left blank\n"
 "                if you don't know the information.\n"
 "            "
-msgstr "\n\n<strong> Только первый </strong>                 Информация о регистрации не требуется. Остальные регистраций может быть пустым                 если вы не знаете информацию."
+msgstr "\n<strong> Только первый </strong>                 Информация о регистрации не требуется. Остальные регистраций может быть пустым                 если вы не знаете информацию."
 
 #: addons/events/templates/events/registration/multi_register.html:42
 msgid "There were some problems in the forms. Please review. Thanks!"
-msgstr "Были некоторые проблемы в формах. Пожалуйста, ознакомьтесь. Благодаря!"
+msgstr "Были некоторые проблемы в формах. Пожалуйста, ознакомьтесь. Спасибо!"
 
 #: addons/events/templates/events/registration/multi_register.html:259
 msgid "Choose a pricing to add another set of registrants"
@@ -10391,7 +10391,7 @@ msgstr "%(q)s"
 
 #: addons/help_files/templates/help_files/index.html:53
 msgid "FAQ"
-msgstr "ЧАВО"
+msgstr "Часто задаваемые вопросы"
 
 #: addons/help_files/templates/help_files/index.html:61
 msgid "Most viewed"
@@ -10533,7 +10533,7 @@ msgstr "Запрашиваемая Нью Помощь файла"
 msgid ""
 "\n"
 "%(question)s\n"
-msgstr "\n\n%(question)s\n\n"
+msgstr "\n%(question)s\n"
 
 #: addons/help_files/templates/notification/help_file_requested/short.txt:3
 #, python-format
@@ -11109,7 +11109,7 @@ msgstr "Информация о компании"
 #: addons/resumes/templates/resumes/print-view.html:61
 #: apps/profiles/templates/profiles/index.html:88
 msgid "Contact Information"
-msgstr "Контактная информация"
+msgstr "Контакты"
 
 #: addons/jobs/templates/jobs/thank-you.html:8
 msgid "Your job is is under review and will be approved by an administrator"
@@ -11418,7 +11418,7 @@ msgstr "Обработка Расположение Импорт!"
 
 #: addons/locations/templates/locations/import-status.html:25
 msgid "We're not done yet! Come back and check on us again later. Thanks!"
-msgstr "Мы еще не закончили! Вернись и проверить нас еще раз позже. Благодаря!"
+msgstr "Мы еще не закончили! Вернись и проверить нас еще раз позже. Спасибо!"
 
 #: addons/locations/templates/locations/import-upload-file.html:16
 msgid "Import Locations"
@@ -11702,7 +11702,7 @@ msgstr "Кипр"
 
 #: addons/make_payments/forms.py:61
 msgid "Czech Republic"
-msgstr "Чехия"
+msgstr "Чешская Республика"
 
 #: addons/make_payments/forms.py:62
 msgid "Germany"
@@ -12454,7 +12454,7 @@ msgstr "Неизвестный или неопределенный страна"
 
 #: addons/make_payments/forms.py:256
 msgid "Make Online Payment"
-msgstr "Сделать оплату онлайн"
+msgstr "Сделайте Оплата онлайн"
 
 #: addons/make_payments/forms.py:262
 msgid "A valid e-mail address, please."
@@ -13354,7 +13354,7 @@ msgid ""
 "\n"
 "        <strong>Note</strong>: An email will be sent to you at <strong>%(request.user.email)s</strong> once the export is ready.\n"
 "        "
-msgstr "\n\n<strong> Примечание </strong>: адрес электронной почты будет отправлено Вам на <strong> %(request.user.email)s </strong>, как только экспорт готов."
+msgstr "\n<strong> Примечание </strong>: адрес электронной почты будет отправлено Вам на <strong> %(request.user.email)s </strong>, как только экспорт готов."
 
 #: addons/memberships/templates/memberships/default_export_status.html:6
 msgid "Export Memberships - Status"
@@ -13396,7 +13396,7 @@ msgid ""
 "\n"
 "        </p>\n"
 "        "
-msgstr "\n\n<p>           Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий этой странице </strong>. <br /> <br />           В то же время, мы сообщим вам по электронной почте после того, как экспорт готов. Спасибо за ваше терпение!          </p>"
+msgstr "\n<p>           Ваш запрос обрабатывается. Пожалуйста, проверьте позже <strong> освежающий этой странице </strong>. <br /> <br />           В то же время, мы сообщим вам по электронной почте после того, как экспорт готов. Спасибо за ваше терпение!          </p>"
 
 #: addons/memberships/templates/memberships/details.html:7
 #: addons/memberships/templates/memberships/details_print.html:7
@@ -13706,7 +13706,7 @@ msgstr "Архив Членство"
 msgid ""
 "\n"
 "                    %(memname)s"
-msgstr "\n\n%(memname)s"
+msgstr "\n%(memname)s"
 
 #: addons/memberships/templates/memberships/details_print.html:37
 #: addons/recurring_payments/templates/recurring_payments/index.html:161
@@ -13754,7 +13754,7 @@ msgstr "Мобильный телефон"
 
 #: addons/memberships/templates/memberships/details_print.html:457
 msgid "(you are here)"
-msgstr "(Вы находитесь здесь)"
+msgstr "(Ты здесь)"
 
 #: addons/memberships/templates/memberships/invoice_view_display.html:8
 #: addons/memberships/templates/memberships/invoice_view_display2.html:21
@@ -13847,7 +13847,7 @@ msgid ""
 "        <p>Update your membership information.</p>\n"
 "        <span> Go back to your <a href=\"%(mem_url)s\">Membership Info</a></span>\n"
 "        "
-msgstr "\n\n<p> Обновление информации о членстве. </p>          <span> Возвращайтесь в свой <a href=\"%(mem_url)s\"> Членство Info </a> </span>"
+msgstr "\n\n        <p>Update your membership information.</p>\n        <span> Go back to your <a href=\"%(mem_url)s\">Membership Info</a></span>\n        "
 
 #: addons/memberships/templates/memberships/applications/confirmation.html:20
 #, python-format
@@ -13863,7 +13863,7 @@ msgid ""
 "                    Approved on\n"
 "                    %(decision_date)s\n"
 "                    by:"
-msgstr "\n\nУтвержден                      %(decision_date)s                     по:"
+msgstr "\nУтвержден                      %(decision_date)s                     по:"
 
 #: addons/memberships/templates/memberships/applications/confirmation.html:31
 #, python-format
@@ -13872,7 +13872,7 @@ msgid ""
 "                    Denied on\n"
 "                    %(decision_date)s\n"
 "                    by:"
-msgstr "\n\nОтказано на                      %(decision_date)s                     по:"
+msgstr "\nОтказано на                      %(decision_date)s                     по:"
 
 #: addons/memberships/templates/memberships/applications/confirmation_default.html:19
 #: addons/memberships/templates/memberships/applications/confirmation_default2.html:19
@@ -13888,7 +13888,7 @@ msgstr "Представленные"
 msgid ""
 "\n"
 "                Approved on %(decision_date)s by:"
-msgstr "\n\nУтвержден %(decision_date)s помощью:"
+msgstr "\nУтвержден %(decision_date)s помощью:"
 
 #: addons/memberships/templates/memberships/applications/confirmation_default.html:32
 msgid "Anonymous"
@@ -13899,7 +13899,7 @@ msgstr "Анонимные"
 msgid ""
 "\n"
 "                Denied on %(decision_date)s by:"
-msgstr "\n\nОтказано в %(decision_date)s помощью:"
+msgstr "\nОтказано в %(decision_date)s помощью:"
 
 #: addons/memberships/templates/memberships/applications/confirmation_default.html:49
 #: apps/profiles/templates/notification/user_edited/full.html:269
@@ -14077,7 +14077,7 @@ msgstr "Инициалы"
 #: apps/profiles/templates/profiles/edit.html:78
 #: apps/profiles/templates/profiles/edit_notice.txt:126
 msgid "Display Name"
-msgstr "Показать имя"
+msgstr "Отображаемое имя"
 
 #: addons/memberships/templates/memberships/applications/detail_default.html:58
 msgid "Functional Title"
@@ -14120,7 +14120,7 @@ msgstr "Имя"
 
 #: addons/memberships/templates/memberships/applications/detail_default.html:111
 msgid "confirm password"
-msgstr "подтвердить пароль"
+msgstr "Подтвердите Пароль"
 
 #: addons/memberships/templates/memberships/applications/detail_default.html:114
 msgid "Section 2: Membership Information"
@@ -14255,7 +14255,7 @@ msgid ""
 "    <p>You are a member of every (%(c)s) membership type available in this application.</p>\n"
 "    <p>This application will be available starting at your next renewal period.</p>\n"
 "    "
-msgstr "\n\n<p> Вы являетесь участником каждого ( %(c)s) типа членства доступны в этом приложении. </p>      <p> Это приложение будет доступно начиная с вашего следующего периода обновления. </p>"
+msgstr "\n<p> Вы являетесь участником каждого ( %(c)s) типа членства доступны в этом приложении. </p>      <p> Это приложение будет доступно начиная с вашего следующего периода обновления. </p>"
 
 #: addons/memberships/templates/memberships/applications/no-renew.html:40
 msgid "This membership never expires. There is no renewal period"
@@ -14267,7 +14267,7 @@ msgid ""
 "\n"
 "            This is the preview of \"%(n)s\". Back to <a href=\"%(app_url)s\">App Edit</a>.\n"
 "            "
-msgstr "\n\nЭто предварительный просмотр &quot;% (п) ы&quot;. Вернуться к <a href=\"%(app_url)s\"> App Edit </a>."
+msgstr "\n\n            This is the preview of \"%(n)s\". Back to <a href=\"%(app_url)s\">App Edit</a>.\n            "
 
 #: addons/memberships/templates/memberships/import_default/preview.html:8
 msgid "Import Memberships from CSV file - Preview"
@@ -14310,7 +14310,7 @@ msgid ""
 "\n"
 "        Please <a href=\"%(memtype_url)s\">set up membership types</a> before proceeding.\n"
 "        "
-msgstr "\n\nПожалуйста, <a href=\"%(memtype_url)s\"> настроить типы членские </a> прежде чем продолжить."
+msgstr "\n\n        Please <a href=\"%(memtype_url)s\">set up membership types</a> before proceeding.\n        "
 
 #: addons/memberships/templates/memberships/import_default/upload.html:79
 #, python-format
@@ -14318,7 +14318,7 @@ msgid ""
 "\n"
 "        Please <a href=\"%(app_add_url)s\">set up membership applications</a> before proceeding.\n"
 "        "
-msgstr "\n\nПожалуйста, <a href=\"%(app_add_url)s\"> настроить членские приложений </a> прежде чем продолжить."
+msgstr "\n\n        Please <a href=\"%(app_add_url)s\">set up membership applications</a> before proceeding.\n        "
 
 #: addons/memberships/templates/memberships/import_default/upload.html:89
 #, python-format
@@ -14326,7 +14326,7 @@ msgid ""
 "\n"
 "        <p style=\"margin-top:0;\">Please review your membership <a href=\"%(mem_settings_url)s\">privacy settings</a> before importing.</p>\n"
 "        "
-msgstr "\n\n<p style=\"margin-top:0;\"> Пожалуйста, проверьте ваши членские режим приватности <a href=\"%(mem_settings_url)s\"> </a> перед импортом </p>."
+msgstr "\n\n        <p style=\"margin-top:0;\">Please review your membership <a href=\"%(mem_settings_url)s\">privacy settings</a> before importing.</p>\n        "
 
 #: addons/memberships/templates/memberships/import_default/upload.html:93
 msgid ""
@@ -14348,7 +14348,7 @@ msgid ""
 "           </li>\n"
 "        </ul>\n"
 "        "
-msgstr "\n\n<h3> Как подготовить таблицы (CSV файл)? </h3>          <ul>             <li>                Обязательными полями являются поле (ы) в выбранном ключе (см второе поле ниже).             </li>             <li>                Если <strong> membership_type </strong> не присутствует в таблице, первого типа членства                в системе будет использоваться.             </li>             <li>                Тип данных ForeignKey полей (например: membership_type) является <strong> целое </strong>. Поэтому, пожалуйста, заполните ForeignKey поля с идентификаторами.             </li>              <li>                Используйте имена полей в <strong> Шаблон </strong>. Порядок имен полей не имеет значения.             </li>          </ul>"
+msgstr "\n<h3> Как подготовить таблицы (CSV файл)? </h3>          <ul>             <li>                Обязательными полями являются поле (ы) в выбранном ключе (см второе поле ниже).             </li>             <li>                Если <strong> membership_type </strong> не присутствует в таблице, первого типа членства                в системе будет использоваться.             </li>             <li>                Тип данных ForeignKey полей (например: membership_type) является <strong> целое </strong>. Поэтому, пожалуйста, заполните ForeignKey поля с идентификаторами.             </li>              <li>                Используйте имена полей в <strong> Шаблон </strong>. Порядок имен полей не имеет значения.             </li>          </ul>"
 
 #: addons/memberships/templates/memberships/notices/email_corp_reps_body.html:7
 msgid "New Member Joined under Your Corporation"
@@ -14384,7 +14384,7 @@ msgid ""
 "        %(SITE_GLOBAL_SITEDISPLAYNAME)s\n"
 "        <br /><br />\n"
 "        "
-msgstr "\n\nДля просмотра профиля этого пользователя, перейдите к <a href=\"%(SITE_GLOBAL_SITEURL)s%(profile_url)s\">% (SITE_GLOBAL_SITEURL) с% (profile_url) с </a>.          <br /> <br />          Для просмотра и управления корпоративной членство, перейдите в <a href=\"%(SITE_GLOBAL_SITEURL)s%(corp_mem_url)s\">% (SITE_GLOBAL_SITEURL) с% (corp_url) с </a>.          <br /> <br />         Спасибо, <br />         % (SITE_GLOBAL_SITEDISPLAYNAME) с          <br /> <br />"
+msgstr "\n\n        To view the profile of this member, go to <a href=\"%(SITE_GLOBAL_SITEURL)s%(profile_url)s\">%(SITE_GLOBAL_SITEURL)s%(profile_url)s</a>.\n        <br /> <br />\n\n         To view and manage the corporate membership, go to <a href=\"%(SITE_GLOBAL_SITEURL)s%(corp_mem_url)s\">%(SITE_GLOBAL_SITEURL)s%(corp_url)s</a>.\n        <br /> <br />\n\n        Thanks,<br />\n        %(SITE_GLOBAL_SITEDISPLAYNAME)s\n        <br /><br />\n        "
 
 #: addons/memberships/templates/memberships/notices/email_corp_reps_subject.html:3
 #: apps/dashboard/templates/dashboard/new.html:269
@@ -14514,7 +14514,7 @@ msgid ""
 "<br /><br />\n"
 "\n"
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s\n"
-msgstr "Спасибо, <br /> <br /> %(SITE_GLOBAL_SITEDISPLAYNAME)s\n\n"
+msgstr "Спасибо, <br /> <br /> %(SITE_GLOBAL_SITEDISPLAYNAME)s\n"
 
 #: addons/memberships/templates/notification/membership_corp_indiv_verify_email/short.txt:3
 #, python-format
@@ -14726,14 +14726,14 @@ msgstr "Следующая новость была   добавлен в %(SIT
 msgid ""
 "\n"
 "  by %(requser)s(administrator)"
-msgstr "\n\nпо %(requser)s (администратор)"
+msgstr "\nпо %(requser)s (администратор)"
 
 #: addons/news/templates/notification/news_added/full.html:17
 #, python-format
 msgid ""
 "\n"
 "  by %(requser)s and needs to be activated"
-msgstr "\n\nпо %(requser)s и должна быть активирована"
+msgstr "\nпо %(requser)s и должна быть активирована"
 
 #: addons/news/templates/notification/news_added/full.html:32
 msgid ""
@@ -15254,7 +15254,7 @@ msgid ""
 "\n"
 "            Image slots left: %(slots)s\n"
 "        "
-msgstr "\n\nСлоты Image оставили: %(slots)s"
+msgstr "\nСлоты Image оставили: %(slots)s"
 
 #: addons/photos/templates/photos/batch-add.html:29
 msgid "Select photos to upload"
@@ -15266,7 +15266,7 @@ msgid ""
 "\n"
 "                Sorry but you have uploaded the max number ( %(slots)s ) of images available for this photo set.\n"
 "            "
-msgstr "\n\nЖаль, но вы загрузили максимальное число ( %(slots)sы) изображений, доступных для этого фото набора."
+msgstr "\nЖаль, но вы загрузили максимальное число ( %(slots)sы) изображений, доступных для этого фото набора."
 
 #: addons/photos/templates/photos/batch-edit.html:8
 msgid "Batch Edit Photos"
@@ -15371,7 +15371,7 @@ msgid ""
 "Licensed under\n"
 "                        <a rel=\"license\" href=\"%(photo_deed)s\">\n"
 "                            %(photo_name)s</a>."
-msgstr "Распространяется по лицензии                          <a rel=\"license\" href=\"%(photo_deed)s\">                             % (Photo_name) с </a>."
+msgstr "Licensed under\n                        <a rel=\"license\" href=\"%(photo_deed)s\">\n                            %(photo_name)s</a>."
 
 #: addons/photos/templates/photos/details.html:96
 msgid "Taken on:"
@@ -15431,7 +15431,7 @@ msgid ""
 "Licensed under\n"
 "                    <a rel=\"license\" href=\"%(phodeed)s\">\n"
 "                        %(phoname)s</a>."
-msgstr "Распространяется по лицензии                      <a rel=\"license\" href=\"%(phodeed)s\">                         % (Phoname) с </a>."
+msgstr "Licensed under\n                    <a rel=\"license\" href=\"%(phodeed)s\">\n                        %(phoname)s</a>."
 
 #: addons/photos/templates/photos/search-result.html:16
 msgid "search photo"
@@ -15862,7 +15862,7 @@ msgstr "Количество платежный цикл не удалось"
 #: addons/recurring_payments/templates/recurring_payments/disable.html:37
 #, python-format
 msgid "Are you sure you want to disable <a href=\"%(acc_url)s\">this account</a>?"
-msgstr "Вы уверены, что хотите отключить <a href=\"%(acc_url)s\"> этот счет </a>?"
+msgstr "Are you sure you want to disable <a href=\"%(acc_url)s\">this account</a>?"
 
 #: addons/recurring_payments/templates/recurring_payments/disable.html:42
 #: addons/recurring_payments/templates/recurring_payments/nav.html:51
@@ -15874,7 +15874,7 @@ msgstr "Отключить аккаунт"
 msgid ""
 "\n"
 "The recurring payment account for %(rp)s has been disabled by <a href=\"%(profile_url)s\">%(user_by.get_full_name)s</a>"
-msgstr "\n\nПовторяющихся расчетный счет для% (RP) с была отключена <a href=\"%(profile_url)s\">% (user_by.get_full_name) с </a>"
+msgstr "\n\nThe recurring payment account for %(rp)s has been disabled by <a href=\"%(profile_url)s\">%(user_by.get_full_name)s</a>"
 
 #: addons/recurring_payments/templates/recurring_payments/email_admins_account_disabled.html:13
 msgid "To view this recurring payment account, go to"
@@ -15911,7 +15911,7 @@ msgstr "www.tendenci.com разработан Schipul - веб-маркетин�
 msgid ""
 "\n"
 "The recurring payment account for %(rp)s doesn't have a valid payment method set up yet. A notification is also sent to the customer %(rp.user.get_full_name)s (%(rp.user.email)s) to add/update their payment method on the payment gateway.\n"
-msgstr "\n\nПовторяющихся расчетный счет для %(rp)s не иметь действительный способ оплаты создана еще. Уведомление направляется также клиентской %(rp.user.get_full_name)s ( %(rp.user.email)sы), чтобы добавить / обновить свои способ оплаты на платежный шлюз.\n\n"
+msgstr "\nПовторяющихся расчетный счет для %(rp)s не иметь действительный способ оплаты создана еще. Уведомление направляется также клиентской %(rp.user.get_full_name)s ( %(rp.user.email)sы), чтобы добавить / обновить свои способ оплаты на платежный шлюз.\n"
 
 #: addons/recurring_payments/templates/recurring_payments/email_admins_no_payment_profile.html:12
 msgid ""
@@ -15988,7 +15988,7 @@ msgstr "Конец Текущий цикл"
 msgid ""
 "\n"
 "Your recurring payment account \"%(d)s\" doesn't have a valid payment method associated with.\n"
-msgstr "\n\nВаш повторяющееся расчетный счет &quot; %(d)s&quot; не иметь действительный способ оплаты, связанной с.\n\n"
+msgstr "\nВаш повторяющееся расчетный счет &quot; %(d)s&quot; не иметь действительный способ оплаты, связанной с.\n"
 
 #: addons/recurring_payments/templates/recurring_payments/email_customer_no_payment_profile.html:12
 msgid "Please visit the link below to add or update the payment method"
@@ -15999,14 +15999,14 @@ msgstr "Пожалуйста, перейдите по ссылке ниже, ч�
 msgid ""
 "\n"
 "The payment has been received for the %(d)s.\n"
-msgstr "\n\nКомпенсация была получена для %(d)s.\n\n"
+msgstr "\nКомпенсация была получена для %(d)s.\n"
 
 #: addons/recurring_payments/templates/recurring_payments/email_customer_transaction.html:11
 #, python-format
 msgid ""
 "\n"
 "We attempted a payment for the %(d)s but was failed. The failed reason is listed below.\n"
-msgstr "\n\nМы попытались плату за %(d)sх, но был не удалось. Неудавшийся причина приведена ниже.\n\n"
+msgstr "\nМы попытались плату за %(d)sх, но был не удалось. Неудавшийся причина приведена ниже.\n"
 
 #: addons/recurring_payments/templates/recurring_payments/email_customer_transaction.html:26
 msgid "Billing cycle"
@@ -16043,7 +16043,7 @@ msgid ""
 "A transaction\n"
 "was failed for the recurring payment (%(rp)s)\n"
 "on <a href=\"%(site_url)s\">%(site_display_name)s</a>.\n"
-msgstr "\n\nСделка провалилась на повторяющиеся взнос (% (рп) с) на <a href=\"%(site_url)s\">% (site_display_name) с </a>.\n\n"
+msgstr "\n\nA transaction\nwas failed for the recurring payment (%(rp)s)\non <a href=\"%(site_url)s\">%(site_display_name)s</a>.\n\n"
 
 #: addons/recurring_payments/templates/recurring_payments/email_script_support_transaction.html:24
 msgid "Error code"
@@ -16282,7 +16282,7 @@ msgid ""
 "    Oops, we're not able to process your request at the moment due to an error from payment gateway. Please try again later or\n"
 "    contact your site administrator for assistance. Thanks!\n"
 "    "
-msgstr "\n\n     Нам, мы не можем обработать ваш запрос в данный момент вследствие ошибки от платежного шлюза. Пожалуйста, повторите попытку позже или     обратитесь к администратору сайта для получения помощи. Благодаря!     "
+msgstr "\n     Нам, мы не можем обработать ваш запрос в данный момент вследствие ошибки от платежного шлюза. Пожалуйста, повторите попытку позже или     обратитесь к администратору сайта для получения помощи. Спасибо!     "
 
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_manage_payment_iframe.html:37
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_manage_payment_iframe2.html:58
@@ -16553,7 +16553,7 @@ msgstr "Ваше резюме будет находится на рассмот�
 #: addons/resumes/templates/resumes/view.html:30
 #: addons/resumes/templates/resumes/view.html:36
 msgid "resume"
-msgstr "резюме"
+msgstr "продолжить"
 
 #: addons/resumes/templates/resumes/view.html:30
 msgid "this resume's"
@@ -16582,7 +16582,7 @@ msgstr "События"
 
 #: addons/tendenci_guide/models.py:8
 msgid "Getting Started"
-msgstr "Приступая к работе"
+msgstr "Начинаем"
 
 #: addons/tendenci_guide/models.py:9
 msgid "Miscellaneous"
@@ -16707,7 +16707,7 @@ msgstr "Выход?"
 #: apps/accounts/templates/accounts/login.html:29
 #: apps/accounts/templates/accounts/password_reset_form.html:12
 msgid "Forgot your password?"
-msgstr "Забыли пароль?"
+msgstr "Забыли свой пароль?"
 
 #: apps/accounts/templates/accounts/login.html:30
 msgid "Click here to reset your password."
@@ -16746,7 +16746,7 @@ msgstr "Сброс пароля"
 msgid ""
 "Enter your e-mail address below, and we'll e-mail instructions for setting a"
 " new one."
-msgstr "Введите адрес электронной почты ниже, и мы будем электронной почты указания по установке нового."
+msgstr "Введите адрес электронной почты ниже, и мы будем электронной почты инструкции по установке нового."
 
 #: apps/accounts/templates/accounts/password_reset_form.html:18
 #: apps/registration/templates/registration/password_reset_form.html:14
@@ -16765,7 +16765,7 @@ msgstr "Регистрация завершена"
 msgid ""
 "Thank you for registering with us!<br><br> Your account is not activated "
 "yet. Please check your email to confirm the activation."
-msgstr "Спасибо за регистрацию с нами! &lt;br&gt; Твой запись еще не активирована. Пожалуйста, проверьте свою электронную почту, чтобы подтвердить активацию."
+msgstr "Thank you for registering with us!<br><br> Your account is not activated yet. Please check your email to confirm the activation."
 
 #: apps/accounts/templates/accounts/registration_form.html:4
 msgid "User Registration"
@@ -16802,7 +16802,7 @@ msgstr "Безопасность:"
 
 #: apps/accounts/templates/accounts/registration_form.html:57
 msgid "Create Account"
-msgstr "Создать учетную запись"
+msgstr "Создать аккаунт"
 
 #: apps/boxes/admin.py:47 core/perms/admin.py:84
 msgid "permission"
@@ -16949,7 +16949,7 @@ msgstr "Переключить Dashboard Статистика"
 msgid ""
 "\n"
 "Customize the dashboard statistics that would show up in the dashboard page by either reordering the following statistics types or choosing which type would be visible at a current time.\n"
-msgstr "\n\n Переключить статистику приборной панели, что будет отображаться на странице приборной панели либо переназначения следующие виды статистики или выбрав, какой тип будет видна на текущее время. \n\n"
+msgstr "\n Переключить статистику приборной панели, что будет отображаться на странице приборной панели либо переназначения следующие виды статистики или выбрав, какой тип будет видна на текущее время. \n"
 
 #: apps/dashboard/templates/dashboard/index.html:50
 #: apps/dashboard/templates/dashboard/new.html:51
@@ -16958,7 +16958,7 @@ msgid ""
 "\n"
 "                    Your free trial period expired on %(expiration_dt)s.\n"
 "                    "
-msgstr "\n\nБесплатный ознакомительный период истек %(expiration_dt)s."
+msgstr "\nБесплатный ознакомительный период истек %(expiration_dt)s."
 
 #: apps/dashboard/templates/dashboard/index.html:54
 #: apps/dashboard/templates/dashboard/new.html:55
@@ -16967,7 +16967,7 @@ msgid ""
 "\n"
 "                    Your free trial period expires on %(expiration_dt)s.\n"
 "                    "
-msgstr "\n\nБесплатный ознакомительный период истекает %(expiration_dt)s."
+msgstr "\nБесплатный ознакомительный период истекает %(expiration_dt)s."
 
 #: apps/dashboard/templates/dashboard/index.html:59
 #: apps/dashboard/templates/dashboard/new.html:60
@@ -17728,7 +17728,7 @@ msgstr "Полное имя"
 
 #: apps/forms_builder/forms/models.py:54
 msgid "Phone Number"
-msgstr "Номер телефона"
+msgstr "Телефонный номер"
 
 #: apps/forms_builder/forms/models.py:55
 msgid "Email to Recipients"
@@ -17878,7 +17878,7 @@ msgstr "США"
 
 #: apps/forms_builder/forms/models.py:248 core/base/fields.py:152
 msgid "United Kingdom"
-msgstr "Великобритания"
+msgstr "Объединенное Королевство"
 
 #: apps/forms_builder/forms/models.py:293
 msgid "Form entry"
@@ -18236,7 +18236,7 @@ msgstr "Корректировка счета"
 
 #: apps/invoices/templates/invoices/adjust.html:21
 msgid "Billing Information:"
-msgstr "Платежную информацию:"
+msgstr "Платежная информация:"
 
 #: apps/invoices/templates/invoices/adjust.html:36
 msgid "Current Invoice Totals"
@@ -18846,7 +18846,7 @@ msgstr "архив"
 
 #: apps/notifications/models.py:140
 msgid "on site"
-msgstr "на сайте"
+msgstr "местный"
 
 #: apps/notifications/models.py:166
 msgid "notice"
@@ -18894,7 +18894,7 @@ msgid ""
 "%(m)s\n"
 "\n"
 "To see other notices or change how you receive notifications, please go to %(notices_url)s.\n"
-msgstr "Вы получили следующие уведомления от %(site)s: %(m)s Чтобы увидеть другие уведомления или изменить, как вы получать уведомления, пожалуйста, перейдите на %(notices_url)s.\n\n"
+msgstr "Вы получили следующие уведомления от %(site)s: %(m)s Чтобы увидеть другие уведомления или изменить, как вы получать уведомления, пожалуйста, перейдите на %(notices_url)s.\n"
 
 #: apps/notifications/templates/notification/email_subject.txt:1
 #, python-format
@@ -18912,14 +18912,14 @@ msgstr "изменение"
 #: apps/notifications/templates/notification/notices.html:28
 #: apps/profiles/templates/profiles/export.html:20
 msgid "Note"
-msgstr "Примечание"
+msgstr "Заметка"
 
 #: apps/notifications/templates/notification/notices.html:29
 #, python-format
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr "Вы не должны проверено адрес электронной почты, на который замечает могут быть отправлены. Вы можете добавить один, идя в <a href=\"%(email_url)s\"> данные </a>."
+msgstr "You do not have a verified email address to which notices can be sent. You can add one by going to <a href=\"%(email_url)s\">Account</a>."
 
 #: apps/notifications/templates/notification/notices.html:36
 msgid "Notification Type"
@@ -19265,7 +19265,7 @@ msgstr "Ваш новый аккаунт создан."
 msgid ""
 "\n"
 "<div style=\"margin-bottom:10px\">Your username is %(username)s</div>\n"
-msgstr "\n\n<div style=\"margin-bottom:10px\"> Ваше имя пользователя %(username)s </div>\n\n"
+msgstr "\n<div style=\"margin-bottom:10px\"> Ваше имя пользователя %(username)s </div>\n"
 
 #: apps/notifications/templates/notification/user_welcome/full.html:11
 msgid "Clicking the link below allows you to reset your password and log in."
@@ -19402,7 +19402,7 @@ msgid ""
 "<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a></b><br>\n"
 "To approve this page and make it visible to the public, go to\n"
 "<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a>"
-msgstr "Для просмотра деталей этой странице, перейдите по ссылке: &lt;б&gt; &lt;a href=&quot;%(SITE_GLOBAL_SITEURL)s%(objget)s&quot;&gt;% (SITE_GLOBAL_SITEURL) S% (objget) с &lt;/a&gt; &lt;/ B&gt; инструменты Утвердить эту страницу и сделать его видимым для публики, перейдите к &lt;a href=&quot;%(SITE_GLOBAL_SITEURL)s%(objget)s&quot;&gt;% (SITE_GLOBAL_SITEURL) S% (objget) с &lt;/a&gt;"
+msgstr "To view the detail of this page, go to: <b>\n<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a></b><br>\nTo approve this page and make it visible to the public, go to\n<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s%(objget)s</a>"
 
 #: apps/pages/templates/notification/page_added/short.txt:3
 #, python-format
@@ -19640,7 +19640,7 @@ msgstr "Первоначальный"
 
 #: apps/profiles/forms.py:98
 msgid "Display name"
-msgstr "Изменения имен"
+msgstr "Отображаемое имя"
 
 #: apps/profiles/forms.py:104
 msgid "Company is a required field."
@@ -19761,7 +19761,7 @@ msgid ""
 "                        'Field(s) %(fields)s used to identify the duplicates\n"
 "                        should be included in the .csv file.'\n"
 "                        "
-msgstr "\n\n&#39;Поле (ы) %(fields)sы используются для идентификации дубликатов                         должны быть включены в файл CSV-&#39;."
+msgstr "\n&#39;Поле (ы) %(fields)sы используются для идентификации дубликатов                         должны быть включены в файл CSV-&#39;."
 
 #: apps/profiles/models.py:29
 msgid "historical member number"
@@ -19845,7 +19845,7 @@ msgstr "URL2"
 
 #: apps/profiles/models.py:51
 msgid "date of birth"
-msgstr "дата рождения"
+msgstr "Дата рождения"
 
 #: apps/profiles/models.py:52
 msgid "social security number"
@@ -20212,7 +20212,7 @@ msgstr "Используйте автоматическую сгенериров
 
 #: apps/profiles/templates/profiles/add.html:388
 msgid "Confirm Password"
-msgstr "Подтвердите пароль"
+msgstr "Подтвердите Пароль"
 
 #: apps/profiles/templates/profiles/add.html:419
 #: apps/profiles/templates/profiles/edit.html:409
@@ -20304,7 +20304,7 @@ msgstr "Измените информацию ниже по мере необх�
 
 #: apps/profiles/templates/profiles/edit.html:376
 msgid "change password"
-msgstr "Изменение пароля"
+msgstr "сменить пароль"
 
 #: apps/profiles/templates/profiles/edit_groups.html:5
 msgid "Add/Remove User Groups"
@@ -20443,7 +20443,7 @@ msgid ""
 "\n"
 "    Check the boxes below to select which user accounts you would like to merge. The Master account will be the account into which all other users are merged. Please review the user account information listed below before merging.\n"
 "    "
-msgstr "\n\n     Установите флажки ниже, чтобы выбрать, каким учетным записям вы хотели бы объединить. Основная учетная запись будет счет, на который все остальные пользователи будут объединены. Пожалуйста, ознакомьтесь с информацией о пользователях, перечисленных ниже перед слиянием.     "
+msgstr "\n     Установите флажки ниже, чтобы выбрать, каким учетным записям вы хотели бы объединить. Основная учетная запись будет счет, на который все остальные пользователи будут объединены. Пожалуйста, ознакомьтесь с информацией о пользователях, перечисленных ниже перед слиянием.     "
 
 #: apps/profiles/templates/profiles/merge_profiles.html:30
 msgid "Merge"
@@ -20460,7 +20460,7 @@ msgstr "Редактирование групп"
 #: apps/profiles/templates/profiles/options.html:45
 #: apps/registration/templates/registration/password_change_form.html:65
 msgid "Change Password"
-msgstr "Изменение пароля"
+msgstr "Сменить пароль"
 
 #: apps/profiles/templates/profiles/meta.html:57
 #: apps/profiles/templates/profiles/options.html:52
@@ -20630,7 +20630,7 @@ msgid ""
 "           </li>\n"
 "        </ul>\n"
 "        "
-msgstr "\n\n<h3> Как подготовить таблицы (CSV файл)? </h3>          <ul>             <li>                Обязательными полями являются поле (ы) в выбранном ключе (см поле &quot;Определить дубликаты по&quot; ниже).                Например, если &quot;Отправить&quot; выбран в качестве ключа, поле электронной почты должны быть включены в таблицу.             </li>              <li>                Используйте имена полей в <strong> Шаблон </strong>. Порядок имен полей не имеет значения.             </li>          </ul>"
+msgstr "\n<h3> Как подготовить таблицы (CSV файл)? </h3>          <ul>             <li>                Обязательными полями являются поле (ы) в выбранном ключе (см поле &quot;Определить дубликаты по&quot; ниже).                Например, если &quot;Отправить&quot; выбран в качестве ключа, поле электронной почты должны быть включены в таблицу.             </li>              <li>                Используйте имена полей в <strong> Шаблон </strong>. Порядок имен полей не имеет значения.             </li>          </ul>"
 
 #: apps/profiles/templates/profiles/import/upload.html:135
 msgid "Make Users"
@@ -20811,7 +20811,7 @@ msgstr "имя пользователя"
 
 #: apps/registration/forms.py:40
 msgid "email address"
-msgstr "E-mail адрес"
+msgstr "адрес электронной почты"
 
 #: apps/registration/forms.py:42
 #: project_template/themes/academic-bootstrap3/templates/footer.html:27
@@ -20857,14 +20857,14 @@ msgstr "Профили регистрации"
 msgid ""
 "\n"
 "Please click here to activate your account: %(site_url)s/accounts/activate/%(activation_key)s/. There are %(expiration_days)s days left to do it.\n"
-msgstr "\n\nПожалуйста, нажмите здесь, чтобы активировать свой аккаунт: %(site_url)s / счета / активировать / %(activation_key)s /. Есть %(expiration_days)s дней, чтобы сделать это.\n\n"
+msgstr "\nПожалуйста, нажмите здесь, чтобы активировать свой аккаунт: %(site_url)s / счета / активировать / %(activation_key)s /. Есть %(expiration_days)s дней, чтобы сделать это.\n"
 
 #: apps/registration/templates/registration/activation_email.txt:8
 #, python-format
 msgid ""
 "\n"
 "To get back to your event, click here: %(site_url)s%(event_url)s\n"
-msgstr "\n\nЧтобы вернуться на свое мероприятие, нажмите здесь: %(site_url)s %(event_url)s\n\n"
+msgstr "\nЧтобы вернуться на свое мероприятие, нажмите здесь: %(site_url)s %(event_url)s\n"
 
 #: apps/registration/templates/registration/activation_email_subject.txt:3
 #, python-format
@@ -20938,7 +20938,7 @@ msgstr "Новый пароль:"
 
 #: apps/registration/templates/registration/password_reset_confirm.html:18
 msgid "Confirm password:"
-msgstr "Подтвердите пароль:"
+msgstr "Подтвердите Пароль:"
 
 #: apps/registration/templates/registration/password_reset_confirm.html:19
 msgid "Change my password"
@@ -20991,7 +20991,7 @@ msgstr "%(site_name)s командой"
 msgid ""
 "Forgotten your password? Enter your e-mail address below, and we'll e-mail "
 "instructions for setting a new one."
-msgstr "Забыли пароль? Введите адрес электронной почты ниже, и мы будем электронной почты указания по установке нового."
+msgstr "Забыли пароль? Введите адрес электронной почты ниже, и мы будем электронной почты инструкции по установке нового."
 
 #: apps/registration/templates/registration/password_reset_form.html:14
 msgid "E-mail address:"
@@ -21812,7 +21812,7 @@ msgid ""
 "Hover over the navigation menu and click on \"Edit Nav.\" You can add pages "
 "and use our drag and drop editor to change the order and levels of "
 "navigation. Check out"
-msgstr "Наведите указатель мыши на меню навигации и нажмите &quot;Edit Nav.&quot; Вы можете добавлять страницы и использовать наш редактор перетаскивания, чтобы изменить порядок и уровни навигации. Выезд"
+msgstr "Наведите указатель мыши на меню навигации и нажмите &quot;Edit Nav.&quot; Вы можете добавлять страницы и использовать наш редактор перетаскивания, чтобы изменить порядок и уровни навигации. Проверить"
 
 #: apps/theme_editor/templates/theme_editor/walkthrough.html:48
 msgid "this help file."
@@ -22055,7 +22055,7 @@ msgstr "Не удается удалить %(name)s"
 
 #: apps/user_groups/views.py:276 core/perms/admin.py:171
 msgid "Are you sure?"
-msgstr "Вы уверены?"
+msgstr "Ты уверен?"
 
 #: apps/user_groups/views.py:312
 #, python-format
@@ -22105,7 +22105,7 @@ msgstr "Выберите опцию добавления пользовател�
 #: apps/user_groups/templates/user_groups/bulk_add_redirect.html:11
 msgid ""
 "You have too many users to use the bulk add for group members. You can:"
-msgstr "У тебя слишком много пользователей, чтобы использовать основная добавить для членов группы. Вы можете:"
+msgstr "У тебя слишком много пользователей, чтобы использовать основная добавить для членов группы. Ты можешь:"
 
 #: apps/user_groups/templates/user_groups/bulk_add_redirect.html:13
 msgid "Search for the user"
@@ -22275,7 +22275,7 @@ msgstr "вид на"
 #: apps/user_groups/templates/user_groups/member_add_edit.html:21
 #, python-format
 msgid "Edit Member <a href=\"%(urlz)s\">%(group_member)s</a> in Group"
-msgstr "<a href=\"%(urlz)s\"> Edit участника </a>% (group_member) S в группе"
+msgstr "Edit Member <a href=\"%(urlz)s\">%(group_member)s</a> in Group"
 
 #: apps/user_groups/templates/user_groups/member_add_edit.html:21
 msgid "Add Member to Group"
@@ -22643,7 +22643,7 @@ msgstr "Аддон загрузить полный."
 
 #: core/base/widgets.py:73 core/base/widgets.py:74
 msgid "Confirm Email"
-msgstr "Подтверждение на e-mail"
+msgstr "Подтвердить почтовый ящик"
 
 #: core/base/management/commands/createuser.py:27
 msgid "Enter a valid e-mail address."
@@ -22676,7 +22676,7 @@ msgid ""
 "\n"
 "    <p>Module named <strong>%(addon_name)s</strong> already exists in <strong>SITE ADDONS PATH</strong></p>\n"
 "    "
-msgstr "\n\n<p> Модуль с именем <strong> %(addon_name)s </strong> уже существует в <strong> САЙТА плагины PATH </strong> </p>"
+msgstr "\n<p> Модуль с именем <strong> %(addon_name)s </strong> уже существует в <strong> САЙТА плагины PATH </strong> </p>"
 
 #: core/base/templates/base/addon_upload_preview.html:11
 msgid "Would you like to overwrite this module?"
@@ -22720,21 +22720,21 @@ msgid ""
 "\n"
 "    Here at Tendenci, we like to think of websites as living and breathing entities. Yes, we know they don't actually breathe, but they are constantly changing and evolving as your organization grows and evolves.\n"
 "    "
-msgstr "\n\n     Здесь, в Tendenci, нам нравится думать о сайтах, как живет и дышит лиц. Да, мы знаем, что они на самом деле не дышать, но они постоянно меняется и развивается по мере роста и развивается.     "
+msgstr "\n     Здесь, в Tendenci, нам нравится думать о сайтах, как живет и дышит лиц. Да, мы знаем, что они на самом деле не дышать, но они постоянно меняется и развивается по мере роста и развивается.     "
 
 #: core/base/templates/base/checklist.html:19
 msgid ""
 "\n"
 "    So, your website will never be \"complete\" per se, but we want to get you on track to a healthy website with a belly full of hearty content. As you fill in new content on your website, this page will update to show you how far you've gotten and what else your website is hungry for.\n"
 "    "
-msgstr "\n\n     Таким образом, ваш сайт никогда не будет &quot;завершить&quot; как таковой, но мы хотим, чтобы вы на пути к здоровому сайте с живота полный обильного содержания. Как вы заполните новым содержанием на вашем сайте, эту страницу будет обновлять, чтобы показать вам, как далеко вы получили и что еще ваш сайт жаждет.     "
+msgstr "\n     Таким образом, ваш сайт никогда не будет &quot;завершить&quot; как таковой, но мы хотим, чтобы вы на пути к здоровому сайте с живота полный обильного содержания. Как вы заполните новым содержанием на вашем сайте, эту страницу будет обновлять, чтобы показать вам, как далеко вы получили и что еще ваш сайт жаждет.     "
 
 #: core/base/templates/base/checklist.html:23
 msgid ""
 "\n"
 "    Don't forget -- you should always be adding fresh, new content to keep visitors coming back for more. Happy updating!\n"
 "    "
-msgstr "\n\n     Не забывайте - вы всегда должны быть добавив, свежий, новый контент держать посетителей возвращаться снова и снова. Днем обновление!     "
+msgstr "\n     Не забывайте - вы всегда должны быть добавив, свежий, новый контент держать посетителей возвращаться снова и снова. Днем обновление!     "
 
 #: core/base/templates/base/feedback.html:4
 msgid "Provide Feedback for Tendenci!"
@@ -23165,7 +23165,7 @@ msgid ""
 "you need them to go.\"<br />\n"
 "If you think this wouldn't work for the site, you can request to increase the sending limits\n"
 "by <a href=\"https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/SESExtendedAccess\">contacting amazon.com</a>.\n"
-msgstr "\n\nЗа Amazon, &quot;Каждый пользователь имеет уникальный набор отправки пределах, которые рассчитываются по Amazon SES на постоянной основе. Как вы продолжать посылать высококачественную электронную почту, Amazon SES узнает больше о ваших конкретных моделей использования, и постепенно корректирует ваши отправке пределы вверх - выше, чем Вы нуждаетесь в них, чтобы пойти. &quot; <br /> Если вы думаете, это не будет работать для сайта, вы можете запросить увеличить отправку пределы по <a href=\"https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/SESExtendedAccess\">contacting amazon.com </a>.\n\n"
+msgstr "\nЗа Amazon, &quot;Каждый пользователь имеет уникальный набор отправки пределах, которые рассчитываются по Amazon SES на постоянной основе. Как вы продолжать посылать высококачественную электронную почту, Amazon SES узнает больше о ваших конкретных моделей использования, и постепенно корректирует ваши отправке пределы вверх - выше, чем Вы нуждаетесь в них, чтобы пойти. &quot; <br /> Если вы думаете, это не будет работать для сайта, вы можете запросить увеличить отправку пределы по <a href=\"https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/SESExtendedAccess\">contacting amazon.com </a>.\n"
 
 #: core/emails/templates/emails/amazon_ses/verify_email.html:23
 msgid "Verify"
@@ -23731,7 +23731,7 @@ msgid ""
 "        <h2>Identify Duplicates by</h2>\n"
 "        %(form_key)s\n"
 "    "
-msgstr "\n\n<h2> Определить дубликатов по </h2>          %(form_key)s"
+msgstr "\n<h2> Определить дубликатов по </h2>          %(form_key)s"
 
 #: core/imports/templates/imports/users_preview.html:18
 msgid ""
@@ -24022,7 +24022,7 @@ msgid ""
 "Your login information is listed below.\n"
 "    To log into the site, visit <a href=\"%(SITE_GLOBAL_SITEURL)s\">%(SITE_GLOBAL_SITEURL)s</a>\n"
 "     and enter your Username and Password. "
-msgstr "Ваше Войти информация приведена ниже.     Для входа на сайт, посетите <a href=\"%(SITE_GLOBAL_SITEURL)s\">% (SITE_GLOBAL_SITEURL) с </a>      и введите имя пользователя и пароль."
+msgstr "Your login information is listed below.\n    To log into the site, visit <a href=\"%(SITE_GLOBAL_SITEURL)s\">%(SITE_GLOBAL_SITEURL)s</a>\n     and enter your Username and Password. "
 
 #: core/newsletters/templates/newsletters/login.txt:12
 msgid "If you have any questions, please contact the Site Administrator."
@@ -24051,7 +24051,7 @@ msgid ""
 "\n"
 "       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href=\"%(newsletter_changelist_url)s\">Newsletter Templates</a> see your templates and generate new email newsletters.</p>\n"
 "       "
-msgstr "\n\n<p> Tendenci поддерживает генерирующие HTML бюллетени, которые могут быть скопированы в большинстве третьей стороне поставщиков электронного бюллетеня. К Шаблоны <a href=\"%(newsletter_changelist_url)s\"> бюллетень Tendenci в </a> увидеть ваши шаблоны и генерировать новые подписаться на рассылку новостей. </p>"
+msgstr "\n\n       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href=\"%(newsletter_changelist_url)s\">Newsletter Templates</a> see your templates and generate new email newsletters.</p>\n       "
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:51
 msgid "MailChimp"
@@ -24072,7 +24072,7 @@ msgid ""
 "               to MailChimp.\n"
 "           </div>\n"
 "           "
-msgstr "\n\n<div class=\"tpn-detail\">                 <a href=\"http://mailchimp.com\" target=\"_blank\"> MailChimp </a> поможет вам разработать электронную почту                кампании, делиться ими в социальных сетях, интеграции с                веб-сервисы, управлять абонентов, а также отслеживать свои результаты. <a href=\"\" target=\"_blank\"> Подробнее ... </a>                 <br /> <br />                MailChimp не интегрирована с Tendenci. Для начала, вы можете                 <a href=\"%(profile_export_url)s\"> пользователи </a>                чтобы MailChimp.             </div>"
+msgstr "\n\n           <div class=\"tpn-detail\">\n               <a href=\"http://mailchimp.com\" target=\"_blank\">MailChimp</a> helps you to design email\n               campaigns, share them on social networks, integrate with\n               web services, manage subscribers, and track your results. <a href=\"\" target=\"_blank\">More...</a>\n\n               <br /><br />\n               MailChimp is not integrated with Tendenci. To start, you can\n               <a href=\"%(profile_export_url)s\">export users</a>\n               to MailChimp.\n           </div>\n           "
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:73
 msgid "Constant Contact"
@@ -24092,7 +24092,7 @@ msgid ""
 "               to Constant Contact.\n"
 "           </div>\n"
 "           "
-msgstr "\n\n<div class=\"tpn-detail\">                 <a href=\"http://search.constantcontact.com/mainpage.jsp\" target=\"_blank\"> электронный маркетинг постоянном контакте </a> &#39;S легко для вас, чтобы связаться с вашими клиентами,                и для клиентов, чтобы поделиться своим сообщение с их сетей. <a href=\"\" target=\"_blank\"> Подробнее ... </a>             <br /> <br />                Постоянный контакт не интегрирована с Tendenci. Для начала, вы можете                 <a href=\"%(profile_export_url)s\"> пользователи </a>                в постоянном контакте.             </div>"
+msgstr "\n\n           <div class=\"tpn-detail\">\n               <a href=\"http://search.constantcontact.com/mainpage.jsp\" target=\"_blank\">Constant Contact</a>'s email marketing is easy for you to connect with your customers,\n               and for customers to share your message with their networks. <a href=\"\" target=\"_blank\">More...</a>\n\n           <br /><br />\n               Constant Contact is not integrated with Tendenci. To start, you can\n               <a href=\"%(profile_export_url)s\">export users</a>\n               to Constant Contact.\n           </div>\n           "
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:99
 msgid ""
@@ -24101,7 +24101,7 @@ msgid ""
 "               makes it easy for your to send beautiful email newsletters and\n"
 "               manage your subscribers. <a href=\"\" target=\"_blank\">More...</a>\n"
 "           "
-msgstr "\n\n<a href=\"http://www.campaignmonitor.com/\" target=\"_blank\"> Кампания монитор </a>                делает его легким для вашего для того чтобы отправить красивые подписаться на рассылку новостей и                управлять абонентов. <a href=\"\" target=\"_blank\"> Подробнее ... </a>"
+msgstr "\n<a href=\"http://www.campaignmonitor.com/\" target=\"_blank\"> Кампания монитор </a>                делает его легким для вашего для того чтобы отправить красивые подписаться на рассылку новостей и                управлять абонентов. <a href=\"\" target=\"_blank\"> Подробнее ... </a>"
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:111
 msgid ""
@@ -24288,7 +24288,7 @@ msgstr "Это Оплата"
 msgid ""
 "If you are not redirected within 45 secs,<br> please click the button below "
 "to submit your payment. Thank you."
-msgstr "Если вы не перенаправлены в течение 45 секунд, инструменты, пожалуйста, нажмите на кнопку ниже, чтобы представить вашу компенсацию. Спасибо."
+msgstr "If you are not redirected within 45 secs,<br> please click the button below to submit your payment. Thank you."
 
 #: core/payments/templates/payments/pay_online.html:18
 msgid "The online payment is not setup for the site. Check out later."
@@ -24328,7 +24328,7 @@ msgstr "НЕ нажимайте кнопку назад в вашем брауз
 
 #: core/payments/templates/payments/thankyou_display.html:23
 msgid "Status of transaction (with reason if declined):"
-msgstr "Состояние сделки (со причинам если отказался):"
+msgstr "Статус сделки (с разумом, если отказался):"
 
 #: core/payments/templates/payments/thankyou_display.html:25
 msgid "Not approved -"
@@ -24354,7 +24354,7 @@ msgid ""
 "were to not be approved then it is possible for the user to initiate payment\n"
 "again resulting in more than one payment per invoice. The real trail is on the accounting side - note the yellow &quot;accounting&quot; link below for more information. <br><br>***Reversing a payment does *NOT* issue a credit or refund.  It will simply reverse\n"
 "the payment entries in the general ledger for accounting purposes.\n"
-msgstr "\n\n Там может быть, теоретически, несколько платежей за один счет-фактуру. Только подал фактура может иметь платеж, созданный для него, но если выплаты были не утверждается, то это возможно, для пользователя, чтобы инициировать компенсацию снова в результате чего более одним платежом на счет-фактуру. Реальный след на отчетный стороны - обратите внимание на желтую и Quot; учет &amp; Quot; ссылаются ниже для получения дополнительной информации. Математические инструменты *** реверса платеж * не * должен выдать кредит или возврат. Это будет просто поменяйте записи оплаты в главной книге для целей бухгалтерского учета. \n\n"
+msgstr "\n\nThere can be, theoretically, multiple payments for one invoice.\nOnly a TENDERED invoice can have a payment created for it, but if the payment\nwere to not be approved then it is possible for the user to initiate payment\nagain resulting in more than one payment per invoice. The real trail is on the accounting side - note the yellow &quot;accounting&quot; link below for more information. <br><br>***Reversing a payment does *NOT* issue a credit or refund.  It will simply reverse\nthe payment entries in the general ledger for accounting purposes.\n\n"
 
 #: core/payments/templates/payments/view.html:30
 msgid "Admin / Owner Block"
@@ -24438,7 +24438,7 @@ msgstr "Имя клиента и платежный адрес"
 
 #: core/payments/templates/payments/view.html:161
 msgid "Cardholder Name:"
-msgstr "Карты имя:"
+msgstr "Имя владельца карты:"
 
 #: core/payments/templates/payments/view.html:173
 msgid "Billing Address:"
@@ -25052,7 +25052,7 @@ msgstr "Список Сообщить"
 #: libs/model_report/templates/model_report/includes/datepicker_options.html:3
 #: templates/model_report/includes/datepicker_options.html:3
 msgid "Sun"
-msgstr "Вс"
+msgstr "Солнце"
 
 #: libs/model_report/templates/model_report/includes/datepicker_options.html:3
 #: templates/model_report/includes/datepicker_options.html:3
@@ -25142,7 +25142,7 @@ msgstr "%(b)rг тег требуется аргументы"
 #: libs/styled_forms/templates/styled_forms/dynamic_form_set.html:6
 #: libs/styled_forms/templates/styled_forms/form_set.html:6
 msgid "There were some problems in the formset. Please review. Thanks!"
-msgstr "Были некоторые проблемы в наборе форм. Пожалуйста, ознакомьтесь. Благодаря!"
+msgstr "Были некоторые проблемы в наборе форм. Пожалуйста, ознакомьтесь. Спасибо!"
 
 #: libs/styled_forms/templates/styled_forms/dynamic_form_set.html:70
 msgid "Add More"
@@ -25206,7 +25206,7 @@ msgstr "Вы вошли как"
 #: project_template/themes/jordy/templates/homepage.html:183
 #: templates/theme_includes/events_list_daybox.html:14
 msgid "Read More"
-msgstr "Подробнее"
+msgstr "Прочитайте больше"
 
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:125
 msgid "In The News"
@@ -25375,7 +25375,7 @@ msgid ""
 "        <strong>Oh snap!</strong> Change a few things up and try submitting again.\n"
 "      </div>\n"
 "      "
-msgstr "\n\n<div class=\"page-header\">          <h1> Оповещения </h1>        </div>        <div class=\"alert alert-success\">          <strong> Молодцы! </strong> Вы успешно изучите эту важную сообщение предупреждения.        </div>        <div class=\"alert alert-info\">          <strong> Внимание! </strong> Это предупреждение нуждается в вашем внимании, но это не супер важно.        </div>        <div class=\"alert alert-warning\">          <strong> Внимание! </strong> Лучший проверить йо себя, вы не ищете слишком хорошо.        </div>        <div class=\"alert alert-danger\">          <strong> О проще простого! </strong> Измените несколько вещей и попробуйте отправить снова.        </div>"
+msgstr "\n<div class=\"page-header\">          <h1> Оповещения </h1>        </div>        <div class=\"alert alert-success\">          <strong> Молодцы! </strong> Вы успешно изучите эту важную сообщение предупреждения.        </div>        <div class=\"alert alert-info\">          <strong> Внимание! </strong> Это предупреждение нуждается в вашем внимании, но это не супер важно.        </div>        <div class=\"alert alert-warning\">          <strong> Внимание! </strong> Лучший проверить йо себя, вы не ищете слишком хорошо.        </div>        <div class=\"alert alert-danger\">          <strong> О проще простого! </strong> Измените несколько вещей и попробуйте отправить снова.        </div>"
 
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:284
 msgid "Progress bars"
@@ -25449,7 +25449,7 @@ msgid ""
 "This page requires a login. Please <a "
 "href=\"/accounts/login/?next=%(full_path)s\">log in</a> if you have an "
 "account"
-msgstr "Эта страница требует логин. Пожалуйста, <a href=\"/accounts/login/?next=%(full_path)s\"> войти </a> если у вас есть аккаунт"
+msgstr "This page requires a login. Please <a href=\"/accounts/login/?next=%(full_path)s\">log in</a> if you have an account"
 
 #: templates/403.html:14
 msgid ""
@@ -25517,7 +25517,7 @@ msgstr "Мы были уведомлены об этом и будет рабо�
 msgid ""
 "You may want to <a href=\"%(reqpath)s\">try this page again</a> in a little "
 "bit."
-msgstr "Вы можете <a href=\"%(reqpath)s\"> попробовать эту страницу снова </a> в немного."
+msgstr "You may want to <a href=\"%(reqpath)s\">try this page again</a> in a little bit."
 
 #: templates/default.html:18 templates/homepage.html:21
 msgid "Website tagline"
@@ -25537,7 +25537,7 @@ msgstr "Выход"
 
 #: templates/footer.html:5 templates/form.html:6 templates/form.html.py:18
 msgid "Contact Us"
-msgstr "Связаться с Нами"
+msgstr "Свяжитесь с нами"
 
 #: templates/footer.html:5 templates/site_map.html:5
 msgid "Site Map"
@@ -25576,7 +25576,7 @@ msgid ""
 "\n"
 "        <p>Please fill out the form below.</p>\n"
 "        "
-msgstr "\n\n<p> Пожалуйста, заполните форму ниже. </p>"
+msgstr "\n<p> Пожалуйста, заполните форму ниже. </p>"
 
 #: templates/homepage.html:32
 msgid "Welcome to your Tendenci 5 powered Site!"
@@ -25643,7 +25643,7 @@ msgstr "Удаление выбранного %(objects_name)s потребуе�
 msgid ""
 "Are you sure you want to delete the selected %(objects_name)s? All of the "
 "following objects and their related items will be deleted:"
-msgstr "Вы уверены, что хотите удалить выбранный %(objects_name)s? Все из следующих объектов и связанных с ними элементов будут удалены:"
+msgstr "Вы уверены, что хотите удалить выбранную %(objects_name)s? Все из следующих объектов и связанных с ними элементов будут удалены:"
 
 #: templates/feeds/photo-latest-albums.html:3
 #, python-format
@@ -25734,7 +25734,7 @@ msgid ""
 "the numbers on the left to view those specific views. Blank headlines means "
 "the article was probably deleted but the view records are still kept for "
 "accurate reporting."
-msgstr "Статья раз прочитать. Нажмите заголовок статьи для просмотра в статье. Нажмите цифры слева, чтобы просмотреть эти конкретные взгляды. Пустые заголовки означает статья была, вероятно, удаляется, но вид записи до сих пор хранятся в точной отчетности."
+msgstr "Статья раз прочитать. Нажмите заголовок статьи для просмотра в статье. Нажмите цифры слева, чтобы просмотреть эти конкретные виды. Пустые заголовки означает статья была, вероятно, удаляется, но вид записи до сих пор хранятся в точной отчетности."
 
 #: templates/reports/articles.html:16
 msgid "Viewed"
@@ -25787,7 +25787,7 @@ msgid ""
 "<div>\n"
 "    <p>You can <a href=\"%(hist_logs_url)s\">view historical reports</a> or go to the <a href=\"%(logs_search)s\">Event log search</a> to see the latest event logs.</p>\n"
 "</div>\n"
-msgstr "\n\n<div>      <p> Вы можете <a href=\"%(hist_logs_url)s\"> смотреть исторические отчеты </a> или пойти в <a href=\"%(logs_search)s\"> поиска Журнал событий </a> видеть последние журналы событий. </p> </div>\n\n"
+msgstr "\n\n<div>\n    <p>You can <a href=\"%(hist_logs_url)s\">view historical reports</a> or go to the <a href=\"%(logs_search)s\">Event log search</a> to see the latest event logs.</p>\n</div>\n\n"
 
 #: templates/reports/grace_period_members.html:6
 msgid "Members in Grace Period"
@@ -25886,7 +25886,7 @@ msgstr "Пользователи с начала года по видам"
 msgid ""
 "\n"
 "    Currently showing data for %(year)s.\n"
-msgstr "\n\nВ настоящее время с указанием данных, для %(year)s.\n\n"
+msgstr "\nВ настоящее время с указанием данных, для %(year)s.\n"
 
 #: templates/reports/members_ytd_type.html:16
 msgid "Year"
@@ -25931,7 +25931,7 @@ msgid ""
 "\n"
 "            Currently showing members who joined in the last %(days)s days.\n"
 "            "
-msgstr "\n\nВ настоящее время идут Вступивших в последнем %(days)s дней."
+msgstr "\nВ настоящее время идут Вступивших в последнем %(days)s дней."
 
 #: templates/reports/membership_list.html:21
 msgid "Filter by join date"
@@ -25986,7 +25986,7 @@ msgid ""
 "\n"
 "            Currently showing members who expired in the last %(days)s days.\n"
 "            "
-msgstr "\n\nВ настоящее время показывая членов, которые истекли в прошлом %(days)s дней."
+msgstr "\nВ настоящее время показывая членов, которые истекли в прошлом %(days)s дней."
 
 #: templates/reports/membership_list.html:45
 msgid "Filter by expire date"
@@ -26159,7 +26159,7 @@ msgid ""
 "\n"
 "    Currently showing members who renewed in the last %(days)s days.\n"
 "    "
-msgstr "\n\nВ настоящее время показывая членов, которые возобновилась в последней %(days)s дней."
+msgstr "\nВ настоящее время показывая членов, которые возобновилась в последней %(days)s дней."
 
 #: templates/reports/renewed_members.html:17
 msgid "Filter by renew date"
@@ -26215,15 +26215,15 @@ msgstr "Активность пользователя Сводные отчет�
 
 #: templates/reports/user_activity.html:7
 msgid "Top 10 Most Active Users - Last 30 days"
-msgstr "Топ-10 самых активных пользователей - За последние 30 дней"
+msgstr "Топ-10 Самые активные пользователи - За последние 30 дней"
 
 #: templates/reports/user_activity.html:14
 msgid "Top 10 Most Active Users - Last 60 days"
-msgstr "Топ-10 самых активных пользователей - За последние 60 дней"
+msgstr "Топ-10 Самые активные пользователи - Последние 60 дней"
 
 #: templates/reports/user_activity.html:21
 msgid "Top 10 Most Active Users - Last 90 days"
-msgstr "Топ-10 самых активных пользователей - За последние 90 дней"
+msgstr "Топ-10 Самые активные пользователи - Последние 90 дней"
 
 #: templates/reports/users_added.html:9
 msgid "Site:"
@@ -26256,7 +26256,7 @@ msgstr "# Пользователи"
 #: templates/theme_includes/news_list.html:11
 #: templates/theme_includes/news_list.html:14
 msgid "Read more"
-msgstr "Подробнее"
+msgstr "Прочитайте больше"
 
 #: templates/theme_includes/articles_list.html:15
 msgid ""
@@ -26277,7 +26277,7 @@ msgid ""
 "        <li>Another top story in the articles</li>\n"
 "        <li>Even more great article updates</li>\n"
 "        "
-msgstr "\n\n<li> Еще один топ-история в статьях </li>          <li> Еще более великий обновления статье </li>"
+msgstr "\n<li> Еще один топ-история в статьях </li>          <li> Еще более великий обновления статье </li>"
 
 #: templates/theme_includes/boxes_group.html:19
 #, python-format
@@ -26285,7 +26285,7 @@ msgid ""
 "\n"
 "            <p><a href=\"/admin/boxes/box/add/\">Add a box</a> and use the tag <strong>%(TEMPLATE_BOXES_GROUP_TAGNAME)s</strong> to add content to this area. The Title of the box will be the heading and the content will display below. You can add up to %(TEMPLATE_BOXES_GROUP_LIMIT)s boxes to your sidebar.</p>\n"
 "            "
-msgstr "\n\n<p> <a href=\"/admin/boxes/box/add/\"> Добавить коробки </a> и использовать тег <strong> %(TEMPLATE_BOXES_GROUP_TAGNAME)s </strong>, чтобы добавить содержимое в эту область. Название коробки будет заголовок и содержание будет отображаться ниже. Вы можете добавить до %(TEMPLATE_BOXES_GROUP_LIMIT)s коробки на боковую панель. </p>"
+msgstr "\n<p> <a href=\"/admin/boxes/box/add/\"> Добавить коробки </a> и использовать тег <strong> %(TEMPLATE_BOXES_GROUP_TAGNAME)s </strong>, чтобы добавить содержимое в эту область. Название коробки будет заголовок и содержание будет отображаться ниже. Вы можете добавить до %(TEMPLATE_BOXES_GROUP_LIMIT)s коробки на боковую панель. </p>"
 
 #: templates/theme_includes/default_about_info_image.html:7
 msgid ""
@@ -26388,7 +26388,7 @@ msgid ""
 "        <li>Another top story in the news</li>\n"
 "        <li>Even more great news updates</li>\n"
 "        "
-msgstr "\n\n<li> Еще один топ-история в новостях </li>          <li> Еще более великий обновления новостей </li>"
+msgstr "\n<li> Еще один топ-история в новостях </li>          <li> Еще более великий обновления новостей </li>"
 
 #: templates/theme_includes/news_list.html:14
 msgid ""
@@ -26401,7 +26401,7 @@ msgstr "Tendenci поддерживает большие обновления н
 #: templates/theme_includes/single_event.html:19
 #: templates/theme_includes/single_event.html:29
 msgid "Read More …"
-msgstr "Подробнее ..."
+msgstr "Прочитайте больше ..."
 
 #: templates/theme_includes/setting_edit_form.html:11
 #, python-format
@@ -26419,7 +26419,7 @@ msgid ""
 "You can change this space's content by choosing one of the content options "
 "or any <a href=\"/boxes/add/?next=%(request.path)s\">boxes</a> you have "
 "added."
-msgstr "Вы можете изменить содержание этого пространства, выбрав один из вариантов контента или любых <a href=\"/boxes/add/?next=%(request.path)s\"> коробки </a> вы добавили."
+msgstr "You can change this space's content by choosing one of the content options or any <a href=\"/boxes/add/?next=%(request.path)s\">boxes</a> you have added."
 
 #: templates/theme_includes/setting_edit_form.html:29
 #: templates/theme_includes/setting_edit_form.html:43
@@ -26463,7 +26463,7 @@ msgid ""
 "<p><a href=\"/stories/add/?tags=%(TEMPLATE_STORIES_SPONSORS_TAG)s\">Add a "
 "story</a> and tag it <strong>%(TEMPLATE_STORIES_SPONSORS_TAG)s</strong> to "
 "have it appear as an image above.</p>"
-msgstr "<p> <a href=\"/stories/add/?tags=%(TEMPLATE_STORIES_SPONSORS_TAG)s\"> Добавить рассказ </a> и пометить его <strong>% (TEMPLATE_STORIES_SPONSORS_TAG) с </strong>, чтобы иметь вид, как Изображение выше. </p>"
+msgstr "<p><a href=\"/stories/add/?tags=%(TEMPLATE_STORIES_SPONSORS_TAG)s\">Add a story</a> and tag it <strong>%(TEMPLATE_STORIES_SPONSORS_TAG)s</strong> to have it appear as an image above.</p>"
 
 #: templates/theme_includes/stories_tagged_featured.html:15
 msgid "Business Strategy"
@@ -26645,7 +26645,7 @@ msgstr "Помощь"
 
 #: templates/top_menu/user_top-new.html:57 templates/top_menu/user_top.html:91
 msgid "Users Search"
-msgstr "Поиск пользователей"
+msgstr "Пользователи Поиск"
 
 #: templates/top_menu/user_top-new.html:61 templates/top_menu/user_top.html:97
 msgid "My Links"
