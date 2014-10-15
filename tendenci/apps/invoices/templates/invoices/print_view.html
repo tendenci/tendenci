@@ -26,13 +26,23 @@
             <td>{% trans "Invoice #" %}</td>
             <td class="td-right">{{ invoice.id }}</td>
         </tr>
-        {% if object %}
-            <tr>
-                <td>{% trans "Invoice For" %}</td>
-                <td class="td-right">{{ object }}</td>
-            </tr>
-        {% endif %}
+      {% if object %}
         <tr>
+          <td>{% trans "Invoice For" %}</td>
+          <td class="td-right">
+        {% if object.event.pk %}
+          <a href="{% url event.registration_confirmation object.event.pk object.pk %}">{{ object }}</a><br>
+          <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
+            {% else %}
+            {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+            <br>
+            {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
+            {% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
+            {% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
+            {% endif %}
+          </td>
+        </tr>
+      {% endif %}
             <td>{% trans "Invoice Date" %}</td>
             <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
         </tr>
