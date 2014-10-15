@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-13 18:42+0000\n"
-"PO-Revision-Date: 2014-10-13 20:01+0000\n"
-"Last-Translator: Jayjay Montalbo <jayjay@bixly.com>\n"
+"POT-Creation-Date: 2014-10-15 03:48+0000\n"
+"PO-Revision-Date: 2014-10-15 04:00+0000\n"
+"Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/tendenci/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1078,6 +1078,8 @@ msgstr "Отменить"
 #: addons/directories/templates/directories/pricing-nav.html:55
 #: addons/directories/templates/directories/pricing-options.html:10
 #: addons/events/templates/events/edit.html:7
+#: addons/events/templates/events/event_custom_reg_form_list.html:30
+#: addons/events/templates/events/event_custom_reg_form_list.html:57
 #: addons/events/templates/events/index.html:9
 #: addons/events/templates/events/meta.html:69
 #: addons/events/templates/events/options.html:16
@@ -2572,6 +2574,8 @@ msgstr " Недоступен"
 #: addons/campaign_monitor/templates/campaign_monitor/templates/index.html:41
 #: addons/campaign_monitor/templates/campaign_monitor/templates/options.html:10
 #: addons/corporate_memberships/templates/admin/corporate_memberships/corpmembershipapp/change_form.html:10
+#: addons/events/templates/events/event_custom_reg_form_list.html:29
+#: addons/events/templates/events/event_custom_reg_form_list.html:56
 #: addons/memberships/templates/memberships/admin/membershipapp/change_form.html:10
 #: apps/theme_editor/templates/theme_editor/index.html:75
 #: core/files/admin.py:66
@@ -3078,7 +3082,7 @@ msgstr "Показать активность только"
 #: addons/corporate_memberships/forms.py:564
 #: addons/corporate_memberships/models.py:637
 #: addons/corporate_memberships/utils.py:130
-#: addons/corporate_memberships/views.py:635 apps/profiles/forms.py:727
+#: addons/corporate_memberships/views.py:647 apps/profiles/forms.py:727
 #: core/imports/forms.py:23
 msgid "Select One"
 msgstr "Выберите один"
@@ -5560,7 +5564,7 @@ msgid "Expired - in grace period"
 msgstr "Истекло - в льготный период"
 
 #: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:70
-#: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:81
+#: addons/corporate_memberships/templates/corporate_memberships/reports/summary.html:83
 msgid "Corp. Membership Type"
 msgstr "Корпорация Тип Членство"
 
@@ -7791,7 +7795,7 @@ msgstr "Нет изменения, внесенные в регистранта 
 msgid "Successfully sent a test email."
 msgstr "Успешно отправлено тестовое письмо."
 
-#: addons/events/views.py:3936
+#: addons/events/views.py:3941
 msgid ""
 "Your event submission has been received. It is now subject to approval."
 msgstr "Ваше представление мероприятие было получено. Теперь при условии утверждения."
@@ -8426,6 +8430,10 @@ msgstr "%(title)s - изготовление на заказ регистрац�
 #: addons/events/templates/events/event_custom_reg_form_list.html:19
 msgid "Manage Custom Registration Form(s)"
 msgstr "Управление Пользовательские Регистрационная форма (ы)"
+
+#: addons/events/templates/events/event_custom_reg_form_list.html:25
+msgid "This event uses one custom registration form."
+msgstr ""
 
 #: addons/events/templates/events/event_custom_reg_form_list.html:45
 msgid "This event uses a separate custom registrations form for each pricing."
