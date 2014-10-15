@@ -1,0 +1,44 @@
+{% load nav_tags %}
+{% load base_tags %}
+{% load theme_tags %}
+
+<div class="top-header">
+  <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+              <span class="aux-text hidden-xs">
+                    Welcome to {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+                </span>
+              <nav class="top-header-menu">
+                    <ul class="menu">
+                        {% if request.user.is_authenticated %}
+                        <li><a href="{% url profile.index %}">{{ request.user.username }}</a></li>
+                        <li><a href="{{ LOGOUT_URL }}">Logout</a></li>
+                        {% else %}
+                        <li><a href="{{ LOGIN_URL }}">Login</a></li>
+                        {% endif %}
+                    </ul>
+        </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<header>
+    <div id="navOne" class="navbar navbar-wp" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}">
+                  <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/60x30/crop/90/{% else %}http://placehold.it/60x30{% endif %}" alt="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
+                </a>
+                {% theme_include 'theme_includes/logo_edit_form.html' %}
+            </div>
+            <div class="mainnav">
+            {% nav 1 %}
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+

@@ -1,0 +1,327 @@
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load box_tags %}
+{% load nav_tags %}
+{% load video_tags %}
+{% load video_filters %}
+{% load news_tags %}
+{% load photo_tags %}
+{% load news_tags %}
+{% load event_tags %}
+{% load directory_tags %}
+{% load job_tags %}
+{% theme_extends "base.html" %}
+
+
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+=========================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load story_tags %}
+
+
+<!-- Meta Tags (for optimal SEO)
+=========================================================== -->
+{% block title %}{{ SITE_GLOBAL_SITENAME }} {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+
+
+<!-- Starts Tendenci Head Tag
+=========================================================== -->
+{% block extra_head %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+
+    <title>Theme Template for Bootstrap</title>
+
+    <!-- Theme Global Style
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/global-style.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ THEME_URL }}media/assets/layerslider/css/layerslider.css" type="text/css">
+    <!-- Bootstrap theme
+=========================================================== -->
+
+    <!-- navigation dropdowns
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
+    <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
+    <!-- Custom styles for this template
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
+{% endblock extra_head %}
+
+
+    <!-- Start of the Body
+=========================================================== -->
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+{% block html_body %}
+<div class="wrapper">
+    <a class="sr-only" href="#content">Skip to main content</a>
+
+    <!-- Header Starts
+    =========================================================== -->
+    {% theme_include "header.html" %}<!-- Pulls in Header Include -->
+    <!-- Header Ends -->
+
+    {% list_stories as stories_list limit=6 tags="rotator" quality="90" %}
+    <section id="slider-wrapper" class="layer-slider-wrapper">
+        <div id="layerslider" style="width:100%;height:500px;">
+            {% for story in stories_list %}
+            <div class="ls-slide" data-ls="transition2d:1;timeshift:-1000;">
+              <img src="{{ THEME_URL }}media/images/slider/fw-1.jpg" class="ls-bg" alt="Slide background"/>
+              {% if story.image %}
+              <img src="{% image_url story.image size=1000x700 crop=true quality=90 %}" class="ls-l" style="top:48%; left:70%;" data-ls="offsetxin:0;offsetyin:250;durationin:950;offsetxout:0;offsetyout:-8;easingout:easeInOutQuart;scalexout:1.2;scaleyout:1.2;" alt="image for {{ story.title }}"/>
+              {% endif %}
+              <h3 class="ls-l title rotator-title" style="width:320px; top:15%; left:80px;" data-ls="offsetxin:0;offsetyin:250;durationin:1000;delayin:500;offsetxout:0;offsetyout:-8;easingout:easeInOutQuart;scalexout:1.2;scaleyout:1.2;"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h3>
+              <p class="ls-l text-standard rotator-content" style="width:320px; top:30%; left:80px;" data-ls="offsetxin:0;offsetyin:250;durationin:2000;delayin:1000;offsetxout:0;offsetyout:-8;easingout:easeInOutQuart;scalexout:1.2;scaleyout:1.2;">{{ story.content|striptags|truncatewords_html:"32" }}</p>
+              <a href="{{ story.full_story_link }}" class="btn btn-two btn-lg ls-l rotator-link" style="top:45%; left:80px;" data-ls="offsetxin:0;offsetyin:250;durationin:2000;delayin:1000;offsetxout:0;offsetyout:-8;easingout:easeInOutQuart;scalexout:1.2;scaleyout:1.2;" target="_blank">Read more</a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="slice bg-3">
+      <div class="w-section inverse">
+          <div class="container">
+              <div class="row">
+                  <div class="col-lg-3 col-md-6 col-sm-6">
+                      <div class="w-box w-box-inverse">
+                          <div class="thmb-img">
+                              <i class="fa fa-money"></i>
+                          </div>
+
+                          <h2>{% box_title 12 %}</h2>
+                          {% box 12 %}
+                      </div>
+                  </div>
+
+                  <div class="col-lg-3 col-md-6 col-sm-6">
+                      <div class="w-box w-box-inverse">
+                          <div class="thmb-img">
+                              <i class="fa fa-users"></i>
+                          </div>
+
+                          <h2>{% box_title 13 %}</h2>
+                          {% box 13 %}
+                      </div>
+                  </div>
+
+                  <div class="col-lg-3 col-md-6 col-sm-6">
+                      <div class="w-box w-box-inverse">
+                          <div class="thmb-img">
+                              <i class="fa fa-user"></i>
+                          </div>
+
+                          <h2>{% box_title 14 %}</h2>
+                          {% box 14 %}
+                      </div>
+                  </div>
+
+                  <div class="col-lg-3 col-md-6 col-sm-6">
+                      <div class="w-box w-box-inverse">
+                          <div class="thmb-img">
+                              <i class="fa fa-calendar"></i>
+                          </div>
+
+                          <h2>{% trans 'Events' %}</h2>
+                          {% list_events as events_list limit=3 %}
+                          <ul class="list-unstyled">
+                          {% for event in events_list %}
+                            <li><a href="{{ event.get_absolute_url }}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></li>
+                            {% empty %}
+                            {% trans 'Events will be shown here. <a href="/events/add/">Start adding events now!</a>' %}
+                          {% endfor %}
+                          </ul>
+                          {% if event_list %}
+                          <a href="{% url event.search %}">{% trans 'View more events' %} »</a>W
+                          {% endif %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </section>
+
+    <section class="slice bg-5">
+        <div class="w-section inverse">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 box-text-center">
+                        <h3 class="section-title"><span><i class="fa fa-globe" ></i>{% trans 'About the Organization' %}<span class="border"></span></span></h3>
+                        {% box 16 %}
+                    </div>
+                    <div class="col-md-6 box-text-center">
+                        {% box 15 %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slice relative animate-hover-slide bg-3">
+        <div class="w-section">
+            <div class="container">
+                <h3 class="section-title">{% trans 'Photos' %}</h3>
+                <div id="carouselWork" class="carousel carousel-3 slide animate-hover-slide">
+                    <div class="carousel-nav">
+                        <a data-slide="prev" class="left" href="#carouselWork"><i class="fa fa-angle-left"></i></a>
+                        <a data-slide="next" class="right" href="#carouselWork"><i class="fa fa-angle-right"></i></a>
+                    </div>
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+                        {% list_photos as photos_list limit=8 random=True %}
+                        <div class="item active">
+                          <div class="row">
+                        {% for photo in photos_list %}
+                            <div class="col-md-3">
+                                <div class="w-box inverse">
+                                    <div class="figure">
+                                        <img alt="" src="{% photo_image_url photo size=1000x700 crop=True %}" class="img-responsive">
+                                        <div class="figcaption bg-2"></div>
+                                        <div class="figcaption-btn">
+                                            <a href="{% photo_image_url photo size=1000x700 crop=True %}" class="btn btn-xs btn-one theater"><i class="fa fa-plus-circle"></i> {% trans 'Zoom' %}</a>
+                                            <a href="{{ photo.get_absolute_url }}" class="btn btn-xs btn-one"><i class="fa fa-link"></i> {% trans 'View' %}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          {% if forloop.counter|divisibleby:4 %}
+                          {% if not forloop.last %}
+                          </div>
+                        </div>
+                        <div class="item">
+                          <div class="row">
+                          {% else %}
+                          </div>
+                        </div>
+                          {% endif %}
+                          {% endif %}
+
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="slice bg-5">
+        <div class="w-section inverse">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 box-text-center">
+                        {% box 4 %}
+                    </div>
+                    <div class="col-md-6 box-text-center">
+                        {% box 6 %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slice animate-hover-slide bg-5">
+        <div class="w-section inverse">
+            <div class="container">
+                <h3 class="section-title"><a href="/news">{% trans 'Latest News' %}</a></h3>
+                <div class="row">
+                    {% list_news as news_list limit=4 %}
+                    {% for news_item in news_list %}
+                    <div class="col-md-3">
+                        <div class="w-box">
+                            <h2>{% blocktrans with headline=news_item.headline|truncatewords:6 %}{{ headline }}{% endblocktrans %}</h2>
+                            <p>
+                            {% if news_item.summary %}
+                            {% blocktrans with summary=news_item.summary|striptags|truncatewords:"15" %}{{ summary }}{% endblocktrans %}
+                            {% else %}
+                            {% blocktrans with summary=news_item.body|striptags|truncatewords:"15" %}{{ summary }}{% endblocktrans %}
+                            {% endif %}
+                            </p>
+                            <a href="{{ news_item.get_absolute_url }}">{% trans 'Read More' %} »</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-md-12">
+                    <h3>{% trans 'No news to show now.' %} <a href="/news/add/">{% trans 'Start adding news now!' %}</a></h3>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer starts
+      =========================================================== -->
+    {% theme_include 'footer.html' %}
+    <!-- Footer Ends -->
+</div>
+{% endblock %} <!-- Ends the Body -->
+
+
+{% block extra_body %}
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+
+
+ <!-- Theme Specific Javascript files
+ ================================================== -->
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/modernizr.custom.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.easing.js"></script>
+
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Plugins -->
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/hover-dropdown/bootstrap-hover-dropdown.min.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/masonry/masonry.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/page-scroller/jquery.ui.totop.min.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/mixitup/jquery.mixitup.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/mixitup/jquery.mixitup.init.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/easy-pie-chart/jquery.easypiechart.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/waypoints/waypoints.min.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/sticky/jquery.sticky.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.wp.custom.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.wp.switcher.js"></script>
+    <script src="{{ THEME_URL }}media/assets/layerslider/js/greensock.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
+
+    <!-- LayerSlider script files -->
+    <script src="{{ THEME_URL }}media/assets/layerslider/js/layerslider.transitions.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/assets/layerslider/js/layerslider.kreaturamedia.jquery.js" type="text/javascript"></script>
+    <!-- Initializing the slider -->
+    <script>
+    jQuery("#layerslider").layerSlider({
+      pauseOnHover: true,
+      autoPlayVideos: false,
+      skinsPath: '{{ THEME_URL }}media/assets/layerslider/skins/',
+      responsive: true,
+      responsiveUnder: 1280,
+      layersContainer: 1280,
+      skin: 'borderlessdark3d',
+      hoverPrevNext: false,
+    });
+    </script>
+    <!-- Initialize the meanmenu -->
+    <script type="text/javascript">
+    jQuery(document).ready(function() {
+      jQuery('.mainnav nav').meanmenu();
+    });
+    </script>
+
+{% endblock extra_body %}
