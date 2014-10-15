@@ -77,7 +77,7 @@
 .errorlist{
 		color: red;
 	}
-	
+
 /* invoice search*/
 .t .t-invoice .t-search .invoice-row{
 	width: 95%;
@@ -157,6 +157,7 @@ div.invoice-meta-clear {
 div.invoice-table {
 	width: 100%;
 	margin-bottom: 15px;
+    clear: both;
 }
 
 div.invoice-table table {
@@ -235,7 +236,7 @@ div.invoice-options .invoice-options-header {
 }
 
 div.invoice-total-wrap {
-	width: 90%;	
+	width: 90%;
 }
 
 a.invoice-pay {
