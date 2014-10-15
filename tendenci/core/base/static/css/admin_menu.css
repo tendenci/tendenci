@@ -530,6 +530,7 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 .t-top-nav .nav-logo {
     position: relative;
     bottom: 12px;
+    top: auto;
 }
 
 .t-top-nav .classic {
