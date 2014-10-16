@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-15 03:48+0000\n"
-"PO-Revision-Date: 2014-10-15 04:00+0000\n"
+"POT-Creation-Date: 2014-10-16 03:29+0000\n"
+"PO-Revision-Date: 2014-10-15 21:17+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/tendenci/language/de_CH/)\n"
 "MIME-Version: 1.0\n"
@@ -399,7 +399,7 @@ msgstr "Anstehend"
 #: addons/events/templates/events/registration/multi_register.html:282
 #: addons/locations/forms.py:31
 #: addons/locations/templates/locations/import-preview.html:45
-#: addons/make_payments/forms.py:262 addons/memberships/models.py:64
+#: addons/make_payments/forms.py:264 addons/memberships/models.py:64
 #: addons/memberships/models.py:2248 addons/memberships/reports.py:26
 #: addons/memberships/templates/memberships/details.html:221
 #: addons/memberships/templates/memberships/details_print.html:99
@@ -911,6 +911,7 @@ msgstr "Löschen"
 #: addons/events/templates/notification/event_deleted/full.html:17
 #: addons/events/templates/notification/event_registration_cancelled/full.html:37
 #: addons/help_files/templates/help_files/details.html:6
+#: project_template/themes/boomerang/templates/homepage.html:138
 #: project_template/themes/jordy/templates/homepage.html:99
 #: project_template/themes/jordy/templates/homepage.html:131
 #, python-format
@@ -936,6 +937,7 @@ msgstr "%(title)s"
 #: addons/directories/templates/notification/directory_edited/full.html:7
 #: addons/directories/templates/notification/directory_renewal_eligible/full.html:19
 #: addons/directories/templates/notification/directory_renewed/full.html:21
+#: project_template/themes/boomerang/templates/homepage.html:240
 #: project_template/themes/jordy/templates/homepage.html:180
 #, python-format
 msgid "%(headline)s"
@@ -1047,6 +1049,7 @@ msgstr "Änderungen speichern"
 #: addons/resumes/templates/resumes/delete.html:15
 #: addons/resumes/templates/resumes/edit-meta.html:26
 #: apps/pages/templates/pages/edit-meta.html:31
+#: project_template/themes/boomerang/templates/theme_includes/logo_edit_form.html:24
 #: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:23
 #: templates/theme_includes/image_edit_form.html:25
 #: templates/theme_includes/logo_edit_form.html:19
@@ -1364,6 +1367,7 @@ msgstr "Suche"
 #: core/files/templates/files/index.html:7
 #: core/versions/templates/versions/version_list.html:21
 #: core/versions/templates/versions/version_list.html:28
+#: project_template/themes/boomerang/templates/homepage.html:191
 msgid "View"
 msgstr "Blick"
 
@@ -1951,6 +1955,8 @@ msgstr "Suchen nach:"
 #: addons/articles/templates/articles/search-result.html:8
 #: addons/directories/templates/directories/search-result.html:10
 #: addons/directories/templates/directories/search-result.html:12
+#: project_template/themes/boomerang/templates/homepage.html:243
+#: project_template/themes/boomerang/templates/homepage.html:245
 #: project_template/themes/jordy/templates/homepage.html:182
 #, python-format
 msgid "%(summary)s"
@@ -2786,7 +2792,7 @@ msgstr "Firmenmitgliedschaft Management-Anwendung."
 #: addons/resumes/templates/resumes/view.html:42
 #: apps/forms_builder/forms/models.py:45
 #: apps/invoices/templates/invoices/detail.html:31
-#: apps/invoices/templates/invoices/print_view.html:63
+#: apps/invoices/templates/invoices/print_view.html:73
 #: apps/user_groups/templates/user_groups/imports/user_groups_preview.html:56
 #: core/payments/templates/payments/search-result.html:20
 #: core/payments/templates/payments/stripe/payonline.html:18
@@ -2902,6 +2908,7 @@ msgstr "Wählen Sie einen"
 #: apps/profiles/templates/profiles/import/preview.html:76
 #: core/imports/forms.py:11
 #: project_template/themes/academic-bootstrap3/templates/footer.html:26
+#: project_template/themes/boomerang/templates/footer.html:35
 #: project_template/themes/developer-bootstrap3/templates/footer.html:26
 #: project_template/themes/jordy/templates/footer.html:25
 #: templates/reports/admin_users.html:19 templates/reports/admin_users.html:21
@@ -3023,7 +3030,7 @@ msgstr "PLZ"
 #: addons/events/templates/admin/events/standardregform/standard_reg_form_edit.html:133
 #: addons/locations/forms.py:32
 #: addons/locations/templates/locations/import-preview.html:42
-#: addons/make_payments/forms.py:264 addons/memberships/forms.py:703
+#: addons/make_payments/forms.py:266 addons/memberships/forms.py:703
 #: addons/memberships/forms.py:704
 #: addons/memberships/templates/memberships/applications/confirmation_default.html:59
 #: addons/memberships/templates/memberships/applications/detail_default.html:71
@@ -3100,7 +3107,7 @@ msgstr "csv (Export)"
 
 #: addons/corporate_memberships/forms.py:644 addons/events/forms.py:1465
 #: addons/events/forms.py:1548 addons/events/registration/forms.py:24
-#: addons/jobs/forms.py:57 addons/make_payments/forms.py:253
+#: addons/jobs/forms.py:57 addons/make_payments/forms.py:255
 #: addons/resumes/forms.py:48 apps/accounts/forms.py:47
 #: apps/contacts/forms.py:39 apps/forms_builder/forms/forms.py:171
 #: core/base/forms.py:72
@@ -8483,6 +8490,7 @@ msgid "Filter"
 msgstr "Filter"
 
 #: addons/events/templates/events/financial_reports.html:32
+#: apps/invoices/templates/invoices/print_view.html:35
 #: apps/invoices/templates/invoices/view.html:93
 msgid "Event Date"
 msgstr "Datum der Veranstaltung"
@@ -9717,7 +9725,7 @@ msgstr "Inv #"
 
 #: addons/events/templates/events/registrants/roster.html:78
 #: apps/invoices/templates/invoices/mark-as-paid.html:60
-#: apps/invoices/templates/invoices/print_view.html:48
+#: apps/invoices/templates/invoices/print_view.html:58
 #: apps/invoices/templates/invoices/view.html:122
 msgid "Invoice Amount"
 msgstr "Rechnungsbetrag"
@@ -10467,6 +10475,7 @@ msgstr "%(t)s Thema"
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:131
 #: project_template/themes/academic-bootstrap3/templates/sidebar.html:19
 #: project_template/themes/academic-bootstrap3/templates/theme_includes/box.html:5
+#: project_template/themes/boomerang/templates/sidebar.html:30
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:101
 #: project_template/themes/developer-bootstrap3/templates/theme_includes/box.html:5
 #: project_template/themes/jordy/templates/sidebar.html:30
@@ -10513,6 +10522,7 @@ msgstr "%(c)s"
 #: libs/styled_forms/templates/styled_forms/multi_form.html:298
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:130
 #: project_template/themes/academic-bootstrap3/templates/sidebar.html:18
+#: project_template/themes/boomerang/templates/sidebar.html:29
 #: project_template/themes/jordy/templates/sidebar.html:29
 #: templates/model_report/includes/form_fields.html:9
 #: templates/model_report/widgets/range_widget.html:9
@@ -11253,6 +11263,7 @@ msgid "Latest Locations by %(dname)s"
 msgstr "Neueste Standorte %(dname)s"
 
 #: addons/locations/forms.py:25
+#: project_template/themes/boomerang/templates/theme_includes/logo_edit_form.html:19
 #: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:18
 #: templates/theme_includes/logo_edit_form.html:14
 msgid "Logo"
@@ -11497,968 +11508,968 @@ msgstr "Google Maps der Standort"
 msgid "Google Maps view"
 msgstr "Google Maps"
 
-#: addons/make_payments/forms.py:10
+#: addons/make_payments/forms.py:12 core/site_settings/utils.py:10
 msgid "Andorra"
 msgstr "Andorra"
 
-#: addons/make_payments/forms.py:11
+#: addons/make_payments/forms.py:13 core/site_settings/utils.py:11
 msgid "United Arab Emirates"
 msgstr "Vereinigte Arabische Emirate"
 
-#: addons/make_payments/forms.py:12
+#: addons/make_payments/forms.py:14 core/site_settings/utils.py:12
 msgid "Afghanistan"
 msgstr "Afghanistan"
 
-#: addons/make_payments/forms.py:13
+#: addons/make_payments/forms.py:15 core/site_settings/utils.py:13
 msgid "Antigua & Barbuda"
 msgstr "Antigua &amp; Barbuda"
 
-#: addons/make_payments/forms.py:14
+#: addons/make_payments/forms.py:16 core/site_settings/utils.py:14
 msgid "Anguilla"
 msgstr "Anguilla"
 
-#: addons/make_payments/forms.py:15
+#: addons/make_payments/forms.py:17 core/site_settings/utils.py:15
 msgid "Albania"
 msgstr "Albanien"
 
-#: addons/make_payments/forms.py:16
+#: addons/make_payments/forms.py:18 core/site_settings/utils.py:16
 msgid "Armenia"
 msgstr "Armenien"
 
-#: addons/make_payments/forms.py:17
+#: addons/make_payments/forms.py:19 core/site_settings/utils.py:17
 msgid "Netherlands Antilles"
 msgstr "Niederländische Antillen"
 
-#: addons/make_payments/forms.py:18
+#: addons/make_payments/forms.py:20 core/site_settings/utils.py:18
 msgid "Angola"
 msgstr "Angola"
 
-#: addons/make_payments/forms.py:19
+#: addons/make_payments/forms.py:21 core/site_settings/utils.py:19
 msgid "Antarctica"
 msgstr "Antarktika"
 
-#: addons/make_payments/forms.py:20
+#: addons/make_payments/forms.py:22 core/site_settings/utils.py:20
 msgid "Argentina"
 msgstr "Argentinien"
 
-#: addons/make_payments/forms.py:21
+#: addons/make_payments/forms.py:23 core/site_settings/utils.py:21
 msgid "American Samoa"
 msgstr "Amerikanische Samoa"
 
-#: addons/make_payments/forms.py:22
+#: addons/make_payments/forms.py:24 core/site_settings/utils.py:22
 msgid "Austria"
 msgstr "Österreich"
 
-#: addons/make_payments/forms.py:23
+#: addons/make_payments/forms.py:25 core/site_settings/utils.py:23
 msgid "Australia"
 msgstr "Australien"
 
-#: addons/make_payments/forms.py:24
+#: addons/make_payments/forms.py:26 core/site_settings/utils.py:24
 msgid "Aruba"
 msgstr "Aruba"
 
-#: addons/make_payments/forms.py:25
+#: addons/make_payments/forms.py:27 core/site_settings/utils.py:25
 msgid "Azerbaijan"
 msgstr "Aserbaidschan"
 
-#: addons/make_payments/forms.py:26
+#: addons/make_payments/forms.py:28 core/site_settings/utils.py:26
 msgid "Bosnia and Herzegovina"
 msgstr "Bosnien und Herzegowina"
 
-#: addons/make_payments/forms.py:27
+#: addons/make_payments/forms.py:29 core/site_settings/utils.py:27
 msgid "Barbados"
 msgstr "Barbados"
 
-#: addons/make_payments/forms.py:28
+#: addons/make_payments/forms.py:30 core/site_settings/utils.py:28
 msgid "Bangladesh"
 msgstr "Bangladesch"
 
-#: addons/make_payments/forms.py:29
+#: addons/make_payments/forms.py:31 core/site_settings/utils.py:29
 msgid "Belgium"
 msgstr "Belgien"
 
-#: addons/make_payments/forms.py:30
+#: addons/make_payments/forms.py:32 core/site_settings/utils.py:30
 msgid "Burkina Faso"
 msgstr "Burkina Faso"
 
-#: addons/make_payments/forms.py:31
+#: addons/make_payments/forms.py:33 core/site_settings/utils.py:31
 msgid "Bulgaria"
 msgstr "Bulgarien"
 
-#: addons/make_payments/forms.py:32
+#: addons/make_payments/forms.py:34 core/site_settings/utils.py:32
 msgid "Bahrain"
 msgstr "Bahrein"
 
-#: addons/make_payments/forms.py:33
+#: addons/make_payments/forms.py:35 core/site_settings/utils.py:33
 msgid "Burundi"
 msgstr "Burundi"
 
-#: addons/make_payments/forms.py:34
+#: addons/make_payments/forms.py:36 core/site_settings/utils.py:34
 msgid "Benin"
 msgstr "Benin"
 
-#: addons/make_payments/forms.py:35
+#: addons/make_payments/forms.py:37 core/site_settings/utils.py:35
 msgid "Bermuda"
 msgstr "Bermuda"
 
-#: addons/make_payments/forms.py:36
+#: addons/make_payments/forms.py:38 core/site_settings/utils.py:36
 msgid "Brunei Darussalam"
 msgstr "Brunei Darussalam"
 
-#: addons/make_payments/forms.py:37
+#: addons/make_payments/forms.py:39 core/site_settings/utils.py:37
 msgid "Bolivia"
 msgstr "Bolivien"
 
-#: addons/make_payments/forms.py:38
+#: addons/make_payments/forms.py:40 core/site_settings/utils.py:38
 msgid "Brazil"
 msgstr "Brasilien"
 
-#: addons/make_payments/forms.py:39
+#: addons/make_payments/forms.py:41 core/site_settings/utils.py:39
 msgid "Bahama"
 msgstr "Bahamas"
 
-#: addons/make_payments/forms.py:40
+#: addons/make_payments/forms.py:42 core/site_settings/utils.py:40
 msgid "Bhutan"
 msgstr "Bhutan"
 
-#: addons/make_payments/forms.py:41
+#: addons/make_payments/forms.py:43 core/site_settings/utils.py:41
 msgid "Bouvet Island"
 msgstr "Bouvet-Insel"
 
-#: addons/make_payments/forms.py:42
+#: addons/make_payments/forms.py:44 core/site_settings/utils.py:42
 msgid "Botswana"
 msgstr "Botswana"
 
-#: addons/make_payments/forms.py:43
+#: addons/make_payments/forms.py:45 core/site_settings/utils.py:43
 msgid "Belarus"
 msgstr "Weißrussland"
 
-#: addons/make_payments/forms.py:44
+#: addons/make_payments/forms.py:46 core/site_settings/utils.py:44
 msgid "Belize"
 msgstr "Belize"
 
-#: addons/make_payments/forms.py:45 apps/forms_builder/forms/models.py:247
-#: core/base/fields.py:151
+#: addons/make_payments/forms.py:47 apps/forms_builder/forms/models.py:247
+#: core/base/fields.py:151 core/site_settings/utils.py:45
 msgid "Canada"
 msgstr "Kanada"
 
-#: addons/make_payments/forms.py:46
+#: addons/make_payments/forms.py:48 core/site_settings/utils.py:46
 msgid "Cocos (Keeling) Islands"
 msgstr "Cocos (Keeling) Islands"
 
-#: addons/make_payments/forms.py:47
+#: addons/make_payments/forms.py:49 core/site_settings/utils.py:47
 msgid "Central African Republic"
 msgstr "Zentralafrikanische Republik"
 
-#: addons/make_payments/forms.py:48
+#: addons/make_payments/forms.py:50 core/site_settings/utils.py:48
 msgid "Congo"
 msgstr "Kongo"
 
-#: addons/make_payments/forms.py:49
+#: addons/make_payments/forms.py:51 core/site_settings/utils.py:49
 msgid "Switzerland"
 msgstr "Schweiz"
 
-#: addons/make_payments/forms.py:50
+#: addons/make_payments/forms.py:52 core/site_settings/utils.py:50
 msgid "Ivory Coast"
 msgstr "Elfenbeinküste"
 
-#: addons/make_payments/forms.py:51
+#: addons/make_payments/forms.py:53 core/site_settings/utils.py:51
 msgid "Cook Iislands"
 msgstr "Koch Iislands"
 
-#: addons/make_payments/forms.py:52
+#: addons/make_payments/forms.py:54 core/site_settings/utils.py:52
 msgid "Chile"
 msgstr "Chile"
 
-#: addons/make_payments/forms.py:53
+#: addons/make_payments/forms.py:55 core/site_settings/utils.py:53
 msgid "Cameroon"
 msgstr "Kamerun"
 
-#: addons/make_payments/forms.py:54
+#: addons/make_payments/forms.py:56 core/site_settings/utils.py:54
 msgid "China"
 msgstr "China"
 
-#: addons/make_payments/forms.py:55
+#: addons/make_payments/forms.py:57 core/site_settings/utils.py:55
 msgid "Colombia"
 msgstr "Kolumbien"
 
-#: addons/make_payments/forms.py:56
+#: addons/make_payments/forms.py:58 core/site_settings/utils.py:56
 msgid "Costa Rica"
 msgstr "Costa Rica"
 
-#: addons/make_payments/forms.py:57
+#: addons/make_payments/forms.py:59 core/site_settings/utils.py:57
 msgid "Cuba"
 msgstr "Kuba"
 
-#: addons/make_payments/forms.py:58
+#: addons/make_payments/forms.py:60 core/site_settings/utils.py:58
 msgid "Cape Verde"
 msgstr "Cape Verde"
 
-#: addons/make_payments/forms.py:59
+#: addons/make_payments/forms.py:61 core/site_settings/utils.py:59
 msgid "Christmas Island"
 msgstr "Weihnachtsinsel"
 
-#: addons/make_payments/forms.py:60
+#: addons/make_payments/forms.py:62 core/site_settings/utils.py:60
 msgid "Cyprus"
 msgstr "Zypern"
 
-#: addons/make_payments/forms.py:61
+#: addons/make_payments/forms.py:63 core/site_settings/utils.py:61
 msgid "Czech Republic"
 msgstr "Tschechische Republik"
 
-#: addons/make_payments/forms.py:62
+#: addons/make_payments/forms.py:64 core/site_settings/utils.py:62
 msgid "Germany"
 msgstr "Deutschland"
 
-#: addons/make_payments/forms.py:63
+#: addons/make_payments/forms.py:65 core/site_settings/utils.py:63
 msgid "Djibouti"
 msgstr "Dschibuti"
 
-#: addons/make_payments/forms.py:64
+#: addons/make_payments/forms.py:66 core/site_settings/utils.py:64
 msgid "Denmark"
 msgstr "Dänemark"
 
-#: addons/make_payments/forms.py:65
+#: addons/make_payments/forms.py:67 core/site_settings/utils.py:65
 msgid "Dominica"
 msgstr "Dominica"
 
-#: addons/make_payments/forms.py:66
+#: addons/make_payments/forms.py:68 core/site_settings/utils.py:66
 msgid "Dominican Republic"
 msgstr "Dominikanische Republik"
 
-#: addons/make_payments/forms.py:67
+#: addons/make_payments/forms.py:69 core/site_settings/utils.py:67
 msgid "Algeria"
 msgstr "Algerien"
 
-#: addons/make_payments/forms.py:68
+#: addons/make_payments/forms.py:70 core/site_settings/utils.py:68
 msgid "Ecuador"
 msgstr "Ecuador"
 
-#: addons/make_payments/forms.py:69
+#: addons/make_payments/forms.py:71 core/site_settings/utils.py:69
 msgid "Estonia"
 msgstr "Estland"
 
-#: addons/make_payments/forms.py:70
+#: addons/make_payments/forms.py:72 core/site_settings/utils.py:70
 msgid "Egypt"
 msgstr "Ägypten"
 
-#: addons/make_payments/forms.py:71
+#: addons/make_payments/forms.py:73 core/site_settings/utils.py:71
 msgid "Western Sahara"
 msgstr "Westsahara"
 
-#: addons/make_payments/forms.py:72
+#: addons/make_payments/forms.py:74 core/site_settings/utils.py:72
 msgid "Eritrea"
 msgstr "Eritrea"
 
-#: addons/make_payments/forms.py:73
+#: addons/make_payments/forms.py:75 core/site_settings/utils.py:73
 msgid "Spain"
 msgstr "Spanien"
 
-#: addons/make_payments/forms.py:74
+#: addons/make_payments/forms.py:76 core/site_settings/utils.py:74
 msgid "Ethiopia"
 msgstr "Äthiopien"
 
-#: addons/make_payments/forms.py:75
+#: addons/make_payments/forms.py:77 core/site_settings/utils.py:75
 msgid "Finland"
 msgstr "Finnland"
 
-#: addons/make_payments/forms.py:76
+#: addons/make_payments/forms.py:78 core/site_settings/utils.py:76
 msgid "Fiji"
 msgstr "Fidschi"
 
-#: addons/make_payments/forms.py:77
+#: addons/make_payments/forms.py:79 core/site_settings/utils.py:77
 msgid "Falkland Islands (Malvinas)"
 msgstr "Falkland-Inseln (Malvinas)"
 
-#: addons/make_payments/forms.py:78
+#: addons/make_payments/forms.py:80 core/site_settings/utils.py:78
 msgid "Micronesia"
 msgstr "Mikronesien"
 
-#: addons/make_payments/forms.py:79
+#: addons/make_payments/forms.py:81 core/site_settings/utils.py:79
 msgid "Faroe Islands"
 msgstr "Färöer-Inseln"
 
-#: addons/make_payments/forms.py:80
+#: addons/make_payments/forms.py:82 core/site_settings/utils.py:80
 msgid "France"
 msgstr "Frankreich"
 
-#: addons/make_payments/forms.py:81
+#: addons/make_payments/forms.py:83 core/site_settings/utils.py:81
 msgid "France, Metropolitan"
 msgstr "Frankreich, Metropolitan"
 
-#: addons/make_payments/forms.py:82
+#: addons/make_payments/forms.py:84 core/site_settings/utils.py:82
 msgid "Gabon"
 msgstr "Gabun"
 
-#: addons/make_payments/forms.py:83
+#: addons/make_payments/forms.py:85 core/site_settings/utils.py:83
 msgid "United Kingdom (Great Britain)"
 msgstr "Vereinigtes Königreich (Großbritannien)"
 
-#: addons/make_payments/forms.py:84
+#: addons/make_payments/forms.py:86 core/site_settings/utils.py:84
 msgid "Grenada"
 msgstr "Grenada"
 
-#: addons/make_payments/forms.py:85
+#: addons/make_payments/forms.py:87 core/site_settings/utils.py:85
 msgid "Georgia"
 msgstr "Georgia"
 
-#: addons/make_payments/forms.py:86
+#: addons/make_payments/forms.py:88 core/site_settings/utils.py:86
 msgid "French Guiana"
 msgstr "Französisch-Guayana"
 
-#: addons/make_payments/forms.py:87
+#: addons/make_payments/forms.py:89 core/site_settings/utils.py:87
 msgid "Ghana"
 msgstr "Ghana"
 
-#: addons/make_payments/forms.py:88
+#: addons/make_payments/forms.py:90 core/site_settings/utils.py:88
 msgid "Gibraltar"
 msgstr "Gibraltar"
 
-#: addons/make_payments/forms.py:89
+#: addons/make_payments/forms.py:91 core/site_settings/utils.py:89
 msgid "Greenland"
 msgstr "Grönland"
 
-#: addons/make_payments/forms.py:90
+#: addons/make_payments/forms.py:92 core/site_settings/utils.py:90
 msgid "Gambia"
 msgstr "Gambia"
 
-#: addons/make_payments/forms.py:91
+#: addons/make_payments/forms.py:93 core/site_settings/utils.py:91
 msgid "Guinea"
 msgstr "Guinea"
 
-#: addons/make_payments/forms.py:92
+#: addons/make_payments/forms.py:94 core/site_settings/utils.py:92
 msgid "Guadeloupe"
 msgstr "Guadeloupe"
 
-#: addons/make_payments/forms.py:93
+#: addons/make_payments/forms.py:95 core/site_settings/utils.py:93
 msgid "Equatorial Guinea"
 msgstr "Äquatorial-Guinea"
 
-#: addons/make_payments/forms.py:94
+#: addons/make_payments/forms.py:96 core/site_settings/utils.py:94
 msgid "Greece"
 msgstr "Griechenland"
 
-#: addons/make_payments/forms.py:95
+#: addons/make_payments/forms.py:97 core/site_settings/utils.py:95
 msgid "South Georgia and the South Sandwich Islands"
 msgstr "Südgeorgien und die Südlichen Sandwichinseln"
 
-#: addons/make_payments/forms.py:96
+#: addons/make_payments/forms.py:98 core/site_settings/utils.py:96
 msgid "Guatemala"
 msgstr "Guatemala"
 
-#: addons/make_payments/forms.py:97
+#: addons/make_payments/forms.py:99 core/site_settings/utils.py:97
 msgid "Guam"
 msgstr "Guam"
 
-#: addons/make_payments/forms.py:98
+#: addons/make_payments/forms.py:100 core/site_settings/utils.py:98
 msgid "Guinea-Bissau"
 msgstr "Guinea-Bissau"
 
-#: addons/make_payments/forms.py:99
+#: addons/make_payments/forms.py:101 core/site_settings/utils.py:99
 msgid "Guyana"
 msgstr "Guyana"
 
-#: addons/make_payments/forms.py:100
+#: addons/make_payments/forms.py:102 core/site_settings/utils.py:100
 msgid "Hong Kong"
 msgstr "Hongkong"
 
-#: addons/make_payments/forms.py:101
+#: addons/make_payments/forms.py:103 core/site_settings/utils.py:101
 msgid "Heard & McDonald Islands"
 msgstr "Heard &amp; McDonald-Inseln"
 
-#: addons/make_payments/forms.py:102
+#: addons/make_payments/forms.py:104 core/site_settings/utils.py:102
 msgid "Honduras"
 msgstr "Honduras"
 
-#: addons/make_payments/forms.py:103
+#: addons/make_payments/forms.py:105 core/site_settings/utils.py:103
 msgid "Croatia"
 msgstr "Kroatien"
 
-#: addons/make_payments/forms.py:104
+#: addons/make_payments/forms.py:106 core/site_settings/utils.py:104
 msgid "Haiti"
 msgstr "Haiti"
 
-#: addons/make_payments/forms.py:105
+#: addons/make_payments/forms.py:107 core/site_settings/utils.py:105
 msgid "Hungary"
 msgstr "Ungarn"
 
-#: addons/make_payments/forms.py:106
+#: addons/make_payments/forms.py:108 core/site_settings/utils.py:106
 msgid "Indonesia"
 msgstr "Indonesien"
 
-#: addons/make_payments/forms.py:107
+#: addons/make_payments/forms.py:109 core/site_settings/utils.py:107
 msgid "Ireland"
 msgstr "Irland"
 
-#: addons/make_payments/forms.py:108
+#: addons/make_payments/forms.py:110 core/site_settings/utils.py:108
 msgid "Israel"
 msgstr "Israel"
 
-#: addons/make_payments/forms.py:109
+#: addons/make_payments/forms.py:111 core/site_settings/utils.py:109
 msgid "India"
 msgstr "Indien"
 
-#: addons/make_payments/forms.py:110
+#: addons/make_payments/forms.py:112 core/site_settings/utils.py:110
 msgid "British Indian Ocean Territory"
 msgstr "British Indian Ocean Territory"
 
-#: addons/make_payments/forms.py:111
+#: addons/make_payments/forms.py:113 core/site_settings/utils.py:111
 msgid "Iraq"
 msgstr "Irak"
 
-#: addons/make_payments/forms.py:112
+#: addons/make_payments/forms.py:114 core/site_settings/utils.py:112
 msgid "Islamic Republic of Iran"
 msgstr "Islamischen Republik Iran"
 
-#: addons/make_payments/forms.py:113
+#: addons/make_payments/forms.py:115 core/site_settings/utils.py:113
 msgid "Iceland"
 msgstr "Island"
 
-#: addons/make_payments/forms.py:114
+#: addons/make_payments/forms.py:116 core/site_settings/utils.py:114
 msgid "Italy"
 msgstr "Italien"
 
-#: addons/make_payments/forms.py:115
+#: addons/make_payments/forms.py:117 core/site_settings/utils.py:115
 msgid "Jamaica"
 msgstr "Jamaika"
 
-#: addons/make_payments/forms.py:116
+#: addons/make_payments/forms.py:118 core/site_settings/utils.py:116
 msgid "Jordan"
 msgstr "Jordan"
 
-#: addons/make_payments/forms.py:117
+#: addons/make_payments/forms.py:119 core/site_settings/utils.py:117
 msgid "Japan"
 msgstr "Japan"
 
-#: addons/make_payments/forms.py:118
+#: addons/make_payments/forms.py:120 core/site_settings/utils.py:118
 msgid "Kenya"
 msgstr "Kenia"
 
-#: addons/make_payments/forms.py:119
+#: addons/make_payments/forms.py:121 core/site_settings/utils.py:119
 msgid "Kyrgyzstan"
 msgstr "Kirgisistan"
 
-#: addons/make_payments/forms.py:120
+#: addons/make_payments/forms.py:122 core/site_settings/utils.py:120
 msgid "Cambodia"
 msgstr "Kambodscha"
 
-#: addons/make_payments/forms.py:121
+#: addons/make_payments/forms.py:123 core/site_settings/utils.py:121
 msgid "Kiribati"
 msgstr "Kiribati"
 
-#: addons/make_payments/forms.py:122
+#: addons/make_payments/forms.py:124 core/site_settings/utils.py:122
 msgid "Comoros"
 msgstr "Komoren"
 
-#: addons/make_payments/forms.py:123
+#: addons/make_payments/forms.py:125 core/site_settings/utils.py:123
 msgid "St. Kitts and Nevis"
 msgstr "St. Kitts und Nevis"
 
-#: addons/make_payments/forms.py:124
+#: addons/make_payments/forms.py:126 core/site_settings/utils.py:124
 msgid "Korea, Democratic People's Republic of"
 msgstr "Korea, Demokratische Volksrepublik"
 
-#: addons/make_payments/forms.py:125
+#: addons/make_payments/forms.py:127 core/site_settings/utils.py:125
 msgid "Korea, Republic of"
 msgstr "Korea, Republik"
 
-#: addons/make_payments/forms.py:126
+#: addons/make_payments/forms.py:128 core/site_settings/utils.py:126
 msgid "Kuwait"
 msgstr "Kuwait"
 
-#: addons/make_payments/forms.py:127
+#: addons/make_payments/forms.py:129 core/site_settings/utils.py:127
 msgid "Cayman Islands"
 msgstr "Cayman Islands"
 
-#: addons/make_payments/forms.py:128
+#: addons/make_payments/forms.py:130 core/site_settings/utils.py:128
 msgid "Kazakhstan"
 msgstr "Kasachstan"
 
-#: addons/make_payments/forms.py:129
+#: addons/make_payments/forms.py:131 core/site_settings/utils.py:129
 msgid "Lao People's Democratic Republic"
 msgstr "Lao Demokratischen Volksrepublik"
 
-#: addons/make_payments/forms.py:130
+#: addons/make_payments/forms.py:132 core/site_settings/utils.py:130
 msgid "Lebanon"
 msgstr "Libanon"
 
-#: addons/make_payments/forms.py:131
+#: addons/make_payments/forms.py:133 core/site_settings/utils.py:131
 msgid "Saint Lucia"
 msgstr "St. Lucia"
 
-#: addons/make_payments/forms.py:132
+#: addons/make_payments/forms.py:134 core/site_settings/utils.py:132
 msgid "Liechtenstein"
 msgstr "Liechtenstein"
 
-#: addons/make_payments/forms.py:133
+#: addons/make_payments/forms.py:135 core/site_settings/utils.py:133
 msgid "Sri Lanka"
 msgstr "Sri Lanka"
 
-#: addons/make_payments/forms.py:134
+#: addons/make_payments/forms.py:136 core/site_settings/utils.py:134
 msgid "Liberia"
 msgstr "Liberia"
 
-#: addons/make_payments/forms.py:135
+#: addons/make_payments/forms.py:137 core/site_settings/utils.py:135
 msgid "Lesotho"
 msgstr "Lesotho"
 
-#: addons/make_payments/forms.py:136
+#: addons/make_payments/forms.py:138 core/site_settings/utils.py:136
 msgid "Lithuania"
 msgstr "Litauen"
 
-#: addons/make_payments/forms.py:137
+#: addons/make_payments/forms.py:139 core/site_settings/utils.py:137
 msgid "Luxembourg"
 msgstr "Luxemburg"
 
-#: addons/make_payments/forms.py:138
+#: addons/make_payments/forms.py:140 core/site_settings/utils.py:138
 msgid "Latvia"
 msgstr "Lettland"
 
-#: addons/make_payments/forms.py:139
+#: addons/make_payments/forms.py:141 core/site_settings/utils.py:139
 msgid "Libyan Arab Jamahiriya"
 msgstr "Libysch-Arabische Dschamahirija"
 
-#: addons/make_payments/forms.py:140
+#: addons/make_payments/forms.py:142 core/site_settings/utils.py:140
 msgid "Morocco"
 msgstr "Marokko"
 
-#: addons/make_payments/forms.py:141
+#: addons/make_payments/forms.py:143 core/site_settings/utils.py:141
 msgid "Monaco"
 msgstr "Monaco"
 
-#: addons/make_payments/forms.py:142
+#: addons/make_payments/forms.py:144 core/site_settings/utils.py:142
 msgid "Moldova, Republic of"
 msgstr "Moldau, Republik"
 
-#: addons/make_payments/forms.py:143
+#: addons/make_payments/forms.py:145 core/site_settings/utils.py:143
 msgid "Madagascar"
 msgstr "Madagaskar"
 
-#: addons/make_payments/forms.py:144
+#: addons/make_payments/forms.py:146 core/site_settings/utils.py:144
 msgid "Marshall Islands"
 msgstr "Marshall-Inseln"
 
-#: addons/make_payments/forms.py:145
+#: addons/make_payments/forms.py:147 core/site_settings/utils.py:145
 msgid "Mali"
 msgstr "Mali"
 
-#: addons/make_payments/forms.py:146
+#: addons/make_payments/forms.py:148 core/site_settings/utils.py:146
 msgid "Mongolia"
 msgstr "Mongolei"
 
-#: addons/make_payments/forms.py:147
+#: addons/make_payments/forms.py:149 core/site_settings/utils.py:147
 msgid "Myanmar"
 msgstr "Myanmar"
 
-#: addons/make_payments/forms.py:148
+#: addons/make_payments/forms.py:150 core/site_settings/utils.py:148
 msgid "Macau"
 msgstr "Macau"
 
-#: addons/make_payments/forms.py:149
+#: addons/make_payments/forms.py:151 core/site_settings/utils.py:149
 msgid "Northern Mariana Islands"
 msgstr "Northern Mariana Islands"
 
-#: addons/make_payments/forms.py:150
+#: addons/make_payments/forms.py:152 core/site_settings/utils.py:150
 msgid "Martinique"
 msgstr "Martinique"
 
-#: addons/make_payments/forms.py:151
+#: addons/make_payments/forms.py:153 core/site_settings/utils.py:151
 msgid "Mauritania"
 msgstr "Mauretanien"
 
-#: addons/make_payments/forms.py:152
+#: addons/make_payments/forms.py:154 core/site_settings/utils.py:152
 msgid "Monserrat"
 msgstr "Monserrat"
 
-#: addons/make_payments/forms.py:153
+#: addons/make_payments/forms.py:155 core/site_settings/utils.py:153
 msgid "Malta"
 msgstr "Malta"
 
-#: addons/make_payments/forms.py:154
+#: addons/make_payments/forms.py:156 core/site_settings/utils.py:154
 msgid "Mauritius"
 msgstr "Mauritius"
 
-#: addons/make_payments/forms.py:155
+#: addons/make_payments/forms.py:157 core/site_settings/utils.py:155
 msgid "Maldives"
 msgstr "Malediven"
 
-#: addons/make_payments/forms.py:156
+#: addons/make_payments/forms.py:158 core/site_settings/utils.py:156
 msgid "Malawi"
 msgstr "Malawi"
 
-#: addons/make_payments/forms.py:157
+#: addons/make_payments/forms.py:159 core/site_settings/utils.py:157
 msgid "Mexico"
 msgstr "Mexiko"
 
-#: addons/make_payments/forms.py:158
+#: addons/make_payments/forms.py:160 core/site_settings/utils.py:158
 msgid "Malaysia"
 msgstr "Malaysia"
 
-#: addons/make_payments/forms.py:159
+#: addons/make_payments/forms.py:161 core/site_settings/utils.py:159
 msgid "Mozambique"
 msgstr "Mosambik"
 
-#: addons/make_payments/forms.py:160
+#: addons/make_payments/forms.py:162 core/site_settings/utils.py:160
 msgid "Namibia"
 msgstr "Namibia"
 
-#: addons/make_payments/forms.py:161
+#: addons/make_payments/forms.py:163 core/site_settings/utils.py:161
 msgid "New Caledonia"
 msgstr "Neukaledonien"
 
-#: addons/make_payments/forms.py:162
+#: addons/make_payments/forms.py:164 core/site_settings/utils.py:162
 msgid "Niger"
 msgstr "Niger"
 
-#: addons/make_payments/forms.py:163
+#: addons/make_payments/forms.py:165 core/site_settings/utils.py:163
 msgid "Norfolk Island"
 msgstr "Norfolk-Insel"
 
-#: addons/make_payments/forms.py:164
+#: addons/make_payments/forms.py:166 core/site_settings/utils.py:164
 msgid "Nigeria"
 msgstr "Nigeria"
 
-#: addons/make_payments/forms.py:165
+#: addons/make_payments/forms.py:167 core/site_settings/utils.py:165
 msgid "Nicaragua"
 msgstr "Nicaragua"
 
-#: addons/make_payments/forms.py:166
+#: addons/make_payments/forms.py:168 core/site_settings/utils.py:166
 msgid "Netherlands"
 msgstr "Niederlande"
 
-#: addons/make_payments/forms.py:167
+#: addons/make_payments/forms.py:169 core/site_settings/utils.py:167
 msgid "Norway"
 msgstr "Norwegen"
 
-#: addons/make_payments/forms.py:168
+#: addons/make_payments/forms.py:170 core/site_settings/utils.py:168
 msgid "Nepal"
 msgstr "Nepal"
 
-#: addons/make_payments/forms.py:169
+#: addons/make_payments/forms.py:171 core/site_settings/utils.py:169
 msgid "Nauru"
 msgstr "Nauru"
 
-#: addons/make_payments/forms.py:170
+#: addons/make_payments/forms.py:172 core/site_settings/utils.py:170
 msgid "Niue"
 msgstr "Niue"
 
-#: addons/make_payments/forms.py:171
+#: addons/make_payments/forms.py:173 core/site_settings/utils.py:171
 msgid "New Zealand"
 msgstr "Neuseeland"
 
-#: addons/make_payments/forms.py:172
+#: addons/make_payments/forms.py:174 core/site_settings/utils.py:172
 msgid "Oman"
 msgstr "Oman"
 
-#: addons/make_payments/forms.py:173
+#: addons/make_payments/forms.py:175 core/site_settings/utils.py:173
 msgid "Panama"
 msgstr "Panama"
 
-#: addons/make_payments/forms.py:174
+#: addons/make_payments/forms.py:176 core/site_settings/utils.py:174
 msgid "Peru"
 msgstr "Peru"
 
-#: addons/make_payments/forms.py:175
+#: addons/make_payments/forms.py:177 core/site_settings/utils.py:175
 msgid "French Polynesia"
 msgstr "Französisch-Polynesien"
 
-#: addons/make_payments/forms.py:176
+#: addons/make_payments/forms.py:178 core/site_settings/utils.py:176
 msgid "Papua New Guinea"
 msgstr "Papua-Neuguinea"
 
-#: addons/make_payments/forms.py:177
+#: addons/make_payments/forms.py:179 core/site_settings/utils.py:177
 msgid "Philippines"
 msgstr "Philippinen"
 
-#: addons/make_payments/forms.py:178
+#: addons/make_payments/forms.py:180 core/site_settings/utils.py:178
 msgid "Pakistan"
 msgstr "Pakistan"
 
-#: addons/make_payments/forms.py:179
+#: addons/make_payments/forms.py:181 core/site_settings/utils.py:179
 msgid "Poland"
 msgstr "Polen"
 
-#: addons/make_payments/forms.py:180
+#: addons/make_payments/forms.py:182 core/site_settings/utils.py:180
 msgid "St. Pierre & Miquelon"
 msgstr "St. Pierre &amp; Miquelon"
 
-#: addons/make_payments/forms.py:181
+#: addons/make_payments/forms.py:183 core/site_settings/utils.py:181
 msgid "Pitcairn"
 msgstr "Pitcairn"
 
-#: addons/make_payments/forms.py:182
+#: addons/make_payments/forms.py:184 core/site_settings/utils.py:182
 msgid "Puerto Rico"
 msgstr "Puerto Rico"
 
-#: addons/make_payments/forms.py:183
+#: addons/make_payments/forms.py:185 core/site_settings/utils.py:183
 msgid "Portugal"
 msgstr "Portugal"
 
-#: addons/make_payments/forms.py:184
+#: addons/make_payments/forms.py:186 core/site_settings/utils.py:184
 msgid "Palau"
 msgstr "Palau"
 
-#: addons/make_payments/forms.py:185
+#: addons/make_payments/forms.py:187 core/site_settings/utils.py:185
 msgid "Paraguay"
 msgstr "Paraguay"
 
-#: addons/make_payments/forms.py:186
+#: addons/make_payments/forms.py:188 core/site_settings/utils.py:186
 msgid "Qatar"
 msgstr "Katar"
 
-#: addons/make_payments/forms.py:187
+#: addons/make_payments/forms.py:189 core/site_settings/utils.py:187
 msgid "Reunion"
 msgstr "Wiedervereinigung"
 
-#: addons/make_payments/forms.py:188
+#: addons/make_payments/forms.py:190 core/site_settings/utils.py:188
 msgid "Romania"
 msgstr "Rumänien"
 
-#: addons/make_payments/forms.py:189
+#: addons/make_payments/forms.py:191 core/site_settings/utils.py:189
 msgid "Russian Federation"
 msgstr "Russischen Föderation"
 
-#: addons/make_payments/forms.py:190
+#: addons/make_payments/forms.py:192 core/site_settings/utils.py:190
 msgid "Rwanda"
 msgstr "Ruanda"
 
-#: addons/make_payments/forms.py:191
+#: addons/make_payments/forms.py:193 core/site_settings/utils.py:191
 msgid "Saudi Arabia"
 msgstr "Saudi-Arabien"
 
-#: addons/make_payments/forms.py:192
+#: addons/make_payments/forms.py:194 core/site_settings/utils.py:192
 msgid "Solomon Islands"
 msgstr "Salomon-Inseln"
 
-#: addons/make_payments/forms.py:193
+#: addons/make_payments/forms.py:195 core/site_settings/utils.py:193
 msgid "Seychelles"
 msgstr "Seychellen"
 
-#: addons/make_payments/forms.py:194
+#: addons/make_payments/forms.py:196 core/site_settings/utils.py:194
 msgid "Sudan"
 msgstr "Sudan"
 
-#: addons/make_payments/forms.py:195
+#: addons/make_payments/forms.py:197 core/site_settings/utils.py:195
 msgid "Sweden"
 msgstr "Schweden"
 
-#: addons/make_payments/forms.py:196
+#: addons/make_payments/forms.py:198 core/site_settings/utils.py:196
 msgid "Singapore"
 msgstr "Singapur"
 
-#: addons/make_payments/forms.py:197
+#: addons/make_payments/forms.py:199 core/site_settings/utils.py:197
 msgid "St. Helena"
 msgstr "St. Helena"
 
-#: addons/make_payments/forms.py:198
+#: addons/make_payments/forms.py:200 core/site_settings/utils.py:198
 msgid "Slovenia"
 msgstr "Slowenien"
 
-#: addons/make_payments/forms.py:199
+#: addons/make_payments/forms.py:201 core/site_settings/utils.py:199
 msgid "Svalbard & Jan Mayen Islands"
 msgstr "Svalbard &amp; Jan-Mayen-Inseln"
 
-#: addons/make_payments/forms.py:200
+#: addons/make_payments/forms.py:202 core/site_settings/utils.py:200
 msgid "Slovakia"
 msgstr "Slowakei"
 
-#: addons/make_payments/forms.py:201
+#: addons/make_payments/forms.py:203 core/site_settings/utils.py:201
 msgid "Sierra Leone"
 msgstr "Sierra Leone"
 
-#: addons/make_payments/forms.py:202
+#: addons/make_payments/forms.py:204 core/site_settings/utils.py:202
 msgid "San Marino"
 msgstr "San Marino"
 
-#: addons/make_payments/forms.py:203
+#: addons/make_payments/forms.py:205 core/site_settings/utils.py:203
 msgid "Senegal"
 msgstr "Senegal"
 
-#: addons/make_payments/forms.py:204
+#: addons/make_payments/forms.py:206 core/site_settings/utils.py:204
 msgid "Somalia"
 msgstr "Somalia"
 
-#: addons/make_payments/forms.py:205
+#: addons/make_payments/forms.py:207 core/site_settings/utils.py:205
 msgid "Suriname"
 msgstr "Suriname"
 
-#: addons/make_payments/forms.py:206
+#: addons/make_payments/forms.py:208 core/site_settings/utils.py:206
 msgid "Sao Tome & Principe"
 msgstr "Sao Tome &amp; Principe"
 
-#: addons/make_payments/forms.py:207
+#: addons/make_payments/forms.py:209 core/site_settings/utils.py:207
 msgid "El Salvador"
 msgstr "El Salvador"
 
-#: addons/make_payments/forms.py:208
+#: addons/make_payments/forms.py:210 core/site_settings/utils.py:208
 msgid "Syrian Arab Republic"
 msgstr "Arabische Republik Syrien"
 
-#: addons/make_payments/forms.py:209
+#: addons/make_payments/forms.py:211 core/site_settings/utils.py:209
 msgid "Swaziland"
 msgstr "Swasiland"
 
-#: addons/make_payments/forms.py:210
+#: addons/make_payments/forms.py:212 core/site_settings/utils.py:210
 msgid "Turks & Caicos Islands"
 msgstr "Turks &amp; Caicos Islands"
 
-#: addons/make_payments/forms.py:211
+#: addons/make_payments/forms.py:213 core/site_settings/utils.py:211
 msgid "Chad"
 msgstr "Tschad"
 
-#: addons/make_payments/forms.py:212
+#: addons/make_payments/forms.py:214 core/site_settings/utils.py:212
 msgid "French Southern Territories"
 msgstr "Französisch-Polynesien"
 
-#: addons/make_payments/forms.py:213
+#: addons/make_payments/forms.py:215 core/site_settings/utils.py:213
 msgid "Togo"
 msgstr "Togo"
 
-#: addons/make_payments/forms.py:214
+#: addons/make_payments/forms.py:216 core/site_settings/utils.py:214
 msgid "Thailand"
 msgstr "Thailand"
 
-#: addons/make_payments/forms.py:215
+#: addons/make_payments/forms.py:217 core/site_settings/utils.py:215
 msgid "Tajikistan"
 msgstr "Tadschikistan"
 
-#: addons/make_payments/forms.py:216
+#: addons/make_payments/forms.py:218 core/site_settings/utils.py:216
 msgid "Tokelau"
 msgstr "Tokelau"
 
-#: addons/make_payments/forms.py:217
+#: addons/make_payments/forms.py:219 core/site_settings/utils.py:217
 msgid "Turkmenistan"
 msgstr "Turkmenistan"
 
-#: addons/make_payments/forms.py:218
+#: addons/make_payments/forms.py:220 core/site_settings/utils.py:218
 msgid "Tunisia"
 msgstr "Tunesien"
 
-#: addons/make_payments/forms.py:219
+#: addons/make_payments/forms.py:221 core/site_settings/utils.py:219
 msgid "Tonga"
 msgstr "Tonga"
 
-#: addons/make_payments/forms.py:220
+#: addons/make_payments/forms.py:222 core/site_settings/utils.py:220
 msgid "East Timor"
 msgstr "Ost-Timor"
 
-#: addons/make_payments/forms.py:221
+#: addons/make_payments/forms.py:223 core/site_settings/utils.py:221
 msgid "Turkey"
 msgstr "Türkei"
 
-#: addons/make_payments/forms.py:222
+#: addons/make_payments/forms.py:224 core/site_settings/utils.py:222
 msgid "Trinidad & Tobago"
 msgstr "Trinidad &amp; Tobago"
 
-#: addons/make_payments/forms.py:223
+#: addons/make_payments/forms.py:225 core/site_settings/utils.py:223
 msgid "Tuvalu"
 msgstr "Tuvalu"
 
-#: addons/make_payments/forms.py:224
+#: addons/make_payments/forms.py:226 core/site_settings/utils.py:224
 msgid "Taiwan, Province of China"
 msgstr "Taiwan, Province of China"
 
-#: addons/make_payments/forms.py:225
+#: addons/make_payments/forms.py:227 core/site_settings/utils.py:225
 msgid "Tanzania, United Republic of"
 msgstr "Tansania, Vereinigte Republik"
 
-#: addons/make_payments/forms.py:226
+#: addons/make_payments/forms.py:228 core/site_settings/utils.py:226
 msgid "Ukraine"
 msgstr "Ukraine"
 
-#: addons/make_payments/forms.py:227
+#: addons/make_payments/forms.py:229 core/site_settings/utils.py:227
 msgid "Uganda"
 msgstr "Uganda"
 
-#: addons/make_payments/forms.py:228
+#: addons/make_payments/forms.py:230 core/site_settings/utils.py:228
 msgid "United States Minor Outlying Islands"
 msgstr "Vereinigte Staaten von Amerika Ozeanien"
 
-#: addons/make_payments/forms.py:229
+#: addons/make_payments/forms.py:231 core/site_settings/utils.py:229
 msgid "United States of America"
 msgstr "Vereinigte Staaten von Amerika"
 
-#: addons/make_payments/forms.py:230
+#: addons/make_payments/forms.py:232 core/site_settings/utils.py:230
 msgid "Uruguay"
 msgstr "Uruguay"
 
-#: addons/make_payments/forms.py:231
+#: addons/make_payments/forms.py:233 core/site_settings/utils.py:231
 msgid "Uzbekistan"
 msgstr "Usbekistan"
 
-#: addons/make_payments/forms.py:232
+#: addons/make_payments/forms.py:234 core/site_settings/utils.py:232
 msgid "Vatican City State (Holy See)"
 msgstr "Vatikanstadt (Heiliger Stuhl)"
 
-#: addons/make_payments/forms.py:233
+#: addons/make_payments/forms.py:235 core/site_settings/utils.py:233
 msgid "St. Vincent & the Grenadines"
 msgstr "St. Vincent und die Grenadinen"
 
-#: addons/make_payments/forms.py:234
+#: addons/make_payments/forms.py:236 core/site_settings/utils.py:234
 msgid "Venezuela"
 msgstr "Venezuela"
 
-#: addons/make_payments/forms.py:235
+#: addons/make_payments/forms.py:237 core/site_settings/utils.py:235
 msgid "British Virgin Islands"
 msgstr "British Virgin Islands"
 
-#: addons/make_payments/forms.py:236
+#: addons/make_payments/forms.py:238 core/site_settings/utils.py:236
 msgid "United States Virgin Islands"
 msgstr "Amerikanische Jungferninseln"
 
-#: addons/make_payments/forms.py:237
+#: addons/make_payments/forms.py:239 core/site_settings/utils.py:237
 msgid "Viet Nam"
 msgstr "Vietnam"
 
-#: addons/make_payments/forms.py:238
+#: addons/make_payments/forms.py:240 core/site_settings/utils.py:238
 msgid "Vanuatu"
 msgstr "Vanuatu"
 
-#: addons/make_payments/forms.py:239
+#: addons/make_payments/forms.py:241 core/site_settings/utils.py:239
 msgid "Wallis & Futuna Islands"
 msgstr "Wallis und Futuna-Inseln"
 
-#: addons/make_payments/forms.py:240
+#: addons/make_payments/forms.py:242 core/site_settings/utils.py:240
 msgid "Samoa"
 msgstr "Samoa"
 
-#: addons/make_payments/forms.py:241
+#: addons/make_payments/forms.py:243 core/site_settings/utils.py:241
 msgid "Yemen"
 msgstr "Jemen"
 
-#: addons/make_payments/forms.py:242
+#: addons/make_payments/forms.py:244 core/site_settings/utils.py:242
 msgid "Mayotte"
 msgstr "Mayotte"
 
-#: addons/make_payments/forms.py:243
+#: addons/make_payments/forms.py:245 core/site_settings/utils.py:243
 msgid "Yugoslavia"
 msgstr "Jugoslawien"
 
-#: addons/make_payments/forms.py:244
+#: addons/make_payments/forms.py:246 core/site_settings/utils.py:244
 msgid "South Africa"
 msgstr "Südafrika"
 
-#: addons/make_payments/forms.py:245
+#: addons/make_payments/forms.py:247 core/site_settings/utils.py:245
 msgid "Zambia"
 msgstr "Sambia"
 
-#: addons/make_payments/forms.py:246
+#: addons/make_payments/forms.py:248 core/site_settings/utils.py:246
 msgid "Zaire"
 msgstr "Zaire"
 
-#: addons/make_payments/forms.py:247
+#: addons/make_payments/forms.py:249 core/site_settings/utils.py:247
 msgid "Zimbabwe"
 msgstr "Simbabwe"
 
-#: addons/make_payments/forms.py:248
+#: addons/make_payments/forms.py:250 core/site_settings/utils.py:248
 msgid "Unknown or unspecified country"
 msgstr "Unbekannt oder nicht näher Land"
 
-#: addons/make_payments/forms.py:256
+#: addons/make_payments/forms.py:258
 msgid "Make Online Payment"
 msgstr "Machen Online-Zahlung"
 
-#: addons/make_payments/forms.py:262
+#: addons/make_payments/forms.py:264
 msgid "A valid e-mail address, please."
 msgstr "Eine gültige E-Mail-Adresse, bitte."
 
@@ -14704,6 +14715,8 @@ msgstr "Submitted on %(news_create)s by %(news_creator)s"
 
 #: addons/news/templates/news/search.html:18
 #: project_template/themes/academic-bootstrap3/templates/sidebar.html:13
+#: project_template/themes/boomerang/templates/homepage.html:234
+#: project_template/themes/boomerang/templates/sidebar.html:26
 #: project_template/themes/jordy/templates/homepage.html:175
 #: project_template/themes/jordy/templates/sidebar.html:26
 msgid "Latest News"
@@ -15438,6 +15451,7 @@ msgid "search photo"
 msgstr "Suche Foto"
 
 #: addons/photos/templates/photos/search.html:8
+#: project_template/themes/boomerang/templates/homepage.html:172
 #: project_template/themes/jordy/templates/homepage.html:150
 #: templates/footer.html:6
 msgid "Photos"
@@ -16302,6 +16316,7 @@ msgstr "Klicken Sie zum Starten"
 
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_manage_payment_iframe2.html:66
 #: apps/theme_editor/templates/theme_editor/walkthrough.html:84
+#: project_template/themes/boomerang/templates/theme_includes/logo_edit_form.html:13
 #: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:13
 msgid "Close"
 msgstr "Schließen"
@@ -16572,6 +16587,7 @@ msgstr "Falsche Authentifizierungsdienst"
 #: apps/dashboard/templates/dashboard/new.html:124
 #: apps/dashboard/templates/dashboard/stats.html:201
 #: apps/wp_exporter/forms.py:29
+#: project_template/themes/boomerang/templates/homepage.html:134
 #: project_template/themes/jordy/templates/homepage.html:127
 #: templates/reports/user_activity_table.html:42
 #: templates/reports/user_activity_table.html:44
@@ -16660,6 +16676,7 @@ msgstr "Ihr Konto wurde aktiviert."
 #: apps/accounts/templates/accounts/password_reset_form.html:26
 #: apps/registration/templates/registration/password_reset_complete.html:12
 #: project_template/themes/academic-bootstrap3/templates/footer.html:28
+#: project_template/themes/boomerang/templates/footer.html:37
 #: project_template/themes/developer-bootstrap3/templates/footer.html:28
 #: project_template/themes/jordy/templates/footer.html:27
 #: templates/default.html:71 templates/homepage.html:55
@@ -18161,7 +18178,7 @@ msgstr "Dienten"
 
 #: apps/invoices/forms.py:39 apps/invoices/models.py:19
 #: apps/invoices/templates/invoices/mark-as-paid.html:56
-#: apps/invoices/templates/invoices/print_view.html:44
+#: apps/invoices/templates/invoices/print_view.html:54
 #: libs/model_report/report.py:554
 msgid "Estimate"
 msgstr "Schätzung"
@@ -18342,13 +18359,13 @@ msgid "Invoice For"
 msgstr "Rechnung für"
 
 #: apps/invoices/templates/invoices/mark-as-paid.html:48
-#: apps/invoices/templates/invoices/print_view.html:36
+#: apps/invoices/templates/invoices/print_view.html:46
 #: apps/invoices/templates/invoices/view.html:105
 msgid "Invoice Date"
 msgstr "Rechnungsdatum"
 
 #: apps/invoices/templates/invoices/mark-as-paid.html:52
-#: apps/invoices/templates/invoices/print_view.html:40
+#: apps/invoices/templates/invoices/print_view.html:50
 #: apps/invoices/templates/invoices/view.html:109
 msgid "Invoice Status"
 msgstr "Rechnungsstatus"
@@ -18406,7 +18423,7 @@ msgid "Payment History"
 msgstr "Zahlungsprotokoll"
 
 #: apps/invoices/templates/invoices/payment_history.html:9
-#: apps/invoices/templates/invoices/print_view.html:64
+#: apps/invoices/templates/invoices/print_view.html:74
 #: apps/invoices/templates/invoices/view.html:141
 msgid "Line Amount"
 msgstr "Linie Betrag"
@@ -18464,12 +18481,12 @@ msgstr "Antwort:"
 msgid "Payment Status:"
 msgstr "Status der Zahlung:"
 
-#: apps/invoices/templates/invoices/print_view.html:42
+#: apps/invoices/templates/invoices/print_view.html:52
 #, python-format
 msgid "Tendered %(tenddate)s"
 msgstr "Dienten %(tenddate)s"
 
-#: apps/invoices/templates/invoices/print_view.html:55
+#: apps/invoices/templates/invoices/print_view.html:65
 #: apps/invoices/templates/invoices/view.html:129
 msgid "invoice logo"
 msgstr "Rechnung logo"
@@ -20814,6 +20831,7 @@ msgstr "E-Mail-Addresse"
 
 #: apps/registration/forms.py:42
 #: project_template/themes/academic-bootstrap3/templates/footer.html:27
+#: project_template/themes/boomerang/templates/footer.html:36
 #: project_template/themes/developer-bootstrap3/templates/footer.html:27
 #: project_template/themes/jordy/templates/footer.html:26
 msgid "password"
@@ -22785,8 +22803,10 @@ msgid "Tendenci is now updating."
 msgstr "Tendenci wird nun aktualisiert."
 
 #: core/base/templates/base/update_confirmation.html:13
-msgid "In the meantime, we"
-msgstr "In der Zwischenzeit haben wir"
+msgid ""
+"In the meantime, we'll notify you via email once the update is complete. "
+"Thank you for your patience!"
+msgstr ""
 
 #: core/base/templates/notification/update_tendenci_notice/full.html:7
 #: core/base/templates/notification/update_tendenci_notice/short.txt:3
@@ -24585,17 +24605,17 @@ msgstr "Alle RSS-Feeds auf syndizierte %(dname)s"
 msgid "%(dname)s RSS Feed"
 msgstr "%(dname)sSS-Feed"
 
-#: core/site_settings/forms.py:28
+#: core/site_settings/forms.py:29
 #, python-format
 msgid "'%(l)s' must be true or false"
 msgstr "&#39; %(l)s&#39; muss wahr oder falsch sein"
 
-#: core/site_settings/forms.py:32
+#: core/site_settings/forms.py:33
 #, python-format
 msgid "'%(l)s' must be a whole number"
 msgstr "&#39; %(l)s&#39; muss eine ganze Zahl sein"
 
-#: core/site_settings/forms.py:36
+#: core/site_settings/forms.py:37
 #, python-format
 msgid "'%(l)s' must be a file"
 msgstr "&#39; %(l)s&#39; muss eine Datei sein"
@@ -25188,12 +25208,14 @@ msgid "Skip to main content"
 msgstr "Direkt zum Inhalt"
 
 #: project_template/themes/academic-bootstrap3/templates/footer.html:21
+#: project_template/themes/boomerang/templates/footer.html:33
 #: project_template/themes/developer-bootstrap3/templates/footer.html:21
 #: project_template/themes/jordy/templates/footer.html:23
 msgid "Log In"
 msgstr "Anmelden"
 
 #: project_template/themes/academic-bootstrap3/templates/footer.html:23
+#: project_template/themes/boomerang/templates/footer.html:31
 #: project_template/themes/developer-bootstrap3/templates/footer.html:23
 #: project_template/themes/jordy/templates/footer.html:21
 msgid "Logged in as"
@@ -25201,6 +25223,7 @@ msgstr "Angemeldet als"
 
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:106
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:172
+#: project_template/themes/boomerang/templates/homepage.html:248
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:102
 #: project_template/themes/jordy/templates/homepage.html:183
 #: templates/theme_includes/events_list_daybox.html:14
@@ -25213,6 +25236,7 @@ msgstr "In den Nachrichten"
 
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:133
 #: project_template/themes/academic-bootstrap3/templates/sidebar.html:21
+#: project_template/themes/boomerang/templates/sidebar.html:32
 #: project_template/themes/jordy/templates/sidebar.html:32
 msgid "View More News"
 msgstr "Mehr News anzeigen"
@@ -25243,6 +25267,7 @@ msgid ""
 msgstr "Zeigen Sie Ihre nächsten Veranstaltung direkt auf Ihrer Homepage. Sobald Sie <a href=\"/events/add/\"> fügen Sie Ihre erste Veranstaltung </a>, wird dieser Bereich von den Informationen ausgetauscht werden. Vergessen Sie nicht, um ein Ereignis zu Fotos hinzufügen!"
 
 #: project_template/themes/academic-bootstrap3/templates/homepage.html:180
+#: project_template/themes/boomerang/templates/sidebar.html:15
 #: project_template/themes/jordy/templates/sidebar.html:15
 msgid "Our Photos"
 msgstr "Unsere Fotos"
@@ -25255,6 +25280,64 @@ msgstr "Unsere Fotos"
 #, python-format
 msgid "Admin: Edit %(t)s Box"
 msgstr "Admin: Bearbeiten %(t)s Box"
+
+#: project_template/themes/boomerang/templates/footer.html:30
+msgid "Hello!"
+msgstr ""
+
+#: project_template/themes/boomerang/templates/footer.html:31
+#: templates/default.html:66 templates/homepage.html:50
+msgid "Log Out"
+msgstr "Ausloggen"
+
+#: project_template/themes/boomerang/templates/homepage.html:140
+#: project_template/themes/jordy/templates/homepage.html:133
+msgid ""
+"Events will be shown here. <a href=\"/events/add/\">Start adding events "
+"now!</a>"
+msgstr "Veranstaltungen werden hier angezeigt. <a href=\"/events/add/\"> Fangen Sie jetzt Ereignisse! </a>"
+
+#: project_template/themes/boomerang/templates/homepage.html:144
+#: project_template/themes/jordy/templates/homepage.html:137
+msgid "View more events"
+msgstr "Weitere Veranstaltungen"
+
+#: project_template/themes/boomerang/templates/homepage.html:158
+#: project_template/themes/jordy/templates/homepage.html:171
+msgid "About the Organization"
+msgstr "Über die Organisation"
+
+#: project_template/themes/boomerang/templates/homepage.html:190
+msgid "Zoom"
+msgstr ""
+
+#: project_template/themes/boomerang/templates/homepage.html:253
+msgid "No news to show now."
+msgstr ""
+
+#: project_template/themes/boomerang/templates/homepage.html:253
+msgid "Start adding news now!"
+msgstr ""
+
+#: project_template/themes/boomerang/templates/sidebar.html:22
+#: project_template/themes/jordy/templates/sidebar.html:22
+msgid "View More Photos"
+msgstr "Mehr Fotos"
+
+#: project_template/themes/boomerang/templates/theme_includes/logo_edit_form.html:6
+#: project_template/themes/boomerang/templates/theme_includes/logo_edit_form.html:23
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:7
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:22
+#: templates/theme_includes/logo_edit_form.html:5
+#: templates/theme_includes/logo_edit_form.html:18
+msgid "Upload Logo"
+msgstr "Logo hochladen"
+
+#: project_template/themes/boomerang/templates/theme_includes/logo_edit_form.html:15
+#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:14
+#: templates/theme_includes/logo_edit_form.html:10
+msgid "Upload a Logo"
+msgstr "Ein Logo hochladen"
 
 #: project_template/themes/developer-bootstrap3/templates/homepage.html:121
 msgid "Buttons"
@@ -25394,39 +25477,9 @@ msgstr "Bild für %(t)sn"
 msgid "LEARN MORE"
 msgstr ""
 
-#: project_template/themes/jordy/templates/homepage.html:133
-msgid ""
-"Events will be shown here. <a href=\"/events/add/\">Start adding events "
-"now!</a>"
-msgstr "Veranstaltungen werden hier angezeigt. <a href=\"/events/add/\"> Fangen Sie jetzt Ereignisse! </a>"
-
-#: project_template/themes/jordy/templates/homepage.html:137
-msgid "View more events"
-msgstr "Weitere Veranstaltungen"
-
-#: project_template/themes/jordy/templates/homepage.html:171
-msgid "About the Organization"
-msgstr "Über die Organisation"
-
 #: project_template/themes/jordy/templates/homepage.html:186
 msgid "No news to show now. <a href=\"/news/add/\">Start adding news now!</a>"
 msgstr "Keine Nachrichten zu zeigen. <a href=\"/news/add/\"> Fangen Sie Nachrichten jetzt! </a>"
-
-#: project_template/themes/jordy/templates/sidebar.html:22
-msgid "View More Photos"
-msgstr "Mehr Fotos"
-
-#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:7
-#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:22
-#: templates/theme_includes/logo_edit_form.html:5
-#: templates/theme_includes/logo_edit_form.html:18
-msgid "Upload Logo"
-msgstr "Logo hochladen"
-
-#: project_template/themes/jordy/templates/theme_includes/logo_edit_form.html:14
-#: templates/theme_includes/logo_edit_form.html:10
-msgid "Upload a Logo"
-msgstr "Ein Logo hochladen"
 
 #: templates/403.html:4
 msgid "403 Forbidden"
@@ -25529,10 +25582,6 @@ msgstr "Innen Seite"
 #: templates/default.html:48
 msgid "What is schipul doing..."
 msgstr "Was ist zu tun ... schipul"
-
-#: templates/default.html:66 templates/homepage.html:50
-msgid "Log Out"
-msgstr "Ausloggen"
 
 #: templates/footer.html:5 templates/form.html:6 templates/form.html.py:18
 msgid "Contact Us"
