@@ -24,5 +24,25 @@ def newrelic(request):
         'NEW_RELIC_FOOTER': "",
     }
 
+
 def site_admin_email(request):
     return {'SITE_ADMIN_EMAIL': get_setting('site', 'global', 'admincontactemail')}
+
+
+def user_classification(request):
+    data = {'USER_CLASSIFICATION': 'normal'}
+    if hasattr(request.user, 'profile') and request.user.profile.is_superuser:
+        data = {'USER_CLASSIFICATION': 'superuser'}
+    elif hasattr(request.user, 'memberships'):
+        active_memberships = request.user.membershipdefault_set.filter(
+            status=True, status_detail__iexact='active'
+        )
+        inactive_memberships = request.user.membershipdefault_set.filter(
+            status=True, status_detail__iexact='inactive'
+        )
+        if len(inactive_memberships) > 0:
+            data = {'USER_CLASSIFICATION': 'expired'}
+        elif len(active_memberships) > 0:
+            data = {'USER_CLASSIFICATION': 'member'}
+
+    return data

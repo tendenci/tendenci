@@ -522,6 +522,11 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     bottom: 12px;
 }
 
+.nav-icon {
+    position: relative;
+    margin-right: 10px;
+}
+
 .t-top-nav .classic {
     padding: 5px 15px;
 }

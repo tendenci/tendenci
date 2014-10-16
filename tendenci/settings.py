@@ -161,6 +161,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'tendenci.core.base.context_processors.index_update_note',
     'tendenci.core.base.context_processors.today',
     'tendenci.core.base.context_processors.site_admin_email',
+    'tendenci.core.base.context_processors.user_classification',
     'tendenci.core.registry.context_processors.registered_apps',
 )
 
