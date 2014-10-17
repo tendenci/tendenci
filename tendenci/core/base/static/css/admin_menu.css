@@ -638,4 +638,8 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     .people-dropdown {
         width: 275px;
     }
+
+    .profile-dropdown {
+        width: 520px;
+    }
 }

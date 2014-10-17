@@ -46,3 +46,10 @@ def user_classification(request):
             data = {'USER_CLASSIFICATION': 'member'}
 
     return data
+
+
+def display_name(request):
+    if request.user.first_name:
+        return {'DISPLAY_NAME': request.user.first_name}
+    else:
+        return {'DISPLAY_NAME': request.user.username}
