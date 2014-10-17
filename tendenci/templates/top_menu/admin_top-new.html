@@ -18,12 +18,47 @@
                     </span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
                 </a>
             </li>
-            {% comment %}<li class="dropdown">
-                <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-                    <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application.png"/>{% trans "Your Community" %}
-                </a>
-            </li>
             <li class="dropdown">
+                <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application.png"/>{% trans "Community" %}</a>
+                <ul class="dropdown-menu community-dropdown">
+                        <li>
+                            <div class="yamm-content custom-yamm-content content-dropdown">
+                                <div class="row">
+                                    <ul class="list-unstyled col-sm-4 col-xs-8">
+                                        <li><span class="content-head"><a href="">{% trans 'Member' %}</a></span></li>
+                                        <li class="content-item">
+                                            <span class="app-name pull-left"><a href="">{% trans 'Members' %}</a></span>
+                                        </li>
+                                        <li class="content-item">
+                                            <span class="app-name pull-left"><a href="">{% trans 'Groups' %}</a></span>
+                                        </li>
+                                        <li class="content-item">
+                                            <span class="app-name pull-left"><a href="">{% trans 'Committees' %}</a></span>
+                                        </li>
+                                        <li class="content-item">
+                                            <span class="app-name pull-left"><a href="">{% trans 'Corporate Membership' %}</a></span>
+                                        </li>
+                                        <li class="content-item">
+                                            <span class="app-name pull-left"><a href="">{% trans 'Community Forum' %}</a></span>
+                                        </li>
+                                        <li class="content-item">
+                                            <span class="app-name pull-left"><a href="">{% trans 'Email an Admin' %}</a></span>
+                                        </li>
+                                    </ul>
+                                    {% if USER_CLASSIFICATION == "superuser" %}
+                                    <ul class="list-unstyled col-sm-4 col-xs-8">
+                                        <li><span class="content-head"><a href="">{% trans 'Administrator' %}</a></span></li>
+                                        <li class="content-item">
+                                            <span class="app-name pull-left"><a href="">{% trans 'Reports' %}</a></span>
+                                        </li>
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+            </li>
+            {% comment %}<li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
                     <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application_view_tile.png"/>{% trans "Apps" %}
                 </a>
@@ -32,8 +67,8 @@
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/error.png"/><strong>{% trans "Support" %}</strong></a>
                 <ol class="dropdown-menu">
                         <li><a href="">{% trans 'Clear Cache' %}</a></li>
-                        <li><a href="">{% trans 'Report A Bug' %}</a></li>
-                        <li><a href="">{% trans 'Request An App' %}</a></li>
+                        <li><a href="">{% trans 'Report a Bug' %}</a></li>
+                        <li><a href="">{% trans 'Request an App' %}</a></li>
                         <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Search Help Files" %}</a></li>
                         <li><a href="{% url update_tendenci %}">{% trans "Update Tendenci" %}</a></li>
                         <li><a>Current Version: {{ TENDENCI_VERSION }}</a></li>

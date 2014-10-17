@@ -631,6 +631,10 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
         width: 510px;
     }
 
+    .community-dropdown {
+        width: 350px;
+    }
+
     .people-dropdown {
         width: 275px;
     }
