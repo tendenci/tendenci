@@ -538,6 +538,10 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     margin-right: 10px;
 }
 
+.navbar-header .nav-icon {
+    margin-top: 8px;
+}
+
 .t-top-nav .classic {
     padding: 5px 15px;
 }
@@ -594,7 +598,6 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 .t-top-nav .inner-top-nav > li > a > img {
   max-width: none;
 }
-
 
 @media (max-width: 992px) {
     .t-top-nav .inner-top-nav > li > a {

@@ -1,5 +1,6 @@
 {% load pluginmanager_tags %}
 {% list_plugins as plugins %}
+{% load avatar_tags %}
 {% load i18n %}
 <div class="navbar yamm navbar-inverse navbar-fixed-top t-top-nav" role="navigation">
     <div class="container-fluid">
@@ -21,6 +22,12 @@
                     <li>
                         <div class="yamm-content custom-yamm-content content-dropdown">
                             <div class="row">
+                                <ul class="list-unstyled col-sm-4 col-xs-8">
+                                    <div class="profile-icon">
+                                        {% avatar user 128 %}
+                                    </div>
+                                    <a class="update-avatar-link" href="">{% trans 'Update Photo' %}</a>
+                                </ul>
                                 <ul class="list-unstyled col-sm-4 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
                                     <li class="content-item">
@@ -96,11 +103,11 @@
                     </li>
                 </ul>
             </li>
-            {% comment %}<li class="dropdown">
+            <li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
                     <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application_view_tile.png"/>{% trans "Apps" %}
                 </a>
-            </li>{% endcomment %}
+            </li>
             <li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/error.png"/><strong>{% trans "Support" %}</strong></a>
                 <ol class="dropdown-menu">
@@ -116,15 +123,15 @@
                         <li><a  href="http://support.tendenci.com" target="_blank">{% trans "Contact Tendenci" %}</a></li>
                 </ol>
             </li>
-            {% comment %}<li class="dropdown">
+            <li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
                     <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application.png"/>{% trans "Current App" %}
                 </a>
-            </li>{% endcomment %}
+            </li>
 
 
 
-            <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
+            {% comment %}<li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
                     <ul class="dropdown-menu">
                         <li>
                             <div class="yamm-content custom-yamm-content content-dropdown">
@@ -245,8 +252,8 @@
                         <li><a  href="{% url reports-user-access %}">{% trans "Active User Logins" %}</a></li>
                         <li><a  href="{% url reports-contacts-referral %}">{% trans "Contacts Report" %}</a></li>
                         <li><a  href="{% url reports-memberships %}">{% trans "Membership Reports" %}</a></li>
-                        {% comment %}
-                        <li><a   href="{# url reports-corp-mems-over-time #}">{% trans "Corporate Memberships Over Time" %}</a></li>{% endcomment %}
+                        {% endcomment %}{% comment %}
+                        <li><a   href="{# url reports-corp-mems-over-time #}">{% trans "Corporate Memberships Over Time" %}</a></li>{% endcomment %}{% comment %}
                         {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                         <li><a  href="{% url corp_membership.summary_report %}">{% trans "Corporate Membership Summary" %}</a></li>
                         {% endif %}
@@ -286,7 +293,7 @@
                         <li><a  href="https://github.com/tendenci/tendenci" target="_blank">Version: {{ TENDENCI_VERSION }}</a></li>
                         <li><a  href="{% url update_tendenci %}">{% trans "Update Tendenci" %}</a></li>
                     </ul>
-                </li>
+                </li>{% endcomment %}
                 {% if CUSTOM_TEMPLATE %}
                 <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">{% trans "Using Custom Template" %}</a>
                     <ul class="dropdown-menu">
