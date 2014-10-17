@@ -1,15 +1,15 @@
 [
     {
-        "default_value": "jordy",
+        "default_value": "boomerang",
         "description": "The current theme in use for the website.",
         "data_type": "string",
         "update_dt": "2011-08-04 12:38:23",
         "input_type": "select",
         "client_editable": true,
         "name": "theme",
-        "value": "jordy",
+        "value": "boomerang",
         "label": "Theme",
-        "input_value": "jordy",
+        "input_value": "boomerang",
         "parent_id": 0,
         "scope": "module",
         "scope_category": "theme_editor",

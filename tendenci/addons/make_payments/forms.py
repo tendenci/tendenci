@@ -5,8 +5,10 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.addons.make_payments.models import MakePayment
 from tendenci.core.base.fields import EmailVerificationField, PriceField
 from captcha.fields import CaptchaField
+from tendenci.core.site_settings.utils import get_setting
 
 COUNTRIES = (
+    ('', '-----------'),
     ('AD', _('Andorra')),
     ('AE', _('United Arab Emirates')),
     ('AF', _('Afghanistan')),
@@ -261,7 +263,7 @@ class MakePaymentForm(forms.ModelForm):
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
     email = EmailVerificationField(label=_("Email"), help_text=_('A valid e-mail address, please.'))
     email_receipt = forms.BooleanField(initial=True)
-    country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES, required=False)
+    country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES)
 
     class Meta:
         model = MakePayment
@@ -286,6 +288,7 @@ class MakePaymentForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super(MakePaymentForm, self).__init__(*args, **kwargs)
+        self.initial['country'] = get_setting('site', 'global', 'defaultcountry')
         # populate the user fields
         if user and user.id:
             if 'captcha' in self.fields:

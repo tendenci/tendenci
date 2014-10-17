@@ -1,0 +1,101 @@
+{% load theme_tags %}
+{% load box_tags %}
+{% load i18n %}
+
+  <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+              <div class="col">
+              {% box 8 %}
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="col">
+                {% box 9 %}
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="col col-social-icons">
+                    <h4>Follow us</h4>
+                    {% box 3 %}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="col">
+                {% if request.user.is_authenticated %}
+                <h4>{% trans 'Hello!' %}</h4>
+                <p>{% trans 'Logged in as' %} <a href="/profiles/">{{ request.user.username }}</a> | <a href="">{% trans 'Log Out' %}</a></p>
+                {% else %}
+                  <h4>{% trans 'Log In' %}</h4>
+                  <form method="post" action="/accounts/login/?next={{ request.path }}">{% csrf_token %}
+                    <p><input id="id_username" name="username" type="text" title="{% trans 'Username' %}" maxlength="30" /></p>
+                    <p><input type="password" title="{% trans 'password' %}" name="password" id="id_password"  /></p>
+                    <input name="submit" type="submit" value="{% trans 'Log in' %}" />
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+          <div class="col-lg-9 copyright">
+            {% box 10 %}
+          </div>
+          <div class="col-lg-3 footer-logo">
+
+          </div>
+        </div>
+    </div>
+  </footer>
+
+{% comment %}
+<div id="footer" class="container footer">
+  <div class="row">
+    <div class="col-md-4  col-xs-6">
+      <div class="footer-link space">
+      {% box 8 %}
+      </div>
+    </div>
+    <div class="col-md-4  col-xs-6">
+      <div class="footer-link space">
+      {% box 9 %}
+      </div>
+    </div>
+    <div class="col-md-4 col-xs-6">
+      <div class="footer-link">
+        <div class="login-form">
+          {% if request.user.is_authenticated %}
+          <p>{% trans 'Logged in as' %} <a href="/profiles/">{{ request.user }}</a> | <a href="/accounts/logout/">{% trans 'Logout' %}</a></p>
+          {% else %}
+          <h5>{% trans 'Log In' %}</h5>
+          <form method="post" action="/accounts/login/?next={{ request.path }}">{% csrf_token %}
+            <p><input id="id_username" name="username" type="text" title="{% trans 'Username' %}" maxlength="30" /></p>
+            <p><input type="password" title="{% trans 'password' %}" name="password" id="id_password"  /></p>
+            <input name="submit" type="submit" value="{% trans 'Log in' %}" />
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      <div class="footer-link space">
+      {% box 2 %}
+      </div>
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+
+  <div class="row">
+    <div class="col-md-12">
+      <hr>
+      <div class="copy text-center space">
+      {% box 10 %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endcomment %}
+​

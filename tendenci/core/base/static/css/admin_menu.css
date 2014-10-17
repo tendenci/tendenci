@@ -451,6 +451,15 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     z-index: 9999999 !important;
 }
 
+.t-top-nav li {
+    margin: 0;
+    font-size: 14px;
+}
+
+.t-top-nav .row {
+    margin: 0 -15px;
+}
+
 .t-top-nav .navbar-header {
     min-height: 30px;
     height: 30px;
@@ -468,6 +477,7 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 
 .t-top-nav .dropdown-menu {
     max-width: 1170px;
+    top: 100%;
 }
 
 .t-top-nav .yamm-content > .row > ul {
@@ -485,7 +495,7 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     padding: 4px 0;
 }
 
-.t-top-nav .nav > li > a {
+.t-top-nav .inner-top-nav > li > a {
     padding: 5px 15px !important;
 }
 
@@ -520,6 +530,7 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 .t-top-nav .nav-logo {
     position: relative;
     bottom: 12px;
+    top: auto;
 }
 
 .nav-icon {
@@ -545,48 +556,48 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     height: 26px;
 }
 
-.t-top-nav .nav {
+.t-top-nav .inner-top-nav {
   padding-left: 0;
   margin-bottom: 0;
   list-style: none;
 }
-.t-top-nav .nav > li > a {
+.t-top-nav .inner-top-nav > li > a {
   position: relative;
   display: block;
   padding: 10px 15px;
 }
-.t-top-nav .nav > li > a:hover,
-.t-top-nav .nav > li > a:focus {
+.t-top-nav .inner-top-nav > li > a:hover,
+.t-top-nav .inner-top-nav > li > a:focus {
   text-decoration: none;
 }
-.t-top-nav .nav > li.disabled > a {
+.t-top-nav .inner-top-nav > li.disabled > a {
   color: #777;
 }
-.t-top-nav .nav > li.disabled > a:hover,
-.t-top-nav .nav > li.disabled > a:focus {
+.t-top-nav .inner-top-nav > li.disabled > a:hover,
+.t-top-nav .inner-top-nav > li.disabled > a:focus {
   color: #777;
   text-decoration: none;
   cursor: not-allowed;
   background-color: transparent;
 }
-.t-top-nav .nav .open > a,
-.t-top-nav .nav .open > a:hover,
-.t-top-nav .nav .open > a:focus {
+.t-top-nav .inner-top-nav .open > a,
+.t-top-nav .inner-top-nav .open > a:hover,
+.t-top-nav .inner-top-nav .open > a:focus {
   border-color: #428bca;
 }
-.t-top-nav .nav .nav-divider {
+.t-top-nav .inner-top-nav .nav-divider {
   height: 1px;
   margin: 9px 0;
   overflow: hidden;
   background-color: #e5e5e5;
 }
-.t-top-nav .nav > li > a > img {
+.t-top-nav .inner-top-nav > li > a > img {
   max-width: none;
 }
 
 
 @media (max-width: 992px) {
-    .t-top-nav .nav > li > a {
+    .t-top-nav .inner-top-nav > li > a {
         padding: 5px !important;
     }
 
