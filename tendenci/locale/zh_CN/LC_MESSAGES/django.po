@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-16 20:51+0000\n"
-"PO-Revision-Date: 2014-10-16 21:24+0000\n"
+"POT-Creation-Date: 2014-10-17 21:38+0000\n"
+"PO-Revision-Date: 2014-10-17 17:33+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -10394,6 +10394,8 @@ msgstr "精选"
 #: addons/help_files/templates/help_files/index.html:56
 #: addons/help_files/templates/help_files/index.html:64
 #: addons/help_files/templates/help_files/request_list.html:25
+#: addons/help_files/templates/help_files/search-result.html:5
+#: addons/help_files/templates/help_files/search-result.html:6
 #, python-format
 msgid "%(q)s"
 msgstr "%(q)s"
