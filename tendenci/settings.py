@@ -298,9 +298,9 @@ EXTRA_LANG_INFO = {
         'name': 'Tagalog (Philippines)',
         'name_local': u'Tagalog (Philippines)',
     },
-    'iw': {
+    'he': {
         'bidi': True, # right-to-left
-        'code': 'iw',
+        'code': 'he',
         'name': 'Hebrew',
         'name_local': u'Hebrew', #unicode codepoints here
     },
