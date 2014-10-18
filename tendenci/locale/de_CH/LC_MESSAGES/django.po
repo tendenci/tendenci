@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-16 03:29+0000\n"
-"PO-Revision-Date: 2014-10-15 21:17+0000\n"
+"POT-Creation-Date: 2014-10-17 21:38+0000\n"
+"PO-Revision-Date: 2014-10-17 17:33+0000\n"
 "Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/tendenci/language/de_CH/)\n"
 "MIME-Version: 1.0\n"
@@ -3764,7 +3764,7 @@ msgid "Completed"
 msgstr "Fertiggestellt"
 
 #: addons/corporate_memberships/models.py:1583
-#: addons/memberships/models.py:1811 apps/profiles/models.py:399
+#: addons/memberships/models.py:1811 apps/profiles/models.py:405
 msgid "Upload File"
 msgstr "Datei hochladen"
 
@@ -10396,6 +10396,8 @@ msgstr "Vorge"
 #: addons/help_files/templates/help_files/index.html:56
 #: addons/help_files/templates/help_files/index.html:64
 #: addons/help_files/templates/help_files/request_list.html:25
+#: addons/help_files/templates/help_files/search-result.html:5
+#: addons/help_files/templates/help_files/search-result.html:6
 #, python-format
 msgid "%(q)s"
 msgstr "%(q)s"
@@ -13097,7 +13099,7 @@ msgid "Can approve memberships"
 msgstr "Mitgliedschaften können genehmigen"
 
 #: addons/memberships/models.py:1791 apps/profiles/forms.py:731
-#: apps/profiles/models.py:393
+#: apps/profiles/models.py:399
 #: apps/profiles/templates/notification/user_edited/full.html:535
 #: apps/profiles/templates/profiles/add.html:394
 #: apps/profiles/templates/profiles/edit.html:381
@@ -13108,11 +13110,11 @@ msgstr "Interactive"
 
 #: addons/memberships/models.py:1792 apps/profiles/forms.py:156
 #: apps/profiles/forms.py:367 apps/profiles/forms.py:732
-#: apps/profiles/models.py:394 core/imports/forms.py:17
+#: apps/profiles/models.py:400 core/imports/forms.py:17
 msgid "Not Interactive (no login)"
 msgstr "Nicht Interactive (kein Login)"
 
-#: addons/memberships/models.py:1814 apps/profiles/models.py:402
+#: addons/memberships/models.py:1814 apps/profiles/models.py:408
 msgid "Recap File"
 msgstr "Recap Datei"
 
