@@ -11,21 +11,20 @@ Tendenci allows membership management organizations to communicate, manage and c
 ## Demo?  
 
 Got tired of spammers so pulled the demo. Sheesh people. Get a life. Anyway, you can do a free 30 day trial without risk at 
-[https://www.tendenci.com/tendenci](http://www.tendenci.com)
+[https://tendenci.com/forms/tendenci-free-trial/](https://tendenci.com/forms/tendenci-free-trial/)
 
 ## Impatient Developer?  
 
 If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP three ways (do NOT use thse in production).  
 
-1) TKL version is out of date so pulled the link but will get one back up soon.
-2) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
-3) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
- 
+1) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
+2) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
+3) TKL version is out of date so pulled the link.
 
 ## Developer Installing Tendenci?  
 
 Community forums for questions that may not fit in issues on github or solutions to questions on installation. We check these more frequently than the issues on github and it is also where you can read about the Roadmap going forward. Your input is greatly appreciated! (Seriously - this changing the world stuff is hard and we could use your input and maybe a few pull requests too!)
-[https://community.tendenci.com/]https://community.tendenci.com/
+[https://community.tendenci.com/](https://community.tendenci.com/)
 
 Detailed installation docs at [https://tendenci.readthedocs.org/en/latest/](https://tendenci.readthedocs.org/en/latest/). 
 You will need to install the server on Ubuntu 14.04 LTS (or later) and Postgres 9.3 (or later.) Cloud hypervisors work fine.  
