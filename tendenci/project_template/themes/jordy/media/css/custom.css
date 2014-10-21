@@ -36,6 +36,12 @@ body {
   float: right;
 }
 
+.logo img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  max-width: 400px;
+}
 
 .upload-logo {
   width: 100px;
@@ -291,7 +297,7 @@ footer {
   .carousel-caption {
     bottom: 5px;
   }
- 
+
   .carousel-caption h1 {
     font-size:20px;
   }
