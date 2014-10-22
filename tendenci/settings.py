@@ -25,7 +25,7 @@ EMAIL_PORT = 25
 """
 
 # user agent for external retrieval of files/images
-TENDENCI_USER_AGENT = 'Tendenci/5.0 +http://www.tendenci.com'
+TENDENCI_USER_AGENT = 'Tendenci/6.0 +https://www.tendenci.com'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
