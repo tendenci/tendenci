@@ -11,7 +11,7 @@
   <div class="row">
    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
              <div class="logo" id="logo">
-               <a href="/"> <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/60x30/crop/90/{% else %}http://placehold.it/60x30{% endif %}" /> </a>
+               <a href="/"> <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/{% else %}http://placehold.it/60x30{% endif %}" /> </a>
         </div>
         {% theme_include 'theme_includes/logo_edit_form.html' %}
     </div>

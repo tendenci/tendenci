@@ -300,6 +300,12 @@ EXTRA_LANG_INFO = {
         'name': 'Tagalog (Philippines)',
         'name_local': u'Tagalog (Philippines)',
     },
+    'he': {
+        'bidi': True, # right-to-left
+        'code': 'he',
+        'name': 'Hebrew',
+        'name_local': u'Hebrew', #unicode codepoints here
+    },
 }
 
 # Add custom languages not provided by Django
@@ -307,12 +313,10 @@ LANG_INFO = dict(django.conf.locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
 django.conf.locale.LANG_INFO = LANG_INFO
 
 # Languages using BiDi (right-to-left) layout
-LANGUAGES_BIDI = global_settings.LANGUAGES_BIDI + ('tl', 'tl_PH',)
-LANGUAGES = sorted(global_settings.LANGUAGES + (
-    ('tl', u'Tagalog'),
-    ('tl_PH', 'Tagalog (Philippines)'),
-), key=lambda x: x[0])
-
+LANGUAGES_BIDI = global_settings.LANGUAGES_BIDI + tuple(EXTRA_LANG_INFO.keys())
+LANGUAGES = sorted(global_settings.LANGUAGES + tuple([
+    (k, v['name']) for k, v in EXTRA_LANG_INFO.items()
+    ]), key=lambda x: x[0])
 
 #--------------------------------------------------
 # DEBUG TOOLBAR
