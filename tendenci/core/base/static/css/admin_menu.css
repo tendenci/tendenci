@@ -445,6 +445,27 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 * New styles for the new admin bar
 *********************************************/
 
+.tcf:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+
+.tcf {
+    display: inline-block;
+}
+
+html[xmlns] .tcf {
+    display: block;
+}
+
+* html .tcf {
+    height: 1%;
+}
+
 
 .t-top-nav {
     min-height: 30px;
@@ -478,6 +499,11 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 .t-top-nav .dropdown-menu {
     max-width: 1170px;
     top: 100%;
+    width: auto;
+}
+
+.t-top-nav .yamm-content {
+    width: auto;
 }
 
 .t-top-nav .yamm-content > .row > ul {
@@ -597,6 +623,19 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 }
 .t-top-nav .inner-top-nav > li > a > img {
   max-width: none;
+}
+
+.t-top-nav .administrator {
+    background-color: #EFD;
+}
+
+.t-top-nav .profile-icon img {
+    display: block;
+    margin: 0 auto;
+}
+
+.t-top-nav .update-avatar-link {
+    text-align: center;
 }
 
 @media (max-width: 992px) {

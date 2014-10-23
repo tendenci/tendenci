@@ -1,20 +1,21 @@
 {% load pluginmanager_tags %}
+{% load url from future %}
 {% list_plugins as plugins %}
 {% load avatar_tags %}
 {% load i18n %}
 <div class="navbar yamm navbar-inverse navbar-fixed-top t-top-nav" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url dashboard %}" class="navbar-brand"><img class="nav-logo nav-icon" src="{{ STATIC_URL }}famfamfam/icons/house.png"/><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
+            <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url 'dashboard' %}" class="navbar-brand"><img class="nav-logo nav-icon" src="{{ STATIC_URL }}famfamfam/icons/house.png"/><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
         </div>
         <div id="navbar-collapse-0" class="navbar-collapse collapse">
             <ul class="inner-top-nav navbar-nav">
             <li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
                     <span>
-                        {% if USER_CLASSIFICATION == "superuser" %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_orange.png">
-                        {% elif USER_CLASSIFICATION == "expired" %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_red.png">
-                        {% elif USER_CLASSIFICATION == "member" %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_go.png">
+                        {% if USER_IS_SUPERUSER %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_orange.png">
+                        {% elif USER_IS_MEMBER_EXPIRED %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_red.png">
+                        {% elif USER_IS_MEMBER_ACTIVE %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_go.png">
                         {% else %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user.png">{% endif %}
                     </span>{{ DISPLAY_NAME }}
                 </a>
@@ -22,42 +23,52 @@
                     <li>
                         <div class="yamm-content custom-yamm-content content-dropdown">
                             <div class="row">
-                                <ul class="list-unstyled col-sm-4 col-xs-8">
+                                <ul class="list-unstyled col-sm-3 col-xs-8">
                                     <div class="profile-icon">
                                         {% avatar user 128 %}
                                     </div>
-                                    <a class="update-avatar-link" href="">{% trans 'Update Photo' %}</a>
+                                    <a class="update-avatar-link" href="{% url 'profile.change_avatar' user.profile.pk %}">{% trans 'Update Photo' %}</a>
                                 </ul>
-                                <ul class="list-unstyled col-sm-4 col-xs-8">
-                                    <li><span class="content-head"><a href="">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
+                                <ul class="list-unstyled col-sm-3 col-xs-8">
+                                    <li><span class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Profile' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'profile.index' %}">{% trans 'Profile' %}</a></span>
                                     </li>
+                                    {% if MODULE_MEMBERSHIPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Membership' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on">{% trans 'Membership' %}</a></span>
                                     </li>
+                                    {% endif %}
+                                    {% if MODULE_GROUPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Groups' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'groups' %}">{% trans 'Groups' %}</a></span>
                                     </li>
+                                    {% endif %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Committees' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'committees.search' %}">{% trans 'Committees' %}</a></span>
                                     </li>
+                                    {% if MODULE_DONATIONS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Donations' %}</a></span>
+                                        <span class="app-name pull-left"><a href="#">{% trans 'Donations' %}</a></span>
                                     </li>
+                                    {% endif %}
                                 </ul>
-                                <ul class="list-unstyled col-sm-4 col-xs-8">
+                                {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
+                                <ul class="list-unstyled col-sm-3 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Activities' %}</a></span></li>
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Reports' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'event.myevents' %}">{% trans 'Events' %}</a></span>
                                     </li>
                                 </ul>
-                                <ul class="list-unstyled col-sm-4 col-xs-8">
+                                {% endif %}
+                                {% if USER_IS_SUPERUSER %}
+                                <ul class="list-unstyled col-sm-3 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Administrator' %}</a></span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="">{% trans 'View as ' %} someoneelse</a></span>
                                     </li>
                                 </ul>
+                                {% endif %}
                             </div>
                         </div>
                     </li>
@@ -69,29 +80,37 @@
                     <li>
                         <div class="yamm-content custom-yamm-content content-dropdown">
                             <div class="row">
-                                <ul class="list-unstyled col-sm-4 col-xs-8">
+                                <ul class="list-unstyled col-sm-6 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Member' %}</a></span></li>
+                                    {% if MODULE_MEMBERSHIPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Members' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on">{% trans 'Membership' %}</a></span>
                                     </li>
+                                    {% endif %}
+                                    {% if MODULE_GROUPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Groups' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'groups' %}">{% trans 'Groups' %}</a></span>
                                     </li>
+                                    {% endif %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Committees' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'committees.search' %}">{% trans 'Committees' %}</a></span>
                                     </li>
+                                    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Corporate Membership' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'corpmembership.mycorps' %}">{% trans 'Corporate Membership' %}</a></span>
                                     </li>
+                                    {% endif %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Community Forum' %}</a></span>
+                                        <span class="app-name pull-left"><a href="//community.tendenci.com">{% trans 'Community Forum' %}</a></span>
                                     </li>
+                                    {% if SITE_ADMIN_EMAIL %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Email an Admin' %}</a></span>
+                                        <span class="app-name pull-left"><a a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="{% trans 'Email Administrators' %}">{% trans 'Email Administrators' %}</a></span>
                                     </li>
+                                    {% endif %}
                                 </ul>
-                                {% if USER_CLASSIFICATION == "superuser" %}
-                                <ul class="list-unstyled col-sm-4 col-xs-8">
+                                {% if USER_IS_SUPERUSER %}
+                                <ul class="list-unstyled col-sm-6 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Administrator' %}</a></span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="">{% trans 'Reports' %}</a></span>
@@ -107,16 +126,25 @@
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
                     <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application_view_tile.png"/>{% trans "Apps" %}
                 </a>
+                <ul class="dropdown-menu apps-dropdown">
+                    <li>
+                        <div class="yamm-content custom-yamm-content content-dropdown">
+                            <div class="row">
+
+                            </div>
+                        </div>
+                    </li>
+                </ul>
             </li>
             <li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/error.png"/><strong>{% trans "Support" %}</strong></a>
                 <ol class="dropdown-menu">
-                        <li><a href="">{% trans 'Clear Cache' %}</a></li>
-                        <li><a href="">{% trans 'Report a Bug' %}</a></li>
-                        <li><a href="">{% trans 'Request an App' %}</a></li>
+                        <li><a href="{% url 'clear_cache' %}">{% trans 'Clear Cache' %}</a></li>
+                        <li><a href="#">{% trans 'Report a Bug' %}</a></li>
+                        <li><a href="#">{% trans 'Request an App' %}</a></li>
                         <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Search Help Files" %}</a></li>
-                        <li><a href="{% url update_tendenci %}">{% trans "Update Tendenci" %}</a></li>
-                        <li><a>Current Version: {{ TENDENCI_VERSION }}</a></li>
+                        <li><a href="{% url 'update_tendenci' %}">{% trans "Update Tendenci" %}</a></li>
+                        <li><a href="//github.com/tendenci/tendenci">Current Version: {{ TENDENCI_VERSION }}</a></li>
                         {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
                             <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
                         {% endif %}
@@ -137,7 +165,7 @@
                             <div class="yamm-content custom-yamm-content content-dropdown">
                                 <div class="row">
                                     <ul class="list-unstyled col-sm-6 col-xs-12">
-                                        <li><span class="content-head"><a href="{% url dashboard %}">{% trans 'Apps' %}</a></span></li>
+                                        <li><span class="content-head"><a href="{% url 'dashboard' %}">{% trans 'Apps' %}</a></span></li>
                                         {% for app in registered_apps.core %}
                                         {% if app.enabled %}
                                         <li class="content-item">
@@ -159,7 +187,7 @@
                                     </ul>
                                     {% if registered_apps.addons %}
                                     <ul class="list-unstyled col-sm-6 col-xs-12">
-                                        <li><span class="content-head"><a href="{% url dashboard %}">{% trans 'Add-ons' %}</a></span></li>
+                                        <li><span class="content-head"><a href="{% url 'dashboard' %}">{% trans 'Add-ons' %}</a></span></li>
                                         {% for app in registered_apps.addons %}
                                         {% if app.enabled %}
                                         <li>
@@ -211,11 +239,11 @@
                                         {% endif %}
                                         {% endfor %}
                                         <li>
-                                            <span class="app-name pull-left"><a  href="{% url reports-user-activity %}">{% trans "Activity Report" %}</a></span>
-                                            <span class="pull-right"><a href="{% url reports-user-activity %}" class="glyph app-button">&#117;</a></span>
+                                            <span class="app-name pull-left"><a  href="{% url 'reports-user-activity' %}">{% trans "Activity Report" %}</a></span>
+                                            <span class="pull-right"><a href="{% url 'reports-user-activity' %}" class="glyph app-button">&#117;</a></span>
                                         </li>
                                         <li>
-                                            <span class="app-name pull-left"><a  href="{% url profile.admins %}">{% trans "Administrators" %}</a></span>
+                                            <span class="app-name pull-left"><a  href="{% url 'profile.admins' %}">{% trans "Administrators" %}</a></span>
                                             {% if SITE_ADMIN_EMAIL %}
                                             <span class="pull-right"><a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="Email Administrators" class="app-button"><i class="fa fa-envelope"></i></a></span>
                                             {% endif %}
@@ -225,33 +253,33 @@
                             </div>
                         </li>
                         {% else %}
-                        <li><a href="{% url profile.search %}">{% trans 'Seaach' %}</a></li>
+                        <li><a href="{% url 'profile.search' %}">{% trans 'Seaach' %}</a></li>
                         {% endif %}
                     </ul>
                 </li>
                 {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
                 <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
                     <ul class="dropdown-menu">
-                        <li><a  href="{% url theme_editor.picker %}">
+                        <li><a  href="{% url 'theme_editor.picker' %}">
                             {% trans "Change Theme From: " %}
                             {{ MODULE_THEME_EDITOR_THEME|title }}</a></li>
-                        <li><a  href="{% url settings.index 'module' 'theme' %}">
+                        <li><a  href="{% url 'settings.index' 'module' 'theme' %}">
                             {% trans "Theme Settings" %}</a></li>
-                        <li><a class= "strong "href="{% url theme_editor.editor %}">
+                        <li><a class= "strong "href="{% url 'theme_editor.editor' %}">
                             {% trans "Theme Editor" %}</a></li>
                     </ul>
                 </li>
                 {% endif %}
                 <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#117;</span>&nbsp;&nbsp;{% trans "Reports" %}</a>
                     <ul class="dropdown-menu">
-                        <li><a  href="{% url report_list %}">{% trans "Invoice Reports" %}</a></li>
-                        <li><a  href="{% url reports-events-summary %}">{% trans "Event logs Summary" %}</a></li>
-                        <li><a  href="{% url reports-admin-users %}">{% trans "Administrators" %}</a></li>
-                        <li><a  href="{% url reports-user-added %}">{% trans "Site Users Added" %}</a></li>
-                        <li><a  href="{% url reports-user-activity %}">{% trans "User Activity Summary" %}</a></li>
-                        <li><a  href="{% url reports-user-access %}">{% trans "Active User Logins" %}</a></li>
-                        <li><a  href="{% url reports-contacts-referral %}">{% trans "Contacts Report" %}</a></li>
-                        <li><a  href="{% url reports-memberships %}">{% trans "Membership Reports" %}</a></li>
+                        <li><a  href="{% url 'report_list' %}">{% trans "Invoice Reports" %}</a></li>
+                        <li><a  href="{% url 'reports-events-summary' %}">{% trans "Event logs Summary" %}</a></li>
+                        <li><a  href="{% url 'reports-admin-users' %}">{% trans "Administrators" %}</a></li>
+                        <li><a  href="{% url 'reports-user-added' %}">{% trans "Site Users Added" %}</a></li>
+                        <li><a  href="{% url 'reports-user-activity' %}">{% trans "User Activity Summary" %}</a></li>
+                        <li><a  href="{% url 'reports-user-access' %}">{% trans "Active User Logins" %}</a></li>
+                        <li><a  href="{% url 'reports-contacts-referral' %}">{% trans "Contacts Report" %}</a></li>
+                        <li><a  href="{% url 'reports-memberships' %}">{% trans "Membership Reports" %}</a></li>
                         {% endcomment %}{% comment %}
                         <li><a   href="{# url reports-corp-mems-over-time #}">{% trans "Corporate Memberships Over Time" %}</a></li>{% endcomment %}{% comment %}
                         {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
@@ -329,7 +357,7 @@
                     </form>
                 </li>
                 {% endif %}
-                <li><a href="{% url auth_logout %}"><span class="glyph">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
+                <li><a href="{% url 'auth_logout' %}"><span class="glyph">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
             </ul>
         </div>
     </div>

@@ -30,9 +30,15 @@ def site_admin_email(request):
 
 
 def user_classification(request):
-    data = {'USER_CLASSIFICATION': 'normal'}
+    data = {
+    'USER_IS_NORMAL' : True,
+    'USER_IS_SUPERUSER' : False,
+    'USER_IS_MEMBER': False,
+    'USER_IS_MEMBER_ACTIVE': False,
+    'USER_IS_MEMBER_EXPIRED': False
+    }
     if hasattr(request.user, 'profile') and request.user.profile.is_superuser:
-        data = {'USER_CLASSIFICATION': 'superuser'}
+        data.update({'USER_IS_SUPERUSER': True})
     elif hasattr(request.user, 'memberships'):
         active_memberships = request.user.membershipdefault_set.filter(
             status=True, status_detail__iexact='active'
@@ -40,10 +46,11 @@ def user_classification(request):
         inactive_memberships = request.user.membershipdefault_set.filter(
             status=True, status_detail__iexact='inactive'
         )
+        data.update({'USER_IS_MEMBER':True})
         if inactive_memberships.exists() > 0:
-            data = {'USER_CLASSIFICATION': 'expired'}
+            data.update({'USER_IS_MEMBER_EXPIRED': True})
         elif active_memberships.exists() > 0:
-            data = {'USER_CLASSIFICATION': 'member'}
+            data.update({'USER_IS_MEMBER_ACTIVE': True})
 
     return data
 
