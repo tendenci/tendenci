@@ -40,16 +40,19 @@ def user_classification(request):
         inactive_memberships = request.user.membershipdefault_set.filter(
             status=True, status_detail__iexact='inactive'
         )
-        if len(inactive_memberships) > 0:
+        if inactive_memberships.exists() > 0:
             data = {'USER_CLASSIFICATION': 'expired'}
-        elif len(active_memberships) > 0:
+        elif active_memberships.exists() > 0:
             data = {'USER_CLASSIFICATION': 'member'}
 
     return data
 
 
 def display_name(request):
-    if request.user.first_name:
-        return {'DISPLAY_NAME': request.user.first_name}
-    else:
-        return {'DISPLAY_NAME': request.user.username}
+    if request.user.is_authenticated():
+        if request.user.first_name:
+            return {'DISPLAY_NAME': request.user.first_name}
+        else:
+            return {'DISPLAY_NAME': request.user.username}
+
+    return {'DISPLAY_NAME': ''}
