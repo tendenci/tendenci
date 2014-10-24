@@ -130,7 +130,156 @@
                     <li>
                         <div class="yamm-content custom-yamm-content content-dropdown">
                             <div class="row">
-
+                                <div id="accordion" class="panel-group">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                                {% trans 'Content' %}
+                                            </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse collapse in">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:index' %}">{% trans 'Admin Backend' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'articles' %}">{% trans 'Articles' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:boxes_box_changelist' %}">{% trans 'Boxes' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'directories' %}">{% trans 'Directories' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'files' %}">{% trans 'Files' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'forms' %}">{% trans 'Forms' %}</a></span></li>
+                                                </ul>
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="//tendenci.com/help-files/" target="_blank">{% trans 'Help Files' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'navs.search' %}">{% trans 'Navs' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'news' %}">{% trans 'News' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'pages' %}">{% trans 'Pages' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'stories' %}">{% trans 'Stories' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'theme_editor.editor' %}">{% trans 'Theme Editor' %}</a></span></li>
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                                {% trans 'Financial' %}
+                                            </a>
+                                            </h3>
+                                        </div>
+                                        <div id="collapseTwo" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'discounts' %}">{% trans 'Discount' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Donations' %}</a></span></li>
+                                                </ul>
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'invoices' %}">{% trans 'Invoices' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Reports' %}</a></span></li>
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                                {% trans 'Organizational' %}
+                                            </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseThree" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'case_study' %}">{% trans 'Case Studies' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'jobs' %}">{% trans 'Jobs' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'resumes' %}">{% trans 'Resumes' %}</a></span></li>
+                                                </ul>
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'staff' %}">{% trans 'Staff' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Testimonials' %}</a></span></li>
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+                                                {% trans 'Locational' %}
+                                            </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseFour" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'locations' %}">{% trans 'Location' %}</a></span></li>
+                                                </ul>
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:regions_region_changelist' %}">{% trans 'Regions' %}</a></span></li>
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
+                                                {% trans 'Media' %}
+                                            </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseFive" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'photoset_latest' %}">{% trans 'Photo Album' %}</a></span></li>
+                                                </ul>
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'video' %}">{% trans 'Video' %}</a></span></li>
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">
+                                                {% trans 'Activities' %}
+                                            </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseSix" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'events' %}">{% trans 'Events List' %}</a></span></li>
+                                                </ul>
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Calendar' %}</a></span></li>
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">
+                                                {% trans 'Reports' %}
+                                            </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseSeven" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Membership' %}</a></span></li>
+                                                </ul>
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Financial' %}</a></span></li>
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </li>

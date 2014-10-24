@@ -521,6 +521,11 @@ html[xmlns] .tcf {
     padding: 4px 0;
 }
 
+.t-top-nav .panel-title a {
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .t-top-nav .inner-top-nav > li > a {
     padding: 5px 15px !important;
 }
