@@ -32,24 +32,27 @@
                                 <ul class="list-unstyled col-sm-3 col-xs-8">
                                     <li><span class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'profile.index' %}">{% trans 'Profile' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'profile.index' %}">{% if USER_IS_SUPERUSER %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_orange.png">
+                                        {% elif USER_IS_MEMBER_EXPIRED %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_red.png">
+                                        {% elif USER_IS_MEMBER_ACTIVE %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_go.png">
+                                        {% else %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user.png">{% endif %}{% trans 'Profile' %}</a></span>
                                     </li>
                                     {% if MODULE_MEMBERSHIPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on">{% trans 'Membership' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/arrow_join.png"/>{% trans 'Membership' %}</a></span>
                                     </li>
                                     {% endif %}
                                     {% if MODULE_GROUPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'groups' %}">{% trans 'Groups' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'groups' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/group.png"/>{% trans 'Groups' %}</a></span>
                                     </li>
                                     {% endif %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'committees.search' %}">{% trans 'Committees' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'committees.search' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/group_gear.png"/>{% trans 'Committees' %}</a></span>
                                     </li>
                                     {% if MODULE_DONATIONS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="#">{% trans 'Donations' %}</a></span>
+                                        <span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/money.png"/>{% trans 'Donations' %}</a></span>
                                     </li>
                                     {% endif %}
                                 </ul>
@@ -57,7 +60,7 @@
                                 <ul class="list-unstyled col-sm-3 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Activities' %}</a></span></li>
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'event.myevents' %}">{% trans 'Events' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/calendar_view_day.png"/>{% trans 'Events' %}</a></span>
                                     </li>
                                 </ul>
                                 {% endif %}
@@ -65,7 +68,7 @@
                                 <ul class="list-unstyled col-sm-3 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Administrator' %}</a></span></li>
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'View as ' %} someoneelse</a></span>
+                                        <span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder_user.png"/>{% trans 'Impersonate' %}</a></span>
                                     </li>
                                 </ul>
                                 {% endif %}
@@ -84,28 +87,28 @@
                                     <li><span class="content-head"><a href="">{% trans 'Member' %}</a></span></li>
                                     {% if MODULE_MEMBERSHIPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on">{% trans 'Membership' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/arrow_join.png"/>{% trans 'Membership' %}</a></span>
                                     </li>
                                     {% endif %}
                                     {% if MODULE_GROUPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'groups' %}">{% trans 'Groups' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'groups' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/group.png"/>{% trans 'Groups' %}</a></span>
                                     </li>
                                     {% endif %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'committees.search' %}">{% trans 'Committees' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'committees.search' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/group_gear.png"/>{% trans 'Committees' %}</a></span>
                                     </li>
                                     {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="{% url 'corpmembership.mycorps' %}">{% trans 'Corporate Membership' %}</a></span>
+                                        <span class="app-name pull-left"><a href="{% url 'corpmembership.mycorps' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_suit.png"/>{% trans 'Corporate Membership' %}</a></span>
                                     </li>
                                     {% endif %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="//community.tendenci.com">{% trans 'Community Forum' %}</a></span>
+                                        <span class="app-name pull-left"><a href="//community.tendenci.com"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/comment.png"/>{% trans 'Community Forum' %}</a></span>
                                     </li>
                                     {% if SITE_ADMIN_EMAIL %}
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="{% trans 'Email Administrators' %}">{% trans 'Email Administrators' %}</a></span>
+                                        <span class="app-name pull-left"><a a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="{% trans 'Email Administrators' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/email.png"/>{% trans 'Email Administrators' %}</a></span>
                                     </li>
                                     {% endif %}
                                 </ul>
@@ -113,7 +116,7 @@
                                 <ul class="list-unstyled col-sm-6 col-xs-8">
                                     <li><span class="content-head"><a href="">{% trans 'Administrator' %}</a></span></li>
                                     <li class="content-item">
-                                        <span class="app-name pull-left"><a href="">{% trans 'Reports' %}</a></span>
+                                        <span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/report.png"/>{% trans 'Reports' %}</a></span>
                                     </li>
                                 </ul>
                                 {% endif %}
@@ -135,27 +138,27 @@
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                                {% trans 'Content' %}
+                                                {% trans '1. Content' %}
                                             </a>
                                             </h4>
                                         </div>
                                         <div id="collapseOne" class="panel-collapse collapse in">
                                             <div class="panel-body">
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:index' %}">{% trans 'Admin Backend' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'articles' %}">{% trans 'Articles' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:boxes_box_changelist' %}">{% trans 'Boxes' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'directories' %}">{% trans 'Directories' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'files' %}">{% trans 'Files' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'forms' %}">{% trans 'Forms' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:index' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/database.png"/>{% trans 'Admin Backend' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'articles' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/page_green.png"/>{% trans 'Articles' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:boxes_box_changelist' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/box.png"/>{% trans 'Boxes' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'directories' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder_page_white.png"/>{% trans 'Directories' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'files' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder.png"/>{% trans 'Files' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'forms' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application_form.png"/>{% trans 'Forms' %}</a></span></li>
                                                 </ul>
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="//tendenci.com/help-files/" target="_blank">{% trans 'Help Files' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'navs.search' %}">{% trans 'Navs' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'news' %}">{% trans 'News' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'pages' %}">{% trans 'Pages' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'stories' %}">{% trans 'Stories' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'theme_editor.editor' %}">{% trans 'Theme Editor' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="//tendenci.com/help-files/" target="_blank"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/help.png"/>{% trans 'Help Files' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'navs.search' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder_explore.png"/>{% trans 'Navs' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'news' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/newspaper.png"/>{% trans 'News' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'pages' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/page_white_stack.png"/>{% trans 'Pages' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'stories' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/book_open.png"/>{% trans 'Stories' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'theme_editor.editor' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/layout_edit.png"/>{% trans 'Theme Editor' %}</a></span></li>
                                                 </ul>
                                             </div>
                                          </div>
@@ -164,19 +167,19 @@
                                         <div class="panel-heading">
                                             <h3 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                                                {% trans 'Financial' %}
+                                                {% trans '2. Financial' %}
                                             </a>
                                             </h3>
                                         </div>
                                         <div id="collapseTwo" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'discounts' %}">{% trans 'Discount' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Donations' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'discounts' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/money_delete.png"/>{% trans 'Discount' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/money.png"/>{% trans 'Donations' %}</a></span></li>
                                                 </ul>
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'invoices' %}">{% trans 'Invoices' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Reports' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'invoices' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/page_white_width.png"/>{% trans 'Invoices' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/report.png"/>{% trans 'Reports' %}</a></span></li>
                                                 </ul>
                                             </div>
                                          </div>
@@ -185,20 +188,20 @@
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                                                {% trans 'Organizational' %}
+                                                {% trans '3. Organizational' %}
                                             </a>
                                             </h4>
                                         </div>
                                         <div id="collapseThree" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'case_study' %}">{% trans 'Case Studies' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'jobs' %}">{% trans 'Jobs' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'resumes' %}">{% trans 'Resumes' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'case_study' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder_table.png"/>{% trans 'Case Studies' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'jobs' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/briefcase.png"/>{% trans 'Jobs' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'resumes' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/page_attach.png"/>{% trans 'Resumes' %}</a></span></li>
                                                 </ul>
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'staff' %}">{% trans 'Staff' %}</a></span></li>
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Testimonials' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'staff' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/drive_user.png"/>{% trans 'Staff' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/page_white_text_width.png"/>{% trans 'Testimonials' %}</a></span></li>
                                                 </ul>
                                             </div>
                                          </div>
@@ -207,17 +210,17 @@
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
-                                                {% trans 'Locational' %}
+                                                {% trans '4. Locational' %}
                                             </a>
                                             </h4>
                                         </div>
                                         <div id="collapseFour" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'locations' %}">{% trans 'Location' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'locations' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/map_go.png"/>{% trans 'Location' %}</a></span></li>
                                                 </ul>
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:regions_region_changelist' %}">{% trans 'Regions' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'admin:regions_region_changelist' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/map.png"/>{% trans 'Regions' %}</a></span></li>
                                                 </ul>
                                             </div>
                                          </div>
@@ -226,17 +229,17 @@
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
-                                                {% trans 'Media' %}
+                                                {% trans '5. Media' %}
                                             </a>
                                             </h4>
                                         </div>
                                         <div id="collapseFive" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'photoset_latest' %}">{% trans 'Photo Album' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'photoset_latest' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/photos.png"/>{% trans 'Photo Album' %}</a></span></li>
                                                 </ul>
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'video' %}">{% trans 'Video' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'video' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/camera.png"/>{% trans 'Video' %}</a></span></li>
                                                 </ul>
                                             </div>
                                          </div>
@@ -245,17 +248,17 @@
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">
-                                                {% trans 'Activities' %}
+                                                {% trans '6. Activities' %}
                                             </a>
                                             </h4>
                                         </div>
                                         <div id="collapseSix" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'events' %}">{% trans 'Events List' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="{% url 'events' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/date.png"/>{% trans 'Events List' %}</a></span></li>
                                                 </ul>
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Calendar' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/calendar.png"/>{% trans 'Calendar' %}</a></span></li>
                                                 </ul>
                                             </div>
                                          </div>
@@ -264,17 +267,17 @@
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">
-                                                {% trans 'Reports' %}
+                                                {% trans '7. Reports' %}
                                             </a>
                                             </h4>
                                         </div>
                                         <div id="collapseSeven" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Membership' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/report_user.png"/>{% trans 'Membership' %}</a></span></li>
                                                 </ul>
                                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                                    <li class"content-item"><span class="app-name pull-left"><a href="#">{% trans 'Financial' %}</a></span></li>
+                                                    <li class"content-item"><span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/money_dollar.png"/>{% trans 'Financial' %}</a></span></li>
                                                 </ul>
                                             </div>
                                          </div>
@@ -300,12 +303,13 @@
                         <li><a  href="http://support.tendenci.com" target="_blank">{% trans "Contact Tendenci" %}</a></li>
                 </ol>
             </li>
+            {% block current_app %}
             <li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
                     <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application.png"/>{% trans "Current App" %}
                 </a>
             </li>
-
+            {% endblock %}
 
 
             {% comment %}<li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
