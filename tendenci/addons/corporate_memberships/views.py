@@ -749,7 +749,7 @@ def corpmembership_delete(request, id,
 
             return HttpResponseRedirect(reverse('corpmembership.search'))
 
-        return render_to_response(template_name, {'corp_memb': corp_memb},
+        return render_to_response(template_name, {'corp_membership': corp_memb},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -1523,7 +1523,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
                 return HttpResponseRedirect(reverse('corpmembership.view',
                                                     args=[corp_memb.id]))
 
-    return render_to_response(template_name, {'corp_memb': corp_memb,
+    return render_to_response(template_name, {'corp_membership': corp_memb,
                                               'form': form,
                                               'reps': reps},
         context_instance=RequestContext(request))
@@ -1590,7 +1590,7 @@ def delete_corp_rep(request, id,
                                         'corpmembership.edit_corp_reps',
                                         args=[corp_memb.pk]))
 
-        return render_to_response(template_name, {'corp_memb': corp_memb},
+        return render_to_response(template_name, {'corp_membership': corp_memb},
             context_instance=RequestContext(request))
     else:
         raise Http403

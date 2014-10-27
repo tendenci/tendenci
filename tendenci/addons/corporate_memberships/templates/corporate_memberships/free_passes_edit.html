@@ -20,7 +20,7 @@
 
 {% block body %}
 <div class="t">
-{% corpmemb_nav request.user corp_memb %}
+{% corpmemb_nav request.user corp_membership %}
 <div class="corp-reps">
      <h1>{% trans "Corporate Membership Edit Free Passes" %}</h1>
      <div><a href="{% url corpmembership.view corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></div>
