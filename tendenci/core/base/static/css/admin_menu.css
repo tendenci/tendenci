@@ -515,6 +515,7 @@ html[xmlns] .tcf {
     font-size: 12px;
 }
 
+.t-top-nav .content-head,
 .t-top-nav .content-head a {
     font-weight: bold;
     font-size: 18px;

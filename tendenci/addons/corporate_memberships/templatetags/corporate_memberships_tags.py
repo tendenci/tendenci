@@ -88,6 +88,14 @@ def corpmemb_nav(context, user, corp_memb=None):
     })
     return context
 
+@register.inclusion_tag("corporate_memberships/top_nav.html", takes_context=True)
+def corpmemb_current_app(context, user, corp_memb=None):
+    context.update({
+        'nav_object': corp_memb,
+        "user": user
+    })
+    return context
+
 
 @register.inclusion_tag("corporate_memberships/options.html", takes_context=True)
 def corpmemb_options(context, user, corp_memb):

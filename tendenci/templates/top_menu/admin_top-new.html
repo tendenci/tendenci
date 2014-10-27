@@ -58,7 +58,7 @@
                                 </ul>
                                 {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
                                 <ul class="list-unstyled col-sm-3 col-xs-8">
-                                    <li><span class="content-head"><a href="">{% trans 'Activities' %}</a></span></li>
+                                    <li><span class="content-head">{% trans 'Activities' %}</span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/calendar_view_day.png"/>{% trans 'Events' %}</a></span>
                                     </li>
@@ -66,7 +66,7 @@
                                 {% endif %}
                                 {% if USER_IS_SUPERUSER %}
                                 <ul class="list-unstyled col-sm-3 col-xs-8">
-                                    <li><span class="content-head"><a href="">{% trans 'Administrator' %}</a></span></li>
+                                    <li><span class="content-head">{% trans 'Administrator' %}</span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder_user.png"/>{% trans 'Impersonate' %}</a></span>
                                     </li>
@@ -84,7 +84,7 @@
                         <div class="yamm-content custom-yamm-content content-dropdown">
                             <div class="row">
                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                    <li><span class="content-head"><a href="">{% trans 'Member' %}</a></span></li>
+                                    <li><span class="content-head">{% trans 'Member' %}</span></li>
                                     {% if MODULE_MEMBERSHIPS_ENABLED %}
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/arrow_join.png"/>{% trans 'Membership' %}</a></span>
@@ -114,7 +114,7 @@
                                 </ul>
                                 {% if USER_IS_SUPERUSER %}
                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                    <li><span class="content-head"><a href="">{% trans 'Administrator' %}</a></span></li>
+                                    <li><span class="content-head">{% trans 'Administrator' %}</span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/report.png"/>{% trans 'Reports' %}</a></span>
                                     </li>
@@ -290,26 +290,20 @@
             </li>
             <li class="dropdown">
                 <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/error.png"/><strong>{% trans "Support" %}</strong></a>
-                <ol class="dropdown-menu">
-                        <li><a href="{% url 'clear_cache' %}">{% trans 'Clear Cache' %}</a></li>
-                        <li><a href="#">{% trans 'Report a Bug' %}</a></li>
-                        <li><a href="#">{% trans 'Request an App' %}</a></li>
-                        <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Search Help Files" %}</a></li>
-                        <li><a href="{% url 'update_tendenci' %}">{% trans "Update Tendenci" %}</a></li>
+                <ul class="dropdown-menu">
+                        <li><a href="{% url 'clear_cache' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/computer_delete.png"/>{% trans 'Clear Cache' %}</a></li>
+                        <li><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/bug_add.png"/>{% trans 'Report a Bug' %}</a></li>
+                        <li><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application_get.png"/>{% trans 'Request an App' %}</a></li>
+                        <li><a href="http://tendenci.com/help-files/" target="_blank"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/help.png"/>{% trans "Search Help Files" %}</a></li>
+                        <li><a href="{% url 'update_tendenci' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/arrow_up.png"/>{% trans "Update Tendenci" %}</a></li>
                         <li><a href="//github.com/tendenci/tendenci">Current Version: {{ TENDENCI_VERSION }}</a></li>
                         {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
-                            <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
+                            <li><a href="http://schipul.com/py/" target="_blank"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/money_add.png"/>{% trans "Make a Payment" %}</a></li>
                         {% endif %}
-                        <li><a  href="http://support.tendenci.com" target="_blank">{% trans "Contact Tendenci" %}</a></li>
-                </ol>
+                        <li><a  href="http://support.tendenci.com" target="_blank"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/telephone.png"/>{% trans "Contact Tendenci" %}</a></li>
+                </ul>
             </li>
-            {% block current_app %}
-            <li class="dropdown">
-                <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-                    <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/application.png"/>{% trans "Current App" %}
-                </a>
-            </li>
-            {% endblock %}
+            {% block current_app %}{% endblock %}
 
 
             {% comment %}<li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
