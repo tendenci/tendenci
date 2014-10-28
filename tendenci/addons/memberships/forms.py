@@ -1841,6 +1841,13 @@ class MembershipDefaultForm(TendenciBaseForm):
             'dob',
             'sex',
             'spouse',
+            # alternate address fields here
+            'address_2',
+            'address2_2',
+            'city_2',
+            'state_2',
+            'zipcode_2',
+            'country_2',
         ]
 
         for i in profile_attrs:
