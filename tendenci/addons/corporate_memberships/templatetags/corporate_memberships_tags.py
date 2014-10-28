@@ -91,7 +91,7 @@ def corpmemb_nav(context, user, corp_memb=None):
 @register.inclusion_tag("corporate_memberships/top_nav_items.html", takes_context=True)
 def corpmemb_current_app(context, user, corp_memb=None):
     context.update({
-        'nav_object': corp_memb,
+        'app_object': corp_memb,
         "user": user
     })
     return context

@@ -35,7 +35,7 @@ def article_search(context):
 @register.inclusion_tag("articles/top_nav_items.html", takes_context=True)
 def article_current_app(context, user, article=None):
     context.update({
-        "nav_object": article,
+        "app_object": article,
         "user": user
     })
     return context

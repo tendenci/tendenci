@@ -1,0 +1,51 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+{% load url from future %}
+
+{% has_perm user directories.add_directorypricing as can_add_directory_pricing %}
+
+{% if app_object %}
+    {% has_perm user directories.view_directorypricing app_object as can_view_directory_pricing %}
+    {% has_perm user directories.change_directorypricing app_object as can_edit_directory_pricing %}
+    {% has_perm user directories.delete_directorypricing app_object as can_delete_directory_pricing %}
+{% else %}
+    {% has_perm user directories.view_directorypricing as can_view_directory_pricing %}
+    {% has_perm user directories.change_directorypricing as can_edit_directory_pricing %}
+    {% has_perm user directories.delete_directorypricing as can_delete_directory_pricing %}
+{% endif %}
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-sm-6 col-xs-8">
+                    {% if app_object %}
+                    <li><span class="content-head">{% trans "All Pricings" %}</span></li>
+                    {% endif %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'directory_pricing.search' %}">{% trans "All" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricings" %}</a></span></li>
+                    {% if can_add_directory_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'directory_pricing.add' %}">{% trans "Add" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricings" %}</a></span></li>
+                    {% endif %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'directory.search' %}">{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}</a></span></li>
+                </ul>
+                {% if app_object %}
+                {% if can_view_directory_pricing or can_edit_directory_pricing %}
+                <ul class="list-unstyled col-sm-6 col-xs-8">
+                    <li><span class="content-head">{% trans "This Price" %}</span></li>
+                    {% if can_view_directory_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricing" %}</a></span></li>
+                    {% endif %}
+                    {% if can_edit_directory_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'directory_pricing.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricing" %}</a></span></li>
+                    {% endif %}
+                    {% if can_delete_directory_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a class="delete" href="{% url 'directory_pricing.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricing" %}</a></span></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

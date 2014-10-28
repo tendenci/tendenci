@@ -7,12 +7,12 @@
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {#{% has_perm user corporate_memberships.add_corpmembership as can_add_corpmemb %}#}
 
-{% if nav_object %}
-    {% has_perm user corporate_memberships.view_corpmembership nav_object as can_view_corpmemb %}
-    {% allow_view_corp nav_object user as allow_view %}
-    {% has_perm user corporate_memberships.change_corpmembership nav_object as can_edit_corpmemb %}
-    {% allow_edit_corp nav_object user as allow_edit %}
-    {% has_perm user corporate_memberships.delete_corpemembership nav_object as can_delete %}
+{% if app_object %}
+    {% has_perm user corporate_memberships.view_corpmembership app_object as can_view_corpmemb %}
+    {% allow_view_corp app_object user as allow_view %}
+    {% has_perm user corporate_memberships.change_corpmembership app_object as can_edit_corpmemb %}
+    {% allow_edit_corp app_object user as allow_edit %}
+    {% has_perm user corporate_memberships.delete_corpemembership app_object as can_delete %}
 {% else %}
     {% has_perm user corporate_memberships.view_corpmembership as can_view_corpmemb %}
     {% has_perm user corporate_memberships.change_corpmembership as can_edit_corpmemb %}
@@ -23,7 +23,7 @@
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                    {% if nav_object %}
+                    {% if app_object %}
                     <li><span class="content-head">{% trans "All Corp. Members" %}</span></li>
                     {% endif %}
                     {% if can_edit_setting %}
@@ -50,28 +50,28 @@
                     {% endif %}
                     {% endif %}
                 </ul>
-                {% if nav_object %}
+                {% if app_object %}
                 {% if can_view_corpmemb or can_edit_corpmemb %}
                 <ul class="list-unstyled col-sm-6 col-xs-8">
                     <li><span class="content-head">{% trans "This Corp. Member" %}</span></li>
                     {% if can_view_corpmemb or allow_view %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.view' nav_object.pk %}">{% trans "View Corp. Member" %}</a></span></li>
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.view' app_object.pk %}">{% trans "View Corp. Member" %}</a></span></li>
                     {% endif %}
-                    {% if can_edit_corpmemb and not nav_object.is_archive %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.edit' nav_object.pk %}">{% trans "Edit Corp. Member" %}</a></span></li>
-                    <li class="content-item"><span class="app-name pull-left"><a class="option-link roster" href="{% url 'corpmembership.roster_search' %}?cm_id={{ nav_object.id }}&active_only=1">{% trans "View Roster" %}</a></span></li>
-                   <li class="content-item"><span class="app-name pull-left"><a href="{% url 'memberships.default_export' %}?cp_id={{ nav_object.corp_profile.pk }}">{% trans "Export Roster" %}</a></span></li>
+                    {% if can_edit_corpmemb and not app_object.is_archive %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.edit' app_object.pk %}">{% trans "Edit Corp. Member" %}</a></span></li>
+                    <li class="content-item"><span class="app-name pull-left"><a class="option-link roster" href="{% url 'corpmembership.roster_search' %}?cm_id={{ app_object.id }}&active_only=1">{% trans "View Roster" %}</a></span></li>
+                   <li class="content-item"><span class="app-name pull-left"><a href="{% url 'memberships.default_export' %}?cp_id={{ app_object.corp_profile.pk }}">{% trans "Export Roster" %}</a></span></li>
                     {% endif %}
 
-                    {% if nav_object.can_renew %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.renew' nav_object.id %}">{% trans "Renew" %}</a></span></li>
+                    {% if app_object.can_renew %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.renew' app_object.id %}">{% trans "Renew" %}</a></span></li>
                     {% else %}
-                    {% if nav_object.is_expired and request.user.is_superuser %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.renew' nav_object.id %}">{% trans "Admin: Renew" %}</a></span></li>
+                    {% if app_object.is_expired and request.user.is_superuser %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'corpmembership.renew' app_object.id %}">{% trans "Admin: Renew" %}</a></span></li>
                     {% endif %}
                     {% endif %}
                     {% if can_delete %}
-                    <li class="content-item"><span class="app-name pull-left"><a class="option-link delete" href="{% url corpmembership.delete nav_object.pk %}">{% trans "Delete" %}</a></span></li>
+                    <li class="content-item"><span class="app-name pull-left"><a class="option-link delete" href="{% url corpmembership.delete app_object.pk %}">{% trans "Delete" %}</a></span></li>
                     {% endif %}
                 </ul>
                 {% endif %}

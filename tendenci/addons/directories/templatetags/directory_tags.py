@@ -26,6 +26,14 @@ def directory_nav(context, user, directory=None):
 def directory_search(context):
     return context
 
+@register.inclusion_tag("directories/top_nav_items.html", takes_context=True)
+def directory_current_app(context, user, directory=None):
+    context.update({
+        "app_object" : directory,
+        "user": user
+    })
+    return context
+
 
 @register.inclusion_tag("directories/pricing-nav.html", takes_context=True)
 def directory_pricing_nav(context, user, directory_pricing=None):
@@ -54,6 +62,14 @@ def directory_pricing_table(context):
     context.update({
         "directory_pricings": directory_pricings,
         'show_premium_price': show_premium_price
+    })
+    return context
+
+@register.inclusion_tag("directories/top_nav_items_pricing.html", takes_context=True)
+def directory_pricing_current_app(context, user, directory_pricing=None):
+    context.update({
+        'app_object': directory_pricing,
+        "user": user
     })
     return context
 
