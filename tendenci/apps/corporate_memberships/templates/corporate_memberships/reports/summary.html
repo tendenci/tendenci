@@ -73,6 +73,8 @@
           {% for type in summary %}
           ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }},
           {{ type.expired }}, {{ type.in_grace_period }}],
+          {% empty %}
+          ['', 0, 0, 0, 0],
           {% endfor %}
         ]);
 

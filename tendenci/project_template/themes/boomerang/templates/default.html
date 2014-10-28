@@ -1,0 +1,131 @@
+{% load theme_tags %}
+{% theme_extends "base.html" %}
+
+
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+=========================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load story_tags %}
+{% load news_tags %}
+
+
+<!-- Meta Tags (for optimal SEO)
+=========================================================== -->
+{% block title %}{{ SITE_GLOBAL_SITENAME }} {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+
+
+<!-- Starts Tendenci Head Tag
+=========================================================== -->
+{% block extra_head %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+
+    <!-- Global Styles
+    ==================================================-->
+    <link href="{{ THEME_URL }}media/css/global-style.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ THEME_URL }}media/assets/layerslider/css/layerslider.css" type="text/css">
+
+    <!-- navigation dropdowns
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
+    <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
+
+    <!-- Custom styles for this template
+=========================================================== -->
+  <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
+{% endblock extra_head %}
+
+
+    <!-- Start of the Body
+=========================================================== -->
+{% block body_ids %}sub{% endblock body_ids %}
+{% block body_classes %}sub{% endblock body_classes %}
+{% block html_body %}
+<div class="wrapper">
+    <a class="sr-only" href="#content">Skip to main content</a>
+
+    <!-- Header Starts
+    =========================================================== -->
+    {% theme_include "header.html" %}<!-- Pulls in Header Include -->
+    <!-- Header Ends -->
+
+    <section class="slice bg-3">
+        <div class="w-section inverse">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8{% block content_classes %}{% endblock %}">
+                        {% theme_include "base/messages.html" %}
+                        {% block body %}{% endblock %}
+                    </div>
+                    {% block sidebar %}
+                    <div class="sidebar col-md-4">
+                        {% theme_include "sidebar.html" %}
+                    </div>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer starts
+      =========================================================== -->
+    {% theme_include 'footer.html' %}
+    <!-- Footer Ends -->
+</div>
+{% endblock %}
+
+{% block extra_body %}
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+
+
+ <!-- Theme Specific Javascript files
+ ================================================== -->
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/modernizr.custom.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.easing.js"></script>
+
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Plugins -->
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/hover-dropdown/bootstrap-hover-dropdown.min.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/masonry/masonry.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/page-scroller/jquery.ui.totop.min.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/mixitup/jquery.mixitup.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/mixitup/jquery.mixitup.init.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/easy-pie-chart/jquery.easypiechart.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/waypoints/waypoints.min.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/assets/sticky/jquery.sticky.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.wp.custom.js"></script>
+    <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.wp.switcher.js"></script>
+    <script src="{{ THEME_URL }}media/assets/layerslider/js/greensock.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
+
+    <!-- LayerSlider script files -->
+    <script src="{{ THEME_URL }}media/assets/layerslider/js/layerslider.transitions.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/assets/layerslider/js/layerslider.kreaturamedia.jquery.js" type="text/javascript"></script>
+    <!-- Initialize the meanmenu -->
+    <script type="text/javascript">
+    jQuery(document).ready(function() {
+      jQuery('.mainnav nav').meanmenu();
+    });
+    </script>
+
+{% endblock extra_body %}
+
+

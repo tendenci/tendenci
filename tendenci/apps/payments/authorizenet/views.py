@@ -19,6 +19,10 @@ def sim_thank_you(request, payment_id,
 
 @csrf_exempt
 def silent_post(request):
+    # for now, we only handle AUTH_CAPTURE AND AUTH_ONLY
+    if not request.POST.get('x_type', '').lower() in ['auth_capture', 'auth_only']:
+        return HttpResponse('')
+
     payment = authorizenet_thankyou_processing(
         request, dict(request.POST.items()))
 

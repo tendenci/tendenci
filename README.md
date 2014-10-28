@@ -10,23 +10,28 @@ Tendenci allows membership management organizations to communicate, manage and c
 
 ## Demo?  
 
-Can I see a demo now? Yup. [http://demo.tendenci.com/](http://demo.tendenci.com/).  
+Got tired of spammers so pulled the demo. Sheesh people. Get a life. Anyway, you can do a free 30 day trial without risk at 
+[https://tendenci.com/forms/tendenci-free-trial/](https://tendenci.com/forms/tendenci-free-trial/)
 
 ## Impatient Developer?  
 
 If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP three ways (do NOT use thse in production).  
 
-1) TurnKey Tendenci Virtual Appliances: [http://www.turnkeylinux.org/tendenci](http://www.turnkeylinux.org/tendenci)  
-2) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
-3) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
- 
+1) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
+2) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
+3) TKL version is out of date so pulled the link.
 
 ## Developer Installing Tendenci?  
 
-Detailed installation docs at [https://tendenci.readthedocs.org/en/latest/](https://tendenci.readthedocs.org/en/latest/). 
-You will need to install the server on Ubuntu 12.04 LTS (or later) and Postgres 9.1 (or later.) Cloud hypervisors work fine.  
+Community forums for questions that may not fit in issues on github or solutions to questions on installation. We check these more frequently than the issues on github and it is also where you can read about the Roadmap going forward. Your input is greatly appreciated! (Seriously - this changing the world stuff is hard and we could use your input and maybe a few pull requests too!)
+[https://community.tendenci.com/](https://community.tendenci.com/)
 
-Have you deployed Tendenci in a Production Environment? Let us know because we'd like to build a directory of qualified developers. Send us a link to a production site and we can add you to our developer list. (no cost)  
+Detailed installation docs at [https://tendenci.readthedocs.org/en/latest/](https://tendenci.readthedocs.org/en/latest/). 
+You will need to install the server on Ubuntu 14.04 LTS (or later) and Postgres 9.3 (or later.) Cloud hypervisors work fine.  
+
+Dockers? We are using them in our test environments now. We'll have a public docker file up soon in the dockers.io registry. Testing internally currently and I want it to come out on Django 1.6at a minimum. So until we get the migrations set up please hang on. It is based on the phusion/basebox so feel free to play with that in the meanttime. Or make a container and do an install with netsetter on your own docker.
+
+Have you deployed Tendenci in a Production Environment? Tell us in the forums please! There are no "trackers" in Tendenci as that goes against our values. So we really only know if you have a site up if you tell us. 
 [http://tendenci.com/directories/](http://tendenci.com/directories/)
 
 ## Humans Looking for a Hosted Solution?  

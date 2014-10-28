@@ -11,7 +11,8 @@ from timezones import zones
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.site_settings.utils import (get_form_list,
                                                get_box_list,
-                                               get_group_list)
+                                               get_group_list,
+                                               COUNTRIES)
 from tendenci.apps.base.utils import get_languages_with_local_name
 from django.utils.translation import ugettext_lazy as _
 
@@ -150,6 +151,8 @@ def build_settings_form(user, settings):
             elif setting.input_value == '<language_list>':
                 choices = get_languages_with_local_name()
                 required = True
+            elif setting.input_value == '<country_list>':
+                choices = COUNTRIES
             else:
                 # Allow literal_eval in settings in order to pass a list from the setting
                 # This is useful if you want different values and labels for the select options

@@ -36,6 +36,8 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.decorators import is_enabled
+
 
 from tendenci.apps.corporate_memberships.models import (
                                             CorpMembershipApp,
@@ -87,7 +89,7 @@ from tendenci.apps.profiles.models import Profile
 #from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.site_settings.utils import get_setting
 
-
+@is_enabled('corporate_memberships')
 @staff_member_required
 def free_passes_list(request,
     template='corporate_memberships/reports/free_passes_list.html'):
@@ -103,6 +105,7 @@ def free_passes_list(request,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @staff_member_required
 def free_passes_edit(request, id,
             template='corporate_memberships/free_passes_edit.html'):
@@ -126,6 +129,8 @@ def free_passes_edit(request, id,
                'form': form}
     return render_to_response(template, context, RequestContext(request))
 
+
+@is_enabled('corporate_memberships')
 @csrf_exempt
 @login_required
 def get_app_fields_json(request):
@@ -141,6 +146,7 @@ def get_app_fields_json(request):
     return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def app_preview(request, slug,
                     template='corporate_memberships/applications/preview.html'):
@@ -169,6 +175,7 @@ def app_preview(request, slug,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def corpmembership_add_pre(request,
                 template='corporate_memberships/applications/add_pre.html'):
     app = CorpMembershipApp.objects.current_app()
@@ -196,6 +203,7 @@ def corpmembership_add_pre(request,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def corpmembership_add(request, slug='',
                        template='corporate_memberships/applications/add.html'):
     """
@@ -348,6 +356,7 @@ def corpmembership_add(request, slug='',
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def corpmembership_add_conf(request, id,
             template="corporate_memberships/applications/add_conf.html"):
     """
@@ -364,6 +373,7 @@ def corpmembership_add_conf(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def corpmembership_edit(request, id,
                        template='corporate_memberships/applications/edit.html'):
@@ -445,6 +455,7 @@ def corpmembership_edit(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def corpmembership_view(request, id,
                 template="corporate_memberships/applications/view.html"):
     """
@@ -554,6 +565,7 @@ def corpmembership_view(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def download_file(request, cm_id, field_id):
     """
@@ -586,6 +598,7 @@ def download_file(request, cm_id, field_id):
     raise Http404
 
 
+@is_enabled('corporate_memberships')
 def corpmembership_search(request, my_corps_only=False,
             pending_only=False,
             template_name="corporate_memberships/applications/search.html"):
@@ -702,6 +715,7 @@ def corpmembership_search(request, my_corps_only=False,
         context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def corpmembership_delete(request, id,
             template_name="corporate_memberships/applications/delete.html"):
@@ -742,6 +756,7 @@ def corpmembership_delete(request, id,
         raise Http403
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def corpmembership_approve(request, id,
                 template="corporate_memberships/applications/approve.html"):
@@ -832,6 +847,7 @@ def corpmembership_approve(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def corp_renew(request, id,
                template='corporate_memberships/renewal.html'):
@@ -991,6 +1007,7 @@ def corp_renew(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def corp_renew_conf(request, id,
                     template="corporate_memberships/renewal_conf.html"):
     corp_membership = get_object_or_404(CorpMembership, id=id)
@@ -1010,6 +1027,8 @@ def corp_renew_conf(request, id,
                }
     return render_to_response(template, context, RequestContext(request))
 
+
+@is_enabled('corporate_memberships')
 @login_required
 def roster_search(request,
                   template_name='corporate_memberships/roster_search.html'):
@@ -1122,6 +1141,7 @@ def roster_search(request,
             context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 @password_required
 def import_upload(request,
@@ -1168,6 +1188,7 @@ def import_upload(request,
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def import_preview(request, mimport_id,
                 template='corporate_memberships/imports/preview.html'):
@@ -1269,6 +1290,7 @@ def import_preview(request, mimport_id,
                 }, context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @csrf_exempt
 @login_required
 def check_preprocess_status(request, mimport_id):
@@ -1284,6 +1306,7 @@ def check_preprocess_status(request, mimport_id):
     return HttpResponse(mimport.status)
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def import_process(request, mimport_id):
     """
@@ -1311,6 +1334,7 @@ def import_process(request, mimport_id):
                                      args=[mimport.id]))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def import_status(request, mimport_id,
                     template_name='corporate_memberships/imports/status.html'):
@@ -1329,6 +1353,7 @@ def import_status(request, mimport_id,
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @csrf_exempt
 @login_required
 def import_get_status(request, mimport_id):
@@ -1354,6 +1379,7 @@ def import_get_status(request, mimport_id):
     return HttpResponse(simplejson.dumps(status_data))
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def download_template(request):
     """
@@ -1393,6 +1419,7 @@ def download_template(request):
     return render_csv(filename, title_list, [])
 
 
+@is_enabled('corporate_memberships')
 @login_required
 @password_required
 def corpmembership_export(request,
@@ -1468,6 +1495,7 @@ def corpmembership_export(request,
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
                    template_name="corporate_memberships/reps/edit.html"):
     corp_memb = get_object_or_404(CorpMembership, pk=id)
@@ -1502,6 +1530,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
         context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def corp_reps_lookup(request):
     q = request.REQUEST['term']
     #use_search_index = get_setting('site', 'global', 'searchindex')
@@ -1540,6 +1569,7 @@ def corp_reps_lookup(request):
                         mimetype='application/json')
 
 
+@is_enabled('corporate_memberships')
 @login_required
 def delete_corp_rep(request, id,
                     template_name="corporate_memberships/reps/delete.html"):
@@ -1567,6 +1597,7 @@ def delete_corp_rep(request, id,
         raise Http403
 
 
+@is_enabled('corporate_memberships')
 def index(request,
           template_name="corporate_memberships/applications/index.html"):
     corp_app = CorpMembershipApp.objects.current_app()
@@ -1576,6 +1607,7 @@ def index(request,
         context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 @staff_member_required
 def summary_report(request,
                 template_name='corporate_memberships/reports/summary.html'):
@@ -1596,6 +1628,7 @@ def summary_report(request,
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 # TO BE DELETED
 def add_pre(request, slug, template='corporate_memberships/add_pre.html'):
     corp_app = get_object_or_404(CorpApp, slug=slug)
@@ -1615,6 +1648,7 @@ def add_pre(request, slug, template='corporate_memberships/add_pre.html'):
                'corp_app': corp_app}
     return render_to_response(template, context, RequestContext(request))
 
+@is_enabled('corporate_memberships')
 def add(request, slug=None, hash=None, template="corporate_memberships/add.html"):
     """
         add a corporate membership
@@ -1745,10 +1779,12 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
     return render_to_response(template, context, RequestContext(request))
 
 
+@is_enabled('corporate_memberships')
 def search(request, template_name="corporate_memberships/search.html"):
     return HttpResponseRedirect(reverse('corpmembership.search'))
 
 
+@is_enabled('corporate_memberships')
 def reps_lookup(request):
     q = request.REQUEST['term']
     use_search_index = get_setting('site', 'global', 'searchindex')
@@ -1782,6 +1818,7 @@ def reps_lookup(request):
     return HttpResponse(simplejson.dumps(results),mimetype='application/json')
 
 
+@is_enabled('corporate_memberships')
 @staff_member_required
 def new_over_time_report(request, template_name='reports/corp_mems_over_time.html'):
     """
@@ -1797,6 +1834,8 @@ def new_over_time_report(request, template_name='reports/corp_mems_over_time.htm
         'stats':stats,
         }, context_instance=RequestContext(request))
 
+
+@is_enabled('corporate_memberships')
 @staff_member_required
 def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
     """

@@ -6,7 +6,7 @@
 {% load i18n %}
 
 {% if profile.user_id %}
-{% with profile.user.membershipdefault_set.all.0 as membership %}
+{% with profile.membership as membership %}
 
 <div class="wrap-search-item">
     <div class="" style="padding:10px;">

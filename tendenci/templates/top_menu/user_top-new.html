@@ -6,7 +6,7 @@
             <button type="button" data-toggle="collapse" data-target="#navbar-collapse-0" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="{% url "dashboard" %}" class="navbar-brand"><img class="nav-logo" src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a>
         </div>
         <div id="navbar-collapse-0" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
+            <ul class="inner-top-nav navbar-nav">
                 <li class="dropdown"><a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><span class="glyph">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
                     <ul class="dropdown-menu">
                         {% if SITE_GLOBAL_SEARCHINDEX %}
@@ -80,7 +80,7 @@
                 <li><a href="/admin/"><span class="glyph">&#83;</span>&nbsp;&nbsp;{% trans "Admin Area" %}</a></li>
                 {% endif %}
             </ul>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="inner-top-nav navbar-nav navbar-right">
                 <li>
                     <form class="navbar-form"  action="/search/" method="get" name="search" id="admin-search-box" role="search">
                         <div class="form-group">

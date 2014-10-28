@@ -257,6 +257,12 @@ class Profile(Person):
     def get_groups(self):
         memberships = self.user.group_member.filter(group__status=True)
         return [membership.group for membership in memberships]
+    
+    @property
+    def membership(self):
+        [membership] = self.user.membershipdefault_set.exclude(
+                    status_detail='archive').order_by('-create_dt')[:1] or [None]
+        return membership
 
     def refresh_member_number(self):
         """

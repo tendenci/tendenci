@@ -831,5 +831,22 @@
         "scope_category": "global",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "US",
+        "description": "Enter the Country of your site.",
+        "data_type": "string",
+        "update_dt": "2010-08-12 17:19:13",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "defaultcountry",
+        "value": "US",
+        "label": "Country",
+        "input_value": "<country_list>",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
     }
 ]
