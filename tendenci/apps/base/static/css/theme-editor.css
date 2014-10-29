@@ -120,6 +120,7 @@ textarea{
      font-size: 10pt;
      font-family: monospace;
      padding-top: .4em;
+     line-height: 15px;
 }
 
 #file_version_box {
