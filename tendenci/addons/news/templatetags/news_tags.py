@@ -31,6 +31,15 @@ def news_search(context):
     return context
 
 
+@register.inclusion_tag("news/top_nav_items.html", takes_context=True)
+def news_current_app(context, user, news=None):
+    context.update({
+        "app_object": news,
+        "user": user
+    })
+    return context
+
+
 class ListNewsNode(ListNode):
     model = News
     perms = 'news.view_news'
