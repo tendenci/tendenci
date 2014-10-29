@@ -32,6 +32,15 @@ def forms_search(context):
     return context
 
 
+@register.inclusion_tag("forms/top_nav_items.html", takes_context=True)
+def form_current_app(context, user, form=None):
+    context.update({
+        "app_object": form,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("forms/entry_options.html", takes_context=True)
 def forms_entry_options(context, user, entry):
     context.update({
