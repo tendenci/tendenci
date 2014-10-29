@@ -29,6 +29,15 @@ def file_search(context):
     return context
 
 
+@register.inclusion_tag("files/top_nav_items.html", takes_context=True)
+def file_current_app(context, user, file=None):
+    context.update({
+        "app_object": file,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("files/thumbnail.html", takes_context=True)
 def file_thumbnail(context, layout, file_obj):
     use_image = False
