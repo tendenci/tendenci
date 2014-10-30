@@ -319,7 +319,7 @@ LANGUAGES = sorted(global_settings.LANGUAGES + tuple([
 # DEBUG TOOLBAR
 #--------------------------------------------------
 INTERNAL_IPS = ('127.0.0.1', '192.168.0.1', '10.1.0.0', '10.1.4.0',)
-DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS': False,}
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
 # -------------------------------------- #
 # THEMES

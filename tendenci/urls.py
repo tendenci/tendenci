@@ -183,3 +183,9 @@ pattern_pages = patterns('',
     url(r'^(?P<slug>[\w\-\/]+)/$', 'tendenci.apps.pages.views.index', name="page"),
 )
 urlpatterns += pattern_pages
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )
