@@ -9,61 +9,43 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        # Changing field 'Box.status'
-        db.alter_column(u'boxes_box', 'status', self.gf('django.db.models.fields.NullBooleanField')(null=True))
+        # Changing field 'Education.allow_user_view'
+        db.alter_column(u'educations_education', 'allow_user_view', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
-        # Changing field 'Box.creator'
-        db.alter_column(u'boxes_box', 'creator_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, on_delete=models.SET_NULL, to=orm['auth.User']))
+        # Changing field 'Education.allow_member_edit'
+        db.alter_column(u'educations_education', 'allow_member_edit', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
-        # Changing field 'Box.allow_user_edit'
-        db.alter_column(u'boxes_box', 'allow_user_edit', self.gf('django.db.models.fields.NullBooleanField')(null=True))
+        # Changing field 'Education.allow_anonymous_view'
+        db.alter_column(u'educations_education', 'allow_anonymous_view', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
-        # Changing field 'Box.allow_user_view'
-        db.alter_column(u'boxes_box', 'allow_user_view', self.gf('django.db.models.fields.NullBooleanField')(null=True))
+        # Changing field 'Education.status'
+        db.alter_column(u'educations_education', 'status', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
-        # Changing field 'Box.allow_member_view'
-        db.alter_column(u'boxes_box', 'allow_member_view', self.gf('django.db.models.fields.NullBooleanField')(null=True))
+        # Changing field 'Education.allow_user_edit'
+        db.alter_column(u'educations_education', 'allow_user_edit', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
-        # Changing field 'Box.entity'
-        db.alter_column(u'boxes_box', 'entity_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, to=orm['entities.Entity'], null=True))
-
-        # Changing field 'Box.allow_member_edit'
-        db.alter_column(u'boxes_box', 'allow_member_edit', self.gf('django.db.models.fields.NullBooleanField')(null=True))
-
-        # Changing field 'Box.owner'
-        db.alter_column(u'boxes_box', 'owner_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, on_delete=models.SET_NULL, to=orm['auth.User']))
-
-        # Changing field 'Box.allow_anonymous_view'
-        db.alter_column(u'boxes_box', 'allow_anonymous_view', self.gf('django.db.models.fields.NullBooleanField')(null=True))
+        # Changing field 'Education.allow_member_view'
+        db.alter_column(u'educations_education', 'allow_member_view', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
     def backwards(self, orm):
 
-        # Changing field 'Box.status'
-        db.alter_column(u'boxes_box', 'status', self.gf('django.db.models.fields.BooleanField')())
+        # Changing field 'Education.allow_user_view'
+        db.alter_column(u'educations_education', 'allow_user_view', self.gf('django.db.models.fields.BooleanField')())
 
-        # Changing field 'Box.creator'
-        db.alter_column(u'boxes_box', 'creator_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
+        # Changing field 'Education.allow_member_edit'
+        db.alter_column(u'educations_education', 'allow_member_edit', self.gf('django.db.models.fields.BooleanField')())
 
-        # Changing field 'Box.allow_user_edit'
-        db.alter_column(u'boxes_box', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')())
+        # Changing field 'Education.allow_anonymous_view'
+        db.alter_column(u'educations_education', 'allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')())
 
-        # Changing field 'Box.allow_user_view'
-        db.alter_column(u'boxes_box', 'allow_user_view', self.gf('django.db.models.fields.BooleanField')())
+        # Changing field 'Education.status'
+        db.alter_column(u'educations_education', 'status', self.gf('django.db.models.fields.BooleanField')())
 
-        # Changing field 'Box.allow_member_view'
-        db.alter_column(u'boxes_box', 'allow_member_view', self.gf('django.db.models.fields.BooleanField')())
+        # Changing field 'Education.allow_user_edit'
+        db.alter_column(u'educations_education', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')())
 
-        # Changing field 'Box.entity'
-        db.alter_column(u'boxes_box', 'entity_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['entities.Entity']))
-
-        # Changing field 'Box.allow_member_edit'
-        db.alter_column(u'boxes_box', 'allow_member_edit', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Box.owner'
-        db.alter_column(u'boxes_box', 'owner_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
-
-        # Changing field 'Box.allow_anonymous_view'
-        db.alter_column(u'boxes_box', 'allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')())
+        # Changing field 'Education.allow_member_view'
+        db.alter_column(u'educations_education', 'allow_member_view', self.gf('django.db.models.fields.BooleanField')())
 
     models = {
         u'auth.group': {
@@ -95,34 +77,37 @@ class Migration(SchemaMigration):
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
-        u'boxes.box': {
-            'Meta': {'ordering': "['position']", 'object_name': 'Box'},
-            'allow_anonymous_view': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
-            'allow_member_edit': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
-            'allow_member_view': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
-            'allow_user_edit': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
-            'allow_user_view': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
-            'content': ('tinymce.models.HTMLField', [], {}),
-            'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "u'boxes_box_creator'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': u"orm['auth.User']"}),
-            'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'boxes_box_entity'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': u"orm['entities.Entity']", 'blank': 'True', 'null': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "u'boxes_box_owner'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': u"orm['auth.User']"}),
-            'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'position': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
-            'status': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
-            'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
-            'tags': ('tagging.fields.TagField', [], {}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'blank': 'True'}),
-            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
-        },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'educations.education': {
+            'Meta': {'object_name': 'Education'},
+            'allow_anonymous_view': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
+            'allow_member_edit': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'allow_member_view': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'allow_user_edit': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'allow_user_view': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "u'educations_education_creator'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': u"orm['auth.User']"}),
+            'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'degree': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'educations_education_entity'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': u"orm['entities.Entity']", 'blank': 'True', 'null': 'True'}),
+            'graduation_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'graduation_year': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'major': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "u'educations_education_owner'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': u"orm['auth.User']"}),
+            'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'school': ('django.db.models.fields.CharField', [], {'max_length': '350'}),
+            'status': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
+            'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
+            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'educations'", 'to': u"orm['auth.User']"})
         },
         u'entities.entity': {
             'Meta': {'ordering': "('entity_name',)", 'object_name': 'Entity'},
@@ -156,4 +141,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['boxes']
+    complete_apps = ['educations']

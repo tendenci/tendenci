@@ -39,6 +39,9 @@ class Migration(SchemaMigration):
         # Changing field 'Profile.remember_login'
         db.alter_column(u'profiles_profile', 'remember_login', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
+        # Changing field 'Profile.allow_user_edit'
+        db.alter_column(u'profiles_profile', 'allow_user_edit', self.gf('django.db.models.fields.NullBooleanField')(null=True))
+
         # Changing field 'Profile.agreed_to_tos'
         db.alter_column(u'profiles_profile', 'agreed_to_tos', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
@@ -47,9 +50,6 @@ class Migration(SchemaMigration):
 
         # Changing field 'Profile.hide_phone'
         db.alter_column(u'profiles_profile', 'hide_phone', self.gf('django.db.models.fields.NullBooleanField')(null=True))
-
-        # Changing field 'Profile.allow_user_edit'
-        db.alter_column(u'profiles_profile', 'allow_user_edit', self.gf('django.db.models.fields.NullBooleanField')(null=True))
 
         # Changing field 'Profile.allow_member_view'
         db.alter_column(u'profiles_profile', 'allow_member_view', self.gf('django.db.models.fields.NullBooleanField')(null=True))
@@ -92,6 +92,9 @@ class Migration(SchemaMigration):
         # Changing field 'Profile.remember_login'
         db.alter_column(u'profiles_profile', 'remember_login', self.gf('django.db.models.fields.BooleanField')())
 
+        # Changing field 'Profile.allow_user_edit'
+        db.alter_column(u'profiles_profile', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')())
+
         # Changing field 'Profile.agreed_to_tos'
         db.alter_column(u'profiles_profile', 'agreed_to_tos', self.gf('django.db.models.fields.BooleanField')())
 
@@ -100,9 +103,6 @@ class Migration(SchemaMigration):
 
         # Changing field 'Profile.hide_phone'
         db.alter_column(u'profiles_profile', 'hide_phone', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Profile.allow_user_edit'
-        db.alter_column(u'profiles_profile', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')())
 
         # Changing field 'Profile.allow_member_view'
         db.alter_column(u'profiles_profile', 'allow_member_view', self.gf('django.db.models.fields.BooleanField')())
@@ -184,6 +184,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Profile'},
             'address': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
             'address2': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '100', 'blank': 'True'}),
+            'address2_2': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '100', 'blank': 'True'}),
+            'address_2': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
             'address_type': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'admin_notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'agreed_to_tos': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
@@ -193,9 +195,12 @@ class Migration(SchemaMigration):
             'allow_user_edit': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'allow_user_view': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'city_2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'company': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'country_2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'county': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'county_2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'profiles_profile_creator'", 'to': u"orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -221,6 +226,7 @@ class Migration(SchemaMigration):
             'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '10'}),
             'mailing_name': ('django.db.models.fields.CharField', [], {'max_length': '120', 'blank': 'True'}),
             'member_number': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'member_number_2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'mobile_phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'original_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -230,7 +236,7 @@ class Migration(SchemaMigration):
             'phone2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'pl_id': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'position_assignment': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'position_title': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'position_title': ('django.db.models.fields.CharField', [], {'max_length': '250', 'blank': 'True'}),
             'referral_source': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'remember_login': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'salutation': ('django.db.models.fields.CharField', [], {'max_length': '15', 'blank': 'True'}),
@@ -239,16 +245,19 @@ class Migration(SchemaMigration):
             'spouse': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'ssn': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'state_2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'status': ('django.db.models.fields.NullBooleanField', [], {'default': 'True', 'null': 'True', 'blank': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'student': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'time_zone': ('timezones.fields.TimeZoneField', [], {'default': "'US/Central'", 'max_length': '100'}),
+            'total_spend': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '16', 'decimal_places': '4'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'url': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'url2': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"}),
             'work_phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'zipcode': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
+            'zipcode': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'zipcode_2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
         },
         u'profiles.userimport': {
             'Meta': {'object_name': 'UserImport'},
