@@ -28,6 +28,15 @@ def discount_search(context):
     return context
 
 
+@register.inclusion_tag("discounts/top_nav_items.html", takes_context=True)
+def discount_current_app(context, user, discount=None):
+    context.update({
+        "app_object": discount,
+        "user": user
+    })
+    return context
+
+
 @register.simple_tag
 def discount_expiration(obj):
     t = '<span class="status-%s">%s</span>'
