@@ -1,0 +1,46 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+{% load url from future %}
+
+{% has_perm request.user site_settings.change_setting as can_edit_setting %}
+
+{% if app_object %}
+    {% has_perm request.user invoices.view_invoice app_object as can_view_invoice %}
+{% endif %}
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-sm-6 col-xs-8">
+                    {% if app_object %}
+                    <li><span class="content-head">{% trans "All Invoices" %}</span></li>
+                    {% endif %}
+                    {% if can_edit_setting %}
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'settings.index' 'module' 'invoices' %}">{% trans "Settings" %}</a></span></li>
+                    {% endif %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'invoice.search' %}">{% trans "Search Invoices" %}</a></span></li>
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'invoice.export' %}">{% trans "Export Invoices" %}</a></span></li>
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'reports-top-spenders' %}">{% trans "Top Spenders Report" %}</a></span></li>
+                    {% endif %}
+                </ul>
+                {% if app_object %}
+                {% if can_view_invoice %}
+                <ul class="list-unstyled col-sm-6 col-xs-8">
+                    <li><span class="content-head">{% trans "This Invoice" %}</span></li>
+                    {% if can_view_invoice %}
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'invoice.view' app_object.pk %}">{% trans "View Invoice" %}</a></span></li>
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'invoice.print_view' app_object.id guid %}">{% trans "Print Invoice" %}</a></span></li>
+                        {% if invoice.is_tendered %}
+                            <li class="content-item"><span class="app-name pull-left"><a href="{% url 'invoice.adjust' app_object.id %}">{% trans "Adjust Invoice" %}</a></span></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

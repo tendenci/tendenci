@@ -52,6 +52,16 @@ def invoices_search_line_header(context, request, invoice, obj_color):
 def invoice_search(context):
     return context
 
+
+@register.inclusion_tag("invoices/top_nav_items.html", takes_context=True)
+def invoice_current_app(context, user, invoice=None):
+    context.update({
+        "app_object": invoice,
+        "user": user
+    })
+    return context
+
+
 # display object on invoice view
 @register.inclusion_tag("invoices/object_display.html")
 def invoice_object_display(request, invoice):
