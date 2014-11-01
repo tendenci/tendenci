@@ -38,6 +38,15 @@ def stories_search(context):
     return context
 
 
+@register.inclusion_tag("stories/top_nav_items.html", takes_context=True)
+def story_current_app(context, user, story=None):
+    context.update({
+        "app_object": story,
+        "user": user
+    })
+    return context
+
+
 @register.simple_tag
 def story_expiration(obj):
     t = '<span class="expires-%s">%s</span>'
