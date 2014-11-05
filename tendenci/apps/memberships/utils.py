@@ -482,7 +482,11 @@ def process_export(
                     item = ''
                 if item:
                     if isinstance(item, datetime):
-                        item = item.strftime('%Y-%m-%d %H:%M:%S')
+                        # strftime will throw an error if year is before 1900
+                        if item.year < 1900:
+                            item = '1900-1-1 00:00:00'
+                        else:
+                            item = item.strftime('%Y-%m-%d %H:%M:%S')
                     elif isinstance(item, date):
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
