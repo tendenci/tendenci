@@ -25,6 +25,9 @@
     <link href="{{ STATIC_URL }}css/announcements.css" rel="stylesheet" type="text/css" />
     {% block extra_head %}{% endblock %}
     <link href="{{ STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />
+    {% if SITE_GLOBAL_OVERRIDEBOOTSTRAPCSS %}
+    <link href="{{ STATIC_URL }}css/override.bootstrap.css" rel="stylesheet" type="text/css" />
+    {% endif %}
     {% if request.user.is_authenticated %}
         {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
         <link rel="stylesheet" href="{{ STATIC_URL }}yamm/yamm.css">
