@@ -21,3 +21,12 @@ def resume_nav(context, user, resume=None):
 @register.inclusion_tag("resumes/search-form.html", takes_context=True)
 def resume_search(context):
     return context
+
+
+@register.inclusion_tag("resumes/top_nav_items.html", takes_context=True)
+def resume_current_app(context, user, resume=None):
+    context.update({
+        "app_object": resume,
+        "user": user
+    })
+    return context
