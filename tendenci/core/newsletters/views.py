@@ -33,6 +33,14 @@ class NewsletterGeneratorView(TemplateView):
         return context
 
 
+class NewsletterGeneratorOrigView(TemplateView):
+    template_name = "newsletters/add.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
+        return context
+
+
 def generate(request):
     """
     Newsletter generator form
