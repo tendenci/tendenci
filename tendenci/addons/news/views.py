@@ -7,7 +7,6 @@ from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
 
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
@@ -127,7 +126,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             if thumbnail:
                 thumbnail.status_detail = news.status_detail
                 thumbnail.save()
-            msg_string = 'Successfully updated %s' % force_unicode(news)
+            msg_string = 'Successfully updated %s' % unicode(news)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
@@ -157,7 +156,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         if form.is_valid():
             news.meta = form.save()  # save meta
             news.save()  # save relationship
-            msg_string = 'Successfully updated meta for %s' % force_unicode(news)
+            msg_string = 'Successfully updated meta for %s' % unicode(news)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
@@ -189,7 +188,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
                 news.save(photo=photo)
                 assign_files_perms(news, files=[news.thumbnail])
 
-            msg_string = 'Successfully added %s' % force_unicode(news)
+            msg_string = 'Successfully added %s' % unicode(news)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
@@ -220,7 +219,7 @@ def delete(request, id, template_name="news/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        msg_string = 'Successfully deleted %s' % force_unicode(news)
+        msg_string = 'Successfully deleted %s' % unicode(news)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         # send notification to administrators

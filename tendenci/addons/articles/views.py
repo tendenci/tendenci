@@ -17,8 +17,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
-
 
 from tendenci.core.base.http import Http403
 from tendenci.core.perms.decorators import is_enabled
@@ -206,7 +204,7 @@ def edit(request, id, form_class=ArticleForm,
 
                 # update all permissions and save the model
                 update_perms_and_save(request, form, article)
-                msg_string = 'Successfully updated %s' % force_unicode(article)
+                msg_string = 'Successfully updated %s' % unicode(article)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
@@ -256,7 +254,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         if form.is_valid():
             article.meta = form.save()  # save meta
             article.save()  # save relationship
-            msg_string = 'Successfully updated meta for %s' % force_unicode(article)
+            msg_string = 'Successfully updated meta for %s' % unicode(article)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('article', args=[article.slug]))
@@ -290,7 +288,7 @@ def add(request, form_class=ArticleForm,
 
                 # add all permissions and save the model
                 update_perms_and_save(request, form, article)
-                msg_string = 'Successfully added %s' % force_unicode(article)
+                msg_string = 'Successfully added %s' % unicode(article)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 # send notification to administrator(s) and module recipient(s)
@@ -328,7 +326,7 @@ def delete(request, id, template_name="articles/delete.html"):
 
     if has_perm(request.user, 'articles.delete_article'):
         if request.method == "POST":
-            msg_string = 'Successfully deleted %s' % force_unicode(article)
+            msg_string = 'Successfully deleted %s' % unicode(article)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
