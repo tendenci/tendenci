@@ -26,8 +26,8 @@
                 &nbsp;<label>Send To:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
             </p>
              <div class="input-wrapper">
-                {# commenting it out for now. will add back later when membership is available: <p><strong>{% trans "Send to Members Only?" %}</strong> {{ form.member_only }} {% trans "If checked, skip user group" %}</p>#}
-                <p><strong>{% trans "User group" %}</strong> {{ form.group }}</p>
+                {% comment %}commenting it out for now. will add back later when membership is available:{% endcomment %} <p><strong>{% trans "Send to Members Only?" %}</strong> {{ form.member_only }} {% trans "If checked, skip user group" %}</p>
+                <p><strong>{% trans "Usergroup" %}</strong> {{ form.group }}</p>
                 <p>{% trans "Include email2?" %} {{ form.send_to_email2 }}
                 {% trans "Yes, send to user's second email address" %}
                 </p>

@@ -4,6 +4,7 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from tendenci.addons.campaign_monitor.models import Template
 from tendenci.core.newsletters.models import NewsletterTemplate
+from tendenci.apps.user_groups.models import Group
 
 THIS_YEAR = datetime.date.today().year
 DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
@@ -13,6 +14,12 @@ DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
 INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
 types_list = [(u'',_(u'All'))]
+
+"""
+Choices for Old Form (t4 version)
+"""
+
+
 try:
     from tendenci.addons.events.models import Type
     types = Type.objects.all()
@@ -48,3 +55,14 @@ class GenerateForm(forms.Form):
 
     #Campaign Monitor Template
     template = forms.ModelChoiceField(queryset=NewsletterTemplate.objects.all())
+
+
+class OldGenerateForm(forms.Form):
+    # step 1
+    member_only = forms.BooleanField()
+    send_to_email2 = forms.BooleanField()
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, empty_label='SELECT ONE')
+    subject = forms.CharField(widget=forms.TextInput(attrs={'size': 50}), required=True)
+    personalize_subject_first_name = forms.BooleanField()
+    personalize_subject_last_name = forms.BooleanField()
+    pass

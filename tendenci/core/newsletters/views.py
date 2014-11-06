@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from tendenci.core.base.http import Http403
 from tendenci.core.newsletters.utils import apply_template_media
 from tendenci.core.newsletters.models import NewsletterTemplate
-from tendenci.core.newsletters.forms import GenerateForm
+from tendenci.core.newsletters.forms import GenerateForm, OldGenerateForm
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
@@ -19,6 +19,7 @@ from tendenci.core.newsletters.utils import (
     newsletter_pages_list,
     newsletter_events_list)
 from tendenci.core.perms.utils import has_perm
+from tendenci.core.site_settings.utils import get_setting
 
 
 class NewsletterGeneratorView(TemplateView):
@@ -35,6 +36,26 @@ class NewsletterGeneratorView(TemplateView):
 
 class NewsletterGeneratorOrigView(TemplateView):
     template_name = "newsletters/add.html"
+    form_class = OldGenerateForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+
+        site_name = get_setting('site', 'global', 'sitedisplayname')
+        date_string = datetime.datetime.now().strftime("%d-%b-%Y")
+        subject_initial = site_name + ' Newsletter ' + date_string
+        form.initial = {'subject': subject_initial}
+
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            # <process form cleaned data>
+            # return HttpResponseRedirect('/success/')
+            pass
+
+        return render(request, self.template_name, {'form': form})
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
