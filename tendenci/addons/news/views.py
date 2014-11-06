@@ -157,7 +157,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         if form.is_valid():
             news.meta = form.save()  # save meta
             news.save()  # save relationship
-            msg_string = 'Successfully updated meta for %s' % news
+            msg_string = 'Successfully updated meta for %s' % force_unicode(news)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
@@ -220,7 +220,7 @@ def delete(request, id, template_name="news/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        msg_string = 'Successfully deleted %s' % news
+        msg_string = 'Successfully deleted %s' % force_unicode(news)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         # send notification to administrators

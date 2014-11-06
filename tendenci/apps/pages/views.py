@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_unicode
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import template_exists, checklist_update
@@ -193,7 +194,7 @@ def edit(request, id, form_class=PageForm,
                 checklist_update('update-about')
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully updated %(p)s' % {'p':page}))
+                                 _('Successfully updated %(p)s' % {'p': force_unicode(page)}))
 
             if not request.user.profile.is_superuser:
                 # send notification to administrators
@@ -265,7 +266,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
             page.save()  # save relationship
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully updated meta for %(p)s' % {'p':page}))
+                                 _('Successfully updated meta for %(p)s' % {'p': force_unicode(page)}))
 
             return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
@@ -376,7 +377,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
             page = update_perms_and_save(request, form, page)
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully added %(p)s' % {'p': page}))
+                                 _('Successfully added %(p)s' % {'p': force_unicode(page)}))
 
             checklist_update('add-page')
 
@@ -426,7 +427,7 @@ def delete(request, id, template_name="pages/delete.html"):
     if request.method == "POST":
         EventLog.objects.log(instance=page)
         messages.add_message(request, messages.SUCCESS,
-                             _('Successfully deleted %(p)s' % { 'p': page}))
+                             _('Successfully deleted %(p)s' % { 'p': force_unicode(page)}))
 
         # send notification to administrators
         recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
