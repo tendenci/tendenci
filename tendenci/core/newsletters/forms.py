@@ -58,11 +58,29 @@ class GenerateForm(forms.Form):
 
 
 class OldGenerateForm(forms.Form):
-    # step 1
+    ### step 1 ###
+
+    # recipient, subject fields
     member_only = forms.BooleanField()
     send_to_email2 = forms.BooleanField()
     group = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, empty_label='SELECT ONE')
     subject = forms.CharField(widget=forms.TextInput(attrs={'size': 50}), required=True)
     personalize_subject_first_name = forms.BooleanField()
     personalize_subject_last_name = forms.BooleanField()
+    include_login = forms.BooleanField()
+
+    # module content
+    jump_links = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
+    events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
+    event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
+    event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
+    events_type = forms.ChoiceField(initial='', choices=TYPE_CHOICES, required=False)
+    articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
+    articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
+    news = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
+    news_days = forms.ChoiceField(initial=30, choices=DAYS_CHOICES)
+    jobs = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
+    jobs_days = forms.ChoiceField(initial=30, choices=DAYS_CHOICES)
+    pages = forms.ChoiceField(initial=0, choices=INCLUDE_CHOICES)
+    pages_days = forms.ChoiceField(initial=7, choices=DAYS_CHOICES)
     pass
