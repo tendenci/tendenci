@@ -331,7 +331,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, form, photo)
 
-                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': photo.title}) )
+                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': unicode(photo)}) )
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
             form = form_class(instance=photo, user=request.user)
@@ -359,7 +359,7 @@ def delete(request, id, set_id=0):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title':photo.title}))
+        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title': unicode(photo)}))
 
         photo.delete()
 

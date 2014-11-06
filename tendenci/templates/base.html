@@ -94,11 +94,11 @@
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 {% endblock jquery_script %}
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('#lang-menu a').click(function(e){
-            var lang = $(this).data('lang');
-            $('#lang-form #lang-id_language').attr('value', lang);
-            $('#lang-form').submit();
+    jQuery(document).ready(function () {
+        jQuery('#lang-menu a').click(function(e){
+            var lang = jQuery(this).data('lang');
+            jQuery('#lang-form #lang-id_language').attr('value', lang);
+            jQuery('#lang-form').submit();
         });
     });
 </script>
