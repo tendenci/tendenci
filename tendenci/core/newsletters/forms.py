@@ -13,6 +13,8 @@ DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
                 )
 INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
+FORMAT_CHOICES = ((1, 'Detailed - original format View Example'), (0, 'Simplified - removes AUTHOR, POSTED BY, RELEASES DATE, etc from the detailed format View Example'))
+
 types_list = [(u'',_(u'All'))]
 
 """
@@ -83,4 +85,6 @@ class OldGenerateForm(forms.Form):
     jobs_days = forms.ChoiceField(initial=30, choices=DAYS_CHOICES)
     pages = forms.ChoiceField(initial=0, choices=INCLUDE_CHOICES)
     pages_days = forms.ChoiceField(initial=7, choices=DAYS_CHOICES)
-    pass
+
+    # format
+    format = forms.ChoiceField(choices=FORMAT_CHOICES, widget=forms.RadioSelect)

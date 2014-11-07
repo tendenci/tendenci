@@ -46,7 +46,9 @@ class NewsletterGeneratorOrigView(TemplateView):
         subject_initial = site_name + ' Newsletter ' + date_string
         form.initial = {'subject': subject_initial}
 
-        return render(request, self.template_name, {'form': form})
+        context = self.get_context_data()
+        context['form'] = form
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -59,6 +61,14 @@ class NewsletterGeneratorOrigView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
+
+        # Not sure how to differentiate templates for site and tendenci default templates
+        templates = NewsletterTemplate.objects.all()
+        default_templates = NewsletterTemplate.objects.all()
+        print templates
+        context['templates'] = templates
+        context['default_templates'] = default_templates
+
         return context
 
 

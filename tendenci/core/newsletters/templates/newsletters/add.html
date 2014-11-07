@@ -136,7 +136,9 @@
                 {% for template in templates %}
                     <li>
                     <input name="template" value="{{ template }}" type="radio"  {% if template = template_selected %}checked="checked" {% endif %} />
-                    <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+                    <a href="{% url newsletter.template_content template.pk %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+                    {% comment %}Not sure how to present this url properly
+                    <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>{% endcomment %}
                     </li>
                 {% endfor %}
                 </ul>
@@ -149,7 +151,9 @@
             {% for template in default_templates %}
                 <li>
                 <input name="template" value="{{ template }}" type="radio" {% if template = template_selected %}checked="checked" {% endif %} />
-                <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>
+                <a href="{% url newsletter.template_content template.pk %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+                {% comment %}Not sure how to present this url properly
+                <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>{% endcomment %}
                 </li>
             {% endfor %}
             </ul>
