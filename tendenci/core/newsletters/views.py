@@ -72,6 +72,10 @@ class NewsletterGeneratorOrigView(TemplateView):
         return context
 
 
+class NewsletterGeneratorOrigStep2View(TemplateView):
+    template_name = 'newsletters/add2.html'
+
+
 def generate(request):
     """
     Newsletter generator form

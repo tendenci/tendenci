@@ -1,0 +1,29 @@
+{% extends "newsletters/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/newsletters.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ <div id="t-newsletters">
+   <div id="t-add">
+        <h1>{% trans 'Generate Tendenci Newsletter '%}</h1>
+
+
+   </div>
+ </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% endblock %}
