@@ -3,7 +3,7 @@
 {% load base_filters %}
 
 {% block title %}
-{{ block.super }}{% trans 'Tendenci Newsletter Generator'%}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator - Marketing Action'%}
 {% endblock %}
 
 {% block extra_head %}
@@ -15,7 +15,9 @@
 <div class="t">
  <div id="t-newsletters">
    <div id="t-add">
-        <h1>{% trans 'Generate Tendenci Newsletter '%}</h1>
+        <h1>{% Marketing Actions '%}</h1>
+
+        <p>{{ request.user.profile.get_name }}</p>
 
 
    </div>

@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -5,6 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.core.files.models import file_directory
 from tendenci.core.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
+
+from tinymce import models as tinymce_models
 
 
 class NewsletterTemplate(models.Model):
@@ -63,3 +70,32 @@ class NewsletterTemplate(models.Model):
             set_s3_file_permission(self.zip_file.file, public=True)
         #extract and serve files in zip
         extract_files(self)
+
+
+class Newsletter(models.Model):
+    subject = models.CharField(max_length=255, null=True, blank=True)
+    content = tinymce_models.HTMLField()
+
+    # recipient, subject fields
+    member_only = models.BooleanField(default=False)
+    send_to_email2 = models.BooleanField(default=False)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+    include_login = models.BooleanField()
+
+    # module content
+    jump_links = models.IntegerField(default=1)
+    events =  models.IntegerField(default=1)
+    event_start_dt = models.DateField()
+    event_end_dt = models.DateField()
+    events_type = models.IntegerField(default=1, null=True, blank=True)
+    articles = models.IntegerField(default=1)
+    articles_days = models.IntegerField(default=60)
+    news = models.IntegerField(default=1)
+    news_days = models.IntegerField(default=30)
+    jobs = models.IntegerField(default=1)
+    jobs_days = models.IntegerField(default=30)
+    pages = models.IntegerField(default=0)
+    pages_days = models.IntegerField(default=7)
+
+    # format
+    format = models.IntegerField(default=0)

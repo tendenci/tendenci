@@ -6,6 +6,8 @@ from tendenci.addons.campaign_monitor.models import Template
 from tendenci.core.newsletters.models import NewsletterTemplate
 from tendenci.apps.user_groups.models import Group
 
+from .models import Newsletter
+
 THIS_YEAR = datetime.date.today().year
 DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
                 (14,'14'), (30,'30'), (60,'60'), (90,'90'),
@@ -88,3 +90,18 @@ class OldGenerateForm(forms.Form):
 
     # format
     format = forms.ChoiceField(choices=FORMAT_CHOICES, widget=forms.RadioSelect)
+
+    def generate_newsletter(self, template):
+        data = self.cleaned_data
+        subject = ''
+        subj = data.get('subject', '')
+        inc_last_name = data.get('personalize_subject_last_name')
+        inc_first_name = data.get('personalize_subject_first_name')
+
+        if inc_first_name and not inc_last_name:
+            subject = '[firstname] ' + subj
+        elif inc_last_name and not inc_first_name:
+            subject = '[lastname] ' + subj
+        elif inc_first_name and inc_last_name:
+            subject = '[firstname] [lastname] ' + subj
+
