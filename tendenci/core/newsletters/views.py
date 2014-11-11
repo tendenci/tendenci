@@ -61,13 +61,8 @@ class NewsletterGeneratorOrigView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
-
-        # Not sure how to differentiate templates for site and tendenci default templates
         templates = NewsletterTemplate.objects.all()
-        default_templates = NewsletterTemplate.objects.all()
-        print templates
         context['templates'] = templates
-        context['default_templates'] = default_templates
 
         return context
 
@@ -212,3 +207,10 @@ def template_view(request, template_id, render=True):
             'content': content,
             'template': template},
             context_instance=RequestContext(request))
+
+
+def default_template_view(request):
+    template_name = request.GET.get('template_name', '')
+    if not template_name:
+        raise Http404
+    return render (request, template_name)

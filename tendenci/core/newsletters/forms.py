@@ -19,6 +19,17 @@ FORMAT_CHOICES = ((1, 'Detailed - original format View Example'), (0, 'Simplifie
 
 types_list = [(u'',_(u'All'))]
 
+DEFAULT_TEMPLATE_CHOICES = (
+    ('newsletters/templates/default/Big City Newsletter.html', 'Big City Newsletter'),
+    ('newsletters/templates/default/Holiday Night Lights Newsletter.html', 'Holiday Night Lights Newsletter'),
+    ('newsletters/templates/default/One Column With Header.html', 'One Column With Header'),
+    ('newsletters/templates/default/Seagulls Newsletter.html', 'Seagulls Newsletter'),
+    ('newsletters/templates/default/Subway Line Newsletter.html', 'Subway Line Newsletter'),
+    ('newsletters/templates/default/Two Column Left Newsletter.html', 'Two Column Left Newsletter'),
+    ('newsletters/templates/default/Two Column Left Sidebar.html', 'Two Column Left Sidebar'),
+    ('newsletters/templates/default/Two Column Right Sidebar.html', 'Two Column Right Sidebar'),
+)
+
 """
 Choices for Old Form (t4 version)
 """
@@ -87,6 +98,9 @@ class OldGenerateForm(forms.Form):
     jobs_days = forms.ChoiceField(initial=30, choices=DAYS_CHOICES)
     pages = forms.ChoiceField(initial=0, choices=INCLUDE_CHOICES)
     pages_days = forms.ChoiceField(initial=7, choices=DAYS_CHOICES)
+
+    #template
+    template = forms.ChoiceField(choices=DEFAULT_TEMPLATE_CHOICES, widget=forms.RadioSelect)
 
     # format
     format = forms.ChoiceField(choices=FORMAT_CHOICES, widget=forms.RadioSelect)

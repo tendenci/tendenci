@@ -8,4 +8,6 @@ urlpatterns = patterns('tendenci.core.newsletters.views',
     url(r'^newsletters/templates/(?P<template_id>[\w\-\/]+)/render/$', 'template_view', name="newsletter.template_render"),
     url(r'^newsletters/templates/(?P<template_id>[\w\-\/]+)/content/$', 'template_view', {'render':False}, name="newsletter.template_content"),
     url(r'^newsletters/generate/$', 'generate', name="newsletter.generate"),
+    url(r'^newsletters/default_templates/view/$', 'default_template_view', name="newsletter.default_template"),
+
 )
