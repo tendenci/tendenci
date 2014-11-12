@@ -124,11 +124,10 @@
                 </div>
         <p>&nbsp;</p>
         <p><strong>{% trans "Template Selection?" %}</strong></p>
-
+        {% comment %}
         {% if form.template.errors %}
                 {{ form.template.errors }}
         {% endif %}
-
         {% if templates %}
             <h2>{% blocktrans %}Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</h2>
             <div class="template_list">
@@ -137,19 +136,20 @@
                     <li>
                     <input name="template" value="{{ template }}" type="radio"  {% if template = template_selected %}checked="checked" {% endif %} />
                     <a href="{% url newsletter.template_content template.pk %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
-                    {% comment %}Not sure how to present this url properly
-                    <a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>{% endcomment %}
                     </li>
                 {% endfor %}
                 </ul>
             </div>
         {% endif %}
+        {% endcomment %}
 
         <h2>{% trans "Tendenci Default Templates" %}</h2>
         <div class="template_list">
           <ul>
-            {% for choice in form.template %}
+            {% for choice in form.default_template %}
+            {% if choice.choice_value %}
             <li>{{ choice.tag }} <a href="{% url newsletter.default_template %}?template_name={{ choice.choice_value }}"><strong>{{ choice.choice_label }}</strong></a></li>
+            {% endif %}
             {% endfor %}
           </ul>
         </div>

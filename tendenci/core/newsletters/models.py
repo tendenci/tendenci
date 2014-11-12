@@ -2,11 +2,22 @@ import datetime
 
 from django.conf import settings
 from django.db import models
+from django.template import Template as DTemplate
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
+from django.template import RequestContext
 
 from tendenci.core.files.models import file_directory
 from tendenci.core.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.core.newsletters.utils import apply_template_media
+
+from tendenci.core.newsletters.utils import (
+    newsletter_articles_list,
+    newsletter_jobs_list,
+    newsletter_news_list,
+    newsletter_pages_list,
+    newsletter_events_list)
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
@@ -139,8 +150,89 @@ class Newsletter(models.Model):
     pages = models.IntegerField(default=0, choices=INCLUDE_CHOICES)
     pages_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
 
-    #template
-    template = models.CharField(max_length=255, choices=DEFAULT_TEMPLATE_CHOICES)
+    # default template
+    default_template = models.CharField(max_length=255, choices=DEFAULT_TEMPLATE_CHOICES, null=True)
 
     # format
     format = models.IntegerField(default=0, choices=FORMAT_CHOICES)
+
+    def generate_newsletter(self, request):
+        # data = self.cleaned_data
+        # subject = ''
+        # subj = data.get('subject', '')
+        # inc_last_name = data.get('personalize_subject_last_name')
+        # inc_first_name = data.get('personalize_subject_first_name')
+
+        # if inc_first_name and not inc_last_name:
+        #     subject = '[firstname] ' + subj
+        # elif inc_last_name and not inc_first_name:
+        #     subject = '[lastname] ' + subj
+        # elif inc_first_name and inc_last_name:
+        #     subject = '[firstname] [lastname] ' + subj
+
+        # request = self.request
+
+        # if not has_perm(request.user, 'newsletters.view_newslettertemplate'):
+        #     raise Http403
+
+        simplified = True if self.format == 0 else False
+        login_content = ""
+        if self.include_login:
+            login_content = render_to_string('newsletters/login.txt',
+                                             context_instance=RequestContext(request))
+
+        jumplink_content = ""
+        if self.jump_links:
+            jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
+                                                context_instance=RequestContext(request))
+
+        art_content = ""
+        if self.articles:
+            articles_list, articles_content = newsletter_articles_list(request, self.articles_days, simplified)
+
+        news_content = ""
+        if self.news:
+            news_list, news_content = newsletter_news_list(request, self.news_days, simplified)
+
+        jobs_content = ""
+        if self.jobs:
+            jobs_list, jobs_content = newsletter_jobs_list(request, self.jobs_days, simplified)
+
+        pages_content = ""
+        if self.pages:
+            pages_list, pages_content = newsletter_pages_list(request, self.pages_days, simplified)
+
+        try:
+            events_type = self.events_type
+            events_list, events_content = newsletter_events_list(
+                request,
+                start_dt=self.event_start_dt,
+                end_dt=self.event_end_dt,
+                simplified=simplified)
+
+        except ImportError:
+            events_list = []
+            events_type = None
+
+        text = DTemplate(self.default_template)
+        context = RequestContext(request,
+                {
+                    'jumplink_content': jumplink_content,
+                    'login_content': login_content,
+                    "art_content": articles_content, # legacy usage in templates
+                    "articles_content": articles_content,
+                    "articles_list": articles_list,
+                    "jobs_content": jobs_content,
+                    "jobs_list": jobs_list,
+                    "news_content": news_content,
+                    "news_list": news_list,
+                    "pages_content": pages_content,
+                    "pages_list": pages_content,
+                    "events": events_list, # legacy usage in templates
+                    "events_content": events_content,
+                    "events_list": events_list,
+                    "events_type": events_type
+                })
+        content = text.render(context)
+
+        return content

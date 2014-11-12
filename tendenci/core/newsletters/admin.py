@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.newsletters.models import NewsletterTemplate
+from tendenci.core.newsletters.models import NewsletterTemplate, Newsletter
 
 
 class NewsletterTemplateAdmin(admin.ModelAdmin):
@@ -33,3 +33,5 @@ class NewsletterTemplateAdmin(admin.ModelAdmin):
 
 
 admin.site.register(NewsletterTemplate, NewsletterTemplateAdmin)
+
+admin.site.register(Newsletter)

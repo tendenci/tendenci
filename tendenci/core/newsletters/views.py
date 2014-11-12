@@ -1,16 +1,16 @@
 import datetime
 
 from django.conf import settings
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView
-from django.core.urlresolvers import reverse
+from django.views.generic import TemplateView, FormView
+from django.core.urlresolvers import reverse, reverse_lazy
 from tendenci.core.base.http import Http403
 from tendenci.core.newsletters.utils import apply_template_media
-from tendenci.core.newsletters.models import NewsletterTemplate
+from tendenci.core.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.core.newsletters.forms import GenerateForm, OldGenerateForm
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
@@ -34,30 +34,32 @@ class NewsletterGeneratorView(TemplateView):
         return context
 
 
-class NewsletterGeneratorOrigView(TemplateView):
+class NewsletterGeneratorOrigView(FormView):
     template_name = "newsletters/add.html"
     form_class = OldGenerateForm
 
-    def get(self, request, *args, **kwargs):
-        form = self.form_class()
-
+    def get_initial(self):
         site_name = get_setting('site', 'global', 'sitedisplayname')
         date_string = datetime.datetime.now().strftime("%d-%b-%Y")
         subject_initial = site_name + ' Newsletter ' + date_string
-        form.initial = {'subject': subject_initial}
 
-        context = self.get_context_data()
-        context['form'] = form
-        return render(request, self.template_name, context)
+        return {'subject': subject_initial}
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            # <process form cleaned data>
-            # return HttpResponseRedirect('/success/')
-            pass
+    def form_valid(self, form):
+        nl = form.save()
+        self.object_id = nl.pk
+        return HttpResponseRedirect(self.get_success_url())
 
-        return render(request, self.template_name, {'form': form})
+    def form_invalid(self, form):
+        for k, v in form.errors.items():
+            print "********************"
+            print k
+            print v
+            print "*********************"
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def get_success_url(self):
+        return reverse_lazy('newsletter.preview_from_default_template', kwargs={'pk': self.object_id })
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
@@ -214,3 +216,11 @@ def default_template_view(request):
     if not template_name:
         raise Http404
     return render (request, template_name)
+
+
+def preview_from_default_template(request, pk):
+    nl = get_object_or_404(Newsletter, pk=int(pk))
+
+    content = nl.generate_newsletter(request)
+
+    return HttpResponse(content)
