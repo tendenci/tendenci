@@ -14,6 +14,46 @@ from tendenci.apps.user_groups.utils import get_default_group
 from tinymce import models as tinymce_models
 
 
+"""
+Choice constants
+"""
+
+THIS_YEAR = datetime.date.today().year
+DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
+                (14,'14'), (30,'30'), (60,'60'), (90,'90'),
+                (120,'120'), (0,'ALL'),
+                )
+INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
+
+FORMAT_CHOICES = ((1, 'Detailed - original format View Example'), (0, 'Simplified - removes AUTHOR, POSTED BY, RELEASES DATE, etc from the detailed format View Example'))
+
+types_list = [(u'',_(u'All'))]
+
+DEFAULT_TEMPLATE_CHOICES = (
+    ('newsletters/templates/default/Big City Newsletter.html', 'Big City Newsletter'),
+    ('newsletters/templates/default/Holiday Night Lights Newsletter.html', 'Holiday Night Lights Newsletter'),
+    ('newsletters/templates/default/One Column With Header.html', 'One Column With Header'),
+    ('newsletters/templates/default/Seagulls Newsletter.html', 'Seagulls Newsletter'),
+    ('newsletters/templates/default/Subway Line Newsletter.html', 'Subway Line Newsletter'),
+    ('newsletters/templates/default/Two Column Left Newsletter.html', 'Two Column Left Newsletter'),
+    ('newsletters/templates/default/Two Column Left Sidebar.html', 'Two Column Left Sidebar'),
+    ('newsletters/templates/default/Two Column Right Sidebar.html', 'Two Column Right Sidebar'),
+)
+
+"""
+Choices for Old Form (t4 version)
+"""
+
+try:
+    from tendenci.addons.events.models import Type
+    types = Type.objects.all()
+    for type in types:
+        types_list.append((int(type.pk),type.name))
+except ImportError:
+    pass
+TYPE_CHOICES = tuple(types_list)
+
+
 class NewsletterTemplate(models.Model):
     """
     This represents a Template for Newsletters.
@@ -81,21 +121,26 @@ class Newsletter(models.Model):
     send_to_email2 = models.BooleanField(default=False)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     include_login = models.BooleanField()
+    personalize_subject_first_name = models.BooleanField()
+    personalize_subject_last_name = models.BooleanField()
 
     # module content
-    jump_links = models.IntegerField(default=1)
-    events =  models.IntegerField(default=1)
-    event_start_dt = models.DateField()
-    event_end_dt = models.DateField()
-    events_type = models.IntegerField(default=1, null=True, blank=True)
-    articles = models.IntegerField(default=1)
-    articles_days = models.IntegerField(default=60)
-    news = models.IntegerField(default=1)
-    news_days = models.IntegerField(default=30)
-    jobs = models.IntegerField(default=1)
-    jobs_days = models.IntegerField(default=30)
-    pages = models.IntegerField(default=0)
-    pages_days = models.IntegerField(default=7)
+    jump_links = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
+    events = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
+    event_start_dt = models.DateField(default=datetime.date.today())
+    event_end_dt = models.DateField(default=datetime.date.today()+datetime.timedelta(days=90))
+    events_type = models.IntegerField(default=1, null=True, blank=True, choices=TYPE_CHOICES)
+    articles = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
+    articles_days = models.IntegerField(default=60, choices=DAYS_CHOICES)
+    news = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
+    news_days = models.IntegerField(default=30, choices=DAYS_CHOICES)
+    jobs = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
+    jobs_days = models.IntegerField(default=30, choices=DAYS_CHOICES)
+    pages = models.IntegerField(default=0, choices=INCLUDE_CHOICES)
+    pages_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
+
+    #template
+    template = models.CharField(max_length=255, choices=DEFAULT_TEMPLATE_CHOICES)
 
     # format
-    format = models.IntegerField(default=0)
+    format = models.IntegerField(default=0, choices=FORMAT_CHOICES)
