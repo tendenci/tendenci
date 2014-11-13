@@ -156,7 +156,16 @@ class Newsletter(models.Model):
     # format
     format = models.IntegerField(default=0, choices=FORMAT_CHOICES)
 
+    def __unicode__(self):
+        return self.subject
+
     def generate_newsletter(self, request):
+        if self.default_template:
+            content = self.generate_from_default_template(request)
+            '[articles]' in content
+            return content
+
+        return ''
         # data = self.cleaned_data
         # subject = ''
         # subj = data.get('subject', '')
@@ -175,6 +184,62 @@ class Newsletter(models.Model):
         # if not has_perm(request.user, 'newsletters.view_newslettertemplate'):
         #     raise Http403
 
+
+
+        # text = DTemplate(self.default_template)
+        # context = RequestContext(request,
+        #         {
+        #             'jumplink_content': jumplink_content,
+        #             'login_content': login_content,
+        #             "art_content": articles_content, # legacy usage in templates
+        #             "articles_content": articles_content,
+        #             "articles_list": articles_list,
+        #             "jobs_content": jobs_content,
+        #             "jobs_list": jobs_list,
+        #             "news_content": news_content,
+        #             "news_list": news_list,
+        #             "pages_content": pages_content,
+        #             "pages_list": pages_content,
+        #             "events": events_list, # legacy usage in templates
+        #             "events_content": events_content,
+        #             "events_list": events_list,
+        #             "events_type": events_type
+        #         })
+        # content = text.render(context)
+
+        # return content
+
+    def generate_from_default_template(self, request):
+        data = self.generate_newsletter_contents(request)
+        content = self.content
+
+        if '[menu]' in content:
+            content.replace('[menu]', data.get('jumplink_content'))
+
+        if '[content]' in content:
+            full_content = data.get('login_content') + data.get('articles_content') + \
+                            data.get('news_content') + data.get('jobs_content') + \
+                            data.get('pages_content') + data.get('events_content')
+            content.replace('[content]', full_content)
+
+        if '[articles]' in content:
+            content.replace('[articles]', data.get('articles_content'))
+
+        if '[releases]' in content:
+            content.replace('[releases]', data.get('news_content'))
+
+        if '[calendarevents]' in content:
+            content.replace('[calendarevents]', data.get('events_content'))
+
+        if '[jobs]' in content:
+            content.replace('[jobs]', data.get('jobs_content'))
+
+        if '[pages]' in content:
+            content.replace('[pages]', data.get('pages_content'))
+
+        return content
+
+    def generate_newsletter_contents(self, request):
         simplified = True if self.format == 0 else False
         login_content = ""
         if self.include_login:
@@ -186,19 +251,23 @@ class Newsletter(models.Model):
             jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
                                                 context_instance=RequestContext(request))
 
-        art_content = ""
+        articles_content = ""
+        articles_list =[]
         if self.articles:
             articles_list, articles_content = newsletter_articles_list(request, self.articles_days, simplified)
 
         news_content = ""
+        news_list = []
         if self.news:
             news_list, news_content = newsletter_news_list(request, self.news_days, simplified)
 
         jobs_content = ""
+        jobs_list = []
         if self.jobs:
             jobs_list, jobs_content = newsletter_jobs_list(request, self.jobs_days, simplified)
 
         pages_content = ""
+        pages_list = []
         if self.pages:
             pages_list, pages_content = newsletter_pages_list(request, self.pages_days, simplified)
 
@@ -214,25 +283,17 @@ class Newsletter(models.Model):
             events_list = []
             events_type = None
 
-        text = DTemplate(self.default_template)
-        context = RequestContext(request,
-                {
-                    'jumplink_content': jumplink_content,
-                    'login_content': login_content,
-                    "art_content": articles_content, # legacy usage in templates
-                    "articles_content": articles_content,
-                    "articles_list": articles_list,
-                    "jobs_content": jobs_content,
-                    "jobs_list": jobs_list,
-                    "news_content": news_content,
-                    "news_list": news_list,
-                    "pages_content": pages_content,
-                    "pages_list": pages_content,
-                    "events": events_list, # legacy usage in templates
-                    "events_content": events_content,
-                    "events_list": events_list,
-                    "events_type": events_type
-                })
-        content = text.render(context)
 
-        return content
+        return {'login_content': login_content,
+                'jumplink_content': jumplink_content,
+                'articles_content': articles_content,
+                'articles_list': articles_list,
+                'news_content': news_content,
+                'news_list': news_list,
+                'jobs_content': jobs_content,
+                'jobs_list': jobs_list,
+                'pages_content': pages_content,
+                'pages_list': pages_list,
+                'events_list': events_list,
+                'events_content': events_content,
+                'events_type': events_type }

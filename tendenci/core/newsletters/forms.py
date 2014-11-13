@@ -3,6 +3,8 @@ import datetime
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
+from django.template import RequestContext
 
 from tendenci.addons.campaign_monitor.models import Template
 from tendenci.core.perms.utils import has_perm
@@ -56,6 +58,16 @@ class OldGenerateForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
         super(OldGenerateForm, self).__init__(*args, **kwargs)
         self.fields['default_template'].blank = False
         self.fields['content'].required = False
+
+    def save(self, *args, **kwargs):
+        nl = super(OldGenerateForm, self).save(*args, **kwargs)
+        if nl.default_template:
+            nl.content = render_to_string(nl.default_template, context_instance=RequestContext(self.request))
+
+        nl.save()
+
+        return nl

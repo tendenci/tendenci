@@ -50,14 +50,6 @@ class NewsletterGeneratorOrigView(FormView):
         self.object_id = nl.pk
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, form):
-        for k, v in form.errors.items():
-            print "********************"
-            print k
-            print v
-            print "*********************"
-        return self.render_to_response(self.get_context_data(form=form))
-
     def get_success_url(self):
         return reverse_lazy('newsletter.preview_from_default_template', kwargs={'pk': self.object_id })
 
@@ -67,6 +59,12 @@ class NewsletterGeneratorOrigView(FormView):
         context['templates'] = templates
 
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super(NewsletterGeneratorOrigView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+
+        return kwargs
 
 
 class NewsletterGeneratorOrigStep2View(TemplateView):
