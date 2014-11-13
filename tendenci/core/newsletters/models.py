@@ -213,23 +213,14 @@ class Newsletter(models.Model):
         data = self.generate_newsletter_contents(request)
         content = self.content
 
-        print content
-        print data
-
         if '[menu]' in content:
             content = content.replace('[menu]', data.get('jumplink_content'))
 
         if '[content]' in content:
-            print 'FOUND CONTENT'
             full_content = data.get('login_content') + data.get('articles_content') + \
                             data.get('news_content') + data.get('jobs_content') + \
                             data.get('pages_content') + data.get('events_content')
-            print 'full_content' + full_content
             content = content.replace('[content]', full_content)
-
-            print content
-        else:
-            print 'NOT FOUND CONTENT'
 
         if '[articles]' in content:
             content = content.replace('[articles]', data.get('articles_content'))
@@ -246,7 +237,6 @@ class Newsletter(models.Model):
         if '[pages]' in content:
             content = content.replace('[pages]', data.get('pages_content'))
 
-        print content
         return content
 
     def generate_newsletter_contents(self, request):
