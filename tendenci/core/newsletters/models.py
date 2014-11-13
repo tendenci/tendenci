@@ -213,30 +213,40 @@ class Newsletter(models.Model):
         data = self.generate_newsletter_contents(request)
         content = self.content
 
+        print content
+        print data
+
         if '[menu]' in content:
-            content.replace('[menu]', data.get('jumplink_content'))
+            content = content.replace('[menu]', data.get('jumplink_content'))
 
         if '[content]' in content:
+            print 'FOUND CONTENT'
             full_content = data.get('login_content') + data.get('articles_content') + \
                             data.get('news_content') + data.get('jobs_content') + \
                             data.get('pages_content') + data.get('events_content')
-            content.replace('[content]', full_content)
+            print 'full_content' + full_content
+            content = content.replace('[content]', full_content)
+
+            print content
+        else:
+            print 'NOT FOUND CONTENT'
 
         if '[articles]' in content:
-            content.replace('[articles]', data.get('articles_content'))
+            content = content.replace('[articles]', data.get('articles_content'))
 
         if '[releases]' in content:
-            content.replace('[releases]', data.get('news_content'))
+            content = content.replace('[releases]', data.get('news_content'))
 
         if '[calendarevents]' in content:
-            content.replace('[calendarevents]', data.get('events_content'))
+            content = content.replace('[calendarevents]', data.get('events_content'))
 
         if '[jobs]' in content:
-            content.replace('[jobs]', data.get('jobs_content'))
+            content = content.replace('[jobs]', data.get('jobs_content'))
 
         if '[pages]' in content:
-            content.replace('[pages]', data.get('pages_content'))
+            content = content.replace('[pages]', data.get('pages_content'))
 
+        print content
         return content
 
     def generate_newsletter_contents(self, request):
@@ -283,8 +293,7 @@ class Newsletter(models.Model):
             events_list = []
             events_type = None
 
-
-        return {'login_content': login_content,
+        data = {'login_content': login_content,
                 'jumplink_content': jumplink_content,
                 'articles_content': articles_content,
                 'articles_list': articles_list,
@@ -296,4 +305,6 @@ class Newsletter(models.Model):
                 'pages_list': pages_list,
                 'events_list': events_list,
                 'events_content': events_content,
-                'events_type': events_type }
+                'events_type': events_type}
+
+        return data
