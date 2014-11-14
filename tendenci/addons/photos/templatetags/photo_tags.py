@@ -126,6 +126,16 @@ def photo_nav(context, user, photo=None):
 def photo_search(context):
     return context
 
+
+@register.inclusion_tag("photos/top_nav_items.html", takes_context=True)
+def photo_current_app(context, user, photo=None):
+    context.update({
+        "app_object": photo,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("photos/photo-set/options.html", takes_context=True)
 def photo_set_options(context, user, photo_set):
     context.update({
