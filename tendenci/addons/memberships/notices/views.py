@@ -45,8 +45,6 @@ def membership_notice_log_view(request, id,
     log = get_object_or_404(NoticeLog, id=id)
 
     log_records = log.default_log_records.all()
-    if not log_records:
-        log_records = log.log_records.all()
 
     return render_to_response(template_name, {'log': log,
                                               'log_records': log_records},

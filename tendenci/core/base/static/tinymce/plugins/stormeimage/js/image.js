@@ -152,10 +152,10 @@ var ImageDialog = {
 
 		// set the styles
 		ed.dom.setStyle(n, 'float', nl.edit_float.value);
-		ed.dom.setStyle(n, 'margin-top', nl.edit_top_margin.value + 'px');
-		ed.dom.setStyle(n, 'margin-right', nl.edit_right_margin.value + 'px');
-		ed.dom.setStyle(n, 'margin-bottom', nl.edit_bottom_margin.value + 'px');
-		ed.dom.setStyle(n, 'margin-left', nl.edit_left_margin.value + 'px');
+		ed.dom.setStyle(n, 'margin-top', nl.edit_top_margin.value);
+		ed.dom.setStyle(n, 'margin-right', nl.edit_right_margin.value);
+		ed.dom.setStyle(n, 'margin-bottom', nl.edit_bottom_margin.value);
+		ed.dom.setStyle(n, 'margin-left', nl.edit_left_margin.value);
 
 		tinymce.extend(args, {
 			src : img_src,
