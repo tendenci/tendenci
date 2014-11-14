@@ -30,6 +30,15 @@ def location_search(context):
     return context
 
 
+@register.inclusion_tag("locations/top_nav_items.html", takes_context=True)
+def location_current_app(context, user, location=None):
+    context.update({
+        "app_object": location,
+        "user": user
+    })
+    return context
+
+
 class ListLocationNode(ListNode):
     model = Location
     perms = 'locations.view_location'
