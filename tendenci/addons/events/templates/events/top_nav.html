@@ -1,0 +1,17 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load event_tags %}
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/calendar_view_day.png"/>{% trans "Events" %}
+    </a>
+    {% if event %}
+    {% event_current_app request.user event %}
+    {% else %}
+    {% event_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}
+

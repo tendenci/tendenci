@@ -54,6 +54,15 @@ def event_search(context):
     return context
 
 
+@register.inclusion_tag("events/top_nav_items.html", takes_context=True)
+def event_current_app(context, user, event=None):
+    context.update({
+        "app_object": event,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("events/registrants/options.html", takes_context=True)
 def registrant_options(context, user, registrant):
     context.update({
