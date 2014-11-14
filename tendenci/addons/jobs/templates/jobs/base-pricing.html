@@ -7,13 +7,13 @@
             {% if SITE_GLOBAL_SHOWANCIENTMENU %}
                 {% include "top_menu/user_top.html" %}
             {% else %}
-                {% include "directories/top_nav_pricing.html" %}
+                {% include "jobs/top_nav_pricing.html" %}
             {% endif %}
         {% else %}
             {% if SITE_GLOBAL_SHOWANCIENTMENU %}
                 {% include "top_menu/admin_top.html" %}
             {% else %}
-                {% include "directories/top_nav_pricing.html" %}
+                {% include "jobs/top_nav_pricing.html" %}
             {% endif %}
             {% if request.session.theme %}
                 {% include "themes/theme_top.html" %}
@@ -23,7 +23,7 @@
         {% if SITE_GLOBAL_SHOWANCIENTMENU %}
             {% include "top_menu/user_top.html" %}
         {% else %}
-            {% include "directories/top_nav_pricing.html" %}
+            {% include "jobs/top_nav_pricing.html" %}
         {% endif %}
     {% endif %}
 {% endif %}
