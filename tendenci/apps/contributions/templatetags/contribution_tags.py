@@ -23,6 +23,15 @@ def contribution_search(context):
     return context
 
 
+@register.inclusion_tag("contributions/top_nav_items.html", takes_context=True)
+def contribution_current_app(context, user, contribution=None):
+    context.update({
+        "app_object": contribution,
+        "user": user
+    })
+    return context
+
+
 class LatestContributionsNode(Node):
     def __init__(self, **kwargs):
         self.user = Variable(kwargs.get('user', None))
