@@ -1,0 +1,30 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+{% load url from future %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user profiles.view_profile as can_view_user %}
+{% has_perm user profiles.change_profile as can_edit_user %}
+{% has_perm user profiles.add_profile as can_add_user %}
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-sm-6 col-xs-8">
+                    {% if can_edit_setting %}
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'settings.index' 'module' 'users' %}">{% trans "Settings" %}</a></span></li>
+                    {% endif %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'profile.search' %}">{% trans "Search Users" %}</a></span></li>
+                    {% if can_add_user %}
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'profile.add' %}">{% trans "Add User" %}</a></span></li>
+                    {% endif %}
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'profiles.user_import' %}">{% trans "Import" %}</a></span></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>

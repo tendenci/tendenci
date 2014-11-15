@@ -30,3 +30,12 @@ def dashboard_stat(context, stat_type):
         "value": value,
     })
     return context
+
+
+@register.inclusion_tag("dashboard/top_nav_items.html", takes_context=True)
+def dashboard_current_app(context, user, dashboard=None):
+    context.update({
+        "app_object": dashboard,
+        "user": user
+    })
+    return context
