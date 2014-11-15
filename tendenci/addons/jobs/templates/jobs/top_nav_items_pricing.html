@@ -1,0 +1,50 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+{% load url from future %}
+
+{% has_perm user jobs.add_jobpricing as can_add_job_pricing %}
+
+{% if app_object %}
+    {% has_perm user jobs.view_jobpricing app_object as can_view_job_pricing %}
+    {% has_perm user jobs.change_jobpricing app_object as can_edit_job_pricing %}
+    {% has_perm user jobs.delete_jobpricing app_object as can_delete_job_pricing %}
+{% else %}
+    {% has_perm user jobs.view_jobpricing as can_view_job_pricing %}
+    {% has_perm user jobs.change_jobpricing as can_edit_job_pricing %}
+{% endif %}
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-sm-6 col-xs-8">
+                    {% if app_object %}
+                    <li><span class="content-head">{% trans "All Pricings" %}</span></li>
+                    {% endif %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'job_pricing.search' %}">{% trans "Search Pricings" %}</a></span></li>
+                    {% if can_add_job_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'job_pricing.add' %}">{% trans "Add Pricing" %}</a></span></li>
+                    {% endif %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'jobs' %}">{% trans "Latest" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</a></span></li>
+                </ul>
+                {% if app_object %}
+                {% if can_view_job_pricing or can_edit_job_pricing %}
+                <ul class="list-unstyled col-sm-6 col-xs-8">
+                    <li><span class="content-head">{% trans "This Pricing" %}</span></li>
+                    {% if can_view_job_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'job_pricing.view' app_object.pk %}">{% trans "View Pricing" %}</a></span></li>
+                    {% endif %}
+                    {% if can_edit_job_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'job_pricing.edit' app_object.pk %}">{% trans "Edit Pricing" %}</a></span></li>
+                    {% endif %}
+                    {% if can_delete_job_pricing %}
+                    <li class="content-item"><span class="app-name pull-left"><a class="delete" href="{% url 'job_pricing.delete' app_object.pk %}">{% trans "Delete Pricing" %}</a></span></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

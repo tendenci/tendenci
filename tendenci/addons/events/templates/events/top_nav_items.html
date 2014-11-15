@@ -78,7 +78,7 @@
                             <li class="content-item"><span class="app-name pull-left"><a href="{% url 'event.edit' app_object.pk %}">{% trans "Edit Event" %}</a></span></li>
                             <li class="content-item"><span class="app-name pull-left"><a href="{% url 'event.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a></span></li>
                             <li class="content-item"><span class="app-name pull-left"><a href="{% url 'event.list_addons' app_object.pk %}">{% trans "Edit Addons" %}</a></span></li>
-                            <li class="content-item"><span class="app-name pull-left"><a href="{% url 'event.addon' app_object.pk %}">{% trans "Add Addon" %}</a></span></li>
+                            <li class="content-item"><span class="app-name pull-left"><a href="{% url 'event.add_addon' app_object.pk %}">{% trans "Add Addon" %}</a></span></li>
                             {% if app_object.registration_configuration.use_custom_reg_form %}
                                 <li class="content-item"><span class="app-name pull-left"><a href="{% url 'event.event_custom_reg_form_list' app_object.pk %}">{% trans "Manage Custom Registration Form" %}</a></span></li>
                             {% endif %}

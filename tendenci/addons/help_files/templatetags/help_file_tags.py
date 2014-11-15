@@ -22,6 +22,14 @@ def help_file_nav(context, user, help_file=None):
     })
     return context
 
+@register.inclusion_tag("help_files/top_nav_items.html", takes_context=True)
+def help_file_current_app(context, user, help_file=None):
+    context.update({
+        "app_object": help_file,
+        "user": user
+    })
+    return context
+
 @register.inclusion_tag("help_files/search-form.html", takes_context=True)
 def help_file_search(context):
     return context

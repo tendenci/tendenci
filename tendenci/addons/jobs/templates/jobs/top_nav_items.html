@@ -52,7 +52,7 @@
                     {% if can_edit_job %}
                         <li class="content-item"><span class="app-name pull-left"><a href="{% url 'job.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a></span></li>
                         <li class="content-item"><span class="app-name pull-left"><a href="{% url 'job.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a></span></li>
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'category.update' app_object.opt_app_label job.opt_module_name app_ojbect.pk %}">{% trans "Edit Categories" %}</a></span></li>
+                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'category.update' app_object.opt_app_label job.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a></span></li>
                     {% endif %}
                     {% if can_delete_job %}
                         <li class="content-item"><span class="app-name pull-left"><a href="{% url 'job.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a></span></li>

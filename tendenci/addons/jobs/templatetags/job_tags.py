@@ -86,6 +86,15 @@ def job_pricing_table(context):
     return context
 
 
+@register.inclusion_tag("jobs/top_nav_items_pricing.html", takes_context=True)
+def job_pricing_current_app(context, user, job_pricing=None):
+    context.update({
+        'app_object': job_pricing,
+        "user": user
+    })
+    return context
+
+
 class ListJobNode(ListNode):
     model = Job
     perms = 'jobs.view_job'

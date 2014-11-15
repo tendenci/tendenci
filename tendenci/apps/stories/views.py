@@ -98,7 +98,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 if 'rotator' in story.tags:
                     checklist_update('add-story')
 
-                messages.add_message(request, messages.SUCCESS, _('Successfully added %(str)s' % {'str':story}))
+                messages.add_message(request, messages.SUCCESS, _('Successfully added %(str)s' % {'str': unicode(story)}))
 
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
             else:
@@ -137,7 +137,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
 
                 story = update_perms_and_save(request, form, story)
 
-                messages.add_message(request, messages.SUCCESS, _('Successfully updated %(str)s' % {'str':story}))
+                messages.add_message(request, messages.SUCCESS, _('Successfully updated %(str)s' % {'str': unicode(story)}))
 
                 redirect_to = request.REQUEST.get('next', '')
                 if redirect_to:
@@ -165,7 +165,7 @@ def delete(request, id, template_name="stories/delete.html"):
                 # Delete story.image to prevent transaction issues.
                 story.image.delete()
             story.delete()
-            messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(str)s' % {'str':story}))
+            messages.add_message(request, messages.SUCCESS, _('Successfully deleted %(str)s' % {'str': unicode(story)}))
 
             return HttpResponseRedirect(reverse('story.search'))
 
