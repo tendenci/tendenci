@@ -7,6 +7,16 @@ from avatar.templatetags.avatar_tags import avatar_url
 
 register = Library()
 
+
+@register.inclusion_tag("profiles/top_nav_items.html", takes_context=True)
+def profile_current_app(context, user, profile=None):
+    context.update({
+        "app_object": profile,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("profiles/nav.html", takes_context=True)
 def users_nav(context, user_current, user_this):
     if user_this:

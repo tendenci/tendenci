@@ -1,0 +1,18 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load profile_tags %}
+
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/page_green.png' %}"/>{% firstof MODULE_USERS_LABEL 'People' %}
+    </a>
+    {% if profile %}
+    {% profile_current_app request.user profile %}
+    {% else %}
+    {% profile_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}
