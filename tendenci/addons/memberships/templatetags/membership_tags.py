@@ -73,3 +73,12 @@ def get_actions(membership, user):
         return membership.get_actions(is_superuser=True).items()
     else:
         return membership.get_actions().items()
+
+
+@register.inclusion_tag("memberships/top_nav_items.html", takes_context=True)
+def membership_current_app(context, user, membership=None):
+    context.update({
+        "app_object" : membership,
+        "user": user
+    })
+    return context

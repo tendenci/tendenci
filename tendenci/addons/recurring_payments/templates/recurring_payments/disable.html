@@ -28,7 +28,7 @@
     <div>{% trans 'Billing Frequency' %}: <span class="body-bold">{% trans 'Once every' %} {{ rp.billing_frequency }}
     {{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
 
-    <div>{% trans 'Billing Date' %}: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  {% trans 'after each billing cycle' %} {{ rp.due_sore }} {% {% trans 'date' %}</span></div>
+    <div>{% trans 'Billing Date' %}: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  {% trans 'after each billing cycle' %} {{ rp.due_sore }} {% trans 'date' %}</span></div>
 
     <div>{% trans 'The number of billing cycle completed' %}: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span></div>
     <div>{% trans 'The number of billing cycle failed' %}: <span class="body-bold">{{ rp.num_billing_cycle_failed }}</span></div>

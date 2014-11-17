@@ -1,0 +1,17 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load make_payment_tags %}
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/map_go.png"/>{% trans "Make Payments" %}
+    </a>
+    {% if mp %}
+    {% make_payment_current_app mp %}
+    {% else %}
+    {% make_payment_current_app %}
+    {% endif %}
+</li>
+{% endblock %}
+
