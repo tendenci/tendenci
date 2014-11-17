@@ -12,7 +12,11 @@
     {% if profile %}
     {% profile_current_app request.user profile %}
     {% else %}
-    {% profile_current_app request.user %}
+        {% if user_this %}
+            {% profile_current_app request.user user_this %}
+        {% else %}
+            {% profile_current_app request.user %}
+        {% endif %}
     {% endif %}
 </li>
 {% endblock %}
