@@ -1,7 +1,8 @@
-from django.template import Library
 from django.contrib.auth.models import User
+from django.template import Library
+from django.utils.translation import ugettext_lazy as _
 
-from avatar import AVATAR_DEFAULT_URL, AVATAR_GRAVATAR_BACKUP, AVATAR_GRAVATAR_DEFAULT
+from avatar import AVATAR_DEFAULT_URL
 from avatar.templatetags.avatar_tags import avatar_url
 
 
@@ -35,6 +36,7 @@ def users_nav(context, user_current, user_this):
 
     return context
 
+
 @register.inclusion_tag("profiles/options.html", takes_context=True)
 def users_options(context, user_current, user_this):
     if user_this:
@@ -51,9 +53,11 @@ def users_options(context, user_current, user_this):
     })
     return context
 
+
 @register.inclusion_tag("profiles/search-form.html", takes_context=True)
 def profile_search(context):
     return context
+
 
 @register.inclusion_tag("profiles/meta.html", takes_context=True)
 def profile_meta(context, detail_view=None):
@@ -70,12 +74,14 @@ def similar_profile_items(context, users):
     })
     return context
 
+
 @register.inclusion_tag("profiles/merge_detail.html", takes_context=True)
 def merge_detail(context, profile):
     context.update({
         "profile": profile,
     })
     return context
+
 
 @register.simple_tag
 def has_avatar(user, size=88):
