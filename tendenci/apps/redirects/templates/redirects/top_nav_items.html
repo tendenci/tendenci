@@ -1,0 +1,75 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user redirects.add_redirect as can_add_redirect %}
+
+{% if app_object %}
+    {% has_perm user redirects.view_redirect app_object as can_view_redirect %}
+    {% has_perm user redirects.change_redirect app_object as can_edit_redirect %}
+    {% has_perm user redirects.delete_redirect app_object as can_delete_redirect %}
+{% else %}
+    {% has_perm user redirects.view_redirect as can_view_redirect %}
+    {% has_perm user redirects.change_redirect as can_edit_redirect %}
+{% endif %}
+
+
+<ul class="dropdown-menu pull-left">
+    <div class="yamm-content custom-yamm-content content-dropdown">
+        {% if app_object %}
+            {# "All Redirects" Section #}
+            <li class="heading">{% trans "All Redirects" %}</li>
+        {% endif %}
+
+        {% if can_edit_setting %}
+            <li class="content-item">
+                <a href="{% url 'settings.index' 'module' 'redirects' %}">{% trans "Settings" %}</a>
+            </li>
+        {% endif %}
+
+        <li class="content-item">
+            <a href="{% url 'redirects' %}">{% trans "Redirect List" %}</a>
+        </li>
+
+        {% if can_add_redirect %}
+            <li class="content-item">
+                <a href="{% url 'redirect.add' %}">{% trans "Add a Redirect" %}</a>
+            </li>
+        {% endif %}
+
+        {% if user.profile.is_superuser %}
+            <li class="content-item">
+                <a href="{% url 'redirect.export' %}">{% trans "Export Redirects" %}</a>
+            </li>
+        {% endif %}
+
+        {% if app_object %}
+            {# End "All Redirects" Section #}
+
+            {% if can_view_redirect or can_edit_redirect %}
+                <li class="divider"></li>
+
+                {# "This Redirect" Section #}
+                <li class="heading">{% trans "This Redirect" %}</li>
+
+                {% if can_edit_redirect %}
+                    <li class="content-item">
+                        <a href="{% url 'redirect.edit' app_object.pk %}">{% trans "Edit Redirect" %}</a>
+                    </li>
+                {% endif %}
+
+                {% if can_delete_redirect %}
+                    <li class="divider"></li>
+
+                    <li class="content-item">
+                        <a class="delete" href="{% url 'redirect.delete' app_object.pk %}">{% trans "Delete Redirect" %}</a>
+                    </li>
+                {% endif %}
+                {# End "This Redirect" Section #}
+            {% endif %}
+        {% endif %}
+    </div>
+</ul>
