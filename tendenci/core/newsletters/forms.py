@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template import RequestContext
 
+from tendenci.core.emails.models import Email
 from tendenci.addons.campaign_monitor.models import Template
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.base.http import Http403
@@ -61,12 +62,49 @@ class OldGenerateForm(forms.ModelForm):
         self.request = kwargs.pop('request')
         super(OldGenerateForm, self).__init__(*args, **kwargs)
         self.fields['default_template'].blank = False
-        self.fields['content'].required = False
+        self.fields['email'].required = False
+        self.fields['group'].empty_label = _('SELECT ONE')
+
+    def clean_group(self):
+        data = self.cleaned_data
+        group = data.get('group', None)
+        member_only = data.get('member_only', False)
+
+        if not member_only and not group:
+            raise forms.ValidationError(_('Usergroup field is required if Send to members only is unchecked.'))
+
+        return group
 
     def save(self, *args, **kwargs):
+        data = self.cleaned_data
+        subject = ''
+        subj = data.get('subject', '')
+        inc_last_name = data.get('personalize_subject_last_name')
+        inc_first_name = data.get('personalize_subject_first_name')
+
+        if inc_first_name and not inc_last_name:
+            subject = '[firstname] ' + subj
+        elif inc_last_name and not inc_first_name:
+            subject = '[lastname] ' + subj
+        elif inc_first_name and inc_last_name:
+            subject = '[firstname] [lastname] ' + subj
         nl = super(OldGenerateForm, self).save(*args, **kwargs)
+        nl.subject = subject
         if nl.default_template:
-            nl.content = render_to_string(nl.default_template, context_instance=RequestContext(self.request))
+            template = render_to_string(nl.default_template, context_instance=RequestContext(self.request))
+            email_content = nl.generate_newsletter(self.request, template)
+
+            email = Email()
+            email.subject = subject
+            email.body = email_content
+            email.sender = self.request.user.email
+            email.sender_display = self.request.user.profile.get_name()
+            email.reply_to = self.request.user.email
+            email.creator_username = self.request.user.creator_username
+            email.owner = self.request.user
+            email.owner_username = self.request.user.username
+            email.save()
+            nl.email = email
 
         nl.save()
 

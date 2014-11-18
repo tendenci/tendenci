@@ -27,6 +27,9 @@
             </p>
              <div class="input-wrapper">
                 {% comment %}commenting it out for now. will add back later when membership is available:{% endcomment %} <p><strong>{% trans "Send to Members Only?" %}</strong> {{ form.member_only }} {% trans "If checked, skip user group" %}</p>
+                {% if form.group.errors %}
+                  {{ form.group.errors }}
+                {% endif %}
                 <p><strong>{% trans "Usergroup" %}</strong> {{ form.group }}</p>
                 <p>{% trans "Include email2?" %} {{ form.send_to_email2 }}
                 {% trans "Yes, send to user's second email address" %}
@@ -142,7 +145,9 @@
             </div>
         {% endif %}
         {% endcomment %}
-
+        {% if form.default_template.errors %}
+          {{ form.default_template.errors }}
+        {% endif %}
         <h2>{% trans "Tendenci Default Templates" %}</h2>
         <div class="template_list">
           <ul>

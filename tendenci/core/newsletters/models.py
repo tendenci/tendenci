@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template import RequestContext
 
+from tendenci.core.emails.models import Email
 from tendenci.core.files.models import file_directory
 from tendenci.core.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -124,13 +125,14 @@ class NewsletterTemplate(models.Model):
 
 
 class Newsletter(models.Model):
+    email = models.ForeignKey(Email, null=True)
+
     subject = models.CharField(max_length=255, null=True, blank=True)
-    content = tinymce_models.HTMLField()
 
     # recipient, subject fields
     member_only = models.BooleanField(default=False)
     send_to_email2 = models.BooleanField(default=False)
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
     include_login = models.BooleanField()
     personalize_subject_first_name = models.BooleanField()
     personalize_subject_last_name = models.BooleanField()
@@ -159,10 +161,9 @@ class Newsletter(models.Model):
     def __unicode__(self):
         return self.subject
 
-    def generate_newsletter(self, request):
+    def generate_newsletter(self, request, template):
         if self.default_template:
-            content = self.generate_from_default_template(request)
-            '[articles]' in content
+            content = self.generate_from_default_template(request, template)
             return content
 
         return ''
@@ -209,18 +210,15 @@ class Newsletter(models.Model):
 
         # return content
 
-    def generate_from_default_template(self, request):
+    def generate_from_default_template(self, request, template):
         data = self.generate_newsletter_contents(request)
-        content = self.content
+        content = template
 
         if '[menu]' in content:
             content = content.replace('[menu]', data.get('jumplink_content'))
 
         if '[content]' in content:
-            full_content = data.get('login_content') + data.get('articles_content') + \
-                            data.get('news_content') + data.get('jobs_content') + \
-                            data.get('pages_content') + data.get('events_content')
-            content = content.replace('[content]', full_content)
+            content = content.replace('[content]', data.get('opening_text') + data.get('login_content'))
 
         if '[articles]' in content:
             content = content.replace('[articles]', data.get('articles_content'))
@@ -241,6 +239,10 @@ class Newsletter(models.Model):
 
     def generate_newsletter_contents(self, request):
         simplified = True if self.format == 0 else False
+
+        opening_txt = render_to_string('newsletters/opening_text.txt',
+                                            context_instance=RequestContext(request))
+
         login_content = ""
         if self.include_login:
             login_content = render_to_string('newsletters/login.txt',
@@ -283,7 +285,9 @@ class Newsletter(models.Model):
             events_list = []
             events_type = None
 
-        data = {'login_content': login_content,
+        data = {
+                'opening_text': opening_txt,
+                'login_content': login_content,
                 'jumplink_content': jumplink_content,
                 'articles_content': articles_content,
                 'articles_list': articles_list,

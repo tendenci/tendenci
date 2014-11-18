@@ -47,11 +47,11 @@ class NewsletterGeneratorOrigView(FormView):
 
     def form_valid(self, form):
         nl = form.save()
-        self.object_id = nl.pk
+        self.email_id = nl.email.pk
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse_lazy('newsletter.preview_from_default_template', kwargs={'pk': self.object_id })
+        return reverse_lazy('email.viewbody', kwargs={'id': self.email_id })
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
@@ -214,11 +214,3 @@ def default_template_view(request):
     if not template_name:
         raise Http404
     return render (request, template_name)
-
-
-def preview_from_default_template(request, pk):
-    nl = get_object_or_404(Newsletter, pk=int(pk))
-
-    content = nl.generate_newsletter(request)
-
-    return HttpResponse(content)
