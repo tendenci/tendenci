@@ -15,3 +15,10 @@ def emails_nav(context, email=None):
         "nav_object": email,
     })
     return context
+
+@register.inclusion_tag("emails/top_nav_items.html", takes_context=True)
+def emails_current_app(context, email=None):
+    context.update({
+        "app_object": email,
+    })
+    return context
