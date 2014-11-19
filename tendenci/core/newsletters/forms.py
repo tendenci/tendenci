@@ -88,6 +88,8 @@ class OldGenerateForm(forms.ModelForm):
             subject = '[lastname] ' + subj
         elif inc_first_name and inc_last_name:
             subject = '[firstname] [lastname] ' + subj
+        else:
+            subject = subj
         nl = super(OldGenerateForm, self).save(*args, **kwargs)
         nl.subject = subject
         if nl.default_template:
@@ -100,7 +102,8 @@ class OldGenerateForm(forms.ModelForm):
             email.sender = self.request.user.email
             email.sender_display = self.request.user.profile.get_name()
             email.reply_to = self.request.user.email
-            email.creator_username = self.request.user.creator_username
+            email.creator = self.request.user
+            email.creator_username = self.request.user.username
             email.owner = self.request.user
             email.owner_username = self.request.user.username
             email.save()

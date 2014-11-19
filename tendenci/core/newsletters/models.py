@@ -167,48 +167,6 @@ class Newsletter(models.Model):
             return content
 
         return ''
-        # data = self.cleaned_data
-        # subject = ''
-        # subj = data.get('subject', '')
-        # inc_last_name = data.get('personalize_subject_last_name')
-        # inc_first_name = data.get('personalize_subject_first_name')
-
-        # if inc_first_name and not inc_last_name:
-        #     subject = '[firstname] ' + subj
-        # elif inc_last_name and not inc_first_name:
-        #     subject = '[lastname] ' + subj
-        # elif inc_first_name and inc_last_name:
-        #     subject = '[firstname] [lastname] ' + subj
-
-        # request = self.request
-
-        # if not has_perm(request.user, 'newsletters.view_newslettertemplate'):
-        #     raise Http403
-
-
-
-        # text = DTemplate(self.default_template)
-        # context = RequestContext(request,
-        #         {
-        #             'jumplink_content': jumplink_content,
-        #             'login_content': login_content,
-        #             "art_content": articles_content, # legacy usage in templates
-        #             "articles_content": articles_content,
-        #             "articles_list": articles_list,
-        #             "jobs_content": jobs_content,
-        #             "jobs_list": jobs_list,
-        #             "news_content": news_content,
-        #             "news_list": news_list,
-        #             "pages_content": pages_content,
-        #             "pages_list": pages_content,
-        #             "events": events_list, # legacy usage in templates
-        #             "events_content": events_content,
-        #             "events_list": events_list,
-        #             "events_type": events_type
-        #         })
-        # content = text.render(context)
-
-        # return content
 
     def generate_from_default_template(self, request, template):
         data = self.generate_newsletter_contents(request)
@@ -218,7 +176,8 @@ class Newsletter(models.Model):
             content = content.replace('[menu]', data.get('jumplink_content'))
 
         if '[content]' in content:
-            content = content.replace('[content]', data.get('opening_text') + data.get('login_content'))
+            full_content = data.get('opening_text') + data.get('login_content') + data.get('footer_text')
+            content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
             content = content.replace('[articles]', data.get('articles_content'))
@@ -241,6 +200,9 @@ class Newsletter(models.Model):
         simplified = True if self.format == 0 else False
 
         opening_txt = render_to_string('newsletters/opening_text.txt',
+                                            context_instance=RequestContext(request))
+
+        footer_txt = render_to_string('newsletters/footer.txt',
                                             context_instance=RequestContext(request))
 
         login_content = ""
@@ -287,6 +249,7 @@ class Newsletter(models.Model):
 
         data = {
                 'opening_text': opening_txt,
+                'footer_text' : footer_txt,
                 'login_content': login_content,
                 'jumplink_content': jumplink_content,
                 'articles_content': articles_content,
