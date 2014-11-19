@@ -21,6 +21,15 @@ def event_log_nav(context, user, event_log=None):
     return context
 
 
+@register.inclusion_tag("event_logs/top_nav_items.html", takes_context=True)
+def event_log_current_app(context, user, event_log=None):
+    context.update({
+        "app_object": event_log,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("event_logs/search-form.html", takes_context=True)
 def event_log_search(context, search_form):
     context.update({

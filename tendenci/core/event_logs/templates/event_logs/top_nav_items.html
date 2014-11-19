@@ -1,0 +1,25 @@
+{% load i18n %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+{% if app_object %}
+    {% has_perm user event_log.view_eventlog app_object as can_view_el %}
+{% else %}
+    {% has_perm user event_log.view_eventlog as can_view_el %}
+{% endif %}
+
+
+<ul class="dropdown-menu pull-left">
+    <div class="yamm-content custom-yamm-content content-dropdown">
+        <li class="content-item">
+            <a href="{% url event_log.search %}">{% trans "Search" %}</a>
+        </li>
+
+        <li class="content-item">
+            <a href="{% url event_log.info %}">{% trans "Info List" %}</a>
+        </li>
+    </div>
+</ul>
