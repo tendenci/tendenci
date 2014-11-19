@@ -64,6 +64,8 @@ class OldGenerateForm(forms.ModelForm):
         self.fields['default_template'].blank = False
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')
+        self.fields['actionname'].required = False
+        self.fields['actiontype'].required = False
 
     def clean_group(self):
         data = self.cleaned_data
@@ -120,6 +122,11 @@ class MarketingStepOneForm(forms.ModelForm):
         model = Newsletter
         fields= ('actiontype', 'actionname',)
 
+    def __init__(self, *args, **kwargs):
+        super(MarketingStepOneForm, self).__init__(*args, **kwargs)
+        self.fields['actiontype'].required = True
+        self.fields['actionname'].required = True
+
 
 class MarketingStepTwoForm(forms.ModelForm):
     class Meta:
@@ -150,6 +157,14 @@ class MarketingStepFourForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MarketingStepFourForm, self).__init__(*args, **kwargs)
         self.fields['sla'].initial = False
+        self.fields['sla'].required = True
+
+        self.fields['send_to_email2'] = forms.ChoiceField(
+            choices=(
+                (True, _('Yes')),
+                (False, _('No')),
+                ),
+            label=_('include emal2'))
 
 
 

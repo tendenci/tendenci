@@ -1,4 +1,4 @@
-/* 
+/*
 
 All CSS for newsletters and actions
 
@@ -115,3 +115,40 @@ ul.errorlist li{
 #global-zeroclipboard-html-bridge {
     margin-top: 30px;
 }
+
+.step-section {
+    margin: 10px 0;
+}
+
+.step-number {
+    float: left;
+    width: 4em;
+    margin-right: 1em;
+
+}
+
+.step-contents {
+    float: left;
+    width: 35em;
+}
+
+.step-content-item {
+    margin: 10px 0;
+}
+
+.step-content-item input[type="text"] {
+    width: 100%;
+}
+
+.cf:after {
+     visibility: hidden;
+     display: block;
+     font-size: 0;
+     content: " ";
+     clear: both;
+     height: 0;
+     }
+.cf { display: inline-block; }
+
+* html .cf { height: 1%; }
+.cf { display: block; }

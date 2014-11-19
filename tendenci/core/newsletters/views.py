@@ -1,12 +1,13 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView, FormView, UpdateView
+from django.views.generic import TemplateView, FormView, UpdateView, DetailView
 from django.core.urlresolvers import reverse, reverse_lazy
 from tendenci.core.base.http import Http403
 from tendenci.core.newsletters.utils import apply_template_media
@@ -15,7 +16,6 @@ from tendenci.core.newsletters.forms import (
     GenerateForm,
     OldGenerateForm,
     MarketingStepOneForm,
-    MarketingStepTwoForm,
     MarketingStepThreeForm,
     MarketingStepFourForm)
 from tendenci.core.newsletters.utils import (
@@ -53,11 +53,11 @@ class NewsletterGeneratorOrigView(FormView):
 
     def form_valid(self, form):
         nl = form.save()
-        self.email_id = nl.email.pk
+        self.object_id = nl.pk
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse_lazy('email.viewbody', kwargs={'id': self.email_id })
+        return reverse_lazy('newsletter.action.step1', kwargs={'pk': self.object_id })
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
@@ -78,10 +78,13 @@ class MarketingActionStepOneView(UpdateView):
     form_class = MarketingStepOneForm
     template_name = 'newsletters/actions/step1.html'
 
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step2', kwargs={'pk': obj.pk})
 
-class MarketingActionStepTwoView(UpdateView):
+
+class MarketingActionStepTwoView(DetailView):
     model = Newsletter
-    form_class = MarketingStepTwoForm
     template_name = 'newsletters/actions/step2.html'
 
 
@@ -89,6 +92,10 @@ class MarketingActionStepThreeView(UpdateView):
     model = Newsletter
     form_class = MarketingStepThreeForm
     template_name = 'newsletters/actions/step3.html'
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step4', kwargs={'pk': obj.pk})
 
 
 class MarketingActionStepFourView(UpdateView):
@@ -240,6 +247,7 @@ def template_view(request, template_id, render=True):
             context_instance=RequestContext(request))
 
 
+@login_required
 def default_template_view(request):
     template_name = request.GET.get('template_name', '')
     if not template_name:
