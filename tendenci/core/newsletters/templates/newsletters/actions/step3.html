@@ -1,0 +1,32 @@
+{% extends "newsletters/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator - Marketing Action'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/newsletters.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ <div id="t-newsletters">
+   <div id="t-add">
+        <h1>{% Marketing Action Step 4 of 5 '%}</h1>
+
+        <p>{{ request.user.profile.get_name }}</p>
+
+
+
+   </div>
+ </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% endblock %}

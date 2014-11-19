@@ -6,12 +6,18 @@ from django.shortcuts import get_object_or_404, render_to_response, render, redi
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView, FormView
+from django.views.generic import TemplateView, FormView, UpdateView
 from django.core.urlresolvers import reverse, reverse_lazy
 from tendenci.core.base.http import Http403
 from tendenci.core.newsletters.utils import apply_template_media
 from tendenci.core.newsletters.models import NewsletterTemplate, Newsletter
-from tendenci.core.newsletters.forms import GenerateForm, OldGenerateForm
+from tendenci.core.newsletters.forms import (
+    GenerateForm,
+    OldGenerateForm,
+    MarketingStepOneForm,
+    MarketingStepTwoForm,
+    MarketingStepThreeForm,
+    MarketingStepFourForm)
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
@@ -67,8 +73,33 @@ class NewsletterGeneratorOrigView(FormView):
         return kwargs
 
 
-class NewsletterGeneratorOrigStep2View(TemplateView):
-    template_name = 'newsletters/add2.html'
+class MarketingActionStepOneView(UpdateView):
+    model = Newsletter
+    form_class = MarketingStepOneForm
+    template_name = 'newsletters/actions/step1.html'
+
+
+class MarketingActionStepTwoView(UpdateView):
+    model = Newsletter
+    form_class = MarketingStepTwoForm
+    template_name = 'newsletters/actions/step2.html'
+
+
+class MarketingActionStepThreeView(UpdateView):
+    model = Newsletter
+    form_class = MarketingStepThreeForm
+    template_name = 'newsletters/actions/step3.html'
+
+
+class MarketingActionStepFourView(UpdateView):
+    model = Newsletter
+    form_class = MarketingStepFourForm
+    template_name = 'newsletters/actions/step4.html'
+
+
+class MarketingActionStepFiveView(TemplateView):
+    template_name = 'newsletters/actions/step5.html'
+
 
 
 def generate(request):

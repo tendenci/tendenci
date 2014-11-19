@@ -52,6 +52,16 @@ DEFAULT_TEMPLATE_CHOICES = (
     ('newsletters/templates/default/Two Column Right Sidebar.html', 'Two Column Right Sidebar'),
 )
 
+ACTIONTYPE_CHOICES = (
+    ('Distribution E-mail', _('Distribution E-mail')),
+    ('Direct Mail Letter', _('Direct Mail Letter')),
+    ('Phone Call', _('Phone Call')),
+    ('Press Release', _('Press Release')),
+    ('Direct Mail Post Card', _('Direct Mail Post Card')),
+    ('Newspaper Advertisement', _('Newspaper Advertisement')),
+    ('Favorable Newspaper Article', _('Favorable Newspaper Article')),
+    ('Unfavorable Newspaper Article', _('Unfavorable Newspaper Article'))
+)
 """
 Choices for Old Form (t4 version)
 """
@@ -128,11 +138,13 @@ class Newsletter(models.Model):
     email = models.ForeignKey(Email, null=True)
 
     subject = models.CharField(max_length=255, null=True, blank=True)
+    actiontype = models.CharField(max_length=30, choices=ACTIONTYPE_CHOICES, default='Distribution E-mail')
+    actionname = models.CharField(max_length=255, null=True, blank=True)
 
     # recipient, subject fields
     member_only = models.BooleanField(default=False)
     send_to_email2 = models.BooleanField(default=False)
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
+    group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, blank=True)
     include_login = models.BooleanField()
     personalize_subject_first_name = models.BooleanField()
     personalize_subject_last_name = models.BooleanField()
@@ -157,6 +169,9 @@ class Newsletter(models.Model):
 
     # format
     format = models.IntegerField(default=0, choices=FORMAT_CHOICES)
+
+    # accept software license agreement
+    sla = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.subject

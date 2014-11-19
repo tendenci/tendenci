@@ -92,6 +92,7 @@ class OldGenerateForm(forms.ModelForm):
             subject = subj
         nl = super(OldGenerateForm, self).save(*args, **kwargs)
         nl.subject = subject
+        nl.actionname = subject
         if nl.default_template:
             template = render_to_string(nl.default_template, context_instance=RequestContext(self.request))
             email_content = nl.generate_newsletter(self.request, template)
@@ -112,3 +113,43 @@ class OldGenerateForm(forms.ModelForm):
         nl.save()
 
         return nl
+
+
+class MarketingStepOneForm(forms.ModelForm):
+    class Meta:
+        model = Newsletter
+        fields= ('actiontype', 'actionname',)
+
+
+class MarketingStepTwoForm(forms.ModelForm):
+    class Meta:
+        model = Newsletter
+
+
+class MarketingStepThreeForm(forms.ModelForm):
+    class Meta:
+        model = Newsletter
+        fields = ('member_only', 'group',)
+
+    def clean_group(self):
+        data = self.cleaned_data
+        group = data.get('group', None)
+        member_only = data.get('member_only', False)
+
+        if not member_only and not group:
+            raise forms.ValidationError(_('Usergroup field is required if Send to members only is unchecked.'))
+
+        return group
+
+
+class MarketingStepFourForm(forms.ModelForm):
+    class Meta:
+        model = Newsletter
+        fields = ('send_to_email2', 'sla',)
+
+    def __init__(self, *args, **kwargs):
+        super(MarketingStepFourForm, self).__init__(*args, **kwargs)
+        self.fields['sla'].initial = False
+
+
+
