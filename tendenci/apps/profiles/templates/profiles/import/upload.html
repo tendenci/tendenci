@@ -1,18 +1,22 @@
 {% extends "profiles/base-wide.html" %}
-{% load profile_tags %}
-{% load base_tags %}
-{% load base_filters %}
-{% load styled_forms %}
 {% load i18n %}
+{% load static from staticfiles %}
+{% load url from future %}
+{% load base_filters %}
+{% load base_tags %}
+{% load profile_tags %}
+{% load styled_forms %}
+
 
 {% block title %}{% trans 'Import Users from CSV file' %}{% endblock %}
 
+
 {% block extra_head %}
-{{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/user-import.css">
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/user-import.css' %}">
     <style>
-        .error{
+        .error {
             color: red;
         }
         .template-download{
@@ -58,126 +62,124 @@
         	list-style: none;
         }
     </style>
-
 {% endblock %}
 
 {% block body %}
-<div class="t">
-	{% users_nav request.user None %}
-<div id="import-wrap">
+    <div class="t">
+        {% users_nav request.user None %}
 
-    <h1>{% trans "Import Users" %}</h1>
+        <div id="import-wrap">
+            <h1>{% trans "Import Users" %}</h1>
 
-    <div id="import-instruction">
-        <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
-        {% blocktrans %}
-        <h3>How to prepare the spreadsheet (.csv file)?</h3>
-        <ul>
-           <li>
-               The required fields are the field(s) in the selected key (see the field "Identify duplicates by" below).
-               For example, if "Email" is selected as the key, the email field should be included in your spreadsheet.
-           </li>
+            <div id="import-instruction">
+                <p style="margin-bottom:0;">
+                    {% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}
+                </p>
 
-            <li>
-               Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.
-           </li>
-        </ul>
-        {% endblocktrans %}
+                {% blocktrans %}
+                    <h3>How to prepare the spreadsheet (.csv file)?</h3>
+                    <ul>
+                       <li>
+                           The required fields are the field(s) in the selected key (see the field "Identify duplicates by" below).
+                           For example, if "Email" is selected as the key, the email field should be included in your spreadsheet.
+                       </li>
 
-    </div>
+                        <li>
+                           Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.
+                       </li>
+                    </ul>
+                {% endblocktrans %}
+            </div>
 
-    <div class="template-download">
-        <a href="{% url profiles.download_user_template %}">
-        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
-        </a>
+            <div class="template-download">
+                <a href="{% url 'profiles.download_user_template' %}">
+                    <img src="{% static 'images/icons/xls-icon.gif' %}" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
+                </a>
 
-        <div class="link">
-            <a href="{% url profiles.download_user_template %}">{% trans "Download Template" %}</a>
+                <div class="link">
+                    <a href="{% url 'profiles.download_user_template' %}">{% trans "Download Template" %}</a>
+                </div>
+            </div>
 
+            <div class="clear"></div>
+
+            <form method="post" action="{% url 'profiles.user_import' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div id="upload-form-wrap">
+                    <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>
+
+                    {% if form.errors.values %}
+                        <div class="errors well">
+                            {% trans 'There were some problems in the form. Please review. Thanks!' %}
+                            {% for error in form.non_field_errors %}
+                                <p><a href="#">{{ error }}</a></p>
+                            {% endfor %}
+
+                            {% for field in form %}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+
+                        </div>
+                    {% endif %}
+
+                    <div class="fields-block import-fields">
+                        {% if form.upload_file.errors %}
+                            <div class="error">
+                                {% for error in form.upload_file.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="import-field">{{ form.upload_file }}</div>
+
+                        <div class="field-label">{% trans "Make Users" %}</div>
+                        <div>{{ form.interactive }}</div>
+
+                        {% if form.override.errors %}
+                            <div class="error">
+                                {% for error in form.override.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="import-field">
+                            <div class="field-label">{% trans "Update" %}</div>
+                            <div>{{ form.override }}</div>
+                        </div>
+
+                        {% if form.key.errors %}
+                            <div class="error">
+                                {% for error in form.key.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="import-field">
+                            <div class="field-label">{% trans "Identify duplicates by" %}</div>
+                            <div>{{ form.key }}</div>
+                        </div>
+
+                        <div class="field-label">{% trans "Add Users to Group" %}</div>
+                        <div>{{ form.group_id }}</div>
+
+                        <div class="reset-group">{{form.clear_group_membership}}
+                            <label for="id_clear_group_membership">{% trans "Delete members in group before importing" %}</label>
+                        </div>
+
+                        <div class="prev-btn">
+                            <input type="submit" value="{% trans 'Preview Import' %}" class="btn btn-primary">
+                        </div>
+                    </div>
+
+                </div>
+            </form>
         </div>
     </div>
-
-    <div class="clear"></div>
-
-    <form method='post' action='{% url profiles.user_import %}' enctype="multipart/form-data">
-    {% csrf_token %}
-    <div id="upload-form-wrap">
-        <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>
-
-        {% if form.errors.values %}
-        <div class="errors well">
-        {% trans 'There were some problems in the form. Please review. Thanks!' %}
-        {% for error in form.non_field_errors %}
-            <p><a href="#">{{ error }}</a></p>
-        {% endfor %}
-
-        {% for field in form %}
-            {% if field.errors %}
-                  {% for error in field.errors %}
-                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
-                  {% endfor %}
-            {% endif %}
-        {% endfor %}
-
-        </div>
-        {% endif %}
-
-        <div class="fields-block import-fields">
-        	 {% if form.upload_file.errors %}
-            <div class="error">
-                {% for error in form.upload_file.errors %}
-                <div>{{ error }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        	 <div class="import-field">{{ form.upload_file }}</div>
-
-        	<div class="field-label">{% trans "Make Users" %}</div>
-            <div>{{ form.interactive }}</div>
-
-            {% if form.override.errors %}
-            <div class="error">
-                {% for error in form.override.errors %}
-                <div>{{ error }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <div class="import-field">
-                <div class="field-label">{% trans "Update" %}</div>
-                <div>{{ form.override }}</div>
-            </div>
-
-            {% if form.key.errors %}
-            <div class="error">
-                {% for error in form.key.errors %}
-                <div>{{ error }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <div class="import-field">
-                 <div class="field-label">{% trans "Identify duplicates by" %}</div>
-                <div>{{ form.key }}</div>
-            </div>
-
-            <div class="field-label">{% trans "Add Users to Group" %}</div>
-            <div>{{ form.group_id }}</div>
-
-           <div class="reset-group">{{form.clear_group_membership}}
-			<label for="id_clear_group_membership">{% trans "Delete members in group before importing" %}</label>
-		  </div>
-
-
-
-
-            <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn btn-primary"></div>
-        </div>
-
-     </div>
-    </form>
-
-</div>
-</div>
 {% endblock %}
-
