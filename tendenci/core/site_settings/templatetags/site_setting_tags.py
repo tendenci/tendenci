@@ -2,7 +2,9 @@ from django.template import Library, Node
 
 from tendenci.core.site_settings.utils import get_setting as gs
 
+
 register = Library()
+
 
 class GetSettingNode(Node):
     def __init__(self, scope, scope_category, name, context_var=None):
@@ -14,6 +16,7 @@ class GetSettingNode(Node):
         value = gs(self.scope, self.scope_category, self.name)
         context[self.context_var] = value
         return ''
+
 
 @register.tag
 def get_setting(parser, token):
@@ -37,6 +40,7 @@ def get_setting(parser, token):
 
     return GetSettingNode(scope, scope_category, name, context_var=context_var)
 
+
 @register.inclusion_tag("site_settings/options.html", takes_context=True)
 def settings_options(context, user, setting):
     context.update({
@@ -45,10 +49,20 @@ def settings_options(context, user, setting):
     })
     return context
 
+
 @register.inclusion_tag("site_settings/nav.html", takes_context=True)
 def settings_nav(context, user, scope_category=None):
     context.update({
         "user": user,
-        'scope_category': scope_category
+        "scope_category": scope_category
+    })
+    return context
+
+
+@register.inclusion_tag("site_settings/top_nav_items.html", takes_context=True)
+def settings_current_app(context, user, scope_category=None):
+    context.update({
+        "user": user,
+        "app_object": scope_category
     })
     return context
