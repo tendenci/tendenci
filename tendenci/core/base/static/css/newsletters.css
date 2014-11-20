@@ -136,8 +136,14 @@ ul.errorlist li{
     margin: 10px 0;
 }
 
-.step-content-item input[type="text"] {
+.step-content-item input[name="actionname"] {
     width: 100%;
+}
+
+.emails-table thead tr th,
+.emails-table tbody tr td {
+    text-align: center;
+    padding: 5px;
 }
 
 .cf:after {

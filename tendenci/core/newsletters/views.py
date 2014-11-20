@@ -7,9 +7,12 @@ from django.shortcuts import get_object_or_404, render_to_response, render, redi
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView, FormView, UpdateView, DetailView
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView
 from django.core.urlresolvers import reverse, reverse_lazy
+
 from tendenci.core.base.http import Http403
+from tendenci.core.emails.models import Email
 from tendenci.core.newsletters.utils import apply_template_media
 from tendenci.core.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.core.newsletters.forms import (
@@ -17,7 +20,8 @@ from tendenci.core.newsletters.forms import (
     OldGenerateForm,
     MarketingStepOneForm,
     MarketingStepThreeForm,
-    MarketingStepFourForm)
+    MarketingStepFourForm,
+    MarketingStep2EmailFilterForm)
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
@@ -83,9 +87,33 @@ class MarketingActionStepOneView(UpdateView):
         return reverse_lazy('newsletter.action.step2', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepTwoView(DetailView):
-    model = Newsletter
+class MarketingActionStepTwoView(ListView):
+    paginate_by = 10
+    model = Email
     template_name = 'newsletters/actions/step2.html'
+
+
+    def get(self, request, *args, **kwargs):
+        self.form = MarketingStep2EmailFilterForm(request.GET)
+        return super(MarketingActionStepTwoView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(MarketingActionStepTwoView, self).get_context_data(**kwargs)
+        pk = int(self.kwargs.get('pk'))
+        context['newsletter'] = get_object_or_404(Newsletter, pk=pk)
+        context['form'] = self.form
+        return context
+
+    def get_queryset(self):
+        qset = super(MarketingActionStepTwoView, self).get_queryset()
+        qset = qset.filter(status=True, status_detail='active').order_by('-pk')
+        request = self.request
+        form = self.form
+
+        if 'search_criteria' in request.GET and 'q' in request.GET:
+            qset = form.filter_email(request, qset)
+
+        return qset
 
 
 class MarketingActionStepThreeView(UpdateView):

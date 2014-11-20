@@ -18,6 +18,17 @@ from tendenci.core.newsletters.models import (
     TYPE_CHOICES
 )
 
+EMAIL_SEARCH_CRITERIA_CHOICES = (
+    ('subject__icontains', _('Subject')),
+    ('id', _('Email ID #')),
+    ('sender__icontains', _('Sender')),
+    ('body__icontains', _('Body of Email')),
+    ('owner__id', _('Owner User ID #')),
+    ('owner_username', _('Owner Username')),
+    ('creator__id', _('Creator User ID #')),
+    ('creator_username', _('Creator Username'))
+)
+
 
 class TemplateForm(forms.ModelForm):
     class Meta:
@@ -128,11 +139,6 @@ class MarketingStepOneForm(forms.ModelForm):
         self.fields['actionname'].required = True
 
 
-class MarketingStepTwoForm(forms.ModelForm):
-    class Meta:
-        model = Newsletter
-
-
 class MarketingStepThreeForm(forms.ModelForm):
     class Meta:
         model = Newsletter
@@ -165,6 +171,19 @@ class MarketingStepFourForm(forms.ModelForm):
                 (False, _('No')),
                 ),
             label=_('include emal2'))
+
+
+class MarketingStep2EmailFilterForm(forms.Form):
+    search_criteria = forms.ChoiceField(choices=EMAIL_SEARCH_CRITERIA_CHOICES)
+    q = forms.CharField(required=False)
+
+    def filter_email(self, request, queryset):
+        search_criteria = request.GET.get('search_criteria')
+        q = request.GET.get('q')
+        query = {search_criteria: q}
+        queryset = queryset.filter(**query)
+
+        return queryset
 
 
 
