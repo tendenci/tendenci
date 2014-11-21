@@ -162,7 +162,6 @@ class MarketingStepFourForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MarketingStepFourForm, self).__init__(*args, **kwargs)
-        self.fields['sla'].initial = False
         self.fields['sla'].required = True
 
         self.fields['send_to_email2'] = forms.ChoiceField(
@@ -171,6 +170,12 @@ class MarketingStepFourForm(forms.ModelForm):
                 (False, _('No')),
                 ),
             label=_('include emal2'))
+
+
+class NewslettterEmailUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Newsletter
+        fields = ('email',)
 
 
 class MarketingStep2EmailFilterForm(forms.Form):

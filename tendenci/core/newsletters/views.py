@@ -21,7 +21,9 @@ from tendenci.core.newsletters.forms import (
     MarketingStepOneForm,
     MarketingStepThreeForm,
     MarketingStepFourForm,
-    MarketingStep2EmailFilterForm)
+    MarketingStep2EmailFilterForm,
+    NewslettterEmailUpdateForm
+    )
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
@@ -116,6 +118,16 @@ class MarketingActionStepTwoView(ListView):
         return qset
 
 
+class NewsletterUpdateEmailView(UpdateView):
+    model = Newsletter
+    form_class = NewslettterEmailUpdateForm
+    template_name = 'newsletters/actions/step2.html'
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step3', kwargs={'pk': obj.pk})
+
+
 class MarketingActionStepThreeView(UpdateView):
     model = Newsletter
     form_class = MarketingStepThreeForm
@@ -131,9 +143,15 @@ class MarketingActionStepFourView(UpdateView):
     form_class = MarketingStepFourForm
     template_name = 'newsletters/actions/step4.html'
 
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step5', kwargs={'pk': obj.pk})
 
-class MarketingActionStepFiveView(TemplateView):
+
+class MarketingActionStepFiveView(DetailView):
+    model = Newsletter
     template_name = 'newsletters/actions/step5.html'
+
 
 
 

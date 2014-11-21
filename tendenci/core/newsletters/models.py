@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template import RequestContext
 
+from tendenci.addons.articles.models import Article
 from tendenci.core.emails.models import Email
 from tendenci.core.files.models import file_directory
 from tendenci.core.newsletters.utils import extract_files
@@ -61,6 +62,14 @@ ACTIONTYPE_CHOICES = (
     ('Newspaper Advertisement', _('Newspaper Advertisement')),
     ('Favorable Newspaper Article', _('Favorable Newspaper Article')),
     ('Unfavorable Newspaper Article', _('Unfavorable Newspaper Article'))
+)
+
+NEWSLETTER_SEND_STATUS_CHOICES = (
+    ('draft', _('Draft')),
+    ('queued', _('Queued')),
+    ('sending', _('Sending')),
+    ('sent', _('Sent')),
+    ('resent', _('Resent'))
 )
 """
 Choices for Old Form (t4 version)
@@ -173,6 +182,15 @@ class Newsletter(models.Model):
     # accept software license agreement
     sla = models.BooleanField(default=False)
 
+    # field pointing to the article if created on send
+    article = models.ForeignKey(Article, null=True, blank=True, on_delete=models.SET_NULL)
+
+    # indicate the send status of the newsletter
+    send_status = models.CharField(
+        max_length=30,
+        choices=NEWSLETTER_SEND_STATUS_CHOICES,
+        default='draft')
+
     def __unicode__(self):
         return self.subject
 
@@ -280,3 +298,17 @@ class Newsletter(models.Model):
                 'events_type': events_type}
 
         return data
+
+    def generate_article(self, user):
+        if not self.article:
+            article = Article.objects.create(
+                creator=user,
+                creator_username=user.username,
+                owner=user,
+                owner_username=user.username,
+                headline=self.email.subject,
+                body=self.email.body,
+            )
+
+            self.article = article
+            self.save()

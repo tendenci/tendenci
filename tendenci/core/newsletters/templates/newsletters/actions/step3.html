@@ -71,9 +71,15 @@
                     {% trans 'Confirm acceptance of site policies and common sense.' %}
                 </div>
                 <div class="step-content-item body-copy-alerts">
-                {% blocktrans %}
-                I agree that I have permission from all users of the user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
-                {% endblocktrans %}
+                {% if object.member_only %}
+                    {% blocktrans %}
+                    I agree that I have permission from all users of the user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans with group=object.group.name %}
+                    I agree that I have permission from all users of the <strong>{{ group }}</strong> user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+                    {% endblocktrans %}
+                {% endif %}
                 </div>
             </div>
         </div>

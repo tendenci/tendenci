@@ -57,7 +57,7 @@
                 </div>
                 {% if not object.member_only %}
                 <div class="step-content-item">
-                    {{ object.group }}&nbsp;&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url groups %}">{% trans 'Search UserGroup' %}</a>
+                    <strong>{{ object.group }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url groups %}">{% trans 'Search UserGroup' %}</a>
                 </div>
                 {% endif %}
             </div>
@@ -65,16 +65,27 @@
         <div class='step-section cf'>
             <div class="step-number"><a href="{% url newsletter.action.step4 object.pk %}">{% trans 'Step 4' %}</a></div>
             <div class="step-contents">
-                <div>
+                <div class="body-copy-yellow">
                     {% trans 'Confirm acceptance of site policies and common sense.' %}
                 </div>
                 <div class="step-content-item body-copy-alerts">
-                {% blocktrans %}
-                I agree that I have permission from all users of the user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
-                {% endblocktrans %}
+                {% if object.member_only %}
+                    {% blocktrans %}
+                    I agree that I have permission from all users of the user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans with group=object.group.name %}
+                    I agree that I have permission from all users of the <strong>{{ group }}</strong> user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+                    {% endblocktrans %}
+                {% endif %}
                 </div>
+                {% if form.sla.errors %}
+                <div class="step-content-item body-copy-alerts">
+                    {{ form.sla.errors }}
+                </div>
+                {% endif %}
                 <div class="step-content-item">
-                    {{ form.sla }}&nbsp;&nbsp; {% trans 'I Agree' %}
+                    <input type="checkbox" name="sla">&nbsp;&nbsp; {% trans 'I Agree' %}
                 </div>
                 <div class="step-content-item">
                     <input type="submit" value="{% trans 'Accept Software License Agreement' %}" />
