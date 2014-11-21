@@ -644,6 +644,16 @@ html[xmlns] .tcf {
     text-align: center;
 }
 
+.t-top-nav .apps-dropdown {
+    height: auto;
+    max-height: 500px;
+    overflow-x: hidden;
+}
+
+.t-top-nav .panel-heading {
+    padding: 4px 15px;
+}
+
 @media (max-width: 992px) {
     .t-top-nav .inner-top-nav > li > a {
         padding: 5px !important;
@@ -700,5 +710,16 @@ html[xmlns] .tcf {
 
     .profile-dropdown {
         width: 520px;
+    }
+}
+
+@media (max-width: 767px) {
+    .t-top-nav .content-head {
+        color: #999999;
+    }
+
+    .t-top-nav .breakpoint > ul.list-unstyled {
+        border-bottom: 1px solid #333;
+        padding: 10px 0;
     }
 }

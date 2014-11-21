@@ -26,14 +26,14 @@
                 <ul class="dropdown-menu profile-dropdown">
                     <li>
                         <div class="yamm-content custom-yamm-content content-dropdown">
-                            <div class="row">
-                                <ul class="list-unstyled col-sm-3 col-xs-8">
+                            <div class="row breakpoint">
+                                <ul class="list-unstyled col-sm-3 col-xs-12">
                                     <div class="profile-icon">
                                         {% avatar user 128 %}
                                     </div>
                                     <a class="update-avatar-link" href="{% url 'profile.change_avatar' user.profile.pk %}">{% trans 'Update Photo' %}</a>
                                 </ul>
-                                <ul class="list-unstyled col-sm-3 col-xs-8">
+                                <ul class="list-unstyled col-sm-3 col-xs-12">
                                     <li><span class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="{% url 'profile.index' %}">{% if USER_IS_SUPERUSER %}<img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/user_orange.png">
@@ -56,7 +56,7 @@
                                     </li>
                                 </ul>
                                 {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
-                                <ul class="list-unstyled col-sm-3 col-xs-8">
+                                <ul class="list-unstyled col-sm-3 col-xs-12">
                                     <li><span class="content-head">{% trans 'Activities' %}</span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/calendar_view_day.png"/>{% trans 'Events' %}</a></span>
@@ -69,7 +69,7 @@
                                 </ul>
                                 {% endif %}
                                 {% if USER_IS_SUPERUSER %}
-                                <ul class="list-unstyled col-sm-3 col-xs-8">
+                                <ul class="list-unstyled col-sm-3 col-xs-12">
                                     <li><span class="content-head">{% trans 'Administrator' %}</span></li>
                                     <li class="content-item">
                                         <span class="app-name pull-left"><a href="#"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder_user.png"/>{% trans 'Impersonate' %}</a></span>
@@ -342,6 +342,28 @@
                                             </div>
                                          </div>
                                     </div>
+                                    {% if registered_apps.addons %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseEight">
+                                                {% trans '8. Other Apps' %}
+                                            </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseEight" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <ul class="list-unstyled col-sm-6 col-xs-8">
+                                                {% for app in registered_apps.addons %}
+                                                    {% if app.enabled %}
+                                                    <li class="content-item"><span class="app-name pull-left"><a href="{% firstof app.url.list app.url.search %}">{{ app|title }}</a></span></li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </ul>
+                                            </div>
+                                         </div>
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -349,7 +371,7 @@
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/error.png"/><strong>{% trans "Support" %}</strong></a>
+                <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle"><img width="16" height="16" class="nav-icon" src="{{ STATIC_URL }}images/icons/tendenci_white.png"/><strong>{% trans "Support" %}</strong></a>
                 <ul class="dropdown-menu">
                         <li><a href="{% url 'clear_cache' %}"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/computer_delete.png"/>{% trans 'Clear Cache' %}</a></li>
                         <li><a href="//community.tendenci.com/forum/community-support-people-helping-people-11/" target="_blank"><img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/bug_add.png"/>{% trans 'Report an Issue' %}</a></li>
