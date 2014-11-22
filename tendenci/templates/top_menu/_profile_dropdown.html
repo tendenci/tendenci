@@ -1,0 +1,96 @@
+{% load i18n %}
+{% load static from staticfiles %}
+{% load url from future %}
+{% load avatar_tags %}
+
+
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        {# NOTE: Notice repeated DISPLAY_NAME context. This is to avoid newline/whitespace between the <img> and the text #}
+        {% if USER_IS_SUPERUSER %}
+            <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">{{ DISPLAY_NAME }}
+        {% elif USER_IS_MEMBER_EXPIRED %}
+            <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">{{ DISPLAY_NAME }}
+        {% elif USER_IS_MEMBER_ACTIVE %}
+            <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">{{ DISPLAY_NAME }}
+        {% else %}
+            <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">{{ DISPLAY_NAME }}
+        {% endif %}
+    </a>
+
+    <ul class="dropdown-menu profile-dropdown">
+        <li><div class="yamm-content custom-yamm-content content-dropdown"><div class="row">
+            <ul class="list-unstyled col-sm-3 col-xs-12 content-dropdown-col">
+                <div class="profile-icon">
+                    {% avatar user 128 %}
+                </div>
+                <a class="update-avatar-link" href="{% url 'profile.change_avatar' user.profile.pk %}">{% trans 'Update Photo' %}</a>
+            </ul>
+
+            <ul class="list-unstyled col-sm-3 col-xs-12 content-dropdown-col">
+                <li><span class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
+
+                <li class="content-item">
+                    <span class="app-name pull-left">
+                        <a href="{% url 'profile.index' %}">
+                            {% if USER_IS_SUPERUSER %}
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">{% trans 'Profile' %}
+                            {% elif USER_IS_MEMBER_EXPIRED %}
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">{% trans 'Profile' %}
+                            {% elif USER_IS_MEMBER_ACTIVE %}
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">{% trans 'Profile' %}
+                            {% else %}
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">{% trans 'Profile' %}
+                            {% endif %}
+                        </a>
+                    </span>
+                </li>
+
+                {% if MODULE_MEMBERSHIPS_ENABLED %}
+                    <li class="content-item">
+                        <span class="app-name pull-left"><a href="{% url 'profile.search' %}?member_only=on"><img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/>{% trans 'Membership' %}</a></span>
+                    </li>
+                {% endif %}
+
+                {% if MODULE_GROUPS_ENABLED %}
+                    <li class="content-item">
+                        <span class="app-name pull-left"><a href="{% url 'groups' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/group.png' %}"/>{% trans 'Groups' %}</a></span>
+                    </li>
+                {% endif %}
+
+                <li class="content-item">
+                    <span class="app-name pull-left"><a href="{% url 'committees.search' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/>{% trans 'Committees' %}</a></span>
+                </li>
+            </ul>
+
+            {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
+                <ul class="list-unstyled col-sm-3 col-xs-12 content-dropdown-col">
+                    <li><span class="content-head">{% trans 'Activities' %}</span></li>
+
+                    <li class="content-item">
+                        <span class="app-name pull-left"><a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/calendar_view_day.png' %}"/>{% trans 'Events' %}</a></span>
+                    </li>
+
+                    {% if MODULE_DONATIONS_ENABLED %}
+                        <li class="content-item">
+                            <span class="app-name pull-left"><a href="{% url 'donation.add' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/money.png' %}"/>{% trans 'Donate' %}</a></span>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+
+            {% if USER_IS_SUPERUSER %}
+                <ul class="list-unstyled col-sm-3 col-xs-12 content-dropdown-col admin-col">
+                    <li><span class="content-head">{% trans 'Administrator' %}</span></li>
+                    <li class="content-item">
+                        <span class="app-name pull-left">
+                            <a href="#">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/folder_user.png' %}"/>{% trans 'Impersonate' %}
+                            </a>
+                        </span>
+                    </li>
+                </ul>
+            {% endif %}
+        </div></div></li>
+    </ul>
+</li>

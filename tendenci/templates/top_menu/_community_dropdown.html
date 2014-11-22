@@ -1,0 +1,90 @@
+{% load i18n %}
+{% load static from staticfiles %}
+{% load url from future %}
+
+
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/>{% trans "Community" %}
+    </a>
+
+    <ul class="dropdown-menu community-dropdown">
+        <li><div class="yamm-content custom-yamm-content content-dropdown"><div class="row">
+            <ul class="list-unstyled col-sm-6 col-xs-12 content-dropdown-col">
+                <li>
+                    <span class="content-head">{% trans 'Member' %}</span>
+                </li>
+
+                {% if MODULE_MEMBERSHIPS_ENABLED %}
+                    <li class="content-item">
+                        <span class="app-name pull-left">
+                            <a href="{% url 'profile.search' %}?member_only=on">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/>{% trans 'Membership' %}
+                            </a>
+                        </span>
+                    </li>
+                {% endif %}
+
+                {% if MODULE_GROUPS_ENABLED %}
+                    <li class="content-item">
+                        <span class="app-name pull-left">
+                            <a href="{% url 'groups' %}">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/group.png' %}"/>{% trans 'Groups' %}
+                            </a>
+                        </span>
+                    </li>
+                {% endif %}
+
+                <li class="content-item">
+                    <span class="app-name pull-left">
+                        <a href="{% url 'committees.search' %}">
+                            <img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/>{% trans 'Committees' %}
+                        </a>
+                    </span>
+                </li>
+
+                {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                    <li class="content-item">
+                        <span class="app-name pull-left">
+                            <a href="{% url 'corpmembership.mycorps' %}">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/>{% trans 'Corporate Membership' %}
+                            </a>
+                        </span>
+                    </li>
+                {% endif %}
+
+                <li class="content-item">
+                    <span class="app-name pull-left">
+                        <a href="//community.tendenci.com">
+                            <img class="nav-icon" src="{% static 'famfamfam/icons/comment.png' %}"/>{% trans 'Community Forum' %}
+                        </a>
+                    </span>
+                </li>
+
+                {% if SITE_ADMIN_EMAIL %}
+                    <li class="content-item">
+                        <span class="app-name pull-left">
+                            <a a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="{% trans 'Email Administrators' %}">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/email.png' %}"/>{% trans 'Email Administrators' %}
+                            </a>
+                        </span>
+                    </li>
+                {% endif %}
+            </ul>
+
+            {% if USER_IS_SUPERUSER %}
+                <ul class="list-unstyled col-sm-6 col-xs-12 content-dropdown-col">
+                    <li><span class="content-head">{% trans 'Administrator' %}</span></li>
+
+                    <li class="content-item">
+                        <span class="app-name pull-left">
+                            <a href="#">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/>{% trans 'Reports' %}
+                            </a>
+                        </span>
+                    </li>
+                </ul>
+            {% endif %}
+        </div></div></li>
+    </ul>
+</li>

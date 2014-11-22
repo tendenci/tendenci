@@ -1,0 +1,62 @@
+{% load i18n %}
+{% load static from staticfiles %}
+{% load url from future %}
+
+
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img width="16" height="16" class="nav-icon" src="{% static 'images/icons/tendenci_white.png' %}"/><strong>{% trans "Support" %}</strong>
+    </a>
+
+    <ul class="dropdown-menu support-dropdown">
+        <li>
+            <a href="{% url 'clear_cache' %}">
+                <img class="nav-icon" src="{% static 'famfamfam/icons/computer_delete.png' %}"/>{% trans 'Clear Cache' %}
+            </a>
+        </li>
+
+        <li>
+            <a href="//community.tendenci.com/forum/community-support-people-helping-people-11/" target="_blank">
+                <img class="nav-icon" src="{% static 'famfamfam/icons/bug_add.png' %}"/>{% trans 'Report an Issue' %}
+            </a>
+        </li>
+
+        <li>
+            <a href="//community.tendenci.com/forum/tendenci-roadmap-21/" target="_blank">
+                <img class="nav-icon" src="{% static 'famfamfam/icons/application_get.png' %}"/>{% trans 'Request an App' %}
+            </a>
+        </li>
+
+        <li>
+            <a href="http://tendenci.com/help-files/" target="_blank">
+                <img class="nav-icon" src="{% static 'famfamfam/icons/help.png' %}"/>{% trans "Search Help Files" %}
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'update_tendenci' %}">
+                <img width="16" height="16" class="nav-icon" src="{% static 'images/icons/tendenci_white.png' %}"/>{% trans "Update Tendenci" %}
+            </a>
+        </li>
+
+        <li>
+            <a href="//github.com/tendenci/tendenci">
+                {% blocktrans with version=TENDENCI_VERSION %}Current Version: {{ version }}{% endblocktrans %}
+            </a>
+        </li>
+
+        {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
+            <li>
+                <a href="http://schipul.com/py/" target="_blank">
+                    <img class="nav-icon" src="{% static 'famfamfam/icons/money_add.png' %}"/>{% trans "Make a Payment" %}
+                </a>
+            </li>
+        {% endif %}
+
+        <li>
+            <a  href="http://support.tendenci.com" target="_blank">
+                <img class="nav-icon" src="{% static 'famfamfam/icons/telephone.png' %}"/>{% trans "Contact Tendenci" %}
+            </a>
+        </li>
+    </ul>
+</li>
