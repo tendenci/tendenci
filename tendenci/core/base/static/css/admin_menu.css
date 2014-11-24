@@ -461,7 +461,7 @@ a.edit-setting {
     display: none;
 }
 
-#admin-bar li#themecolor>a {
+#admin-bar li#themecolor > a {
     position: relative;
     padding-left: 20px;
 }
