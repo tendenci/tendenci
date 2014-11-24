@@ -1,5 +1,5 @@
 html {
-    margin-top: 30px !important;
+    margin-top: 40px !important;
 }
 
 #admin-bar,
@@ -763,6 +763,10 @@ html[xmlns] .tcf {
 }
 
 @media (min-width: 768px) {
+    .t-top-nav .navbar-nav {
+        margin: 0;
+    }
+
     .content-dropdown {
         width: 510px;
     }
