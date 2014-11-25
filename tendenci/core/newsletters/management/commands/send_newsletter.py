@@ -19,11 +19,13 @@ class Command(BaseCommand):
             '--newsletter',
             action='store',
             dest='newsletter',
+            default=0,
             help='Newsletter ID'),
 
     )
 
     def handle(self, *args, **options):
+        from tendenci.core.emails.models import Email
         from tendenci.core.newsletters.models import Newsletter
 
         newsletter_id = options.get('newsletter', 0)
@@ -39,3 +41,36 @@ class Command(BaseCommand):
 
         if not newsletter:
             raise CommandError('You are trying to send a newsletter that does not exist.')
+
+        recipients = newsletter.get_recipients()
+        email = newsletter.email
+
+        for recipient in recipients:
+            subject = email.subject
+            body = email.body
+
+            if '[firstname]' in subject:
+                subject = subject.replace('[firstname]', recipient.member.first_name)
+
+            if '[lastname]' in subject:
+                subject = subject.replace('[lastname]', recipient.member.last_name)
+
+            if '[username]' in body:
+                body = body.replace('[username]', recipient.member.username)
+
+            if '[firstname]' in body:
+                body = body.replace('[firstname]', recipient.member.first_name)
+
+            email_to_send = Email(
+                    subject=subject,
+                    body=body,
+                    sender=email.sender,
+                    sender_display=email.sender_display,
+                    reply_to=email.reply_to,
+                    recipient=recipient.member.email
+                    )
+            email_to_send.send()
+
+            if newsletter.send_to_email2 and recipient.member.profile.email2:
+                email_to_send.recipient = recipient.member.profile.email2
+                email_to_send.send()

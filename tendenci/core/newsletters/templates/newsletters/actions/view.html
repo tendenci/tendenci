@@ -14,9 +14,9 @@
 {% block body %}
 <div class="t">
  <div id="t-newsletters">
-    <h2>{% trans 'Marketing Action Step 5 of 5' %}</h2>
+    <h2>View Newsletter</h2>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step1 object.pk %}">{% trans 'Step 1' %}</a></div>
+            <div class="step-number">{% trans 'Step 1' %}</div>
             <div class="step-contents">
                 <div>
                     {% trans 'Specify Action Name and General Properties.' %}
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step2 object.pk %}">{% trans 'Step 2' %}</a></div>
+            <div class="step-number">{% trans 'Step 2' %}</div>
             <div class="step-contents">
                 <div>
                     {% trans 'E-mail to bind to this Marketing Action.' %}
@@ -42,7 +42,7 @@
             </div>
         </div>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step3 object.pk %}">{% trans 'Step 3' %}</a></div>
+            <div class="step-number">{% trans 'Step 3' %}</div>
             <div class="step-contents">
                 <div>
                     {% if object.member_only %}
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step4 object.pk %}">{% trans 'Step 4' %}</a></div>
+            <div class="step-number">{% trans 'Step 4' %}</div>
             <div class="step-contents">
                 <div>
                     {% trans 'Confirm acceptance of site policies and common sense.' %}
@@ -80,7 +80,7 @@
         <div class='step-section cf'>
             <div class="step-number">{% trans 'Step 5' %}</div>
             <div class="step-contents">
-                <div class="body-copy-yellow">
+                <div>
                     {% trans 'Send Email' %}
                 </div>
                 <div class="step-content-item">

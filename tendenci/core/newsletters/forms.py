@@ -72,11 +72,13 @@ class OldGenerateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         super(OldGenerateForm, self).__init__(*args, **kwargs)
+        not_required = ['actionname', 'actiontype', 'article', 'send_status']
         self.fields['default_template'].blank = False
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')
-        self.fields['actionname'].required = False
-        self.fields['actiontype'].required = False
+
+        for key in not_required:
+            self.fields[key].required = False
 
     def clean_group(self):
         data = self.cleaned_data
@@ -170,6 +172,12 @@ class MarketingStepFourForm(forms.ModelForm):
                 (False, _('No')),
                 ),
             label=_('include emal2'))
+
+
+class MarketingStepFiveForm(forms.ModelForm):
+    class Meta:
+        model = Newsletter
+        fields = ('send_status',)
 
 
 class NewslettterEmailUpdateForm(forms.ModelForm):

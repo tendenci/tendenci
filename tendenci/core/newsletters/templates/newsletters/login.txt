@@ -7,8 +7,8 @@
    </p>
    <blockquote>
         {% trans "Username:" %} [username]<br />
-        {% trans "Password:" %} [password]
    </blockquote>
+   {% include 'newsletters/password.txt' %}
    <p>{% trans "If you have any questions, please contact the Site Administrator." %}</p>
 </font>
 <hr>

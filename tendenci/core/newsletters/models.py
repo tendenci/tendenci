@@ -14,6 +14,7 @@ from tendenci.core.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.core.newsletters.utils import apply_template_media
 
+
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
@@ -21,7 +22,7 @@ from tendenci.core.newsletters.utils import (
     newsletter_pages_list,
     newsletter_events_list)
 
-from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.utils import get_default_group
 
 from tinymce import models as tinymce_models
@@ -69,6 +70,7 @@ NEWSLETTER_SEND_STATUS_CHOICES = (
     ('queued', _('Queued')),
     ('sending', _('Sending')),
     ('sent', _('Sent')),
+    ('resending', _('Resending')),
     ('resent', _('Resent'))
 )
 """
@@ -192,7 +194,7 @@ class Newsletter(models.Model):
         default='draft')
 
     def __unicode__(self):
-        return self.subject
+        return self.actionname
 
     def generate_newsletter(self, request, template):
         if self.default_template:
@@ -307,8 +309,37 @@ class Newsletter(models.Model):
                 owner=user,
                 owner_username=user.username,
                 headline=self.email.subject,
-                body=self.email.body,
-            )
+                body=self.email.body)
 
             self.article = article
             self.save()
+            return True
+
+        return False
+
+    def get_recipients(self):
+        """
+        Method that will generate the recipients of the newsletter
+        """
+
+        if self.member_only:
+            members = GroupMembership.objects.filter(
+                status=True,
+                status_detail='active').order_by(
+                'member__email').distinct(
+                'member__email')
+
+        else:
+            group = self.group
+            members = GroupMembership.objects.filter(
+                group=group,
+                status=True,
+                status_detail='active').order_by(
+                'member__email').distinct(
+                'member__email')
+
+        return members
+
+
+
+

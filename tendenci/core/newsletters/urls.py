@@ -9,7 +9,8 @@ from tendenci.core.newsletters.views import (
     NewsletterUpdateEmailView,
     MarketingActionStepThreeView,
     MarketingActionStepFourView,
-    MarketingActionStepFiveView)
+    MarketingActionStepFiveView,
+    NewsletterDetailView)
 
 urlpatterns = patterns('tendenci.core.newsletters.views',
     url(r'^newsletter_generator/', NewsletterGeneratorView.as_view(), name="newsletter.generator"),
@@ -26,5 +27,7 @@ urlpatterns = patterns('tendenci.core.newsletters.views',
     url(r'^newsletters/actions/step3/(?P<pk>\d+)', login_required(MarketingActionStepThreeView.as_view()), name='newsletter.action.step3'),
     url(r'^newsletters/actions/step4/(?P<pk>\d+)', login_required(MarketingActionStepFourView.as_view()), name='newsletter.action.step4'),
     url(r'^newsletters/actions/step5/(?P<pk>\d+)', login_required(MarketingActionStepFiveView.as_view()), name='newsletter.action.step5'),
+
+    url(r'^newsletters/view/details/(?P<pk>\d+)', login_required(NewsletterDetailView.as_view()), name='newsletter.detail.view'),
 
 )

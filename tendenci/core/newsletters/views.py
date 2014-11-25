@@ -21,6 +21,7 @@ from tendenci.core.newsletters.forms import (
     MarketingStepOneForm,
     MarketingStepThreeForm,
     MarketingStepFourForm,
+    MarketingStepFiveForm,
     MarketingStep2EmailFilterForm,
     NewslettterEmailUpdateForm
     )
@@ -63,7 +64,7 @@ class NewsletterGeneratorOrigView(FormView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse_lazy('newsletter.action.step1', kwargs={'pk': self.object_id })
+        return reverse_lazy('newsletter.action.step4', kwargs={'pk': self.object_id })
 
     def get_context_data(self, **kwargs):
         context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
@@ -148,9 +149,24 @@ class MarketingActionStepFourView(UpdateView):
         return reverse_lazy('newsletter.action.step5', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepFiveView(DetailView):
+class MarketingActionStepFiveView(UpdateView):
     model = Newsletter
     template_name = 'newsletters/actions/step5.html'
+    form_class = MarketingStepFiveForm
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.view', kwargs={'pk': obj.pk})
+
+
+class NewsletterDetailView(DetailView):
+    model = Newsletter
+    template_name = 'newsletters/actions/view.html'
+
+    def dispatch(self, request, *args, **kwargs):
+
+        return super(NewsletterDetailView, self).dispatch(request, *args, **kwargs)
+
 
 
 
