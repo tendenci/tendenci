@@ -1,5 +1,5 @@
 html {
-    margin-top: 40px !important;
+    margin-top: 40px;
 }
 
 #admin-bar,
@@ -558,7 +558,6 @@ html[xmlns] .tcf {
 .t-top-nav .dropdown-menu {
     max-width: 1170px;
     top: 100%;
-    width: auto;
 }
 
 .t-top-nav .yamm-content {
@@ -644,7 +643,7 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .inner-top-nav {
-    margin-bottom: 0;
+    margin: 0;
     list-style: none;
     padding-left: 0;
 }
@@ -705,6 +704,10 @@ html[xmlns] .tcf {
     overflow-x: hidden;
 }
 
+.apps-dropdown .panel-group {
+    margin: 0;
+}
+
 .t-top-nav .panel-heading {
     padding: 4px 15px;
 }
@@ -720,16 +723,8 @@ html[xmlns] .tcf {
     padding: 0 1px;
 }
 
-@media (max-width: 992px) {
-    .t-top-nav .navbar-form input.form-control {
-        width: 80%;
-    }
 
-    .t-top-nav .inner-top-nav {
-        margin-left: -15px;
-    }
-}
-
+/* Extra small devices (< 768px) */
 @media (max-width: 767px) {
     .t-top-nav a:link,
     .t-top-nav a:visited {
@@ -748,7 +743,6 @@ html[xmlns] .tcf {
 
     .t-top-nav .app-name {
         max-width: 100%;
-        width: 50%;
     }
 
     .t-top-nav .lang-scrollable-menu {
@@ -760,11 +754,26 @@ html[xmlns] .tcf {
     .t-top-nav .navbar-form input.form-control {
         width: 100%;
     }
+
+    .t-top-nav .navbar-collapse {
+        padding: 0 15px 5px;
+    }
+
+    .t-top-nav .content-head {
+        color: #999999;
+    }
+
+    .content-dropdown-col {
+        border-bottom: 1px solid #333;
+        padding: 10px 15px;
+    }
 }
 
+
+/* Small devices (768px - 991px) */
 @media (min-width: 768px) {
-    .t-top-nav .navbar-nav {
-        margin: 0;
+    html {
+        margin-top: 80px;
     }
 
     .content-dropdown {
@@ -780,26 +789,46 @@ html[xmlns] .tcf {
     }
 
     .profile-dropdown {
-        width: 520px;
+        width: 685px;
+    }
+
+    .community-dropdown {
+        width: 410px;
     }
 
     .admin-col {
         background-color: #eeffdd;
-        height: 145px;
+    }
+
+    .profile-dropdown .admin-col {
+        height: 154px;
+    }
+
+    .community-dropdown .admin-col {
+        height: 181px;
     }
 }
 
-@media (max-width: 767px) {
-    .t-top-nav .navbar-collapse {
-        padding: 5px 15px;
+@media (max-width: 991px) {
+    .t-top-nav .navbar-form input.form-control {
+        width: 80%;
     }
 
-    .t-top-nav .content-head {
-        color: #999999;
+    .t-top-nav .inner-top-nav {
+        margin-left: -15px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .t-top-nav .inner-top-nav:first-of-type {
+        padding-left: 10px;
     }
 
-    .content-dropdown-col {
-        border-bottom: 1px solid #333;
-        padding: 10px 15px;
+    .t-top-nav .inner-top-nav:last-of-type {
+        padding-right: 10px;
+    }
+
+    .t-top-nav .inner-top-nav > li > a {
+        padding: 10px 5px;
     }
 }

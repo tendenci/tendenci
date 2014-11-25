@@ -39,9 +39,7 @@
 
             <ul class="inner-top-nav navbar-nav navbar-right">
                 {% if USE_I18N %}
-                    <li class="dropdown lang-dropdown">
-                        {% include 'top_menu/change_lang-new.html' %}
-                    </li>
+                    {% include 'top_menu/change_lang-new.html' %}
                 {% else %}
                     <li>
                         <form class="navbar-form"  action="{% url 'haystack_search' %}" method="get" name="search" id="admin-search-box" role="search">
