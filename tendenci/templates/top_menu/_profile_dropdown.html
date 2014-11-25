@@ -65,7 +65,7 @@
 
             {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
                 <ul class="list-unstyled col-sm-3 col-xs-12 content-dropdown-col">
-                    <li><span class="content-head">{% trans 'Activities' %}</span></li>
+                    <li><span class="content-head text-content-head">{% trans 'Activities' %}</span></li>
 
                     <li class="content-item">
                         <span class="app-name pull-left"><a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/calendar_view_day.png' %}"/>{% trans 'Events' %}</a></span>
@@ -81,7 +81,7 @@
 
             {% if USER_IS_SUPERUSER %}
                 <ul class="list-unstyled col-sm-3 col-xs-12 content-dropdown-col admin-col">
-                    <li><span class="content-head">{% trans 'Administrator' %}</span></li>
+                    <li><span class="content-head text-content-head">{% trans 'Administrator' %}</span></li>
                     <li class="content-item">
                         <span class="app-name pull-left">
                             <a href="#">

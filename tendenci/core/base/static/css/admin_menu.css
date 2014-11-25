@@ -575,9 +575,20 @@ html[xmlns] .tcf {
 
 .t-top-nav .content-head,
 .t-top-nav .content-head a {
+    display: block;
     font-weight: bold;
     font-size: 18px;
-    padding: 4px 0;
+    line-height: 1;
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.t-top-nav .text-content-head {
+    padding: 4px;
+}
+
+.t-top-nav .content-head a {
+    padding: 4px;
 }
 
 .t-top-nav .panel-title a {
@@ -591,7 +602,7 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .app-name a {
-    padding: 4px 0;
+    padding: 4px;
 }
 
 .t-top-nav .strong {
@@ -789,7 +800,8 @@ html[xmlns] .tcf {
     }
 
     .profile-dropdown {
-        width: 685px;
+        min-width: 370px;
+        max-width: 930px;
     }
 
     .community-dropdown {
