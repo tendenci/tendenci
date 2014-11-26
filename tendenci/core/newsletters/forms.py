@@ -72,7 +72,8 @@ class OldGenerateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         super(OldGenerateForm, self).__init__(*args, **kwargs)
-        not_required = ['actionname', 'actiontype', 'article', 'send_status']
+        not_required = ['actionname', 'actiontype', 'article', 'send_status',
+        'date_created', 'date_submitted', 'date_email_sent', 'email_sent_count']
         self.fields['default_template'].blank = False
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')
@@ -108,6 +109,8 @@ class OldGenerateForm(forms.ModelForm):
         nl = super(OldGenerateForm, self).save(*args, **kwargs)
         nl.subject = subject
         nl.actionname = subject
+        nl.date_created = datetime.datetime.now()
+        nl.send_status = 'draft'
         if nl.default_template:
             template = render_to_string(nl.default_template, context_instance=RequestContext(self.request))
             email_content = nl.generate_newsletter(self.request, template)
@@ -175,9 +178,23 @@ class MarketingStepFourForm(forms.ModelForm):
 
 
 class MarketingStepFiveForm(forms.ModelForm):
+    create_article = forms.BooleanField(label=_('Create an Article from this Newsletter?'), required=False)
     class Meta:
         model = Newsletter
-        fields = ('send_status',)
+        fields = ('create_article', 'send_status',)
+
+    def save(self, *args, **kwargs):
+        create_article = self.cleaned_data.get('create_article', False)
+        newsletter = super(MarketingStepFiveForm, self).save(*args, **kwargs)
+        newsletter.date_submitted = datetime.datetime.now()
+        newsletter.save()
+
+        if create_article:
+            newsletter.generate_article(newsletter.email.creator)
+
+        newsletter.send_to_recipients()
+
+        return newsletter
 
 
 class NewslettterEmailUpdateForm(forms.ModelForm):

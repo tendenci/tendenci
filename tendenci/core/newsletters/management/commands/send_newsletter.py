@@ -10,28 +10,21 @@ class Command(BaseCommand):
         python manage.py send_newsletter
 
         example:
-        python manage.py send_newsletter --newsletter 1
+        python manage.py send_newsletter 1
 
     """
-    option_list = BaseCommand.option_list + (
-
-        make_option(
-            '--newsletter',
-            action='store',
-            dest='newsletter',
-            default=0,
-            help='Newsletter ID'),
-
-    )
-
     def handle(self, *args, **options):
+        import datetime
         from tendenci.core.emails.models import Email
         from tendenci.core.newsletters.models import Newsletter
+        from django.template.loader import render_to_string
 
-        newsletter_id = options.get('newsletter', 0)
+        print "Started sending newsletter..."
+
+        newsletter_id = int(args[0])
 
         if newsletter_id == 0:
-            raise CommandError('Newsletter ID is required. Usage: ./manage.py send_newsletter --newsletter 1')
+            raise CommandError('Newsletter ID is required. Usage: ./manage.py send_newsletter <newsletter_id>')
 
         newsletter = Newsletter.objects.filter(pk=int(newsletter_id))
         if newsletter.exists():
@@ -42,9 +35,21 @@ class Command(BaseCommand):
         if not newsletter:
             raise CommandError('You are trying to send a newsletter that does not exist.')
 
+        if newsletter.send_status == 'queued':
+            newsletter.send_status = 'sending'
+
+        elif newsletter.send_status == 'sent':
+            newsletter.send_status = 'resending'
+
+        elif newsletter.send_status == 'resent':
+            newsletter.send_status == 'resending'
+
+        newsletter.save()
+
         recipients = newsletter.get_recipients()
         email = newsletter.email
 
+        counter = 0
         for recipient in recipients:
             subject = email.subject
             body = email.body
@@ -70,7 +75,43 @@ class Command(BaseCommand):
                     recipient=recipient.member.email
                     )
             email_to_send.send()
+            counter += 1
+            print "Newsletter sent to %s" % recipient.member.email
 
             if newsletter.send_to_email2 and recipient.member.profile.email2:
                 email_to_send.recipient = recipient.member.profile.email2
                 email_to_send.send()
+                counter += 1
+                print "Newsletter sent to %s" % recipient.member.profile.email2
+
+        if newsletter.send_status == 'sending':
+            newsletter.send_status = 'sent'
+            newsletter.date_email_sent = datetime.datetime.now()
+
+        elif newsletter.send_status == 'resending':
+            newsletter.send_status = 'resent'
+
+        newsletter.email_sent_count = counter
+
+        newsletter.save()
+
+        print "Successfully sent %s newsletter emails." % counter
+
+        print "Sending confirmation message to creator..."
+        # send confirmation email
+        subject = "Newsletter Submission Recap for %s" % newsletter.email.subject
+        params = {'first_name': newsletter.email.creator.first_name,
+                    'subject': newsletter.email.subject,
+                    'count': counter}
+
+        body = render_to_string(
+                'newsletters/newsletter_sent_email_body.html', params)
+
+        email = Email(
+            recipient=newsletter.email.sender,
+            subject=subject,
+            body=body)
+
+        email.send()
+
+        print "Confirmation email sent."

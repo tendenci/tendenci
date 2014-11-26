@@ -1,4 +1,5 @@
 import datetime
+import subprocess
 
 from django.conf import settings
 from django.db import models
@@ -6,6 +7,7 @@ from django.template import Template as DTemplate
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from django.template.defaultfilters import slugify
 
 from tendenci.addons.articles.models import Article
 from tendenci.core.emails.models import Email
@@ -193,6 +195,14 @@ class Newsletter(models.Model):
         choices=NEWSLETTER_SEND_STATUS_CHOICES,
         default='draft')
 
+    # important dates
+    date_created = models.DateTimeField(null=True, blank=True)
+    date_submitted = models.DateTimeField(null=True, blank=True)
+    date_email_sent = models.DateTimeField(null=True, blank=True)
+
+    # number of emails sent
+    email_sent_count = models.IntegerField(null=True, blank=True, default=0)
+
     def __unicode__(self):
         return self.actionname
 
@@ -238,6 +248,7 @@ class Newsletter(models.Model):
                                             context_instance=RequestContext(request))
 
         footer_txt = render_to_string('newsletters/footer.txt',
+                                            {'newsletter': self },
                                             context_instance=RequestContext(request))
 
         login_content = ""
@@ -309,6 +320,7 @@ class Newsletter(models.Model):
                 owner=user,
                 owner_username=user.username,
                 headline=self.email.subject,
+                slug=slugify(self.email.subject),
                 body=self.email.body)
 
             self.article = article
@@ -339,6 +351,12 @@ class Newsletter(models.Model):
                 'member__email')
 
         return members
+
+    def send_to_recipients(self):
+        subprocess.Popen(["python", "manage.py",
+                              "send_newsletter",
+                              str(self.pk)])
+
 
 
 

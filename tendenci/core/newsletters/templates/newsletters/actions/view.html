@@ -88,10 +88,29 @@
                 <strong>Note:</strong> This could take up to 30 minutes or longer depending on the size of your distribution list.
                 </div>
                 {% endblocktrans %}
-                <div class="step-content-item body-copy-alerts">
-                {% blocktrans %}
-                Once submitted the e-mail will be put into the queue for processing within 10 minutes.
-                {% endblocktrans %}
+                <div class="step-content-item">
+                    <span class="body-copy-yellow">{% trans 'Status of email' %} : {{ object.send_status }}</span><br />
+                    {% if object.send_status == 'sent' or object.send_status == 'resent' %}
+                    <p>{% trans "The e-mail has completed processing - all e-mails have been distributed." %}</p>
+                    {% endif %}
+                </div>
+                {% if object.send_status == 'sent' or object.send_status == 'resent' %}
+                <div class="step-content-item">
+                    <p>{% trans 'Total E-mail Sent' %}: {{ object.email_sent_count }}</p>
+                    <p>{% trans 'E-mails completed sending at' %}: {{ object.date_email_sent }}</p>
+                    <p>
+                    <span>{% trans 'Date Created' %}: {{ object.date_created }}</span>&nbsp;&nbsp;
+                    <span>{% trans 'Date Submitted' %}: {{ object.date_submitted }}
+                    </p>
+                </div>
+                {% endif %}
+                {% if object.sent_status == 'resending' %}
+                <div class="step-content-item">
+                <p>{% trans "Kindly refresh this page or wait for the confirmation email to check the status of your newsletter." %}</p>
+                </div>
+                {% endif %}
+                <div class="step-content-item">
+                    <a class="body-copy-yellow" href="javascript:void(0);" id="resend-email" >{% trans 'Resend Email' %}</a>
                 </div>
             </div>
         </div>
@@ -101,5 +120,15 @@
 
 {% block extra_body %}
 {{ block.super }}
-
+<script type="text/javascript">
+    jQuery(document).ready(function(j) {
+        j("#resend-email").click(function() {
+            var x = confirm("Resend this newsletter?");
+            if (x == true)
+                window.location.href = "{% url newsletter.resend.view object.pk %}"
+            else
+                return false;
+        });
+    });
+</script>
 {% endblock %}

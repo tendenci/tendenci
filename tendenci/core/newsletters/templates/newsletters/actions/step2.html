@@ -16,18 +16,18 @@
  <div id="t-newsletters">
     <h2>{% trans 'Marketing Action Step 2 of 5' %}</h2>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step1 newsletter.pk %}">{% trans 'Step 1' %}</a></div>
+            <div class="step-number"><a href="{% url newsletter.action.step1 object.pk %}">{% trans 'Step 1' %}</a></div>
             <div class="step-contents">
                 <div>
                     {% trans 'Specify Action Name and General Properties.' %}
                 </div>
                 <div class="step-content-item">
-                    <strong>{{ newsletter.actionname }}</strong>
+                    <strong>{{ object.actionname }}</strong>
                 </div>
             </div>
         </div>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step2 newsletter.pk %}">{% trans 'Step 2' %}</a></div>
+            <div class="step-number"><a href="{% url newsletter.action.step2 object.pk %}">{% trans 'Step 2' %}</a></div>
             <div class="step-contents">
                 <div>
                     {% trans 'E-mail to bind to this Marketing Action.' %}&nbsp;&nbsp;<a href="{% url email.add %}?next={{ request.path }}">add new email</a>
@@ -68,49 +68,49 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    <form id="email-update-form" action="{% url newsletter.action.step2.update-email newsletter.pk %}" method="POST">{% csrf_token %}
-                        <input type="hidden"  name="email" id="emailid" value="{{ newsletter.email.pk }}" />
+                    <form id="email-update-form" action="{% url newsletter.action.step2.update-email object.pk %}" method="POST">{% csrf_token %}
+                        <input type="hidden"  name="email" id="emailid" value="{{ object.email.pk }}" />
                     </form>
                 </div>
                 <div class="step-content-item">
-                    {% trans 'Sender' %} : <a href="mailto:{{ newsletter.email.sender }}">{{ newsletter.email.sender }}</a>&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url email.viewbody newsletter.email.pk %}" target="_blank">{% trans 'View Email' %}</a>&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url email.edit newsletter.email.pk %}?next={{ request.path }}">{% trans 'Edit Email' %}</a>
+                    {% trans 'Sender' %} : <a href="mailto:{{ object.email.sender }}">{{ object.email.sender }}</a>&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url email.viewbody object.email.pk %}" target="_blank">{% trans 'View Email' %}</a>&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url email.edit object.email.pk %}?next={{ request.path }}">{% trans 'Edit Email' %}</a>
                 </div>
                 <div class="step-content-item">
-                    <strong>{{ newsletter.email.subject }}</strong>
+                    <strong>{{ object.email.subject }}</strong>
                 </div>
 
             </div>
         </div>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step3 newsletter.pk %}">{% trans 'Step 3' %}</a></div>
+            <div class="step-number"><a href="{% url newsletter.action.step3 object.pk %}">{% trans 'Step 3' %}</a></div>
             <div class="step-contents">
                 <div>
-                    {% if newsletter.member_only %}
+                    {% if object.member_only %}
                         {% trans 'Members Only' %}
                     {% else %}
                         {% trans 'Select a Group' %}
                     {% endif %}
                 </div>
-                {% if not newsletter.member_only %}
+                {% if not object.member_only %}
                 <div class="step-content-item">
-                    <strong>{{ newsletter.group }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url groups %}">{% trans 'Search UserGroup' %}</a>
+                    <strong>{{ object.group }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url groups %}">{% trans 'Search UserGroup' %}</a>
                 </div>
                 {% endif %}
             </div>
         </div>
         <div class='step-section cf'>
-            <div class="step-number"><a href="{% url newsletter.action.step4 newsletter.pk %}">{% trans 'Step 4' %}</a></div>
+            <div class="step-number"><a href="{% url newsletter.action.step4 object.pk %}">{% trans 'Step 4' %}</a></div>
             <div class="step-contents">
                 <div>
                     {% trans 'Confirm acceptance of site policies and common sense.' %}
                 </div>
                 <div class="step-content-item body-copy-alerts">
-                {% if newsletter.member_only %}
+                {% if object.member_only %}
                     {% blocktrans %}
                     I agree that I have permission from all users of the user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
                     {% endblocktrans %}
                 {% else %}
-                    {% blocktrans with group=newsletter.group.name %}
+                    {% blocktrans with group=object.group.name %}
                     I agree that I have permission from all users of the <strong>{{ group }}</strong> user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
                     {% endblocktrans %}
                 {% endif %}

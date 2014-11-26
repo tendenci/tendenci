@@ -15,6 +15,7 @@
 <div class="t">
  <div id="t-newsletters">
     <h2>{% trans 'Marketing Action Step 5 of 5' %}</h2>
+    <form action="" method="POST">{% csrf_token %}
         <div class='step-section cf'>
             <div class="step-number"><a href="{% url newsletter.action.step1 object.pk %}">{% trans 'Step 1' %}</a></div>
             <div class="step-contents">
@@ -93,8 +94,16 @@
                 Once submitted the e-mail will be put into the queue for processing within 10 minutes.
                 {% endblocktrans %}
                 </div>
+                <div class="step-content-item">
+                    {{ form.create_article }} &nbsp; {{ form.create_article.label }}
+                </div>
+                <div class="step-content-item">
+                    <input type="checkbox" name="send_status" value="queued" /> &nbsp;
+                    <input type="submit" value="{% trans 'Send Newsletter' %}" />
+                </div>
             </div>
         </div>
+    </form>
  </div>
 </div>
 {% endblock %}

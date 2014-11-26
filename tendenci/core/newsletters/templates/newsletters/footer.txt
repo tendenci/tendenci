@@ -2,10 +2,10 @@
 
 <font face=Arial size=2 color=#000000>
  {% trans "Powered by Tendenci" %} (http://www.tendenci.com)
- {% if action.group %}
+ {% if newletter.group %}
     {% blocktrans %}To unsubscribe, reply with the subject "remove" or click here:{% endblocktrans %}
 
-    {{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser action.group.slug user_this.id %}
+    <a href="{{ SITEs_GLOBAL_SITEURL }}{% url group.deleteuser newsletter.group.slug user_this.id %}">{{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser newsletter.group.slug user_this.id %}</a>
  {% endif %}
     {% blocktrans %}RSS syndication available for the {{ SITE_GLOBAL_SITEDISPLAYNAME }}:{% endblocktrans %}
     <a href="{{ SITE_GLOBAL_SITEURL }}{% url rss.mainrssfeed %}">{% trans 'Stay up to date with our RSS feeds.' %}</a>

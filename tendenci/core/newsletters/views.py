@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
@@ -80,7 +81,17 @@ class NewsletterGeneratorOrigView(FormView):
         return kwargs
 
 
-class MarketingActionStepOneView(UpdateView):
+class NewsletterStatusMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        pk = int(kwargs.get('pk'))
+        newsletter = get_object_or_404(Newsletter, pk=pk)
+        if newsletter.send_status != 'draft':
+            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
+
+        return super(NewsletterStatusMixin, self).dispatch(request, *args, **kwargs)
+
+
+class MarketingActionStepOneView(NewsletterStatusMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepOneForm
     template_name = 'newsletters/actions/step1.html'
@@ -90,7 +101,7 @@ class MarketingActionStepOneView(UpdateView):
         return reverse_lazy('newsletter.action.step2', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepTwoView(ListView):
+class MarketingActionStepTwoView(NewsletterStatusMixin, ListView):
     paginate_by = 10
     model = Email
     template_name = 'newsletters/actions/step2.html'
@@ -103,7 +114,7 @@ class MarketingActionStepTwoView(ListView):
     def get_context_data(self, **kwargs):
         context = super(MarketingActionStepTwoView, self).get_context_data(**kwargs)
         pk = int(self.kwargs.get('pk'))
-        context['newsletter'] = get_object_or_404(Newsletter, pk=pk)
+        context['object'] = get_object_or_404(Newsletter, pk=pk)
         context['form'] = self.form
         return context
 
@@ -119,7 +130,7 @@ class MarketingActionStepTwoView(ListView):
         return qset
 
 
-class NewsletterUpdateEmailView(UpdateView):
+class NewsletterUpdateEmailView(NewsletterStatusMixin, UpdateView):
     model = Newsletter
     form_class = NewslettterEmailUpdateForm
     template_name = 'newsletters/actions/step2.html'
@@ -129,7 +140,7 @@ class NewsletterUpdateEmailView(UpdateView):
         return reverse_lazy('newsletter.action.step3', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepThreeView(UpdateView):
+class MarketingActionStepThreeView(NewsletterStatusMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepThreeForm
     template_name = 'newsletters/actions/step3.html'
@@ -139,7 +150,7 @@ class MarketingActionStepThreeView(UpdateView):
         return reverse_lazy('newsletter.action.step4', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepFourView(UpdateView):
+class MarketingActionStepFourView(NewsletterStatusMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepFourForm
     template_name = 'newsletters/actions/step4.html'
@@ -149,27 +160,54 @@ class MarketingActionStepFourView(UpdateView):
         return reverse_lazy('newsletter.action.step5', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepFiveView(UpdateView):
+class MarketingActionStepFiveView(NewsletterStatusMixin, UpdateView):
     model = Newsletter
     template_name = 'newsletters/actions/step5.html'
     form_class = MarketingStepFiveForm
 
     def get_success_url(self):
         obj = self.get_object()
-        return reverse_lazy('newsletter.action.view', kwargs={'pk': obj.pk})
+        return reverse_lazy('newsletter.detail.view', kwargs={'pk': obj.pk})
+
+    def form_valid(self, form):
+        messages.success(self.request,
+            "Your newsletter has been scheduled to send within the next 10 minutes. "
+            "Please note that it may take several hours to complete the process depending "
+            "on the size of your user group. You will receive an email notification when it's done."
+            )
+        return super(MarketingActionStepFiveView, self).form_valid(form)
 
 
 class NewsletterDetailView(DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
 
+
+class NewsletterResendView(DetailView):
+    model = Newsletter
+    template_name = 'newsletters/actions/view.html'
+
     def dispatch(self, request, *args, **kwargs):
+        pk = int(kwargs.get('pk'))
+        newsletter = get_object_or_404(Newsletter, pk=pk)
+        if newsletter.send_status == 'draft':
+            return redirect(reverse('newsletter.action.step4', kwargs={'pk': newsletter.pk}))
 
-        return super(NewsletterDetailView, self).dispatch(request, *args, **kwargs)
+        elif newsletter.send_status == 'sending' or newsletter.send_status == 'resending':
+            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
+        return super(NewsletterResendView, self).dispatch(request, *args, **kwargs)
 
+    def get(self, request, *args, **kwargs):
+        newsletter = self.get_object()
+        if newsletter.send_status == 'sent' or newsletter.send_status == 'resent':
+            newsletter.send_status = 'resending'
+            newsletter.save()
+            newsletter.send_to_recipients()
+            messages.success(request, 'Resending newsletters..')
+            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
-
+        return super(NewsletterResendView, self).get(request, *args, **kwargs)
 
 def generate(request):
     """
