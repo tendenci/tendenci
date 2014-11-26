@@ -16,40 +16,58 @@
 {% endif %}
 
 
-<ul class="dropdown-menu pull-left">
-    <div class="yamm-content custom-yamm-content content-dropdown">
-        <li class="content-item">
-            <a href="{% url 'entities' %}">{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %}</a>
-        </li>
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-xs-12">
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'entities' %}">{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %}</a>
+                        </span>
+                    </li>
 
-        {% if app_object %}
-            {% if can_view_entity %}
-                <li class="content-item">
-                    <a href="{% url 'entity' app_object.pk %}">{% trans "View" %}</a>
-                </li>
-            {% endif %}
+                    {% if app_object %}
+                        {% if can_view_entity %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'entity' app_object.pk %}">{% trans "View" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+                            
+                        {% if can_edit_entity %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'entity.edit' app_object.pk %}">{% trans "Edit" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
 
-            {% if can_edit_entity %}
-                <li class="content-item">
-                    <a href="{% url 'entity.edit' app_object.pk %}">{% trans "Edit" %}</a>
-                </li>
-            {% endif %}
-        {% endif %}
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'entity.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
 
-        <li class="content-item">
-            <a href="{% url 'entity.search' %}">{% trans "Search" %}</a>
-        </li>
+                    {% if can_add_entity %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'entity.add' %}">{% trans "Add" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
 
-        {% if can_add_entity %}
-            <li class="content-item">
-                <a href="{% url 'entity.add' %}">{% trans "Add" %}</a>
-            </li>
-        {% endif %}
-
-        {% if user.is_authenticated %}
-            <li class="content-item">
-                <a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a>
-            </li>
-        {% endif %}
-    </div>
+                    {% if user.is_authenticated %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </li>
 </ul>

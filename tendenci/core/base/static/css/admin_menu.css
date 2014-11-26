@@ -597,6 +597,7 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .app-name {
+    display: inline-block;
     min-width: 150px;
     max-width: 200px;
 }

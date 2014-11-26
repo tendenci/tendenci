@@ -19,88 +19,117 @@
 {% endif %}
 
 
-<ul class="dropdown-menu pull-left">
-    <div class="yamm-content custom-yamm-content content-dropdown">
-        {% if app_object %}
-            {# "All Groups" Section #}
-            <li class="heading">{% trans "All Groups" %}</li>
-        {% endif %}
-
-        {% if can_edit_setting %}
-            <li class="content-item">
-                <a href="{% url 'settings.index' 'module' 'groups' %}">{% trans "Settings" %}</a>
-            </li>
-        {% endif %}
-
-        <li class="content-item">
-            <a href="{% url 'groups' %}">{% trans "Group List" %}</a>
-        </li>
-
-        {% if can_add_group %}
-            <li class="content-item">
-                <a href="{% url 'group.add' %}">{% trans "Add Group" %}</a>
-            </li>
-        {% endif %}
-
-        {% if request.user.is_superuser %}
-            <li class="content-item">
-                <a href="{% url 'group.import_add' %}">{% trans "Import" %}</a>
-            </li>
-        {% endif %}
-
-        {% if app_object %}
-            {# End "All Groups" Section #}
-
-            {% if can_view_group or can_edit_group %}
-                <li class="divider"></li>
-                {# "This Group" Section #}
-
-                <li class="heading">{% trans "This Group" %}</li>
-
-                {% if group.type != "system_generated" %}
-                    {% if can_view_group %}
-                        <li class="content-item">
-                            <a href="{{ app_object.get_absolute_url }}">{% trans "View Group" %}</a>
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-xs-12">
+                    {% if app_object %}
+                        {# "All Groups" Section #}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Groups" %}</span>
                         </li>
                     {% endif %}
-                {% endif %}
 
-                {% if can_edit_group %}
-                    <li class="content-item">
-                        <a href="{% url 'group.edit' app_object.slug %}">{% trans "Edit Group" %}</a>
-                    </li>
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'groups' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
 
                     <li class="content-item">
-                        <a href="{% url 'group.edit_perms' app_object.id %}">{% trans "Edit Permissions" %}</a>
+                        <span class="app-name">
+                            <a href="{% url 'groups' %}">{% trans "Group List" %}</a>
+                        </span>
                     </li>
-                {% endif %}
 
-                {% if group.type != "system_generated" %}
-                    <li class="divider"></li>
-
-                    {% if can_add_member %}
+                    {% if can_add_group %}
                         <li class="content-item">
-                            <a href="{% url 'group.adduser' app_object.slug %}">{% trans "Add Users" %}</a>
+                            <span class="app-name">
+                                <a href="{% url 'group.add' %}">{% trans "Add Group" %}</a>
+                            </span>
                         </li>
                     {% endif %}
 
-                    {% if app_object.allow_self_add and user.is_authenticated or can_add_member %}
+                    {% if request.user.is_superuser %}
                         <li class="content-item">
-                            <a href="{% url 'group.selfadd' app_object.slug user.id %}">{% trans "Add Myself to Group" %}</a>
+                            <span class="app-name">
+                                <a href="{% url 'group.import_add' %}">{% trans "Import" %}</a>
+                            </span>
                         </li>
                     {% endif %}
 
-                    {% if can_delete_group %}
-                        <li class="divider"></li>
+                    {% if app_object %}
+                        {# End "All Groups" Section #}
 
-                        <li class="content-item">
-                            <a class="delete" href="{% url 'group.delete' app_object.pk %}">{% trans "Delete Group" %}</a>
-                        </li>
+                        {% if can_view_group or can_edit_group %}
+                            <li class="divider"></li>
+
+                            {# "This Group" Section #}
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Group" %}</span>
+                            </li>
+
+                            {% if group.type != "system_generated" %}
+                                {% if can_view_group %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{{ app_object.get_absolute_url }}">{% trans "View Group" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if can_edit_group %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'group.edit' app_object.slug %}">{% trans "Edit Group" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'group.edit_perms' app_object.id %}">{% trans "Edit Permissions" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if group.type != "system_generated" %}
+                                <li class="divider"></li>
+
+                                {% if can_add_member %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'group.adduser' app_object.slug %}">{% trans "Add Users" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+
+                                {% if app_object.allow_self_add and user.is_authenticated or can_add_member %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'group.selfadd' app_object.slug user.id %}">{% trans "Add Myself to Group" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+
+                                {% if can_delete_group %}
+                                    <li class="divider"></li>
+
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a class="delete" href="{% url 'group.delete' app_object.pk %}">{% trans "Delete Group" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                            {# End "This Group" Section #}
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-
-                {# End "This Group" Section #}
-            {% endif %}
-        {% endif %}
-    </div>
+                </ul>
+            </div>
+        </div>
+    </li>
 </ul>

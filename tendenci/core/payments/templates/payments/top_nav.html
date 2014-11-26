@@ -7,8 +7,7 @@
 {% block current_app %}
     <li class="dropdown">
         <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-            <img class="nav-icon" src="{% static 'famfamfam/icons/page_green.png' %}"/>
-            {% firstof MODULE_PAYMENTS_LABEL trans 'Payments' %}
+            <img class="nav-icon" src="{% static 'famfamfam/icons/page_green.png' %}"/>{% firstof MODULE_PAYMENTS_LABEL trans 'Payments' %}
         </a>
 
         {% if payment %}

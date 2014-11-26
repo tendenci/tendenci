@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -12,14 +13,24 @@
 {% endif %}
 
 
-<ul class="dropdown-menu pull-left">
-    <div class="yamm-content custom-yamm-content content-dropdown">
-        <li class="content-item">
-            <a href="{% url event_log.search %}">{% trans "Search" %}</a>
-        </li>
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-xs-12">
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'event_log.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
 
-        <li class="content-item">
-            <a href="{% url event_log.info %}">{% trans "Info List" %}</a>
-        </li>
-    </div>
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'event_log.info' %}">{% trans "Info List" %}</a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
 </ul>

@@ -5,40 +5,58 @@
 
 
 
-<ul class="dropdown-menu pull-left">
-    <div class="yamm-content custom-yamm-content content-dropdown">
-        <li class="content-item">
-            <a href="{% url 'settings.index' 'site' 'global' %}">{% trans "Global Site Settings" %}</a>
-        </li>
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled col-xs-12">
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'settings.index' 'site' 'global' %}">{% trans "Global Site Settings" %}</a>
+                        </span>
+                    </li>
 
-        <li class="content-item">
-            <a href="{% url 'settings' %}">{% trans "Full Settings List" %}</a>
-        </li>
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'settings' %}">{% trans "Full Settings List" %}</a>
+                        </span>
+                    </li>
 
-        {% if app_object %}
-            {% if app_object == 'events' and MODULE_EVENTS_ENABLED %}
-                <li class="content-item">
-                    <a href="{% url 'events' %}">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a>
-                </li>
-            {% endif %}
+                    {% if app_object %}
+                        {% if app_object == 'events' and MODULE_EVENTS_ENABLED %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'events' %}">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
 
-            {% if app_object == 'articles' and MODULE_ARTICLES_ENABLED %}
-                <li class="content-item">
-                    <a href="{% url 'articles' %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a>
-                </li>
-            {% endif %}
+                        {% if app_object == 'articles' and MODULE_ARTICLES_ENABLED %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'articles' %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
 
-            {% if app_object == 'news' and MODULE_NEWS_ENABLED %}
-                <li class="content-item">
-                    <a href="{% url 'news' %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
-                </li>
-            {% endif %}
+                        {% if app_object == 'news' and MODULE_NEWS_ENABLED %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'news' %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
 
-            {% if app_object == 'pages' and MODULE_PAGES_ENABLED %}
-                <li class="content-item">
-                    <a href="{% url 'pages' %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a>
-                </li>
-            {% endif %}
-        {% endif %}
-    </div>
+                        {% if app_object == 'pages' and MODULE_PAGES_ENABLED %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'pages' %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </li>
 </ul>
