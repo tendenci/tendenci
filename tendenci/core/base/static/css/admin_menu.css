@@ -611,11 +611,12 @@ html[xmlns] .tcf {
 
 .t-top-nav .app-name a {
     padding: 4px;
-    /*width: 100%;*/
 }
 
-.t-top-nav .community-dropdown .app-name {
+.t-top-nav .community-dropdown .app-name,
+.t-top-nav .apps-dropdown .app-name {
     min-width: 160px;
+    width: 100%;
 }
 
 .t-top-nav .strong {
@@ -813,15 +814,6 @@ html[xmlns] .tcf {
         width: 275px;
     }
 
-    /*.profile-dropdown {
-        min-width: 370px;
-        max-width: 930px;
-    }*/
-
-    /*.community-dropdown {
-        width: 410px;
-    }*/
-
     .admin-col {
         background-color: #eeffdd;
     }
@@ -835,7 +827,7 @@ html[xmlns] .tcf {
     }
 
     .apps-dropdown {
-        min-width: 394px;
+        min-width: 453px;
     }
 }
 
