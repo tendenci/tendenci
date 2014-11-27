@@ -468,11 +468,11 @@
                         <div id="collapseEight" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                    {% for app in registered_apps.addons %}
-                                        {% if app.enabled and forloop.counter0|divisibleby:'2' %}
+                                    {% for addon in enabled_addons %}
+                                        {% if forloop.counter0|divisibleby:'2' %}
                                             <li class="content-item">
                                                 <span class="app-name">
-                                                    <a href="{% firstof app.url.list app.url.search %}">{{ app|title }}</a>
+                                                    <a href="{% firstof addon.url.list addon.url.search %}">{{ addon|title }}</a>
                                                 </span>
                                             </li>
                                         {% endif %}
@@ -480,11 +480,11 @@
                                 </ul>
 
                                 <ul class="list-unstyled col-sm-6 col-xs-8">
-                                    {% for app in registered_apps.addons %}
-                                        {% if app.enabled and not forloop.counter0|divisibleby:'2' %}
+                                    {% for addon in enabled_addons %}
+                                        {% if not forloop.counter0|divisibleby:'2' %}
                                             <li class="content-item">
                                                 <span class="app-name">
-                                                    <a href="{% firstof app.url.list app.url.search %}">{{ app|title }}</a>
+                                                    <a href="{% firstof addon.url.list addon.url.search %}">{{ addon|title }}</a>
                                                 </span>
                                             </li>
                                         {% endif %}

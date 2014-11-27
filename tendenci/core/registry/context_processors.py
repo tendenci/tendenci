@@ -19,4 +19,25 @@ def registered_apps(request):
     app_context = site.get_registered_apps()
 
     contexts['registered_apps'] = app_context
+
+    return contexts
+
+
+def enabled_addons(request):
+    """
+    Context processor that further filters registered apps
+    by selecting only the enabled addons.
+
+    """
+
+    contexts = {}
+    app_context = site.get_registered_apps()
+
+    enabled_apps = []
+    for app in app_context.addons:
+        if app.get('enabled', False):
+            enabled_apps.append(app)
+
+    contexts['enabled_addons'] = enabled_apps
+
     return contexts

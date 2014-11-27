@@ -164,6 +164,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'tendenci.core.base.context_processors.user_classification',
     'tendenci.core.base.context_processors.display_name',
     'tendenci.core.registry.context_processors.registered_apps',
+    'tendenci.core.registry.context_processors.enabled_addons',
 )
 
 INSTALLED_APPS = (
