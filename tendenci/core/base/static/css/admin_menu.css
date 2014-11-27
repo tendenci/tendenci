@@ -1,5 +1,5 @@
 html {
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 #admin-bar,
@@ -530,7 +530,7 @@ html[xmlns] .tcf {
 
 
 .t-top-nav {
-    min-height: 40px;
+    min-height: 30px;
     z-index: 9999999 !important;
 }
 
@@ -540,13 +540,13 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .navbar-header {
-    min-height: 40px;
-    height: 40px;
+    min-height: 30px;
+    height: 30px;
 }
 
 .t-top-nav .navbar-toggle {
-    margin-top: 7px;
-    margin-bottom: 7px;
+    margin-bottom: 2px;
+    margin-top: 2px;
     padding: 5px 10px;
 }
 
@@ -557,6 +557,7 @@ html[xmlns] .tcf {
 
 .t-top-nav .dropdown-menu {
     max-width: 1170px;
+    padding: 5px;
     top: 100%;
 }
 
@@ -579,7 +580,7 @@ html[xmlns] .tcf {
     font-weight: bold;
     font-size: 18px;
     line-height: 1;
-    min-width: 150px;
+    min-width: 145px;
     max-width: 200px;
 }
 
@@ -591,19 +592,30 @@ html[xmlns] .tcf {
     padding: 4px;
 }
 
-.t-top-nav .panel-title a {
+.t-top-nav .panel-title > a {
     font-size: 18px;
     font-weight: bold;
 }
 
+.t-top-nav .panel-title > a:hover {
+    background-image: none;
+    background-color: inherit;
+    text-decoration: underline;
+}
+
 .t-top-nav .app-name {
     display: inline-block;
-    min-width: 150px;
+    min-width: 145px;
     max-width: 200px;
 }
 
 .t-top-nav .app-name a {
     padding: 4px;
+    /*width: 100%;*/
+}
+
+.t-top-nav .community-dropdown .app-name {
+    min-width: 160px;
 }
 
 .t-top-nav .strong {
@@ -619,21 +631,17 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .custom-yamm-content {
-    padding: 0 20px;
+    padding: 0 15px;
 }
 
 .t-top-nav .nav-logo {
     position: relative;
-    bottom: -7px;
+    top: 3px;
 }
 
 .nav-icon {
     position: relative;
     margin-right: 10px;
-}
-
-.navbar-header .nav-icon {
-    margin-top: 5px;
 }
 
 .t-top-nav .classic {
@@ -655,15 +663,16 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .inner-top-nav {
-    margin: 0;
+    margin: 0 -15px;
     list-style: none;
     padding-left: 0;
 }
 
 .t-top-nav .inner-top-nav > li > a {
-    position: relative;
     display: block;
-    padding: 10px 15px;
+    line-height: 20px;
+    padding: 5px 15px;
+    position: relative;
 }
 
 .t-top-nav .inner-top-nav > li > a:hover,
@@ -731,8 +740,13 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .glyph {
+    display: inline-block;
     margin-right: 9px;
     padding: 0 1px;
+}
+
+.t-top-nav .content-dropdown-col {
+    padding: 0 15px;
 }
 
 
@@ -747,6 +761,12 @@ html[xmlns] .tcf {
     .t-top-nav .dropdown-menu:not(.apps-dropdown) a:hover {
         background: none;
         color: #ffffff;
+    }
+
+    /* Accordion panel links */
+    .t-top-nav .panel-group a {
+        color: #404040;
+        text-shadow: 0 1px 0 #fff;
     }
 
     .t-top-nav .content-item {
@@ -775,39 +795,32 @@ html[xmlns] .tcf {
         color: #999999;
     }
 
-    .content-dropdown-col {
+    .t-top-nav .content-dropdown-col {
         border-bottom: 1px solid #333;
         padding: 10px 15px;
+        width: 100%;
     }
 }
 
 
-/* Small devices (768px - 991px) */
+/* Small devices (> 767px) */
 @media (min-width: 768px) {
     html {
-        margin-top: 80px;
-    }
-
-    .content-dropdown {
-        width: 510px;
-    }
-
-    .community-dropdown {
-        width: 350px;
+        margin-top: 60px; /* 2x .t-top-nav height */
     }
 
     .people-dropdown {
         width: 275px;
     }
 
-    .profile-dropdown {
+    /*.profile-dropdown {
         min-width: 370px;
         max-width: 930px;
-    }
+    }*/
 
-    .community-dropdown {
+    /*.community-dropdown {
         width: 410px;
-    }
+    }*/
 
     .admin-col {
         background-color: #eeffdd;
@@ -820,15 +833,15 @@ html[xmlns] .tcf {
     .community-dropdown .admin-col {
         height: 181px;
     }
+
+    .apps-dropdown {
+        min-width: 394px;
+    }
 }
 
 @media (max-width: 991px) {
     .t-top-nav .navbar-form input.form-control {
         width: 80%;
-    }
-
-    .t-top-nav .inner-top-nav {
-        margin-left: -15px;
     }
 }
 
@@ -842,6 +855,14 @@ html[xmlns] .tcf {
     }
 
     .t-top-nav .inner-top-nav > li > a {
-        padding: 10px 5px;
+        padding: 5px;
+    }
+}
+
+
+/* Medium devices (> 991px) */
+@media (min-width: 992px) {
+    .t-top-nav .inner-top-nav {
+        margin: 0;
     }
 }
