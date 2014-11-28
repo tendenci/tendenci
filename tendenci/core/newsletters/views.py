@@ -3,7 +3,6 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
@@ -35,6 +34,8 @@ from tendenci.core.newsletters.utils import (
     newsletter_events_list)
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.site_settings.utils import get_setting
+
+from johnny.cache import invalidate as johnny_invalidate
 
 
 class NewsletterGeneratorView(TemplateView):
@@ -183,10 +184,9 @@ class NewsletterDetailView(DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
 
-    @transaction.commit_on_success
-    def get(self, request, *args, **kwargs):
-        return super(NewsletterDetailView, self).get(request, *args, **kwargs)
-
+    def get_queryset(self):
+        johnny_invalidate('Newsletter')
+        return super(NewsletterDetailView, self).get_queryset()
 
 
 class NewsletterResendView(DetailView):
