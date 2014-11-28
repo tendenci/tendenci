@@ -104,7 +104,7 @@
                     </p>
                 </div>
                 {% endif %}
-                {% if object.sent_status == 'resending' %}
+                {% if object.send_status == 'resending' or object.send_status == 'sending' or object.send_status == 'queued' %}
                 <div class="step-content-item">
                 <p>{% trans "Kindly refresh this page or wait for the confirmation email to check the status of your newsletter." %}</p>
                 </div>

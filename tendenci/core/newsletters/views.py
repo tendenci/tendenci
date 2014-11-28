@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
@@ -182,6 +183,11 @@ class NewsletterDetailView(DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
 
+    @transaction.commit_on_success
+    def get(self, request, *args, **kwargs):
+        return super(NewsletterDetailView, self).get(request, *args, **kwargs)
+
+
 
 class NewsletterResendView(DetailView):
     model = Newsletter
@@ -204,7 +210,10 @@ class NewsletterResendView(DetailView):
             newsletter.send_status = 'resending'
             newsletter.save()
             newsletter.send_to_recipients()
-            messages.success(request, 'Resending newsletters..')
+            messages.success(request, 'Resending newsletters.'
+                "Your newsletter has been scheduled to send within the next 10 minutes. "
+            "Please note that it may take several hours to complete the process depending "
+            "on the size of your user group. You will receive an email notification when it's done.")
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
         return super(NewsletterResendView, self).get(request, *args, **kwargs)

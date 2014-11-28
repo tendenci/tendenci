@@ -17,7 +17,11 @@ class Command(BaseCommand):
         import datetime
         from tendenci.core.emails.models import Email
         from tendenci.core.newsletters.models import Newsletter
+        from tendenci.core.site_settings.utils import get_setting
+
+        from django.core.urlresolvers import reverse
         from django.template.loader import render_to_string
+
 
         print "Started sending newsletter..."
 
@@ -100,9 +104,12 @@ class Command(BaseCommand):
         print "Sending confirmation message to creator..."
         # send confirmation email
         subject = "Newsletter Submission Recap for %s" % newsletter.email.subject
+        detail_url = get_setting('site', 'global', 'siteurl') + \
+                reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk})
         params = {'first_name': newsletter.email.creator.first_name,
                     'subject': newsletter.email.subject,
-                    'count': counter}
+                    'count': counter,
+                    'detail_url': detail_url}
 
         body = render_to_string(
                 'newsletters/newsletter_sent_email_body.html', params)
