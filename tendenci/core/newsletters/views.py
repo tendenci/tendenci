@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
@@ -182,18 +183,19 @@ class NewsletterDetailView(DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
 
+    @transaction.commit_manually
     def get_queryset(self):
         if self.queryset is None:
             if self.model:
-                # invalidation hack
-                self.model._default_manager.all().order_by('-date_created')
-                return self.model._default_manager.all().order_by('date_created')
+                transaction.commit()
+                return self.model._default_manager.all()
             else:
                 raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
                                            u"%(cls)s.model, %(cls)s.queryset, or override "
                                            u"%(cls)s.get_object()." % {
                                                 'cls': self.__class__.__name__
                                         })
+        transaction.commit()
         return self.queryset._clone()
 
 
