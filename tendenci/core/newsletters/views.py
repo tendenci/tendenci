@@ -35,8 +35,6 @@ from tendenci.core.newsletters.utils import (
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.site_settings.utils import get_setting
 
-from johnny.cache import invalidate as johnny_invalidate
-
 
 class NewsletterGeneratorView(TemplateView):
     template_name="newsletters/newsletter_generator.html"
@@ -185,8 +183,18 @@ class NewsletterDetailView(DetailView):
     template_name = 'newsletters/actions/view.html'
 
     def get_queryset(self):
-        johnny_invalidate('Newsletter')
-        return super(NewsletterDetailView, self).get_queryset()
+    if self.queryset is None:
+        if self.model:
+            # invalidation hack
+            self.model._default_manager.all().order_by('-date_created')
+            return self.model._default_manager.all().order_by('date_created')
+        else:
+            raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
+                                       u"%(cls)s.model, %(cls)s.queryset, or override "
+                                       u"%(cls)s.get_object()." % {
+                                            'cls': self.__class__.__name__
+                                    })
+    return self.queryset._clone()
 
 
 class NewsletterResendView(DetailView):
