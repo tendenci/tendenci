@@ -183,18 +183,18 @@ class NewsletterDetailView(DetailView):
     template_name = 'newsletters/actions/view.html'
 
     def get_queryset(self):
-    if self.queryset is None:
-        if self.model:
-            # invalidation hack
-            self.model._default_manager.all().order_by('-date_created')
-            return self.model._default_manager.all().order_by('date_created')
-        else:
-            raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
-                                       u"%(cls)s.model, %(cls)s.queryset, or override "
-                                       u"%(cls)s.get_object()." % {
-                                            'cls': self.__class__.__name__
-                                    })
-    return self.queryset._clone()
+        if self.queryset is None:
+            if self.model:
+                # invalidation hack
+                self.model._default_manager.all().order_by('-date_created')
+                return self.model._default_manager.all().order_by('date_created')
+            else:
+                raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
+                                           u"%(cls)s.model, %(cls)s.queryset, or override "
+                                           u"%(cls)s.get_object()." % {
+                                                'cls': self.__class__.__name__
+                                        })
+        return self.queryset._clone()
 
 
 class NewsletterResendView(DetailView):
