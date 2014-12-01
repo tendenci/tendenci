@@ -98,6 +98,9 @@
                 <div class="step-content-item">
                     <p>{% trans 'Total E-mail Sent' %}: {{ object.email_sent_count }}</p>
                     <p>{% trans 'E-mails completed sending at' %}: {{ object.date_email_sent }}</p>
+                    {% if object.date_last_resent %}
+                    <p>{% trans 'Date of last resent' %}: {{ object.date_last_resent }}</p>
+                    {% endif %}
                     <p>
                     <span>{% trans 'Date Created' %}: {{ object.date_created }}</span>&nbsp;&nbsp;
                     <span>{% trans 'Date Submitted' %}: {{ object.date_submitted }}

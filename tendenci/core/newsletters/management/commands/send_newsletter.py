@@ -94,6 +94,7 @@ class Command(BaseCommand):
 
         elif newsletter.send_status == 'resending':
             newsletter.send_status = 'resent'
+            newsletter.date_last_resent = datetime.datetime.now()
 
         newsletter.email_sent_count = counter
 

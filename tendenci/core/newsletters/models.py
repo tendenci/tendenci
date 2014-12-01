@@ -199,6 +199,7 @@ class Newsletter(models.Model):
     date_created = models.DateTimeField(null=True, blank=True)
     date_submitted = models.DateTimeField(null=True, blank=True)
     date_email_sent = models.DateTimeField(null=True, blank=True)
+    date_last_resent = models.DateTimeField(null=True, blank=True)
 
     # number of emails sent
     email_sent_count = models.IntegerField(null=True, blank=True, default=0)
