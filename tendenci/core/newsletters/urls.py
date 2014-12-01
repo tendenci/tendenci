@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import patterns, url
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import never_cache
 
 from tendenci.core.newsletters.views import (
     NewsletterGeneratorView,
@@ -30,6 +29,6 @@ urlpatterns = patterns('tendenci.core.newsletters.views',
     url(r'^newsletters/actions/step4/(?P<pk>\d+)', login_required(MarketingActionStepFourView.as_view()), name='newsletter.action.step4'),
     url(r'^newsletters/actions/step5/(?P<pk>\d+)', login_required(MarketingActionStepFiveView.as_view()), name='newsletter.action.step5'),
 
-    url(r'^newsletters/view/details/(?P<pk>\d+)', login_required(never_cache(NewsletterDetailView.as_view())), name='newsletter.detail.view'),
+    url(r'^newsletters/view/details/(?P<pk>\d+)', login_required(NewsletterDetailView.as_view()), name='newsletter.detail.view'),
     url(r'^newsletters/resend/(?P<pk>\d+)', login_required(NewsletterResendView.as_view()), name='newsletter.resend.view'),
 )

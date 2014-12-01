@@ -74,7 +74,7 @@ class OldGenerateForm(forms.ModelForm):
         super(OldGenerateForm, self).__init__(*args, **kwargs)
         not_required = ['actionname', 'actiontype', 'article', 'send_status',
         'date_created', 'date_submitted', 'date_email_sent', 'email_sent_count',
-        'date_last_resent']
+        'date_last_resent', 'resent_count']
         self.fields['default_template'].blank = False
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')

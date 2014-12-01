@@ -14,7 +14,7 @@
 {% block body %}
 <div class="t">
  <div id="t-newsletters">
-    <h2>View Newsletter</h2>
+    <h2>{% trans 'View Newsletter' %} - {% trans 'Status' %}: {{ object.send_status }}</h2>
         <div class='step-section cf'>
             <div class="step-number">{% trans 'Step 1' %}</div>
             <div class="step-contents">
@@ -100,6 +100,7 @@
                     <p>{% trans 'E-mails completed sending at' %}: {{ object.date_email_sent }}</p>
                     {% if object.date_last_resent %}
                     <p>{% trans 'Date of last resent' %}: {{ object.date_last_resent }}</p>
+                    <p>{% trans 'Resent Count' %}: {{ object.resent_count }}
                     {% endif %}
                     <p>
                     <span>{% trans 'Date Created' %}: {{ object.date_created }}</span>&nbsp;&nbsp;

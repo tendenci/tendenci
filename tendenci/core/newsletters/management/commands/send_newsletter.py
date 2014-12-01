@@ -19,6 +19,7 @@ class Command(BaseCommand):
         from tendenci.core.newsletters.models import Newsletter
         from tendenci.core.site_settings.utils import get_setting
 
+        from django.core.cache import cache
         from django.core.urlresolvers import reverse
         from django.template.loader import render_to_string
 
@@ -95,6 +96,9 @@ class Command(BaseCommand):
         elif newsletter.send_status == 'resending':
             newsletter.send_status = 'resent'
             newsletter.date_last_resent = datetime.datetime.now()
+            if not newsletter.resend_count:
+                newsletter.resend_count = 0
+            newsletter.resend_count += 1
 
         newsletter.email_sent_count = counter
 
@@ -123,3 +127,8 @@ class Command(BaseCommand):
         email.send()
 
         print "Confirmation email sent."
+
+        # add cache clear to resolve issue
+        # TODO: cache clear only to specifies
+        cache.clear()
+        print 'Cache cleared!'

@@ -204,6 +204,9 @@ class Newsletter(models.Model):
     # number of emails sent
     email_sent_count = models.IntegerField(null=True, blank=True, default=0)
 
+    # resend_count
+    resend_count = models.IntegerField(null=True, blank=True, default=0)
+
     def __unicode__(self):
         return self.actionname
 
