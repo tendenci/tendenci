@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
@@ -74,7 +75,7 @@ class OldGenerateForm(forms.ModelForm):
         super(OldGenerateForm, self).__init__(*args, **kwargs)
         not_required = ['actionname', 'actiontype', 'article', 'send_status',
         'date_created', 'date_submitted', 'date_email_sent', 'email_sent_count',
-        'date_last_resent', 'resent_count']
+        'date_last_resent', 'resend_count']
         self.fields['default_template'].blank = False
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')
@@ -183,6 +184,17 @@ class MarketingStepFiveForm(forms.ModelForm):
     class Meta:
         model = Newsletter
         fields = ('create_article', 'send_status',)
+
+    def clean(self):
+        data = self.cleaned_data
+
+        # check if email host relay is properly set up
+        if not (settings.EMAIL_BACKEND and settings.EMAIL_HOST and settings.EMAIL_PORT and \
+            settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD):
+            raise forms.ValidationError(_('Email relay is not configured properly.'
+                                            ' Newsletter cannot be sent.'))
+
+        return data
 
     def save(self, *args, **kwargs):
         create_article = self.cleaned_data.get('create_article', False)

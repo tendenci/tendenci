@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 
 from tendenci.core.base.http import Http403
 from tendenci.core.emails.models import Email
+from tendenci.core.event_logs.models import EventLog
 from tendenci.core.newsletters.utils import apply_template_media
 from tendenci.core.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.core.newsletters.forms import (
@@ -27,6 +28,10 @@ from tendenci.core.newsletters.forms import (
     MarketingStep2EmailFilterForm,
     NewslettterEmailUpdateForm
     )
+from tendenci.core.newsletters.mixins import (
+    NewsletterEditLogMixin,
+    NewsletterStatusMixin
+    )
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
@@ -35,6 +40,7 @@ from tendenci.core.newsletters.utils import (
     newsletter_events_list)
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.site_settings.utils import get_setting
+
 
 
 class NewsletterGeneratorView(TemplateView):
@@ -63,6 +69,10 @@ class NewsletterGeneratorOrigView(FormView):
     def form_valid(self, form):
         nl = form.save()
         self.object_id = nl.pk
+
+        # add event logging
+        EventLog.objects.log(action='add')
+
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -82,17 +92,7 @@ class NewsletterGeneratorOrigView(FormView):
         return kwargs
 
 
-class NewsletterStatusMixin(object):
-    def dispatch(self, request, *args, **kwargs):
-        pk = int(kwargs.get('pk'))
-        newsletter = get_object_or_404(Newsletter, pk=pk)
-        if newsletter.send_status != 'draft':
-            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
-
-        return super(NewsletterStatusMixin, self).dispatch(request, *args, **kwargs)
-
-
-class MarketingActionStepOneView(NewsletterStatusMixin, UpdateView):
+class MarketingActionStepOneView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepOneForm
     template_name = 'newsletters/actions/step1.html'
@@ -106,7 +106,6 @@ class MarketingActionStepTwoView(NewsletterStatusMixin, ListView):
     paginate_by = 10
     model = Email
     template_name = 'newsletters/actions/step2.html'
-
 
     def get(self, request, *args, **kwargs):
         self.form = MarketingStep2EmailFilterForm(request.GET)
@@ -131,7 +130,7 @@ class MarketingActionStepTwoView(NewsletterStatusMixin, ListView):
         return qset
 
 
-class NewsletterUpdateEmailView(NewsletterStatusMixin, UpdateView):
+class NewsletterUpdateEmailView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = NewslettterEmailUpdateForm
     template_name = 'newsletters/actions/step2.html'
@@ -141,7 +140,7 @@ class NewsletterUpdateEmailView(NewsletterStatusMixin, UpdateView):
         return reverse_lazy('newsletter.action.step3', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepThreeView(NewsletterStatusMixin, UpdateView):
+class MarketingActionStepThreeView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepThreeForm
     template_name = 'newsletters/actions/step3.html'
@@ -151,7 +150,7 @@ class MarketingActionStepThreeView(NewsletterStatusMixin, UpdateView):
         return reverse_lazy('newsletter.action.step4', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepFourView(NewsletterStatusMixin, UpdateView):
+class MarketingActionStepFourView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepFourForm
     template_name = 'newsletters/actions/step4.html'
@@ -171,6 +170,7 @@ class MarketingActionStepFiveView(NewsletterStatusMixin, UpdateView):
         return reverse_lazy('newsletter.detail.view', kwargs={'pk': obj.pk})
 
     def form_valid(self, form):
+        EventLog.objects.log(instance=self.get_object(), action='send')
         messages.success(self.request,
             "Your newsletter has been scheduled to send within the next 10 minutes. "
             "Please note that it may take several hours to complete the process depending "
@@ -183,20 +183,9 @@ class NewsletterDetailView(DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
 
-    @transaction.commit_manually
-    def get_queryset(self):
-        if self.queryset is None:
-            if self.model:
-                transaction.commit()
-                return self.model._default_manager.all()
-            else:
-                raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
-                                           u"%(cls)s.model, %(cls)s.queryset, or override "
-                                           u"%(cls)s.get_object()." % {
-                                                'cls': self.__class__.__name__
-                                        })
-        transaction.commit()
-        return self.queryset._clone()
+    def get(self, request, *args, **kwargs):
+        EventLog.objects.log(instance=self.get_object(), action='view')
+        return super(NewsletterDetailView, self).get(request, *args, **kwargs)
 
 
 class NewsletterResendView(DetailView):
@@ -212,6 +201,12 @@ class NewsletterResendView(DetailView):
         elif newsletter.send_status == 'sending' or newsletter.send_status == 'resending':
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
+        if not (settings.EMAIL_BACKEND and settings.EMAIL_HOST and settings.EMAIL_PORT and \
+            settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD):
+            messages.error(request, _('Email relay is not configured properly.'
+                ' Newsletter cannot be sent.'))
+            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
+
         return super(NewsletterResendView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -220,6 +215,7 @@ class NewsletterResendView(DetailView):
             newsletter.send_status = 'resending'
             newsletter.save()
             newsletter.send_to_recipients()
+            EventLog.objects.log(instance=newsletter, action='resend')
             messages.success(request, 'Resending newsletters.'
                 "Your newsletter has been scheduled to send within the next 10 minutes. "
             "Please note that it may take several hours to complete the process depending "

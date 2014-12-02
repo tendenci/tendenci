@@ -15,6 +15,15 @@
 <div class="t">
  <div id="t-newsletters">
     <h2>{% trans 'Marketing Action Step 5 of 5' %}</h2>
+    {% if form.non_field_errors %}
+    <div class="body-copy-alerts">
+        <ul>
+            {% for error in form.non_field_errors %}
+            <li>{{error}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <form action="" method="POST">{% csrf_token %}
         <div class='step-section cf'>
             <div class="step-number"><a href="{% url newsletter.action.step1 object.pk %}">{% trans 'Step 1' %}</a></div>
