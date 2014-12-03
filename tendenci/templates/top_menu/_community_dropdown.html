@@ -35,13 +35,15 @@
                     </li>
                 {% endif %}
 
-                <li class="content-item">
-                    <span class="app-name">
-                        <a href="{% url 'committees.search' %}">
-                            <img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/>{% trans 'Committees' %}
-                        </a>
-                    </span>
-                </li>
+                {% if MODULE_COMMITTEES_ENABLED %}
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'committees.search' %}">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/>{% trans 'Committees' %}
+                            </a>
+                        </span>
+                    </li>
+                {% endif %}
 
                 {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                     <li class="content-item">
