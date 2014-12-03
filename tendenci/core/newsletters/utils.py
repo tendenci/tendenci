@@ -147,6 +147,54 @@ def newsletter_events_list(request, start_dt, end_dt, simplified):
     return events, event_content
 
 
+def newsletter_directories_list(request, directories_days, simplified):
+    directories = []
+    directories_content = ''
+    try:
+        from tendenci.addons.directories.models import Directory
+        end_dt = datetime.datetime.now()
+        start_dt = get_start_dt(directories_days, end_dt)
+
+        directories = Directory.objects.filter(activation_dt__lte=end_dt)
+        if start_dt:
+            directories = directories.filter(activation_dt__gt=start_dt)
+        directories = directories.filter(status_detail='active', status=True, allow_anonymous_view=True)
+        directories = directories.order_by('status_detail','list_type','-activation_dt')
+        directories_content = render_to_string('newsletters/directories_list.txt',
+                                       {'directories': directories,
+                                        'start_dt': start_dt,
+                                        'end_dt': end_dt,
+                                        'simplified':simplified},
+                                       context_instance=RequestContext(request))
+    except ImportError:
+        pass
+    return directories, directories_content
+
+
+def newsletter_resumes_list(request, resumes_days, simplified):
+    resumes = []
+    resumes_content = ''
+    try:
+        from tendenci.addons.resumes.models import Resume
+        end_dt = datetime.datetime.now()
+        start_dt = get_start_dt(resumes_days, end_dt)
+
+        resumes = Resume.objects.filter(activation_dt__lte=end_dt)
+        if start_dt:
+            resumes = resumes.filter(activation_dt__gt=start_dt)
+        resumes = resumes.filter(status_detail='active', status=True, allow_anonymous_view=True)
+        resumes = resumes.order_by('status_detail','list_type','-activation_dt')
+        resumes_content = render_to_string('newsletters/resumes_list.txt',
+                                       {'resumes': resumes,
+                                        'start_dt': start_dt,
+                                        'end_dt': end_dt,
+                                        'simplified':simplified},
+                                       context_instance=RequestContext(request))
+    except ImportError:
+        pass
+    return resumes, resumes_content
+
+
 def extract_files(template):
     if template.zip_file:
         zip_file = zipfile.ZipFile(template.zip_file.file)

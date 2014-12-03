@@ -176,6 +176,10 @@ class Newsletter(models.Model):
     jobs_days = models.IntegerField(default=30, choices=DAYS_CHOICES)
     pages = models.IntegerField(default=0, choices=INCLUDE_CHOICES)
     pages_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
+    directories = models.IntegerField(default=0, choices=INCLUDE_CHOICES)
+    directories_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
+    resumes = models.IntegerField(default=0, choices=INCLUDE_CHOICES)
+    resumes_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
 
     # default template
     default_template = models.CharField(max_length=255, choices=DEFAULT_TEMPLATE_CHOICES, null=True)

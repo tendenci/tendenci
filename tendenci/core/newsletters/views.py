@@ -37,7 +37,9 @@ from tendenci.core.newsletters.utils import (
     newsletter_jobs_list,
     newsletter_news_list,
     newsletter_pages_list,
-    newsletter_events_list)
+    newsletter_events_list,
+    newsletter_directories_list,
+    newsletter_resumes_list)
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.site_settings.utils import get_setting
 
@@ -308,6 +310,18 @@ def template_view(request, template_id, render=True):
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
 
+    directories_content = ""
+    directories = int(request.GET.get('directories', 0))
+    directories_days = request.GET.get('directories_days', 7)
+    if directories:
+        directories_list, directories_content = newsletter_directories_list(request, directories_days, simplified)
+
+    resumes_content = ""
+    resumes = int(request.GET.get('resumes', 0))
+    resumes_days = request.GET.get('resumes_days', 7)
+    if resumes:
+        resumes_list, resumes_content = newsletter_resumes_list(request, resumes_days, simplified)
+
     try:
         events = int(request.GET.get('events', 1))
         events_type = request.GET.get('events_type')
@@ -343,6 +357,10 @@ def template_view(request, template_id, render=True):
                 "news_list":news_list,
                 "pages_content":pages_content,
                 "pages_list":pages_content,
+                "directories_content":directories_content,
+                "directories_list":directories_list,
+                "resumes_content":resumes_content,
+                "resumes_list":resumes_list,
                 "events":events_list, # legacy usage in templates
                 "events_content":events_content,
                 "events_list":events_list,
