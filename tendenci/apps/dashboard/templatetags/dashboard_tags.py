@@ -3,6 +3,8 @@ import simplejson
 from django.template import Library
 
 from tendenci.apps.dashboard.models import DashboardStat
+
+
 register = Library()
 
 

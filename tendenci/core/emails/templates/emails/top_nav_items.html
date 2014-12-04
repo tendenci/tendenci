@@ -1,38 +1,67 @@
-{% load base_tags %}
-{% load perm_tags %}
 {% load i18n %}
 {% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user emails.add_email as can_add %}
 
-{% if nav_object %}
-    {% has_perm user emails.view_email nav_object as can_view %}
-    {% has_perm user emails.change_email nav_object as can_edit %}
+{% if app_object %}
+    {% has_perm user emails.view_email app_object as can_view %}
+    {% has_perm user emails.change_email app_object as can_edit %}
 {% endif %}
+
 
 <ul class="dropdown-menu">
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-sm-6 col-xs-8">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                     {% if app_object %}
-                    <li><span class="content-head">{% trans "Emails" %}</span></li>
+                        <li>
+                            <span class="content-head text-content-head">{% trans "Emails" %}</span>
+                        </li>
                     {% endif %}
-                    {% if nav_object %}
+
+                    {% if app_object %}
                         {% if can_view %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'email.view' nav_object.pk %}">{% trans "View" %}</a></span></li>
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'email.view' app_object.pk %}">{% trans "View" %}</a>
+                                </span>
+                            </li>
                         {% endif %}
+
                         {% if can_edit %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'email.edit' nav_object.pk %}">{% trans "Edit" %}</a></span></li>
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'email.edit' app_object.pk %}">{% trans "Edit" %}</a>
+                                </span>
+                            </li>
                         {% endif %}
                     {% endif %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'email.search' %}">{% trans "Search" %}</a></span></li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'email.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
+
                     {% if can_add %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'email.add' %}">{% trans "Add" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'email.add' %}">{% trans "Add" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
+
                     {% if user.is_authenticated %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
                 </ul>
             </div>

@@ -1,7 +1,9 @@
 from django.template import Library
 from django.conf import settings
 
+
 register = Library()
+
 
 @register.inclusion_tag("invoices/nav.html", takes_context=True)
 def invoice_nav(context, invoice=None):
@@ -9,6 +11,7 @@ def invoice_nav(context, invoice=None):
         "nav_object" : invoice,
     })
     return context
+
 
 @register.inclusion_tag("invoices/invoice_item.html")
 def invoices_search_results_line(request, invoice):

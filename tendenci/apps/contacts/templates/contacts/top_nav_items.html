@@ -1,7 +1,8 @@
-{% load base_tags %}
-{% load perm_tags %}
 {% load i18n %}
 {% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user contacts.add_contact as can_add_contact %}
@@ -12,20 +13,40 @@
     {% has_perm user contacts.view_contact as can_view_contact %}
 {% endif %}
 
+
 <ul class="dropdown-menu">
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-sm-6 col-xs-8">
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'contact.search' %}">{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}:</a></span></li>
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'contact.search' %}">{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}:</a>
+                        </span>
+                    </li>
+
                     {% if app_object %}
                         {% if can_view_contact %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'contact' app_object.pk %}">{% trans "View" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'contact' app_object.pk %}">{% trans "View" %}</a>
+                            </span>
+                        </li>
                         {% endif %}
                     {% endif %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'contact.search' %}">{% trans "Search" %}</a></span></li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'contact.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
+
                     {% if user.is_authenticated %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
                 </ul>
             </div>

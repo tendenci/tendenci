@@ -1,16 +1,17 @@
+import random
 from datetime import datetime
 from operator import or_, and_
-import random
 
-from django.template import Library, TemplateSyntaxError, Variable
+from django.contrib.auth.models import AnonymousUser, User
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import AnonymousUser, User
+from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.perms.utils import get_query_filters
-from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.stories.models import Story
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.core.perms.utils import get_query_filters
+
 
 register = Library()
 
