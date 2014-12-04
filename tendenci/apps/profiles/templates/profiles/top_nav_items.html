@@ -21,7 +21,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                     {% if app_object %}
                         {# "All Users" Section #}
                         <li>
@@ -86,15 +86,13 @@
                             </span>
                         </li>
                     {% endif %}
+                </ul>
 
-                    {% if app_object %}
-                        {# End "All Users" Section #}
-
-                        {# Edit links need to point to the user_this instead of app_object since the views for profile pull from auth.user #}
-                        {% if can_view_profile or can_edit %}
-                            <li class="divider"></li>
-
-                            {# "This User" Section #}
+                {% if app_object %}
+                    {# Edit links need to point to the user_this instead of app_object since the views for profile pull from auth.user #}
+                    {% if can_view_profile or can_edit %}
+                        {# "This User" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This User" %}</span>
                             </li>
@@ -147,9 +145,9 @@
                                 </li>
                             {% endif %}
                             {# End "This User" Section #}
-                        {% endif %}
+                        </ul>
                     {% endif %}
-                </ul>
+                {% endif %}
             </div>
         </div>
     </li>

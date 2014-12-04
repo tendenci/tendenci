@@ -15,7 +15,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                     {% if app_object %}
                         {# "All Payments" Section #}
                         <li>
@@ -28,14 +28,12 @@
                             <a href="{% url 'payment.search' %}">{% trans "Search Payments" %}</a>
                         </span>
                     </li>
+                </ul>
 
-                    {% if app_object %}
-                        {# End "All Payments" Section #}
-
-                        {% if can_view_invoice %}
-                            <li class="divider"></li>
-
-                            {# "This Payment" Section #}
+                {% if app_object %}
+                    {% if can_view_invoice %}
+                        {# "This Payment" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Payment" %}</span>
                             </li>
@@ -47,10 +45,9 @@
                                     </span>
                                 </li>
                             {% endif %}
-                            {# End "This Payment" Section #}
-                        {% endif %}
+                        </ul>
                     {% endif %}
-                </ul>
+                {% endif %}
             </div>
         </div>
     </li>

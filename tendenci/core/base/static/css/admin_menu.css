@@ -736,6 +736,7 @@ html[xmlns] .tcf {
 
 .t-top-nav .fa-globe {
     font-size: 16px;
+    margin-left: 0;
     margin-right: 10px;
     padding: 0 1px;
 }
@@ -806,10 +807,6 @@ html[xmlns] .tcf {
 
 /* Small devices (> 767px) */
 @media (min-width: 768px) {
-    html {
-        margin-top: 60px; /* 2x .t-top-nav height */
-    }
-
     .people-dropdown {
         width: 275px;
     }
@@ -838,6 +835,10 @@ html[xmlns] .tcf {
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
+    html {
+        margin-top: 60px; /* 2x .t-top-nav height */
+    }
+
     .t-top-nav .inner-top-nav:first-of-type {
         padding-left: 10px;
     }

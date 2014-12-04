@@ -21,7 +21,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 xs-12">
                     {% if app_object %}
                         {# "All Pages" Section #}
                         <li>
@@ -58,15 +58,12 @@
                             </span>
                         </li>
                     {% endif %}
+                </ul>
 
-                    {% if app_object %}
-                        {# End "All Pages" Section #}
-
-
-                        {% if can_view_page or can_edit_page %}
-                            <li class="divider"></li>
-
-                            {# "This Page" Section #}
+                {% if app_object %}
+                    {% if can_view_page or can_edit_page %}
+                        {# "This Page" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Page" %}</span>
                             </li>
@@ -102,13 +99,13 @@
                             {% if can_delete_page %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{% url 'page.delete' app_object.pk %}">{% trans "Delete Page" %}</a>
+                                        <a class="delete" href="{% url 'page.delete' app_object.pk %}">{% trans "Delete Page" %}</a>
                                     </span>
                                 </li>
                             {% endif %}
-                        {% endif %}
+                        </ul>
                     {% endif %}
-                </ul>
+                {% endif %}
             </div>
         </div>
     </li>

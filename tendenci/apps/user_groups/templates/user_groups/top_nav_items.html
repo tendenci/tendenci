@@ -23,7 +23,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                     {% if app_object %}
                         {# "All Groups" Section #}
                         <li>
@@ -60,14 +60,12 @@
                             </span>
                         </li>
                     {% endif %}
+                </ul>
 
-                    {% if app_object %}
-                        {# End "All Groups" Section #}
-
-                        {% if can_view_group or can_edit_group %}
-                            <li class="divider"></li>
-
-                            {# "This Group" Section #}
+                {% if app_object %}
+                    {% if can_view_group or can_edit_group %}
+                        {# "This Group" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Group" %}</span>
                             </li>
@@ -125,10 +123,9 @@
                                     </li>
                                 {% endif %}
                             {% endif %}
-                            {# End "This Group" Section #}
-                        {% endif %}
+                        </ul>
                     {% endif %}
-                </ul>
+                {% endif %}
             </div>
         </div>
     </li>

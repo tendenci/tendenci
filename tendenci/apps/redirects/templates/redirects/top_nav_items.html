@@ -21,7 +21,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                     {% if app_object %}
                         {# "All Redirects" Section #}
                         <li class="content-item">
@@ -58,14 +58,12 @@
                             </span>
                         </li>
                     {% endif %}
+                </ul>
 
-                    {% if app_object %}
-                        {# End "All Redirects" Section #}
-
-                        {% if can_view_redirect or can_edit_redirect %}
-                            <li class="divider"></li>
-
-                            {# "This Redirect" Section #}
+                {% if app_object %}
+                    {% if can_view_redirect or can_edit_redirect %}
+                        {# "This Redirect" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Redirect" %}</span>
                             </li>
@@ -87,10 +85,9 @@
                                     </span>
                                 </li>
                             {% endif %}
-                            {# End "This Redirect" Section #}
-                        {% endif %}
+                        </ul>
                     {% endif %}
-                </ul>
+                {% endif %}
             </div>
         </div>
     </li>
