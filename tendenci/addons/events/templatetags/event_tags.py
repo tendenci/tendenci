@@ -1,27 +1,20 @@
 import random
-import hashlib
-import random
 from datetime import datetime, timedelta
 from operator import or_
 
-from django.contrib.humanize.templatetags.humanize import naturalday
-from django.core.urlresolvers import reverse
-from django.template.defaultfilters import floatformat
 from django.db import models
-from django.template import Node, Library, TemplateSyntaxError, Variable
-from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
+from django.contrib.auth.models import AnonymousUser, User
+from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.addons.events.models import Event, Registrant, Type
+from tendenci.addons.events.utils import (registration_earliest_time,
+                                          registration_has_started,
+                                          registration_has_ended,)
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import get_query_filters
-from tendenci.apps.user_groups.models import Group
 
-from tendenci.addons.events.models import Event, Registrant, Type, RegConfPricing
-from tendenci.addons.events.utils import get_pricing, registration_earliest_time
-from tendenci.addons.events.utils import registration_has_started, get_event_spots_taken
-from tendenci.addons.events.utils import registration_has_ended
 
 register = Library()
 

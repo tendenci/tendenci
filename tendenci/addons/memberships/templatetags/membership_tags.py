@@ -1,6 +1,8 @@
 from django.template import Library
 
+
 register = Library()
+
 
 @register.inclusion_tag("memberships/options.html", takes_context=True)
 def membership_options(context, user, membership):
@@ -10,6 +12,7 @@ def membership_options(context, user, membership):
     })
     return context
 
+
 @register.inclusion_tag("memberships/nav.html", takes_context=True)
 def membership_nav(context, user, membership=None):
     context.update({
@@ -17,6 +20,7 @@ def membership_nav(context, user, membership=None):
         "user": user
     })
     return context
+
 
 @register.inclusion_tag("memberships/search-form.html", takes_context=True)
 def membership_search(context):

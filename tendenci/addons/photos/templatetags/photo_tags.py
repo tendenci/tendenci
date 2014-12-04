@@ -1,16 +1,17 @@
 import re
-from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
+
 from django.core.urlresolvers import reverse
+from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.photos.models import Image, Pool
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 
+
 register = Library()
 
 
 class PrintExifNode(Node):
-
     def __init__(self, exif):
         self.exif = exif
 

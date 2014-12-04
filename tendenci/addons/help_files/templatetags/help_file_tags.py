@@ -1,10 +1,12 @@
 from django.template import Library, TemplateSyntaxError
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.addons.help_files.models import HelpFile
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+
 
 register = Library()
+
 
 @register.inclusion_tag("help_files/options.html", takes_context=True)
 def help_file_options(context, user, help_file):
@@ -14,6 +16,7 @@ def help_file_options(context, user, help_file):
     })
     return context
 
+
 @register.inclusion_tag("help_files/nav.html", takes_context=True)
 def help_file_nav(context, user, help_file=None):
     context.update({
@@ -21,6 +24,7 @@ def help_file_nav(context, user, help_file=None):
         "user": user
     })
     return context
+
 
 @register.inclusion_tag("help_files/top_nav_items.html", takes_context=True)
 def help_file_current_app(context, user, help_file=None):
@@ -30,9 +34,11 @@ def help_file_current_app(context, user, help_file=None):
     })
     return context
 
+
 @register.inclusion_tag("help_files/search-form.html", takes_context=True)
 def help_file_search(context):
     return context
+
 
 class ListHelpFilesNode(ListNode):
     model = HelpFile

@@ -1,4 +1,3 @@
-
 import random
 
 from django.contrib.auth.models import AnonymousUser, User
@@ -8,8 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.addons.corporate_memberships.models import CorpMembership
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.utils import tcurrency
+from tendenci.core.site_settings.utils import get_setting
 
 
 register = Library()
@@ -88,6 +87,7 @@ def corpmemb_nav(context, user, corp_memb=None):
     })
     return context
 
+
 @register.inclusion_tag("corporate_memberships/top_nav_items.html", takes_context=True)
 def corpmemb_current_app(context, user, corp_memb=None):
     context.update({
@@ -132,6 +132,7 @@ class AllowViewCorpNode(Node):
         else:
             return boo
 
+
 @register.tag
 def allow_view_corp(parser, token):
     """
@@ -172,6 +173,7 @@ class AllowEditCorpNode(Node):
             return ""
         else:
             return boo
+
 
 @register.tag
 def allow_edit_corp(parser, token):

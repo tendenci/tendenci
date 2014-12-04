@@ -1,9 +1,11 @@
 from datetime import datetime
-from django.template import Node, Library, TemplateSyntaxError, Variable
+
+from django.template import Library, TemplateSyntaxError
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.addons.news.models import News
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+
 
 register = Library()
 

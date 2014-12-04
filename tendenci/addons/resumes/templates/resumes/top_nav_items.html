@@ -1,7 +1,8 @@
-{% load base_tags %}
-{% load perm_tags %}
 {% load i18n %}
 {% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user resumes.add_resume as can_add_resume %}
@@ -15,43 +16,95 @@
     {% has_perm user resumes.change_resume as can_edit_resume %}
 {% endif %}
 
+
 <ul class="dropdown-menu">
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-sm-6 col-xs-8">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                     {% if app_object %}
-                    <li><span class="content-head">{% trans "All Resumes" %}</span></li>
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Resumes" %}</span>
+                        </li>
                     {% endif %}
+
                     {% if can_edit_setting %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'settings.index' 'module' 'resumes' %}">{% trans "Settings" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'resumes' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'resumes' %}">{% trans "Resume List" %}</a></span></li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'resumes' %}">{% trans "Resume List" %}</a>
+                        </span>
+                    </li>
+
                     {% if user.is_authenticated %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'resume.add' %}">{% trans "Add Resume" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'resume.add' %}">{% trans "Add Resume" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
+
                     {% if user.profile.is_superuser %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'resume.pending' %}">{% trans "Pending Resumes" %}</a></span></li>
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'resume.export' %}">{% trans "Export Resumes" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'resume.pending' %}">{% trans "Pending Resumes" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'resume.export' %}">{% trans "Export Resumes" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
                 </ul>
+
                 {% if app_object %}
-                {% if can_view_resume or can_edit_resume %}
-                <ul class="list-unstyled col-sm-6 col-xs-8">
-                    <li><span class="content-head">{% trans "This Resume" %}</span></li>
-                    {% if can_view_resume %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{{ app_object.get_absolute_url }}">{% trans "View Resume" %}</a></span></li>
+                    {% if can_view_resume or can_edit_resume %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Resume" %}</span>
+                            </li>
+
+                            {% if can_view_resume %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Resume" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_resume %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'resume.edit' app_object.pk %}">{% trans "Edit Resume" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'resume.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_resume %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'resume.delete' app_object.pk %}">{% trans "Delete Resume" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
                     {% endif %}
-                    {% if can_edit_resume %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'resume.edit' app_object.pk %}">{% trans "Edit Resume" %}</a></span></li>
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'resume.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a></span></li>
-                    {% endif %}
-                    {% if can_delete_resume %}
-                        <li class="divider"></li>
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'resume.delete' app_object.pk %}">{% trans "Delete Resume" %}</a></span></li>
-                    {% endif %}
-                </ul>
-                {% endif %}
                 {% endif %}
             </div>
         </div>
