@@ -1,7 +1,8 @@
-{% load base_tags %}
-{% load perm_tags %}
 {% load i18n %}
 {% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user pages.add_page as can_add_page %}
@@ -15,41 +16,97 @@
     {% has_perm user pages.change_page as can_edit_page %}
 {% endif %}
 
+
 <ul class="dropdown-menu">
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled col-sm-6 col-xs-8">
+                <ul class="list-unstyled col-xs-12">
                     {% if app_object %}
-                        <li><span class="content-head">{% trans "All Pages" %}</span></li>
+                        {# "All Pages" Section #}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Pages" %}</span>
+                        </li>
                     {% endif %}
+
                     {% if can_edit_setting %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'settings.index' 'module' 'pages' %}">{% trans "Settings" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'pages' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
-                    <li class="content-item"><span class="app-name pull-left"><a href="{% url 'page.search' %}">{% trans "Search Pages" %}</a></span></li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'page.search' %}">{% trans "Search Pages" %}</a>
+                        </span>
+                    </li>
+
                     {% if can_add_page %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'page.add' %}">{% trans "Add Page" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'page.add' %}">{% trans "Add Page" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
+
                     {% if user.profile.is_superuser %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'page.export' %}">{% trans "Export Pages" %}</a></span></li>
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'page.export' %}">{% trans "Export Pages" %}</a>
+                            </span>
+                        </li>
                     {% endif %}
+
                     {% if app_object %}
-                    {% if can_view_page or can_edit_page %}
-                        <ul class="list-unstyled col-sm-6 col-xs-8">
-                            <li><span class="content-head">{% trans "All Pages" %}</span></li>
+                        {# End "All Pages" Section #}
+
+
+                        {% if can_view_page or can_edit_page %}
+                            <li class="divider"></li>
+
+                            {# "This Page" Section #}
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Page" %}</span>
+                            </li>
+
                             {% if can_view_page %}
-                                <li class="content-item"><span class="app-name pull-left"><a href="{{ app_object.get_absolute_url }}">{% trans "View Page" %}</a></span></li>
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Page" %}</a>
+                                    </span>
+                                </li>
                             {% endif %}
+
                             {% if can_edit_page %}
-                                <li class="content-item"><span class="app-name pull-left"><a href="{% url 'page.edit' app_object.pk %}">{% trans "Edit Page" %}</a></span></li>
-                                <li class="content-item"><span class="app-name pull-left"><a href="{% url 'page.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a></span></li>
-                                <li class="content-item"><span class="app-name pull-left"><a href="{% url 'category.update' app_object.opt_app_label page.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a></span></li>
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'page.edit' app_object.pk %}">{% trans "Edit Page" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'page.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'category.update' app_object.opt_app_label page.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
+                                    </span>
+                                </li>
                             {% endif %}
+
                             {% if can_delete_page %}
-                                <li class="content-item"><span class="app-name pull-left"><a href="{% url 'page.delete' app_object.pk %}">{% trans "Delete Page" %}</a></span></li>
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'page.delete' app_object.pk %}">{% trans "Delete Page" %}</a>
+                                    </span>
+                                </li>
                             {% endif %}
-                        </ul>
-                    {% endif %}
+                        {% endif %}
                     {% endif %}
                 </ul>
             </div>
