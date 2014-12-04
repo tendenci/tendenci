@@ -38,7 +38,7 @@
                         <ul class="list-unstyled col-sm-6 col-xs-8">
                             <li><span class="content-head">{% trans "All Pages" %}</span></li>
                             {% if can_view_page %}
-                                <li class="content-item"><span class="app-name pull-left"><a href="{% url 'app_object.get_absolute_url' %}">{% trans "View Page" %}</a></span></li>
+                                <li class="content-item"><span class="app-name pull-left"><a href="{{ app_object.get_absolute_url }}">{% trans "View Page" %}</a></span></li>
                             {% endif %}
                             {% if can_edit_page %}
                                 <li class="content-item"><span class="app-name pull-left"><a href="{% url 'page.edit' app_object.pk %}">{% trans "Edit Page" %}</a></span></li>

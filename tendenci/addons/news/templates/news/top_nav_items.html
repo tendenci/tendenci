@@ -39,7 +39,7 @@
                 <ul class="list-unstyled col-sm-6 col-xs-8">
                     <li><span class="content-head">{% trans "This" %} {% firstof MODULE_NEWS_LABEL 'News' %}</span></li>
                     {% if can_view_news %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'app_object.get_absolute_url' %}">{% trans "View" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a></span></li>
+                        <li class="content-item"><span class="app-name pull-left"><a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a></span></li>
                     {% endif %}
                     {% if can_edit_news %}
                         <li class="content-item"><span class="app-name pull-left"><a href="{% url 'news.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a></span></li>

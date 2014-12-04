@@ -40,7 +40,7 @@
                 <ul class="list-unstyled col-sm-6 col-xs-8">
                     <li><span class="content-head">{% trans "This Form" %}</span></li>
                     {% if can_view_form %}
-                        <li class="content-item"><span class="app-name pull-left"><a href="{% url 'app_object.get_absolute_url' %}">{% trans "View Form" %}</a></span></li>
+                        <li class="content-item"><span class="app-name pull-left"><a href="{{ app_object.get_absolute_url }}">{% trans "View Form" %}</a></span></li>
                         <li class="content-item"><span class="app-name pull-left"><a href="{% url 'form_entries' app_object.pk %}">{% trans "View Entries" %}</a></span></li>
                         <li class="content-item"><span class="app-name pull-left"><a href="{% url 'admin:forms_form_export' app_object.pk %}">{% trans "Export Entries" %}</a></span></li>
                     {% endif %}
