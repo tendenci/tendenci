@@ -214,6 +214,11 @@ class Newsletter(models.Model):
     def __unicode__(self):
         return self.actionname
 
+    class Meta:
+        permissions = (("view_newsletter", _("Can view newsletter")),)
+        verbose_name = _("Newsletter")
+        verbose_name_plural = _("Newsletters")
+
     def generate_newsletter(self, request, template):
         if self.default_template:
             content = self.generate_from_default_template(request, template)
@@ -246,6 +251,12 @@ class Newsletter(models.Model):
 
         if '[pages]' in content:
             content = content.replace('[pages]', data.get('pages_content'))
+
+        if '[directories]' in content:
+            content = content.replace('[directories]', data.get('directories_content'))
+
+        if '[resumes]' in content:
+            content = content.replace('[resumes]', data.get('resumes_content'))
 
         return content
 
@@ -289,6 +300,16 @@ class Newsletter(models.Model):
         if self.pages:
             pages_list, pages_content = newsletter_pages_list(request, self.pages_days, simplified)
 
+        directories_content = ""
+        directories_list = []
+        if self.directories:
+            directories_list, directories_content = newsletter_directories_list(request, self.directories_days, simplified)
+
+        resumes_content = ""
+        resumes_list = []
+        if self.resumes:
+            resumes_list, resumes_content = newsletter_resumes_list(request, self.resumes_days, simplified)
+
         try:
             events_type = self.events_type
             events_list, events_content = newsletter_events_list(
@@ -314,6 +335,10 @@ class Newsletter(models.Model):
                 'jobs_list': jobs_list,
                 'pages_content': pages_content,
                 'pages_list': pages_list,
+                'directories_content': directories_content,
+                'directories_list': directories_list,
+                'resumes_content': resumes_content,
+                'resumes_list': resumes_list,
                 'events_list': events_list,
                 'events_content': events_content,
                 'events_type': events_type}
