@@ -8,6 +8,8 @@ from .models import Newsletter
 
 class NewsletterStatusMixin(object):
     def dispatch(self, request, *args, **kwargs):
+        if not has_perm(request.user, 'newsletters.view_newsletter'):
+            raise Http403
         pk = int(kwargs.get('pk'))
         newsletter = get_object_or_404(Newsletter, pk=pk)
         if newsletter.send_status != 'draft':

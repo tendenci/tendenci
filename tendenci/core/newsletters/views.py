@@ -187,6 +187,8 @@ class NewsletterDetailView(DetailView):
 
     def get(self, request, *args, **kwargs):
         EventLog.objects.log(instance=self.get_object(), action='view')
+        if not has_perm(request.user, 'newsletters.view_newsletter'):
+            raise Http403
         return super(NewsletterDetailView, self).get(request, *args, **kwargs)
 
 
@@ -195,6 +197,8 @@ class NewsletterResendView(DetailView):
     template_name = 'newsletters/actions/view.html'
 
     def dispatch(self, request, *args, **kwargs):
+        if not has_perm(request.user, 'newsletters.view_newsletter'):
+            raise Http403
         pk = int(kwargs.get('pk'))
         newsletter = get_object_or_404(Newsletter, pk=pk)
         if newsletter.send_status == 'draft':
