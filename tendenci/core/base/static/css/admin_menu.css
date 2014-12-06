@@ -603,6 +603,10 @@ html[xmlns] .tcf {
     text-decoration: underline;
 }
 
+.t-top-nav .panel-body > ul {
+    margin-left: 0;
+}
+
 .t-top-nav .app-name {
     display: inline-block;
     min-width: 145px;
@@ -749,6 +753,10 @@ html[xmlns] .tcf {
 
 .t-top-nav .content-dropdown-col {
     padding: 0 15px;
+}
+
+.t-top-nav .content-dropdown-col .row {
+    margin-bottom: 0;
 }
 
 
