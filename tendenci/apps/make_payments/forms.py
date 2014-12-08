@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.make_payments.models import MakePayment
 from tendenci.apps.base.fields import EmailVerificationField, PriceField
 from captcha.fields import CaptchaField
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 COUNTRIES = (
     ('', '-----------'),
