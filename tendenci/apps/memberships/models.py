@@ -1996,7 +1996,7 @@ class Notice(models.Model):
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
             'email': membership.user.email,
-            'username': membership.user.email,
+            'username': membership.user.username,
             'member_number': membership.member_number,
             'membership_type': membership.membership_type.name,
             'payment_method': payment_method_name,
