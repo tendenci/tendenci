@@ -22,7 +22,9 @@ from tendenci.core.newsletters.utils import (
     newsletter_jobs_list,
     newsletter_news_list,
     newsletter_pages_list,
-    newsletter_events_list)
+    newsletter_events_list,
+    newsletter_directories_list,
+    newsletter_resumes_list)
 
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.utils import get_default_group

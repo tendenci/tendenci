@@ -30,7 +30,10 @@ from tendenci.core.newsletters.forms import (
     )
 from tendenci.core.newsletters.mixins import (
     NewsletterEditLogMixin,
-    NewsletterStatusMixin
+    NewsletterStatusMixin,
+    NewsletterPermissionMixin,
+    NewsletterPermStatMixin,
+    NewsletterPassedSLAMixin
     )
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
@@ -57,9 +60,10 @@ class NewsletterGeneratorView(TemplateView):
         return context
 
 
-class NewsletterGeneratorOrigView(FormView):
+class NewsletterGeneratorOrigView(NewsletterPermissionMixin, FormView):
     template_name = "newsletters/add.html"
     form_class = OldGenerateForm
+    newsletter_permission = 'newsletters.add_newsletter'
 
     def get_initial(self):
         site_name = get_setting('site', 'global', 'sitedisplayname')
@@ -94,20 +98,22 @@ class NewsletterGeneratorOrigView(FormView):
         return kwargs
 
 
-class MarketingActionStepOneView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
+class MarketingActionStepOneView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepOneForm
     template_name = 'newsletters/actions/step1.html'
+    newsletter_permission = 'newsletters.change_newsletter'
 
     def get_success_url(self):
         obj = self.get_object()
         return reverse_lazy('newsletter.action.step2', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepTwoView(NewsletterStatusMixin, ListView):
+class MarketingActionStepTwoView(NewsletterPermStatMixin, ListView):
     paginate_by = 10
     model = Email
     template_name = 'newsletters/actions/step2.html'
+    newsletter_permission = 'newsletters.change_newsletter'
 
     def get(self, request, *args, **kwargs):
         self.form = MarketingStep2EmailFilterForm(request.GET)
@@ -132,40 +138,44 @@ class MarketingActionStepTwoView(NewsletterStatusMixin, ListView):
         return qset
 
 
-class NewsletterUpdateEmailView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
+class NewsletterUpdateEmailView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = NewslettterEmailUpdateForm
     template_name = 'newsletters/actions/step2.html'
+    newsletter_permission = 'newsletters.change_newsletter'
 
     def get_success_url(self):
         obj = self.get_object()
         return reverse_lazy('newsletter.action.step3', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepThreeView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
+class MarketingActionStepThreeView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepThreeForm
     template_name = 'newsletters/actions/step3.html'
+    newsletter_permission = 'newsletters.change_newsletter'
 
     def get_success_url(self):
         obj = self.get_object()
         return reverse_lazy('newsletter.action.step4', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepFourView(NewsletterStatusMixin, NewsletterEditLogMixin, UpdateView):
+class MarketingActionStepFourView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
     model = Newsletter
     form_class = MarketingStepFourForm
     template_name = 'newsletters/actions/step4.html'
+    newsletter_permission = 'newsletters.change_newsletter'
 
     def get_success_url(self):
         obj = self.get_object()
         return reverse_lazy('newsletter.action.step5', kwargs={'pk': obj.pk})
 
 
-class MarketingActionStepFiveView(NewsletterStatusMixin, UpdateView):
+class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMixin, UpdateView):
     model = Newsletter
     template_name = 'newsletters/actions/step5.html'
     form_class = MarketingStepFiveForm
+    newsletter_permission = 'newsletters.change_newsletter'
 
     def get_success_url(self):
         obj = self.get_object()
@@ -181,24 +191,22 @@ class MarketingActionStepFiveView(NewsletterStatusMixin, UpdateView):
         return super(MarketingActionStepFiveView, self).form_valid(form)
 
 
-class NewsletterDetailView(DetailView):
+class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
+    newsletter_permission = 'newsletters.view_newsletter'
 
     def get(self, request, *args, **kwargs):
         EventLog.objects.log(instance=self.get_object(), action='view')
-        if not has_perm(request.user, 'newsletters.view_newsletter'):
-            raise Http403
         return super(NewsletterDetailView, self).get(request, *args, **kwargs)
 
 
-class NewsletterResendView(DetailView):
+class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
     model = Newsletter
     template_name = 'newsletters/actions/view.html'
+    newsletter_permission = 'newsletters.view_newsletter'
 
     def dispatch(self, request, *args, **kwargs):
-        if not has_perm(request.user, 'newsletters.view_newsletter'):
-            raise Http403
         pk = int(kwargs.get('pk'))
         newsletter = get_object_or_404(Newsletter, pk=pk)
         if newsletter.send_status == 'draft':
@@ -230,6 +238,8 @@ class NewsletterResendView(DetailView):
 
         return super(NewsletterResendView, self).get(request, *args, **kwargs)
 
+
+@login_required
 def generate(request):
     """
     Newsletter generator form
@@ -265,6 +275,7 @@ def generate(request):
 
     return render(request, 'newsletters/generate.html', {'form':form})
 
+@login_required
 def template_view(request, template_id, render=True):
     """
     Generate newsletter preview
