@@ -30,7 +30,7 @@
                     <form action="{% url event.register event.pk %}" method="get">
 
                     {% if pricing|length == 1 and pricing.0.price == 0 %}
-                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'RSVP' %}" />
+                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'RSVP Now' %}" />
                     {% else %}
                     <ul>
                         {% for price in pricing %}
