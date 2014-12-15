@@ -78,3 +78,7 @@ white-space: nowrap;
  	background-repeat: no-repeat;
  	padding-right: 10px;
  }
+
+p.cls-paragraph-warning strong {
+    color: red;
+ }
