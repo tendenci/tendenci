@@ -640,13 +640,16 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .nav-logo {
+    margin: 0;
     position: relative;
     top: 3px;
+    vertical-align: middle;
 }
 
-.nav-icon {
+.t-top-nav .nav-icon {
     position: relative;
-    margin-right: 10px;
+    margin: 0 10px 0 0;
+    vertical-align: middle;
 }
 
 .t-top-nav .classic {
