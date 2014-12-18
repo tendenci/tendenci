@@ -1112,10 +1112,19 @@ class MembershipDefault(TendenciBaseModel):
         """
         Returns a boolean value on whether approval is required
         This is dependent on whether membership is a join or renewal.
-        """
+        """  
         if self.renewal:
-            return self.membership_type.renewal_require_approval or self.membership_type.require_payment_approval
-        return self.membership_type.require_approval or self.membership_type.require_payment_approval
+            if not self.membership_type.renewal_require_approval:
+                if not self.membership_type.require_payment_approval \
+                  or self.get_invoice().balance <= 0:
+                    # auto approve if not require approval or paid or free
+                    return False
+        else: # join
+            if not self.membership_type.require_approval:
+                if not self.membership_type.require_payment_approval \
+                  or self.get_invoice().balance <= 0:
+                    return False
+        return True
 
     def group_refresh(self):
         """
@@ -1987,7 +1996,7 @@ class Notice(models.Model):
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
             'email': membership.user.email,
-            'username': membership.user.email,
+            'username': membership.user.username,
             'member_number': membership.member_number,
             'membership_type': membership.membership_type.name,
             'payment_method': payment_method_name,

@@ -183,6 +183,10 @@ class Command(BaseCommand):
                                   'site_contact_name': site_contact_name,
                                   'site_contact_email': site_contact_email,
                                   'time_submitted': nowstr,
+                                  'sitedisplayname': site_display_name,
+                                  'sitecontactname': site_contact_name,
+                                  'sitecontactemail': site_contact_email,
+                                  'timesubmitted': nowstr,
                                   'password': passwd_str
                                   }
 
@@ -245,7 +249,10 @@ class Command(BaseCommand):
                 'payment_method': payment_method_name,
                 'referer_url': '%s%s?next=%s' % (site_url, reverse('auth_login'), membership.referer_url),
                 'membership_link': '%s%s' % (site_url, membership.get_absolute_url()),
-                'renew_link': '%s%s' % (site_url, membership.get_absolute_url())
+                'renew_link': '%s%s' % (site_url, membership.get_absolute_url()),
+                'mymembershipslink': '%s%s' % (site_url, membership.get_absolute_url()),
+                'membershiplink': '%s%s' % (site_url, membership.get_absolute_url()),
+                'renewlink': '%s%s' % (site_url, membership.get_absolute_url())
             })
 
             body = fieldify(body)
