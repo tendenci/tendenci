@@ -1,130 +1,152 @@
-<!DOCTYPE html>
+{% load static from staticfiles %}
 {% load perm_tags %}
 {% load announcement_tags %}
+
+
 {# admin left for deprecation for custom templates/themes #}
 {% is_admin request.user as admin %}
+
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US">
 
-<head profile="http://gmpg.org/xfn/11">{{ NEW_RELIC_HEADER|safe }}
-    {% block full_title %}<title>{% block title %}{% endblock %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>{% endblock %}
-    <meta charset="UTF-8">
-    {% block full_meta_description %}<meta name="description" content="{% block meta_description %}{% endblock %}" />{% endblock %}
-    {% block full_meta_keywords %}<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />{% endblock %}
-    <meta name="generator" content="Tendenci 5.1" />
+    <head profile="http://gmpg.org/xfn/11">
+        {{ NEW_RELIC_HEADER|safe }}
 
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/" />
-    {% block meta_canonical_url %}{% endblock %}
-    {% block includebootstrap3css %}
-    {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap3/css/bootstrap.min.css">
-    {% endif %}
-    {% endblock %}
-    <link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/required.css" />
-    <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
-    <link href="{{ STATIC_URL }}css/announcements.css" rel="stylesheet" type="text/css" />
-    {% block extra_head %}{% endblock %}
-    <link href="{{ STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />
-    {% if SITE_GLOBAL_OVERRIDEBOOTSTRAPCSS %}
-    <link href="{{ STATIC_URL }}css/override.bootstrap.css" rel="stylesheet" type="text/css" />
-    {% endif %}
-    {% if request.user.is_authenticated %}
-        {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
-        <link rel="stylesheet" href="{{ STATIC_URL }}yamm/yamm.css">
-        {% endif %}
-        <link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />
-        <link href="{{ STATIC_URL }}css/theme_bar.css" rel="stylesheet" type="text/css" />
-    {% endif %}
-    {% if request.user.is_superuser and THEME_INFO.SSU.color %}
-        <link href="{{ STATIC_URL }}css/spectrum.css" rel="stylesheet" type="text/css" />
-    {% endif %}
-    {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    {% endif %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome.min.css">
-</head>
+        {% block full_title %}<title>{% block title %}{% endblock %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>{% endblock %}
 
-<body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
-{% block top_bar %}
-{% if request.user.is_superuser %}
-    {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
-        {% if request.user.is_authenticated %}
-            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                {% include "top_menu/user_top.html" %}
-            {% else %}
-                {% include "top_menu/user_top-new.html" %}
+        <meta charset="UTF-8">
+        {% block full_meta_description %}<meta name="description" content="{% block meta_description %}{% endblock %}" />{% endblock %}
+        {% block full_meta_keywords %}<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />{% endblock %}
+        <meta name="generator" content="Tendenci 5.1" />
+        {% block meta_canonical_url %}{% endblock %}
+
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
+        <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
+
+        {% block includebootstrap3css %}
+            {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
+                <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
             {% endif %}
+        {% endblock %}
+
+        <link href="{% static 'css/global_tendenci.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'css/required.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css">
+
+        {% block extra_head %}{% endblock %}
+
+        <link href="{% static 'css/websymbols.css' %}" rel="stylesheet" type="text/css">
+
+        {% if SITE_GLOBAL_OVERRIDEBOOTSTRAPCSS %}
+            <link href="{% static 'css/override.bootstrap.css' %}" rel="stylesheet" type="text/css">
         {% endif %}
-    {% else %}
-        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/admin_top.html" %}
-        {% else %}
-            {% include "top_menu/admin_top-new.html" %}
+
+        {% if request.user.is_authenticated %}
+            {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
+                <link href="{% static 'yamm/yamm.css' %}" rel="stylesheet" type="text/css">
+            {% endif %}
+            <link href="{% static 'css/admin_menu.css' %}" rel="stylesheet" type="text/css">
+            <link href="{% static 'css/theme_bar.css' %}" rel="stylesheet" type="text/css">
         {% endif %}
-        {% if request.session.theme %}
-            {% include "themes/theme_top.html" %}
+
+        {% if request.user.is_superuser and THEME_INFO.SSU.color %}
+            <link href="{% static 'css/spectrum.css' %}" rel="stylesheet" type="text/css">
         {% endif %}
-    {% endif %}
-{% else %}
-    {% if request.user.is_authenticated %}
-        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/user_top.html" %}
-        {% else %}
-            {% include "top_menu/user_top-new.html" %}
+
+        <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+        {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
+            <script type="text/javascript">
+              var _gaq = _gaq || [];
+              _gaq.push(['_setAccount', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}']);
+              _gaq.push(['_trackPageview']);
+              (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+              })();
+            </script>
         {% endif %}
-    {% endif %}
-{% endif %}
-{% emergency_announcement request.user %}
-{% endblock %}
+    </head>
 
-{% block html_body %}{% endblock %}
+    <body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
+        {% block top_bar %}
+            {% if request.user.is_superuser %}
+                {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+                    {% if request.user.is_authenticated %}
+                        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                            {% include "top_menu/user_top.html" %}
+                        {% else %}
+                            {% include "top_menu/user_top-new.html" %}
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                        {% include "top_menu/admin_top.html" %}
+                    {% else %}
+                        {% include "top_menu/admin_top-new.html" %}
+                    {% endif %}
+                    {% if request.session.theme %}
+                        {% include "themes/theme_top.html" %}
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {% if request.user.is_authenticated %}
+                    {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                        {% include "top_menu/user_top.html" %}
+                    {% else %}
+                        {% include "top_menu/user_top-new.html" %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
 
-{% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
+            {% emergency_announcement request.user %}
+        {% endblock %}
 
-{% block jquery_script %}
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-{% endblock jquery_script %}
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        jQuery('#lang-menu a').click(function(e){
-            var lang = jQuery(this).data('lang');
-            jQuery('#lang-form #lang-id_language').attr('value', lang);
-            jQuery('#lang-form').submit();
-        });
-    });
-</script>
-<script type="text/javascript" src="{{ STATIC_URL }}bootstrap3/js/bootstrap.min.js"></script>
-{% if request.user.is_superuser %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>
-{% endif %}
-{% if user.is_authenticated %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/global/authenticated.js"></script>
-{% endif %}
-{% block extra_body %}{% endblock %}
+        {% block html_body %}{% endblock %}
 
-{% if request.user.is_superuser and THEME_INFO.SSU.color %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_plugins/spectrum.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/theme_color_admin.js"></script>
-{% endif %}
+        {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
 
-{% if THEME_INFO.SSU.walkthrough %}
-<script type="text/javascript">
-    $('#walkthrough-quicklink').click(function(){
-        var d = new Date();
-        d.setDate(d.getDate() - 2);
-        document.cookie = "_walkthrough-walkthrough=; path=/; expires=" + d.toUTCString() + ";";
-    });
-</script>
-{% endif %}
+        {% block jquery_script %}
+            <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        {% endblock jquery_script %}
 
-</body>
+        <script type="text/javascript">
+            jQuery(document).ready(function () {
+                jQuery('#lang-menu a').click(function(e){
+                    var lang = jQuery(this).data('lang');
+                    jQuery('#lang-form #lang-id_language').attr('value', lang);
+                    jQuery('#lang-form').submit();
+                });
+            });
+        </script>
+
+        <script type="text/javascript" src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
+
+        {% if request.user.is_superuser %}
+            <script type="text/javascript" src="{% static 'js/admin_menu.js' %}"></script>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <script type="text/javascript" src="{% static 'js/global/authenticated.js' %}"></script>
+        {% endif %}
+
+        {% block extra_body %}{% endblock %}
+
+        {% if request.user.is_superuser and THEME_INFO.SSU.color %}
+            <script type="text/javascript" src="{% static 'js/jquery_plugins/spectrum.js' %}"></script>
+            <script type="text/javascript" src="{% static 'js/theme_color_admin.js' %}"></script>
+        {% endif %}
+
+        {% if THEME_INFO.SSU.walkthrough %}
+            <script type="text/javascript">
+                $('#walkthrough-quicklink').click(function(){
+                    var d = new Date();
+                    d.setDate(d.getDate() - 2);
+                    document.cookie = "_walkthrough-walkthrough=; path=/; expires=" + d.toUTCString() + ";";
+                });
+            </script>
+        {% endif %}
+    </body>
+
 </html>
