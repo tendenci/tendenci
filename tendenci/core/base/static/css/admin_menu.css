@@ -489,6 +489,11 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     font-size: 12px;
 }
 
+.t-top-nav .glyph,
+.t-top-nav .fa-globe {
+    margin-right: 6px;
+}
+
 .t-top-nav .content-head a {
     font-weight: bold;
     font-size: 18px;

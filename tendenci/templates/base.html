@@ -24,12 +24,11 @@
         <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
 
         {% block includebootstrap3css %}
-            {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
-                <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
-            {% endif %}
+            {# Let's try using Bootstrap 3 in all sites #}
+            <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
         {% endblock %}
 
-        <link href="{% static 'css/global_tendenci.css' %}" rel="stylesheet" type="text/css">
+        {# <link href="{% static 'css/global_tendenci.css' %}" rel="stylesheet" type="text/css"> #}
         <link href="{% static 'css/required.css' %}" rel="stylesheet" type="text/css">
         <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css">
 
