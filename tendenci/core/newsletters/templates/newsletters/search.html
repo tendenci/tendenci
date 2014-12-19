@@ -1,0 +1,60 @@
+{% extends "newsletters/base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load pagination_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% trans "Newsletters" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+   {# <link rel="stylesheet" href="{% static 'css/ballots.css' %}" /> #}
+{% endblock %}
+
+{% block body %}
+    <div class="t">
+        {# ballot_nav request.user #}
+
+        <h1>{% trans "Newsletters" %}</h1>
+
+        <div class="newsletter-wrap">
+            {% if is_paginated %}
+                {% for newsletter in page_obj %}
+                    {% include 'newsletters/search-result.html' %}
+                {% endfor %}
+
+                {% paginate %}
+            {% else %}
+                {% if object_list %}
+                    {% for ballot in object_list %}
+                        {% include 'newsletters/search-result.html' %}
+                    {% endfor %}
+                {% else %}
+                    <p>{% trans "No Newsletters found." %}</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    {% if user.profile.is_superuser %}
+    <script type="text/javascript">
+        jQuery(document).ready(function(j) {
+            j(".resend-link").click(function() {
+                var nl = j(this).data('title');
+                var resend_link = j(this).data('href');
+                var x = confirm('Resend the newsletter "' + nl + '"?');
+                if (x == true)
+                    window.location.href = resend_link;
+                else
+                    return false;
+            });
+        });
+    </script>
+    {% endif %}
+{% endblock %}

@@ -23,6 +23,7 @@ class NewsletterRegistry(CoreRegistry):
     }
     url = {
         'add': lazy_reverse('newsletter.orig.generator'),
+        'search': lazy_reverse('newsletter.list'),
     }
 
 site.register(Newsletter, NewsletterRegistry)

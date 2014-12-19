@@ -10,7 +10,7 @@ from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
 from django.views.generic.detail import SingleObjectMixin
-from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView
+from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
 from django.core.urlresolvers import reverse, reverse_lazy
 
 from tendenci.core.base.http import Http403
@@ -43,7 +43,7 @@ from tendenci.core.newsletters.utils import (
     newsletter_events_list,
     newsletter_directories_list,
     newsletter_resumes_list)
-from tendenci.core.perms.utils import has_perm
+from tendenci.core.perms.utils import has_perm, get_query_filters
 from tendenci.core.site_settings.utils import get_setting
 
 
@@ -58,6 +58,19 @@ class NewsletterGeneratorView(TemplateView):
 
         context['CAMPAIGNMONITOR_ENABLED'] = (cm_api_key and cm_client_id)
         return context
+
+
+class NewsletterListView(NewsletterPermissionMixin, ListView):
+    model = Newsletter
+    paginate_by = 10
+    newsletter_permission = 'newsletters.view_newsletter'
+    template_name = 'newsletters/search.html'
+
+    def get_queryset(self, **kwargs):
+        qset = super(NewsletterListView, self).get_queryset(**kwargs)
+        qset = qset.order_by('-date_created')
+
+        return qset
 
 
 class NewsletterGeneratorOrigView(NewsletterPermissionMixin, FormView):
@@ -237,6 +250,13 @@ class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
         return super(NewsletterResendView, self).get(request, *args, **kwargs)
+
+
+class NewsletterDeleteView(NewsletterPermissionMixin, DeleteView):
+    model = Newsletter
+    newsletter_permission = 'newsletters.delete_newsletter'
+    template_name = 'newsletters/delete.html'
+    success_url = reverse_lazy('newsletter.list')
 
 
 @login_required

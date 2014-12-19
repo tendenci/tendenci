@@ -213,13 +213,17 @@ class Newsletter(models.Model):
     # resend_count
     resend_count = models.IntegerField(null=True, blank=True, default=0)
 
-    def __unicode__(self):
-        return self.actionname
-
     class Meta:
         permissions = (("view_newsletter", _("Can view newsletter")),)
         verbose_name = _("Newsletter")
         verbose_name_plural = _("Newsletters")
+
+    def __unicode__(self):
+        return self.actionname
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("newsletter.detail.view", [self.pk])
 
     def generate_newsletter(self, request, template):
         if self.default_template:

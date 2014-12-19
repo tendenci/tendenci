@@ -1,0 +1,52 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load base_filters %}
+
+
+<div class="meta">
+    <div class="meta-left">
+        <div><strong>{% trans "Status" %}: </strong> {{ newsletter.send_status|title }}</div>
+        <div><strong>{% trans 'Created' %}: </strong> {{ newsletter.date_created }}</div>
+        {% if newsletter.date_submitted %}
+        <div><strong>{% trans 'Submitted' %}: </strong> {{ newsletter.date_submitted }}</div>
+        {% endif %}
+        {% if newsletter.date_email_sent %}
+        <div><strong>{% trans 'Sent' %}: </strong> {{ newsletter.date_email_sent }}</div>
+        {% endif %}
+        {% if newsletter.date_last_resent %}
+        <div><strong>{% trans 'Resent' %}: </strong> {{ newsletter.date_last_resent }}</div>
+        <div><strong>{% trans 'Resend Count' %}: </strong> {{ newsletter.resend_count }}</div>
+        {% endif %}
+
+    </div>
+
+    <div class="meta-right"></div>
+</div>
+
+{% if user.profile.is_superuser %}
+    <div class="editor-bar">
+        <div class="edit-links">
+            <ul>
+                <li>
+                    <a class="eventlog-link" href="{% url 'event_log.search' %}?application=newsletters&model_name=newsletter&object_id={{ newsletter.pk }}">{% trans "Eventlogs" %}</a>
+                </li>
+
+                <li>
+                    <a class="edit-link" href="{% url 'newsletter.action.step1' newsletter.pk %}">{% trans "Edit" %}</a>
+                </li>
+                <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+                <div class="options-list">
+                    <ul>
+                        <li><a class="delete" href="{% url 'newsletter.delete' newsletter.pk %}">{% trans "Delete" %}</a></li>
+                        {% if not newsletter.date_email_sent %}
+                        <li><a href="{% url 'newsletter.action.step5' newsletter.pk %}">{% trans "Send" %}</a></li>
+                        {% else %}
+                        <li><a class="resend-link" href="{% url 'newsletter.resend.view' newsletter.pk %}" data-title="{{ newsletter.actionname }}" data-href="{% url 'newsletter.resend.view' newsletter.pk %}">{% trans "Resend" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </ul>
+        </div>
+    </div>
+{% endif %}

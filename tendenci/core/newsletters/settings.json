@@ -1,0 +1,36 @@
+[
+    {
+        "default_value": "true",
+        "description": "Module is enabled or not.",
+        "data_type": "boolean",
+        "update_dt": "2011-11-29 13:32:43",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "enabled",
+        "value": "true",
+        "label": "Enabled",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "newsletters",
+        "store": true,
+        "updated_by": ""
+    },
+    {
+        "default_value": "newsletters",
+        "description": "The root url for the newsletters app. Use letters and dashes only.",
+        "data_type": "string",
+        "update_dt": "2012-02-16 15:25:04",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "url",
+        "value": "newsletters",
+        "label": "Root URL",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "newsletters",
+        "store": true,
+        "updated_by": ""
+    }
+]
