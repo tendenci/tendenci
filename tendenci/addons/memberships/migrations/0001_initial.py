@@ -8,6 +8,7 @@ class Migration(SchemaMigration):
     depends_on = (
         ('invoices', '0001_initial'),
         ('payments', '0001_initial'),
+        ('user_groups', '0001_initial'),
     )
 
     def forwards(self, orm):
