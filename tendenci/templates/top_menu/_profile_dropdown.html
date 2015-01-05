@@ -24,7 +24,7 @@
                 <div class="profile-icon">
                     {% avatar user 128 %}
                 </div>
-                <a class="update-avatar-link" href="{% url 'profile.change_avatar' user.profile.pk %}">{% trans 'Update Photo' %}</a>
+                <a class="update-avatar-link" href="{% url 'profile.change_avatar' user.pk %}">{% trans 'Update Photo' %}</a>
             </ul>
 
             <ul class="list-unstyled content-dropdown-col pull-left">
@@ -84,10 +84,26 @@
             {% if USER_IS_SUPERUSER %}
                 <ul class="list-unstyled content-dropdown-col admin-col pull-left">
                     <li><span class="content-head text-content-head">{% trans 'Administrator' %}</span></li>
+                    {% comment %}
                     <li class="content-item">
                         <span class="app-name">
                             <a href="#">
                                 <img class="nav-icon" src="{% static 'famfamfam/icons/folder_user.png' %}"/>{% trans 'View as...' %}
+                            </a>
+                        </span>
+                    </li>
+                    {% endcomment %}
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'settings.index' 'site' 'global' %}">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"/>{% trans 'Site Settings' %}
+                            </a>
+                        </span>
+                    </li>
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'settings' %}">
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"/>{% trans 'Full Settings' %}
                             </a>
                         </span>
                     </li>
