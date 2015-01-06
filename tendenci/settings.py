@@ -157,6 +157,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # tendenci context processors
     'tendenci.core.theme.context_processors.theme',
     'tendenci.core.site_settings.context_processors.settings',
+    'tendenci.core.site_settings.context_processors.app_dropdown',
     'tendenci.core.base.context_processors.static_url',
     'tendenci.core.base.context_processors.index_update_note',
     'tendenci.core.base.context_processors.today',

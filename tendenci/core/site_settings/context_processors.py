@@ -1,4 +1,5 @@
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.conf import settings as d_settings
 from django.template import Context, Template
 
@@ -48,3 +49,26 @@ def settings(request):
     contexts['USE_I18N'] = d_settings.USE_I18N
 
     return contexts
+
+
+def app_dropdown(request):
+    """
+    Context processor for getting the template
+    needed for a module setting dropdown
+    """
+    context = {}
+    path = request.get_full_path().strip('/')
+    path = path.split('/')
+
+    if len(path) < 3:
+        context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'site_settings/top_nav.html'})
+
+    else:
+        if path[0] == 'settings' and path[1] == 'module':
+            context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': path[2]+'/top_nav.html'})
+        else:
+            context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'site_settings/top_nav.html'})
+
+    return context
+
+
