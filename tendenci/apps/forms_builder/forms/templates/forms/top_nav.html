@@ -10,7 +10,7 @@
         <img class="nav-icon" src="{% static 'famfamfam/icons/application_form.png' %}"/>{% trans "Forms" %}
     </a>
 
-    {% if form %}
+    {% if form and not 'settings/module/forms' in request.path %}
         {% form_current_app request.user form %}
     {% else %}
         {% form_current_app request.user %}
