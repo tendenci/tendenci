@@ -1015,3 +1015,11 @@ img.alignleft {
 	
 #footer p{padding:14px 0;margin: 0; color: #333; text-align:center; font-size:12px;}
 
+
+/* main-content navigation */
+
+#showh {
+	/** Handle for navigation inside main content (#main-content) **/
+	margin: 10px 0 30px;
+}
+

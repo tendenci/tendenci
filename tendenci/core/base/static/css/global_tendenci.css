@@ -4,88 +4,88 @@
 }
 
 #showh {
-	position: relative;
-	width: 45em;
-	height: 3em;
-	width: 45em;
-	font-size: 10px;
-	margin:10px 0 30px;
+    position: relative;
+    width: 45em;
+    height: 3em;
+    width: 45em;
+    font-size: 10px;
+    margin:10px 0 30px;
 }
 
 #showh #primary {
-	margin: 0;
-	padding: 0;
-	position: absolute;
-	bottom: -1px;
-	width: 45em;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    bottom: -1px;
+    width: 45em;
 }
 
 #showh #primary li  {
-	display: inline;
-	list-style: none;
+    display: inline;
+    list-style: none;
 
 }
 
 #showh #primary a,#primary span,#primary a.current {
-	width: 9em;
-	display: block;
-	float: left;
-	padding: 8px 0;
-	margin: 1px 2px 0 0;
-	text-align: center;
-	font-family: tahoma, verdana, sans-serif;
-	font-size: 90%;
-	text-decoration: none;
-	color: #333;
-	height: 21px;
+    width: 9em;
+    display: block;
+    float: left;
+    padding: 8px 0;
+    margin: 1px 2px 0 0;
+    text-align: center;
+    font-family: tahoma, verdana, sans-serif;
+    font-size: 90%;
+    text-decoration: none;
+    color: #333;
+    height: 21px;
 }
 
 #showh #primary span,#primary a.current,#primary a.current:hover {
-	border: 1px solid;
-	border: none;
+    border: 1px solid;
+    border: none;
 
-	padding-bottom: 8px;
-	margin-top: 0;
-	background-image: url('../images/backgrounds/tabs_roll.jpg');
-	background-repeat: no-repeat;
-	height: 21px;
+    padding-bottom: 8px;
+    margin-top: 0;
+    background-image: url('../images/backgrounds/tabs_roll.jpg');
+    background-repeat: no-repeat;
+    height: 21px;
 
 }
 
 #showh #primary a {
-	background: #FFF;
-	border: none;
-	border-bottom: none;
-	background-image: url('../images/backgrounds/tabs.jpg');
-	background-repeat: no-repeat;
+    background: #FFF;
+    border: none;
+    border-bottom: none;
+    background-image: url('../images/backgrounds/tabs.jpg');
+    background-repeat: no-repeat;
     height: 21px;
 
 }
 
 #showh #primary a:hover {
-	border-color: #666;
+    border-color: #666;
     background-image: url('../images/backgrounds/tabs_hover.jpg');
-	background-repeat: no-repeat;
+    background-repeat: no-repeat;
 }
 
 #showh #secondary {
-	position: absolute;
-	margin: 0; padding: 0;
+    position: absolute;
+    margin: 0; padding: 0;
     left: 0;
     top: 35px;
-	width: 60em;
+    width: 60em;
 }
 
 #showh #secondary li a,#secondary li span {
-	width: auto;
-	display: block;
-	float: left;
-	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
-	margin: 0;
-	text-align: auto;
-	border: none;
-	border-right: 1px dotted #AAA;
-	background: none;
+    width: auto;
+    display: block;
+    float: left;
+    padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+    margin: 0;
+    text-align: auto;
+    border: none;
+    border-right: 1px dotted #AAA;
+    background: none;
 height: 12px;
 
 
@@ -93,74 +93,74 @@ height: 12px;
 }
 
 #showh #secondary li a {
-	color: #06C;
-	text-decoration: underline;
+    color: #06C;
+    text-decoration: underline;
 height: 12px;
 
 
 }
 
 #showh #secondary li a:hover {
-	color: #333;
-	background: transparent;
-	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
-	border: none;
-	border-right: 1px dotted #AAA;
+    color: #333;
+    background: transparent;
+    padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+    border: none;
+    border-right: 1px dotted #AAA;
 height: 12px;
 
 }
 
 #showh #secondary li a:active {
-	color: #000;
-	background: transparent;
+    color: #000;
+    background: transparent;
 height: 12px;
 }
 
 #showh #secondary li:last-child a { border: none; }
 
 #showh #secondarysub li a,#secondarysub li span {
-	width: auto;
-	display: block;
-	float: left;
-	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
-	margin: 0;
-	text-align: auto;
-	border: none;
-	border-right: 1px dotted #AAA;
-	background: none;
+    width: auto;
+    display: block;
+    float: left;
+    padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+    margin: 0;
+    text-align: auto;
+    border: none;
+    border-right: 1px dotted #AAA;
+    background: none;
 
 }
 
 #showh #secondarysub li a {
-	color: #06C;
-	text-decoration: underline;
+    color: #06C;
+    text-decoration: underline;
 }
 
 #showh #secondarysub li a:hover {
-	color: #333;
-	background: transparent;
-	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
-	border: none;
-	border-right: 1px dotted #AAA;
+    color: #333;
+    background: transparent;
+    padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+    border: none;
+    border-right: 1px dotted #AAA;
 }
 
 #showh #secondarysub li a:active {
-	color: #000;
-	background: transparent;
+    color: #000;
+    background: transparent;
 }
 
 #showh #secondarysub li:last-child a { border: none; }
 
-/*	style for tag input box
-	it was placed here because tabs.css is global
-	SOON we'll make a style that's global to tendenci
-	-EZ 06/26/2007
+/*  style for tag input box
+    it was placed here because tabs.css is global
+    SOON we'll make a style that's global to tendenci
+    -EZ 06/26/2007
 -----------------------------------------------------*/
 .tag-input-box h6 {
-	margin:0;
-	font-size: 11px;
-	font-style: italic;
-	font-weight: normal;
+    margin:0;
+    font-size: 11px;
+    font-style: italic;
+    font-weight: normal;
 }
 
 /*===========END TABS STYLES=========== */
@@ -195,6 +195,7 @@ height: 12px;
  */
  /*.tabs>li.dropdown:hover .dropdown-menu{display:block}.tabs>li.active>a{color:#404040}.tabs>li>a{color:#555;text-decoration:none}.dropdown-menu{margin:0}.dropdown-menu a{text-decoration:none;color:#404040}.dropdown-menu a:visited{color:#404040}.dropdown-menu a:hover{color:#333}.dropdown-menu a.delete{color:#9d261d!important}li.dropdown{z-index:100}div.dropdown-menu{min-width:320px;width:320px}div.dropdown-menu li.heading{padding-left:10px;font-weight:bold;font-size:110%}div.dropdown-menu ul{float:left;margin:0;padding:0;display:block;min-width:160px;width:160px}.alert-message a.close,.btn{text-decoration:none}.alert-message a,.alert-message a:visited{color:#404040}.alert-message a:hover{color:#333}.modal{width:460px;margin:-150px 0 0 -230px}.modal.hide{display:none}.modal-header{background-color:#f5f5f5}.modal-header h3{color:#404040;border:0;margin:0;padding:4px 0;font-size:24px;font-family:Helvetica,Arial,"sans-serif";text-transform:none}.modal-header a{text-decoration:none}.modal-middle-header{border-top:solid 1px #bfbfbf}.btn.secondary{color:#404040}*/
 /*===========END PATTERNS-BS STYLES=========== */
+
 
 /*===========BEGIN ICONROW STYLES=========== */
 .t-iconrow {
@@ -307,83 +308,83 @@ height: 12px;
 
 .t-iconrow .more-options-target ul li:hover{background: #DFEBFF;}
 .body-copy-alerts{
-	color: red;
+    color: red;
 }
 /*===========END ICONROW STYLES=========== */
 
 /*===========BEGIN FORMS STYLES=========== */
 div.forms .errors {
-	color: #990000;
-	margin: 10px 0 10px 0;
-	font-weight: bold;
+    color: #990000;
+    margin: 10px 0 10px 0;
+    font-weight: bold;
 }
 
 div.forms .form-label {
-	font-size: 1.4em;
-	border-bottom: 1px solid silver;
-	margin: 35px 0 10px 0;
-	font-weight: bold;
+    font-size: 1.4em;
+    border-bottom: 1px solid silver;
+    margin: 35px 0 10px 0;
+    font-weight: bold;
 }
 
 div.forms .formset-label {
-	font-size: 1.2em;
-	margin: 35px 0 10px 0;
-	font-weight: normal;
+    font-size: 1.2em;
+    margin: 35px 0 10px 0;
+    font-weight: normal;
 }
 
 div.forms .form-field {
-	margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 div.forms .form-field .label {
-	font-size: 16px;
-	margin-bottom: 2px;
-	color: #555;
+    font-size: 16px;
+    margin-bottom: 2px;
+    color: #555;
 }
 
 div.forms .form-field .error {
-	color: #990000;
+    color: #990000;
 }
 
 div.forms .form-field .help-text {
-	color: #777;
+    color: #777;
 }
 
 div.forms .form-field .field input[type="text"] {
-	padding: 3px;
-	font-size: 16px;
-	width: 70%;
-	color: #777;
+    padding: 3px;
+    font-size: 16px;
+    width: 70%;
+    color: #777;
 }
 
 div.forms .form-field .field input[readonly="readonly"] {
-	color: #AAA;
+    color: #AAA;
 }
 
 div.forms .form-field .field input[type="password"] {
-	padding: 3px;
-	font-size: 16px;
-	width: 70%;
-	color: #777;
+    padding: 3px;
+    font-size: 16px;
+    width: 70%;
+    color: #777;
 }
 
 div.forms .form-field .field select {
-	padding: 3px;
-	font-size: 16px;
-	width: 50%;
-	color: #777;
+    padding: 3px;
+    font-size: 16px;
+    width: 50%;
+    color: #777;
 }
 
 div.forms .form-field .field textarea {
-	width: 70%;
-	font-size: 16px;
-	color: #777;
+    width: 70%;
+    font-size: 16px;
+    color: #777;
 }
 
 div.forms input[type="submit"] {
-	margin-top: 15px;
-	padding: 5px;
-	cursor: pointer;
+    margin-top: 15px;
+    padding: 5px;
+    cursor: pointer;
 }
 
 div.forms li {
@@ -392,24 +393,24 @@ div.forms li {
 }
 
 div.forms div.checkbox {
-	float: left;
+    float: left;
 }
 
 div.forms div.checkbox .field {
-	float: left;
+    float: left;
 }
 
 div.forms div.checkbox .label {
-	float: left;
-	margin-left: 5px;
+    float: left;
+    margin-left: 5px;
 }
 
 div.forms div.checkbox .help-text {
-	clear: both;
+    clear: both;
 }
 
 div.forms fieldset {
-	border: 0;
+    border: 0;
 }
 
 div.forms fieldset legend {
@@ -418,25 +419,25 @@ div.forms fieldset legend {
 }
 
 div.forms div.form-grouping {
-	margin-bottom: 15px;
-	padding: 5px 0 5px 10px;
+    margin-bottom: 15px;
+    padding: 5px 0 5px 10px;
 }
 
 div.forms div.alt {
-	background-color: #EFEFEF;
+    background-color: #EFEFEF;
 }
 
 
 div.forms div.formset-functions {
-	margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 div.forms div.formset-add {
-	display: none;
+    display: none;
 }
 
 div.forms div.formset-delete {
-	display: none;
+    display: none;
 }
 
 div.forms fieldset.permissions {
@@ -448,165 +449,165 @@ div.forms fieldset.permissions {
 }
 
 .required {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 img.captcha {
-	display: block;
+    display: block;
 }
 
 /* groups */
 table#id_group_perms {
-	text-align: left;
-	border: 1px solid #DDD;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+    text-align: left;
+    border: 1px solid #DDD;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 table#id_group_perms tr.alt {
-	background-color: #FFFFFF;
+    background-color: #FFFFFF;
 }
 
 table#id_group_perms td {
-	padding: 5px;
+    padding: 5px;
 }
 
 table#id_group_perms td input {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 table#id_group_perms th.header-col-1 {
-	width: 150px;
+    width: 150px;
 }
 
 table#id_group_perms th.header-col-2 {
-	width: 70px;
+    width: 70px;
 }
 
 table#id_group_perms th.header-col-3 {
-	width: 70px;
+    width: 70px;
 }
 
 
 /* users and members*/
 table#id_user_perms, table#id_member_perms {
-	text-align: left;
-	border: 1px solid #DDD;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+    text-align: left;
+    border: 1px solid #DDD;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 table#id_user_perms tr.alt, table#id_member_perms tr.alt {
-	background-color: #FFFFFF;
+    background-color: #FFFFFF;
 }
 
 table#id_user_perms td, table#id_member_perms td {
-	padding: 5px;
+    padding: 5px;
 }
 
 table#id_user_perms td input, table#id_member_perms td input {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 table#id_user_perms th.header-col-1, table#id_member_perms th.header-col-1 {
-	width: 150px;
+    width: 150px;
 }
 
 table#id_user_perms th.header-col-2, table#id_member_perms th.header-col-2 {
-	width: 70px;
+    width: 70px;
 }
 
 table#id_user_perms th.header-col-3, table#id_member_perms th.header-col-3 {
-	width: 70px;
+    width: 70px;
 }
 
 /* admin-only section */
 div.forms fieldset.admin-only {
-	background-color: #EFEFEF;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	padding: 10px;
-	margin-bottom: 10px;
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 
 div.forms fieldset.admin-only legend {
-	padding: 5px;
+    padding: 5px;
 }
 
 /* boxy-grey stuff */
 div.forms fieldset.boxy-grey {
-	background-color: #EFEFEF;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	padding: 10px;
-	margin-bottom: 10px;
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 
 div.forms fieldset.boxy-grey legend {
-	padding: 5px;
+    padding: 5px;
 }
 
 
 /* capctha section */
 div.forms fieldset.captcha {
-	background-color: #EFEFEF;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	padding: 10px;
-	margin-bottom: 10px;
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 
 div.forms fieldset.captcha legend {
-	padding: 5px;
+    padding: 5px;
 }
 
 /* permission section */
 
 div.id_group_perms {
-	padding-top: 10px;
-	border-top: 1px solid #CCC;
+    padding-top: 10px;
+    border-top: 1px solid #CCC;
 }
 
 div.id_user_perms, div.id_member_perms {
-	padding-top: 10px;
-	border-top: 1px solid #CCC;
+    padding-top: 10px;
+    border-top: 1px solid #CCC;
 }
 
 div.forms fieldset.permissions {
-	background-color: #EFEFEF;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	padding: 10px;
-	margin-bottom: 10px;
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
 div.forms fieldset.permissions legend {
-	padding: 5px;
+    padding: 5px;
 }
 
 /* Forms delete links */
 .form-delete-link {
-	text-align: right;
-	font-size: 12px;
-	text-decoration: underline;
+    text-align: right;
+    font-size: 12px;
+    text-decoration: underline;
 }
 
 /* Custom Price Input Fields */
 div.forms div.form-field div.field input.custom-price {
-	width: 50px;
+    width: 50px;
 }
 
 .id_captcha input[type="text"]{
-	width: 160px !important;
+    width: 160px !important;
 }
 .t .form-wrap {
     padding: 10px;
