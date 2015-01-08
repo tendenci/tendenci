@@ -1,3 +1,4 @@
+import hashlib
 import os
 import mimetypes
 import uuid
@@ -32,13 +33,16 @@ from tendenci.core.site_settings.utils import get_setting
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._-]+', '_', filename)
-    uuid_hex = uuid.uuid1().get_hex()[:8]
+    m = hashlib.md5()
+    m.update(filename)
+
+    hex_digest = m.hexdigest()[:8]
 
     if instance.content_type:
         content_type = re.sub(r'[^a-zA-Z0-9._]+', '_', unicode(instance.content_type))
-        return 'files/%s/%s/%s' % (content_type, uuid_hex, filename)
+        return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
 
-    return 'files/files/%s/%s' % (uuid_hex, filename)
+    return 'files/files/%s/%s' % (hex_digest, filename)
 
 
 class File(TendenciBaseModel):
