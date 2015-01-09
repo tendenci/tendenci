@@ -47,7 +47,7 @@
             <div class="form-field">
                 <div class="{{ field.auto_id }}">
                     {% if field|is_checkbox %}
-                        <div class="checkbox">
+                        <div class="checkbox-input">
                                {% if field.errors %}
                             <div class="error">
                                 {% for error in field.errors %}
@@ -99,7 +99,7 @@
         <div class="form-field">
             <div class="{{ field.auto_id }}{{ field.field.css_classes }}">
                 {% if field|is_checkbox %}
-                    <div class="checkbox">
+                    <div class="checkbox-input">
                            {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
