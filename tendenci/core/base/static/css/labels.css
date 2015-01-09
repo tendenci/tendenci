@@ -1,0 +1,9 @@
+label.required:after,
+div.label.required:after {
+    content: '*';
+    }
+
+.forms .label,
+.label {
+    color: #000;
+    }
