@@ -42,9 +42,11 @@
      <h2>{% trans "Interior page" %}</h2>
         <ul>
             <li>
-                <h2>{% trans "Search" %}</h2>
+                <h2>{% trans 'Search' %}</h2>
                 <form id="searchform" method="get" action="/search">
-                    <input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" />
+                    <div class="form-group">
+                        <input id="s" class="form-control" type="text" placeholder="type, hit enter" size="18" maxlength="50" name="q">
+                    </div>
                 </form>
             </li>
 
