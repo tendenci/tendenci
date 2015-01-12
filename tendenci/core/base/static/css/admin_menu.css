@@ -489,7 +489,7 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
     font-size: 12px;
 }
 
-.t-top-nav .glyph,
+.t-top-nav .dropdown-toggle > .glyph,
 .t-top-nav .fa-globe {
     margin-right: 6px;
 }

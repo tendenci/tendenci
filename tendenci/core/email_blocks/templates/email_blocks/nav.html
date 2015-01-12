@@ -14,9 +14,8 @@
 {% endif %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}
-    <div id="showh" role="navigation">
-        <ul id="primary" class="nav nav-tabs">
-
+    <div id="module-nav" role="navigation">
+        <ul class="nav nav-tabs">
             {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
                 <li role="presentation">
                     <a href="{% url 'dashboard' %}" title="{% trans 'Tendenci Home Page' %}">
@@ -31,7 +30,7 @@
                     {% trans "Emails" %} <span class="caret"></span>
                 </a>
 
-                <ul id="secondary" class="dropdown-menu" role="menu">
+                <ul class="dropdown-menu" role="menu">
                     <li><a href="{% url 'email.search' %}">{% trans "Emails" %}</a></li>
 
                     <li><a href="{% url 'email_block.search' %}">{% trans "Email Blocks" %}</a></li>
