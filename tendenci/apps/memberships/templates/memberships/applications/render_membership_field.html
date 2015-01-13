@@ -15,7 +15,7 @@
     <div class="form-field{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
         <div class="{{ field.auto_id }}">
             {% if field_obj.field_stype == 'checkboxinput' %}
-                <div class="checkbox">
+                <div class="checkbox-input">
                     {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}

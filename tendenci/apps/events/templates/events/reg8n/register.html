@@ -229,7 +229,7 @@
                                 {% else %}
                                 <div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
                                     {% if field|is_checkbox %}
-                                    <div class="checkbox">
+                                    <div class="checkbox-input">
                                         <div class="error">{{ field.errors }}</div>
                                         <div class="field">{{ field }}</div>
                                         <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
