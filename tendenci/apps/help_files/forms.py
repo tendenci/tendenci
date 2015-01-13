@@ -19,6 +19,8 @@ class HelpFileAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':HelpFile._meta.app_label,
         'storme_model':HelpFile._meta.module_name.lower()}))
 
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=False)
+
     status_detail = forms.ChoiceField(choices=(('draft',_('Draft')),('active',_('Active'))))
 
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
@@ -51,6 +53,20 @@ class HelpFileAdminForm(TendenciBaseForm):
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
 
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
+
 
 class HelpFileForm(TendenciBaseForm):
     answer = forms.CharField(required=False,
@@ -60,6 +76,8 @@ class HelpFileForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('draft',_('Draft')),('active',_('Active'))))
+
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=False)
 
     #topics = forms.MultipleChoiceField(required=True, widget=widgets.CheckboxSelectMultiple())
 
@@ -126,3 +144,17 @@ class HelpFileForm(TendenciBaseForm):
             if 'member_perms' in self.fields: self.fields.pop('member_perms')
             if 'group_perms' in self.fields: self.fields.pop('group_perms')
             if 'syndicate' in self.fields: self.fields.pop('syndicate')
+
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False

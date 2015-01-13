@@ -73,6 +73,8 @@ class JobForm(TendenciBaseForm):
         label=_('Expiration Date/Time'),
         initial=datetime.now())
 
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
+
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending')),))
 
@@ -266,6 +268,20 @@ class JobForm(TendenciBaseForm):
             if f in self.fields:
                 self.fields.pop(f)
 
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
+
     def save(self, *args, **kwargs):
         """
         Assigns the requested_duration of a job based on the
@@ -280,6 +296,7 @@ class JobForm(TendenciBaseForm):
 
 
 class JobAdminForm(JobForm):
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
         if hasattr(self, 'user'):
@@ -290,6 +307,20 @@ class JobAdminForm(JobForm):
             self.fields['activation_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
             self.fields['expiration_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
             self.fields['post_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
 
 
 class JobPricingForm(forms.ModelForm):

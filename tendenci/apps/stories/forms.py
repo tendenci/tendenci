@@ -34,6 +34,7 @@ class StoryForm(TendenciBaseForm):
         help_text=_('Check if you want this story to expire and be sure to specify the end date.'),
         initial=False,
     )
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
@@ -123,6 +124,20 @@ class StoryForm(TendenciBaseForm):
         except Group.DoesNotExist:
             raise forms.ValidationError(_('Invalid group selected.'))
 
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
+
     def __init__(self, *args, **kwargs):
         super(StoryForm, self).__init__(*args, **kwargs)
         if self.instance.image:
@@ -165,6 +180,7 @@ class StoryAdminForm(TendenciBaseForm):
         help_text=_('Check if you want this story to expire and be sure to specify the end date.'),
         initial=False,
     )
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
@@ -219,6 +235,20 @@ class StoryAdminForm(TendenciBaseForm):
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
+
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']

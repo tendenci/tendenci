@@ -56,6 +56,8 @@ class ResumeForm(TendenciBaseForm):
     expiration_dt = SplitDateTimeField(label=_('Expriation Date/Time'),
         initial=(datetime.now() + timedelta(days=30)))
 
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
+
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
@@ -190,6 +192,20 @@ class ResumeForm(TendenciBaseForm):
             ]
         for f in list(set(fields_to_pop)):
             if f in self.fields: self.fields.pop(f)
+
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
 
     def clean_resume_file(self):
         resume = self.cleaned_data['resume_file']

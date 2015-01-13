@@ -41,6 +41,7 @@ class NewsForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))
     email = EmailVerificationField(label=_("Email"), required=False)
+    syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
                                          initial=News.CONTRIBUTOR_AUTHOR,
@@ -154,6 +155,20 @@ class NewsForm(TendenciBaseForm):
             return group
         except Group.DoesNotExist:
             raise forms.ValidationError(_('Invalid group selected.'))
+
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
 
     def save(self, *args, **kwargs):
         news = super(NewsForm, self).save(*args, **kwargs)

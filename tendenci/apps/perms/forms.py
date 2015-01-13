@@ -1,6 +1,9 @@
 from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
 from form_utils.forms import BetterModelForm
 
+from django.utils.translation import ugettext_lazy as _
+from django import forms
+
 
 class TendenciBaseForm(BetterModelForm):
     """
@@ -9,6 +12,8 @@ class TendenciBaseForm(BetterModelForm):
     group_perms = GroupPermissionField()
     user_perms = UserPermissionField()
     member_perms = MemberPermissionField()
+    # override due to the changes for BooleanField to NullBooleanField
+    allow_anonymous_view = forms.BooleanField(label=_('Public can view'), required=False, initial=True)
 
     def clean_user_perms(self):
         user_perm_bits = []
@@ -55,6 +60,13 @@ class TendenciBaseForm(BetterModelForm):
                 groups_and_perms.append((group_pk, perm,))
             value = tuple(groups_and_perms)
         return value
+
+    def clean_allow_anonymous_view(self):
+        data = self.cleaned_data.get('allow_anonymous_view', False)
+        if data:
+            return True
+        else:
+            return False
 
     def __init__(self, *args, **kwargs):
         from tendenci.apps.perms.fields import user_perm_bits, member_perm_bits

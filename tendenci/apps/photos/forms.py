@@ -53,6 +53,20 @@ class PhotoAdminForm(TendenciBaseForm):
                 'classes': ['admin-only'],
                 })]
 
+    def clean_syndicate(self):
+        """
+        clean method for syndicate added due to the update
+        done on the field BooleanField -> NullBooleanField
+        NOTE: BooleanField is converted to NullBooleanField because
+        some Boolean data has value of None than False. This was updated
+        on Django 1.6. BooleanField cannot have a value of None.
+        """
+        data = self.cleaned_data.get('syndicate', False)
+        if data:
+            return True
+        else:
+            return False
+
 
 class PhotoUploadForm(TendenciBaseForm):
 
@@ -148,7 +162,6 @@ class PhotoEditForm(TendenciBaseForm):
                       ], 'classes': ['admin-only'],
                   }),
         ]
-
 
     safetylevel = forms.HiddenInput()
 
