@@ -1,92 +1,106 @@
-{% load avatar_tags %}
-{% load profile_tags %}
-{% load profile_filters %}
-{% load perm_tags %}
-{% load base_filters %}
 {% load i18n %}
+{% load url from future %}
+{% load avatar_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load profile_filters %}
+{% load profile_tags %}
+
 
 {% if profile.user_id %}
-{% with profile.membership as membership %}
+    <div class="wrap-search-item">
+        {% with profile.membership as membership %}
+            <div class="" style="padding:10px;">
+                <div class="row">
+                    <h2 class="col-md-9 col-xs-12">
+                        <a href="{{ profile.get_absolute_url }}">
+                            {% if profile.display_name %}
+                                {{ profile.display_name }}
+                            {% else %}
+                                {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
+                            {% endif %}({{ profile.user.username }})
+                        </a>
+                    </h2>
+                    <div class="col-md-3 col-xs-12" style="line-height:46px;">
+                        {% if membership %}
+                            <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
+                        {% endif %}
+                    </div>
+                </div>
 
-<div class="wrap-search-item">
-    <div class="" style="padding:10px;">
-        <div class="row">
-            <h2 class="col-md-9 col-xs-12">
-                <a href="{{ profile.get_absolute_url }}">
-                    {% if profile.display_name %}
-                    {{ profile.display_name }}
-                    {% else %}
-                    {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
-                    {% endif %}({{ profile.user.username }})
-                </a>
-            </h2>
+                <div class="row">
+                    <div class="col-md-1 hidden-xs profile-avatar-left">
+                        {% avatar profile.user 56 %}
+                    </div>
 
-            <div class="col-md-3 col-xs-12" style="line-height:46px;">
-                {% if membership %}
-                <a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}">{% trans "Edit Membership" %}</a>
+                    <div class="col-x2-12 visible-xs text-center" style="margin:15px;">
+                        {% avatar profile.user 56 %}
+                    </div>
+
+                    <div class="col-md-4 col-xs-12">
+                        {% if profile.company %}
+                            <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
+                        {% endif %}
+
+                        {% if profile.address %}
+                            {% if request.user.profile.is_superuser or not profile.hide_address %}
+                                <b>{% trans "Address:" %}</b> {{ profile.address }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if profile.user.email %}
+                            {% if request.user.profile.is_superuser or not profile.hide_email %}
+                                <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if profile.member_number %}
+                            <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
+                        {% endif %}
+
+                        {% if membership.status_detail %}
+                            <b>{% trans "Application Status:" %}</b> {{ membership.status_detail }}<br />
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4 col-xs-12">
+                        {% if profile.phone %}
+                            {% if request.user.profile.is_superuser or not profile.hide_phone %}
+                                <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if profile.mobile_phone %}
+                            {% if request.user.profile.is_superuser or not profile.hide_phone %}
+                                <b>{% trans "Mobile Phone:" %}</b> {{ profile.mobile_phone|phonenumber }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if membership.create_dt %}
+                            <b>{% trans "Create Date:" %}</b> {{ membership.create_dt }}<br />
+                        {% endif %}
+
+                        {% if membership.join_dt %}
+                            <b>{% trans "Join Date:" %}</b> {{ membership.join_dt }}<br />
+                        {% endif %}
+
+                        {% if membership.expire_dt %}
+                            <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if profile.hide_in_search %}
+                    <em>{% trans "this record is not searchable unless you are administrator." %}</em><br/>
+                {% endif %}
+
+                {% if profile.hide_email or profile.hide_address or profile.hide_phone %}
+                    <em>{% trans "the following items are hidden unless you are administrator: " %}
+                        {% if profile.hide_email %}email{% endif %}{% if profile.hide_address %}, location{% endif %}{% if profile.hide_phone %}, phone{% endif %}.</em>
                 {% endif %}
             </div>
-        </div>
+        {% endwith %}
 
-        <div class="row">
-            <div class="col-md-1 hidden-xs profile-avatar-left">
-                {% avatar profile.user 56 %}
-            </div>
-            <div class="col-x2-12 visible-xs text-center" style="margin:15px;">
-                {% avatar profile.user 56 %}
-            </div>
-            <div class="col-md-4 col-xs-12">
-                {% if profile.company %}
-                <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
-                {% endif %}
-                {% if profile.address %}
-                {% if request.user.profile.is_superuser or not profile.hide_address %}
-                <b>{% trans "Address:" %}</b> {{ profile.address }}<br />
-                {% endif %}
-                {% endif %}
-                {% if profile.user.email %}
-                {% if request.user.profile.is_superuser or not profile.hide_email %}
-                <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
-                {% endif %}
-                {% endif %}
-                {% if profile.member_number %}
-                <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
-                {% endif %}
-                {% if membership.status_detail %}
-                <b>{% trans "Application Status:" %}</b> {{ membership.status_detail }}<br />
-                {% endif %}
-            </div>
-            <div class="col-md-4 col-xs-12">
-                {% if profile.phone %}
-                {% if request.user.profile.is_superuser or not profile.hide_phone %}
-                <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
-                {% endif %}
-                {% endif %}
-                {% if profile.mobile_phone %}
-                {% if request.user.profile.is_superuser or not profile.hide_phone %}
-                <b>{% trans "Mobile Phone:" %}</b> {{ profile.mobile_phone|phonenumber }}<br />
-                {% endif %}
-                {% endif %}
-
-                {% if membership.create_dt %}
-                <b>{% trans "Join Date:" %}</b> {{ membership.create_dt }}<br />
-                {% endif %}
-                {% if membership.expire_dt %}
-                <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
-                {% endif %}
-            </div>
-        </div>
-
-        {% if profile.hide_in_search %}
-        <em>{% trans "this record is not searchable unless you are administrator." %}</em><br/>
-        {% endif %}
-        {% if profile.hide_email or profile.hide_address or profile.hide_phone %}
-        <em>{% trans "the following items are hidden unless you are administrator: " %}
-            {% if profile.hide_email %}email{% endif %}{% if profile.hide_address %}, location{% endif %}{% if profile.hide_phone %}, phone{% endif %}.</em>
-        {% endif %}
-
+        {% profile_meta %}
     </div>
-    {% endwith %}
-    {% profile_meta %}
-</div>
 {% endif %}
