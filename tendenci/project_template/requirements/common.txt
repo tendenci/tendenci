@@ -1,4 +1,4 @@
-https://github.com/tendenci/tendenci/archive/tendenci6.0.zip
+https://github.com/tendenci/tendenci/archive/tendenci6.zip
 https://github.com/tendenci/tendenci-donations/archive/tendenci6.0.zip
 https://github.com/tendenci/tendenci-case-studies/archive/tendenci6.0.zip
 https://github.com/tendenci/tendenci-committees/archive/tendenci6.0.zip
