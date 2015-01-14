@@ -23,10 +23,10 @@
   {% if tags %}
     <div class="tags">
 Tags: {% for tag in tags %}
-<a href="{% url "video.search" %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-{% endfor %} 
+<a href="{% url 'video.search' %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %}
     </div>
-  {% endif %}    
+  {% endif %}
     {% if video.status_detail != "active" %}
       <span class="copyright body-copy-alerts"><em>{{ video.status_detail }}</em></span>
     {% endif %}

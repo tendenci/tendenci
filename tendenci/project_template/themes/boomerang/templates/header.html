@@ -12,7 +12,7 @@
               <nav class="top-header-menu">
                     <ul class="menu">
                         {% if request.user.is_authenticated %}
-                        <li><a href="{% url profile.index %}">{{ request.user.username }}</a></li>
+                        <li><a href="{% url 'profile.index' %}">{{ request.user.username }}</a></li>
                         <li><a href="{{ LOGOUT_URL }}">Logout</a></li>
                         {% else %}
                         <li><a href="{{ LOGIN_URL }}">Login</a></li>

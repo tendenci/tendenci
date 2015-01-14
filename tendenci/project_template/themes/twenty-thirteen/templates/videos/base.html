@@ -15,18 +15,18 @@
 <div id="videos-sidebar">
 
 	{% if can_add_video %}
-	    <div><a href="{% url "admin:videos_video_add" %}">Add Video</a></div>
+	    <div><a href="{% url 'admin:videos_video_add' %}">Add Video</a></div>
 	{% endif %}
 
 	{% if SITE_GLOBAL_SEARCHINDEX %}
-	<form class="search" action="{% url "video.search" %}" method="get">
+	<form class="search" action="{% url 'video.search' %}" method="get">
 	<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
 	<input type="submit" value="Search" />
 	</form>
 
 	<ul>
 		<li>
-			<h2>Categories</h2> 
+			<h2>Categories</h2>
 			<ul>
 				<li><a href="{% url 'video' %}">All</a></li>
 				{% for cat in categories %}

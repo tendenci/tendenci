@@ -31,7 +31,7 @@
       <h4><span class="event-time">{{ event.start_dt }}</span><br/><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
           <p>{{ event.description|striptags|truncatewords:"12"|safe }}</p>
       {% empty %}
-          <h4>{% if user.profile.is_superuser %}<a href="{% url "event.add" %}">Add your first event</a>{% else %}<a href="#">Great Event</a>{% endif %}</h4>
+          <h4>{% if user.profile.is_superuser %}<a href="{% url 'event.add' %}">Add your first event</a>{% else %}<a href="#">Great Event</a>{% endif %}</h4>
           <p>{% now "b" %} 28th</p>
       {% endfor %}
       <p style="text-align: center; margin: 15px 0;"><a  class="readmorelarge" href="/events/">View More Events &raquo;</a></p>
