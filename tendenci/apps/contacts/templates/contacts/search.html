@@ -1,16 +1,18 @@
 {% extends "contacts/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
 {% load pagination_tags %}
-{% load contact_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load contact_tags %}
 {% load perm_tags %}
-{% load i18n %}
+
 
 {% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/contacts.css">
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/contacts.css' %}">
 {% endblock %}
 
 {% block body %}
@@ -29,14 +31,15 @@
         {% if can_view %}
         <div class="contact-wrap">
 
-            <h2><a href="{% url "contact" contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
-            <div class="content">{% blocktrans wit m=contact.message|linebreaks %}{{ m }}{% endblocktrans %}</div>
+            <h2><a href="{% url 'contact' contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
+            <div class="content">{% blocktrans with m=contact.message|linebreaks %}{{ m }}{% endblocktrans %}</div>
+
             <div class="meta">
                 <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-contact form -->
-            <form name="contact-delete" method="POST" action="{% url "contact.delete" contact.pk %}">
+            <form name="contact-delete" method="POST" action="{% url 'contact.delete' contact.pk %}">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>

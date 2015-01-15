@@ -1,0 +1,18 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load user_group_tags %}
+
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/group.png' %}"/>{% firstof MODULE_USER_GROUPS_LABEL trans 'Groups' %}
+    </a>
+    {% if group %}
+    {% user_group_current_app request.user group %}
+    {% else %}
+    {% user_group_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}

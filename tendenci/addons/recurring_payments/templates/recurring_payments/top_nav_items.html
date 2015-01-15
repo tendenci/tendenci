@@ -1,0 +1,82 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All R.P." %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:recurring_payments_recurringpayment_add' %}">{% trans "Add" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'recurring_payment.customers' %}">{% trans "Customers" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:recurring_payments_recurringpayment_changelist' %}">Admin Backend</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                        <li>
+                            <span class="content-head text-content-head">{% trans "This R.P." %}</span>
+                        </li>
+
+                        {% if request.user.is_superuser or user.id == app_object.user.id %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{{ app_object.get_absolute_url }}">{% trans "View" %}</a>
+                                </span>
+                            </li>
+
+                            {% if request.user.is_superuser %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:recurring_payments_recurringpayment_change' app_object.id %}">{% trans "Edit" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if app_object.status_detail == 'active' %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'recurring_payment.disable_account' app_object.id %}" class="disable">{% trans "Disable Account" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'recurring_payment.authnet.update_payment_info' app_object.id %}">{% trans "Payment Method" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

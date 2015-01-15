@@ -1,14 +1,25 @@
-from django.template import Library
 from django.contrib.auth.models import User
+from django.template import Library
+from django.utils.translation import ugettext_lazy as _
 
-from avatar.util import get_default_avatar_url
 from avatar.templatetags.avatar_tags import avatar_url
+from avatar.util import get_default_avatar_url
 
 
 register = Library()
 
+
+@register.inclusion_tag("profiles/top_nav_items.html", takes_context=True)
+def profile_current_app(context, user, profile=None):
+    context.update({
+        "app_object": profile,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("profiles/nav.html", takes_context=True)
-def users_nav(context, user_current, user_this):
+def users_nav(context, user_current, user_this=None):
     if user_this:
         try:
             profile_this = user_this.profile
@@ -24,6 +35,7 @@ def users_nav(context, user_current, user_this):
     })
 
     return context
+
 
 @register.inclusion_tag("profiles/options.html", takes_context=True)
 def users_options(context, user_current, user_this):
@@ -41,9 +53,11 @@ def users_options(context, user_current, user_this):
     })
     return context
 
+
 @register.inclusion_tag("profiles/search-form.html", takes_context=True)
 def profile_search(context):
     return context
+
 
 @register.inclusion_tag("profiles/meta.html", takes_context=True)
 def profile_meta(context, detail_view=None):
@@ -60,12 +74,14 @@ def similar_profile_items(context, users):
     })
     return context
 
+
 @register.inclusion_tag("profiles/merge_detail.html", takes_context=True)
 def merge_detail(context, profile):
     context.update({
         "profile": profile,
     })
     return context
+
 
 @register.simple_tag
 def has_avatar(user, size=88):

@@ -1,0 +1,119 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user help_files.add_helpfile as can_add_helpfile %}
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+{% if app_object %}
+    {% has_perm user help_files.view_helpfile app_object as can_view_helpfile %}
+    {% has_perm user help_files.change_helpfile app_object as can_edit_helpfile %}
+    {% has_perm user help_files.delete_helpfile app_object as can_delete_helpfile %}
+{% else %}
+    {% has_perm user help_files.view_helpfile as can_view_helpfile %}
+    {% has_perm user help_files.change_helpfile as can_edit_helpfile %}
+    {% has_perm user help_files.delete_helpfile as can_delete_helpfile %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'help_files' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'help_files' %}">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans 'Topics' %}</a>
+                        </span>
+                    </li>
+
+                    {% if user.profile.is_staff and can_add_helpfile %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:help_files_helpfile_add' %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a>
+                            </span>
+                        </li>
+                    {% elif can_add_helpfile %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'help_files.add' %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:help_files_request_changelist' %}">{% trans "Requests List" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'help_files.export' %}">{% trans "Export" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_helpfile or can_edit_helpfile %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</span>
+                            </li>
+
+                            {% if can_view_helpfile %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if user.profile.is_staff and can_edit_helpfile %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:help_files_helpfile_change' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a>
+                                    </span>
+                                </li>
+                            {% elif can_edit_helpfile %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'help_files.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_helpfile %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'admin:help_files_helpfile_delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

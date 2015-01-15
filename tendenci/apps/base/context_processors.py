@@ -24,5 +24,42 @@ def newrelic(request):
         'NEW_RELIC_FOOTER': "",
     }
 
+
 def site_admin_email(request):
     return {'SITE_ADMIN_EMAIL': get_setting('site', 'global', 'admincontactemail')}
+
+
+def user_classification(request):
+    data = {
+    'USER_IS_NORMAL' : True,
+    'USER_IS_SUPERUSER' : False,
+    'USER_IS_MEMBER': False,
+    'USER_IS_MEMBER_ACTIVE': False,
+    'USER_IS_MEMBER_EXPIRED': False
+    }
+    if hasattr(request.user, 'profile') and request.user.profile.is_superuser:
+        data.update({'USER_IS_SUPERUSER': True})
+    elif hasattr(request.user, 'memberships'):
+        active_memberships = request.user.membershipdefault_set.filter(
+            status=True, status_detail__iexact='active'
+        )
+        inactive_memberships = request.user.membershipdefault_set.filter(
+            status=True, status_detail__iexact='inactive'
+        )
+        data.update({'USER_IS_MEMBER':True})
+        if inactive_memberships.exists() > 0:
+            data.update({'USER_IS_MEMBER_EXPIRED': True})
+        elif active_memberships.exists() > 0:
+            data.update({'USER_IS_MEMBER_ACTIVE': True})
+
+    return data
+
+
+def display_name(request):
+    if request.user.is_authenticated():
+        if request.user.first_name:
+            return {'DISPLAY_NAME': request.user.first_name}
+        else:
+            return {'DISPLAY_NAME': request.user.username}
+
+    return {'DISPLAY_NAME': ''}

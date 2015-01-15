@@ -1,16 +1,17 @@
 import re
-from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
+
 from django.core.urlresolvers import reverse
+from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.photos.models import Image, Pool
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 
+
 register = Library()
 
 
 class PrintExifNode(Node):
-
     def __init__(self, exif):
         self.exif = exif
 
@@ -125,6 +126,16 @@ def photo_nav(context, user, photo=None):
 @register.inclusion_tag("photos/search-form.html", takes_context=True)
 def photo_search(context):
     return context
+
+
+@register.inclusion_tag("photos/top_nav_items.html", takes_context=True)
+def photo_current_app(context, user, photo=None):
+    context.update({
+        "app_object": photo,
+        "user": user
+    })
+    return context
+
 
 @register.inclusion_tag("photos/photo-set/options.html", takes_context=True)
 def photo_set_options(context, user, photo_set):

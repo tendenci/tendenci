@@ -1,0 +1,18 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load redirect_tags %}
+
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/page_green.png' %}"/>{% firstof MODULE_REDIRECTS_LABEL trans 'Redirects' %}
+    </a>
+    {% if redirect %}
+    {% redirect_current_app request.user redirect %}
+    {% else %}
+    {% redirect_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}

@@ -1,7 +1,11 @@
 from django.template import Library, Node, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext as _
+
 from tendenci.apps.contributions.models import Contribution
+
+
 register = Library()
+
 
 @register.inclusion_tag("contributions/options.html", takes_context=True)
 def contribution_options(context, user, contribution):
@@ -11,6 +15,7 @@ def contribution_options(context, user, contribution):
     })
     return context
 
+
 @register.inclusion_tag("contributions/nav.html", takes_context=True)
 def contribution_nav(context, user):
     context.update({
@@ -18,8 +23,18 @@ def contribution_nav(context, user):
     })
     return context
 
+
 @register.inclusion_tag("contributions/search-form.html", takes_context=True)
 def contribution_search(context):
+    return context
+
+
+@register.inclusion_tag("contributions/top_nav_items.html", takes_context=True)
+def contribution_current_app(context, user, contribution=None):
+    context.update({
+        "app_object": contribution,
+        "user": user
+    })
     return context
 
 
@@ -34,6 +49,7 @@ class LatestContributionsNode(Node):
         contributions = Contribution.objects.filter(owner=self.user.resolve(context)).order_by('-create_dt')[:limit]
         context[self.context_var] = contributions
         return ''
+
 
 @register.tag
 def latest_contributions(parser, token):

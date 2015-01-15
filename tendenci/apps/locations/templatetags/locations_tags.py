@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.locations.models import Location
 
+
 register = Library()
 
 
@@ -27,6 +28,15 @@ def location_nav(context, user, location=None):
 
 @register.inclusion_tag("locations/search-form.html", takes_context=True)
 def location_search(context):
+    return context
+
+
+@register.inclusion_tag("locations/top_nav_items.html", takes_context=True)
+def location_current_app(context, user, location=None):
+    context.update({
+        "app_object": location,
+        "user": user
+    })
     return context
 
 

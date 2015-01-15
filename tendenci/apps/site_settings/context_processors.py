@@ -1,6 +1,8 @@
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.conf import settings as d_settings
-from django.template import Context, Template
+from django.template import Context, Template, TemplateDoesNotExist
+from django.template.loader import get_template
 
 from tendenci import __version__ as version
 from tendenci.apps.site_settings.models import Setting
@@ -48,3 +50,40 @@ def settings(request):
     contexts['USE_I18N'] = d_settings.USE_I18N
 
     return contexts
+
+
+def app_dropdown(request):
+    """
+    Context processor for getting the template
+    needed for a module setting dropdown
+    """
+    context = {}
+    path = request.get_full_path().strip('/')
+    path = path.split('/')
+
+    if len(path) < 3:
+        context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'site_settings/top_nav.html'})
+
+    else:
+        if path[0] == 'settings' and path[1] == 'module':
+            try:
+                get_template(path[2]+'/top_nav.html')
+                context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': path[2]+'/top_nav.html'})
+            except TemplateDoesNotExist:
+                context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'site_settings/top_nav.html'})
+
+            # special case profile setting as users
+            if path[2] == 'users':
+                context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'profiles/top_nav.html'})
+
+            if path[2] == 'groups':
+                context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'user_groups/top_nav.html'})
+
+            if path[2] == 'make_payment':
+                context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'make_payments/top_nav.html'})
+        else:
+            context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'site_settings/top_nav.html'})
+
+    return context
+
+

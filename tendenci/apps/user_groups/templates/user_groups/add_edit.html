@@ -1,35 +1,39 @@
 {% extends "user_groups/base.html" %}
-{% load user_group_tags %}
-{% load styled_forms %}
 {% load i18n %}
+{% load static from staticfiles %}
+{% load styled_forms %}
+{% load user_group_tags %}
+
 
 {% block title %}{% trans 'Groups Add' %}{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/usergroups.css">
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
 {% endblock %}
 
 
 {% block body %}
-<div class="t">
+    <div class="t">
+        {% user_group_nav request.user %}
 
-    {% user_group_nav request.user %}
-    <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
-    <div class="clear-right"></div>
-    {% if group %}
-    <div class="quick-options">
-        {% user_group_options request.user group %}
+        <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
+
+        <div class="clear-right"></div>
+
+        {% if group %}
+            <div class="quick-options">
+                {% user_group_options request.user group %}
+            </div>
+        {% endif %}
+
+        <form action="." method="post">{% csrf_token %}
+            <div class="forms">
+                {{ form|styled_form }}
+                <input type="submit" value="{% trans 'Save' %}" />
+            </div>
+        </form>
     </div>
-    {% endif %}
-
-    <form action="." method="post">{% csrf_token %}
-        <div class="forms">
-            {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Save' %}" />
-        </div>
-    </form>
-</div>
 {% endblock %}

@@ -32,6 +32,15 @@ def page_search(context):
     return context
 
 
+@register.inclusion_tag("pages/top_nav_items.html", takes_context=True)
+def page_current_app(context, user, page=None):
+    context.update({
+        "app_object": page,
+        "user": user
+    })
+    return context
+
+
 class ListPageNode(ListNode):
     model = Page
     perms = 'pages.view_page'

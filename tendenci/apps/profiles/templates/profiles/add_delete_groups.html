@@ -1,23 +1,29 @@
 {% extends "profiles/base.html" %}
-{% load profile_tags %}
 {% load i18n %}
+{% load static from staticfiles %}
+{% load profile_tags %}
+
 
 {% block title %}{% trans 'Join/Leave User Groups' %}{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/admin/django-admin-widgets.css">
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
 {% endblock %}
 
 {% block body %}
     <div class="t">
         {% users_nav request.user user_this %}
+
         <h1>{% trans 'Join/Leave User Groups' %}</h1>
-        <h2>User: <a href="{{ user_this.get_absolute_url}}">
-        {{ user_this.get_full_name }} ({{ user_this.username}})</a></h2>
+        <h2>
+            User: <a href="{{ user_this.get_absolute_url}}">{{ user_this.get_full_name }} ({{ user_this.username}})</a>
+        </h2>
+
         <div class="clear-right"></div>
+
         <div class="profile-wrap">
             <form method="post" action=".">{% csrf_token %}
                 {% if form.non_field_errors %}
@@ -25,6 +31,7 @@
                         {{ form.non_field_errors|striptags }}
                     </div>
                 {% endif %}
+
                 <div class="profile-wrap" style="margin-top:1em;">
                     <div class="field-wrapper">
                         {% if form.groups.errors %}
@@ -38,6 +45,7 @@
                     </div>
                     <div style="clear:left;"></div>
                 </div>
+
                 <div class="submit-row">
                     <input id='add_groups_submit' type="submit" value="{% trans 'Save' %}" class="default" />
                 </div>
@@ -49,7 +57,7 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/admin/django-admin.multiselect.js"></script>
+    <script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             jQuery.each($("select[multiple]"), function () {

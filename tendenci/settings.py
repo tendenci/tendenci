@@ -157,13 +157,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
 
     # tendenci context processors
-    'tendenci.apps.theme.context_processors.theme',
-    'tendenci.apps.site_settings.context_processors.settings',
-    'tendenci.apps.base.context_processors.static_url',
-    'tendenci.apps.base.context_processors.index_update_note',
-    'tendenci.apps.base.context_processors.today',
-    'tendenci.apps.base.context_processors.site_admin_email',
-    'tendenci.apps.registry.context_processors.registered_apps',
+    'tendenci.core.theme.context_processors.theme',
+    'tendenci.core.site_settings.context_processors.settings',
+    'tendenci.core.site_settings.context_processors.app_dropdown',
+    'tendenci.core.base.context_processors.static_url',
+    'tendenci.core.base.context_processors.index_update_note',
+    'tendenci.core.base.context_processors.today',
+    'tendenci.core.base.context_processors.site_admin_email',
+    'tendenci.core.base.context_processors.user_classification',
+    'tendenci.core.base.context_processors.display_name',
+    'tendenci.core.registry.context_processors.registered_apps',
+    'tendenci.core.registry.context_processors.enabled_addons',
 )
 
 INSTALLED_APPS = (

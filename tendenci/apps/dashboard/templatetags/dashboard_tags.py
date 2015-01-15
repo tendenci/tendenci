@@ -3,6 +3,8 @@ import simplejson
 from django.template import Library
 
 from tendenci.apps.dashboard.models import DashboardStat
+
+
 register = Library()
 
 
@@ -28,5 +30,14 @@ def dashboard_stat(context, stat_type):
         "type_name": type_name,
         "label": label,
         "value": value,
+    })
+    return context
+
+
+@register.inclusion_tag("dashboard/top_nav_items.html", takes_context=True)
+def dashboard_current_app(context, user, dashboard=None):
+    context.update({
+        "app_object": dashboard,
+        "user": user
     })
     return context
