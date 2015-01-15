@@ -6,6 +6,7 @@ from django.template import Library, TemplateSyntaxError
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.articles.models import Article
 
+
 register = Library()
 
 
@@ -29,6 +30,15 @@ def article_nav(context, user, article=None):
 
 @register.inclusion_tag("articles/search-form.html", takes_context=True)
 def article_search(context):
+    return context
+
+
+@register.inclusion_tag("articles/top_nav_items.html", takes_context=True)
+def article_current_app(context, user, article=None):
+    context.update({
+        "app_object": article,
+        "user": user
+    })
     return context
 
 

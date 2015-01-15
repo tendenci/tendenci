@@ -1328,16 +1328,14 @@ def profile_export_download(request, identifier):
 
 @login_required
 @password_required
-def user_import_upload(request,
-            template_name='profiles/import/upload.html'):
-    """
-    Import users to the User and Profile
-    """
+def user_import_upload(request, template_name='profiles/import/upload.html'):
+    """ Import users to the User and Profile. """
+
     if not request.user.profile.is_superuser:
         raise Http403
 
-    form = UserUploadForm(request.POST or None,
-                            request.FILES or None)
+    form = UserUploadForm(request.POST or None, request.FILES or None)
+
     if request.method == 'POST':
         if form.is_valid():
             user_import = form.save(commit=False)
@@ -1345,20 +1343,16 @@ def user_import_upload(request,
             user_import.save()
 
             # redirect to preview page.
-            return redirect(reverse('profiles.user_import_preview',
-                                     args=[user_import.id]))
+            return redirect(reverse('profiles.user_import_preview', args=[user_import.id]))
 
     return render_to_response(template_name, {
         'form': form,
-        }, context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 
 
 @login_required
-def user_import_preview(request, uimport_id,
-                template_name='profiles/import/preview.html'):
-    """
-    Preview the import
-    """
+def user_import_preview(request, uimport_id, template_name='profiles/import/preview.html'):
+    """ Preview the import. """
 
     if not request.user.profile.is_superuser:
         raise Http403
@@ -1465,14 +1459,14 @@ def user_import_preview(request, uimport_id,
 
 @login_required
 def user_import_process(request, uimport_id):
-    """
-    Process the import
-    """
+    """ Process the import. """
+
     if not request.user.profile.is_superuser:
         raise Http403
+
     invalidate('profiles_userimport')
-    uimport = get_object_or_404(UserImport,
-                                    pk=uimport_id)
+
+    uimport = get_object_or_404(UserImport, pk=uimport_id)
 
     if uimport.status == 'preprocess_done':
         uimport.status = 'processing'
@@ -1488,16 +1482,13 @@ def user_import_process(request, uimport_id):
         EventLog.objects.log()
 
     # redirect to status page
-    return redirect(reverse('profiles.user_import_status',
-                                     args=[uimport.id]))
+    return redirect(reverse('profiles.user_import_status', args=[uimport.id]))
 
 
 @login_required
-def user_import_status(request, uimport_id,
-                    template_name='profiles/import/status.html'):
-    """
-    Display import status
-    """
+def user_import_status(request, uimport_id, template_name='profiles/import/status.html'):
+    """ Display import status. """
+
     if not request.user.profile.is_superuser:
         raise Http403
     invalidate('profiles_userimport')
@@ -1510,7 +1501,7 @@ def user_import_status(request, uimport_id,
 
     return render_to_response(template_name, {
         'uimport': uimport,
-        }, context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 
 
 @login_required

@@ -1,7 +1,9 @@
 from django.template import Library
 from django.conf import settings
 
+
 register = Library()
+
 
 @register.inclusion_tag("invoices/nav.html", takes_context=True)
 def invoice_nav(context, invoice=None):
@@ -9,6 +11,7 @@ def invoice_nav(context, invoice=None):
         "nav_object" : invoice,
     })
     return context
+
 
 @register.inclusion_tag("invoices/invoice_item.html")
 def invoices_search_results_line(request, invoice):
@@ -51,6 +54,16 @@ def invoices_search_line_header(context, request, invoice, obj_color):
 @register.inclusion_tag("invoices/search-form.html", takes_context=True)
 def invoice_search(context):
     return context
+
+
+@register.inclusion_tag("invoices/top_nav_items.html", takes_context=True)
+def invoice_current_app(context, user, invoice=None):
+    context.update({
+        "app_object": invoice,
+        "user": user
+    })
+    return context
+
 
 # display object on invoice view
 @register.inclusion_tag("invoices/object_display.html")

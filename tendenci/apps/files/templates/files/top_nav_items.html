@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user files.add_file as can_add_file %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'files' %}">{% trans 'File List' %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_file %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'file.add' %}">{% trans 'Add a File' %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'file.bulk_add' %}">{% trans 'Add Multiple Files' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_staff %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'file.report_most_viewed' %}">{% trans 'Most Viewed' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>

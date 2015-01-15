@@ -57,34 +57,33 @@
 
 <body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
 {% block top_bar %}
-{% if request.user.is_superuser %}
-    {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
-        {% if request.user.is_authenticated %}
+{% if request.user.is_authenticated %}
+    {% if request.user.is_superuser %}
+        {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
             {% if SITE_GLOBAL_SHOWANCIENTMENU %}
                 {% include "top_menu/user_top.html" %}
             {% else %}
-                {% include "top_menu/user_top-new.html" %}
+                {% include "top_menu/admin_top-new.html" %}
+            {% endif %}
+        {% else %}
+            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                {% include "top_menu/admin_top.html" %}
+            {% else %}
+                {% include "top_menu/admin_top-new.html" %}
+            {% endif %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
             {% endif %}
         {% endif %}
     {% else %}
         {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/admin_top.html" %}
+            {% include "top_menu/user_top.html" %}
         {% else %}
             {% include "top_menu/admin_top-new.html" %}
         {% endif %}
-        {% if request.session.theme %}
-            {% include "themes/theme_top.html" %}
-        {% endif %}
-    {% endif %}
-{% else %}
-    {% if request.user.is_authenticated %}
-        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/user_top.html" %}
-        {% else %}
-            {% include "top_menu/user_top-new.html" %}
-        {% endif %}
     {% endif %}
 {% endif %}
+
 {% emergency_announcement request.user %}
 {% endblock %}
 
@@ -128,5 +127,10 @@
 </script>
 {% endif %}
 
+<script type="text/javascript">
+    jQuery(document).on('click', '.yamm .dropdown-menu', function(e) {
+          e.stopPropagation()
+    })
+</script>
 </body>
 </html>

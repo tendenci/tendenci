@@ -1,10 +1,12 @@
-from django.template import Library, TemplateSyntaxError, Variable
+from django.template import Library, TemplateSyntaxError
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.directories.models import Directory
 
+
 register = Library()
+
 
 @register.inclusion_tag("directories/options.html", takes_context=True)
 def directory_options(context, user, directory):
@@ -14,6 +16,7 @@ def directory_options(context, user, directory):
     })
     return context
 
+
 @register.inclusion_tag("directories/nav.html", takes_context=True)
 def directory_nav(context, user, directory=None):
     context.update({
@@ -22,8 +25,18 @@ def directory_nav(context, user, directory=None):
     })
     return context
 
+
 @register.inclusion_tag("directories/search-form.html", takes_context=True)
 def directory_search(context):
+    return context
+
+
+@register.inclusion_tag("directories/top_nav_items.html", takes_context=True)
+def directory_current_app(context, user, directory=None):
+    context.update({
+        "app_object" : directory,
+        "user": user
+    })
     return context
 
 
@@ -35,6 +48,7 @@ def directory_pricing_nav(context, user, directory_pricing=None):
     })
     return context
 
+
 @register.inclusion_tag("directories/pricing-options.html", takes_context=True)
 def directory_pricing_options(context, user, directory_pricing):
     context.update({
@@ -42,6 +56,7 @@ def directory_pricing_options(context, user, directory_pricing):
         "user": user
     })
     return context
+
 
 @register.inclusion_tag("directories/pricing-table.html", takes_context=True)
 def directory_pricing_table(context):
@@ -54,6 +69,15 @@ def directory_pricing_table(context):
     context.update({
         "directory_pricings": directory_pricings,
         'show_premium_price': show_premium_price
+    })
+    return context
+
+
+@register.inclusion_tag("directories/top_nav_items_pricing.html", takes_context=True)
+def directory_pricing_current_app(context, user, directory_pricing=None):
+    context.update({
+        'app_object': directory_pricing,
+        "user": user
     })
     return context
 

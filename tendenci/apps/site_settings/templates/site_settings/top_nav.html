@@ -1,0 +1,19 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load site_setting_tags %}
+
+
+{% block current_app %}
+    <li class="dropdown">
+        <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+            <img class="nav-icon" src="{% static 'famfamfam/icons/page_green.png' %}"/>{% firstof MODULE_SETTINGS_LABEL trans 'Settings' %}
+        </a>
+
+        {% if scope_category %}
+            {% settings_current_app request.user scope_category %}
+        {% else %}
+            {% settings_current_app request.user %}
+        {% endif %}
+    </li>
+{% endblock %}

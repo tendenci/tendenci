@@ -1,7 +1,15 @@
-from django.template import Library
 from django.conf import settings
+from django.template import Library
 
 register = Library()
+
+
+@register.inclusion_tag("payments/top_nav_items.html", takes_context=True)
+def payment_current_app(context, payment=None):
+    context.update({
+        "app_object" : payment,
+    })
+    return context
 
 
 @register.inclusion_tag("payments/nav.html", takes_context=True)

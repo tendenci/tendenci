@@ -1,0 +1,20 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load recurring_payments_tags %}
+
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/money_add.png' %}"/>{% trans "Recurring Payments" %}
+    </a>
+
+    {% if rp %}
+        {% rp_current_app request.user rp %}
+    {% else %}
+        {% rp_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}
+

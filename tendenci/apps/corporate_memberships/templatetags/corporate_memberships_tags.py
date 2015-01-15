@@ -1,4 +1,3 @@
-
 import random
 
 from django.contrib.auth.models import AnonymousUser, User
@@ -89,6 +88,15 @@ def corpmemb_nav(context, user, corp_memb=None):
     return context
 
 
+@register.inclusion_tag("corporate_memberships/top_nav_items.html", takes_context=True)
+def corpmemb_current_app(context, user, corp_memb=None):
+    context.update({
+        'app_object': corp_memb,
+        "user": user
+    })
+    return context
+
+
 @register.inclusion_tag("corporate_memberships/options.html", takes_context=True)
 def corpmemb_options(context, user, corp_memb):
     context.update({
@@ -123,6 +131,7 @@ class AllowViewCorpNode(Node):
             return ""
         else:
             return boo
+
 
 @register.tag
 def allow_view_corp(parser, token):
@@ -164,6 +173,7 @@ class AllowEditCorpNode(Node):
             return ""
         else:
             return boo
+
 
 @register.tag
 def allow_edit_corp(parser, token):

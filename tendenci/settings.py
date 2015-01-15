@@ -131,7 +131,7 @@ STATICFILES_DIRS = (
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
-AVATAR_DEFAULT_URL = STATIC_URL + 'images/icons/default-user-80.jpg'
+AVATAR_DEFAULT_URL = '/images/icons/default-user-80.jpg'
 AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
 # default image url (relative to the static folder)
@@ -159,11 +159,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # tendenci context processors
     'tendenci.apps.theme.context_processors.theme',
     'tendenci.apps.site_settings.context_processors.settings',
+    'tendenci.apps.site_settings.context_processors.app_dropdown',
     'tendenci.apps.base.context_processors.static_url',
     'tendenci.apps.base.context_processors.index_update_note',
     'tendenci.apps.base.context_processors.today',
     'tendenci.apps.base.context_processors.site_admin_email',
+    'tendenci.apps.base.context_processors.user_classification',
+    'tendenci.apps.base.context_processors.display_name',
     'tendenci.apps.registry.context_processors.registered_apps',
+    'tendenci.apps.registry.context_processors.enabled_addons',
 )
 
 INSTALLED_APPS = (

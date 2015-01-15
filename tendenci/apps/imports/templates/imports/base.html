@@ -1,4 +1,5 @@
 {% extends "site_base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Imports' %} - {% endblock %}
+
+{% block title %}{% firstof MODULE_IMPORTS_LABEL trans 'Imports' %} - {% endblock %}

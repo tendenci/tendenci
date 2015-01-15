@@ -24,62 +24,8 @@ IMPORT_FOLDER_NAME = 'imports'
 
 @login_required
 @password_required
-def user_upload_add(request, form_class=UserImportForm,
-                    template_name="imports/users.html"):
+def user_upload_add(request):
     return HttpResponseRedirect(reverse('profiles.user_import'))
-
-    if not request.user.profile.is_superuser:
-        raise Http403
-
-    if request.method == 'POST':
-        form = form_class(request.POST, request.FILES)
-        if form.is_valid():
-            # reset the password_promt session
-            del request.session['password_promt']
-
-            # save the uploaded file
-            f = request.FILES['file']
-            file_name = f.name.replace('&', '')
-            file_path = os.path.join(IMPORT_FOLDER_NAME, file_name)
-            if os.path.isdir(settings.MEDIA_ROOT):
-                file_dir = os.path.join(settings.MEDIA_ROOT, IMPORT_FOLDER_NAME)
-                if not os.path.isdir(file_dir):
-                    os.makedirs(file_dir)
-            handle_uploaded_file(f, file_path)
-
-            interactive = form.cleaned_data['interactive']
-            override = form.cleaned_data['override']
-            key = form.cleaned_data['key']
-            group = form.cleaned_data['group']
-            clear_group_membership = form.cleaned_data[
-                                    'clear_group_membership'
-                                    ]
-
-            # read the spreadsheet into a dictionary
-            data_dict_list = extract_from_excel(file_path)
-
-            # generate a unique id for this import
-            sid = str(int(time.time()))
-
-            # store the infor in the session to pass to the next page
-            request.session[sid] = {'file_name': file_name,
-                                   'interactive': interactive,
-                                   'override': override,
-                                   'key': key,
-                                   'group': group,
-                                   'clear_group_membership': \
-                                        clear_group_membership,
-                                   'total': len(data_dict_list),
-                                   'data_dict_list': data_dict_list}
-
-            EventLog.objects.log()
-            return HttpResponseRedirect(reverse(
-                                    'import.user_upload_preview',
-                                    args=[sid]))
-    else:
-        form = form_class()
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
 
 
 @login_required

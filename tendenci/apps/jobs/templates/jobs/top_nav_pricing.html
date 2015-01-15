@@ -1,0 +1,17 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load job_tags %}
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/briefcase.png"/>{% trans "Job Pricing" %}
+    </a>
+    {% if job_pricing %}
+    {% job_pricing_current_app request.user job_pricing %}
+    {% else %}
+    {% job_pricing_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}
+

@@ -1,27 +1,20 @@
 import random
-import hashlib
-import random
 from datetime import datetime, timedelta
 from operator import or_
 
-from django.contrib.humanize.templatetags.humanize import naturalday
-from django.core.urlresolvers import reverse
-from django.template.defaultfilters import floatformat
 from django.db import models
-from django.template import Node, Library, TemplateSyntaxError, Variable
-from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
+from django.contrib.auth.models import AnonymousUser, User
+from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.events.models import Event, Registrant, Type
+from tendenci.apps.events.utils import (registration_earliest_time,
+                                        registration_has_started,
+                                        registration_has_ended,)
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.user_groups.models import Group
 
-from tendenci.apps.events.models import Event, Registrant, Type, RegConfPricing
-from tendenci.apps.events.utils import get_pricing, registration_earliest_time
-from tendenci.apps.events.utils import registration_has_started, get_event_spots_taken
-from tendenci.apps.events.utils import registration_has_ended
 
 register = Library()
 
@@ -51,6 +44,15 @@ def event_nav(context, user, event=None):
 
 @register.inclusion_tag("events/search-form.html", takes_context=True)
 def event_search(context):
+    return context
+
+
+@register.inclusion_tag("events/top_nav_items.html", takes_context=True)
+def event_current_app(context, user, event=None):
+    context.update({
+        "app_object": event,
+        "user": user
+    })
     return context
 
 

@@ -1,9 +1,11 @@
 from datetime import datetime
-from django.template import Node, Library, TemplateSyntaxError, Variable
+
+from django.template import Library, TemplateSyntaxError
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.news.models import News
+
 
 register = Library()
 
@@ -28,6 +30,15 @@ def news_nav(context, user, news=None):
 
 @register.inclusion_tag("news/search-form.html", takes_context=True)
 def news_search(context):
+    return context
+
+
+@register.inclusion_tag("news/top_nav_items.html", takes_context=True)
+def news_current_app(context, user, news=None):
+    context.update({
+        "app_object": news,
+        "user": user
+    })
     return context
 
 

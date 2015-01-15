@@ -1,9 +1,10 @@
-from django.template import Library, TemplateSyntaxError, Variable
+from django.db.models import Q
+from django.template import Library, TemplateSyntaxError
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.jobs.models import Job
-from django.db.models import Q
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+
 
 register = Library()
 
@@ -28,6 +29,15 @@ def job_nav(context, user, job=None):
 
 @register.inclusion_tag("jobs/search-form.html", takes_context=True)
 def job_search(context):
+    return context
+
+
+@register.inclusion_tag("jobs/top_nav_items.html", takes_context=True)
+def job_current_app(context, user, job=None):
+    context.update({
+        "app_object": job,
+        "user": user
+    })
     return context
 
 
@@ -73,6 +83,15 @@ def job_pricing_table(context):
         "job_pricings": job_pricings,
         'show_premium_price': show_premium_price,
         'show_member_price': show_member_price
+    })
+    return context
+
+
+@register.inclusion_tag("jobs/top_nav_items_pricing.html", takes_context=True)
+def job_pricing_current_app(context, user, job_pricing=None):
+    context.update({
+        'app_object': job_pricing,
+        "user": user
     })
     return context
 

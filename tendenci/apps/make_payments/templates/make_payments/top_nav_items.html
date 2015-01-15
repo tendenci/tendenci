@@ -1,0 +1,44 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm request.user site_settings.change_setting as can_edit_setting %}
+
+{% if app_object %}
+    {% has_perm request.user make_payments.view_make_payment app_object as can_view %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'make_payment' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if app_object %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'make_payment.view' app_object.pk %}">{% trans "View" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'make_payment.add' %}">{% trans "Add" %}</a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>

@@ -1,0 +1,112 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user locations.add_location as can_add_location %}
+
+{% if app_object %}
+    {% has_perm user locations.view_location app_object as can_view_location %}
+    {% has_perm user locations.change_location app_object as can_edit_location %}
+    {% has_perm user locations.delete_location app_object as can_delete_location %}
+{% else %}
+    {% has_perm user locations.view_location as can_view_location %}
+    {% has_perm user locations.change_location as can_edit_location %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'locations' %}">{% trans 'Settings' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'locations' %}">{% trans "List of " %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'location.nearest' %}">{% trans "Nearest" %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_location %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'location.add' %}">{% trans "Add" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'locations_import_upload_file' %}">{% trans "Import" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'locations_export' %}">{% trans "Export" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_location or can_edit_location %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</span>
+                            </li>
+
+                            {% if can_view_location %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_location %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'location.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_location %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'location.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_LOCATIONS_LABEL trans 'Location' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

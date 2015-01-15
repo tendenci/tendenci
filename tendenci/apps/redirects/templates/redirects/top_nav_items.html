@@ -1,0 +1,94 @@
+{% load i18n %}
+{% load url from future %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user redirects.add_redirect as can_add_redirect %}
+
+{% if app_object %}
+    {% has_perm user redirects.view_redirect app_object as can_view_redirect %}
+    {% has_perm user redirects.change_redirect app_object as can_edit_redirect %}
+    {% has_perm user redirects.delete_redirect app_object as can_delete_redirect %}
+{% else %}
+    {% has_perm user redirects.view_redirect as can_view_redirect %}
+    {% has_perm user redirects.change_redirect as can_edit_redirect %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        {# "All Redirects" Section #}
+                        <li class="content-item">
+                            <span class="content-head text-content-head">{% trans "All Redirects" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'redirects' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'redirects' %}">{% trans "Redirect List" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_redirect %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'redirect.add' %}">{% trans "Add a Redirect" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'redirect.export' %}">{% trans "Export Redirects" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_redirect or can_edit_redirect %}
+                        {# "This Redirect" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Redirect" %}</span>
+                            </li>
+
+                            {% if can_edit_redirect %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'redirect.edit' app_object.pk %}">{% trans "Edit Redirect" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_redirect %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'redirect.delete' app_object.pk %}">{% trans "Delete Redirect" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

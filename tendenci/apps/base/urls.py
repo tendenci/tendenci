@@ -1,4 +1,8 @@
 from django.conf.urls import patterns, url
+from django.contrib.auth.decorators import login_required
+
+from .views import AppsListView
+
 
 urlpatterns = patterns('tendenci.apps.base.views',
     url(r'^image-preview/(?P<app_label>\w+)/(?P<model>\w+)/(?P<id>\d+)/(?P<size>(\d+|\d+x\d+))/$', 'image_preview', name="image_preview"),
@@ -20,4 +24,6 @@ urlpatterns = patterns('tendenci.apps.base.views',
     url(r'addon/upload/preview/(?P<sid>\d+)$', 'addon_upload_preview', name="addon.upload.preview"),
     url(r'addon/upload/status/(?P<sid>\d+)$', 'addon_upload_process', name="addon.upload.process"),
     url(r'addon/upload/check/(?P<sid>\d+)$', 'addon_upload_check', name="addon.upload.check"),
+
+    url(r'apps-list/$', login_required(AppsListView.as_view()), name="apps.list"),
 )

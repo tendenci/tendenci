@@ -25,6 +25,8 @@ from django.contrib import messages
 from django.views.i18n import set_language as dj_set_language
 from django.utils.translation import check_for_language
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import TemplateView
+
 # local
 from tendenci import __version__ as version
 from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
@@ -271,6 +273,7 @@ def feedback(request, template_name="base/feedback.html"):
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
+
 def homepage(request, template_name="homepage.html"):
     from tendenci.apps.event_logs.models import EventLog
 
@@ -482,3 +485,7 @@ def update_tendenci(request, template_name="base/update.html"):
 @password_required
 def update_tendenci_confirmation(request, template_name="base/update_confirmation.html"):
     return render_to_response(template_name, context_instance=RequestContext(request))
+
+
+class AppsListView(TemplateView):
+    template_name ='base/apps_list.html'
