@@ -640,6 +640,7 @@ html[xmlns] .tcf {
 }
 
 .t-top-nav .nav-logo {
+    display: inline-block;
     margin: 0;
     position: relative;
     top: 3px;

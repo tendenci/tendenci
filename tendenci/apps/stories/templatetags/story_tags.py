@@ -9,8 +9,8 @@ from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.stories.models import Story
-from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.core.perms.utils import get_query_filters
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.perms.utils import get_query_filters
 
 
 register = Library()

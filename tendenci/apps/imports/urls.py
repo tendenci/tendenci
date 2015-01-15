@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 
 
-urlpatterns = patterns('tendenci.core.imports.views',
+urlpatterns = patterns('tendenci.apps.imports.views',
     url(r'^users/upload/add/$', 'user_upload_add', name="import.user_upload_add"),
     url(r'^users/upload/preview/(?P<sid>\d+)$', 'user_upload_preview', name="import.user_upload_preview"),
     url(r'^users/upload/process/(?P<sid>\d+)$', 'user_upload_process', name="import.user_upload_process"),
