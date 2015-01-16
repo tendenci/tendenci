@@ -508,20 +508,20 @@ div.forms li {
     margin: 3px 0;
 }
 
-div.forms div.checkbox {
+div.forms div.checkbox-input {
 	float: left;
 }
 
-div.forms div.checkbox .field {
+div.forms div.checkbox-input .field {
 	float: left;
 }
 
-div.forms div.checkbox .label {
+div.forms div.checkbox-input .label {
 	float: left;
 	margin-left: 5px;
 }
 
-div.forms div.checkbox .help-text {
+div.forms div.checkbox-input .help-text {
 	clear: both;
 }
 
