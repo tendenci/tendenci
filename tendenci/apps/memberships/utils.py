@@ -1289,6 +1289,10 @@ class ImportMembDefault(object):
 
         return False
 
+    def clean_username(self, memb_data):
+        if 'username' in memb_data:
+            memb_data['username'] = memb_data['username'][:30]
+
     def process_default_membership(self, idata, **kwargs):
         """
         Check if it's insert or update. If dry_run is False,
@@ -1324,6 +1328,7 @@ class ImportMembDefault(object):
                 idata.error = user_display['error']
                 idata.save()
         else:
+            self.clean_username(self.memb_data)
             if self.key == 'member_number/email/fn_ln_phone':
                 users = get_user_by_member_number(
                                     self.memb_data['member_number'])
