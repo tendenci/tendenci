@@ -134,6 +134,9 @@ class Command(BaseCommand):
         call_command('loaddata', 'npo_default_user_groups.json')
         print 'npo_default_files.json'
         call_command('loaddata', 'npo_default_files.json')
+        print 'load paymentmethod.json'
+        call_command('loaddata', 'paymentmethod.json')
+        
 
         box_ct = ContentType.objects.get(app_label='boxes', model='box')
         story_ct = ContentType.objects.get(app_label='stories', model='story')
