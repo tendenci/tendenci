@@ -147,7 +147,7 @@ setup(
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     install_requires=[
-        "Django==1.6",
+        "Django==1.6.10",
         "pisa",
         "Reportlab==2.5",
         "html5lib",
