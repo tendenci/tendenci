@@ -16,8 +16,6 @@
 
 {% block body %}
 <div class="t">
-    {% directory_nav request.user directory %}
-
     <div class="directory-wrap">
 
         <h2>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h2>

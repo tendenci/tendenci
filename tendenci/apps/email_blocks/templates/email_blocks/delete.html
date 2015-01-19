@@ -10,8 +10,6 @@
 
 {% block body %}
 <div class="t">
-{% email_blocks_nav email_block %}
-
 <h1>{% trans "Delete an Email Block Record" %}</h1>
 <div>{% trans "Email: " %}{{ email_block.email|obfuscate_email }}</div>
 <div>{% trans "Email Domain: " %}{{ email_block.email_domain }}</div>
