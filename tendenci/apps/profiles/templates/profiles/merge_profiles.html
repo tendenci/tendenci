@@ -14,7 +14,6 @@
 {% block body %}
 {{ block.super }}
 <div class="t">
-    {% users_nav request.user user_this %}
     <p>{% blocktrans %}
     Check the boxes below to select which user accounts you would like to merge. The Master account will be the account into which all other users are merged. Please review the user account information listed below before merging.
     {% endblocktrans %}<p>

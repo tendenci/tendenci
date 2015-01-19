@@ -15,7 +15,6 @@
 
 {% block body %}
 <div class="t">
-    {% event_nav request.user %}
     <div class="events-wrap">
         <h1>{% trans "Events Export - Status" %}</h1>
         <div{% if not download_ready %} class="display-hide"{% endif %}>

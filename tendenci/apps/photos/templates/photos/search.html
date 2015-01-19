@@ -17,7 +17,6 @@
 
 {% block body %}
 <div class="t">
-    {% photo_nav request.user %}
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
 
     {% autopaginate photos 10 %}

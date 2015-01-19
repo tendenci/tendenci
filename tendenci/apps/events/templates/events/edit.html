@@ -16,8 +16,6 @@
 
 {% block body %}
 <div class="t">
-    {% event_nav request.user event %}
-
     <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %}{% trans " Edit" %}</h1>
 
     <div class="event-tabs">

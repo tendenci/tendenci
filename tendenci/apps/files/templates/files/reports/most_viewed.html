@@ -16,8 +16,6 @@
 {% block body %}
 
 <div class="t most-viewed">
-    {% file_nav request.user %}
-
     <h1>{% trans "Most Viewed Files" %}</h1>
 
     <form class="search-form" action="{% url "file.report_most_viewed" %}" method="POST">

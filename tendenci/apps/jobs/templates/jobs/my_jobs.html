@@ -18,7 +18,6 @@
 
 {% block body %}
 <div class="t">
-{% job_nav request.user %}
     <h1>{% trans "My" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} {% trans "List" %}</h1>
 
     {% my_job_search %}

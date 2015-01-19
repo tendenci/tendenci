@@ -19,9 +19,6 @@
 {% block body %}
 
 <div class="day-view">
-
-    {% event_nav user %}
-
     <h2>{{ date|date:"l, F j Y" }}</h2>
 
 <form class="search-form" action="{% url "event.today" %}" method="get">

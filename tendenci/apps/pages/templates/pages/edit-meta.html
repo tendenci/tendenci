@@ -12,8 +12,6 @@
 
 {% block body %}
 <div class="t">
-
-    {% page_nav user page %}
     <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Meta Information for" %}<br />
     {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h1>
 

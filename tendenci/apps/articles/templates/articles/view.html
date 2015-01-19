@@ -19,8 +19,6 @@
 {% block body %}
 
 <div class="t">
-    {% article_nav request.user article %}
-
     <div class="article-wrap">
 
         <h1>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h1>

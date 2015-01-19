@@ -65,7 +65,6 @@
     {{ block.super }}
 
     <div class="t">
-        {% users_nav request.user user_this %}
 
         <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "People Search" %}{% else %}{% trans "People List" %}{% endif %}</h1>
 

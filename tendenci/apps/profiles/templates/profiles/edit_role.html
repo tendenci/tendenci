@@ -13,7 +13,6 @@
 
 {% block body %}
     <div class="t">
-        {% users_nav request.user membership.member %}
         <h1>{% trans 'Edit Group Membership Role' %}</h1>
         <div class="profile-wrap">
             <h2>{% trans 'User' %}: <a href="{{ membership.member.get_absolute_url }}">

@@ -16,8 +16,6 @@
 
 {% block body %}
 <div class="t">
-    {% event_nav request.user event %}
-
     <h1>{% trans "Add Addon for" %} {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</h1>
 
     <div class="event-wrap">

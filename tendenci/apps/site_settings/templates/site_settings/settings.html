@@ -6,7 +6,6 @@
 {% block title %}{% trans 'Settings' %}{% endblock %}
 
 {% block body %}
-{% settings_nav request.user %}
 
 {% regroup settings by scope_category as settings_list %}
 {% for settings in settings_list %}

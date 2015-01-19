@@ -12,7 +12,6 @@
 
 {% block body %}
 <div class="t">
-{% corpmemb_nav request.user corporate_membership %}
      <h1>{% trans "Corporate Membership Add Confirmation" %}</h1>
     <p>{% if app.confirmation_text %}
         {% blocktrans with conf_text=app.confirmation_text|safe %}{{ conf_text }}{% endblocktrans %}

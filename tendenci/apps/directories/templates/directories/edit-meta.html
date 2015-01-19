@@ -12,8 +12,6 @@
 
 {% block body %}
 <div class="t">
-
-    {% directory_nav user %}
     <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Meta Information for" %}<br />
     {% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h1>
 

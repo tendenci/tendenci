@@ -16,9 +16,6 @@
 
 {% block body %}
 <div class="t">
-
-    {% resume_nav request.user resume %}
-
     <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resume' %} {% trans "Edit" %}</h1>
 
     <div class="resume-wrap">

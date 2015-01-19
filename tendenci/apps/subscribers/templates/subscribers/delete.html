@@ -13,7 +13,6 @@
 
 {% block body %}
 <div class="t">
-    {% user_group_nav request.user %}
     <h1>Delete a Subscriber from {{ grp_sub.group.label }}</h1>
     {% for field in grp_sub.subscriber.fields.all %}
         {% if field.field.field_type == 'FileField' %}

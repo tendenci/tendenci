@@ -16,7 +16,6 @@
 
 {% block body %}
 <div class="t">
-    {% discount_nav request.user %}
     <h1>{% firstof MODULE_DISCOUNTS_LABEL trans "Discount" %}  {% trans "Search" %}</h1>
 
     {% discount_search %}

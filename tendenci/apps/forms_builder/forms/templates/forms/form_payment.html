@@ -15,10 +15,6 @@
 {% block body %}
 
 <div class="t">
-    {% if request.user.is_authenticated %}
-        {% forms_nav request.user form %}
-    {% endif %}
-
     <div class="form-wrap">
         <h1>{% trans "Billing Information" %}</h1>
 

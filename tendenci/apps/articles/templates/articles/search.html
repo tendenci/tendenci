@@ -24,7 +24,6 @@
 
 {% block body %}
 <div class="t">
-    {% article_nav request.user %}
     <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %}</h1>
 
     {% autopaginate articles 10 %}

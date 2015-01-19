@@ -15,8 +15,6 @@
 
 {% block body %}
 <div class="t">
-    {% file_nav request.user %}
-
     <h1>{% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %}</h1>
 
     {% autopaginate files 10 %}

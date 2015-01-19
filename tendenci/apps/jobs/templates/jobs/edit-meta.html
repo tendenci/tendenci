@@ -13,8 +13,6 @@
 
 {% block body %}
 <div class="t">
-
-    {% job_nav user %}
     <h1>{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% blocktrans with job.title as job_title %} Meta Information for<br />
     {{ job_title }}{% endblocktrans %}</h1>
 

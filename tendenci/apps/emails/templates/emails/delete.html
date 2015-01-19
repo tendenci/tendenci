@@ -10,7 +10,6 @@
 
 {% block body %}
 <div class="t">
-{% emails_nav email %}
 
 <h1>{% trans "Delete an Email Record" %}</h1>
 <h3>{% blocktrans with email.subject as subject %}Subject: {{ subject }}{% endblocktrans %}</h3>

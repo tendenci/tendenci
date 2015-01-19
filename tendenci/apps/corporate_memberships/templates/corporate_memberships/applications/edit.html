@@ -63,7 +63,6 @@
 {% block body %}
 <div class="t">
 <div class="application-form-wrap">
-{% corpmemb_nav request.user corp_membership %}
         <h1>{% trans "Edit Corporate Membership" %}</h1>
         {% blocktrans with description=app.description|safe %}{{ description }}{% endblocktrans %}
 

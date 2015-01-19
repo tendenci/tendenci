@@ -17,8 +17,6 @@
 
 {% block body %}
     <div class="t">
-        {% user_group_nav request.user %}
-
         <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
 
         <div class="clear-right"></div>

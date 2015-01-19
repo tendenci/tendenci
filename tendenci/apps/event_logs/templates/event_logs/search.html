@@ -21,9 +21,6 @@
 
 {% block body %}
 <div class="t">
-
-    {% event_log_nav request.user %}
-
     <h1>{% firstof MODULE_EVENT_LOGS_LABEL trans 'Event Logs' %} {% trans "Search" %}</h1>
 
     {% event_log_search search_form %}

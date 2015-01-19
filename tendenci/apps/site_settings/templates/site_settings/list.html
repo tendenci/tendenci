@@ -12,7 +12,6 @@
 {% endblock%}
 
 {% block body %}
-    {% settings_nav request.user scope_category %}
     <h1>{{ scope_category|title }} {% trans 'Settings' %}</h1>
 
     <form class="settings-form" method="post" enctype="multipart/form-data">{% csrf_token %}

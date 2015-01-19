@@ -12,9 +12,6 @@
 
 {% block body %}
 <div class="t">
-
-    {% job_pricing_nav request.user %}
-
     <h1>{% blocktrans %}Edit Price:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans'Job' %} </h1>
 
     <p>{% trans "To edit the job price, complete the fields below and press Submit." %}</p>

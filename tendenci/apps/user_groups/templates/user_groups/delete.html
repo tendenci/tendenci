@@ -11,7 +11,6 @@
 
 {% block body %}
 <div class="t">
-{% user_group_nav request.user %}
 <h1>{% trans "Delete a User Group" %}</h1>
 <h3>{% trans 'Group' %}: <a href="{{ group.get_absolute_url }}">{{ group.label }}
 ({{ group.members.count }} member{{group.members.count|pluralize }})</a></h3>
