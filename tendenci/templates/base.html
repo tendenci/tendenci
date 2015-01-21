@@ -20,7 +20,7 @@
         {% block meta_canonical_url %}{% endblock %}
 
         <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
-        <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
+        <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
 
         {% block includebootstrap3css %}
             {# Let's try using Bootstrap 3 in all sites #}
@@ -30,7 +30,6 @@
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css" media="screen">
         <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css">
         <link href="{% static 'css/t_nav_layout.css' %}" rel="stylesheet" type="text/css">
-        <link href="{% static 'css/required.css' %}" rel="stylesheet" type="text/css">
         <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css">
 
         {% block extra_head %}{% endblock %}
