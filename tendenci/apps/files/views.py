@@ -119,7 +119,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
-        response = HttpResponse(mimetype=file.mime_type())
+        response = HttpResponse(content_type=file.mime_type())
         response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
 
         params = {'quality': quality}
@@ -160,7 +160,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # set mimetype
     if file.mime_type():
-        response = HttpResponse(data, mimetype=file.mime_type())
+        response = HttpResponse(data, content_type=file.mime_type())
     else:
         raise Http404
 
@@ -548,7 +548,7 @@ def swfupload(request):
 
         if not form.is_valid():
             return HttpResponseServerError(
-                str(form._errors), mimetype="text/plain")
+                str(form._errors), content_type="text/plain")
 
         app_label = request.POST['storme_app_label']
         model = unicode(request.POST['storme_model']).lower()
@@ -576,7 +576,7 @@ def swfupload(request):
             "url": file.file.url,
         }
 
-        return HttpResponse(json.dumps([d]), mimetype="text/plain")
+        return HttpResponse(json.dumps([d]), content_type="text/plain")
 
 
 @login_required
@@ -645,7 +645,7 @@ def display_less(request, path):
         full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, path)
         url_obj = urllib2.urlopen(full_path)
         content = url_obj.read()
-    return HttpResponse(content, mimetype="text/css")
+    return HttpResponse(content, content_type="text/css")
 
 
 def redirect_to_s3(request, path, file_type='themes'):
@@ -664,7 +664,7 @@ def redirect_to_s3(request, path, file_type='themes'):
                     content_type = 'text/css'
                 else:
                     content_type = mimetypes.guess_type(full_path)[0]
-                return HttpResponse(content, mimetype=content_type)
+                return HttpResponse(content, content_type=content_type)
         else:
             url = '%s/%s' % (settings.THEMES_DIR, path)
         return HttpResponseRedirect(url)
@@ -673,7 +673,7 @@ def redirect_to_s3(request, path, file_type='themes'):
 
 class JSONResponse(HttpResponse):
     """JSON response class."""
-    def __init__(self, obj='', json_opts={}, mimetype="application/json", *args, **kwargs):
+    def __init__(self, obj='', json_opts={}, content_type="application/json", *args, **kwargs):
         content = simplejson.dumps(obj, **json_opts)
         super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
 
@@ -692,5 +692,5 @@ def get_categories(request):
         else:
             data = json.dumps({"error": True})
 
-        return HttpResponse(data, mimetype="text/plain")
+        return HttpResponse(data, content_type="text/plain")
     raise Http404
