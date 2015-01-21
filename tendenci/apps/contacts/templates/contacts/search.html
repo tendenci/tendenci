@@ -27,7 +27,6 @@
         {% has_perm user contacts.view_contact contact as can_view %}
         {% if can_view %}
         <div class="contact-wrap">
-
             <h2><a href="{% url 'contact' contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
             <div class="content">{% blocktrans with m=contact.message|linebreaks %}{{ m }}{% endblocktrans %}</div>
 

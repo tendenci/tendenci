@@ -1,6 +1,8 @@
+{% load i18n %}
+{% load staticfiles %}
 {% load base_tags %}
 {% load perm_tags %}
-{% load i18n %}
+
 
 {% has_perm request.user site_settings.change_setting as can_edit_setting %}
 
@@ -8,7 +10,6 @@
     {% has_perm request.user make_payments.view_make_payment nav_object as can_view %}
 {% endif %}
 
-<div id="showh">
 {% if not SITE_GLOBAL_HIDEALLTABS %}
     <ul id="primary">
 
@@ -32,11 +33,21 @@
             {% endif %}
             <li><a href="{% url "make_payment.add" %}">{% trans "Add" %}</a></li>
 
+            <li role="presentation" class="active dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="true">
+                    {% trans "Make Payments" %} <span class="caret"></span>
+                </a>
+
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% url 'make_payment.add' %}">{% trans "Make Payments" %}</a></li>
+
+                    {% if can_edit_setting %}
+                        <li><a href="{% url 'settings.index' 'module' 'invoices' %}">{% trans "Settings" %}</a></li>
+                    {% endif %}
 
             {% if user.is_authenticated %}
             <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
             {% endif %}
-        </ul>
 
     </li>
     {% if MODULE_INVOICES_ENABLED %}
@@ -47,4 +58,3 @@
     {% endif %}
     </ul>
 {% endif %}
-</div>
