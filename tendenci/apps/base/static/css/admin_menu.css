@@ -645,6 +645,7 @@ html[xmlns] .tcf {
     position: relative;
     top: 3px;
     vertical-align: middle;
+    display: inline-block;
 }
 
 .t-top-nav .nav-icon {
