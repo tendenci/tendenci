@@ -9,6 +9,7 @@ class Migration(SchemaMigration):
         ('user_groups', '0001_initial'),
         ('invoices', '0001_initial'),
         ('payments', '0001_initial'),
+        ('user_groups', '0001_initial'),
     )
 
     def forwards(self, orm):

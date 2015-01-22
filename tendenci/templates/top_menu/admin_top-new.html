@@ -6,25 +6,25 @@
 {% list_plugins as plugins %}
 
 
-<div class="navbar yamm navbar-inverse navbar-fixed-top t-top-nav" role="navigation">
+<div class="navbar navbar-inverse navbar-fixed-top yamm t-top-nav" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" data-toggle="collapse" data-target="#navbar-collapse" class="navbar-toggle">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
 
             <a href="{% url 'dashboard' %}" class="navbar-brand">
-                <img class="nav-logo nav-icon" src="{% static 'famfamfam/icons/house.png' %}"/>
-                <img class="nav-logo" src="{% static 'images/tendenci_white_small_100x51.gif' %}" height="24" />
+                <img src="{% static 'famfamfam/icons/house.png' %}" class="nav-logo nav-icon">
+                <img src="{% static 'images/tendenci_white_small_100x51.gif' %}" class="nav-logo" height="24">
             </a>
         </div>
 
         <div id="navbar-collapse" class="navbar-collapse collapse">
             <div class="clearfix visible-sm-block"></div>
 
-            <ul class="inner-top-nav navbar-nav">
+            <ul class="nav navbar-nav inner-top-nav">
                 {% include 'top_menu/_profile_dropdown.html' %}
 
                 {% include 'top_menu/_community_dropdown.html' %}

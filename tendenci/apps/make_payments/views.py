@@ -98,8 +98,10 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
     return render_to_response(template_name, {'form':form, 'currency_symbol': currency_symbol},
         context_instance=RequestContext(request))
 
+
 def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
     return render_to_response(template_name, context_instance=RequestContext(request))
+
 
 def view(request, id=None, template_name="make_payments/view.html"):
     mp = get_object_or_404(MakePayment, pk=id)

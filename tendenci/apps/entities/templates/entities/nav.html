@@ -1,6 +1,8 @@
+{% load i18n %}
+{% load staticfiles %}
 {% load base_tags %}
 {% load perm_tags %}
-{% load i18n %}
+
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user entities.add_entity as can_add_entity %}
@@ -12,7 +14,6 @@
     {% has_perm user entities.view_entity as can_view_entity %}
     {% has_perm user entities.change_entity as can_edit_entity %}
 {% endif %}
-
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}
 <div id="showh">

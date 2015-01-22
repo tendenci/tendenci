@@ -9,6 +9,10 @@ class Migration(SchemaMigration):
         ('memberships', '0001_initial'),
     )
 
+    needed_by = (
+        ('memberships', '0034_auto__del_appfieldentry__del_noticelogrecord__del_app__del_appentry__d'),
+    )
+
     def forwards(self, orm):
 
         # Adding field 'Export.memb_app'
