@@ -56,6 +56,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         constrain=constrain)
 
     cached_image = cache.get(cache_key)
+    print '*** cached_image: %s ***' % cached_image
     if cached_image:
         return redirect(cached_image)
 
