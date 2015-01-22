@@ -23,8 +23,8 @@
         <li>
             <div class="yamm-content custom-yamm-content content-dropdown">
                 <div class="row">
-                    <div class="col-sm-{{ col_size }}">
-                        <ul class="list-unstyled content-dropdown-col">
+                    <div class="col-sm-{{ col_size }} content-dropdown-col">
+                        <ul class="list-unstyled">
                             <div class="profile-icon">
                                 {% avatar user 128 %}
                             </div>
@@ -32,8 +32,8 @@
                         </ul>
                     </div>
 
-                    <div class="col-sm-{{ col_size }}">
-                        <ul class="list-unstyled content-dropdown-col">
+                    <div class="col-sm-{{ col_size }} content-dropdown-col">
+                        <ul class="list-unstyled">
                             <li><span class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
 
                             <li class="content-item">
@@ -73,8 +73,8 @@
                     </div>
 
                     {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
-                        <div class="col-sm-{{ col_size }}">
-                            <ul class="list-unstyled content-dropdown-col">
+                        <div class="col-sm-{{ col_size }} content-dropdown-col">
+                            <ul class="list-unstyled">
                                 <li><span class="content-head text-content-head">{% trans 'Activities' %}</span></li>
 
                                 <li class="content-item">
@@ -91,8 +91,8 @@
                     {% endif %}
 
                     {% if USER_IS_SUPERUSER %}
-                        <div class="col-sm-{{ col_size }}">
-                            <ul class="list-unstyled content-dropdown-col admin-col">
+                        <div class="col-sm-{{ col_size }} content-dropdown-col">
+                            <ul class="list-unstyled admin-col">
                                 <li><span class="content-head text-content-head">{% trans 'Administrator' %}</span></li>
                                 {% comment %}
                                 <li class="content-item">
