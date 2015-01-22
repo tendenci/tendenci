@@ -23,6 +23,7 @@
         <li>
             <div class="yamm-content custom-yamm-content content-dropdown">
                 <div class="row">
+                    {% comment %}{# this is to remove the avatar and upload link for the meantime #}
                     <div class="col-sm-{{ col_size }} content-dropdown-col">
                         <ul class="list-unstyled">
                             <div class="profile-icon">
@@ -31,6 +32,7 @@
                             <a class="update-avatar-link" href="{% url 'profile.change_avatar' user.pk %}">{% trans 'Update Photo' %}</a>
                         </ul>
                     </div>
+                    {% endcomment %}
 
                     <div class="col-sm-{{ col_size }} content-dropdown-col">
                         <ul class="list-unstyled">
@@ -81,11 +83,13 @@
                                     <span class="app-name"><a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/calendar_view_day.png' %}"/>{% trans 'Events' %}</a></span>
                                 </li>
 
+                                {% comment %}{# this is to remove Donations link for the meantime #}
                                 {% if MODULE_DONATIONS_ENABLED %}
                                     <li class="content-item">
                                         <span class="app-name"><a href="{% url 'donation.add' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/money.png' %}"/>{% trans 'Donate' %}</a></span>
                                     </li>
                                 {% endif %}
+                                {% endcomment %}
                             </ul>
                         </div>
                     {% endif %}
@@ -94,7 +98,7 @@
                         <div class="col-sm-{{ col_size }} content-dropdown-col">
                             <ul class="list-unstyled admin-col">
                                 <li><span class="content-head text-content-head">{% trans 'Administrator' %}</span></li>
-                                {% comment %}
+                                {% comment %}{# this is to remove the "View as..." link for the meantime #}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="#">

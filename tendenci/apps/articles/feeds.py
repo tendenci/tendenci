@@ -10,11 +10,11 @@ from tendenci.apps.articles.models import Article
 
 
 class LatestEntriesFeed(SubFeed):
-    title = _('%(sitedisplayname)s Latest Articles') % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
+    title = _('%(sitedisplayname)s Latest Articles' % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
     link = "/articles/"
-    description = _("Latest Articles by %(sitedisplayname)s") % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
+    description = _("Latest Articles by %(sitedisplayname)s" % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
 
     def items(self):
         items = Article.objects.filter(**PUBLIC_FILTER).filter(
