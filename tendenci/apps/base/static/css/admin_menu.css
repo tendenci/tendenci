@@ -529,10 +529,66 @@ html[xmlns] .tcf {
 }
 
 
-.t-top-nav {
+#t-admin-megamenu {
     min-height: 30px;
     z-index: 9999999 !important;
 }
+
+#t-admin-megamenu .nav-logo {
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    top: 3px;
+    vertical-align: middle;
+}
+
+#t-admin-megamenu .nav-icon {
+    position: relative;
+    margin: 0 10px 0 0;
+    vertical-align: middle;
+}
+
+#t-admin-megamenu .fa-globe {
+    font-size: 16px;
+    margin: 0 10px 0 0;
+    padding: 0 1px;
+}
+
+#t-admin-megamenu .glyph {
+    display: inline-block;
+    margin-right: 9px;
+    padding: 0 1px;
+}
+
+#t-admin-megamenu .navbar-brand {
+    height: 100%;
+    padding: 0 15px;
+}
+
+#t-admin-megamenu .dropdown-toggle,
+#t-admin-megamenu-logout {
+    padding: 5px 15px;
+}
+
+#t-admin-megamenu-toggle {
+    margin-bottom: 2px;
+    margin-top: 2px;
+    padding: 5px 10px;
+}
+
+#t-admin-megamenu .yamm-content {
+    padding: 0 15px;
+}
+
+#t-admin-megamenu .content-head {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.75;
+}
+
+
+
 
 .t-top-nav li {
     margin: 0;
@@ -544,26 +600,19 @@ html[xmlns] .tcf {
     height: 30px;
 }
 
-.t-top-nav .navbar-toggle {
-    margin-bottom: 2px;
-    margin-top: 2px;
-    padding: 5px 10px;
-}
 
-.t-top-nav .navbar-brand {
-    height: 100%;
-    padding: 0 15px;
-}
 
-.t-top-nav .dropdown-menu {
+
+
+/*.t-top-nav .dropdown-menu {
     max-width: 1170px;
     padding: 5px;
     top: 100%;
-}
+}*/
 
-.t-top-nav .yamm-content {
+./*t-top-nav .yamm-content {
     width: auto;
-}
+}*/
 
 .t-top-nav .yamm-content > .row > ul {
     margin: 0 !important;
@@ -633,25 +682,6 @@ html[xmlns] .tcf {
 
 .t-top-nav .app-list li {
     padding: 0;
-}
-
-.t-top-nav .custom-yamm-content {
-    padding: 0 15px;
-}
-
-.t-top-nav .nav-logo {
-    display: inline-block;
-    margin: 0;
-    position: relative;
-    top: 3px;
-    vertical-align: middle;
-    display: inline-block;
-}
-
-.t-top-nav .nav-icon {
-    position: relative;
-    margin: 0 10px 0 0;
-    vertical-align: middle;
 }
 
 .t-top-nav .classic {
@@ -743,18 +773,6 @@ html[xmlns] .tcf {
     padding: 4px 15px;
 }
 
-.t-top-nav .fa-globe {
-    font-size: 16px;
-    margin: 0 10px 0 0;
-    padding: 0 1px;
-}
-
-.t-top-nav .glyph {
-    display: inline-block;
-    margin-right: 9px;
-    padding: 0 1px;
-}
-
 .t-top-nav .content-dropdown .row {
     margin-bottom: 0;
 }
@@ -805,14 +823,20 @@ html[xmlns] .tcf {
         padding: 0 15px 5px;
     }
 
-    .t-top-nav .content-head {
+    #t-admin-megamenu .content-head {
         color: #999999;
     }
 
-    .t-top-nav .content-dropdown-col {
-        border-bottom: 1px solid #333;
+    #t-admin-megamenu .dropdown-menu {
+        margin: -5px 0;
+    }
+
+    #t-admin-megamenu .content-dropdown-col {
         padding: 10px 15px;
-        width: 100%;
+    }
+
+    #t-admin-megamenu-profile-dd .content-dropdown-col {
+        border-bottom: 1px solid #333;
     }
 }
 

@@ -3,12 +3,13 @@
 
 <li class="dropdown lang-dropdown">
     {% with request.user.profile.lang as user_lang %}
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-            <i class="fa fa-globe"></i>{% get_language_info for user_lang as l %}{{ l.name_local }}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <i class="fa fa-globe"></i>{% get_language_info for user_lang as l %}{{ l.name_local }} <span class="caret"></span>
         </a>
 
         <ul id="lang-menu" class="dropdown-menu lang-scrollable-menu col-xs-12 col-sm-2" role="menu">
             {% get_language_info_list for LANGUAGES as languages %}
+
             {% for language in languages %}
                 <li{% if language.code == user_lang %} class="active"{% endif %}>
                 <a href="javascript:void(0);" data-lang="{{ language.code }}">{{ language.name_local }} ({{ language.code }})</a></li>
