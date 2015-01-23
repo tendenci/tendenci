@@ -32,8 +32,13 @@ def settings(request):
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
         if setting.data_type == 'int':
-            if value.strip(): value = int(value.strip())
-            else: value = 0 # default to 0
+            if value.strip():
+                try: # catch possible errors when int() is called
+                    value = int(value.strip())
+                except ValueError:
+                    value = 0
+            else:
+                value = 0 # default to 0
         # Handle context for the social_media addon's
         # contact_message setting
         if setting.name == 'contact_message':
