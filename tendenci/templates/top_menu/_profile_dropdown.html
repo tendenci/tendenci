@@ -19,9 +19,9 @@
     </a>
 
     {% get_profile_dropdown_column_size as col_size %}
-    <ul class="dropdown-menu profile-dropdown" role="menu">
+    <ul id="t-admin-megamenu-proflie-dd" class="dropdown-menu profile-dropdown" role="menu">
         <li>
-            <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="yamm-content content-dropdown">
                 <div class="row">
                     {% comment %}{# this is to remove the avatar and upload link for the meantime #}
                     <div class="col-sm-{{ col_size }} content-dropdown-col">
@@ -36,7 +36,7 @@
 
                     <div class="col-sm-{{ col_size }} content-dropdown-col">
                         <ul class="list-unstyled">
-                            <li><span class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></span></li>
+                            <li><a href="{% url 'profile.index' %}" class="content-head">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></li>
 
                             <li class="content-item">
                                 <span class="app-name">
@@ -77,7 +77,7 @@
                     {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
                         <div class="col-sm-{{ col_size }} content-dropdown-col">
                             <ul class="list-unstyled">
-                                <li><span class="content-head text-content-head">{% trans 'Activities' %}</span></li>
+                                <li><span class="content-head">{% trans 'Activities' %}</span></li>
 
                                 <li class="content-item">
                                     <span class="app-name"><a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/calendar_view_day.png' %}"/>{% trans 'Events' %}</a></span>
@@ -97,7 +97,7 @@
                     {% if USER_IS_SUPERUSER %}
                         <div class="col-sm-{{ col_size }} content-dropdown-col">
                             <ul class="list-unstyled admin-col">
-                                <li><span class="content-head text-content-head">{% trans 'Administrator' %}</span></li>
+                                <li><span class="content-head">{% trans 'Administrator' %}</span></li>
                                 {% comment %}{# this is to remove the "View as..." link for the meantime #}
                                 <li class="content-item">
                                     <span class="app-name">

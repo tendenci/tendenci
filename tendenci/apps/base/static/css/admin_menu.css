@@ -576,7 +576,16 @@ html[xmlns] .tcf {
     padding: 5px 10px;
 }
 
+#t-admin-megamenu .yamm-content {
+    padding: 0 15px;
+}
 
+#t-admin-megamenu .content-head {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.75;
+}
 
 
 
@@ -673,10 +682,6 @@ html[xmlns] .tcf {
 
 .t-top-nav .app-list li {
     padding: 0;
-}
-
-.t-top-nav .custom-yamm-content {
-    padding: 0 15px;
 }
 
 .t-top-nav .classic {
@@ -818,14 +823,20 @@ html[xmlns] .tcf {
         padding: 0 15px 5px;
     }
 
-    .t-top-nav .content-head {
+    #t-admin-megamenu .content-head {
         color: #999999;
     }
 
-    .t-top-nav .content-dropdown-col {
-        border-bottom: 1px solid #333;
+    #t-admin-megamenu .dropdown-menu {
+        margin: -5px 0;
+    }
+
+    #t-admin-megamenu .content-dropdown-col {
         padding: 10px 15px;
-        width: 100%;
+    }
+
+    #t-admin-megamenu-profile-dd .content-dropdown-col {
+        border-bottom: 1px solid #333;
     }
 }
 
