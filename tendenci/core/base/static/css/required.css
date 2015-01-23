@@ -1,4 +1,0 @@
-label.required:after,
-div.label.required:after { 
-    content: '*';
-}

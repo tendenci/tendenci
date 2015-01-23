@@ -1,0 +1,6 @@
+.t-nav-ul *,
+.t-nav-ul *:before,
+.t-nav-ul *:after {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box; }
