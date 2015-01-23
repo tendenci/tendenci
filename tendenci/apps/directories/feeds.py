@@ -8,11 +8,11 @@ from tendenci.apps.sitemaps import TendenciSitemap
 from tendenci.apps.directories.models import Directory
 
 class LatestEntriesFeed(SubFeed):
-    title = _('%(sitedisplayname)s Latest Directories') % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
+    title = _('%(sitedisplayname)s Latest Directories' % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
     link =  "/directories/"
-    description = _("Latest Directories by %(sitedisplayname)s") % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
+    description = _("Latest Directories by %(sitedisplayname)s" % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
 
     def items(self):
         items = Directory.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-create_dt')[:20]

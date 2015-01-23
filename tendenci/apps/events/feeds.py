@@ -9,11 +9,11 @@ from tendenci.apps.events.models import Event
 
 
 class LatestEntriesFeed(SubFeed):
-    title = _('%(sitedisplayname)s Latest Events') % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
+    title = _('%(sitedisplayname)s Latest Events' % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
     link = "/events/"
-    description = _("Latest Events by %(sitedisplayname)s") % {
-        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')}
+    description = _("Latest Events by %(sitedisplayname)s" % {
+        'sitedisplayname': get_setting('site', 'global', 'sitedisplayname')})
 
     def items(self):
         items = Event.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')[:20]
