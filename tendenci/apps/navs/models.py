@@ -8,6 +8,7 @@ from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.managers import NavManager
 from tendenci.apps.navs.signals import update_nav_links
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.apps.navs.utils import cache_nav
 
 class Nav(TendenciBaseModel):
     class Meta:
@@ -29,6 +30,11 @@ class Nav(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return('navs.detail', [self.pk])
+    
+    def save(self, *args, **kwargs):
+        super(Nav, self).save(*args, **kwargs)
+        # reset nav cache
+        cache_nav(self) 
 
     @property
     def top_items(self):
