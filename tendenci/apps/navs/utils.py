@@ -24,3 +24,12 @@ def get_nav(id):
     key = '.'.join(keys)
     nav = cache.get(key)
     return nav
+
+def clear_nav_cache(nav):
+    """
+    Clear nav cache
+    """
+    keys = [settings.CACHE_PRE_KEY, NAV_PRE_KEY, str(nav.id)]
+    key = '.'.join(keys)
+    cache.delete(key)
+

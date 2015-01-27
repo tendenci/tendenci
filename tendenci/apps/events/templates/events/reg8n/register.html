@@ -99,7 +99,7 @@
 
                 <div id="reg-form-box" {% if event.free_event %}style="display:none;"{% endif %}>
                     <div style="background:#3E83C9;color:#fff; padding: 3px; font-weight: bold; font-size:1.2em; text-align: center;">
-                        <div >Summary</div>
+                        <div >{% trans 'Summary' %}</div>
                     </div>
 
                     <div style="padding: 1em;">
@@ -363,7 +363,8 @@
         {% if do_confirmation %}
         <div class="forms" id="confirm-div">
             <div>
-                <p>{% trans "Please review the following" %}:</p>
+                <p><strong>{% trans "Please review the following." %}</strong></p>
+                <p class="cls-paragraph-warning"><strong>{% trans 'Your registration will not be completed until you click "Confirm My Registration" at the bottom of this page.' %}</strong></p>
                 {% for registrant in flat_registrants %}
                     {% include "events/reg8n/registrant_summary_preview.html" %}
                 {% endfor %}
@@ -371,7 +372,7 @@
             <input type="hidden" name="confirmed" />
             <input type="submit" name="addmore" id="add-another-btn" value="{% trans "Add Another Registrant" %}" />
             <div class="clear"></div>
-            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="{% if event.free_event %}{% trans 'RSVP' %}{% else %}{% trans 'Register'%}{% endif %}" />
+            <input type="submit" name="commit" id="register-button" class="registration-green-button" value="{% trans 'Confirm My Registration' %}" />
             <div class="clear"></div>
         </div>
         {% endif %}
