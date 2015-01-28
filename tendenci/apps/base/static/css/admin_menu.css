@@ -613,6 +613,10 @@ html[xmlns] .tcf {
     margin: 0;
 }
 
+#t-admin-megamenu-apps-dd .panel-group {
+    margin-bottom: 0;
+}
+
 
 
 

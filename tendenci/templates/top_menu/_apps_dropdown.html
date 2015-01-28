@@ -134,38 +134,36 @@
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 {% if MODULE_DISCOUNTS_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'discounts' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/money_delete.png' %}"/>{% trans 'Discount' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'discounts' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/money_delete.png' %}"/><span class="nav-label">{% trans 'Discount' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
 
+                                                {% comment %}{# this is to remove Donations link for the meantime #}
                                                 {% if MODULE_DONATIONS_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'donation.search' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/money.png' %}"/>{% trans 'Donations' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'donation.search' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/money.png' %}"/><span class="nav-label">{% trans 'Donations' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
+                                                {% endcomment %}
                                             </ul>
 
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 {% if MODULE_INVOICES_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'invoices' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/>{% trans 'Invoices' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'invoices' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/><span class="nav-label">{% trans 'Invoices' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
 
                                                 <li class="content-item">
-                                                        <a href="#">
-                                                            <img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/>{% trans 'Reports' %}
-                                                        </a>
-                                                    
+                                                    <a href="#"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Reports' %}</span>
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -186,28 +184,25 @@
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 {% if MODULE_CASE_STUDIES_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'case_study' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/folder_table.png' %}"/>{% trans 'Case Studies' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'case_study' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/folder_table.png' %}"/><span class="nav-label">{% trans 'Case Studies' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
 
                                                 {% if MODULE_JOBS_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'jobs' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/briefcase.png' %}"/>{% trans 'Jobs' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'jobs' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/briefcase.png' %}"/><span class="nav-label">{% trans 'Jobs' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
 
                                                 {% if MODULE_RESUMES_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'resumes' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/page_attach.png' %}"/>{% trans 'Resumes' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'resumes' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/page_attach.png' %}"/><span class="nav-label">{% trans 'Resumes' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
                                             </ul>
@@ -215,18 +210,16 @@
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 {% if MODULE_STAFF_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'staff' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/drive_user.png' %}"/>{% trans 'Staff' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'staff' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/drive_user.png' %}"/><span class="nav-label">{% trans 'Staff' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
 
                                                 <li class="content-item">
-                                                        <a href="#">
-                                                            <img class="nav-icon" src="{% static 'famfamfam/icons/page_white_text_width.png' %}"/>{% trans 'Testimonials' %}
-                                                        </a>
-                                                    
+                                                    <a href="#"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_text_width.png' %}"/><span class="nav-label">{% trans 'Testimonials' %}</span>
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -247,10 +240,9 @@
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 {% if MODULE_LOCATIONS_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'locations' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/map_go.png' %}"/>{% trans 'Location' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'locations' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/map_go.png' %}"/><span class="nav-label">{% trans 'Location' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
                                             </ul>
@@ -258,10 +250,9 @@
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 {% if MODULE_REGIONS_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'admin:regions_region_changelist' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/map.png' %}"/>{% trans 'Regions' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'admin:regions_region_changelist' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/map.png' %}"/><span class="nav-label">{% trans 'Regions' %}</span>
+                                                        </a>
                                                     </li>
                                                 {% endif %}
                                             </ul>
@@ -283,10 +274,9 @@
                                             {% if MODULE_PHOTOS_ENABLED %}
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">
                                                     <li class="content-item">
-                                                            <a href="{% url 'photoset_latest' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/photos.png' %}"/>{% trans 'Photo Album' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'photoset_latest' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/photos.png' %}"/><span class="nav-label">{% trans 'Photo Album' %}</span>
+                                                        </a>
                                                     </li>
                                                 </ul>
                                             {% endif %}
@@ -294,10 +284,9 @@
                                             {% if MODULE_VIDEOS_ENABLED %}
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">
                                                     <li class="content-item">
-                                                            <a href="{% url 'video' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/camera.png' %}"/>{% trans 'Video' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'video' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/camera.png' %}"/><span class="nav-label">{% trans 'Video' %}</span>
+                                                        </a>
                                                     </li>
                                                 </ul>
                                             {% endif %}
@@ -319,10 +308,9 @@
                                             {% if MODULE_EVENTS_ENABLED %}
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">
                                                     <li class="content-item">
-                                                            <a href="{% url 'event.search' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/date.png' %}"/>{% trans 'Events List' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'event.search' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/date.png' %}"/><span class="nav-label">{% trans 'Events List' %}</span>
+                                                        </a>
                                                     </li>
                                                 </ul>
                                             {% endif %}
@@ -330,10 +318,9 @@
                                             {% if MODULE_EVENTS_ENABLED %}
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">
                                                     <li class="content-item">
-                                                            <a href="{% url 'event.month' %}">
-                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/calendar.png' %}"/>{% trans 'Calendar' %}
-                                                            </a>
-                                                        
+                                                        <a href="{% url 'event.month' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/calendar.png' %}"/><span class="nav-label">{% trans 'Calendar' %}</span>
+                                                        </a>
                                                     </li>
                                                 </ul>
                                             {% endif %}
@@ -354,67 +341,56 @@
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 <li class="content-item">
-                                                        <a href="{% url 'report_list' %}">{% trans "Invoice Reports" %}</a>
-                                                    
+                                                    <a href="{% url 'report_list' %}"><span class="nav-label">{% trans "Invoice Reports" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-events-summary' %}">{% trans "Event logs Summary" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-events-summary' %}"><span class="nav-label">{% trans "Event logs Summary" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-admin-users' %}">{% trans "Administrators" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-admin-users' %}"><span class="nav-label">{% trans "Administrators" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-user-added' %}">{% trans "Site Users Added" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-user-added' %}"><span class="nav-label">{% trans "Site Users Added" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-user-activity' %}">{% trans "User Activity Summary" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-user-activity' %}"><span class="nav-label">{% trans "User Activity Summary" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-user-access' %}">{% trans "Active User Logins" %}</a>
+                                                    <a href="{% url 'reports-user-access' %}"><span class="nav-label">{% trans "Active User Logins" %}</span></a>
                                                     
                                                 </li>
                                             </ul>
 
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-contacts-referral' %}">{% trans "Contacts Report" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-contacts-referral' %}"><span class="nav-label">{% trans "Contacts Report" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-memberships' %}">{% trans "Membership Reports" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-memberships' %}"><span class="nav-label">{% trans "Membership Reports" %}</span></a>
                                                 </li>
 
                                                 {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                                                     <li class="content-item">
-                                                            <a href="{% url 'corp_membership.summary_report' %}">{% trans "Corporate Membership Summary" %}</a>
-                                                        
+                                                        <a href="{% url 'corp_membership.summary_report' %}"><span class="nav-label">{% trans "Corporate Membership Summary" %}</span></a>
                                                     </li>
                                                 {% endif %}
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-top-spenders' %}">{% trans "Top Spenders" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-top-spenders' %}"><span class="nav-label">{% trans "Top Spenders" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-users-not-in-groups' %}">{% trans "Users not in Groups" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-users-not-in-groups' %}"><span class="nav-label">{% trans "Users not in Groups" %}</span></a>
                                                 </li>
 
                                                 <li class="content-item">
-                                                        <a href="{% url 'reports-404-count' %}">{% trans "404 Tracker" %}</a>
-                                                    
+                                                    <a href="{% url 'reports-404-count' %}"><span class="nav-label">{% trans "404 Tracker" %}</span></a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -437,8 +413,7 @@
                                                     {% for addon in enabled_addons %}
                                                         {% if forloop.counter0|divisibleby:'2' %}
                                                             <li class="content-item">
-                                                                    <a href="{% firstof addon.url.list addon.url.search %}">{{ addon|title }}</a>
-                                                                
+                                                                <a href="{% firstof addon.url.list addon.url.search %}"><span class="nav-label">{{ addon|title }}</span></a>
                                                             </li>
                                                         {% endif %}
                                                     {% endfor %}
@@ -448,8 +423,7 @@
                                                     {% for addon in enabled_addons %}
                                                         {% if not forloop.counter0|divisibleby:'2' %}
                                                             <li class="content-item">
-                                                                    <a href="{% firstof addon.url.list addon.url.search %}">{{ addon|title }}</a>
-                                                                
+                                                                <a href="{% firstof addon.url.list addon.url.search %}"><span class="nav-label">{{ addon|title }}</span></a>
                                                             </li>
                                                         {% endif %}
                                                     {% endfor %}
