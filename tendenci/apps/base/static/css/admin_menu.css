@@ -534,6 +534,10 @@ html[xmlns] .tcf {
     z-index: 9999999 !important;
 }
 
+#t-admin-megamenu a {
+    text-transform: none;
+}
+
 #t-admin-megamenu .nav-logo {
     display: inline-block;
     margin: 0;
@@ -550,13 +554,13 @@ html[xmlns] .tcf {
     vertical-align: middle;
 }
 
-#t-admin-megamenu .nav-head {
+#t-admin-megamenu .nav-label {
     display: inline-block;
     line-height: 16px;          /* make sure this is the same height as the .nav-icon */
     vertical-align: middle;
 }
 
-#t-admin-megamenu .nav-head+.caret {
+#t-admin-megamenu .nav-label+.caret {
     margin-left: 4px;
 }
 
@@ -593,11 +597,20 @@ html[xmlns] .tcf {
     padding: 0 15px;
 }
 
-#t-admin-megamenu .content-head {
+#t-admin-megamenu .content-head,
+#t-admin-megamenu .content-head > a {
     display: block;
     font-weight: bold;
     font-size: 18px;
     line-height: 1.75;
+}
+
+#t-admin-megamenu .content-item {
+    margin-bottom: 5px;
+}
+
+#t-admin-megamenu .list-unstyled > .content-item:last-child {
+    margin: 0;
 }
 
 
@@ -777,7 +790,7 @@ html[xmlns] .tcf {
     max-height: 500px;
     overflow-x: hidden;
 }
-
+f
 .apps-dropdown .panel-group {
     margin: 0;
 }
@@ -797,12 +810,6 @@ html[xmlns] .tcf {
 
 /* Extra small devices (< 768px) */
 @media (max-width: 767px) {
-    .t-top-nav a:link,
-    .t-top-nav a:visited {
-        text-shadow: none;
-        color: #999999;
-    }
-
     .t-top-nav .dropdown-menu:not(.apps-dropdown) a:hover {
         background: none;
         color: #ffffff;
@@ -836,7 +843,14 @@ html[xmlns] .tcf {
         padding: 0 15px 5px;
     }
 
-    #t-admin-megamenu .content-head {
+    #t-admin-megamenu a:link,
+    #t-admin-megamenu a:visited {
+        text-shadow: none;
+        color: #999999;
+    }
+
+    #t-admin-megamenu .content-head,
+    #t-admin-megamenu .content-head > a {
         color: #999999;
     }
 
@@ -850,6 +864,14 @@ html[xmlns] .tcf {
 
     #t-admin-megamenu-profile-dd .content-dropdown-col {
         border-bottom: 1px solid #333;
+    }
+
+    #t-admin-megamenu-apps-dd .panel-body .list-unstyled {
+        margin-top: 5px;
+    }
+
+    #t-admin-megamenu-apps-dd .panel-body .list-unstyled:first-child {
+        margin-top: 0;
     }
 }
 
