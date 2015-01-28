@@ -5,7 +5,7 @@
 
 <li class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-        <img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/>{% trans "Community" %} <span class="caret"></span>
+        <img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-head">{% trans "Community" %}</span><span class="caret"></span>
     </a>
 
     {% get_community_dropdown_column_size as col_size %}

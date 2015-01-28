@@ -545,19 +545,26 @@ html[xmlns] .tcf {
 #t-admin-megamenu .nav-icon {
     position: relative;
     margin: 0 10px 0 0;
+    height: 16px;
+    width: 16px;
     vertical-align: middle;
+}
+
+#t-admin-megamenu .nav-head {
+    display: inline-block;
+    line-height: 16px;          /* make sure this is the same height as the .nav-icon */
+    vertical-align: middle;
+}
+
+#t-admin-megamenu .nav-head+.caret {
+    margin-left: 4px;
 }
 
 #t-admin-megamenu .fa-globe {
     font-size: 16px;
     margin: 0 10px 0 0;
     padding: 0 1px;
-}
-
-#t-admin-megamenu .glyph {
-    display: inline-block;
-    margin-right: 9px;
-    padding: 0 1px;
+    vertical-align: middle;
 }
 
 #t-admin-megamenu .navbar-brand {
@@ -568,6 +575,12 @@ html[xmlns] .tcf {
 #t-admin-megamenu .dropdown-toggle,
 #t-admin-megamenu-logout {
     padding: 5px 15px;
+}
+
+#t-admin-megamenu-logout > .glyph {
+    display: inline-block;
+    margin-right: 9px;
+    line-height: 14px;
 }
 
 #t-admin-megamenu-toggle {
