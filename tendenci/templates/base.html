@@ -28,16 +28,16 @@
         {% endblock %}
 
         {# <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css" media="screen"> #}
-        <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css">
-        <link href="{% static 'css/t_nav_layout.css' %}" rel="stylesheet" type="text/css">
-        <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css">
+        {# <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css"> #}
+        {# <link href="{% static 'css/t_nav_layout.css' %}" rel="stylesheet" type="text/css"> #}
+        {# <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css"> #}
 
         {% block extra_head %}{% endblock %}
 
         <link href="{% static 'css/websymbols.css' %}" rel="stylesheet" type="text/css">
 
         {% if SITE_GLOBAL_OVERRIDEBOOTSTRAPCSS %}
-            <link href="{% static 'css/override.bootstrap.css' %}" rel="stylesheet" type="text/css">
+            {# <link href="{% static 'css/override.bootstrap.css' %}" rel="stylesheet" type="text/css"> #}
         {% endif %}
 
         {% if request.user.is_authenticated %}
@@ -45,7 +45,7 @@
                 <link href="{% static 'yamm/yamm.css' %}" rel="stylesheet" type="text/css">
             {% endif %}
             <link href="{% static 'css/admin_menu.css' %}" rel="stylesheet" type="text/css">
-            <link href="{% static 'css/theme_bar.css' %}" rel="stylesheet" type="text/css">
+            {# <link href="{% static 'css/theme_bar.css' %}" rel="stylesheet" type="text/css"> #}
         {% endif %}
 
         {% if request.user.is_superuser and THEME_INFO.SSU.color %}
