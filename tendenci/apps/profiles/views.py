@@ -243,11 +243,16 @@ def search(request, template_name="profiles/search.html"):
         membership_type = None
         member_only = False
 
-    filters = get_query_filters(request.user, 'profiles.view_profile')
+    profiles = Profile.objects.filter(Q(status=True))
+    if not request.user.profile.is_superuser: 
+        if request.user.is_authenticated() and allow_user_search:
+            profiles = profiles.filter(Q(status_detail="active"))
+        else:
+            filters = get_query_filters(request.user, 'profiles.view_profile')
+            profiles = profiles.filter(Q(status_detail="active"),
+                                       Q(filters))
+    profiles = profiles.distinct()
 
-    profiles = Profile.objects.filter(Q(status=True),
-                                      Q(status_detail="active"),
-                                      Q(filters)).distinct()
     if first_name:
         profiles = profiles.filter(user__first_name__iexact=first_name)
     if last_name:

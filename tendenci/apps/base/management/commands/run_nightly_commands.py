@@ -25,7 +25,8 @@ class Command(BaseCommand):
                     'clean_old_exports',
                     'delete_soft_deleted_items',
                     'update_dashboard_stats',
-                    'collect_metrics'
+                    'collect_metrics',
+                    'captcha_clean'
                     )
         for c in commands:
             try:
