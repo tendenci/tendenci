@@ -1,5 +1,13 @@
 # Tendenci
 
+# WAIT! HOLD ON THERE JUST A SEC. UPDATE UPDATE UPDATE! TRY TENDENCI 6!
+
+The installation information below will still work for the master branch, but if you are considering Tendenci, I'd suggest you try the Tendenci 6 branch (not "master" but "tendenci6") and of course use the project template located here
+
+https://github.com/tendenci/tendenci-project-template
+
+-------------
+
 Tendenci 5.+ is the next iteration of a product started in 2001 and released open source in 2012. It is built specifically for NPOs (Non Profit Organizations.) We started with a focus completely on associations but now being open source GPL it is much broader in scope. 
 It is a content management system (CMS) with powerful features for event registration, membership management, donations, payments, email integration and much more.
 
