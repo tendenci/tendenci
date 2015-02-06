@@ -151,6 +151,10 @@ html {
         background-color: #eeffdd;
         min-height: 165px;
     }
+
+    #t-admin-megamenu-apps-dd {
+        min-width: 525px;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
