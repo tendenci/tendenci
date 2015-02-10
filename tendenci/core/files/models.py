@@ -39,7 +39,11 @@ def file_directory(instance, filename):
     hex_digest = m.hexdigest()[:8]
 
     if instance.content_type:
-        content_type = re.sub(r'[^a-zA-Z0-9._]+', '_', unicode(instance.content_type))
+        if hasattr(instance.content_type, '__call__'):
+            content_type = instance.content_type()
+        else:
+            content_type = instance.content_type
+        content_type = re.sub(r'[^a-zA-Z0-9._]+', '_', unicode(content_type))
         return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
 
     return 'files/files/%s/%s' % (hex_digest, filename)
