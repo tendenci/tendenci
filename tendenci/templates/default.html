@@ -17,8 +17,10 @@
 
 {% block html_body %}
     <div class="container-fluid">
-        <header class="page-header">
-            <h1><a href="{% url 'home' %}">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a><br><small>{% trans "Website tagline" %}</small></h1>
+        <header class="{% block header_classes %}page-header{% endblock %}">
+            {% block header %}
+                <h1><a href="{% url 'home' %}">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a><br><small>{% trans "Website tagline" %}</small></h1>
+            {% endblock %}
         </header>
 
         {% block banner %}
@@ -105,8 +107,10 @@
             </div>
         </div>
 
-        <footer>
-            {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
+        <footer class="{% block footer_classes %}{% endblock %}">
+            {% block footer %}
+                {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
+            {% endblock %}
         </footer>
     </div>
 {% endblock %}
