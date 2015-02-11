@@ -173,59 +173,99 @@
 {% endif %}
 
 {% if type_name == "forms_30_submissions" %}
-<div class="stat">
-    <span>{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    <table>
-        <tr>
-            <th>{% trans "Name" %}</th>
-            <th>30 {% trans "Day Submissions" %}</th>
-        </tr>
-    {% for title, url, count, link in value %}
-        <tr>
-            <td><a href="{{ url }}">{{ title }}</a></td>
-            <td><a href="{{ link }}">{{ count }}</a></td>
-        </tr>
-    {% endfor %}
-    </table>
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        {% if value %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "30-Day Submissions" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for title, url, count, link in value %}
+                        <tr>
+                            <td><a href="{{ url }}">{{ title }}</a></td>
+                            <td><a href="{{ link }}">{{ count }}</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="panel-body">
+                <p>{% trans "No submissions." %}</p>
+            </div>
+        {% endif %}
+    </div>
 {% endif %}
 
 {% if type_name == "pages_30_traffic" %}
-<div class="stat">
-    <span>{{ label|striptags|safe }}</span>
-    <table>
-    {% for title, url, count in value %}
-        <tr>
-        {% if forloop.first %}
-            <th>{% trans "Pages" %}</th>
-            <th>30 {% trans "Day Traffic" %}</th>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        {% if value %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Pages" %}</th>
+                        <th>{% trans "30-Day Traffic" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for title, url, count in value %}
+                        <tr>
+                            <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
+                            <td>{{ count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% else %}
-            <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
-            <td>{{ count }}</td>
+            <div class="panel-body">
+                <p>{% trans "No pages." %}</p>
+            </div>
         {% endif %}
-        </tr>
-    {% endfor %}
-    </table>
-</div>
+    </div>
 {% endif %}
 
 {% if type_name == "events_30_traffic" %}
-<div class="stat">
-    <span>{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    <table>
-    {% for title, url, count in value %}
-        <tr>
-        {% if forloop.first %}
-            <th>{% trans "Events" %}</th>
-            <th>30 {% trans "Day Traffic" %}</th>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        {% if value %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Events" %}</th>
+                        <th>{% trans "30-Day Traffic" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for title, url, count in value %}
+                        <tr>
+                            <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
+                            <td>{{ count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% else %}
-            <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
-            <td>{{ count }}</td>
+            <div class="panel-body">
+                <p>{% trans "No events." %}</p>
+            </div>
         {% endif %}
-        </tr>
-    {% endfor %}
-    </table>
-</div>
+    </div>
 {% endif %}
 
 {% if type_name == "corp_members_top" %}

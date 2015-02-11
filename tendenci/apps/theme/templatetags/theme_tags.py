@@ -2,8 +2,11 @@ import os
 from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template import Library, Template, Variable
 from django.conf import settings
+from django.template.base import TextNode
 from django.template.loader import get_template
-from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode, BlockNode
+from django.template.loader_tags import (ExtendsNode, IncludeNode, ConstantIncludeNode,
+                                         BlockNode, BlockContext,
+                                         BLOCK_CONTEXT_KEY,)
 from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import ugettext_lazy as _
 
@@ -21,32 +24,98 @@ register = Library()
 class ThemeExtendsNode(ExtendsNode):
     must_be_first = False
 
-    def __init__(self, nodelist, parent_name, parent_name_expr):
-        self.parent_name = parent_name
-        self.parent_name_expr = parent_name_expr
+    # def __init__(self, nodelist, parent_name, parent_name_expr):
+    #     self.parent_name = parent_name
+    #     self.parent_name_expr = parent_name_expr
+    #     self.nodelist = nodelist
+    #     self.blocks = dict([(n.name, n) for n in nodelist.get_nodes_by_type(BlockNode)])
+
+    # def get_parent(self, context):
+    #     if self.parent_name_expr:
+    #         self.parent_name = self.parent_name_expr.resolve(context)
+    #     parent = unicode(self.parent_name)
+
+    #     if not parent:
+    #         error_msg = "Invalid template name in 'extends' tag: %r." % parent
+    #         if self.parent_name_expr:
+    #             error_msg += " Got this from the '%s' variable." % self.parent_name_expr.token
+    #         raise TemplateSyntaxError(_(error_msg))
+    #     if hasattr(parent, 'render'):
+    #         return parent  # parent is a Template object
+    #     theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
+    #     theme_template = get_theme_template(parent, theme=theme)
+    #     try:
+    #         template = get_template(theme_template)
+    #     except TemplateDoesNotExist:
+    #         #to be sure that we not are loading the active theme's template
+    #         template = get_default_template(parent)
+
+    #     print 'template: %s' % template.name
+    #     return template
+
+    def __init__(self, nodelist, parent_name, template_dirs=None):
         self.nodelist = nodelist
+        self.parent_name = parent_name
+        self.template_dirs = template_dirs
         self.blocks = dict([(n.name, n) for n in nodelist.get_nodes_by_type(BlockNode)])
 
-    def get_parent(self, context):
-        if self.parent_name_expr:
-            self.parent_name = self.parent_name_expr.resolve(context)
-        parent = unicode(self.parent_name)
+    def __repr__(self):
+        return '<ThemeExtendsNode: theme_extends %s>' % self.parent_name.token
 
+    def get_parent(self, context):
+        print '*** ThemeExtendsNode.get_parent ***'
+
+        parent = self.parent_name.resolve(context)
         if not parent:
             error_msg = "Invalid template name in 'extends' tag: %r." % parent
-            if self.parent_name_expr:
-                error_msg += " Got this from the '%s' variable." % self.parent_name_expr.token
-            raise TemplateSyntaxError(_(error_msg))
+            if self.parent_name.filters or\
+                    isinstance(self.parent_name.var, Variable):
+                error_msg += " Got this from the '%s' variable." %\
+                    self.parent_name.token
+            raise TemplateSyntaxError(error_msg)
         if hasattr(parent, 'render'):
-            return parent  # parent is a Template object
+            return parent # parent is a Template object
+
         theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
         theme_template = get_theme_template(parent, theme=theme)
+
+        print 'theme: %s' % theme
+        print 'theme_template: %s' % theme_template
         try:
             template = get_template(theme_template)
         except TemplateDoesNotExist:
-            #to be sure that we not are loading the active theme's template
+            # to be sure that we are not loadnig the active theme's template
             template = get_default_template(parent)
+
+        print 'template: %s' % template.name
+        print '*** done ThemeExtendsNode.get_parent ***'
+
         return template
+
+    def render(self, context):
+        compiled_parent = self.get_parent(context)
+
+        if BLOCK_CONTEXT_KEY not in context.render_context:
+            context.render_context[BLOCK_CONTEXT_KEY] = BlockContext()
+        block_context = context.render_context[BLOCK_CONTEXT_KEY]
+
+        # Add the block nodes from this node to the block context
+        block_context.add_blocks(self.blocks)
+
+        # If this block's parent doesn't have an extends node it is the root,
+        # and its block nodes also need to be added to the block context.
+        for node in compiled_parent.nodelist:
+            # The ExtendsNode has to be the first non-text node.
+            if not isinstance(node, TextNode):
+                if not isinstance(node, ThemeExtendsNode):
+                    blocks = dict([(n.name, n) for n in
+                                   compiled_parent.nodelist.get_nodes_by_type(BlockNode)])
+                    block_context.add_blocks(blocks)
+                break
+
+        # Call Template._render explicitly so the parser context stays
+        # the same.
+        return compiled_parent._render(context)
 
 
 class ThemeConstantIncludeNode(ConstantIncludeNode):
@@ -192,19 +261,32 @@ def theme_extends(parser, token):
     The template rendered by this extends is based on the active theme or
     the theme specified in request.GET.get('theme')
     """
+    # bits = token.split_contents()
+    # if len(bits) != 2:
+    #     raise TemplateSyntaxError(_("'%s' takes one argument" % bits[0]))
+    # parent_name, parent_name_expr = None, None
+    # if bits[1][0] in ('"', "'") and bits[1][-1] == bits[1][0]:
+    #     parent_name = bits[1][1:-1]
+    # else:
+    #     parent_name_expr = parser.compile_filter(bits[1])
+    # nodelist = parser.parse()
+    # if nodelist.get_nodes_by_type(ExtendsNode):
+    #     raise TemplateSyntaxError(_("'%s' cannot appear more than once in the same template" % bits[0]))
+
+    # return ThemeExtendsNode(nodelist, parent_name, parent_name_expr)
+
     bits = token.split_contents()
     if len(bits) != 2:
-        raise TemplateSyntaxError(_("'%s' takes one argument" % bits[0]))
-    parent_name, parent_name_expr = None, None
-    if bits[1][0] in ('"', "'") and bits[1][-1] == bits[1][0]:
-        parent_name = bits[1][1:-1]
-    else:
-        parent_name_expr = parser.compile_filter(bits[1])
+        raise TemplateSyntaxError("'%s' takes one argument" % bits[0])
+    parent_name = parser.compile_filter(bits[1])
     nodelist = parser.parse()
-    if nodelist.get_nodes_by_type(ExtendsNode):
-        raise TemplateSyntaxError(_("'%s' cannot appear more than once in the same template" % bits[0]))
 
-    return ThemeExtendsNode(nodelist, parent_name, parent_name_expr)
+    print '*** do_extends ***'
+    print 'parent_name: %s' % parent_name
+    print '*** end do_extends ***'
+    if nodelist.get_nodes_by_type(ExtendsNode):
+        raise TemplateSyntaxError("'%s' cannot appear more than once in the same template" % bits[0])
+    return ThemeExtendsNode(nodelist, parent_name)
 
 
 def theme_include(parser, token):
