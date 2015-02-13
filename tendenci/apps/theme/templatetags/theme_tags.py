@@ -50,7 +50,6 @@ class ThemeExtendsNode(ExtendsNode):
     #         #to be sure that we not are loading the active theme's template
     #         template = get_default_template(parent)
 
-    #     print 'template: %s' % template.name
     #     return template
 
     def __init__(self, nodelist, parent_name, template_dirs=None):
@@ -63,8 +62,6 @@ class ThemeExtendsNode(ExtendsNode):
         return '<ThemeExtendsNode: theme_extends %s>' % self.parent_name.token
 
     def get_parent(self, context):
-        print '*** ThemeExtendsNode.get_parent ***'
-
         parent = self.parent_name.resolve(context)
         if not parent:
             error_msg = "Invalid template name in 'extends' tag: %r." % parent
@@ -79,16 +76,11 @@ class ThemeExtendsNode(ExtendsNode):
         theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
         theme_template = get_theme_template(parent, theme=theme)
 
-        print 'theme: %s' % theme
-        print 'theme_template: %s' % theme_template
         try:
             template = get_template(theme_template)
         except TemplateDoesNotExist:
             # to be sure that we are not loadnig the active theme's template
             template = get_default_template(parent)
-
-        print 'template: %s' % template.name
-        print '*** done ThemeExtendsNode.get_parent ***'
 
         return template
 
@@ -107,7 +99,7 @@ class ThemeExtendsNode(ExtendsNode):
         for node in compiled_parent.nodelist:
             # The ExtendsNode has to be the first non-text node.
             if not isinstance(node, TextNode):
-                if not isinstance(node, ThemeExtendsNode):
+                if not isinstance(node, ThemeExtendsNode) and not isinstance(node, ExtendsNode):
                     blocks = dict([(n.name, n) for n in
                                    compiled_parent.nodelist.get_nodes_by_type(BlockNode)])
                     block_context.add_blocks(blocks)
@@ -281,9 +273,6 @@ def theme_extends(parser, token):
     parent_name = parser.compile_filter(bits[1])
     nodelist = parser.parse()
 
-    print '*** do_extends ***'
-    print 'parent_name: %s' % parent_name
-    print '*** end do_extends ***'
     if nodelist.get_nodes_by_type(ExtendsNode):
         raise TemplateSyntaxError("'%s' cannot appear more than once in the same template" % bits[0])
     return ThemeExtendsNode(nodelist, parent_name)

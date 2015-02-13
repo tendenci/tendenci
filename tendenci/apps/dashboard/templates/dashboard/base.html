@@ -47,9 +47,7 @@
 {% block banner %}{% endblock %}
 
 {% block extra_body %}
-    <!-- C -->
     {{ block.super }}
-    <!-- D -->
     {# TODO: Inspect why {{ block.super }} duplicates the imported static files #}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 {% endblock %}
