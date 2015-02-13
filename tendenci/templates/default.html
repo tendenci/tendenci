@@ -16,7 +16,7 @@
 {% endblock extra_head %}
 
 {% block html_body %}
-    <div class="container-fluid">
+    <div class="container">
         <header class="{% block header_classes %}page-header{% endblock %}">
             {% block header %}
                 <h1><a href="{% url 'home' %}">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a><br><small>{% trans "Website tagline" %}</small></h1>

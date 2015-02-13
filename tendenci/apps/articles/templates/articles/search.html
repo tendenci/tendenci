@@ -1,45 +1,50 @@
 {% extends "articles/base.html" %}
-{% load pagination_tags %}
+
+{% load i18n %}
+{% load staticfiles %}
 {% load article_tags %}
 {% load base_tags %}
+{% load pagination_tags %}
 {% load search_tags %}
-{% load i18n %}
 
-{% block title %}{% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %} {% trans "List" %} {{ block.super }}{% endblock %}
+
+{% block title %}{% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %} {% trans "List" %} {{ block.super }}{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
-<link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url "article.feed" %}" />
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'css/articles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/search.css' %}">
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url 'article.feed' %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</h1>
+
+        {% autopaginate articles 10 %}
+        {% article_search %}
+        <span><em>{{ paginator.count }} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Article Search" %} {% trans "Found" %}</em></span>
+
+        <div class="articles-wrap">
+            {% for article in articles %}
+                {% search_result article %}
+            {% empty %}
+
+            {% if user.profile.is_superuser %}
+                <p><a href="{% url 'article.add' %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a></p>
+            {% endif %}
+        {% endfor %}
+        </div>
+
+        {% paginate %}
+    </div>
 {% endblock %}
 
 {% block extra_body %}
-    {{block.super}}
+    {{ block.super }}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/articles.js"></script>
-{% endblock %}
-
-{% block body %}
-<div class="t">
-    <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %}</h1>
-
-    {% autopaginate articles 10 %}
-    {% article_search %}
-    <span><em>{{ paginator.count }} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Article Search' %} {% trans "Found" %}</em></span>
-
-    <div class="articles-wrap">
-    {% for article in articles %}
-        {% search_result article %}
-    {% empty %}
-        {% if user.profile.is_superuser %}
-        <p><a href="{% url "article.add" %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %}</a></p>
-        {% endif %}
-    {% endfor %}
-    </div>
-
-    {% paginate %}
-</div>
+    <script type="text/javascript" src="{% static 'js/articles.js' %}"></script>
 {% endblock %}

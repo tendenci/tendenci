@@ -395,3 +395,56 @@ clear-left{
 	margin-bottom: 3px;
 }
 /* ---END MEMBERSHIP APP ENTRY SEARCH */
+
+
+/*===========BEGIN PERMS STYLES=========== */
+.perm-public {font-weight: bold; color: green;}
+.perm-users,
+.perm-members,
+.perm-groups {font-weight: bold; color: darkblue;}
+.perm-private {font-weight: bold; color: red;}
+.status-active {font-weight: bold; color: green;}
+.status-pending, .status-draft {font-weight: bold; color: orange;}
+.status-inactive, .status-expired {font-weight: bold; color: red;}
+.role-superuser{font-weight: bold; color: #D32E2E;}
+.role-staff{font-weight: bold; color: #E5600D;}
+/*===========END PERMS STYLES=========== */
+
+.wrap-search-item {border-bottom: 1px solid #CCC; margin-bottom: 20px;}
+.search-item {padding: 10px 10px 0 10px;}
+.meta {padding: 10px 10px 5px; background-color: transparent; margin-top: 10px; font-size: 13px; position: relative; clear: both;}
+
+.meta .submitted,
+.meta .categories,
+.meta .tags,
+.meta .contact {margin-bottom: 2px; line-height: 16px;}
+
+.meta-left {left: 0; width: 74%;}
+.meta-right {right:8px; bottom:10px; position:absolute;}
+/*
+.meta .print-link {float: right;}
+.meta .share-link {float: right; margin-right: 40px; display: none;}
+*/
+.editor-bar {background-color: #efd; padding:0 5px 0; border-top: solid 1px #ccc;font-size: 12px; min-height: 28px; line-height: 18px; font-family: arial, tahoma, sans-serif;}
+.editor-bar .bar-label {font-size: 10px; color: #999; display: block;}
+.editor-bar .perm-status {float: left;padding-top: 5px;margin-left: 5px;}
+.editor-bar .perm-status ul {margin: 0;}
+.editor-bar .perm-status li {margin: 0 10px 0 0;}
+
+.editor-bar .edit-links {float: right; position: relative; font-size: 12px; padding: 0;}
+.editor-bar ul {margin: 0; padding: 0; font-size: 12px; list-style: none;}
+.editor-bar li {float: left; list-style-type: none; margin-left: 14px; font-size: 12px;}
+.editor-bar li a {display: block; padding: 6px 0; font-size: 12px; text-decoration: underline; color: #06C;}
+.editor-bar li a:hover {color: #026;}
+.options-link small {font-size: 10px;}
+
+.options-list {bottom: 31px; right: -6px;position: absolute;display: none; background-color: #efd; padding: 0 6px 0 4px; border: solid 1px #ccc; border-bottom: none;}
+.options-list ul {margin-left: 0;}
+.editor-bar li:hover .options-list { display: block; }
+.editor-bar li li {float: none;}
+.editor-bar li li a { display: block; text-align: right; padding: 3px;margin: 0;}
+
+.editor-bar ul li li a.delete,
+.form-delete-link a.delete {color: #c00;}
+.editor-bar ul li li a.delete:hover,
+.form-delete-link a.delete:hover {color: #800;}
