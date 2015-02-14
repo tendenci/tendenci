@@ -45,131 +45,177 @@
             <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
         </div>
 
-        {% for active, expiring, new, pending, expired in value %}
-        <h2>{{ active }} {% trans 'Active' %} | {{ expiring }} {% trans 'Expire in 30 days' %}</h2>
-        <div id="members-info" new="{{ new }}" pending="{{ pending }}" expired="{{ expired }}">
-            Last 30 days
-            <p>{% trans 'New' %}: {{ new }}</p>
-            <p>{% trans 'Pending' %}: {{ pending }}</p>
-            <p>{% trans 'Expired' %}: {{ expired }}</p>
+        <div class="panel-body">
+            {% for active, expiring, new, pending, expired in value %}
+                <h2>{{ active }} {% trans "Active" %} | {{ expiring }} {% trans "Expire in 30 days" %}</h2>
+
+                <div id="t-dashborad-js-statistics-members-info" data-new="{{ new }}" data-pending="{{ pending }}" data-expired="{{ expired }}">
+                    {% trans "Last 30 days" %}
+                    <p>{% trans "New" %}: {{ new }}</p>
+                    <p>{% trans "Pending" %}: {{ pending }}</p>
+                    <p>{% trans "Expired" %}: {{ expired }}</p>
+                </div>
+            {% endfor %}
+
+            <div id="t-dashboard-js-statistics-members-graph"></div>
         </div>
-        {% endfor %}
-        <div id="members-graph"></div>
-        <div style="clear:both;"></div>
     </div>
 {% endif %}
 
 {% if type_name == "memberships_30_new" %}
-<div class="stat">
-    <span>{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    {% if value|slice:"1:" %}
-        <ol>
-        {% for name, url in value|slice:"1:" %}
-            <li><a href="{{ url }}">{{ name }}</a></li>
-        {% endfor %}
-        </ol>
-        <p><a href="{% url "reports-memberships-joins" %}">{% trans 'More new memberships.' %}</a></p>
-    {% else %}
-        <p>{% trans 'No new memberships within this time period.' %}
-           <a href="{% url "reports-memberships-joins" %}"> {% trans 'View all new memberships.' %}</a>
-        </p>
-    {% endif %}
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            {% if value|slice:"1:" %}
+                <ol>
+                {% for name, url in value|slice:"1:" %}
+                    <li><a href="{{ url }}">{{ name }}</a></li>
+                {% endfor %}
+                </ol>
+                <p><a href="{% url 'reports-memberships-joins' %}">{% trans "More new memberships." %}</a></p>
+            {% else %}
+                <p>
+                    {% trans "No new memberships within this time period." %}
+                    <a href="{% url 'reports-memberships-joins' %}">{% trans "View all new memberships." %}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "memberships_30_renew" %}
-<div class="stat">
-    <span>{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    {% if value|slice:"1:" %}
-        <ol>
-        {% for name, url in value|slice:"1:" %}
-            <li><a href="{{ url }}">{{ name }}</a></li>
-        {% endfor %}
-        </ol>
-        <p><a href="{% url "reports-renewed-members" %}">{% trans 'More renewed memberships.' %}</a></p>
-    {% else %}
-        <p>{% trans 'No renewed memberships within this time period.' %}
-           <a href="{% url "reports-renewed-members" %}"> {% trans 'View all renewed memberships.' %}</a>
-        </p>
-    {% endif %}
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            {% if value|slice:"1:" %}
+                <ol>
+                    {% for name, url in value|slice:"1:" %}
+                        <li><a href="{{ url }}">{{ name }}</a></li>
+                    {% endfor %}
+                </ol>
+                <p><a href="{% url 'reports-renewed-members' %}">{% trans "More renewed memberships." %}</a></p>
+            {% else %}
+                <p>
+                    {% trans "No renewed memberships within this time period." %}
+                    <a href="{% url 'reports-renewed-members' %}"> {% trans "View all renewed memberships." %}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "memberships_30_expired" %}
-<div class="stat">
-    <span>{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    {% if value|slice:"1:" %}
-        <ol>
-        {% for name, url in value|slice:"1:" %}
-            <li><a href="{{ url }}">{{ name }}</a></li>
-        {% endfor %}
-        </ol>
-        <p><a href="{% url "reports-expired-members" %}">{% trans 'More expired memberships.' %}</a></p>
-    {% else %}
-        <p>{% trans 'No expired memberships within this time period.' %}
-            <a href="{% url "reports-expired-members" %}">{% trans 'View all expired memberships.' %}</a>
-        </p>
-    {% endif %}
-</div>
+    <div class="panel panel-info">
+        <div class="panel-headnig">
+            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            {% if value|slice:"1:" %}
+                <ol>
+                    {% for name, url in value|slice:"1:" %}
+                        <li><a href="{{ url }}">{{ name }}</a></li>
+                    {% endfor %}
+                </ol>
+                <p><a href="{% url 'reports-expired-members' %}">{% trans "More expired memberships." %}</a></p>
+            {% else %}
+                <p>
+                    {% trans "No expired memberships within this time period." %}
+                    <a href="{% url 'reports-expired-members' %}">{% trans "View all expired memberships." %}</a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "memberships_30_expiring" %}
-<div class="stat">
-    <span>{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    {% if value|slice:"1:" %}
-        <ol>
-        {% for name, url in value|slice:"1:" %}
-            <li><a href="{{ url }}">{{ name }}</a></li>
-        {% endfor %}
-        </ol>
-    {% else %}
-        <p>{% trans 'No expiring memberships within this time period.' %}</p>
-    {% endif %}
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            {% if value|slice:"1:" %}
+                <ol>
+                    {% for name, url in value|slice:"1:" %}
+                        <li><a href="{{ url }}">{{ name }}</a></li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <p>{% trans "No expiring memberships within this time period." %}</p>
+            {% endif %}
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "corp_memberships_30_new" %}
-<div class="stat">
-    <span>{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol>
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            <ol>
+                {% for name, url in value %}
+                    <li><a href="{{ url }}">{{ name }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "corp_memberships_30_renew" %}
-<div class="stat">
-    <span>{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol>
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            <ol>
+                {% for name, url in value %}
+                    <li><a href="{{ url }}">{{ name }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "corp_memberships_30_expired" %}
-<div class="stat">
-    <span>{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol>
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            <ol>
+                {% for name, url in value %}
+                    <li><a href="{{ url }}">{{ name }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "corp_memberships_30_expiring" %}
-<div class="stat">
-    <span>{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    <ol>
-    {% for name, url in value %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ol>
-</div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="panel-body">
+            <ol>
+                {% for name, url in value %}
+                    <li><a href="{{ url }}">{{ name }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
 {% endif %}
 
 {% if type_name == "forms_30_submissions" %}
@@ -179,7 +225,7 @@
         </div>
 
         {% if value %}
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>{% trans "Name" %}</th>
@@ -211,7 +257,7 @@
         </div>
 
         {% if value %}
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>{% trans "Pages" %}</th>
@@ -243,7 +289,7 @@
         </div>
 
         {% if value %}
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>{% trans "Events" %}</th>
@@ -269,20 +315,37 @@
 {% endif %}
 
 {% if type_name == "corp_members_top" %}
-<div class="stat">
-    <span>{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</span>
-    <table>
-    {% for title, url, count in value %}
-        <tr>
-        {% if forloop.first %}
-            <th>{% trans "Corporate Members" %}</th>
-            <th>{{ count }}</th>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+        </div>
+
+        {% if value %}
+            <table class="table table-striped">
+                {% for title, url, count in value %}
+                    {% if forloop.first %}
+                        <thead>
+                            <tr>
+                                <th>{% trans "Corporate Members" %}</th>
+                                <th>{{ count }}</th>
+                            </tr>
+                        </thead>
+
+                        <tbodY>
+                    {% else %}
+                            <tr>
+                                <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
+                                <td>{{ count }}</td>
+                            </tr>
+                    {% endif %}
+                {% endfor %}
+
+                        </tbody>
+            </table>
         {% else %}
-            <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
-            <td>{{ count }}</td>
+            <div class="panel-body">
+                <p>{% trans "No top corporate members." %}</p>
+            </div>
         {% endif %}
-        </tr>
-    {% endfor %}
-    </table>
-</div>
+    </div>
 {% endif %}

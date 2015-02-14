@@ -2,7 +2,7 @@ var position_field = 'position', // Name of inline model field (integer) used fo
     description_field = 'description'; // Name of inline model field (integer) used for ordering. Defaults to "position".
 
 jQuery(function ($) {
-    var table = $('#t-dashboard-customize-statistics-formset');
+    var table = $('#t-dashboard-js-customize-statistics-formset');
     var pos_field = table.find('td.field-' + position_field);
 
     pos_field.find('input[name$="position"]').hide();
@@ -40,7 +40,7 @@ function update_positions (table, update_ids) {
             $(this).find('td.field-' + position_field + ' input[name$="position"]').val(position + 1);
             position++;
 
-            Update row coloring
+            // Update row coloring
             $(this).removeClass('row1 row2');
             if (even) {
                 $(this).addClass('row1');
