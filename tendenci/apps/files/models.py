@@ -35,7 +35,12 @@ def file_directory(instance, filename):
     uuid_hex = uuid.uuid1().get_hex()[:8]
 
     if instance.content_type:
-        content_type = re.sub(r'[^a-zA-Z0-9._]+', '_', unicode(instance.content_type))
+        if hasattr(instance.content_type, '__call__'):
+            content_type = instance.content_type()
+        else:
+            content_type = instance.content_type
+        content_type = re.sub(r'[^a-zA-Z0-9._]+', '_', unicode(content_type))
+        
         return 'files/%s/%s/%s' % (content_type, uuid_hex, filename)
 
     return 'files/files/%s/%s' % (uuid_hex, filename)
