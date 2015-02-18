@@ -11,6 +11,7 @@ from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
 def settings(request):
     """Context processor for settings
     """
+
     key = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 'all']
     key = '.'.join(key)
 
@@ -53,6 +54,8 @@ def settings(request):
     contexts['TENDENCI_VERSION'] = version
 
     contexts['USE_I18N'] = d_settings.USE_I18N
+    contexts['LOGIN_URL'] = d_settings.LOGIN_URL
+    contexts['LOGOUT_URL'] = d_settings.LOGOUT_URL
 
     return contexts
 

@@ -1,13 +1,18 @@
-{% load nav_tags %}
 {% load i18n %}
+{% load nav_tags %}
 
-<li>
-    <a {% if item.css %}class="{{ item.css }}"{% endif %}{% if item.new_window %} target="_blank" {% endif %}href="{{ item.get_url }}">{% blocktrans with l=item.label|removetags:"a"|safe %}{{ l }}{% endblocktrans %}</a>
+
+<li {% if item.children %}class="dropdown"{% endif %}>{% spaceless %}
+    <a class="{% if item.css %}{{ item.css }}{% endif %}{% if item.children %} dropdown-toggle{% endif %}"{% if item.new_window %} target="_blank" {% endif %}href="{{ item.get_url }}"
+       {% if item.children %}data-toggle="dropdown" role="button" aria-expanded="false"{% endif %}>
+        {% blocktrans with l=item.label|removetags:"a"|safe %}{{ l }}{% endblocktrans %}
+    </a>{% endspaceless %}
+
     {% if item.children %}
-        <ul>
-        {% for child in item.children %}
-            {% nav_item child %}
-        {% endfor %}
+        <ul class="dropdown-menu" role="menu">
+            {% for child in item.children %}
+                {% nav_item child %}
+            {% endfor %}
         </ul>
     {% endif %}
 </li>
