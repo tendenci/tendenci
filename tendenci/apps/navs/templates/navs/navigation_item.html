@@ -6,7 +6,7 @@
     {% if item.children %}
         <ul>
         {% for child in item.children %}
-            {% nav_item child %}
+            {% nav_item child is_bootstrap %}
         {% endfor %}
         </ul>
     {% endif %}

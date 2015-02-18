@@ -3,8 +3,8 @@
 {% if show_title == "True" %}
     <h2>{% blocktrans with t=nav.title %}{{ t }}{% endblocktrans %}</h2>
 {% endif %}
-<ul class="t-nav-ul" id="nav-ul-{{ nav.id }}">
+<ul class="t-nav-ul {% if is_bootstrap %}nav navbar-nav{% endif %}" id="nav-ul-{{ nav.id }}">
 {% for item in items %}
-    {% nav_item item %}
+    {% nav_item item is_bootstrap %}
 {% endfor %}
 </ul>

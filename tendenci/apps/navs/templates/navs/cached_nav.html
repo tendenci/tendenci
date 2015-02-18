@@ -5,7 +5,7 @@
 {% if cached %}
     {{ cached|safe }}
 {% else %}
-    {% load_nav nav_id show_title %}
+    {% load_nav nav_id show_title is_bootstrap %}
 {% endif %}
 {% if user.profile.is_superuser %}
 <div class="admin-inline">

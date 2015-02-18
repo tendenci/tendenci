@@ -63,7 +63,7 @@ def navigation(context, nav_id):
     return context
 
 @register.inclusion_tag("navs/load_nav.html", takes_context=True)
-def load_nav(context, nav_id, show_title=False):
+def load_nav(context, nav_id, show_title=False, is_bootstrap=False):
     """
     Renders the nav and its nav items.
     This will call nav_item that will call itself recursively nesting
@@ -78,16 +78,18 @@ def load_nav(context, nav_id, show_title=False):
         "nav": nav,
         "items": nav.top_items,
         "show_title": show_title,
+        "is_bootstrap": is_bootstrap
     })
     return context
 
 @register.inclusion_tag("navs/navigation_item.html", takes_context=True)
-def nav_item(context, item):
+def nav_item(context, item, is_bootstrap=False):
     """
         Renders a nav item and its children.
     """
     context.update({
         "item": item,
+        "is_bootstrap": is_bootstrap
     })
     return context
 
@@ -128,6 +130,46 @@ def nav(context, nav_id, show_title=False):
         "cached": nav,
         "nav_id": nav_id,
         "show_title": show_title,
+    })
+    return context
+
+
+@register.inclusion_tag("navs/cached_nav.html", takes_context=True)
+def bootstrap_nav(context, nav_id, show_title=False):
+    """
+    Bootstrap version of the nav tag
+    """
+    user = AnonymousUser()
+
+    if 'user' in context:
+        if isinstance(context['user'], User):
+            user = context['user']
+
+    try:
+        nav_id = Variable(nav_id)
+        nav_id = nav_id.resolve(context)
+    except:
+        pass
+
+    try:
+        filters = get_query_filters(user, 'navs.view_nav')
+        navs = Nav.objects.filter(filters).filter(id=nav_id)
+        if user.is_authenticated():
+            if not user.profile.is_superuser:
+                navs = navs.distinct()
+
+        nav_object = navs[0]
+        nav = get_nav(nav_object.pk)
+        if not nav:
+            nav = cache_nav(nav_object, show_title)
+    except:
+        return None
+
+    context.update({
+        "cached": nav,
+        "nav_id": nav_id,
+        "show_title": show_title,
+        "is_bootstrap": True   # added context to enable to indicate bootstrap nav will be used
     })
     return context
 
