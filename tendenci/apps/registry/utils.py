@@ -71,6 +71,10 @@ class RegisteredApps(object):
         else:
             #since we can only cache the list of apps and not the RegisteredApps instance
             #we have to rebuild this object based on the list of apps from the cache.
+            if not hasattr(apps, '__iter__'):
+                apps = [apps]
+
+            for app in apps:
 
             # fix for TypeErrors encountered
             # This is just a patch fix.
