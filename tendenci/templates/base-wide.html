@@ -1,6 +1,11 @@
 {% load theme_tags %}
+
+
 {% theme_extends "default.html" %}
-{% block content_classes %}{{ block.super }} content-wide{% endblock %}
+
+
 {% block body_classes %}{{ block.super }} body-wide{% endblock %}
+
+{% block content_classes %}col-xs-12 col-sm-12{% endblock %}
 
 {% block sidebar %}{% endblock %}

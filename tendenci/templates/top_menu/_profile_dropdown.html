@@ -6,16 +6,18 @@
 
 <li class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-        {# NOTE: Notice repeated DISPLAY_NAME context. This is to avoid newline/whitespace between the <img> and the text #}
-        {% if USER_IS_SUPERUSER %}
-            <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}"><span class="nav-label">{{ DISPLAY_NAME }}</span><span class="caret"></span>
-        {% elif USER_IS_MEMBER_EXPIRED %}
-            <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}"><span class="nav-label">{{ DISPLAY_NAME }}</span><span class="caret"></span>
-        {% elif USER_IS_MEMBER_ACTIVE %}
-            <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}"><span class="nav-label">{{ DISPLAY_NAME }}</span><span class="caret"></span>
-        {% else %}
-            <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}"><span class="nav-label">{{ DISPLAY_NAME }}</span><span class="caret"></span>
-        {% endif %}
+        {% spaceless %}
+            {% if USER_IS_SUPERUSER %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">
+            {% elif USER_IS_MEMBER_EXPIRED %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">
+            {% elif USER_IS_MEMBER_ACTIVE %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">
+            {% else %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">
+            {% endif %}
+            <span class="nav-label">{{ DISPLAY_NAME }}</span><span class="caret"></span>
+        {% endspaceless %}
     </a>
 
     {% get_profile_dropdown_column_size as col_size %}
@@ -40,15 +42,18 @@
 
                             <li class="content-item">
                                 <a href="{% url 'profile.index' %}">
-                                    {% if USER_IS_SUPERUSER %}
-                                        <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}"><span class="nav-label">{% trans 'Profile' %}</span>
-                                    {% elif USER_IS_MEMBER_EXPIRED %}
-                                        <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}"><span class="nav-label">{% trans 'Profile' %}</span>
-                                    {% elif USER_IS_MEMBER_ACTIVE %}
-                                        <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}"><span class="nav-label">{% trans 'Profile' %}</span>
-                                    {% else %}
-                                        <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}"><span class="nav-label">{% trans 'Profile' %}</span>
-                                    {% endif %}
+                                    {% spaceless %}
+                                        {% if USER_IS_SUPERUSER %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">
+                                        {% elif USER_IS_MEMBER_EXPIRED %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">
+                                        {% elif USER_IS_MEMBER_ACTIVE %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">
+                                        {% else %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">
+                                        {% endif %}
+                                        <span class="nav-label">{% trans 'Profile' %}</span>
+                                    {% endspaceless %}
                                 </a>
                             </li>
 

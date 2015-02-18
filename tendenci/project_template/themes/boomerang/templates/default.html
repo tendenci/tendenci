@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load theme_tags %}
 {% theme_extends "base.html" %}
 
@@ -39,46 +40,60 @@
 
     <!-- Custom styles for this template
 =========================================================== -->
-  <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
+    <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
 {% endblock extra_head %}
 
 
     <!-- Start of the Body
 =========================================================== -->
 {% block body_ids %}sub{% endblock body_ids %}
+
 {% block body_classes %}sub{% endblock body_classes %}
+
 {% block html_body %}
-<div class="wrapper">
-    <a class="sr-only" href="#content">Skip to main content</a>
+    <div class="wrapper">
+        <a class="sr-only" href="#content">{% trans "Skip to main content" %}</a>
 
-    <!-- Header Starts
-    =========================================================== -->
-    {% theme_include "header.html" %}<!-- Pulls in Header Include -->
-    <!-- Header Ends -->
+        <!-- Header Starts
+        =========================================================== -->
+        <header class="{% block header_classes %}page-header{% endblock %}">
+            {% block header %}
+                {% theme_include "header.html" %}<!-- Pulls in Header Include -->
+            {% endblock %}
+        </header>
+        <!-- Header Ends -->
 
-    <section class="slice bg-3">
-        <div class="w-section inverse">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8{% block content_classes %}{% endblock %}">
-                        {% theme_include "base/messages.html" %}
-                        {% block body %}{% endblock %}
+        <section class="slice bg-3">
+            <div class="w-section inverse">
+                <div class="container">
+                    <div class="row">
+                        <div class="{% block content_classes %}col-xs-12 col-sm-9 col-md-9{% endblock %}">
+                            {% block content_messages %}
+                                {% spaceless %}{% theme_include "base/messages.html" %}{% endspaceless %}
+                            {% endblock %}
+
+                            {% block content %}{% endblock %}
+                        </div>
+
+                        <div class="{% block sidebar_classes %}col-xs-12 col-sm-3 col-md-3 sidebar{% endblock %}">
+                            {% block sidebar %}
+                                {% theme_include "sidebar.html" %}
+                            {% endblock %}
+                        </div>
                     </div>
-                    {% block sidebar %}
-                    <div class="sidebar col-md-4">
-                        {% theme_include "sidebar.html" %}
-                    </div>
-                    {% endblock %}
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer starts
-      =========================================================== -->
-    {% theme_include 'footer.html' %}
-    <!-- Footer Ends -->
-</div>
+        <!-- Footer starts
+        =========================================================== -->
+        <footer class="{% block footer_classes %}{% endblock %}">
+            {% block footer %}
+                {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
+            {% endblock %}
+        </footer>
+        <!-- Footer Ends -->
+    </div>
 {% endblock %}
 
 {% block extra_body %}
@@ -125,7 +140,4 @@
       jQuery('.mainnav nav').meanmenu();
     });
     </script>
-
 {% endblock extra_body %}
-
-
