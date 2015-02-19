@@ -39,7 +39,7 @@
             {% endif %}
 
             {% if reg.registration.status == 'registered-with-balance' %}
-            <div class="registered">{% blocktrans with registration.invoice.balance as regbal %}You are registered. Balance is ${{ regbal }}. {% endblocktrans %}
+            <div class="registered">{% blocktrans with registration.invoice.balance as regbal %}You are registered. Balance is {{ regbal|format_currency }}. {% endblocktrans %}
                 {% if reg.pricing.reg_conf.can_pay_online and reg.registration.invoice.balance > 0 %}
                 <a href="{% url payment.pay_online reg.registration.invoice.pk reg.registration.invoice.guid %}">
                     {% trans "Pay online." %}</a>
