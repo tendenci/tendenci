@@ -70,6 +70,10 @@ class FormForForm(forms.ModelForm):
                     else:
                         field_class = EmailVerificationField
 
+                elif field.field_type == 'BooleanField' and len(field.choices) > 0:
+                    field_class = forms.MultipleChoiceField
+                    field_widget = 'django.forms.CheckboxSelectMultiple'
+
                 elif field.field_type == 'CountryField' or field.field_type == 'StateProvinceField':
                     field_class = getattr(forms, 'ChoiceField')
                 else:

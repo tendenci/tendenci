@@ -265,6 +265,12 @@ class DirectoryForm(TendenciBaseForm):
                 logo = None
 
         return logo
+    
+    def clean_headline(self):
+        """
+        remove extra leading and trailing white spaces
+        """
+        return self.cleaned_data.get('headline', '').strip()
 
     def clean_headline(self):
         """
