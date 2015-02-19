@@ -1,24 +1,51 @@
 import datetime
 
 from django.conf import settings
-from django.http import Http404, HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db import transaction
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView
-from django.core.urlresolvers import reverse
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
+from django.core.urlresolvers import reverse, reverse_lazy
+
 from tendenci.apps.base.http import Http403
+from tendenci.apps.emails.models import Email
+from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.newsletters.utils import apply_template_media
-from tendenci.apps.newsletters.models import NewsletterTemplate
-from tendenci.apps.newsletters.forms import GenerateForm
+from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
+from tendenci.apps.newsletters.forms import (
+    GenerateForm,
+    OldGenerateForm,
+    MarketingStepOneForm,
+    MarketingStepThreeForm,
+    MarketingStepFourForm,
+    MarketingStepFiveForm,
+    MarketingStep2EmailFilterForm,
+    NewslettterEmailUpdateForm
+    )
+from tendenci.apps.newsletters.mixins import (
+    NewsletterEditLogMixin,
+    NewsletterStatusMixin,
+    NewsletterPermissionMixin,
+    NewsletterPermStatMixin,
+    NewsletterPassedSLAMixin
+    )
 from tendenci.apps.newsletters.utils import (
     newsletter_articles_list,
     newsletter_jobs_list,
     newsletter_news_list,
     newsletter_pages_list,
-    newsletter_events_list)
-from tendenci.apps.perms.utils import has_perm
+    newsletter_events_list,
+    newsletter_directories_list,
+    newsletter_resumes_list)
+from tendenci.apps.perms.utils import has_perm, get_query_filters
+from tendenci.apps.site_settings.utils import get_setting
+
 
 
 class NewsletterGeneratorView(TemplateView):
@@ -33,6 +60,206 @@ class NewsletterGeneratorView(TemplateView):
         return context
 
 
+class NewsletterListView(NewsletterPermissionMixin, ListView):
+    model = Newsletter
+    paginate_by = 10
+    newsletter_permission = 'newsletters.view_newsletter'
+    template_name = 'newsletters/search.html'
+
+    def get_queryset(self, **kwargs):
+        qset = super(NewsletterListView, self).get_queryset(**kwargs)
+        qset = qset.order_by('-date_created')
+
+        return qset
+
+
+class NewsletterGeneratorOrigView(NewsletterPermissionMixin, FormView):
+    template_name = "newsletters/add.html"
+    form_class = OldGenerateForm
+    newsletter_permission = 'newsletters.add_newsletter'
+
+    def get_initial(self):
+        site_name = get_setting('site', 'global', 'sitedisplayname')
+        date_string = datetime.datetime.now().strftime("%d-%b-%Y")
+        subject_initial = site_name + ' Newsletter ' + date_string
+
+        return {'subject': subject_initial}
+
+    def form_valid(self, form):
+        nl = form.save()
+        self.object_id = nl.pk
+
+        # add event logging
+        EventLog.objects.log(action='add')
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse_lazy('newsletter.action.step4', kwargs={'pk': self.object_id })
+
+    def get_context_data(self, **kwargs):
+        context = super(NewsletterGeneratorOrigView, self).get_context_data(**kwargs)
+        templates = NewsletterTemplate.objects.all()
+        context['templates'] = templates
+
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(NewsletterGeneratorOrigView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+
+        return kwargs
+
+
+class MarketingActionStepOneView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
+    model = Newsletter
+    form_class = MarketingStepOneForm
+    template_name = 'newsletters/actions/step1.html'
+    newsletter_permission = 'newsletters.change_newsletter'
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step2', kwargs={'pk': obj.pk})
+
+
+class MarketingActionStepTwoView(NewsletterPermStatMixin, ListView):
+    paginate_by = 10
+    model = Email
+    template_name = 'newsletters/actions/step2.html'
+    newsletter_permission = 'newsletters.change_newsletter'
+
+    def get(self, request, *args, **kwargs):
+        self.form = MarketingStep2EmailFilterForm(request.GET)
+        return super(MarketingActionStepTwoView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(MarketingActionStepTwoView, self).get_context_data(**kwargs)
+        pk = int(self.kwargs.get('pk'))
+        context['object'] = get_object_or_404(Newsletter, pk=pk)
+        context['form'] = self.form
+        return context
+
+    def get_queryset(self):
+        qset = super(MarketingActionStepTwoView, self).get_queryset()
+        qset = qset.filter(status=True, status_detail='active').order_by('-pk')
+        request = self.request
+        form = self.form
+
+        if 'search_criteria' in request.GET and 'q' in request.GET:
+            qset = form.filter_email(request, qset)
+
+        return qset
+
+
+class NewsletterUpdateEmailView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
+    model = Newsletter
+    form_class = NewslettterEmailUpdateForm
+    template_name = 'newsletters/actions/step2.html'
+    newsletter_permission = 'newsletters.change_newsletter'
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step3', kwargs={'pk': obj.pk})
+
+
+class MarketingActionStepThreeView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
+    model = Newsletter
+    form_class = MarketingStepThreeForm
+    template_name = 'newsletters/actions/step3.html'
+    newsletter_permission = 'newsletters.change_newsletter'
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step4', kwargs={'pk': obj.pk})
+
+
+class MarketingActionStepFourView(NewsletterPermStatMixin, NewsletterEditLogMixin, UpdateView):
+    model = Newsletter
+    form_class = MarketingStepFourForm
+    template_name = 'newsletters/actions/step4.html'
+    newsletter_permission = 'newsletters.change_newsletter'
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.action.step5', kwargs={'pk': obj.pk})
+
+
+class MarketingActionStepFiveView(NewsletterPermStatMixin, NewsletterPassedSLAMixin, UpdateView):
+    model = Newsletter
+    template_name = 'newsletters/actions/step5.html'
+    form_class = MarketingStepFiveForm
+    newsletter_permission = 'newsletters.change_newsletter'
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return reverse_lazy('newsletter.detail.view', kwargs={'pk': obj.pk})
+
+    def form_valid(self, form):
+        EventLog.objects.log(instance=self.get_object(), action='send')
+        messages.success(self.request,
+            "Your newsletter has been scheduled to send within the next 10 minutes. "
+            "Please note that it may take several hours to complete the process depending "
+            "on the size of your user group. You will receive an email notification when it's done."
+            )
+        return super(MarketingActionStepFiveView, self).form_valid(form)
+
+
+class NewsletterDetailView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
+    model = Newsletter
+    template_name = 'newsletters/actions/view.html'
+    newsletter_permission = 'newsletters.view_newsletter'
+
+    def get(self, request, *args, **kwargs):
+        EventLog.objects.log(instance=self.get_object(), action='view')
+        return super(NewsletterDetailView, self).get(request, *args, **kwargs)
+
+
+class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, DetailView):
+    model = Newsletter
+    template_name = 'newsletters/actions/view.html'
+    newsletter_permission = 'newsletters.view_newsletter'
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = int(kwargs.get('pk'))
+        newsletter = get_object_or_404(Newsletter, pk=pk)
+        if newsletter.send_status == 'draft':
+            return redirect(reverse('newsletter.action.step4', kwargs={'pk': newsletter.pk}))
+
+        elif newsletter.send_status == 'sending' or newsletter.send_status == 'resending':
+            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
+
+        if not (settings.EMAIL_BACKEND and settings.EMAIL_HOST and settings.EMAIL_PORT and \
+            settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD):
+            messages.error(request, _('Email relay is not configured properly.'
+                ' Newsletter cannot be sent.'))
+            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
+
+        return super(NewsletterResendView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        newsletter = self.get_object()
+        if newsletter.send_status == 'sent' or newsletter.send_status == 'resent':
+            newsletter.send_status = 'resending'
+            newsletter.save()
+            newsletter.send_to_recipients()
+            EventLog.objects.log(instance=newsletter, action='resend')
+            messages.success(request, 'Resending newsletters.'
+                "Your newsletter has been scheduled to send within the next 10 minutes. "
+            "Please note that it may take several hours to complete the process depending "
+            "on the size of your user group. You will receive an email notification when it's done.")
+            return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
+
+        return super(NewsletterResendView, self).get(request, *args, **kwargs)
+
+
+class NewsletterDeleteView(NewsletterPermissionMixin, DeleteView):
+    model = Newsletter
+    newsletter_permission = 'newsletters.delete_newsletter'
+    template_name = 'newsletters/delete.html'
+    success_url = reverse_lazy('newsletter.list')
+
+
+@login_required
 def generate(request):
     """
     Newsletter generator form
@@ -68,6 +295,7 @@ def generate(request):
 
     return render(request, 'newsletters/generate.html', {'form':form})
 
+@login_required
 def template_view(request, template_id, render=True):
     """
     Generate newsletter preview
@@ -117,6 +345,18 @@ def template_view(request, template_id, render=True):
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
 
+    directories_content = ""
+    directories = int(request.GET.get('directories', 0))
+    directories_days = request.GET.get('directories_days', 7)
+    if directories:
+        directories_list, directories_content = newsletter_directories_list(request, directories_days, simplified)
+
+    resumes_content = ""
+    resumes = int(request.GET.get('resumes', 0))
+    resumes_days = request.GET.get('resumes_days', 7)
+    if resumes:
+        resumes_list, resumes_content = newsletter_resumes_list(request, resumes_days, simplified)
+
     try:
         events = int(request.GET.get('events', 1))
         events_type = request.GET.get('events_type')
@@ -152,6 +392,10 @@ def template_view(request, template_id, render=True):
                 "news_list":news_list,
                 "pages_content":pages_content,
                 "pages_list":pages_content,
+                "directories_content":directories_content,
+                "directories_list":directories_list,
+                "resumes_content":resumes_content,
+                "resumes_list":resumes_list,
                 "events":events_list, # legacy usage in templates
                 "events_content":events_content,
                 "events_list":events_list,
@@ -169,3 +413,11 @@ def template_view(request, template_id, render=True):
             'content': content,
             'template': template},
             context_instance=RequestContext(request))
+
+
+@login_required
+def default_template_view(request):
+    template_name = request.GET.get('template_name', '')
+    if not template_name:
+        raise Http404
+    return render (request, template_name)

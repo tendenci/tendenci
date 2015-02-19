@@ -49,9 +49,14 @@ class ArticleIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return ''
 
     def prepare_can_syndicate(self, obj):
+        try:
+            temp = obj.release_dt <= datetime.now()
+        except TypeError:
+            temp = False
+
         return obj.allow_anonymous_view and obj.syndicate \
             and obj.status and obj.status_detail == 'active' \
-            and obj.release_dt <= datetime.now()
+            and temp
 
     def prepare_order(self, obj):
         if not obj.release_dt:

@@ -1,0 +1,33 @@
+{% extends "newsletters/base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load url from future %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% trans "Delete Newsletter" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block body %}
+    <div class="t">
+        <h1>{%  trans "Delete Newsletter" %} - {{ object }}</h1>
+
+        <div class="newsletter-wrap">
+            <form action="" method="POST">{% csrf_token %}
+                <div class="forms">
+                    <p>{% trans "Are you sure you want to delete this Newsletter?" %}</p>
+                    <input type="submit" value="{% trans 'Delete this Newsletter' %}" />
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

@@ -26,8 +26,11 @@
                 &nbsp;<label>Send To:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
             </p>
              <div class="input-wrapper">
-                {# commenting it out for now. will add back later when membership is available: <p><strong>{% trans "Send to Members Only?" %}</strong> {{ form.member_only }} {% trans "If checked, skip user group" %}</p>#}
-                <p><strong>{% trans "User group" %}</strong> {{ form.group }}</p>
+                {% comment %}commenting it out for now. will add back later when membership is available:{% endcomment %} <p><strong>{% trans "Send to Members Only?" %}</strong> {{ form.member_only }} {% trans "If checked, skip user group" %}</p>
+                {% if form.group.errors %}
+                  {{ form.group.errors }}
+                {% endif %}
+                <p><strong>{% trans "Usergroup" %}</strong> {{ form.group }}</p>
                 <p>{% trans "Include email2?" %} {{ form.send_to_email2 }}
                 {% trans "Yes, send to user's second email address" %}
                 </p>
@@ -53,7 +56,7 @@
 
 
              <div id="module-options">
-                <!-- <p>{% trans "Include Login Information?" %}" {{ form.include_login }} </p>-->
+                <p>{% trans "Include Login Information?" %} {{ form.include_login }} </p>
                 <table border="0">
                         <tr >
                           <td ><strong>{% trans "Include Jump Links" %}</strong></td>
@@ -118,17 +121,29 @@
                           <td >{{ form.pages_days }}                                                          </select></td>
                         </tr>
 
+                        <tr >
+                          <td ><strong>{% trans "Directories" %}</strong></td>
+                          <td >
+                           {{ form.directories }}                     </td>
+                          <td>{{ form.directories_days }} </td>
+                        </tr>
+
+                        <tr >
+                          <td ><strong>{% trans "Resumes" %}</strong></td>
+                          <td >
+                           {{ form.resumes }}                     </td>
+                          <td>{{ form.resumes_days }} </td>
+                        </tr>
 
                         </table>
                       </div>
                 </div>
         <p>&nbsp;</p>
         <p><strong>{% trans "Template Selection?" %}</strong></p>
-
+        {% comment %}
         {% if form.template.errors %}
                 {{ form.template.errors }}
         {% endif %}
-
         {% if templates %}
             <h2>{% blocktrans %}Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</h2>
             <div class="template_list">
@@ -136,23 +151,25 @@
                 {% for template in templates %}
                     <li>
                     <input name="template" value="{{ template }}" type="radio"  {% if template = template_selected %}checked="checked" {% endif %} />
-                    <a href="{% url "newsletter.view_template" template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+                    <a href="{% url 'newsletter.template_content' template.pk %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
                     </li>
                 {% endfor %}
                 </ul>
             </div>
         {% endif %}
-
+        {% endcomment %}
+        {% if form.default_template.errors %}
+          {{ form.default_template.errors }}
+        {% endif %}
         <h2>{% trans "Tendenci Default Templates" %}</h2>
         <div class="template_list">
-            <ul>
-            {% for template in default_templates %}
-                <li>
-                <input name="template" value="{{ template }}" type="radio" {% if template = template_selected %}checked="checked" {% endif %} />
-                <a href="{% url "newsletter.view_template" template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>
-                </li>
+          <ul>
+            {% for choice in form.default_template %}
+            {% if choice.choice_value %}
+            <li>{{ choice.tag }} <a href="{% url 'newsletter.default_template' %}?template_name={{ choice.choice_value }}"><strong>{{ choice.choice_label }}</strong></a></li>
+            {% endif %}
             {% endfor %}
-            </ul>
+          </ul>
         </div>
 
         <p><strong>{% trans "Format?" %}</strong></p>

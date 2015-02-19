@@ -1,0 +1,23 @@
+{% load i18n %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Newsletter Sent" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+    <p>
+        {% trans 'Hello' %} {{ first_name }},<br /><br />
+
+        {% blocktrans with s=subject c=count %}
+        The newsletter with subject {{ s }} is already sent to {{ c }} recipient(s).
+        {% endblocktrans %}
+        <br />
+        <br />
+        {% trans "Click this link to view the details" %}: <a href="{{ detail_url }}">{{ detail_url }}</a>
+    </p>
+
+</body>
+</html>
