@@ -11,6 +11,8 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator
 from django.template import Context, loader
 from django.utils.http import int_to_base36
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from johnny.cache import invalidate
 from captcha.fields import CaptchaField
@@ -214,7 +216,7 @@ class PasswordResetForm(forms.Form):
         user_list = []
         for user in self.users_cache:
             user_list.append({
-                    'uid': int_to_base36(user.id),
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'user': user,
                     'token': token_generator.make_token(user),
                 })
