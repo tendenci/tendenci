@@ -243,7 +243,7 @@ class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
             newsletter.save()
             newsletter.send_to_recipients()
             EventLog.objects.log(instance=newsletter, action='resend')
-            messages.success(request, 'Resending newsletters.'
+            messages.success(request, 'Resending newsletter.'
                 "Your newsletter has been scheduled to send within the next 10 minutes. "
             "Please note that it may take several hours to complete the process depending "
             "on the size of your user group. You will receive an email notification when it's done.")

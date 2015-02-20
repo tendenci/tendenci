@@ -106,11 +106,15 @@ class Command(BaseCommand):
 
         print "Successfully sent %s newsletter emails." % counter
 
+        # add cache clear to resolve issue
+        # TODO: cache clear only to specifies
+        cache.clear()
+        print 'Cache cleared!'
+
         print "Sending confirmation message to creator..."
         # send confirmation email
         subject = "Newsletter Submission Recap for %s" % newsletter.email.subject
-        detail_url = get_setting('site', 'global', 'siteurl') + \
-                reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk})
+        detail_url = get_setting('site', 'global', 'siteurl') + newsletter.get_absolute_url()
         params = {'first_name': newsletter.email.creator.first_name,
                     'subject': newsletter.email.subject,
                     'count': counter,
@@ -127,8 +131,3 @@ class Command(BaseCommand):
         email.send()
 
         print "Confirmation email sent."
-
-        # add cache clear to resolve issue
-        # TODO: cache clear only to specifies
-        cache.clear()
-        print 'Cache cleared!'

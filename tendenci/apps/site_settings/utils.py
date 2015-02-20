@@ -345,7 +345,11 @@ def get_setting(scope, scope_category, name):
 
     #check if the setting has been set and evaluate the value
     if setting:
-        value = setting.get_value().strip()
+        try:
+            # test is get_value will work
+            value = setting.get_value().strip()
+        except AttributeError:
+            return u''
         # convert data types
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'

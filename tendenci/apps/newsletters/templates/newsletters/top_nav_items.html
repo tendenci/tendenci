@@ -1,0 +1,91 @@
+{% load i18n %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user newsletters.add_newsletter as can_add_newsletter %}
+
+{% if app_object %}
+    {% has_perm user newsletters.view_newsletter app_object as can_view_newsletter %}
+    {% has_perm user newsletters.change_newsletter app_object as can_edit_newsletter %}
+    {% has_perm user newsletters.delete_newsletter app_object as can_delete_newsletter %}
+{% else %}
+    {% has_perm user newsletters.view_newsletter as can_view_newsletter %}
+    {% has_perm user newsletters.change_newsletter as can_edit_newsletter %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 xs-12">
+                    {% if app_object %}
+                        {# "All newsletters" Section #}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Newsletters" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'newsletters' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'newsletter.list' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_newsletter %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'newsletter.orig.generator' %}">{% trans "Add Newsletter" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_newsletter or can_edit_newsletter %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Newsletter" %}</span>
+                            </li>
+
+                            {% if can_view_newsletter %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'newsletter.detail.view' app_object.pk %}">{% trans "View Newsletter" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_newsletter %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'newsletter.action.step1' app_object.pk %}">{% trans "Edit newsletter" %}</a>
+                                    </span>
+                                </li>
+
+                            {% endif %}
+
+                            {% if can_delete_newsletter %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'newsletter.delete' app_object.pk %}">{% trans "Delete newsletter" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.conf.urls import patterns, include
 
 from tendenci.apps.site_settings.utils import check_setting, get_setting
+from tendenci.apps.site_settings.models import Setting
 
 lazy_reverse = lazy(reverse, str)
 
@@ -70,41 +71,50 @@ class RegisteredApps(object):
         else:
             #since we can only cache the list of apps and not the RegisteredApps instance
             #we have to rebuild this object based on the list of apps from the cache.
-            for app in apps:
 
-                setting_tuple = (
-                    'module',
-                    app['model']._meta.app_label,
-                    'enabled',
-                )
+            # fix for TypeErrors encountered
+            # This is just a patch fix.
+            # TODO: Find the root cause of TypeError here
 
-                # enabled / has settings
-                if check_setting(*setting_tuple):
-                    app['enabled'] = get_setting(*setting_tuple)
-                    app['has_settings'] = True
-                else:
-                    app['enabled'] = True
-                    app['has_settings'] = False
+            try:
+                for app in apps:
 
-                if not 'settings' in app['url'].keys():
-                    app['url'].update({
-                        'settings': lazy_reverse('settings.index', args=[
-                            'module',
-                            app['model']._meta.app_label
-                        ])
-                    })
+                    setting_tuple = (
+                        'module',
+                        app['model']._meta.app_label,
+                        'enabled',
+                    )
 
-                if app['app_type'] == 'addon':
-                    self.addons.append(app)
+                    # enabled / has settings
+                    if check_setting(*setting_tuple):
+                        app['enabled'] = get_setting(*setting_tuple)
+                        app['has_settings'] = True
+                    else:
+                        app['enabled'] = True
+                        app['has_settings'] = False
 
-                if app['app_type'] == 'people':
-                    self.people.append(app)
+                    if not 'settings' in app['url'].keys():
+                        app['url'].update({
+                            'settings': lazy_reverse('settings.index', args=[
+                                'module',
+                                app['model']._meta.app_label
+                            ])
+                        })
 
-                if app['app_type'] == 'core':
-                    self.core.append(app)
+                    if app['app_type'] == 'addon':
+                        self.addons.append(app)
 
-                # append all apps for main iterable
-                self.all_apps.append(app)
+                    if app['app_type'] == 'people':
+                        self.people.append(app)
+
+                    if app['app_type'] == 'core':
+                        self.core.append(app)
+
+                    # append all apps for main iterable
+                    self.all_apps.append(app)
+
+            except TypeError:
+                pass
 
         # sort the applications alphabetically by
         # object representation
