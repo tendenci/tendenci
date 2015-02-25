@@ -1,10 +1,13 @@
-{% load nav_tags %}
 {% load i18n %}
+{% load nav_tags %}
+
+
 {% if show_title == "True" %}
     <h2>{% blocktrans with t=nav.title %}{{ t }}{% endblocktrans %}</h2>
 {% endif %}
-<ul class="t-nav-ul {% if is_bootstrap %}nav navbar-nav{% endif %}" id="nav-ul-{{ nav.id }}">
-{% for item in items %}
-    {% nav_item item is_bootstrap %}
-{% endfor %}
+
+<ul class="nav navbar-nav t-main-navbar-nav" id="t-main-navbar-nav-{{ nav.id }}">
+    {% for item in items %}
+        {% nav_item item %}
+    {% endfor %}
 </ul>
