@@ -8,8 +8,18 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.events.models import Type
 
+
+def get_type_choices():
+    types_list = [(u'',_(u'All'))]
+    types = Type.objects.all()
+    for type in types:
+        types_list.append((int(type.pk),type.name))
+
+    return tuple(types_list)
 
 def get_start_dt(duration_days, end_dt=None):
     if not end_dt:

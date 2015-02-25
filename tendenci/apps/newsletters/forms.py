@@ -11,12 +11,12 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.campaign_monitor.models import Template
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.http import Http403
+from tendenci.apps.newsletters.utils import get_type_choices
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.models import (
     THIS_YEAR,
     DAYS_CHOICES,
-    INCLUDE_CHOICES,
-    TYPE_CHOICES
+    INCLUDE_CHOICES
 )
 
 EMAIL_SEARCH_CRITERIA_CHOICES = (
@@ -45,7 +45,7 @@ class GenerateForm(forms.Form):
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
     event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
-    events_type = forms.ChoiceField(initial='', choices=TYPE_CHOICES, required=False)
+    events_type = forms.ChoiceField(initial='', choices=get_type_choices(), required=False)
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
     news = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
