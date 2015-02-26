@@ -33,6 +33,8 @@
 {% has_perm user resumes.view_reume as view_resumes %}
 
 {% block content_messages %}
+    {{ block.super }}
+
     {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
         {% if user.is_superuser %}
             {% if not has_paid and activate_url %}

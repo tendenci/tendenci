@@ -3,6 +3,7 @@
 {% load nav_tags %}
 {% load theme_tags %}
 
+
 <div class="top-header">
     <div class="container">
         <div class="row">
@@ -30,17 +31,17 @@
     <div class="container">
         <div class="navbar-header">
             <div id="t-main-navbar-brand" class="navbar-brand">
-                <a href="{% url 'home' %}" title=="{{ SITE_GLOBAL_SITEDISPLAYNAME }}">
+                {% theme_include "theme_includes/logo_edit_form.html" %}
+
+                <a href="{% url 'home' %}" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}">
                     <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/60x30/crop/90/{% else %}http://placehold.it/60x30{% endif %}" alt="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
                 </a>
-
-                {% theme_include "theme_includes/logo_edit_form.html" %}
             </div>
+        </div>
 
-            <div id="t-main-navbar-collapse" class="mainnav navbar-right">
-                <div class="clearfix">
-                    {% nav 1 %}
-                </div>
+        <div id="t-main-navbar-collapse" class="mainnav navbar-right">
+            <div class="clearfix">
+                {% nav 1 %}
             </div>
         </div>
     </div>
