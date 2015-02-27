@@ -112,11 +112,12 @@ class DictField(models.TextField):
 class EmailVerificationField(fields.MultiValueField):
     widget = EmailVerificationWidget
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, attrs=None, *args, **kwargs):
         """
         Have to pass a list of field types to the constructor, else we
         won't get any data to our compress method.
         """
+
         all_fields = (
             fields.EmailField(max_length=75),
             fields.EmailField(max_length=75, label=_("Verfiy Email Address")),

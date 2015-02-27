@@ -15,7 +15,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from johnny.cache import invalidate
-from captcha.fields import CaptchaField
+from captcha.fields import CaptchaField, CaptchaTextInput
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.registration.models import RegistrationProfile
@@ -43,22 +43,23 @@ class SetPasswordCustomForm(SetPasswordForm):
 
 
 class RegistrationCustomForm(RegistrationForm):
-    first_name = forms.CharField(max_length=100)
-    last_name = forms.CharField(max_length=100)
-    company = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'size':'40'}), required=False)
-    phone = forms.CharField(max_length=50, required=False)
-    address = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'size':'40'}), required=False)
-    city = forms.CharField(max_length=50, required=False)
-    state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10'}), required=False)
-    country = forms.CharField(max_length=50, required=False)
-    zipcode = forms.CharField(max_length=50, required=False)
-    captcha = CaptchaField(label=_('Type the code below'))
+    first_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    company = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'size':'40', 'class': 'form-control'}), required=False)
+    phone = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    address = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'size':'40', 'class': 'form-control'}), required=False)
+    city = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10', 'class': 'form-control'}), required=False)
+    country = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    zipcode = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    captcha = CaptchaField(label=_('Type the code below'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
 
     allow_same_email = None
     similar_email_found = False
 
     def __init__(self, *args, **kwargs):
         self.allow_same_email = kwargs.pop('allow_same_email', False)
+
         super(RegistrationCustomForm, self).__init__(*args, **kwargs)
 
     def clean_password1(self):

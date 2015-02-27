@@ -33,7 +33,7 @@
         {% endblock %}
 
         <div class="row">
-            <div class="{% block content_classes %}col-xs-12 col-sm-9 col-md-9{% endblock %}">
+            <div class="{% block content_classes %}col-xs-12 col-sm-8 col-md-8 col-lg-9{% endblock %}">
                 {% block content_messages %}
                     {% spaceless %}{% theme_include "base/messages.html" %}{% endspaceless %}
                 {% endblock %}
@@ -46,7 +46,7 @@
                 {% endblock %}
             </div>
 
-            <div class="{% block sidebar_classes %}col-xs-12 col-sm-3 col-md-3{% endblock %}">
+            <div class="{% block sidebar_classes %}col-xs-12 col-sm-4 col-md-4 col-lg-3{% endblock %}">
                 {% block sidebar %}
                     {# Panel or sidebar gose here #}
 
@@ -63,7 +63,7 @@
                                     <input type="text" class="form-control" placeholder="type, hit enter" size="18", maxlength="50" name="q">
                                 </div>
 
-                                <button type="submit" class="btn btn-default"><span class="fa fa-search" aria-hidden="true"></span></button>
+                                <button type="submit" class="btn btn-default visible-md-inline visible-lg-inline"><span class="fa fa-search" aria-hidden="true"></span></button>
                             </form>
                         </div>
                     </div>

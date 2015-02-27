@@ -62,12 +62,14 @@ urlpatterns = patterns('tendenci.apps',
     url(
         r'^password/reset/complete/$',
         auth_views.password_reset_complete,
+        {'template_name': 'registration/custom_password_reset_complete.html'},
         name='password_reset_complete'
     ),
 
     url(
         r'^password/reset/done/$',
         auth_views.password_reset_done,
+        {'template_name': 'registration/custom_password_reset_done.html'},
         name='password_reset_done'
     ),
 
