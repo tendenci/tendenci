@@ -34,8 +34,8 @@ class ProfileIndex(TendenciBaseSearchIndex, indexes.Indexable):
             obj.user.username
         )
 
-    def index_queryset(self):
-        return Profile.objects.all().order_by('user')
+    def index_queryset(self, using=None):
+        return self.get_model()._default_manager.all().order_by('user')
 
 # Removed from index after search view was updated to perform
 # all searches on the database.

@@ -30,7 +30,7 @@ class RecurringPaymentIndex(CustomSearchIndex, indexes.Indexable):
     def prepare_order(self, obj):
         return obj.create_dt
 
-    def index_queryset(self):
-        return RecurringPayment.objects.all().order_by('user')
+    def index_queryset(self, using=None):
+        return self.get_model()._default_manager.all().order_by('user')
 
 
