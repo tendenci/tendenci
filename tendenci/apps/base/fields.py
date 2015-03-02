@@ -110,7 +110,7 @@ class DictField(models.TextField):
 
 
 class EmailVerificationField(fields.MultiValueField):
-    widget = EmailVerificationWidget
+    # widget = EmailVerificationWidget
 
     def __init__(self, attrs=None, *args, **kwargs):
         """
@@ -124,7 +124,7 @@ class EmailVerificationField(fields.MultiValueField):
             )
         label = kwargs.pop('label', '') + ' (Enter twice to verify)'
         label = _(label)
-        super(EmailVerificationField, self).__init__(all_fields, label=label, *args, **kwargs)
+        super(EmailVerificationField, self).__init__(all_fields, widget=EmailVerificationWidget(attrs={'class': 'form-control'}), label=label, *args, **kwargs)
 
     def compress(self, data_list):
         """

@@ -65,56 +65,53 @@
             </div>
         </div>
 
-        {% if form.errors.values %}
-            <div class="errors">
-                {% for field in form %}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                            <p>{{ field.label }} - {{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endif %}
+        <div class="form-group {% if form.password1.errors %}has-error{% endif %}">
+            <label for="{{ form.password1.id_for_label }}" class="col-sm-3 control-label">{% trans "Password" %}</label>
+            <div class="col-sm-6">
+                {{ form.password1 }}
 
-        <table border="0" cellspacing="0" cellpadding="0">
-             <tr>
-                 <td><label for="id_username" class="required">{% trans 'Username'%}</label></td>
-                 <td>{{ form.username }}</td>
-             </tr>
-             <tr>
-                 <td><label for="id_first_name" class="required">{% trans 'First Name:'%}</label></td>
-                 <td>{{ form.first_name }}</td>
-             </tr>
-             <tr>
-                 <td><label for="id_last_name" class="required">{% trans 'Last Name:'%}</label></td>
-                 <td>{{ form.last_name }}</td>
-             </tr>
-             <tr>
-                 <td><label for="id_email" class="required">{% trans 'Email Address (Enter twice to verify):'%}</label></td>
-                 <td>{{ form.email }}</td>
-             </tr>
-             <tr>
-                 <td><label for="id_password1" class="required">{% trans "Password:" %}</label></td>
-                 <td>{{ form.password1 }}</td>
-             </tr>
-             <tr>
-                 <td><label for="id_password2" class="required">{% trans "Password (again):" %}</label></td>
-                 <td>{{ form.password2 }}</td>
-             </tr>
-             <tr>
-                 <td><label for="id_captcha" class="required">{% trans "Security:" %}</label></td>
-                 <td>{{ form.captcha }}</td>
-             </tr>
-             <tr>
-                 <td>&nbsp;</td>
-                 <td><input class="create-button" type="submit" name="submit" value="{% trans 'Create Account' %}" /></td>
-             </tr>
-        </table>
+                {% if form.password1.errors %}
+                    <p id="{{ form.password1.id_for_label }}-help-block" class="help-block">
+                        {{ form.password1.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.password2.errors %}has-error{% endif %}">
+            <label for="{{ form.password2.id_for_label }}" class="col-sm-3 control-label">{% trans "Password (again)" %}</label>
+            <div class="col-sm-6">
+                {{ form.password2 }}
+
+                {% if form.password2.errors %}
+                    <p id="{{ form.password2.id_for_label }}-help-block" class="help-block">
+                        {{ form.password2.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.captcha.errors %}has-error{% endif %}">
+            <label for="{{ form.captcha.id_for_label }}" class="col-sm-3 control-label">{% trans "Security" %}</label>
+            <div class="col-sm-6">
+                {{ form.captcha }}
+
+                {% if form.captcha.errors %}
+                    <p id="{{ form.captcha.id_for_label }}-help-block" class="help-block">
+                        {{ form.captcha.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary" id="t-accounts-create-account-btn">{% trans "Create Account" %}</button>
+            </div>
+        </div>
     </form>
 {% endblock %}
 
-{% block extra_body %}
-    {{ block.super }}
+{% block extra_body %} {{ block.super }}
     <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
 {% endblock %}
