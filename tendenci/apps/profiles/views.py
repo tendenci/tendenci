@@ -666,7 +666,7 @@ def change_avatar(request, id, extra_context={}, next_override=None):
 @ssl_required
 @csrf_protect
 @login_required
-def password_change(request, id, template_name='registration/password_change_form.html',
+def password_change(request, id, template_name='registration/custom_password_change_form.html',
                     post_change_redirect=None, password_change_form=ValidatingPasswordChangeForm):
     user_edit = get_object_or_404(User, pk=id)
     if post_change_redirect is None:
@@ -691,9 +691,9 @@ def password_change(request, id, template_name='registration/password_change_for
     }, context_instance=RequestContext(request))
 
 @login_required
-def password_change_done(request, id, template_name='registration/password_change_done.html'):
+def password_change_done(request, id, template_name='registration/custom_password_change_done.html'):
     user_edit = get_object_or_404(User, pk=id)
-    return render_to_response(template_name, {'user_this': user_edit},  context_instance=RequestContext(request))
+    return render_to_response(template_name, {'user_this': user_edit}, context_instance=RequestContext(request))
 
 
 

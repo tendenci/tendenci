@@ -618,6 +618,12 @@ class UserGroupsForm(forms.Form):
 
 
 class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
+    def __init__(self, user, *args, **kwargs):
+        super(ValidatingPasswordChangeForm, self).__init__(user, *args, **kwargs)
+
+        self.fields['old_password'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.fields['new_password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
 
     def clean_new_password1(self):
         password1 = self.cleaned_data.get('new_password1')

@@ -1,36 +1,19 @@
 {% extends "site_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 
 {% block title %}{% firstof MODULE_USERS_LABEL trans 'Profile' %} - {% endblock %}
 
-{% block messages %}{{ block.super }}{% endblock %}
+{% block banner %}{% endblock %}
 
-{% block top_bar %}
-{% if request.user.is_authenticated %}
-    {% if request.user.is_superuser %}
-        {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser %}
-            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                {% include "top_menu/user_top.html" %}
-            {% else %}
-                {% include "profiles/top_nav.html" %}
-            {% endif %}
-        {% else %}
-            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                {% include "top_menu/admin_top.html" %}
-            {% else %}
-                {% include "profiles/top_nav.html" %}
-            {% endif %}
-            {% if request.session.theme %}
-                {% include "themes/theme_top.html" %}
-            {% endif %}
-        {% endif %}
-    {% else %}
-        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/user_top.html" %}
-        {% else %}
-            {% include "profiles/top_nav.html" %}
-        {% endif %}
-    {% endif %}
-{% endif %}
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container: 'more-options-wrap',
+            trigger: 'more-options-trigger',
+            target: 'more-options-target'
+        });
 {% endblock %}
