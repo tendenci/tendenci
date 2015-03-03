@@ -16,7 +16,7 @@ from tendenci.apps.base.fields import EmailVerificationField
 # on them with CSS or JavaScript if they have a class of "required"
 # in the HTML. Your mileage may vary. If/when Django ticket #3515
 # lands in trunk, this will no longer be necessary.
-attrs_dict = { 'class': 'required' }
+attrs_dict = { 'class': 'required form-control' }
 
 
 class RegistrationForm(forms.Form):
@@ -37,7 +37,7 @@ class RegistrationForm(forms.Form):
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
                                 label=_(u'username'))
-    email = EmailVerificationField(label=_(u'email address'))
+    email = EmailVerificationField(label=_(u'email address'), attrs=attrs_dict)
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_(u'password'))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),

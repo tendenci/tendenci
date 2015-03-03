@@ -31,7 +31,7 @@ html {
     vertical-align: middle;
 }
 
-#t-admin-megamenu .nav-label+.caret {
+#t-admin-megamenu .nav-label + .caret {
     margin-left: 4px;
 }
 
@@ -208,6 +208,9 @@ html {
 }
 
 
-.t-main-navbar-nav:hover + .t-admin-inline {
+.t-admin-inline:hover,
+#t-main-navbar-collapse:hover > .t-admin-inline,
+.t-main-navbar-nav:hover + .t-admin-inline,
+#t-main-navbar-brand:hover > .t-admin-inline {
     display: block;
 }
