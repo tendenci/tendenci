@@ -69,6 +69,7 @@ SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
 
 ## Django 1.4
 TEMPLATE_LOADERS = (
+    'app_namespace.Loader',
     'tendenci.apps.theme.template_loaders.load_template_source',
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
