@@ -27,12 +27,10 @@
             <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
         {% endblock %}
 
-        {# <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css" media="screen"> #}
+        <link href="{% static 'css/tendenci.css' %}" rel="stylesheet" type="text/css" media="screen">
         {# <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css"> #}
         {# <link href="{% static 'css/t_nav_layout.css' %}" rel="stylesheet" type="text/css"> #}
         {# <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css"> #}
-
-        {% block extra_head %}{% endblock %}
 
         <link href="{% static 'css/websymbols.css' %}" rel="stylesheet" type="text/css">
 
@@ -53,6 +51,8 @@
         {% endif %}
 
         <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+        {% block extra_head %}{% endblock %}
 
         {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
             <script type="text/javascript">

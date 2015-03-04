@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 
-from tendenci.apps.accounts.forms import RegistrationCustomForm, PasswordResetForm, SetPasswordCustomForm
+from tendenci.apps.accounts.forms import (RegistrationCustomForm, SetPasswordCustomForm,)
 from tendenci.apps.accounts.views import register
 from tendenci.apps.profiles.views import password_change, password_change_done
 from tendenci.apps.registration.views import activate

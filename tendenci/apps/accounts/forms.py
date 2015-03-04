@@ -3,7 +3,7 @@ import re
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _, ugettext

@@ -7,7 +7,7 @@
             <i class="fa fa-globe"></i>{% get_language_info for user_lang as l %}<span class="nav-label">{{ l.name_local }}</span><span class="caret"></span>
         </a>
 
-        <ul id="t-admin-megamenu-lang-dd" class="dropdown-menu lang-dropdown" role="menu">
+        <ul id="t-megamenu-lang-dd" class="dropdown-menu lang-dropdown" role="menu">
             {% get_language_info_list for LANGUAGES as languages %}
 
             {% for language in languages %}

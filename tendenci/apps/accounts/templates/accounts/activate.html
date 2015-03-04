@@ -5,16 +5,22 @@
     {% trans "Account Activation" %}
 {% endblock %}
 
-{% block body %}
-{% if account %}
-    {% trans "Your account has been activated." %}
-{% if not user.is_authenticated %}
-    <a href="{% url 'auth_login' %}">{% trans "Log in" %}</a> now.<br />
-{% else %}
-    <a href="{% url 'dashboard' %}">{% trans "Go to the dashboard" %}</a><br />
-{% endif %}
-{% else %}
-{% trans "Activation failed." %} <br /><br />
-{% endif %}
+{% block content %}
+    {% if account %}
+        <p>{% trans "Your account has been activated." %}</p>
 
+        {% if not user.is_authenticated %}
+            {% url 'auth_login' as auth_login_url %}
+            <p>{% blocktrans with auth_login_url=auth_login_url %}
+                <a href="{{ auth_login_url }}">Log in</a> now
+            {% endblocktrans %}</p>
+        {% else %}
+            {% url 'dashboard' as dashboard_url %}
+            <p>{% blocktrans with dashboard_url=dashboard_url %}
+                <a href="{{ dashboard_url }}">Go to the dashboard</a>
+            {% endblocktrans %}</p>
+        {% endif %}
+    {% else %}
+        <p>{% trans "Activation failed." %}</p>
+    {% endif %}
 {% endblock %}
