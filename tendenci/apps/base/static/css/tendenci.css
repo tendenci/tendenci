@@ -1,0 +1,16 @@
+/* User megamenu */
+
+#t-users-megamenu .glyph {
+    margin-right: 10px;
+}
+
+#t-users-megamenu .nav-label + .caret {
+    margin-left: 4px;
+}
+
+#t-users-megamenu .fa-globe {
+    font-size: 16px;
+    margin: 0 10px 0 0;
+    padding: 0 1px;
+    vertical-align: middle;
+}
