@@ -1,16 +1,90 @@
-/* User megamenu */
+html {
+    margin-top: 30px;
+}
 
-#t-users-megamenu .glyph {
+
+/* Common megamenu styles */
+.t-megamenu {
+    min-height: 30px;
+    z-index: 9999999 !important;
+}
+
+.t-megamenu a {
+    text-transform: none;
+}
+
+.t-megamenu .nav-logo {
+    display: inline-block;
+    margin: 3px 0;
+    vertical-align: middle;
+}
+
+.t-megamenu .navbar-brand {
+    height: 100%;
+    padding: 0 15px;
+}
+
+.t-megamenu-toggle {
+    margin-bottom: 2px;
+    margin-top: 2px;
+    padding: 5px 10px;
+}
+
+.t-megamenu .dropdown-toggle,
+#t-megamenu-logout {
+    padding: 5px 15px;
+}
+
+#t-megamenu-logout > .glyph {
+    display: inline-block;
+    margin-right: 9px;
+    line-height: 14px;
+}
+
+#t-megamenu-search-form {
+    margin: 2px 0;
+}
+
+#t-megamenu-search-form-input {
+    height: 26px;
+}
+
+.t-megamenu .t-megamenu-navbar-link {
+    padding: 5px 15px;
+}
+
+.t-megamenu .glyph {
     margin-right: 10px;
 }
 
-#t-users-megamenu .nav-label + .caret {
+.t-megamenu .nav-label + .caret {
     margin-left: 4px;
 }
 
-#t-users-megamenu .fa-globe {
+.t-megamenu .fa-globe {
     font-size: 16px;
     margin: 0 10px 0 0;
     padding: 0 1px;
     vertical-align: middle;
 }
+
+.t-megamenu .nav-label {
+    display: inline-block;
+    line-height: 16px;          /* make sure this is the same height as the .nav-icon */
+}
+
+.t-megamenu .content-item {
+    margin-bottom: 5px;
+}
+
+.t-megamenu .list-unstyled > .content-item:last-child {
+    margin: 0;
+}
+
+#t-megamenu-lang-dd {
+    height: 500px;
+    overflow-y: scroll;
+}
+
+
+/* User megamenu */
