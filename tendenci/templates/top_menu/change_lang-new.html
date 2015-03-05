@@ -17,10 +17,10 @@
             {% endfor %}
         </ul>
 
-        <form id="lang-form" action="{% url 'base.set_language' %}" method="post" style="display:none;">
+        <form id="t-megamenu-lang-form" class="hidden" action="{% url 'base.set_language' %}" method="post">
             {% csrf_token %}
             <input name="next" type="hidden" value="{{ redirect_to }}" />
-            <input id="lang-id_language" name="language" type="hidden" value="{{ user_lang }}" />
+            <input id="t-megamenu-lang-input" name="language" type="hidden" value="{{ user_lang }}">
         </form>
     {% endwith %}
 </li>
