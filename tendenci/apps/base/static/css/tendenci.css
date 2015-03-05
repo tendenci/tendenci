@@ -81,6 +81,10 @@ html {
     margin: 0;
 }
 
+.t-megamenu .yamm-content {
+    padding: 0 15px;
+}
+
 #t-megamenu-lang-dd {
     height: 500px;
     overflow-y: scroll;

@@ -1,5 +1,6 @@
-{% load styled_forms %}
 {% load i18n %}
+{% load styled_forms %}
+
 
 {% if field_obj.field_name == '' %}
     {% if field_obj.field_name == '' %}
@@ -25,7 +26,7 @@
                     {% endif %}
                     <div class="field">
                         {{ field }}
-                        <span class="label{% if field.field.required %} required{% endif %}">
+                        <span class="label label-default{% if field.field.required %} required{% endif %}">
                             {{ field.label_tag }}
                         </span>
                     </div>
@@ -39,7 +40,7 @@
 
                     {% if field_obj.field_name == 'password' %}
 
-                        <div class="label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
+                        <div class="label label-default{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
                             {{ field_obj.label }}
                         </div>
 
@@ -59,7 +60,7 @@
                         </div>
 
                         <br />
-                        <div class="label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
+                        <div class="label label-default{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
                             {{ field_pwd.label_tag }}
                         </div>
 
@@ -69,7 +70,7 @@
 
                     {% else %}
 
-                        <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
+                        <div class="label label-default{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
                             {{ field_obj.label }}
                         </div>
                         {% if field|is_checkboxselectmultiple %}

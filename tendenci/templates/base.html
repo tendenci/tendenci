@@ -27,10 +27,9 @@
             <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
         {% endblock %}
 
-        <link href="{% static 'css/tendenci.css' %}" rel="stylesheet" type="text/css" media="screen">
-        {# <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css"> #}
-        {# <link href="{% static 'css/t_nav_layout.css' %}" rel="stylesheet" type="text/css"> #}
-        {# <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css"> #}
+        {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
+            <link href="{% static 'yamm/yamm.css' %}" rel="stylesheet" type="text/css">
+        {% endif %}
 
         <link href="{% static 'css/websymbols.css' %}" rel="stylesheet" type="text/css">
 
@@ -39,9 +38,6 @@
         {% endif %}
 
         {% if request.user.is_authenticated %}
-            {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
-                <link href="{% static 'yamm/yamm.css' %}" rel="stylesheet" type="text/css">
-            {% endif %}
             <link href="{% static 'css/admin_menu.css' %}" rel="stylesheet" type="text/css">
             {# <link href="{% static 'css/theme_bar.css' %}" rel="stylesheet" type="text/css"> #}
         {% endif %}
@@ -51,6 +47,11 @@
         {% endif %}
 
         <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+        <link href="{% static 'css/tendenci.css' %}" rel="stylesheet" type="text/css" media="screen">
+        {# <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css"> #}
+        {# <link href="{% static 'css/t_nav_layout.css' %}" rel="stylesheet" type="text/css"> #}
+        {# <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css"> #}
 
         {% block extra_head %}{% endblock %}
 
@@ -113,10 +114,10 @@
 
         <script type="text/javascript">
             jQuery(document).ready(function () {
-                jQuery('#lang-menu a').click(function (e) {
+                jQuery('#t-megamenu-lang-dd a').click(function (e) {
                     var lang = jQuery(this).data('lang');
-                    jQuery('#lang-form #lang-id_language').attr('value', lang);
-                    jQuery('#lang-form').submit();
+                    jQuery('#t-megamenu-lang-input').attr('value', lang);
+                    jQuery('#t-megamenu-lang-form').submit();
                 });
             });
         </script>
