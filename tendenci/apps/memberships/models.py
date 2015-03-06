@@ -15,6 +15,7 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django import forms
 from django.utils.importlib import import_module
+from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
 from django.core.urlresolvers import reverse
@@ -22,7 +23,7 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.db.models.fields import AutoField
 
-from tendenci.apps.base.utils import day_validate, is_blank
+from tendenci.apps.base.utils import day_validate, is_blank, tcurrency
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.utils import get_notice_recipients
@@ -95,6 +96,10 @@ VALID_MEMBERSHIP_STATUS_DETAIL = ['active', 'pending', 'expired', 'archive', 'di
 
 
 class MembershipType(OrderingBaseModel, TendenciBaseModel):
+    PRICE_FORMAT = u'%s - %s'
+    ADMIN_FEE_FORMAT = u' (+%s admin fee)'
+    RENEW_FORMAT = u' Renewal'
+
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
@@ -286,6 +291,32 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
                 return expiration_dt
 
+    def get_price_display(self, customer):
+        renew_mode = False
+        if isinstance(customer, User):
+            m_list = MembershipDefault.objects.filter(user=customer, membership_type=self)
+            renew_mode = any([m.can_renew() for m in m_list])
+
+        self.renewal_price = self.renewal_price or 0
+        if renew_mode:
+            price_display = (self.PRICE_FORMAT + self.RENEW_FORMAT) % (
+                self.name,
+                tcurrency(self.renewal_price)
+            )
+        else:
+            if self.admin_fee:
+                price_display = (self.PRICE_FORMAT + self.ADMIN_FEE_FORMAT) % (
+                    self.name,
+                    tcurrency(self.price),
+                    tcurrency(self.admin_fee)
+                )
+            else:
+                price_display = (self.PRICE_FORMAT) % (
+                    self.name,
+                    tcurrency(self.price)
+                )
+
+        return mark_safe(price_display)
 
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)

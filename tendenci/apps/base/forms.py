@@ -6,12 +6,41 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
-from captcha.fields import CaptchaField
+from captcha.fields import CaptchaField, CaptchaTextInput
 SIMPLE_ANSWER = 22
 SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re not a bot)')
 
 slug_re = compile(r'^[-\w\/]+$')
 validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
+
+
+class FormControlWidgetMixin(object):
+    """
+    Mixin that adds 'form-control' class to all fields of a form
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(FormControlWidgetMixin, self).__init__(*args, **kwargs)
+
+        self.add_form_control_class()
+
+    def add_form_control_class(self):
+
+        # Add .'form-control' class to all field widgets
+        for field_name in self.fields.keys():
+            if self.fields[field_name].widget.__class__.__name__.lower() not in ['checkboxinput', 'radioselect', 'checkboxselectmultiple']:
+                widget_attrs = self.fields[field_name].widget.attrs
+
+                class_attr = 'form-control'
+                if 'class' in widget_attrs.keys():
+                    class_attr = widget_attrs['class']
+
+                    if 'form-control' not in class_attr:
+                        class_attr = class_attr + ' form-control'
+
+                self.fields[field_name].widget.attrs.update({'class': class_attr})
+
 
 class SlugField(CharField):
     """
@@ -68,7 +97,7 @@ class PasswordForm(forms.Form):
         return self.cleaned_data
 
 
-class CaptchaForm(forms.Form):
+class CaptchaForm(FormControlWidgetMixin, forms.Form):
     captcha = CaptchaField(label=_('Type the code below'))
 
 

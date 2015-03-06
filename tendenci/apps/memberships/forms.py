@@ -1,36 +1,40 @@
-#from captcha.fields import CaptchaField
 from datetime import datetime
+
+from django import forms
+from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
+from django.utils.translation import ugettext_lazy as _
+
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
 
-from django.contrib.auth.models import User
-from django import forms
-from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
-from django.core.files.storage import FileSystemStorage
-
 from tendenci.apps.base.fields import EmailVerificationField, PriceField, CountrySelectField
-from tendenci.apps.corporate_memberships.models import (
-    CorpMembership, CorpMembershipAuthDomain)
-from tendenci.apps.user_groups.models import Group
-from tendenci.apps.profiles.models import Profile
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.careers.models import Career
+from tendenci.apps.corporate_memberships.models import (CorpMembership, CorpMembershipAuthDomain,)
+from tendenci.apps.educations.models import Education
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.memberships.fields import (
+    TypeExpMethodField, NoticeTimeTypeField, MembershipTypeModelChoiceField,
+)
 from tendenci.apps.memberships.models import (
     MembershipDefault, MembershipDemographic, MembershipAppField, MembershipType,
-    Notice, MembershipImport, MembershipApp, MembershipFile)
-from tendenci.apps.memberships.fields import TypeExpMethodField, NoticeTimeTypeField
+    Notice, MembershipImport, MembershipApp, MembershipFile
+)
 from tendenci.apps.memberships.settings import UPLOAD_ROOT
-from tendenci.apps.memberships.utils import normalize_field_names
 from tendenci.apps.memberships.utils import (
     get_membership_type_choices, get_corporate_membership_choices, get_selected_demographic_fields,
-    get_ud_file_instance)
+    get_ud_file_instance, normalize_field_names, get_notice_token_help_text,
+)
 from tendenci.apps.memberships.widgets import (
-    CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget)
-from tendenci.apps.memberships.utils import get_notice_token_help_text
+    CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget,
+)
 from tendenci.apps.notifications.utils import send_welcome_email
-from tendenci.apps.educations.models import Education
-from tendenci.apps.careers.models import Career
-from tendenci.apps.entities.models import Entity
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.profiles.models import Profile
 
 
 THIS_YEAR = datetime.today().year
@@ -537,7 +541,7 @@ def assign_fields(form, app_field_objs):
             obj.label_type = ' '.join(label_type)
 
 
-class UserForm(forms.ModelForm):
+class UserForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = User
 
@@ -590,6 +594,7 @@ class UserForm(forms.ModelForm):
                                 })
 
         self.field_names = [name for name in self.fields.keys()]
+        self.add_form_control_class()
 
     def clean(self):
         """
@@ -699,7 +704,7 @@ class UserForm(forms.ModelForm):
         return user
 
 
-class ProfileForm(forms.ModelForm):
+class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
     country = CountrySelectField(label=_('Country'), required=False)
     country_2 = CountrySelectField(label=_('Country'), required=False)
     class Meta:
@@ -709,6 +714,8 @@ class ProfileForm(forms.ModelForm):
         super(ProfileForm, self).__init__(*args, **kwargs)
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
+
+        self.add_form_control_class()
 
     def save(self, *args, **kwargs):
         """
@@ -737,7 +744,7 @@ class ProfileForm(forms.ModelForm):
 
 YEAR_CHOICES = [(i, i) for i in range(1900, THIS_YEAR + 50)]
 YEAR_CHOICES = [('', '?')] + YEAR_CHOICES
-class EducationForm(forms.Form):
+class EducationForm(FormControlWidgetMixin, forms.Form):
 
     school1 = forms.CharField(label=_('School'), max_length=200, required=False, initial='')
     major1 = forms.CharField(label=_('Major'), max_length=200, required=False, initial='')
@@ -786,6 +793,7 @@ class EducationForm(forms.Form):
                         self.fields[field_key].initial = education.graduation_year
                     cnt += 1
 
+        self.add_form_control_class()
 
     def save(self, user):
         data = self.cleaned_data
@@ -823,7 +831,7 @@ class EducationForm(forms.Form):
                 education.save()
 
 
-class DemographicsForm(forms.ModelForm):
+class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = MembershipDemographic
 
@@ -866,6 +874,8 @@ class DemographicsForm(forms.ModelForm):
 
                     else:
                         self.fields[field_name].initial = getattr(self.demographics, field_name)
+
+        self.add_form_control_class()
 
     def save(self, commit=True, *args, **kwargs):
         pks ={}
@@ -913,7 +923,7 @@ class DemographicsForm(forms.ModelForm):
         return demographic
 
 
-class MembershipDefault2Form(forms.ModelForm):
+class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', _('Active')),
             ('pending', _('Pending')),
@@ -921,12 +931,25 @@ class MembershipDefault2Form(forms.ModelForm):
             ('inactive', _('Inactive')),
             ('expired', _('Expired')),
             ('archive', _('Archive')),
-                             )
+    )
+
     STATUS_CHOICES = (
         (1, _('Active')),
-        (0, _('Inactive')))
+        (0, _('Inactive'))
+    )
 
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
+    payment_method = PaymentMethodModelChoiceField(
+        label=_('Payment Method'),
+        widget=forms.RadioSelect(),
+        empty_label=None,
+        queryset=None
+    )
+    membership_type = MembershipTypeModelChoiceField(
+        label=_('Membership Type'),
+        empty_label=None,
+        queryset=None
+    )
 
     class Meta:
         model = MembershipDefault
@@ -953,22 +976,28 @@ class MembershipDefault2Form(forms.ModelForm):
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
 
+        # NOTE: customer attr is needed by MembershipTypeModelChoiceField!
+        self.fields['membership_type'].customer = customer
+
+        mt_choices = get_membership_type_choices(
+            request_user,
+            customer,
+            self.membership_app,
+            corp_membership=self.corp_membership
+        )
+        mt_choices_pks = [mt_choice[0] for mt_choice in mt_choices]
+        mt_choices = MembershipType.objects.filter(pk__in=mt_choices_pks).order_by('position')
+
+        self.fields['membership_type'].queryset = mt_choices
+
         if multiple_membership:
             self.fields['membership_type'].widget = forms.widgets.CheckboxSelectMultiple(
-                    choices=get_membership_type_choices(
-                        request_user,
-                        customer,
-                        self.membership_app,
-                        corp_membership=self.corp_membership),
-                    attrs=self.fields['membership_type'].widget.attrs)
+                choices=self.fields['membership_type'].choices,
+            )
         else:
             self.fields['membership_type'].widget = forms.widgets.RadioSelect(
-                    choices=get_membership_type_choices(
-                        request_user,
-                        customer,
-                        self.membership_app,
-                        corp_membership=self.corp_membership),
-                    attrs=self.fields['membership_type'].widget.attrs)
+                choices=self.fields['membership_type'].choices,
+            )
 
         if self.corp_membership:
             memb_type = self.corp_membership.corporate_membership_type.membership_type
@@ -982,11 +1011,7 @@ class MembershipDefault2Form(forms.ModelForm):
         if not require_payment:
             del self.fields['payment_method']
         else:
-            payment_method_choices = [(p.pk, p.human_name) for p in self.membership_app.payment_methods.all()]
-            self.fields['payment_method'].empty_label = None
-            self.fields['payment_method'].widget = forms.widgets.RadioSelect(
-                        choices=payment_method_choices,
-                        attrs=self.fields['payment_method'].widget.attrs)
+            self.fields['payment_method'].queryset = self.membership_app.payment_methods.all()
 
         self_fields_keys = self.fields.keys()
 
@@ -1021,6 +1046,8 @@ class MembershipDefault2Form(forms.ModelForm):
         if self.instance and self.instance.pk:
             self.fields['membership_type'].widget.attrs['disabled'] = 'disabled'
             del self.fields['discount_code']
+
+        self.add_form_control_class()
 
     def save(self, *args, **kwargs):
         """

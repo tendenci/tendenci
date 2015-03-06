@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -17,9 +16,9 @@
 {% endif %}
 
 
-<ul class="dropdown-menu">
+<ul id="t-admin-megamenu-memberships-dd" class="dropdown-menu" role="menu">
     <li>
-        <div class="yamm-content custom-yamm-content content-dropdown">
+        <div class="yamm-content content-dropdown">
             <div class="row">
                 <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                     {% if app_object %}
