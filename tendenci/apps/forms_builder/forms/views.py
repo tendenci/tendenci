@@ -31,8 +31,9 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.exports.utils import run_export_task
 
-from tendenci.apps.forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
-    PricingForm, BillingForm)
+from tendenci.apps.forms_builder.forms.forms import (
+    FormForForm, FormForm, FormForField, PricingForm, BillingForm
+)
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, Pricing
 from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     generate_submitter_email_body, generate_email_subject,
@@ -70,9 +71,10 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     else:
         form = form_class(user=request.user)
 
+    print formset
     return render_to_response(template_name, {
         'form':form,
-        'formset':formset,
+        'formset': formset,
     }, context_instance=RequestContext(request))
 
 

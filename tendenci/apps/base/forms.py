@@ -29,7 +29,13 @@ class FormControlWidgetMixin(object):
 
         # Add .'form-control' class to all field widgets
         for field_name in self.fields.keys():
-            if self.fields[field_name].widget.__class__.__name__.lower() not in ['checkboxinput', 'radioselect', 'checkboxselectmultiple']:
+
+            print '%s: %s' % (field_name, self.fields[field_name].widget.__class__.__name__.lower(),)
+            non_form_control_widgets = [
+                'checkboxinput', 'radioselect', 'checkboxselectmultiple',
+                'userpermissionwidget', 'grouppermissionwidget', 'memberpermissionwidget',
+            ]
+            if self.fields[field_name].widget.__class__.__name__.lower() not in non_form_control_widgets:
                 widget_attrs = self.fields[field_name].widget.attrs
 
                 class_attr = 'form-control'

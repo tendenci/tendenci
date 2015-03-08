@@ -61,7 +61,7 @@
                             {{ field_pwd }}
                         </div>
                 {% else %}
-                    <label {% if not field|is_checkbox and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="col-sm-3 control-label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_obj.label }}</label>
+                    <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="col-sm-3 control-label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_obj.label }}</label>
 
                     {% if field|is_checkboxselectmultiple %}
                         {% if field.help_text %}
@@ -84,7 +84,11 @@
                             </div>
                         {% endif %}
 
-                        {% if field|is_checkbox or field|is_checkboxselectmultiple %}
+                        {% if field|is_checkbox %}
+                            <div class="checkbox">
+                                <label>{{ field }}</label>
+                            </div>
+                        {% elif field|is_checkboxselectmultiple %}
                             {% for choice in field.field.choices %}
                                 <div class="checkbox">
                                     <label>
