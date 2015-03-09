@@ -71,7 +71,6 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     else:
         form = form_class(user=request.user)
 
-    print formset
     return render_to_response(template_name, {
         'form':form,
         'formset': formset,

@@ -5,11 +5,11 @@
 
 
 {% if form.errors.values %}
-    <div class="errors">
+    <div class="alert alert-danger" role="alert">
         {% trans 'There were some problems in the form. Please review. Thanks!' %}
 
         {% for error in form.non_field_errors %}
-            <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+            <p><a href="#" class="alert-link">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
         {% endfor %}
 
         {% if form.fieldsets.fieldsets %}
@@ -17,7 +17,7 @@
                 {% for field in fieldset %}
                     {% if field.errors %}
                     {% for error in field.errors %}
-                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
                     {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -26,7 +26,7 @@
             {% for field in form %}
                 {% if field.errors %}
                       {% for error in field.errors %}
-                          <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                          <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
                       {% endfor %}
                 {% endif %}
             {% endfor %}
@@ -51,7 +51,7 @@
                         {{ field }}
                     {% else %}
                         <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
-                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}</label>
+                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
 
                             <div class="col-sm-9">
                                 {% if field|is_checkbox %}
@@ -104,7 +104,7 @@
             <p>{% blocktrans with l=filed.label %}{{ l }}{% endblocktrans %}</p>
         {% else %}
             <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
-                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}</label>
+                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
 
                 <div class="col-sm-9">
                     {% if field|is_checkbox %}

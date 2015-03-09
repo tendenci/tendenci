@@ -1,14 +1,14 @@
-import datetime
 from django import forms
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.recurring_payments.models import BILLING_PERIOD_CHOICES, DUE_SORE_CHOICES
+
 
 class BillingDateSelectInput(forms.TextInput):
     def render(self, name, value, attrs=None):
         return mark_safe('%s day(s) after billing cycle end date' \
                          % super(BillingDateSelectInput, self).render(name, value, attrs))
+
 
 class BillingDateSelectWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
@@ -45,15 +45,13 @@ class BillingDateSelectWidget(forms.MultiWidget):
 
         output_html = """
                         <div id="billing_dt_select">
-                            %s day(s) after billing cycle %s date
+                            %s<p>day(s) after billing cycle</p>%s<p>date</p>
                         </div>
                       """ % (rendered_num_days,
                              rendered_due_sore
                              )
 
         return mark_safe(output_html)
-
-
 
     def render_widget(self, widget, name, value, attrs, index=0, id=None):
         i = index
@@ -69,7 +67,6 @@ class BillingDateSelectWidget(forms.MultiWidget):
             final_attrs = dict(attrs, id='%s_%s' % (id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
-
 
     def decompress(self, value):
         if value:
@@ -110,18 +107,15 @@ class BillingCycleWidget(forms.MultiWidget):
         rendered_billing_period = self.render_widget(billing_period_widget,
                                     name, value, final_attrs, self.pos_d['billing_period'][0], id_)
 
-
         output_html = """
-                        <div id="billing_cycle">
-                            Every %s %s
+                        <div id="t-recurring-payment-billing-cycle">
+                            <p>Every</p>%s%s
                         </div>
                       """ % (rendered_billing_frequency,
                              rendered_billing_period
                              )
 
         return mark_safe(output_html)
-
-
 
     def render_widget(self, widget, name, value, attrs, index=0, id=None):
         i = index
@@ -137,7 +131,6 @@ class BillingCycleWidget(forms.MultiWidget):
             final_attrs = dict(attrs, id='%s_%s' % (id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
-
 
     def decompress(self, value):
         if value:

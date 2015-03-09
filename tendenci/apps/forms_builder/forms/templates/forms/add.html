@@ -13,7 +13,7 @@
     <form id="t-forms-builder-form" class="form-horizontal" action="." method="post">{% csrf_token %}
         {{ form|styled_form }}
 
-        <fieldset id='pricing-options'>
+        <fieldset id="t-forms-builder-pricing-options" class="hidden">
             <legend>{% trans "Pricing Options" %}</legend>
             {{ formset.management_form }}
             {{ formset|styled_form_set }}
@@ -31,38 +31,28 @@
     {{ block.super }}
     <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
     <script type="text/javascript">
-        $(document).ready(function(){
-
-            var custom_payment = $('#id_custom_payment');
+        $(document).ready(function() {
+            var $customPaymentFieldset = $('#id_custom_payment'),
+                showCustomPaymentFieldset;
 
             /* Take Payment CHANGE Handler */
-            custom_payment.change(function(){
-                pricings = $(this).attr('checked');
-                if(pricings){
-                    $('#pricing-options').show();
-                    $('.id_payment_methods').show();
-                    $('.id_recurring_payment').show();
-                }else{
-                    $('#pricing-options').hide();
-                    $('.id_payment_methods').hide();
-                    $('.id_recurring_payment').hide();
-                }
+            $customPaymentFieldset.change(function () {
+                var pricings = $(this).prop('checked');
+
+                $('#t-forms-builder-pricing-options').toggleClass('hidden', !pricings);
+                $('.id_payment_methods').toggleClass('hidden', !pricings);
+                $('.id_recurring_payment').toggleClass('hidden', !pricings);
             });
 
             /* Presetting Payment Display */
-            if (custom_payment.attr('checked')){
-                $('#pricing-options').show();
-                $('.id_payment_methods').show();
-                $('.id_recurring_payment').show();
-            } else {
-                $('#pricing-options').hide();
-                $('.id_payment_methods').hide();
-                $('.id_recurring_payment').hide();
-            }
+            showCustomPaymentFieldset = $customPaymentFieldset.prop('checked');
+            $('#t-forms-builder-pricing-options').toggleClass('hidden', !showCustomPaymentFieldset);
+            $('.id_payment_methods').toggleClass('hidden', !showCustomPaymentFieldset);
+            $('.id_recurring_payment').toggleClass('hidden', !showCustomPaymentFieldset);
 
             var recurring_payment = $('#id_recurring_payment');
             recurring_payment.change(function(){
-                rp = $(this).attr('checked');
+                rp = $(this).prop('checked');
                 if(rp=='checked') {
                     $('.recurring-payment').closest('div.form-field').show();
                 }else{
@@ -71,7 +61,7 @@
             });
 
             /*Presenting recurring payment display */
-            if (recurring_payment.attr('checked')){
+            if (recurring_payment.prop('checked')){
                 $('.recurring-payment').closest('div.form-field').show();
             } else {
                 $('.recurring-payment').closest('div.form-field').hide();

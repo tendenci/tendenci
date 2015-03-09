@@ -20,6 +20,7 @@ from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.utils import get_template_list, tcurrency
 from tendenci.apps.base.fields import EmailVerificationField, PriceField
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import currency_check
 from tendenci.apps.payments.fields import PaymentMethodModelMultipleChoiceField
 from tendenci.apps.recurring_payments.fields import BillingCycleField
@@ -472,7 +473,7 @@ class FormForField(forms.ModelForm):
         return cleaned_data
 
 
-class PricingForm(forms.ModelForm):
+class PricingForm(FormControlWidgetMixin, forms.ModelForm):
     billing_dt_select = BillingCycleField(label=_('When to bill'),
                                           widget=BillingDateSelectWidget,
                                           help_text=_('It is used to determine the payment due date for each billing cycle'))
@@ -522,12 +523,17 @@ class PricingForm(forms.ModelForm):
             self.fields['billing_cycle'].initial = [1, u'month']
 
         # Add class for recurring payment fields
-        self.fields['taxable'].widget.attrs['class'] = 'recurring-payment'
-        self.fields['tax_rate'].widget.attrs['class'] = 'recurring-payment'
-        self.fields['billing_cycle'].widget.attrs['class'] = 'recurring-payment'
-        self.fields['billing_dt_select'].widget.attrs['class'] = 'recurring-payment'
-        self.fields['has_trial_period'].widget.attrs['class'] = 'recurring-payment'
-        self.fields['trial_period_days'].widget.attrs['class'] = 'recurring-payment'
+        recurring_payment_fields = [
+            'taxable', 'tax_rate', 'billing_cycle', 'billing_dt_select',
+            'has_trial_period', 'trial_period_days'
+        ]
+
+        for field in recurring_payment_fields:
+            class_attr = self.fields[field].widget.attrs['class']
+            if 'recurring-payment' not in class_attr:
+                class_attr += ' recurring-payment'
+
+            self.fields[field].widget.attrs.update({'class': class_attr})
 
     def save(self, **kwargs):
         pricing = super(PricingForm, self).save(**kwargs)
