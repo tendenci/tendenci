@@ -67,19 +67,19 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{{ app.name }}</h1>
-    {% blocktrans with d=app.description|safe %}{{ d }}{% endblocktrans %}
+    <div class="page-header">
+        <h1>{{ app.name }}{% if app.description %} <small>{% blocktrans with d=app.description|safe %}{{ d }}{% endblocktrans %}</small>{% endif %}</h1>
+    </div>
 
     {% if is_edit %}
         {% url "membership.details" membership.pk as mem_url %}
-        {% blocktrans %}
+        {% blocktrans with mem_url=mem_url %}
             <p>Update your membership information.</p>
-            <span> Go back to your <a href="{{ mem_url }}">Membership Info</a></span>
+            <span>Go back to your <a href="{{ mem_url }}">Membership Info</a></span>
         {% endblocktrans %}
     {% endif %}
 
     <form id="t-memberships-application-form" class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-
         {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or education_form.errors.values or captcha_form.errors.values and not is_edit %}
             <div class="form-errors">
                 {% trans 'There were some problems in the form. Please review. Thanks!' %}
@@ -171,19 +171,47 @@
         {% endfor %}
 
         {% if membership_form.discount_code %}
-            <div class="form-field discount-field-wrap">
-                <div id="discount-message" class="error">{{ membership_form.discount_code.errors }}</div>
-                <div class="required">{% trans "Discount Code" %}</div>
-                <div class="field">{{ membership_form.discount_code }}</div>
-                <button type="button" id="discount_check">{% trans 'Check Discount' %}</button>
+            <div class="form-group">
+                <label for="{{ membership_form.discount_code.id_for_label }}" class="col-sm-3 control-label">{% trans "Discount Code" %}</label>
+
+                <div class="col-sm-9">
+                    {{ membership_form.discount_code }}
+
+                    {% if membershrip_form.discount_code.errors %}
+                        <p id="{{ membershrip_form.discount_code.id_for_label }}-help-block" class="help-block">
+                            {{ membershrip_form.discount_code.errors.as_text }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="button" class="btn btn-default">{% trans "Check Discount" %}</button>
+                </div>
             </div>
         {% endif %}
 
         {% if not is_edit %}
-            {{ captcha_form.as_p }}
+            <div class="form-group">
+                <label for="{{ captcha_form.captcha.id_for_label }}" class="col-sm-3 control-label">{{ captcha_form.captcha.label }}</label>
+                <div class="col-sm-9">
+                    {{ captcha_form.captcha }}
+
+                    {% if captcha_form.captcha.errors %}
+                        <p id="{{ captcha_form.captcha.id_for_label }}-help-block" class="help-block">
+                            {{ captcha_form.captcha.errors.as_text }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
         {% endif %}
 
-        <input class="btn" type="submit" name="submit" value="{% trans 'Submit' %}" />
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+            </div>
+        </div>
     </form>
 {% endblock %}
 

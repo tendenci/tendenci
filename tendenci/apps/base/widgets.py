@@ -100,4 +100,7 @@ class PriceWidget(TextInput):
     def render(self, name, value, attrs=None):
         currency_symbol = get_setting('site', 'global', 'currencysymbol') or '$'
         html = super(PriceWidget, self).render(name, value, attrs)
-        return mark_safe("%s %s" %(currency_symbol, html))
+
+        input_group_addon_html = '<div class="input-group-addon">%s</div>' % currency_symbol
+        input_group_html = '<div class="input-group">%s%s</div>' % (input_group_addon_html, html,)
+        return mark_safe(input_group_html)

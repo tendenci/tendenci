@@ -75,3 +75,10 @@ class AppFieldSelectionField(forms.MultipleChoiceField):
             kwargs['choices'].append((field_name, label))
 
         super(AppFieldSelectionField, self).__init__(*args, **kwargs)
+
+
+class MembershipTypeModelChoiceField(forms.ModelChoiceField):
+    customer = None
+
+    def label_from_instance(self, obj):
+        return obj.get_price_display(self.customer)

@@ -1,20 +1,16 @@
 {% load i18n %}
+{% load l10n %}
 {% load styled_forms %}
 
 
 {% if field_obj.field_name == '' %}
-    {% if field_obj.field_name == '' %}
-        <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
-            <h2>{{ field_obj.label  }}</h2>
-            {% if field_obj.description %}
-            <div>{% blocktrans with d=field_obj.description %}{{ d }}{% endblocktrans %}</div>
-            {% endif %}
-        </div>
-    {% endif %}
+    <div class="page-header{% if field_obj.admin_only %} t-membershipapp-admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
+        <h2>{{ field_obj.label }}</h2>
+        {% if field_obj.description %} {% blocktrans with d=field_obj.description %}{{ d }}{% endblocktrans %}</small>{% endif %}
+    </div>
 {% else %}
-   {% if field %}
-    <div class="form-field{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
-        <div class="{{ field.auto_id }}">
+    {% if field %}
+        <div class="form-group{% if field_obj.admin_only %} t-membershipapp-admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
             {% if field_obj.field_stype == 'checkboxinput' %}
                 <div class="checkbox-input">
                     {% if field.errors %}
@@ -24,6 +20,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
+
                     <div class="field">
                         {{ field }}
                         <span class="label label-default{% if field.field.required %} required{% endif %}">
@@ -32,88 +29,93 @@
                     </div>
 
                     {% if field.help_text %}
-                        <div class="help-text">{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</div>
+                        <div class="help-block">{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</div>
                     {% endif %}
                 </div>
                 <div style="clear: both"><!-- IE7 --></div>
             {% else %}
+                {% if field_obj.field_name == 'password' %}
+                        <label for="{{ field.id_for_label }}" class="col-sm-3 control-label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_obj.label }}</label>
 
-                    {% if field_obj.field_name == 'password' %}
-
-                        <div class="label label-default{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
-                            {{ field_obj.label }}
-                        </div>
-
-                        <div class="field {{ field_obj.field_div_class }}">
+                        <div class="col-sm-9 {{ field_obj.field_div_class }}">
                             {% if field.errors %}
-                             <div class="error">
-                                 {% for error in field.errors %}
-                                    <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
-                                 {% endfor %}
-                             </div>
+                                <div class="error">
+                                    {% for error in field.errors %}
+                                        <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                                    {% endfor %}
+                                </div>
                             {% endif %}
 
                             {{ field }}
+
                             {% if field.help_text %}
-                                <span class="help-text"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
+                                <span class="help-block">{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</span>
                             {% endif %}
                         </div>
+                    </div>
 
-                        <br />
-                        <div class="label label-default{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">
-                            {{ field_pwd.label_tag }}
-                        </div>
+                    <div class="form-group{% if field_obj.admin_only %} t-membershipapp-admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="col-sm-3 control-label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_pwd.label_tag }}</label>
 
-                        <div class="field {{ field_obj.field_div_class }}">
+                        <div class="col-sm-9 {{ field_obj.field_div_class }}">
                             {{ field_pwd }}
                         </div>
+                {% else %}
+                    <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="col-sm-3 control-label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_obj.label }}</label>
 
-                    {% else %}
-
-                        <div class="label label-default{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
-                            {{ field_obj.label }}
-                        </div>
-                        {% if field|is_checkboxselectmultiple %}
-                            {% if field.help_text %}
-                            <span class="help-text checkmultiple"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
-                            {% endif %}
+                    {% if field|is_checkboxselectmultiple %}
+                        {% if field.help_text %}
+                            <span class="help-block checkmultiple">{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</span>
                         {% endif %}
+                    {% endif %}
 
-                        {% if field|is_fileinput %}
-                            {% if field.help_text %}
-                            <span class="help-text"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
-                            {% endif %}
+                    {% if field|is_fileinput %}
+                        {% if field.help_text %}
+                            <span class="help-block">{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</span>
                         {% endif %}
+                    {% endif %}
 
-                        <div class="field {% if field|is_fileinput %}fileinputbox{% else %}{{ field_obj.field_div_class }}{% endif %}">
-                            {% if field.errors %}
-                             <div class="error">
-                                 {% for error in field.errors %}
+                    <div class="col-sm-9 {% if field|is_fileinput %}fileinputbox{% else %}{{ field_obj.field_div_class }}{% endif %}">
+                        {% if field.errors %}
+                            <div class="error">
+                                {% for error in field.errors %}
                                     <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
-                                 {% endfor %}
-                             </div>
-                            {% endif %}
-                            {{ field }}
-                            {% if not field|is_checkboxselectmultiple and not field|is_fileinput %}
-                            {% if field.help_text %}
-                            <span class="help-text"><small>{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</small></span>
-                            {% endif %}
+                                {% endfor %}
+                            </div>
                         {% endif %}
 
-                        </div>
+                        {% if field|is_checkbox %}
+                            <div class="checkbox">
+                                <label>{{ field }}</label>
+                            </div>
+                        {% elif field|is_checkboxselectmultiple %}
+                            {% for choice in field.field.choices %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        {% elif field|is_radioselect %}
+                            {% for choice in field.field.choices %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
 
-                    {% endif %}
-
-                    {% if field_obj.field_stype == 'textarea' %}
-                    <div class="clear"></div>
-                    {% endif %}
-
-                    {% if field|is_radioselect or field|is_checkboxselectmultiple %}
-                    <div style="clear: both"><!-- IE7 --></div>
-                    {% endif %}
-
+                        {% if not field|is_checkboxselectmultiple and not field|is_fileinput %}
+                            {% if field.help_text %}
+                                <span class="help-block">{% blocktrans with h=field.help_text %}{{ h }}{% endblocktrans %}</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
             {% endif %}
-         </div>
-    </div>
+        </div>
     {% endif %}
 {% endif %}

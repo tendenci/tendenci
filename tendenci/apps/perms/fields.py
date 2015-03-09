@@ -132,7 +132,7 @@ class UserPermissionWidget(CheckboxSelectMultiple):
 
         # set up the html for output
         html += """
-            <table border="0" cellspacing="0" cellpadding="0" id="%(id)s">
+            <table class="table table-striped" id="%(id)s">
             <tr>
                 <th class="header-col-1">&nbsp;</th>
                 <th class="header-col-2">View</th>
@@ -216,7 +216,7 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
 
         # set up the html for output
         html += """
-            <table border="0" cellspacing="0" cellpadding="0" id="%(id)s">
+            <table class="table table-striped" id="%(id)s">
             <tr>
                 <th class="header-col-1">&nbsp;</th>
                 <th class="header-col-2">View</th>
@@ -300,7 +300,7 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
 
         # set up the html for output
         html += """
-            <table border="0" cellspacing="0" cellpadding="0" id="%(id)s">
+            <table class="table table-striped" id="%(id)s">
             <tr>
                 <th class="header-col-1">&nbsp;</th>
                 <th class="header-col-2">View</th>

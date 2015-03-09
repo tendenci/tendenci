@@ -123,39 +123,8 @@ def get_membership_type_choices(request_user, customer, membership_app, corp_mem
 
         membership_types = membership_types.order_by('position')
 
-    currency_symbol = get_setting("site", "global", "currencysymbol")
-
-    price_fmt = u'%s - %s'
-    admin_fee_fmt = u' (+%s admin fee)'
-    renew_fmt = u' Renewal'
-
     for mt in membership_types:
-        renew_mode = False
-        if isinstance(customer, User):
-            m_list = MembershipDefault.objects.filter(user=customer, membership_type=mt)
-            renew_mode = any([m.can_renew() for m in m_list])
-
-        mt.renewal_price = mt.renewal_price or 0
-        if renew_mode:
-            price_display = (price_fmt + renew_fmt) % (
-                mt.name,
-                tcurrency(mt.renewal_price)
-            )
-        else:
-            if mt.admin_fee:
-                price_display = (price_fmt + admin_fee_fmt) % (
-                    mt.name,
-                    tcurrency(mt.price),
-                    tcurrency(mt.admin_fee)
-                )
-            else:
-                price_display = (price_fmt) % (
-                    mt.name,
-                    tcurrency(mt.price)
-                )
-
-        price_display = mark_safe(price_display)
-        mt_list.append((mt.id, price_display))
+        mt_list.append((mt.id, mt.get_price_display(customer)))
 
     return mt_list
 
