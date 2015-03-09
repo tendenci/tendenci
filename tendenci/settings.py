@@ -540,7 +540,7 @@ INDEX_UPDATE_NOTE = 'updated hourly'
 # ----------------------------------- #
 # Django Admin Bootstrap
 # ------------------------------------#
-DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
+# DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
 from django.contrib import messages
 

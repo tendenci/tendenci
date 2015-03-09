@@ -11,3 +11,9 @@
     {% endif %}
     {% if has_absolute_url %}<li><a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
 {% endblock %}
+
+{% block field_sets %}
+    {% for fieldset in adminform %}
+      {% include "events/admin/fieldset.html" %}
+    {% endfor %}
+{% endblock %}

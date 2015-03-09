@@ -536,37 +536,37 @@ def _get_price_labels(pricing):
                                       description) )
 
 
-class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
+# class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
-    def __iter__(self):
-        for i, choice in enumerate(self.choices):
-            yield RadioImageInput(self.name, self.value, self.attrs.copy(), choice, i)
+#     def __iter__(self):
+#         for i, choice in enumerate(self.choices):
+#             yield RadioImageInput(self.name, self.value, self.attrs.copy(), choice, i)
 
-    def __getitem__(self, idx):
-        choice = self.choices[idx] # Let the IndexError propogate
-        return RadioImageInput(self.name, self.value, self.attrs.copy(), choice, idx)
+#     def __getitem__(self, idx):
+#         choice = self.choices[idx] # Let the IndexError propogate
+#         return RadioImageInput(self.name, self.value, self.attrs.copy(), choice, idx)
 
 
-class RadioImageInput(forms.widgets.RadioInput):
+# class RadioImageInput(forms.widgets.RadioInput):
 
-    def __unicode__(self):
-        if 'id' in self.attrs:
-            label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
-        else:
-            label_for = ''
-        choice_label = self.choice_label
-        return u'<label%s>%s %s</label>' % (label_for, self.tag(), choice_label)
+#     def __unicode__(self):
+#         if 'id' in self.attrs:
+#             label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
+#         else:
+#             label_for = ''
+#         choice_label = self.choice_label
+#         return u'<label%s>%s %s</label>' % (label_for, self.tag(), choice_label)
 
-    def tag(self):
-        from django.utils.safestring import mark_safe
-        from django.forms.util import flatatt
+#     def tag(self):
+#         from django.utils.safestring import mark_safe
+#         from django.forms.util import flatatt
 
-        if 'id' in self.attrs:
-            self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
-        final_attrs = dict(self.attrs, type='radio', name=self.name, value=self.choice_value)
-        if self.is_checked():
-            final_attrs['checked'] = 'checked'
-        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+#         if 'id' in self.attrs:
+#             self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
+#         final_attrs = dict(self.attrs, type='radio', name=self.name, value=self.choice_value)
+#         if self.is_checked():
+#             final_attrs['checked'] = 'checked'
+#         return mark_safe(u'<input%s />' % flatatt(final_attrs))
 
 
 class EventForm(TendenciBaseForm):
@@ -878,13 +878,13 @@ class TypeForm(forms.ModelForm):
         colorsets = TypeColorSet.objects.all()
 
         color_set_choices = [(color_set.pk,
-            '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s/" />'
-            % color_set.bg_color) for color_set in colorsets]
+            mark_safe('<img style="width:25px; height:25px" src="/event-logs/colored-image/%s/" />'
+            % color_set.bg_color)) for color_set in colorsets]
 
         self.fields['color_set'] = TypeChoiceField(
             choices=color_set_choices,
             queryset=colorsets,
-            widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
+            widget=forms.RadioSelect()
         )
 
     class Meta:
