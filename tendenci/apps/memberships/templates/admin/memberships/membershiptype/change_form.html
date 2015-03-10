@@ -11,3 +11,9 @@
 </script>
 {% endif %}
 {% endblock %}
+
+{% block field_sets %}
+    {% for fieldset in adminform %}
+      {% include "dab_override/fieldset.html" %}
+    {% endfor %}
+{% endblock %}
