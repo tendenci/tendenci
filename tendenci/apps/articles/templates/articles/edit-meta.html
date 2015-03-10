@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="t">
     <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% blocktrans with article.headline as article_headline %}Meta Information for<br />
     {{ article_headline }}{% endblocktrans %}</h1>

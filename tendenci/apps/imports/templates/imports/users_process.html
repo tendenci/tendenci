@@ -4,7 +4,7 @@
 
 {% block title %}{% trans 'Import Users' %}{% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="t">
 <div class="imports">
     <b>{% blocktrans with request.user.username as requser %}You ({{ requser }}) are importing the following file at (time) {% endblocktrans %}({% now "D d M Y P" %})</b>: <br>

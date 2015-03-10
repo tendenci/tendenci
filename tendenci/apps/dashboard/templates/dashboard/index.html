@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
 
 {% has_perm user events.view_event as view_events %}
 {% has_perm user articles.view_article as view_articles %}

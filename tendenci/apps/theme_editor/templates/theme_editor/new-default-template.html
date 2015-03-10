@@ -13,12 +13,13 @@
 {# in your default.html, be sure to wrap the the block body with custom_body like below #}
 
 {% block custom_body %}
-{% block body %}{{ block.super }}{% endblock body %}
+{% block content %}{{ block.super }}{% endblock content %}
 {% endblock custom_body %}
 
 {% endcomment %}
 
 {% block custom_body %}
+    {# TODO: check custom_body block #}
 <div class="t">
     <div class="page-wrap">
         {% if page.header_image %}

@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/invoices.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="t">
 <h1>{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans "Invoice" %}</h1>
 

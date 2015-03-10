@@ -3,7 +3,7 @@
 
 {% block title %}{% trans 'Report' %} {{ run.report.pk }} - {{ run.report.type|title }} - {% trans 'Run' %} {{ run.pk }}{% endblock title %}
 
-{% block body %}
+{% block content %}
 <h1>{% trans 'Report' %} {{ run.report.pk }} - {{ run.report.type|title }} - {% trans 'Run' %} {{ run.pk }}</h1>
 
 <p>
@@ -19,7 +19,7 @@
 
 <p><a href="{{ run.report.get_absolute_url }}">&larr; {% trans "Back to Report page" %}</a></p>
 
-{% endblock body %}
+{% endblock content %}
 
 {% block extra_body %}
 {{ block.super }}

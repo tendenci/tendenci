@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <h1>{% trans "Theme Picker" %}</h1>
 
 <form method="POST" action="{% url "theme_editor.get_themes" %}">{% csrf_token %}

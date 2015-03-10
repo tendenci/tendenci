@@ -4,7 +4,7 @@
 
 {% block title %}{{ block.super }} {% trans "Site Map" %}{% endblock%}
 
-{% block body %}
+{% block content %}
     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Sitemap" %}</h1>
     {% include "nav.html" %}
     {% list_navs as nav_sitemap_list limit=100 %}

@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
 
 {% has_perm request.user help_files.add_helpfile as can_add %}
 <div class="t">

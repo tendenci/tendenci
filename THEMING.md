@@ -301,7 +301,7 @@ Blocks are listed below in the order they typically appear in for a template.
 
 `{% block content_classes %}` - **Default.html only**. This block should be placed inside the class of the main content area. This is used on full-width pages like `/events/month/` or `/dashboard/` to ensure the width is overridden.
 
-`{% block body %}` - **Default.html only**. This block will be populated with the content from Tendenci, like a page, article, or job. This block should be included, but empty.
+`{% block content %}` - **Default.html only**. This block will be populated with the content from Tendenci, like a page, article, or job. This block should be included, but empty.
 
 `{% block sidebar %}` - **Default.html only**. This block should be wrapped around any sidebar content that is not intended to be displayed on wide pages like `/events/month/` or `/dashboard/`. Any content within this block will be removed from the page for those wide pages.
 
@@ -493,7 +493,7 @@ This section differs from `homepage.html` enough that all of it's code is below.
       </div> <!-- /.header -->
       
       <div class="main-content {% block content_classes %}{% endblock %}">
-        {% block body %}{% endblock %}    
+        {% block content %}{% endblock %}
       </div> <!-- /.main-content -->
       
       {% block sidebar %}

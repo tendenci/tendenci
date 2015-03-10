@@ -3,7 +3,7 @@
 
 {% block title %}{{ block.super }} {% trans '403 Forbidden' %}{% endblock%}
 
-{% block body %}
+{% block content %}
 {% if MODULE_USERS_USERSSECURITYMESSAGE %}
   {{ MODULE_USERS_USERSSECURITYMESSAGE }}
 {% else %}
