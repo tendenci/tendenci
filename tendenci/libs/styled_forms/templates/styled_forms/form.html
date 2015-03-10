@@ -6,7 +6,7 @@
 
 {% if form.errors.values %}
     <div class="alert alert-danger" role="alert">
-        {% trans 'There were some problems in the form. Please review. Thanks!' %}
+        <p>{% trans 'There were some problems in the form. Please review. Thanks!' %}</p>
 
         {% for error in form.non_field_errors %}
             <p><a href="#" class="alert-link">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>

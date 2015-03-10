@@ -1,7 +1,7 @@
 {% extends "default.html" %}
 {% load i18n %}
 
-{% block body %}
+{% block content %}
 {% if versions %}
     {% for version in versions %}
     {% if forloop.first %}
@@ -35,4 +35,4 @@
 <h1>{% trans 'No Old Versions Found' %}</h1>
 {% endif %}
 
-{% endblock body %}
+{% endblock content %}

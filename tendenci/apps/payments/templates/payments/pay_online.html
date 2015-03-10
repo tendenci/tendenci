@@ -1,7 +1,7 @@
 {% extends "payments/base1.html" %}
 {% load i18n %}
 
-{% block body %}
+{% block content %}
 {% if form %}
 <form action="{{ post_url }}" method="POST" name="myform99">
     {{ form.as_p }}

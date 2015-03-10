@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/photos.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
     <h1>{{ MODULE_PHOTOS_LABEL }} {% trans "Set Edit" %}</h1>
     <div class="forms">
     <form method="POST" action="">{% csrf_token %}

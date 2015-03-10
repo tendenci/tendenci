@@ -3,7 +3,7 @@
 
 {% block title %}{% trans "Invoices Financial Report" %} {% trans "for" %} {{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans "to" %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}{% endblock title %}
 
-{% block body %}
+{% block content %}
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
 <style>
 .print-only { display: none; }

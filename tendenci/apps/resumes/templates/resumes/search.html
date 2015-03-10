@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="Latest resumes" href="{% url "resume.feed" %}" />
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="t">
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_RESUMES_LABEL_PLURAL trans 'Resumes' %}</h1>
 

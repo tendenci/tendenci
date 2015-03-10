@@ -5,7 +5,7 @@
 
 {% block title %}{% trans 'Settings' %}{% endblock %}
 
-{% block body %}
+{% block content %}
 
 {% regroup settings by scope_category as settings_list %}
 {% for settings in settings_list %}

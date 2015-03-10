@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="t">
     <h1>{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% blocktrans with job.title as job_title %} Meta Information for<br />
     {{ job_title }}{% endblocktrans %}</h1>

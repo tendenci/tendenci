@@ -5,7 +5,8 @@
 
 {% if form_set.errors %}
     <div class="alert alert-danger" role="alert">
-        {% trans "There were some problems in the formset. Please review. Thanks!" %}
+        <p>{% trans "There were some problems in the formset. Please review. Thanks!" %}</p>
+
         {% for error in form_set.non_form_errors %}
             <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
         {% endfor %}

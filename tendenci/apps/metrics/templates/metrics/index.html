@@ -52,7 +52,7 @@
     </script>
 {% endblock extra_head %}
 
-{% block body %}
+{% block content %}
 <h1>{% trans "Tendenci stats" %}</h1>
 
 <table>
@@ -110,4 +110,4 @@
     {% trans 'Last 30 days Total' %} {{ month_sums.total_visits }}</p>
     <p>{% trans 'Storage' %}: {{ yesterday.disk_usage|filesizeformat }}</p>
 </div>
-{% endblock body %}
+{% endblock content %}

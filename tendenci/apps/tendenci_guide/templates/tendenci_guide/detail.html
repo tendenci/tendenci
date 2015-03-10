@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tendenci_guide.css">
 {% endblock extra_head %}
 
-{% block body %}
+{% block content %}
 <div class="guide-nav">
 <h3>{% blocktrans with s=guide.section %}{{ s }}{% endblocktrans %}</h3>
 <ul>
@@ -21,4 +21,4 @@
 <div>{% blocktrans with c=guide.content|safe %}{{ c }}{% endblocktrans %}</div>
 {% if next %}<h3>{% trans 'Next' %}: <a href="{% url "tendenci_guide.guide_page" next.slug %}">{% blocktrans with t=next.title %}{{ t }}{% endblocktrans %}</a></h3>{% endif %}
 </div>
-{% endblock body %}
+{% endblock content %}

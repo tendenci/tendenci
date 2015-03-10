@@ -3,7 +3,7 @@
 
 {% block title %}{{ block.super }}{% trans 'Error' %}{% endblock%}
 
-{% block body %}
+{% block content %}
     <h1>{% if user.is_authenticated %}{% blocktrans with user.username as use %}Oops {{ use }}, we caused a problem{% endblocktrans %}
     {% else %}{% trans 'Oops, we caused a problem' %}
     {% endif %}

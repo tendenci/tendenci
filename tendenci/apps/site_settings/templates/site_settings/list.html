@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/settings.css' %}">
 {% endblock%}
 
-{% block body %}
+{% block content %}
     <h1>{{ scope_category|title }} {% trans 'Settings' %}</h1>
 
     <form class="settings-form" method="post" enctype="multipart/form-data">{% csrf_token %}

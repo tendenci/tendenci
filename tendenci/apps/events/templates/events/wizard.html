@@ -13,7 +13,7 @@
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
-{% block body %}
+{% block content %}
     <p>{% blocktrans %}Step {{ step }} of {{ step_count }}{% endblocktrans %}</p>
     <form action="" method="post">{% csrf_token %}
         <table>

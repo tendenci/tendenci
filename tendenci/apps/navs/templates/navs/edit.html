@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/navs.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
 
 <div class="t">
     <h1>{% firstof MODULE_NAVS_LABEL trans "Nav" %} {% trans "Edit" %}</h1>
@@ -26,7 +26,7 @@
     </div>
 
 </div>
-{% endblock body %}
+{% endblock content %}
 
 {% block extra_body %}
     {{ block.super }}

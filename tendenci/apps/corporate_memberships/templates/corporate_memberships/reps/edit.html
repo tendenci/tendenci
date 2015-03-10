@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships-edit_reps.css">
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="t">
 <div class="corp-reps">
      <h1>{% trans "Representatives for: " %} <a href="{% url "corpmembership.view" corp_memb.id %}">{{ corp_memb.corp_profile.name }}</a></h1>

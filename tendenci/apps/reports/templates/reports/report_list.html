@@ -3,7 +3,7 @@
 
 {% block title %}{% trans 'Reports List' %}{% endblock title %}
 
-{% block body %}
+{% block content %}
 <h1>{% trans 'Reports' %}</h1>
 <p><a class="btn" href="{% url 'report_create' %}">{% trans 'Create a new report' %}</a></p>
 <p>{% blocktrans %}Each report is for a specific type of information (e.g. Invoices) and can have different options saved to be used in the future. All reports can be run multiple times with different date ranges, and are stored for future access.{% endblocktrans %}</p>
@@ -31,4 +31,4 @@
 {% endif %}
 
 
-{% endblock body %}
+{% endblock content %}

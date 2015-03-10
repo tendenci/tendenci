@@ -17,7 +17,7 @@ If your intentions are to only change the content of the page and not the surrou
 In your ``default.html`` file, locate the following code:
 ::
 
-    {% block body %}{{ block.super }}{% endblock body %}
+    {% block content %}{{ block.super }}{% endblock content %}
 
 You can wrap this code in another block that we can use for our custom page. That code would look like this:
 
@@ -25,7 +25,7 @@ You can wrap this code in another block that we can use for our custom page. Tha
    :emphasize-lines: 1,3
 
    {% block custom_body %}
-   {% block body %}{{ block.super }}{% endblock body %}
+   {% block content %}{{ block.super }}{% endblock content %}
    {% endblock custom_body %}
 
 Then, in your new template file, ``default-custom-name.html``, we will add the following code from our ``pages/view.html`` with a couple of changes. We will replace the beginning of the code with ``{% extends "pages/base.html" %}`` and replace our main block with ``{% block custom_body %}``.

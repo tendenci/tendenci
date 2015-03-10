@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}" href="{% url "job.feed" %}" />
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="t">
     <h1>{% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} {% trans "List" %}</h1>
 

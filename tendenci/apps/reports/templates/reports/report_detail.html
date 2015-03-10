@@ -3,7 +3,7 @@
 
 {% block title %}{% trans 'Report' %} {{ report.pk }} - {{ report.type|title }}{% endblock title %}
 
-{% block body %}
+{% block content %}
 <h1>{% trans 'Report' %} {{ report.pk }} - {{ report.type|title }}</h1>
 
 {% if report.config %}
@@ -41,4 +41,4 @@
 
 <p><a href="{% url 'report_list' %}">&larr; {% trans "Back to All Reports page" %}</a></p>
 
-{% endblock body %}
+{% endblock content %}
