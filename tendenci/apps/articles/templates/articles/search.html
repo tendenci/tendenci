@@ -1,10 +1,9 @@
 {% extends "articles/base.html" %}
-
 {% load i18n %}
 {% load staticfiles %}
 {% load article_tags %}
 {% load base_tags %}
-{% load pagination_tags %}
+{% load bootstrap_pagination_tags %}
 {% load search_tags %}
 
 
@@ -15,32 +14,49 @@
 {% block extra_head %}
     {{ block.super }}
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
-    <link rel="stylesheet" href="{% static 'css/articles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/search.css' %}">
     <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url 'article.feed' %}" />
 {% endblock %}
 
 {% block content %}
-    <div class="t">
-        <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</h1>
+    <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</h1>
 
-        {% autopaginate articles 10 %}
-        {% article_search %}
-        <span><em>{{ paginator.count }} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Article Search" %} {% trans "Found" %}</em></span>
+    {% autopaginate articles 1 %}
+    {% article_search %}
 
-        <div class="articles-wrap">
-            {% for article in articles %}
-                {% search_result article %}
-            {% empty %}
+    {% if MODULE_ARTICLES_LABEL_PLURAL %}
+        <h4 class="capitalize">
+            <em>{% blocktrans with module_articles_label_plural=MODULE_ARTICLES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ module_articles_label_plural }} Found
+            {% endblocktrans %}</em>
+        </h4>
+    {% else %}
+        <h4 class="capitalize">
+            <em>{% blocktrans with module_articles_label_plural="Articles" count=paginator.count %}
+                {{ count }} {{ module_articles_label_plural }} Found
+            {% endblocktrans %}</em>
+        </h4>
+    {% endif %}
+    </h4>
 
+    <section>
+        {% for article in articles %}
+            {% search_result article %}
+        {% empty %}
             {% if user.profile.is_superuser %}
-                <p><a href="{% url 'article.add' %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a></p>
+                <p><a href="{% url 'article.add' %}">
+                    {% if MODULE_ARTICLES_LABEL %}
+                        {% blocktrans with module_articles_label=MODULE_ARTICLES_LABEL %}
+                            Add a New {{ module_articles_label }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add a New Article" %}
+                    {% endif %}
+                </a></p>
             {% endif %}
         {% endfor %}
-        </div>
+    </section>
 
-        {% paginate %}
-    </div>
+    {% paginate %}
 {% endblock %}
 
 {% block extra_body %}

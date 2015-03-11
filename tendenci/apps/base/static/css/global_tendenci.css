@@ -629,18 +629,6 @@ color: #333333;
 }
 /*===========END MESSAGES STYLES=========== */
 
-/*===========BEGIN PERMS STYLES=========== */
-.perm-public {font-weight: bold; color: green;}
-.perm-users,
-.perm-members,
-.perm-groups {font-weight: bold; color: darkblue;}
-.perm-private {font-weight: bold; color: red;}
-.status-active {font-weight: bold; color: green;}
-.status-pending, .status-draft {font-weight: bold; color: orange;}
-.status-inactive, .status-expired {font-weight: bold; color: red;}
-.role-superuser{font-weight: bold; color: #D32E2E;}
-.role-staff{font-weight: bold; color: #E5600D;}
-/*===========END PERMS STYLES=========== */
 
 .wrap-search-item {border-bottom: 1px solid #CCC; margin-bottom: 20px;}
 .search-item {padding: 10px 10px 0 10px;}

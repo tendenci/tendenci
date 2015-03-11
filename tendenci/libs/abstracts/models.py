@@ -41,7 +41,7 @@ class TendenciBaseModel(models.Model):
     @property
     def obj_perms(self):
         from tendenci.apps.perms.fields import has_groups_perms
-        t = '<span class="perm-%s">%s</span>'
+        t = '<span class="t-perm t-perm-%s">%s</span>'
 
         if self.allow_anonymous_view:
             value = t % ('public','Public')
@@ -58,7 +58,7 @@ class TendenciBaseModel(models.Model):
 
     @property
     def obj_status(obj):
-        t = '<span class="status-%s">%s</span>'
+        t = '<span class="t-status t-status-%s">%s</span>'
 
         if obj.status:
             if obj.status_detail == 'paid - pending approval':
