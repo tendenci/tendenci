@@ -92,3 +92,66 @@ html {
 
 
 /* User megamenu */
+
+
+/* Metadata */
+#t-meta-editor-bar {
+    border-left-width: 0;
+    border-right-width: 0;
+    margin: 0 -15px;
+
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+
+#t-meta-editor-bar > .container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#t-meta-perm-status {
+    margin-left: -15px;
+}
+
+.t-perm,
+.t-status,
+.t-role {
+    display: block;
+    font-weight: bold;
+    padding: 15px;
+}
+
+.t-perm-public {
+    color: green;
+}
+
+.t-perm-users,
+.t-perm-members,
+.t-perm-groups {
+    color: darkblue;
+}
+
+.t-perm-private {
+    color: red;
+}
+
+.t-status-active {
+    color: green;
+}
+
+.t-status-pending, .t-status-draft {
+    color: orange;
+}
+
+.t-status-inactive, .status-expired {
+    color: red;
+}
+
+.t-role-superuser {
+    color: #d32e2e;
+}
+
+.t-role-staff {
+    color: #e5600d;
+}

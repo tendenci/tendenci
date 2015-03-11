@@ -1,17 +1,18 @@
 from datetime import datetime, date
 
 from django import forms
+from django.conf import settings
 from django.forms.util import ErrorList
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
+
+from tinymce.widgets import TinyMCE
+
 from tendenci.apps.articles.models import Article
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
-from tendenci.apps.base.fields import EmailVerificationField
+from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 
 
@@ -54,8 +55,12 @@ CONTRIBUTOR_CHOICES = (
 GOOGLE_PLUS_HELP_TEXT = _('Additional Options for Authorship <i class="gauthor-help fa fa-lg fa-question-circle"></i><br>Additional Options for Publisher <i class="gpub-help fa fa-lg fa-question-circle"></i>')
 
 
-class ArticleSearchForm(forms.Form):
-    search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
+    search_category = forms.ChoiceField(
+        choices=SEARCH_CATEGORIES_ADMIN,
+        required=False,
+        label=_(u'Search by')
+    )
     q = forms.CharField(required=False)
     filter_date = forms.BooleanField(required=False)
     date = forms.DateField(initial=date.today(), required=False)

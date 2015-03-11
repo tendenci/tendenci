@@ -1,14 +1,22 @@
 {% load i18n %}
 
-<div class="wrap-search-item">
-    <div class="search-item article-search-item">
-        <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline trans 'Untitled' %}</a></h2>
-        <div class="item-content">
-        {% if article.summary %}
-            {% blocktrans with summary=article.summary|striptags|truncatewords:40|safe %}{{ summary }}{% endblocktrans %}
-        {% else %}
-            {% blocktrans with body=article.body|striptags|truncatewords:40|safe %}{{ body }}{% endblocktrans %}
-        {% endif %}</div>
+
+<article class="panel panel-info">
+    <div class="panel-heading">
+        <h1 class="panel-title"><a href="{{ article.get_absolute_url }}">{% firstof article.headline trans "Untitled" %}</a></h1>
     </div>
-      {% include "articles/meta.html" %}
-</div>
+
+    <div class="panel-body">
+        <div class="item-content">
+            {% if article.summary %}
+                {% blocktrans with summary=article.summary|striptags|truncatewords:40|safe %}{{ summary }}{% endblocktrans %}
+            {% else %}
+                {% blocktrans with body=article.body|striptags|truncatewords:40|safe %}{{ body }}{% endblocktrans %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel-footer">
+        {% include "articles/meta.html" %}
+    </div>
+</article>

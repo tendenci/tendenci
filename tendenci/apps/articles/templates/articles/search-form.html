@@ -1,51 +1,37 @@
 {% load i18n %}
 
+
 {% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="search-form" action="{% url "articles" %}" method="get">
-    <div class="first-row" id="form-row">
-        <span>{% trans 'Search by:' %} </span>
-        <div class="search-category">
-            {{ form.search_category}}
-            {{ form.search_category.errors }}
+    <form id="t-articles-search-form" class="form-inline t-search-form" action="{% url 'articles' %}" method="get">
+        <div class="form-group{% if form.search_category.errors %} has-error{% endif %}">
+            <label for="{{ form.search_category.id_for_label }}" class="control-label">{{ form.search_category.label }}</label>
+            {{ form.search_category }}
+
+            {% if form.search_category.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.search_category.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
         </div>
-        <div class="q">
+
+        <div class="form-group">
             {{ form.q }}
-            {{ form.q.errors }}
+
+            {% if form.q.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.q.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
         </div>
-        <input type="submit" value="{% trans 'Search' %}" />
-        <div class="clearfix"></div>
-    </div>
-  <!--
-    <div class="second-row" id="form-row">
-        {{form.filter_date}}
-        <span>Search By Release Date: </span>
-        {{form.date}}
-        {{form.date.errors}}
-        <div class="clearfix"></div>
-    </div> -->
 
-<!-- <div class="category-wrap">
-<select name="category" onchange="this.form.submit();">
-    <option value="">All Categories ({{ categories|length }})</option>
-    {% for cat in categories %}
-        {% if request.GET.category == cat.pk|slugify %}
-        <option selected value="{{ cat.pk }}">{{ cat.name }}</option>
-        {% else %}
-        <option value="{{ cat.pk }}">{{ cat.name }}</option>
-        {% endif %}
-    {% endfor %}
-    </select>
-
-    <select name="sub_category" onchange="this.form.submit();">
-    <option value="">All Subcategories ({{ sub_categories|length }})</option>
-    {% for subcat in sub_categories %}
-        {% if request.GET.sub_category == subcat.pk|slugify %}
-        <option selected value="{{ subcat.pk }}">{{ subcat.name }}</option>
-        {% else %}
-        <option value="{{ subcat.pk }}">{{ subcat.name }}</option>
-        {% endif %}
-    {% endfor %}
-    </select>
-</div> -->
-</form>
+        <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+    </form>
 {% endif %}
