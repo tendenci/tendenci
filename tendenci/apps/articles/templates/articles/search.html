@@ -20,7 +20,7 @@
 {% block content %}
     <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</h1>
 
-    {% autopaginate articles 1 %}
+    {% autopaginate articles 10 %}
     {% article_search %}
 
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
