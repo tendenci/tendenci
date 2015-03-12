@@ -71,6 +71,9 @@ class Command(BaseCommand):
             if '[firstname]' in body:
                 body = body.replace('[firstname]', recipient.member.first_name)
 
+            if '[unsubscribe_url]' in body:
+                body = body.replace('[unsubscribe_url]', recipient.noninteractive_unsubscribe_url)
+
             email_to_send = Email(
                     subject=subject,
                     body=body,

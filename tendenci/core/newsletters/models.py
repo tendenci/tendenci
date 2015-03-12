@@ -240,7 +240,10 @@ class Newsletter(models.Model):
             content = content.replace('[menu]', data.get('jumplink_content'))
 
         if '[content]' in content:
-            full_content = data.get('opening_text') + data.get('login_content') + data.get('footer_text')
+            full_content = data.get('opening_text') + \
+                            data.get('login_content') + \
+                            data.get('footer_text') + \
+                            data.get('unsubscribe_text')
             content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
@@ -274,6 +277,9 @@ class Newsletter(models.Model):
 
         footer_txt = render_to_string('newsletters/footer.txt',
                                             {'newsletter': self },
+                                            context_instance=RequestContext(request))
+
+        unsubscribe_txt = render_to_string('newsletters/newsletter_unsubscribe.txt',
                                             context_instance=RequestContext(request))
 
         login_content = ""
@@ -331,6 +337,7 @@ class Newsletter(models.Model):
         data = {
                 'opening_text': opening_txt,
                 'footer_text' : footer_txt,
+                'unsubscribe_text': unsubscribe_txt,
                 'login_content': login_content,
                 'jumplink_content': jumplink_content,
                 'articles_content': articles_content,
@@ -376,7 +383,8 @@ class Newsletter(models.Model):
         if self.member_only:
             members = GroupMembership.objects.filter(
                 status=True,
-                status_detail='active').order_by(
+                status_detail='active',
+                is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
 
@@ -385,7 +393,8 @@ class Newsletter(models.Model):
             members = GroupMembership.objects.filter(
                 group=group,
                 status=True,
-                status_detail='active').order_by(
+                status_detail='active',
+                is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
 
