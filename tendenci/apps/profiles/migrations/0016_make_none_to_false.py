@@ -11,15 +11,15 @@ class Migration(DataMigration):
         # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
-        orm.Person.objects.exclude(remember_login=True).update(remember_login=False)
-        orm.Person.objects.exclude(exported=True).update(exported=False)
-        orm.Person.objects.exclude(direct_mail=True).update(direct_mail=False)
-        orm.Person.objects.exclude(hide_in_search=True).update(hide_in_search=False)
-        orm.Person.objects.exclude(hide_address=True).update(hide_address=False)
-        orm.Person.objects.exclude(hide_email=True).update(hide_email=False)
-        orm.Person.objects.exclude(hide_phone=True).update(hide_phone=False)
-        orm.Person.objects.exclude(first_responder=True).update(first_responder=False)
-        orm.Person.objects.exclude(agreed_to_tos=True).update(agreed_to_tos=False)
+        orm.Profile.objects.exclude(remember_login=True).update(remember_login=False)
+        orm.Profile.objects.exclude(exported=True).update(exported=False)
+        orm.Profile.objects.exclude(direct_mail=True).update(direct_mail=False)
+        orm.Profile.objects.exclude(hide_in_search=True).update(hide_in_search=False)
+        orm.Profile.objects.exclude(hide_address=True).update(hide_address=False)
+        orm.Profile.objects.exclude(hide_email=True).update(hide_email=False)
+        orm.Profile.objects.exclude(hide_phone=True).update(hide_phone=False)
+        orm.Profile.objects.exclude(first_responder=True).update(first_responder=False)
+        orm.Profile.objects.exclude(agreed_to_tos=True).update(agreed_to_tos=False)
 
         orm.UserImport.objects.exclude(interactive=True).update(interactive=False)
         orm.UserImport.objects.exclude(clear_group_membership=True).update(clear_group_membership=False)

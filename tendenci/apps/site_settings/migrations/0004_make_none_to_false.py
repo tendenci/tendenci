@@ -11,9 +11,9 @@ class Migration(DataMigration):
         # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
-        orm.Settings.objects.exclude(client_editable=True).update(client_editable=False)
-        orm.Settings.objects.exclude(store=True).update(store=False)
-        orm.Settings.objects.exclude(is_secure=True).update(is_secure=False)
+        orm.Setting.objects.exclude(client_editable=True).update(client_editable=False)
+        orm.Setting.objects.exclude(store=True).update(store=False)
+        orm.Setting.objects.exclude(is_secure=True).update(is_secure=False)
 
 
     def backwards(self, orm):
