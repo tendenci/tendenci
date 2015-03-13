@@ -1,12 +1,18 @@
 from django import forms
 from tendenci.core.emails.models import Email
 from django.utils.translation import ugettext_lazy as _
+from tinymce.widgets import TinyMCE
 
 class EmailForm(forms.ModelForm):
     STATUS_CHOICES = (('active',_('Active')),('inactive',_('Inactive')),)
     subject = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size':'50'}))
     recipient =forms.CharField(max_length=255, required=False, widget=forms.Textarea(attrs={'rows':'3'}))
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
+    body = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style': 'width:80%'},
+        mce_attrs={'storme_app_label': Email._meta.app_label,
+        'storme_model': Email._meta.module_name.lower()}))
 
     class Meta:
         model = Email
@@ -20,6 +26,14 @@ class EmailForm(forms.ModelForm):
                   'status',
                   'status_detail',
                   )
+
+    def __init__(self, *args, **kwargs):
+        super(EmailForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+
     def save(self, user=None, *args, **kwargs):
         if user and user.id:
             if not self.instance.id:
