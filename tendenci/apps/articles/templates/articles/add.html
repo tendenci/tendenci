@@ -1,72 +1,147 @@
 {% extends "articles/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
 {% load article_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
-{% load i18n %}
 
-{% block title %}{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Add" %}{% endblock %}
+
+{% block title %}{% firstof MODULE_ARTICLES_LABEL trans "Article" %} {% trans "Add" %}{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
-<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'css/articles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/popover.css' %}">
+    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
 {% block content %}
+    <h1>{% firstof MODULE_ARTICLES_LABEL trans "Article" %} {% trans "Add" %}</h1>
 
-<div class="t">
-    <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Add" %}</h1>
+    <form id="t-articles-article-form" class="form-horizontal" action="{% url 'article.add' %}" method="post">{% csrf_token %}
+        {{ form|styled_form }}
 
-    <div class="article-wrap">
-        <form action="{% url "article.add" %}" method="post">{% csrf_token %}
-        <div class="forms">
-            {{ form|styled_form }}
-            <fieldset class="boxy-grey" >
-                <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
-                <div id="category-form">
-                    {{ categoryform|styled_form }}
-                </div>
-            </fieldset>
-            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_ARTICLES_LABEL  trans 'Article' %}" />
+        <fieldset id="t-articles-category">
+            <legend>{% trans "Category" %}</legend>
+            {{ categoryform|styled_form }}
+        </fieldset>
+
+        {% comment %}
+        <fieldset class="boxy-grey" >
+            <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
+            <div id="category-form">
+                {{ categoryform|styled_form }}
+            </div>
+        </fieldset>
+        {% endcomment %}
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                    {% if MODULE_ARTICLES_LABEL %}
+                        {% blocktrans with module_articles_label=MODULE_ARTICLES_LABEL %}
+                            Add {{ module_articles_label }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add Article" %}
+                    {% endif %}
+                </button>
+            </div>
         </div>
-        </form>
-    </div>
-
-</div>
+    </form>
 {% endblock %}
 
 {% block extra_body %}
+    {# Category Modal #}
+    <div id="t-categories-add-category-modal" class="modal fade" role="dialog" aria-labelledby="t-categories-add-category-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="t-categories-add-category-modal-label" class="modal-title">{% trans "Add Category" %}</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="id_category-name" class="col-sm-3 control-label">{% trans "Category Name" %}</label>
+                            <div class="col-sm-9">
+                                <input id="id_category-name" name="category-name" type="text" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-primary">{% trans "Save Category" %}</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    {# Subcategory Modal #}
+    <div id="t-categories-add-subcategory-modal" class="modal fade" role="dialog" aria-labelledby="t-categories-add-subcategory-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="t-categories-add-subcategory-modal-label" class="modal-title">{% trans "Add Subcategory" %}</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="id_subcategory-name" class="col-sm-4 control-label">{% trans "Subcategory Name" %}</label>
+                            <div class="col-sm-8">
+                                <input id="id_subcategory-name" name="category-name" type="text" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-primary">{% trans "Save Subcategory" %}</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}/js/popover.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}/js/gplus-helptexts.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
-    <script type="text/javascript">
-        var slugit = new Slugify({
-            input_element : 'input#id_headline',
-            slug_element : 'input#id_slug',
-            submit_element : 'input[type="submit"]',
-            help: false,
-            limit : 150
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/popover.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/gplus-helptexts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
-            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('.timepicker').timepicker({'step': 15});
+            // Slugify
+            var slugit = new Slugify({
+                input_element : '#id_headline',
+                slug_element : '#id_slug',
+                submit_element : 'button[type="submit"]',
+                help: false,
+                limit : 150
+            });
+
+            // Release Datetime
+            $('#id_release_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_release_dt_1').timepicker({'step': 15});
+
+            // G+ Help Texts
+            gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
         });
-        gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
     </script>
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.add-category').click(function(){
+            $('dummy').click(function(){
                 select_box = $(this).parent().prev().find('select');
                 var category = prompt('Category Name?','').toLowerCase();
                 category = category.replace('"','')
@@ -74,7 +149,7 @@
                 if (category) select_box.append(option_html)
                 return false;
             });
-            $('.add-sub-category').click(function(){
+            $('dummy').click(function(){
                 select_box = $(this).parent().prev().find('select');
                 var sub_category = prompt('Category Name?','').toLowerCase();
                 sub_category = sub_category.replace('"','')

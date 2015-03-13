@@ -36,7 +36,7 @@ class Location(TendenciBaseModel):
     longitude = models.FloatField(blank=True, null=True)
     logo = models.ForeignKey(File, null=True, default=None,
                              help_text=_('Only jpg, gif, or png images.'))
-    hq = models.NullBooleanField(_('Headquarters'))
+    hq = models.BooleanField(_('Headquarters'), default=False)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

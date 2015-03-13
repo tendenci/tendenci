@@ -41,7 +41,6 @@
 
         {% blocktrans with b=page.content|striptags|truncatewords:60 %}{{ b }}{% endblocktrans %}
          <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'page' page.slug %}">[More Info]</a>
-        }
         </font>
 
         {#  posted by #}

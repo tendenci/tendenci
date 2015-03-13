@@ -10,7 +10,7 @@
 {% block content %}
     <h1>{% firstof MODULE_FORMS_LABEL trans "Forms" %} {% trans "Add" %}</h1>
 
-    <form id="t-forms-builder-form" class="form-horizontal" action="." method="post">{% csrf_token %}
+    <form id="t-forms-builder-form-form" class="form-horizontal" action="." method="post">{% csrf_token %}
         {{ form|styled_form }}
 
         <fieldset id="t-forms-builder-pricing-options" class="hidden">
@@ -21,7 +21,15 @@
 
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-                <button type="submit" class="btn btn-primary">{% trans "Add" %} {% firstof MODULE_FORMS_LABEL trans "Form" %}</button>
+                <button type="submit" class="btn btn-primary text-capitalize">
+                    {% if MODULE_FORMS_LABEL %}
+                        {% blocktrans with module_forms_label=MODULE_FORM_LABEL %}
+                            Add {{ module_forms_label }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add Form" %}
+                    {% endif %}
+                </button>
             </div>
         </div>
     </form>
