@@ -43,7 +43,6 @@
 
         {% blocktrans with b=n.body|striptags|truncatewords:60 %}{{ b }}{% endblocktrans %}
          <a href="{{ SITE_GLOBAL_SITEURL }}{{ news.get_absolute_url }}">[More Info]</a>
-        }
         </font>
 
         {#  posted by #}
