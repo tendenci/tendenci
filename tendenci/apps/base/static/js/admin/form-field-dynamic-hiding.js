@@ -9,9 +9,10 @@ jQuery(function($) {
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents(".dynamic-fields");
 
-        triggers = ['ChoiceField', 
+        triggers = ['ChoiceField',
                     'BooleanField',
-                    'MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
+                    'ChoiceField/django.forms.RadioSelect',
+                    'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
                     'MultipleChoiceField']
 
     	// toggle choices field
@@ -30,9 +31,9 @@ jQuery(function($) {
     	var fieldset = $dd.parents(".dynamic-fields");
 
         triggers = ['CharField',
-                    'ChoiceField', 
+                    'ChoiceField',
                     'BooleanField',
-                    'MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
+                    'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
                     'MultipleChoiceField']
 
         var current_loc = window.location.pathname;
@@ -74,12 +75,13 @@ jQuery(function($) {
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents(".dynamic-fields");
 
-        triggers = ['ChoiceField', 
+        triggers = ['ChoiceField',
                     'BooleanField',
-                    'MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
+                    'ChoiceField/django.forms.RadioSelect',
+                    'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
                     'MultipleChoiceField']
 
-    	// toggle help text field 
+    	// toggle help text field
         if (in_list(selected_value, triggers)){
             fieldset.find(".field-default input").css('visibility', 'visible');
     	}
@@ -90,9 +92,16 @@ jQuery(function($) {
     }
 
     // bind change event to dropdown
-    $("div.inline-group .field-field_type select")
-        .each(manage_choice_field).live('change', manage_choice_field)
-        .each(manage_special_functionality).live('change', manage_special_functionality)
-        .each(manage_default).live('change', manage_default);
+    $("div._inline-group .field-field_type select")
+        .each(manage_choice_field).on('change', manage_choice_field)
+        .each(manage_special_functionality).on('change', manage_special_functionality)
+        .each(manage_default).on('change', manage_default);
+
+    $('.add-row td a').on('click', function() {
+        $("div._inline-group .field-field_type select")
+            .each(manage_choice_field).on('change', manage_choice_field)
+            .each(manage_special_functionality).on('change', manage_special_functionality)
+            .each(manage_default).on('change', manage_default);
+    });
 
 });

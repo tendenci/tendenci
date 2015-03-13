@@ -92,7 +92,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
                                                  ('company_name', 'phone', 'position_title'),
                                                  ('address', 'city', 'state'),
                                                  ('zip', 'country', 'meal_option'),
-                                                 ('comments')),
+                                                 ('comments',)),
                                      'classes': ('mapped-fields',),
                                      'description': _('The fields you selected will be automatically added to ' + \
                                      'your form. These fields are mapped to the user fields in ' + \

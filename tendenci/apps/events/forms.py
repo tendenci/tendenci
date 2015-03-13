@@ -2270,6 +2270,7 @@ class StandardRegAdminForm(forms.Form):
             field_args = {'required':False, 'initial':initial}
             if setting.input_type == 'text':
                 self.fields[field_name] = forms.CharField(**field_args)
+                self.fields[field_name].widget.attrs['class'] = 'form-control'
             elif setting.input_type == 'select':
                 if setting.data_type == 'boolean':
                     self.fields[field_name] = forms.BooleanField(**field_args)
@@ -2282,6 +2283,8 @@ class StandardRegAdminForm(forms.Form):
                         choices = tuple([(s.strip(), s.strip())for s in setting.input_value.split(',')])
                     field_args['choices'] = choices
                     self.fields[field_name] = forms.ChoiceField(**field_args)
+                    self.fields[field_name].widget.attrs['class'] = 'form-control'
+
 
     def apply_changes(self):
         cleaned_data = self.cleaned_data

@@ -115,6 +115,37 @@
                 }
             });
         }
+        var get_nav_item_attrs = function() {
+            jQuery('.field-page select').on('change', function() {
+                var that = jQuery(this);
+                if (that.val()) {
+                    item_id = that.val();
+                } else {
+                item_id = 0;
+                }
+                that.parent().parent().find('td.field-label input').val('');
+                that.parent().parent().find('td.field-title input').val('');
+                that.parent().parent().find('td.field-url_field input').val('');
+                if (item_id != 0) {
+                    jQuery.ajax({
+                        type: "GET",
+                        url: '{% url "navs.get_item_attrs" %}',
+                        data: {'item_id': item_id},
+                        dataType: 'json',
+                        success: function(data) {
+                            if (data.status === 'ok') {
+                                that.parent().parent().find('td.field-label input').val(data.label);
+                                that.parent().parent().find('td.field-title input').val(data.title);
+                                that.parent().parent().find('td.field-url_field input').val(data.url);
+                            } else {
+                                alert('Failed to add attributes on selecting a page. Please try again.');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        get_nav_item_attrs();
         $(rows).formset({
             prefix: "{{ inline_admin_formset.formset.prefix }}",
             addText: "{% blocktrans with verbose_name=inline_admin_formset.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}",
@@ -128,12 +159,11 @@
                 reinitDateTimeShortCuts();
                 updateSelectFilter();
                 alternatingRows(row);
+                get_nav_item_attrs();
             })
         });
     });
 })(django.jQuery);
-
-
 
 // listener for jquery 1.7.2
 (function($) {
@@ -157,53 +187,5 @@
         });
     });
     {% endif %}
-
 })(jQuery);
-</script>
-
-<script type="text/javascript">
-
-(function($) {
-    var get_nav_item_attrs = function() {
-      jQuery('.field-page select').on('change', function() {
-          var that = jQuery(this);
-          if (that.val()) {
-            item_id = that.val();
-          } else {
-            item_id = 0;
-          }
-          that.parent().parent().find('td.field-label input').val('');
-          that.parent().parent().find('td.field-title input').val('');
-          that.parent().parent().find('td.field-url_field input').val('');
-          if (item_id != 0) {
-              jQuery.ajax({
-                  type: "GET",
-                  url: '{% url "navs.get_item_attrs" %}',
-                  data: {'item_id': item_id},
-                  dataType: 'json',
-                  success: function(data) {
-                      if (data.status === 'ok') {
-                          that.parent().parent().find('td.field-label input').val(data.label);
-                          that.parent().parent().find('td.field-title input').val(data.title);
-                          that.parent().parent().find('td.field-url_field input').val(data.url);
-                      } else {
-                          alert('Failed to add attributes on selecting a page. Please try again.');
-                      }
-                  }
-              });
-          }
-      });
-  }
-  get_nav_item_attrs();
-  $("#{{ inline_admin_formset.formset.prefix }}-group .tabular.inline-related tbody tr").tabularFormset({
-    prefix: "{{ inline_admin_formset.formset.prefix }}",
-    adminStaticPrefix: '{% static "admin/" %}',
-    addText: "{% blocktrans with inline_admin_formset.opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}",
-    deleteText: "{% trans 'Remove' %}",
-  });
-
-  $('.add-row td a').on('click', function(){
-    get_nav_item_attrs();
-  });
-})(django.jQuery);
 </script>

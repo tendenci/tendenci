@@ -529,11 +529,14 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
         ]
 
         for field in recurring_payment_fields:
-            class_attr = self.fields[field].widget.attrs['class']
-            if 'recurring-payment' not in class_attr:
-                class_attr += ' recurring-payment'
+            try:
+                class_attr = self.fields[field].widget.attrs['class']
+                if 'recurring-payment' not in class_attr:
+                    class_attr += ' recurring-payment'
 
-            self.fields[field].widget.attrs.update({'class': class_attr})
+                self.fields[field].widget.attrs.update({'class': class_attr})
+            except KeyError:
+                pass
 
     def save(self, **kwargs):
         pricing = super(PricingForm, self).save(**kwargs)
