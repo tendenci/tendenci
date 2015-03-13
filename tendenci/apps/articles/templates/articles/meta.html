@@ -4,6 +4,14 @@
 
 
 <ul id="t-meta-data" class="list-unstyled">
+    {% if show_fb_connect|default:False %}
+        <li>{% fb_like_button_iframe article.get_absolute_url height=20 %}</li>
+    {% endif %}
+
+    {% if show_article_source|default:False and article.source %}
+        <li><strong>{% trans "Source:" %}</strong> <span>{{ article.source|urlize }}</span></li>
+    {% endif %}
+
     <li><strong>{% trans "Released:" %}</strong> <span>{{ article.release_dt|date:"long" }}</span></li>
 
     {% if article.first_name or article.last_name or article.phone or article.fax or article.email or article.website %}

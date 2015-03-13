@@ -1,8 +1,11 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.categories.models import Category, CategoryItem
+
 
 class CategoryField(forms.ChoiceField):
     """
@@ -15,16 +18,37 @@ class CategoryField(forms.ChoiceField):
 category_defaults = {
     'label':_('Category'),
     'choices': [],
-    'help_text': mark_safe('<a href="#" class="add-category">Add Category</a>'),
+    'help_text': format_html(u'{0}{1}{2}',
+        mark_safe('''
+            <span id="t-categories-add-category-help-text" class="help-block">
+                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#t-categories-add-category-modal">
+        '''),
+        _(u'Add Category'),
+        mark_safe('''
+                </button>
+            </span>
+        ''')
+    )
 }
 
 sub_category_defaults = {
-    'label':_('Sub Category'),
+    'label':_('Subcategory'),
     'choices': [],
-    'help_text': mark_safe('<a href="#" class="add-sub-category">Add Sub Category</a>'),
+    'help_text': format_html(u'{0}{1}{2}',
+        mark_safe('''
+            <span id="t-categories-add-subcategory-help-text" class="help-block">
+                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#t-categories-add-subcategory-modal">
+        '''),
+        _(u'Add Subcategory'),
+        mark_safe('''
+                </button>
+            </span>
+        ''')
+    )
 }
 
-class CategoryForm(forms.Form):
+
+class CategoryForm(FormControlWidgetMixin, forms.Form):
     category = CategoryField(**category_defaults)
     sub_category = CategoryField(**sub_category_defaults)
 
