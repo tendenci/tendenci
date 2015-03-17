@@ -31,7 +31,7 @@ class Resume(TendenciBaseModel):
     experience = models.TextField(blank=True)
     awards = models.TextField(_('Awards and Certifications'), blank=True)
     education = models.TextField(blank=True)
-    is_agency = models.NullBooleanField()  # defines if the resume posting is by a third party agency
+    is_agency = models.BooleanField(default=False)  # defines if the resume posting is by a third party agency
 
     #TODO: do we need these fields?
     #desiredlocationstate = models.CharField(max_length=50)
@@ -54,7 +54,7 @@ class Resume(TendenciBaseModel):
     resume_url = models.CharField(max_length=300, blank=True)  # link to other (fuller) resume posting
     resume_file = models.FileField(_('Upload your resume here'), max_length=260,
                                     upload_to=file_directory, blank=True, default="")
-    syndicate = models.NullBooleanField(_('Include in RSS feed'), blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True, default=False)
 
     #TODO: foreign
     contact_name = models.CharField(max_length=150, blank=True)

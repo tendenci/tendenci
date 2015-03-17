@@ -16,7 +16,7 @@ class Nav(TendenciBaseModel):
 
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    megamenu = models.NullBooleanField(default=False)
+    megamenu = models.BooleanField(default=False)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -30,11 +30,11 @@ class Nav(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return('navs.detail', [self.pk])
-    
+
     def save(self, *args, **kwargs):
         super(Nav, self).save(*args, **kwargs)
         # reset nav cache
-        clear_nav_cache(self) 
+        clear_nav_cache(self)
 
     @property
     def top_items(self):
@@ -47,7 +47,7 @@ class NavItem(OrderingBaseModel):
     nav = models.ForeignKey(Nav)
     label = models.CharField(max_length=100)
     title = models.CharField(_("Title Attribute"), max_length=100, blank=True, null=True)
-    new_window = models.NullBooleanField(_("Open in a new window"), default=False)
+    new_window = models.BooleanField(_("Open in a new window"), default=False)
     css = models.CharField(_("CSS Class"), max_length=100, blank=True, null=True)
     level = models.IntegerField(default=0)
     page = models.ForeignKey(Page, null=True)
