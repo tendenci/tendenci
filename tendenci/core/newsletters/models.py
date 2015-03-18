@@ -108,7 +108,7 @@ class NewsletterTemplate(models.Model):
         permissions = (("view_newslettertemplate", _("Can view newsletter template")),)
 
     def __unicode__(self):
-        return self.name
+        return self.name or u"No Name"
 
     @property
     def content_type(self):
@@ -219,7 +219,7 @@ class Newsletter(models.Model):
         verbose_name_plural = _("Newsletters")
 
     def __unicode__(self):
-        return self.actionname
+        return self.actionname or u"No Action Name"
 
     @models.permalink
     def get_absolute_url(self):

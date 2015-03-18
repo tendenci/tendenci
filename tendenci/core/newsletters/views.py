@@ -326,36 +326,54 @@ def template_view(request, template_id, render=True):
     articles_days = request.GET.get('articles_days', 60)
     if articles:
         articles_list, articles_content = newsletter_articles_list(request, articles_days, simplified)
+    else:
+        articles_list = []
+        articles_content = []
 
     news_content = ""
     news = int(request.GET.get('news', 1))
     news_days = request.GET.get('news_days',30)
     if news:
         news_list, news_content = newsletter_news_list(request, news_days, simplified)
+    else:
+        news_list = []
+        news_content = []
 
     jobs_content = ""
     jobs = int(request.GET.get('jobs', 1))
     jobs_days = request.GET.get('jobs_days', 30)
     if jobs:
         jobs_list, jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
+    else:
+        jobs_list = []
+        jobs_content = []
 
     pages_content = ""
     pages = int(request.GET.get('pages', 0))
     pages_days = request.GET.get('pages_days', 7)
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
+    else:
+        pages_list = []
+        pages_content = []
 
     directories_content = ""
     directories = int(request.GET.get('directories', 0))
     directories_days = request.GET.get('directories_days', 7)
     if directories:
         directories_list, directories_content = newsletter_directories_list(request, directories_days, simplified)
+    else:
+        directories_list = []
+        directories_content = []
 
     resumes_content = ""
     resumes = int(request.GET.get('resumes', 0))
     resumes_days = request.GET.get('resumes_days', 7)
     if resumes:
         resumes_list, resumes_content = newsletter_resumes_list(request, resumes_days, simplified)
+    else:
+        resumes_list = []
+        resumes_content = []
 
     try:
         events = int(request.GET.get('events', 1))
