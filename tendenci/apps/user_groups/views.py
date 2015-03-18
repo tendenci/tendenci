@@ -314,6 +314,9 @@ def group_membership_self_add(request, slug, user_id):
 
         group_membership.save()
 
+        if group_membership.is_newsletter_subscribed:
+            group_membership.subscribe_to_newsletter()
+
         EventLog.objects.log(instance=group_membership)
 
         messages.add_message(request, messages.SUCCESS, _('Successfully added yourself to group %(grp)s' % {'grp':group}))
