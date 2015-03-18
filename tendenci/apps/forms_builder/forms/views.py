@@ -552,15 +552,21 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             if form.completion_url:
                 return HttpResponseRedirect(form.completion_url)
             return redirect("form_sent", form.slug)
-    # set form's template to default if no template or template doesn't exist
+
+    # set form's template to forms/base.html if no template or template doesn't exist
     if not form.template or not template_exists(form.template):
-        form.template = "default.html"
+        form.template = "forms/base.html"
+
+    # NOTE: Temporarily use forms/base.html for the meantime
+    form.template = "forms/base.html"
+
     context = {
         "form": form,
         "form_for_form": form_for_form,
         'form_template': form.template,
     }
     return render_to_response(template, context, RequestContext(request))
+
 
 def form_sent(request, slug, template="forms/form_sent.html"):
     """
