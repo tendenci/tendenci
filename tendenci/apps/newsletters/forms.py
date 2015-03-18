@@ -189,8 +189,9 @@ class MarketingStepFiveForm(forms.ModelForm):
         data = self.cleaned_data
 
         # check if email host relay is properly set up
-        if not (settings.EMAIL_BACKEND and settings.EMAIL_HOST and settings.EMAIL_PORT and \
-            settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD):
+        if not all([settings.NEWSLETTER_EMAIL_HOST,
+                    settings.NEWSLETTER_EMAIL_HOST_USER,
+                    settings.NEWSLETTER_EMAIL_HOST_PASSWORD]):
             raise forms.ValidationError(_('Email relay is not configured properly.'
                                             ' Newsletter cannot be sent.'))
 

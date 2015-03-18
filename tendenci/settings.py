@@ -532,3 +532,13 @@ MAX_MEMBERSHIP_TYPES = 10
 # indexes are being used.
 #-------------------------------------------------------#
 INDEX_UPDATE_NOTE = 'updated hourly'
+
+# -------------------------------------- #
+# EMAIL Settings for Newsletters
+# -------------------------------------- #
+NEWSLETTER_EMAIL_HOST = None
+NEWSLETTER_EMAIL_PORT = 25
+NEWSLETTER_EMAIL_HOST_USER = ''
+NEWSLETTER_EMAIL_HOST_PASSWORD = ''
+
+
