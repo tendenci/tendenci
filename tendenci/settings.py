@@ -554,6 +554,6 @@ MESSAGE_TAGS = {
 # EMAIL Settings for Newsletters
 # -------------------------------------- #
 NEWSLETTER_EMAIL_HOST = None
-NEWSLETTER_EMAIL_PORT = 25
+NEWSLETTER_EMAIL_PORT = 587     # 587 is the default for mailgun
 NEWSLETTER_EMAIL_HOST_USER = ''
 NEWSLETTER_EMAIL_HOST_PASSWORD = ''
