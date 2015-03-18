@@ -199,7 +199,10 @@ class GroupMembership(models.Model):
             self.newsletter_key = uuid.uuid1()
             self.save()
             return True
-
+        elif self.newsletter_key == None:
+            self.newsletter_key = uuid.uuid1()
+            self.save()
+            return True
         return False
 
     def unsubscribe_to_newsletter(self):
