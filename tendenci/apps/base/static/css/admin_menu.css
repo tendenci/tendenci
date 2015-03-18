@@ -1,3 +1,7 @@
+#t-admin-megamenu a {
+    text-transform: none;
+}
+
 #t-admin-megamenu .nav-icon {
     position: relative;
     margin: 0 10px 0 0;

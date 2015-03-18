@@ -1,10 +1,8 @@
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
-from decimal import Decimal
 
 from django import forms
-from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
@@ -26,9 +24,14 @@ from tendenci.apps.payments.fields import PaymentMethodModelMultipleChoiceField
 from tendenci.apps.recurring_payments.fields import BillingCycleField
 from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
-from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH
 
-template_choices = [('default.html',_('Default'))]
+
+template_choices = [
+    ('', _('None')),
+    ('default.html', _('Default')),
+    ('forms/base.html', _('Forms Base'))
+]
 template_choices += get_template_list()
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -39,8 +42,8 @@ FIELD_NAME_LENGTH = 50
 FIELD_PHONE_LENGTH = 50
 THIS_YEAR = datetime.today().year
 
-class FormForForm(forms.ModelForm):
 
+class FormForForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = FormEntry
         exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", "creator")
@@ -174,6 +177,8 @@ class FormForForm(forms.ModelForm):
         if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 
+        self.add_form_control_class()
+
 
     def clean_pricing_option(self):
         pricing_pk = int(self.cleaned_data['pricing_option'])
@@ -249,7 +254,7 @@ class FormAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.module_name.lower()}))
 
-    template = forms.ChoiceField(choices=template_choices)
+    template = forms.ChoiceField(choices=template_choices, required=False)
 
     class Meta:
         model = Form
@@ -529,14 +534,11 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
         ]
 
         for field in recurring_payment_fields:
-            try:
-                class_attr = self.fields[field].widget.attrs['class']
-                if 'recurring-payment' not in class_attr:
-                    class_attr += ' recurring-payment'
+            class_attr = self.fields[field].widget.attrs.get('class', None)
+            if class_attr and 'recurring-payment' not in class_attr:
+                class_attr += ' recurring-payment'
 
                 self.fields[field].widget.attrs.update({'class': class_attr})
-            except KeyError:
-                pass
 
     def save(self, **kwargs):
         pricing = super(PricingForm, self).save(**kwargs)
