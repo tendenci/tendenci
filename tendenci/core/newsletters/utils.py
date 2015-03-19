@@ -27,11 +27,8 @@ def get_start_dt(duration_days, end_dt=None):
 
 
 def get_newsletter_connection():
-    return get_connection(
-                host=settings.NEWSLETTER_EMAIL_HOST,
-                port=settings.NEWSLETTER_EMAIL_PORT,
-                username=settings.NEWSLETTER_EMAIL_HOST_USER,
-                password=settings.NEWSLETTER_EMAIL_HOST_PASSWORD)
+    return get_connection(backend=settings.NEWSLETTER_EMAIL_BACKEND)
+
 
 def is_newsletter_relay_set():
     return all([settings.NEWSLETTER_EMAIL_HOST,
