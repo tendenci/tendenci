@@ -1,44 +1,50 @@
 {% extends "events/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
 {% load event_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
-{% load i18n %}
+
 
 {% block title %}{{ block.super }}{% trans 'Add' %}{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+    {{ block.super }}
+    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="t">
-
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
 
-    <div class="event-wrap">
-        <form action="{% url "event.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-        <div class="forms">
-            {{ multi_event_forms|styled_multi_forms }}
-            <input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL trans 'Event' %}" />
+    <form id="t-events-form" class="form-horizontal" action="{% url 'event.add' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {{ multi_event_forms|styled_multi_forms }}
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                    {% if MODULE_EVENTS_LABEL %}
+                        {% blocktrans with module_events_label=MODULE_EVENTS_LABEL %}
+                            Add {{ module_events_label }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add Event" %}
+                    {% endif %}
+                </button>
+            </div>
         </div>
-        </form>
-    </div>
-
-</div>
-
+    </form>
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/events_formset.js"></script>
+    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/events_formset.js' %}"></script>
     <script type="text/javascript">
         var slugit = new Slugify({
             input_element : 'input#id_title',

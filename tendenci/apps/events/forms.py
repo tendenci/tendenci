@@ -34,6 +34,7 @@ from tinymce.widgets import TinyMCE
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.emails.models import Email
 from tendenci.apps.files.utils import get_max_file_upload_size
@@ -902,7 +903,7 @@ class ReassignTypeForm(forms.Form):
         self.fields['type'].queryset = event_types
 
 
-class PlaceForm(forms.ModelForm):
+class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
     place = forms.ChoiceField(label=_('Place'), required=False, choices=[])
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style': 'width:100%'},
@@ -1014,7 +1015,7 @@ class SpeakerBaseFormSet(BaseModelFormSet):
         return saved_instances + new_instances
 
 
-class SpeakerForm(BetterModelForm):
+class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Speaker._meta.app_label,
@@ -1076,7 +1077,7 @@ class SpeakerForm(BetterModelForm):
         return self.cleaned_data
 
 
-class OrganizerForm(forms.ModelForm):
+class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Organizer._meta.app_label,
@@ -1245,7 +1246,7 @@ class Reg8nConfPricingForm(BetterModelForm):
         return super(Reg8nConfPricingForm, self).save(*args, **kwargs)
 
 
-class Reg8nEditForm(BetterModelForm):
+class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     label = _('Registration')
     limit = forms.IntegerField(
             _('Registration Limit'),
@@ -1367,6 +1368,8 @@ class Reg8nEditForm(BetterModelForm):
 
         if self.recurring_edit:
             del self.fields['use_custom_reg']
+
+        self.add_form_control_class()
 
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
@@ -1539,6 +1542,7 @@ class RegistrationPreForm(forms.Form):
             raise forms.ValidationError(_('Please choose a price for table registration.'))
 
         return pricing
+
 
 class RegistrationForm(forms.Form):
     """
