@@ -1,22 +1,19 @@
-{% extends "admin/change_form.html" %}
-{% load i18n admin_modify %}
+{% extends "django_admin_bootstrapped:admin/change_form.html" %}
+{% load i18n admin_urls admin_static admin_modify bootstrapped_goodies_tags %}
 
-{% block object-tools %}
-{% if change %}{% if not is_popup %}
-  <ul class="object-tools">
-    {% block object-tools-items %}
-    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
-    {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
-    {% endblock %}
-  </ul>
-{% endif %}{% endif %}
+{% block extrahead %}
+{{ block.super }}
+{% if original.corporatemembershiptype_set.all|length %}
+<script>
+    $(document).ready(function(){
+        $('.deletelink-box').html('Delete option <strong>disabled</strong>, associated with corporate membership');
+    });
+</script>
+{% endif %}
 {% endblock %}
 
-{% block submit_buttons_bottom %}
-    {% submit_row %}
-    {% if original.corporatemembershiptype_set.all|length %}
-    <script>
-        $('.deletelink-box').html('Delete option <strong>disabled</strong>, associated with corporate membership');
-    </script>
-    {% endif %}
+{% block field_sets %}
+    {% for fieldset in adminform %}
+      {% include "dab_override/fieldset.html" %}
+    {% endfor %}
 {% endblock %}

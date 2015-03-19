@@ -69,6 +69,7 @@ SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
 
 ## Django 1.4
 TEMPLATE_LOADERS = (
+    'app_namespace.Loader',
     'tendenci.apps.theme.template_loaders.load_template_source',
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
@@ -175,6 +176,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django_admin_bootstrapped.bootstrap3', # must be added before django.contrib.admin
+    'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
@@ -184,6 +187,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # applications
+    'bootstrap3',
     'pagination',
     'tagging',
     'avatar',
@@ -532,3 +536,24 @@ MAX_MEMBERSHIP_TYPES = 10
 # indexes are being used.
 #-------------------------------------------------------#
 INDEX_UPDATE_NOTE = 'updated hourly'
+
+# ----------------------------------- #
+# Django Admin Bootstrap
+# ------------------------------------#
+DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
+
+from django.contrib import messages
+
+MESSAGE_TAGS = {
+            messages.SUCCESS: 'alert-success success',
+            messages.WARNING: 'alert-warning warning',
+            messages.ERROR: 'alert-danger error'
+}
+
+# -------------------------------------- #
+# EMAIL Settings for Newsletters
+# -------------------------------------- #
+NEWSLETTER_EMAIL_HOST = None
+NEWSLETTER_EMAIL_PORT = 25
+NEWSLETTER_EMAIL_HOST_USER = ''
+NEWSLETTER_EMAIL_HOST_PASSWORD = ''

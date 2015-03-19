@@ -1,43 +1,31 @@
-{% extends "admin/app_index.html" %}
-{% load i18n %}
+{% extends "django_admin_bootstrapped:admin/app_index.html" %}
+{% load i18n bootstrapped_goodies_tags %}
 
 
 {% block sidebar %}
-<style>
-   .report-section{
-       border: 1px solid #99c299;
-       margin-top: 2em;
-       padding: 1em;
-   }
-   .report-section h2{
-       margin-top: 5px;
-   }
-   .report-section-body{
-       padding-left: 1em;
-   }
-</style>
-<br class="clear" />
-<div class="report-section">
-    <h2>{% trans "Reporting Options" %}</h2>
-    <div class="report-section-body">
-        <h3>{% trans "Imports" %}</h3>
-        <ol>
-            <li><a href="{% url 'corpmembership.import' %}">{% trans "Import" %}</a></li>
-        </ol>
-        <h3>{% trans "Exports" %}</h3>
-        <ol>
-            <li><a href="{% url 'corpmembership.export' %}">{% trans "Export" %}</li>
-        </ol>
-        <h3>{% trans "Others" %}</h3>
-        <ol>
-            <li><a href="{% url 'corpmembership.search' %}">{% trans "Search" %}</a></li>
-             <li><a href="{% url 'corp_membership.summary_report' %}">{% trans "Summary Report" %}</a></li>
-
-        	{% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
-        	<li><a href="{% url 'corp_memb.reports.free_passes_list' %}">{% trans "Free Passes List" %}</a></li>
-            {% endif %}
-        </ol>
-
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class='panel-title'>{% trans "Reporting Options" %}</h3>
+  </div>
+  <div class"panel-body">
+    <div class="container">
+      <h4>{% trans "Imports" %}</h4>
+      <ol>
+        <li><a href="{% url 'corpmembership.import' %}">{% trans "Import" %}</a></li>
+      </ol>
+      <h4>{% trans "Exports" %}</h4>
+      <ol>
+        <li><a href="{% url 'corpmembership.export' %}">{% trans "Export" %}</a></li>
+      </ol>
+      <h4>{% trans "Others" %}</h4>
+      <ol>
+        <li><a href="{% url 'corpmembership.search' %}">{% trans "Search" %}</a></li>
+        <li><a href="{% url 'corp_membership.summary_report' %}">{% trans "Summary Report" %}</a></li>
+        {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+        <li><a href="{% url 'corp_memb.reports.free_passes_list' %}">{% trans "Free Passes List" %}</a></li>
+        {% endif %}
+      </ol>
     </div>
+  </div>
 </div>
 {% endblock %}

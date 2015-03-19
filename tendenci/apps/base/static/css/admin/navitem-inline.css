@@ -18,6 +18,18 @@
 	background-image: url('/static/images/arrow-right.jpg');
 }
 
+
+.field-level {
+    width: 70px;
+}
+
+.field-title input,
+.field-css input,
 .field-page select {
-    width: 375px;
+    max-width: 300px;
+    width: 100%;
+}
+
+.field-new_window {
+    width: 30px;
 }

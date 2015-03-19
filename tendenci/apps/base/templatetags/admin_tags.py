@@ -10,3 +10,14 @@ def check_enabled(value):
     if get_setting('module', value.lower(), 'enabled') == False:
         return False
     return True
+
+
+# admin tags derived from django_admin_bootstrapped
+@register.filter(name="tadmin_form_line_column_width")
+def tadmin_form_line_column_width(line):
+    try:
+        width = len(list(line))
+        value = 12 // width
+        return value
+    except:
+        return 12

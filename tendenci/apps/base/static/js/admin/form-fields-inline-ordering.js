@@ -2,7 +2,7 @@ position_field = 'position'; // Name of inline model field (integer) used for or
 
 jQuery(document).ready(function($) {
     // This script is applied to all TABULAR inlines
-    $('div.inline-group div.tabular').each(function() {
+    $('div._inline-group div.tabular').each(function() {
         table = $(this).find('table');
 
         // Drag and drop functionality - only used if a position field exists

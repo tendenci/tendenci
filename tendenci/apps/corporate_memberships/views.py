@@ -143,7 +143,7 @@ def get_app_fields_json(request):
     app_fields = render_to_string('corporate_memberships/app_fields.json',
                                {}, context_instance=None)
 
-    return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)))
+    return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)), content_type="application/json")
 
 
 @is_enabled('corporate_memberships')
