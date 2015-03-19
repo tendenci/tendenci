@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from django.core.mail import get_connection
 from tendenci.core.site_settings.utils import get_setting
 
 
@@ -23,6 +24,19 @@ def get_start_dt(duration_days, end_dt=None):
     else:
         start_dt = None
     return start_dt
+
+
+def get_newsletter_connection():
+    return get_connection(
+                host=settings.NEWSLETTER_EMAIL_HOST,
+                port=settings.NEWSLETTER_EMAIL_PORT,
+                username=settings.NEWSLETTER_EMAIL_HOST_USER,
+                password=settings.NEWSLETTER_EMAIL_HOST_PASSWORD)
+
+def is_newsletter_relay_set():
+    return all([settings.NEWSLETTER_EMAIL_HOST,
+                settings.NEWSLETTER_EMAIL_HOST_USER,
+                settings.NEWSLETTER_EMAIL_HOST_PASSWORD])
 
 
 def newsletter_articles_list(request, articles_days, simplified):

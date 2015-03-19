@@ -76,7 +76,8 @@ class Email(TendenciBaseModel):
                                self.sender,
                                recipient_list,
                                recipient_bcc_list,
-                               headers=headers )
+                               headers=headers,
+                               connection=kwargs.get('connection', None))
             if self.content_type == 'html' or self.content_type == 'text/html':
                 msg.content_subtype = 'html'
             if attachments:

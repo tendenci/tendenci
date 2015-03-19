@@ -12,11 +12,12 @@ from django.template.loader import render_to_string
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.base.http import Http403
 from tendenci.core.emails.models import Email
 from tendenci.core.event_logs.models import EventLog
-from tendenci.core.newsletters.utils import apply_template_media
+from tendenci.core.newsletters.utils import apply_template_media, is_newsletter_relay_set
 from tendenci.core.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.core.newsletters.forms import (
     GenerateForm,
@@ -228,8 +229,7 @@ class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
         elif newsletter.send_status == 'sending' or newsletter.send_status == 'resending':
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
-        if not (settings.EMAIL_BACKEND and settings.EMAIL_HOST and settings.EMAIL_PORT and \
-            settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD):
+        if not is_newsletter_relay_set():
             messages.error(request, _('Email relay is not configured properly.'
                 ' Newsletter cannot be sent.'))
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))

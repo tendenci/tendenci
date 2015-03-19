@@ -1,5 +1,8 @@
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 
 
 class Command(BaseCommand):
@@ -19,9 +22,12 @@ class Command(BaseCommand):
         from tendenci.core.newsletters.models import Newsletter
         from tendenci.core.site_settings.utils import get_setting
 
-        from django.core.cache import cache
-        from django.core.urlresolvers import reverse
-        from django.template.loader import render_to_string
+        from tendenci.core.newsletters.utils import get_newsletter_connection
+        
+        connection = get_newsletter_connection()
+        if not connection:
+            print('Exiting..Please set up your newsletter email provider before proceeding.')
+            return
 
 
         print "Started sending newsletter..."
@@ -79,13 +85,13 @@ class Command(BaseCommand):
                     reply_to=email.reply_to,
                     recipient=recipient.member.email
                     )
-            email_to_send.send()
+            email_to_send.send(connection=connection)
             counter += 1
             print "Newsletter sent to %s" % recipient.member.email
 
             if newsletter.send_to_email2 and recipient.member.profile.email2:
                 email_to_send.recipient = recipient.member.profile.email2
-                email_to_send.send()
+                email_to_send.send(connection=connection)
                 counter += 1
                 print "Newsletter sent to %s" % recipient.member.profile.email2
 
@@ -124,7 +130,7 @@ class Command(BaseCommand):
             subject=subject,
             body=body)
 
-        email.send()
+        email.send(connection=connection)
 
         print "Confirmation email sent."
 
