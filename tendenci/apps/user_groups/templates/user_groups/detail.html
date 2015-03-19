@@ -90,6 +90,12 @@
                         <input type="hidden" name="action" value="delete">
                     </form>
                 {% endif %}
+
+                {% if gm.is_newsletter_subscribed %}
+                    <span class="unsubscribe-status">{% trans "This User Has Unsubscribed" %}</span>
+                {% else %}
+
+                {% endif %}
                 </div>
             {% endfor %}
         </div>
