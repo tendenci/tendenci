@@ -549,3 +549,11 @@ MESSAGE_TAGS = {
             messages.WARNING: 'alert-warning warning',
             messages.ERROR: 'alert-danger error'
 }
+
+# -------------------------------------- #
+# EMAIL Settings for Newsletters
+# -------------------------------------- #
+NEWSLETTER_EMAIL_HOST = None
+NEWSLETTER_EMAIL_PORT = 25
+NEWSLETTER_EMAIL_HOST_USER = ''
+NEWSLETTER_EMAIL_HOST_PASSWORD = ''

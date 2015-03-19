@@ -747,7 +747,7 @@ def get_app_fields_json(request):
 
     complete_list = simplejson.loads(
         render_to_string('memberships/app_fields.json'))
-    return HttpResponse(simplejson.dumps(complete_list))
+    return HttpResponse(simplejson.dumps(complete_list), content_type="application/json")
 
 
 @csrf_exempt
