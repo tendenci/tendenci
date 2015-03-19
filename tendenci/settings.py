@@ -557,3 +557,5 @@ NEWSLETTER_EMAIL_HOST = None
 NEWSLETTER_EMAIL_PORT = 587     # 587 is the default for mailgun
 NEWSLETTER_EMAIL_HOST_USER = ''
 NEWSLETTER_EMAIL_HOST_PASSWORD = ''
+NEWSLETTER_EMAIL_USE_TLS = True
+NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend'

@@ -16,7 +16,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from tendenci.apps.base.http import Http403
 from tendenci.apps.emails.models import Email
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.newsletters.utils import apply_template_media
+from tendenci.apps.newsletters.utils import apply_template_media, is_newsletter_relay_set
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.forms import (
     GenerateForm,
@@ -228,8 +228,7 @@ class NewsletterResendView(NewsletterPermissionMixin, NewsletterPassedSLAMixin, 
         elif newsletter.send_status == 'sending' or newsletter.send_status == 'resending':
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))
 
-        if not (settings.EMAIL_BACKEND and settings.EMAIL_HOST and settings.EMAIL_PORT and \
-            settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD):
+        if not is_newsletter_relay_set():
             messages.error(request, _('Email relay is not configured properly.'
                 ' Newsletter cannot be sent.'))
             return redirect(reverse('newsletter.detail.view', kwargs={'pk': newsletter.pk}))

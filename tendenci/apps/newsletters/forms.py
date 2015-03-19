@@ -11,7 +11,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.campaign_monitor.models import Template
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.http import Http403
-from tendenci.apps.newsletters.utils import get_type_choices
+from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.models import (
     THIS_YEAR,
@@ -189,9 +189,7 @@ class MarketingStepFiveForm(forms.ModelForm):
         data = self.cleaned_data
 
         # check if email host relay is properly set up
-        if not all([settings.NEWSLETTER_EMAIL_HOST,
-                    settings.NEWSLETTER_EMAIL_HOST_USER,
-                    settings.NEWSLETTER_EMAIL_HOST_PASSWORD]):
+        if not is_newsletter_relay_set():
             raise forms.ValidationError(_('Email relay is not configured properly.'
                                             ' Newsletter cannot be sent.'))
 
