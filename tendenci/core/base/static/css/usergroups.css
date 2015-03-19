@@ -169,6 +169,10 @@
     border-bottom: 1px solid #CCC;
 }
 
+.delete-member-form {
+    display: inline;
+}
+
 .unsubscribe-status {
     color: red;
 }
