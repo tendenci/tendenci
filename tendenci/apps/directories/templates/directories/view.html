@@ -1,31 +1,28 @@
 {% extends "directories/base.html" %}
-{% load directory_tags %}
-{% load base_tags %}
-{% load base_filters %}
 {% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load directory_tags %}
+
 
 {% block title %}{% blocktrans with title=directory.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with desc=directory.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
 {% block meta_keywords %}{% blocktrans with keys=directory.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
-{% block meta_canonical_url %}<link rel="canonical" href="{{ directory.get_canonical_url }}" />{% endblock %}
-
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
-{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ directory.get_canonical_url }}">{% endblock %}
 
 {% block content %}
-<div class="t">
-    <div class="directory-wrap">
+    <article id="t-directories-directory-{{ directory.pk }}" class="t-directories-directory">
+        <h1>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h1>
 
-        <h2>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h2>
-
-        <div class="content">
-
+        <div class="t-directories-directory-body">
             {% if directory.logo %}
-                <div class="directory-image"><img src="{{ directory.get_logo_url }}" alt="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}" title="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}" /></div>
+                <p class="t-directories-directory-image-container">
+                    <img class="t-directories-directory-image" src="{{ directory.get_logo_url }}" alt="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}" title="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}">
+                </p>
             {% endif %}
-            <p>{% blocktrans with body=directory.body|safe %}{{ body }}{% endblocktrans %}</p>
+
+            {% blocktrans with body=directory.body|safe %}{{ body }}{% endblocktrans %}
+        </div>
 
             {% if directory.source %}
             <p>{% trans "Source: " %}{% blocktrans with source=directory.source|safe %}{{ source }}{% endblocktrans %}</p>
@@ -70,13 +67,7 @@
                     <div>{{ directory.website|urlize }}</div>
                 {% endif %}
             </div>
-        </div>
 
         {% include "directories/meta.html" %}
-
-        <div>{% url "directory" directory.pk as the_url %}</div>
-        <div class="fb-connect">{% fb_like_button_iframe the_url %}</div>
-
-    </div>
-</div>
+    </article>
 {% endblock %}

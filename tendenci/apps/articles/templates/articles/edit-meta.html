@@ -5,11 +5,6 @@
 
 {% block title %}{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Edit Meta Information" %}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
-{% endblock %}
-
 {% block content %}
 <div class="t">
     <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% blocktrans with article.headline as article_headline %}Meta Information for<br />

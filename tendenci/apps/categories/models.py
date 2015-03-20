@@ -5,6 +5,7 @@ from django.db.models import Manager
 
 from tendenci.apps.categories.utils import prep_category
 
+
 class CategoryManager(Manager):
     def update(self, object, value, type):
         ct = ContentType.objects.get_for_model(object)

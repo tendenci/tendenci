@@ -3,16 +3,19 @@ from datetime import datetime
 from os.path import splitext, basename
 
 from django import forms
-from django.forms.util import ErrorList
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from django.forms.util import ErrorList
+from django.template.defaultfilters import filesizeformat
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
+
 from tinymce.widgets import TinyMCE
+
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField
-from django.template.defaultfilters import filesizeformat
-from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
-from django.contrib.contenttypes.models import ContentType
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.categories.forms import CategoryField
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.directories.models import Directory, DirectoryPricing
@@ -23,6 +26,7 @@ from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.site_settings.utils import get_setting
+
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -65,10 +69,11 @@ SEARCH_CATEGORIES = (
     ('tags__contains', _('Tags (case sensitive)')),
 )
 
-class DirectorySearchForm(forms.Form):
+
+class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
-    category = CategoryField(label=_('Category'), choices=[], required=False)
-    sub_category = CategoryField(label=_('Sub Category'), choices=[], required=False)
+    category = CategoryField(label=_('All Categories'), choices=[], required=False)
+    sub_category = CategoryField(label=_('All Subcategories'), choices=[], required=False)
     q = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
@@ -81,11 +86,12 @@ class DirectorySearchForm(forms.Form):
         categories, sub_categories = Directory.objects.get_categories()
 
         categories = [(cat.pk, cat) for cat in categories]
+        categories.insert(0, ('', _('All Categories (%d)' % len(categories))))
         sub_categories = [(cat.pk, cat) for cat in sub_categories]
+        sub_categories.insert(0, ('', _('All Subcategories (%d)' % len(sub_categories))))
 
         self.fields['category'].choices = categories
         self.fields['sub_category'].choices = sub_categories
-
 
     def clean(self):
         cleaned_data = self.cleaned_data

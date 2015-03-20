@@ -8,8 +8,6 @@
 
 
 {% block title %}{% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %} {% trans "List" %} {{ block.super }}{% endblock %}
-{% block meta_description %}{{ block.super }}{% endblock %}
-{% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -23,19 +21,16 @@
     {% autopaginate articles 10 %}
     {% article_search %}
 
-    {% if MODULE_ARTICLES_LABEL_PLURAL %}
-        <h4 class="capitalize">
+    <h4 class="capitalize">
+        {% if MODULE_ARTICLES_LABEL_PLURAL %}
             <em>{% blocktrans with module_articles_label_plural=MODULE_ARTICLES_LABEL_PLURAL count=paginator.count %}
                 {{ count }} {{ module_articles_label_plural }} Found
             {% endblocktrans %}</em>
-        </h4>
-    {% else %}
-        <h4 class="capitalize">
+        {% else %}
             <em>{% blocktrans with module_articles_label_plural="Articles" count=paginator.count %}
                 {{ count }} {{ module_articles_label_plural }} Found
             {% endblocktrans %}</em>
-        </h4>
-    {% endif %}
+        {% endif %}
     </h4>
 
     <section>

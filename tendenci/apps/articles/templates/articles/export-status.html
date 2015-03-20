@@ -6,10 +6,6 @@
 {% load perm_tags %}
 {% url "article.export_download" identifier as dl_url %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
-{% endblock %}
 
 {% block content %}
 

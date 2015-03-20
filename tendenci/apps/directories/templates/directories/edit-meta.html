@@ -5,11 +5,6 @@
 
 {% block title %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Edit Meta Information" %}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
-{% endblock %}
-
 {% block content %}
 <div class="t">
     <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Meta Information for" %}<br />
