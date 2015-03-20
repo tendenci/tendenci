@@ -57,6 +57,11 @@ class Command(BaseCommand):
 
         recipients = newsletter.get_recipients()
         email = newsletter.email
+        
+        # replace relative to absolute urls
+        self.site_url = get_setting('site', 'global', 'siteurl')
+        email.body = email.body.replace("src=\"/", "src=\"%s/" % self.site_url)
+        email.body = email.body.replace("href=\"/", "href=\"%s/" % self.site_url)
 
         counter = 0
         for recipient in recipients:
