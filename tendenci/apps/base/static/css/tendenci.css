@@ -95,7 +95,8 @@ html {
 
 
 /* Metadata */
-#t-meta-editor-bar {
+.t-meta-editor-bar {
+    background-color: #eeffdd;
     border-left-width: 0;
     border-right-width: 0;
     margin: 0 -15px;
@@ -103,15 +104,39 @@ html {
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius: 0;
+
+    -moz-border-bottom-left-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+
+    -moz-border-bottom-right-radius: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
-#t-meta-editor-bar > .container-fluid {
+.t-meta-editor-bar > .container-fluid {
     padding-left: 0;
     padding-right: 0;
 }
 
-#t-meta-perm-status {
+.t-meta-perm-status {
     margin-left: -15px;
+}
+
+.t-meta-editor-bar .t-meta-edit-links > li a {
+    color: #0066cc;
+}
+
+.t-meta-editor-bar .t-meta-edit-links > li a:hover {
+    color: #002266;
+}
+
+.t-meta-editor-bar .t-meta-edit-links > li .t-meta-delete-link {
+    color: #cc0000;
+}
+
+.t-meta-editor-bar .t-meta-edit-links > li .t-meta-delete-link:hover {
+    color: #880000;
 }
 
 .t-perm,
@@ -154,4 +179,10 @@ html {
 
 .t-role-staff {
     color: #e5600d;
+}
+
+
+/* Search Results */
+.t-auth-admin-loggedin .t-search-result-footer {
+    padding-bottom: 0;
 }

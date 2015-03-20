@@ -69,7 +69,7 @@
         {% endif %}
     </head>
 
-    <body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
+    <body id="{% block body_ids %}{% endblock %}" class="{% if request.user.is_superuser %}t-auth-admin-loggedin {% endif %}{% block body_classes %}{% endblock %}">
         {% block top_bar %}
             {% if request.user.is_superuser %}
                 {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
