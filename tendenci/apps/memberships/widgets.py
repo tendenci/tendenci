@@ -75,6 +75,11 @@ class TypeExpMethodWidget(forms.MultiWidget):
         final_attrs = self.build_attrs(attrs)
         id_ = final_attrs.get('id', None)
 
+        custom_field_final_attrs = final_attrs.copy()
+        if 'class' in custom_field_final_attrs:
+            classes = custom_field_final_attrs["class"].split(" ")
+            custom_field_final_attrs['class'] = " ".join([cls for cls in classes if cls != "form-control"])
+
         # period type
         period_type_widget = self.pos_d['period_type'][1]
         period_type_widget.choices = PERIOD_CHOICES
@@ -87,6 +92,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
         period_widget.attrs = {'size':'8'}
         rendered_period = self.render_widget(period_widget, name, value, final_attrs,
                                              self.pos_d['period'][0], id_)
+
         # period_unit
         period_unit_widget = self.pos_d['period_unit'][1]
         period_unit_widget.choices = PERIOD_UNIT_CHOICE
@@ -196,34 +202,39 @@ class TypeExpMethodWidget(forms.MultiWidget):
                                                             self.pos_d['fixed_option2_rollover_days'][0], id_)
         # fixed_option2_can_rollover
         fixed_option2_can_rollover_widget = self.pos_d['fixed_option2_can_rollover'][1]
+        can_rollover_attrs = final_attrs.copy()
+        if "class" in can_rollover_attrs:
+            can_rollover_attrs["class"] = "%s checkbox" % can_rollover_attrs["class"]
+        else:
+            can_rollover_attrs["class"] = "checkbox"
         rendered_fixed_option2_can_rollover = self.render_widget(fixed_option2_can_rollover_widget,
-                                                       name, value, final_attrs,
+                                                       name, value, can_rollover_attrs,
                                                        self.pos_d['fixed_option2_can_rollover'][0], id_)
 
         output_html = """
                         <div id="exp-method-box">
                             <div>%s</div>
 
-                            <div style="margin: 1em 0 0 9em;">
-                                <div id="rolling-box">
-                                    <div><label for="%s_%s">Period</label> %s %s</div>
+                            <div style="margin: 1em 0 0 3em;">
+                                <div id="rolling-box" class="form-group">
+                                    <div class="form-inline"><label for="%s_%s">Period</label> %s %s</div>
                                     <div><label for="%s_%s">Expires On</label> %s</div>
                                     <div><label for="%s_%s">Renew Expires On</label> %s</div>
                                 </div>
 
-                                <div id="fixed-box">
+                                <div id="fixed-box" class="form-group">
                                     <div><label for="%s_%s">Expires On</label> %s</div>
-                                    <div>%s For option 2, grace period %s day(s) before expiration then expires in the next year</div>
+                                    <div class="form-inline">%s For option 2, grace period %s day(s) before expiration then expires in the next year</div>
                                 </div>
                             </div>
 
                         </div>
                       """ % (rendered_period_type,
-                           name, self.pos_d['period'],
+                           name, self.pos_d['period'][0],
                            rendered_period, rendered_period_unit,
-                           name, self.pos_d['rolling_option'], rendered_rolling_option,
-                           name, self.pos_d['rolling_renew_option'], rendered_rolling_renew_option,
-                           name, self.pos_d['fixed_option'], rendered_fixed_option,
+                           name, self.pos_d['rolling_option'][0], rendered_rolling_option,
+                           name, self.pos_d['rolling_renew_option'][0], rendered_rolling_renew_option,
+                           name, self.pos_d['fixed_option'][0], rendered_fixed_option,
                            rendered_fixed_option2_can_rollover, rendered_fixed_option2_rollover_days)
 
         return mark_safe(output_html)
@@ -337,17 +348,27 @@ class CustomRadioInput(RadioInput):
         #else:
         #    label_for = ''
         choice_label = conditional_escape(force_unicode(self.choice_label))
-        return mark_safe(u'%s %s' % (self.tag(), choice_label))
+        return mark_safe(u'<div class="form-inline"><label>%s %s</label></div>' % (self.tag(), choice_label))
 
 
 class CustomRadioFieldRenderer(RadioFieldRenderer):
     def __iter__(self):
         for i, choice in enumerate(self.choices):
-            yield CustomRadioInput(self.name, self.value, self.attrs.copy(), choice, i)
+            attrs_copy = self.attrs.copy()
+            if 'class' not in attrs_copy:
+                attrs_copy['class'] = "radio"
+            else:
+                attrs_copy['class'] = "%s radio" % attrs_copy['class']
+            yield CustomRadioInput(self.name, self.value, attrs_copy, choice, i)
 
     def __getitem__(self, idx):
         choice = self.choices[idx] # Let the IndexError propogate
-        return CustomRadioInput(self.name, self.value, self.attrs.copy(), choice, idx)
+        attrs_copy = self.attrs.copy()
+        if 'class' not in attrs_copy:
+            attrs_copy['class'] = "radio"
+        else:
+            attrs_copy['class'] = "%s radio" % attrs_copy['class']
+        return CustomRadioInput(self.name, self.value, attrs_copy, choice, idx)
 
 class CustomRadioSelect(forms.RadioSelect):
     renderer = CustomRadioFieldRenderer
