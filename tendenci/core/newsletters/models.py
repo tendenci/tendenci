@@ -45,8 +45,6 @@ INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
 FORMAT_CHOICES = ((1, 'Detailed - original format View Example'), (0, 'Simplified - removes AUTHOR, POSTED BY, RELEASES DATE, etc from the detailed format View Example'))
 
-types_list = [(u'',_(u'All'))]
-
 DEFAULT_TEMPLATE_CHOICES = (
     ('newsletters/templates/default/Big City Newsletter.html', 'Big City Newsletter'),
     ('newsletters/templates/default/Holiday Night Lights Newsletter.html', 'Holiday Night Lights Newsletter'),
@@ -77,20 +75,6 @@ NEWSLETTER_SEND_STATUS_CHOICES = (
     ('resending', _('Resending')),
     ('resent', _('Resent'))
 )
-"""
-Choices for Old Form (t4 version)
-"""
-
-try:
-    from tendenci.addons.events.models import Type
-    types = Type.objects.all()
-    for type in types:
-        types_list.append((int(type.pk),type.name))
-except ImportError:
-    pass
-except DatabaseError:
-    pass
-TYPE_CHOICES = tuple(types_list)
 
 
 class NewsletterTemplate(models.Model):
@@ -171,7 +155,7 @@ class Newsletter(models.Model):
     events = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
     event_start_dt = models.DateField(default=datetime.date.today())
     event_end_dt = models.DateField(default=datetime.date.today()+datetime.timedelta(days=90))
-    events_type = models.IntegerField(default=1, null=True, blank=True, choices=TYPE_CHOICES)
+    events_type = models.IntegerField(default=1, null=True, blank=True)
     articles = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
     articles_days = models.IntegerField(default=60, choices=DAYS_CHOICES)
     news = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
