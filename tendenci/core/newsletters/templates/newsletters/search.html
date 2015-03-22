@@ -29,7 +29,7 @@
                 {% paginate %}
             {% else %}
                 {% if object_list %}
-                    {% for ballot in object_list %}
+                    {% for newsletter in object_list %}
                         {% include 'newsletters/search-result.html' %}
                     {% endfor %}
                 {% else %}
