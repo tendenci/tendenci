@@ -2,7 +2,7 @@ import datetime
 import subprocess
 
 from django.conf import settings
-from django.db import models
+from django.db import models, DatabaseError
 from django.template import Template as DTemplate
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
@@ -87,6 +87,8 @@ try:
     for type in types:
         types_list.append((int(type.pk),type.name))
 except ImportError:
+    pass
+except DatabaseError:
     pass
 TYPE_CHOICES = tuple(types_list)
 
