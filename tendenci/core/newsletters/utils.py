@@ -139,8 +139,8 @@ def newsletter_events_list(request, start_dt, end_dt, simplified):
         from tendenci.addons.events.models import Event
 
         events = Event.objects.filter(
-            start_dt=start_dt,
-            end_dt=end_dt,
+            start_dt__gt=start_dt,
+            end_dt__lt=end_dt,
             status_detail='active',
             status=True,
             allow_anonymous_view=True).order_by('start_dt')
