@@ -9,7 +9,9 @@ from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.core.mail import get_connection
+from django.utils.translation import ugettext_lazy as _
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.events.models import Type
 
 
 def get_start_dt(duration_days, end_dt=None):
@@ -24,6 +26,15 @@ def get_start_dt(duration_days, end_dt=None):
     else:
         start_dt = None
     return start_dt
+
+
+def get_type_choices():
+    types_list = [(u'',_(u'All'))]
+    types = Type.objects.all()
+    for type in types:
+        types_list.append((int(type.pk),type.name))
+
+    return tuple(types_list)
 
 
 def get_newsletter_connection():
