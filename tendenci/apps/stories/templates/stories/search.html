@@ -1,26 +1,26 @@
 {% extends "stories/base.html" %}
-{% load bootstrap_pagination_tags %}
-{% load story_tags %}
-{% load search_tags %}
-{% load base_tags %}
-{% load base_filters %}
-{% load perm_tags %}
 {% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load story_tags %}
+
 
 {% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/stories.css">
-<link rel="alternate" type="application/rss+xml" title="Latest Stories" href="{% url "story.feed" %}" />
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="Latest Stories" href="{% url 'story.feed' %}">
 {% endblock %}
 
 {% block content %}
-<div class="t">
     <h1>{% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}</h1>
 
     {% autopaginate stories 10 %}
     {% stories_search %}
+
     <span><em>{{ paginator.count }} {% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %} {% trans "Found" %}</em> - {% trans 'Ordered by latest added' %}</span>
 
     <div class="stories-wrap">
@@ -32,5 +32,4 @@
     </div>
 
     {% paginate %}
-</div>
 {% endblock %}

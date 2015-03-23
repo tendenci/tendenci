@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -18,11 +17,11 @@
 {% endif %}
 
 
-<ul class="dropdown-menu">
+<ul id="t-admin-megamenu-articles-dd" class="dropdown-menu" role="menu">
     <li>
-        <div class="yamm-content custom-yamm-content content-dropdown">
+        <div class="yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         <li>
                             {# "All Stories" Section #}
@@ -63,7 +62,7 @@
 
                 {% if app_object %}
                     {% if can_view_story or can_edit_story %}
-                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Story" %}</span>
                             </li>
