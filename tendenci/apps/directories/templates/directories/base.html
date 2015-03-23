@@ -4,15 +4,15 @@
 
 
 {% block title %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} {% blocktrans with name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %} for {{ name }} in {{ location }}{% endblocktrans %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %} {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %} for {{ display_name }} in {{ location }}{% endblocktrans %}
 {% endblock %}
 
 {% block meta_description %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} {% blocktrans with name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %} for {{ name }} in {{ location }}{% endblocktrans %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %} {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %} for {{ display_name }} in {{ location }}{% endblocktrans %}
 {% endblock %}
 
 {% block meta_keywords %}
-    {% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %}, {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %} {{location  }}, {{ name }}, white papers, {{ keys }}{% endblocktrans %}
+    {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}, {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %} {{ location  }}, {{ display_name }}, white papers, {{ keys }}{% endblocktrans %}
 {% endblock %}
 
 {% block extra_head %}

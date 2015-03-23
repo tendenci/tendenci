@@ -1,8 +1,12 @@
 {% load i18n %}
 
+
 {% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="search-form" action="{% url "news" %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="{% trans 'Search' %}" />
-</form>
+    <form id="t-news-search-form" class="form-inline t-search-form" action="{% url 'news' %}" method="get">
+        <div class="form-group">
+            <input type="text" name="q" class="form-control" value="{{ request.GET.q|striptags }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+    </form>
 {% endif %}

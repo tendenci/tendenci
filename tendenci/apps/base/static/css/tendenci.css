@@ -97,13 +97,17 @@ html {
 /* Metadata */
 .t-meta-editor-bar {
     background-color: #eeffdd;
-    border-left-width: 0;
-    border-right-width: 0;
-    margin: 0 -15px;
+    border-color: #eeffdd;
 
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius: 0;
+}
+
+.t-search-view .t-meta-editor-bar {
+    border-left-width: 0;
+    border-right-width: 0;
+    margin: 0 -15px;
 
     -moz-border-bottom-left-radius: 3px;
     -webkit-border-bottom-left-radius: 3px;

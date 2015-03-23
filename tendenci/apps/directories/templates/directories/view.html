@@ -24,50 +24,6 @@
             {% blocktrans with body=directory.body|safe %}{{ body }}{% endblocktrans %}
         </div>
 
-            {% if directory.source %}
-            <p>{% trans "Source: " %}{% blocktrans with source=directory.source|safe %}{{ source }}{% endblocktrans %}</p>
-            {% endif %}
-
-            <div class="contact">
-                {% if directory.first_name and directory.last_name %}
-                <div>{{ directory.first_name }} {{ directory.last_name }}</div>
-                {% endif %}
-                {% if directory.address %}
-                    <div>{{ directory.address }}</div>
-                {% endif %}
-                {% if directory.address2 %}
-                    <div>{{ directory.address2 }}</div>
-                {% endif %}
-                {% if directory.city or directory.state or directory.zip_code %}
-                    <div>
-                        {% if directory.city %}{{ directory.city }}{% endif %}
-                        {% if directory.state %}{{ directory.state }}{% endif %}
-                        {% if directory.zip_code %}{{ directory.zip_code }}{% endif %}
-                    </div>
-                {% endif %}
-                {% if directory.country %}
-                    <div>{{ directory.country }}</div>
-                {% endif %}
-                {% if directory.phone %}
-                    <div>{{ directory.phone|phonenumber }}</div>
-                {% endif %}
-                {% if directory.phone2 %}
-                    <div>{{ directory.phone2|phonenumber }}</div>
-                {% endif %}
-                {% if directory.fax %}
-                    <div>{{ directory.fax }} fax.</div>
-                {% endif %}
-                {% if directory.email %}
-                    <div>{{ directory.email|obfuscate_email }}</div>
-                {% endif %}
-                {% if directory.email2 %}
-                    <div>{{ directory.email2|obfuscate_email }}</div>
-                {% endif %}
-                {% if directory.website %}
-                    <div>{{ directory.website|urlize }}</div>
-                {% endif %}
-            </div>
-
-        {% include "directories/meta.html" %}
+        {% include "directories/meta.html" with show_source=True show_contact=True show_fb_connect=True %}
     </article>
 {% endblock %}

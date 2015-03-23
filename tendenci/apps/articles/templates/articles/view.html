@@ -33,6 +33,6 @@
             {% blocktrans with body=article.body|safe %}{{ body }}{% endblocktrans %}
         </div>
 
-        {% include "articles/meta.html" with show_article_source=True show_fb_connect=True %}
+        {% include "articles/meta.html" with show_source=True show_fb_connect=True %}
     </article>
 {% endblock %}

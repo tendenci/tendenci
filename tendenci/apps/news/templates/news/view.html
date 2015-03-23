@@ -1,11 +1,13 @@
 {% extends "news/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load meta_tags %}
 {% load news_tags %}
 {% load tagging_tags %}
-{% load base_tags %}
-{% load base_filters %}
-{% load category_tags %}
-{% load i18n %}
-{% load meta_tags %}
+
 
 {% block title %}{% blocktrans with t=news.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=news.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
@@ -13,51 +15,31 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
-{% meta_og_image news "thumbnail" %}
-{% meta_og_image news "body" %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
+    {% meta_og_image news "thumbnail" %}
+    {% meta_og_image news "body" %}
+    {{ block.super }}
 {% endblock %}
 
 {% block content %}
-{% tags_for_object news as tags %}
+    {% tags_for_object news as tags %}
 
-<div class="t">
-    <div class="news-wrap">
-        <div class="options">
-             <div class="quick-options">
-                {% news_options request.user news %}
-             </div>
-        </div>
+    {% news_options request.user news %}
 
-        <h1>{% blocktrans with h=news.headline %}{{ h }}{% endblocktrans %}</h1>
+    <article id="t-news-news-{{ news.pk }}" class="t-news-news">
+        <h1>{% blocktrans with headline=news.headline %}{{ headline }}{% endblocktrans %}</h1>
+
         {% if news.google_profile %}
-        {% if news.has_google_author %}
-        <a href="{{ news.google_profile }}?rel=author">{% trans "View author's Google+ profile" %}</a>
-        {% elif news.has_google_publisher %}
-        <a href="{{ news.google_profile }}" rel="publisher">{% trans "View publisher's Google+ page" %}</a>
-        {% endif %}
+            {% if news.has_google_author %}
+                <a href="{{ news.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
+            {% elif news.has_google_publisher %}
+                <a href="{{ news.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
+            {% endif %}
         {% endif %}
 
-        <div class="content">
-            {% blocktrans with b=news.body|safe %}{{ b }}{% endblocktrans %}
+        <div class="t-news-news-body">
+            {% blocktrans with body=news.body|safe %}{{ body }}{% endblocktrans %}
         </div>
-        {% include "news/meta.html" %}
-        <br />
-        <p>{% fb_like_button_iframe news.get_absolute_url %}</p>
-    </div>
 
-</div>
-{% endblock %}
-
-{% block extra_body %}
-{{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-    <script type="text/javascript">
-    var iconrow = new dropdown({
-        container:    'more-options-wrap',
-        trigger:    'more-options-trigger',
-        target:        'more-options-target'
-    });
-    </script>
+        {% include "news/meta.html" with show_source=True show_contact=True show_fb_connect=True %}
+    </article>
 {% endblock %}
