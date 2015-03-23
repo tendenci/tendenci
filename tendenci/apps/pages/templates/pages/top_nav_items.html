@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -17,11 +16,11 @@
 {% endif %}
 
 
-<ul class="dropdown-menu">
+<ul id="t-admin-megamenu-pages-dd" class="dropdown-menu" role="menu">
     <li>
-        <div class="yamm-content custom-yamm-content content-dropdown">
+        <div class="yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         {# "All Pages" Section #}
                         <li>
@@ -63,7 +62,7 @@
                 {% if app_object %}
                     {% if can_view_page or can_edit_page %}
                         {# "This Page" Section #}
-                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Page" %}</span>
                             </li>

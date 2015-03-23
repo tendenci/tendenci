@@ -1,47 +1,50 @@
 {% extends page.template %}
-{% load meta_tags %}
 {% load i18n %}
+{% load staticfiles %}
+{% load meta_tags %}
+
 
 {% block title %}{% blocktrans with t=page.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=page.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
 {% block meta_keywords %}{% blocktrans with k=page.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
+
 {% block extra_head %}
-{% meta_og_image page "header_image" %}
-{% meta_og_image page "content" %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
+    {% meta_og_image page "header_image" %}
+    {% meta_og_image page "content" %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/pages.css' %}">
 {% endblock %}
 
+{% block banner %}{% endblock %}
+
 {% block content %}
-<div class="t">
-    <div class="page-wrap">
+    {% if page.header_image %}
+        <div class="page-header">
+            <img src="{{ page.get_header_image_url }}" alt="page header" title="page header">
+        </div>
+    {% endif %}
 
-        {% if page.header_image %}<div class="page-header">
-            <img src="{{ page.get_header_image_url }}" alt="page header" title="page header" />
-        </div>{% endif %}
-
-        {% if page.title %}
+    {% if page.title %}
         <h1>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
             {% if request.user.is_authenticated %}
                 {% if request.user.is_superuser %}
-                    {% if page.is_public %}<i class="fa fa-unlock-alt green"></i>{% endif %}
+                    {% if page.is_public %}<i class="fa fa-unlock-alt pull-right text-success"></i>{% endif %}
                 {% endif %}
-                {% if not page.is_public %}<i class="fa fa-lock red"></i>{% endif %}
+                {% if not page.is_public %}<i class="fa fa-lock pulll-right text-danger"></i>{% endif %}
             {% endif %}
         </h1>
-        {% endif %}
+    {% endif %}
 
-        {% if page.google_profile %}
+    {% if page.google_profile %}
         {% if page.has_google_author %}
-        <a href="{{ page.google_profile }}?rel=author">{% trans "View author's Google+ profile" %}</a>
+            <a href="{{ page.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
         {% elif page.has_google_publisher %}
-        <a href="{{ page.google_profile }}" rel="publisher">{% trans "View publisher's Google+ page" %}</a>
+            <a href="{{ page.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
         {% endif %}
-        {% endif %}
+    {% endif %}
 
-        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
-        {% include "pages/meta.html" %}
-    </div>
-</div>
+    <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
+
+    {% include "pages/meta.html" %}
 {% endblock %}
