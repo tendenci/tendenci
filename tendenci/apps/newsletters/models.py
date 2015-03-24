@@ -45,7 +45,6 @@ INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
 FORMAT_CHOICES = ((1, 'Detailed - original format View Example'), (0, 'Simplified - removes AUTHOR, POSTED BY, RELEASES DATE, etc from the detailed format View Example'))
 
-
 DEFAULT_TEMPLATE_CHOICES = (
     ('newsletters/templates/default/Big City Newsletter.html', 'Big City Newsletter'),
     ('newsletters/templates/default/Holiday Night Lights Newsletter.html', 'Holiday Night Lights Newsletter'),
@@ -76,9 +75,6 @@ NEWSLETTER_SEND_STATUS_CHOICES = (
     ('resending', _('Resending')),
     ('resent', _('Resent'))
 )
-"""
-Choices for Old Form (t4 version)
-"""
 
 
 class NewsletterTemplate(models.Model):
@@ -98,7 +94,7 @@ class NewsletterTemplate(models.Model):
         permissions = (("view_newslettertemplate", _("Can view newsletter template")),)
 
     def __unicode__(self):
-        return self.name
+        return self.name or u"No Name"
 
     @property
     def content_type(self):
@@ -209,7 +205,7 @@ class Newsletter(models.Model):
         verbose_name_plural = _("Newsletters")
 
     def __unicode__(self):
-        return self.actionname
+        return self.actionname or u"No Action Name"
 
     @models.permalink
     def get_absolute_url(self):
@@ -230,7 +226,10 @@ class Newsletter(models.Model):
             content = content.replace('[menu]', data.get('jumplink_content'))
 
         if '[content]' in content:
-            full_content = data.get('opening_text') + data.get('login_content') + data.get('footer_text')
+            full_content = data.get('opening_text') + \
+                            data.get('login_content') + \
+                            data.get('footer_text') + \
+                            data.get('unsubscribe_text')
             content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
@@ -264,6 +263,9 @@ class Newsletter(models.Model):
 
         footer_txt = render_to_string('newsletters/footer.txt',
                                             {'newsletter': self },
+                                            context_instance=RequestContext(request))
+
+        unsubscribe_txt = render_to_string('newsletters/newsletter_unsubscribe.txt',
                                             context_instance=RequestContext(request))
 
         login_content = ""
@@ -321,6 +323,7 @@ class Newsletter(models.Model):
         data = {
                 'opening_text': opening_txt,
                 'footer_text' : footer_txt,
+                'unsubscribe_text': unsubscribe_txt,
                 'login_content': login_content,
                 'jumplink_content': jumplink_content,
                 'articles_content': articles_content,
@@ -366,7 +369,8 @@ class Newsletter(models.Model):
         if self.member_only:
             members = GroupMembership.objects.filter(
                 status=True,
-                status_detail='active').order_by(
+                status_detail='active',
+                is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
 
@@ -375,7 +379,8 @@ class Newsletter(models.Model):
             members = GroupMembership.objects.filter(
                 group=group,
                 status=True,
-                status_detail='active').order_by(
+                status_detail='active',
+                is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
 

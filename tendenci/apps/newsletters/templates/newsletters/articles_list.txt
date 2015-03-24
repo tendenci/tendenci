@@ -41,7 +41,7 @@
         <tr><td align="left" valign="top"><div>
         <font face="Arial" size="2" color="#000000">
 
-        {{ article.body|striptags|truncatewords:60 }}
+        {{ article.body|striptags|safe|truncatewords:60 }}
          <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'article' article.slug %}">[{% trans "More Info" %}]</a>
         </font>
 

@@ -87,6 +87,13 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     if not has_view_perm(request.user,'user_groups.view_group',group):
         raise Http403
 
+    if group in request.user.profile.get_groups():
+        is_group_member = True
+        gm = GroupMembership.objects.get(group=group, member=request.user)
+    else:
+        is_group_member = False
+        gm = None
+
     EventLog.objects.log(instance=group)
 
     groupmemberships = GroupMembership.objects.filter(
@@ -308,6 +315,9 @@ def group_membership_self_add(request, slug, user_id):
         group_membership.save()
 
         EventLog.objects.log(instance=group_membership)
+
+        if group_membership.is_newsletter_subscribed:
+            group_membership.subscribe_to_newsletter()
 
         messages.add_message(request, messages.SUCCESS, _('Successfully added yourself to group %(grp)s' % {'grp':group}))
     else:
@@ -1044,3 +1054,54 @@ def import_download_template(request, file_ext='.csv'):
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)
+
+# Newsletter stuff here:
+@login_required
+def subscribe_to_newsletter_interactive(request, group_slug):
+    group = get_object_or_404(Group, slug=group_slug)
+
+    groupmembership = get_object_or_404(GroupMembership,
+                        group=group,
+                        member=request.user,
+                        status=True,
+                        status_detail='active')
+
+    if groupmembership.subscribe_to_newsletter():
+        messages.success(request, _('Successfully subscribed to Newsletters.'))
+
+    return redirect(reverse('group.detail', kwargs={'group_slug': group_slug}))
+
+
+@login_required
+def unsubscribe_to_newsletter_interactive(request, group_slug):
+    group = get_object_or_404(Group, slug=group_slug)
+
+    groupmembership = get_object_or_404(GroupMembership,
+                        group=group,
+                        member=request.user,
+                        status=True,
+                        status_detail='active')
+
+    if groupmembership.unsubscribe_to_newsletter():
+        messages.success(request, _('Successfully unsubscribed to Newsletters.'))
+
+    return redirect(reverse('group.detail', kwargs={'group_slug': group_slug}))
+
+
+def subscribe_to_newsletter_noninteractive(request, group_slug):
+    pass
+
+
+def unsubscribe_to_newsletter_noninteractive(request, group_slug, newsletter_key):
+    group = get_object_or_404(Group, slug=group_slug)
+
+    groupmembership = get_object_or_404(GroupMembership,
+                        group=group,
+                        status=True,
+                        status_detail='active',
+                        newsletter_key=newsletter_key)
+    if not groupmembership.unsubscribe_to_newsletter():
+        raise Http404
+
+    return render(request, 'user_groups/newsletter_unsubscribe.html')
+

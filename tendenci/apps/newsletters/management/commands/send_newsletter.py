@@ -22,7 +22,7 @@ class Command(BaseCommand):
         from tendenci.apps.newsletters.models import Newsletter
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.newsletters.utils import get_newsletter_connection
-     
+
         connection = get_newsletter_connection()
         if not connection:
             print('Exiting..Please set up your newsletter email provider before proceeding.')
@@ -57,7 +57,7 @@ class Command(BaseCommand):
 
         recipients = newsletter.get_recipients()
         email = newsletter.email
-        
+
         # replace relative to absolute urls
         self.site_url = get_setting('site', 'global', 'siteurl')
         email.body = email.body.replace("src=\"/", "src=\"%s/" % self.site_url)
@@ -79,6 +79,9 @@ class Command(BaseCommand):
 
             if '[firstname]' in body:
                 body = body.replace('[firstname]', recipient.member.first_name)
+
+            if '[unsubscribe_url]' in body:
+                body = body.replace('[unsubscribe_url]', recipient.noninteractive_unsubscribe_url)
 
             email_to_send = Email(
                     subject=subject,

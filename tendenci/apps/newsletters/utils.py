@@ -39,12 +39,12 @@ def get_start_dt(duration_days, end_dt=None):
 def get_newsletter_connection():
     return get_connection(backend=settings.NEWSLETTER_EMAIL_BACKEND)
 
-    
+
 def is_newsletter_relay_set():
     return all([settings.NEWSLETTER_EMAIL_HOST,
                 settings.NEWSLETTER_EMAIL_HOST_USER,
                 settings.NEWSLETTER_EMAIL_HOST_PASSWORD])
-    
+
 
 def newsletter_articles_list(request, articles_days, simplified):
     articles = []
@@ -149,8 +149,8 @@ def newsletter_events_list(request, start_dt, end_dt, simplified):
         from tendenci.apps.events.models import Event
 
         events = Event.objects.filter(
-            start_dt=start_dt,
-            end_dt=end_dt,
+            start_dt__gt=start_dt,
+            start_dt__lt=end_dt,
             status_detail='active',
             status=True,
             allow_anonymous_view=True).order_by('start_dt')
