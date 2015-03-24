@@ -4,15 +4,36 @@
 
 
 {% block title %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}{% firstof MODULE_NEWS_LABEL_PLURAL trans "News" %} {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}for {{ display_name }} in {{ location }}{% endblocktrans %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_NEWS_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            {{ label_plural }} for {{ display_name }} in {{ location }}
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            News for {{ display_name }} in {{ location }}
+        {% endblocktrans %}
+    {% endif %}
 {% endblock %}
 
 {% block meta_description %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}{% firstof MODULE_NEWS_LABEL_PLURAL trans "News" %} {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}and White Papers for {{ display_name }} in {{ location }}{% endblocktrans %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_NEWS_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            {{ label_plural }} and White Papers for {{ display_name }} in {{ location }}
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            News and White Papers for {{ display_name }} in {{ location }}
+        {% endblocktrans %}
+    {% endif %}
 {% endblock %}
 
 {% block meta_keywords %}
-    {% firstof MODULE_NEWS_LABEL_PLURAL "News" %}, {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %}{{ location }}, {{ display_name }}, white papers, {{ keys }}{% endblocktrans %}
+    {% firstof MODULE_NEWS_LABEL_PLURAL "News" %},
+    {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %}
+        {{ location }}, {{ display_name }}, white papers, {{ keys }}
+    {% endblocktrans %}
 {% endblock %}
 
 {% block extra_head %}

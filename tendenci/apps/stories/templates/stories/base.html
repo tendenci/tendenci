@@ -3,7 +3,10 @@
 {% load staticfiles %}
 
 
-{% block title %}{% firstof MODULE_STORIES_LABEL trans "Story" %} - {% endblock %}
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}
+{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
