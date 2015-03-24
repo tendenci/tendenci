@@ -1,37 +1,74 @@
 {% extends "site_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_JOBS_LABEL 'Job' %} {% trans 'Listings for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans 'employment opportunities and' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'openings' %}{% endblock %}
-{% block meta_description %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'search page for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'in' %} {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'listing' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'openings and employment opportunities' %}{% endblock %}
-{% block meta_keywords %}{% trans 'Employment Search' %}, {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'Search' %}, {{SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans 'Employment' %}, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}, {% trans 'employment opportunities, employment, hiring, staffing, agencies' %}{% endblock %}
 
-{% block messages %}{{ block.super }}{% endblock %}
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_JOBS_LABEL %}
+        {% blocktrans with label=MODULE_JOBS_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            {{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            Job Listings for {{ display_name }} - Employment Opportunities and Job Openings
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if MODULE_JOBS_LABEL %}
+        {% blocktrans with label=MODULE_JOBS_LABEL label_lower=MODULE_JOBS_LABEL|lower display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            {{ label }} search page for {{ display_name }} in {{ location }} listing {{ label_lower }} openings and employment opportunities
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            Job search page for {{ display_name }} in {{ location }} listing - job openings and employment opportunities
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% trans "Employment Search" %}, {% firstof MODULE_JOBS_LABEL trans "Job" %} {% trans "Search" %}, {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
+    {% if MODULE_JOBS_LABEL_PLURAL %}
+        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_JOBS_LABEL_PLURAL %}{{ location }} {{ label_plural }}{% endblocktrans %}
+    {% else %}
+        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ location }} jobs{% endblocktrans %}
+    {% endif %}, {% trans "employment opportunities, employment, hiring, staffing, agencies" %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/jobs.css' %}">
+{% endblock %}
+
+{% block banner %}{% endblock %}
 
 {% block top_bar %}
-{% if request.user.is_authenticated %}
-    {% if request.user.is_superuser %}
-        {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+    {% if request.user.is_authenticated %}
+        {% if request.user.is_superuser %}
+            {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                    {% include "top_menu/user_top.html" %}
+                {% else %}
+                    {% include "jobs/top_nav.html" %}
+                {% endif %}
+            {% else %}
+                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                    {% include "top_menu/admin_top.html" %}
+                {% else %}
+                    {% include "jobs/top_nav.html" %}
+                {% endif %}
+                {% if request.session.theme %}
+                    {% include "themes/theme_top.html" %}
+                {% endif %}
+            {% endif %}
+        {% else %}
             {% if SITE_GLOBAL_SHOWANCIENTMENU %}
                 {% include "top_menu/user_top.html" %}
             {% else %}
                 {% include "jobs/top_nav.html" %}
             {% endif %}
-        {% else %}
-            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                {% include "top_menu/admin_top.html" %}
-            {% else %}
-                {% include "jobs/top_nav.html" %}
-            {% endif %}
-            {% if request.session.theme %}
-                {% include "themes/theme_top.html" %}
-            {% endif %}
-        {% endif %}
-    {% else %}
-        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/user_top.html" %}
-        {% else %}
-            {% include "jobs/top_nav.html" %}
         {% endif %}
     {% endif %}
-{% endif %}
 {% endblock %}

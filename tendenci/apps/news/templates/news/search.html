@@ -10,7 +10,13 @@
 {% load search_tags %}
 
 
-{% block title %}{% firstof MODULE_NEWS_LABEL_PLURAL trans "News" %} {% trans "List" %} {{ block.super }}{% endblock %}
+{% block title %}
+    {% if MODULE_NEWS_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+    {% else %}
+        {% trans "News List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -20,19 +26,26 @@
 {% block content_classes %}{{ block.super }} t-search-view{% endblock %}
 
 {% block content %}
-    <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_NEWS_LABEL_PLURAL trans "News" %} {% trans "Search" %}</h1>
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_NEWS_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+        {% else %}
+            {% trans "News List" %}
+        {% endif %}
+    </h1>
 
     {% autopaginate search_news 10 %}
     {% news_search %}
 
     <h4 class="capitalize">
         {% if MODULE_NEWS_LABEL_PLURAL %}
-            <em>{% blocktrans with module_news_label_plural=MODULE_NEWS_LABEL_PLURAL count=paginator.count %}
-                {{ count }} {{ module_news_label_plural }} Found
+            <em>{% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
             {% endblocktrans %}</em>
         {% else %}
-            <em>{% blocktrans with module_news_label_plural="News" count=paginator.count %}
-                {{ count }} {{ module_news_label_plural }} Found
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} News Found
             {% endblocktrans %}</em>
         {% endif %}
     </h4>

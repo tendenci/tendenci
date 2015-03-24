@@ -1,74 +1,87 @@
-{% load base_tags %}
-{% load base_filters %}
 {% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
 
-<div class="meta">
-    <div class="meta-left">
-        {% with job.category_set as job_cat %}
+
+<ul class="list-unstyled t-meta-data">
+    {% if show_fb_connect|default:False %}
+        <li>{% fb_like_button_iframe job.get_absolute_url height=20 %}</li>
+    {% endif %}
+
+    {% with job.category_set as job_cat %}
         {% if job_cat.category %}
-        <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url "jobs" %}?q=category:{{ job_cat.category }}">{{ job_cat.category }}</a>
-            {% if job_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url "jobs" %}?q=sub_category:{{ job_cat.sub_category }}">{{ job_cat.sub_category }}</a>
-            {% endif %}
-        </div>
+            <li>
+                <ul class="list-inline">
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'jobs' %}?q=category:{{ job_cat.category }}">{% blocktrans with category=job_cat.category %}{{ category }}{% endblocktrans %}</a></li>
+                    {% if job_cat.sub_category %}
+                        <li>|</li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'jobs' %}?q=sub_category:{{ job_cat.sub_category }}">{% blocktrans with sub_category=job_cat.subcategory %}{{ sub_category }}{% endblocktrans %}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
         {% endif %}
-        {% endwith %}
+    {% endwith %}
 
-        {% if job.tags %}
-        <div class="tags">
-            <strong>{% trans 'Tags' %}: </strong>
+    {% if job.tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in job.tags|tag_split %}
-                <a href="{% url "jobs" %}?q=tag:{{ tag }}">{% blocktrans with t=tag %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
+                <a class="label label-default" href="{% url 'jobs' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+           {% endfor %}
+        <li>
+    {% endif %}
 
-        {% if user.is_authenticated %}
-            {% if not user.profile.is_superuser %}
+    {% if user.is_authenticated %}
+        {% if not user.profile.is_superuser %}
             {% if user == job.creator or user == job.owner %}
-            <div class="categories">
-                <strong>{% trans 'Owned by you' %}</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
-            </div>
-            {% endif %}
-            {% endif %}
-
-            {% if user.profile.is_staff or user == job.creator or user == job.owner %}
-                {% meta_creator_owner job %}
+                <li><strong>{% trans "Owned by you" %}</strong></li>
+                {% if not job.status_detail == "active" %}
+                    <li><strong>{% trans "Status:" %}</strong> <span>{{ job.obj_status }}</span></li>
+                {% endif %}
             {% endif %}
         {% endif %}
-    </div>
 
-    <div class="meta-right">
-        <a class="print-link" href="{% url "job.print_view" job.slug %}">{% trans "Print" %}</a>
-    </div>
+        {% if user.profile.is_superuser or user == job.creator or user == job.owner %}
+            {% meta_creator_owner job %}
+        {% endif %}
+    {% endif %}
 
-</div>
+    <li><a href="{% url 'job.print_view' job.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
+</ul>
+
 {% if user.profile.is_superuser %}
-<div class="editor-bar">
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ job.obj_perms }}</li>
+                    <li>{{ job.obj_status }}</li>
+                </ul>
 
-    <div class="perm-status">
-    <ul>
-        <li>{{ job.obj_perms }}</li>
-        <li>{{ job.obj_status }}</li>
-    </ul>
-    </div>
-    <div class="edit-links">
-    <ul>
-        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ job.pk }}&source={{ job.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-        <li><a class="edit-link" href="{% url "job.edit" job.pk %}">{% trans "Edit" %}</a></li>
-        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
-        <div class="options-list">
-            <ul>
-                <li>
-                    <a class="delete" href="{% url "job.delete" job.pk %}">{% trans "Delete" %}</a>
-                </li>
-                <li><a href="{% url "job.edit.meta" job.pk %}">{% trans "Edit Meta" %}</a></li>
-                <li><a href="{% url "category.update" job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a></li>
-            </ul>
+                <ul class="nav navbar-nav navbar-right t-meta-edit-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ job.pk }}&source={{ job.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'job.edit' job.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url 'job.delete' job.pk %}">{% trans "Delete" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'job.edit.meta' job.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'category.update' job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-        </li>
-    </ul>
-    </div>
-</div>
+    </nav>
 {% endif %}

@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block meta_keywords %}
-    {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}, {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %} {{ location  }}, {{ display_name }}, white papers, {{ keys }}{% endblocktrans %}
+    {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %}, {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %} {{ location  }}, {{ display_name }}, white papers, {{ keys }}{% endblocktrans %}
 {% endblock %}
 
 {% block extra_head %}

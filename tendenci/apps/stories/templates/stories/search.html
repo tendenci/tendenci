@@ -8,7 +8,13 @@
 {% load story_tags %}
 
 
-{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
+{% block title %}
+    {% if MODULE_STORIES_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_STORIES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Stories Search" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -18,19 +24,26 @@
 {% block content_classes %}{{ block.super }} t-search-view{% endblock %}
 
 {% block content %}
-    <h1>{% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}</h1>
+    <h1>
+        {% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_STORIES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_STORIES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Stories Search" %}
+        {% endif %}
+    </h1>
 
     {% autopaginate stories 10 %}
     {% stories_search %}
 
     <h4 class="capitalize">
         {% if MODULE_STORIES_LABEL_PLURAL %}
-            <em>{% blocktrans with module_stories_label_plural=MODULE_STORIES_LABEL_PLURAL count=paginator.count %}
-                {{ count }} {{ module_stories_label_plural }} Found
+            <em>{% blocktrans with label_plural=MODULE_STORIES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
             {% endblocktrans %}</em>
         {% else %}
-            <em>{% blocktrans with module_stories_label_plural="Stories" count=paginator.count %}
-                {{ count }} {{ module_stories_label_plural }} Found
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Stories Found
             {% endblocktrans %}</em>
         {% endif %}
 
