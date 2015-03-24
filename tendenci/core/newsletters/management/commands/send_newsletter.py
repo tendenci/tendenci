@@ -23,7 +23,7 @@ class Command(BaseCommand):
         from tendenci.core.site_settings.utils import get_setting
 
         from tendenci.core.newsletters.utils import get_newsletter_connection
-        
+
         connection = get_newsletter_connection()
         if not connection:
             print('Exiting..Please set up your newsletter email provider before proceeding.')
@@ -63,7 +63,7 @@ class Command(BaseCommand):
         self.site_url = get_setting('site', 'global', 'siteurl')
         email.body = email.body.replace("src=\"/", "src=\"%s/" % self.site_url)
         email.body = email.body.replace("href=\"/", "href=\"%s/" % self.site_url)
-        
+
 
         counter = 0
         for recipient in recipients:
@@ -84,6 +84,9 @@ class Command(BaseCommand):
 
             if '[unsubscribe_url]' in body:
                 body = body.replace('[unsubscribe_url]', recipient.noninteractive_unsubscribe_url)
+
+            if '[browser_view_url]' in body:
+                body = body.replace('[browser_view_url]', newsletter.get_browser_view_url())
 
             email_to_send = Email(
                     subject=subject,

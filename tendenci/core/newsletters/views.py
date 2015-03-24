@@ -439,3 +439,18 @@ def default_template_view(request):
     if not template_name:
         raise Http404
     return render (request, template_name)
+
+
+def view_email_from_browser(request, pk):
+    nl = get_object_or_404(Newsletter, pk=pk)
+    email = nl.email
+    if email == None:
+        raise Http404
+    if not email.allow_view_by(request.user):
+        # check if security_key is in GET
+        key = request.GET.get("key", "")
+        if key == "" or key != nl.security_key:
+            raise Http403
+
+    return render_to_response("newsletters/viewbody.html", {'email': email},
+                                context_instance=RequestContext(request))

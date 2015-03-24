@@ -26,6 +26,7 @@ urlpatterns = patterns('tendenci.core.newsletters.views',
     url(r'^%s/templates/(?P<template_id>[\w\-\/]+)/content/$' % urlpath, 'template_view', {'render':False}, name="newsletter.template_content"),
     url(r'^%s/generate/$' % urlpath, 'generate', name="newsletter.generate"),
     url(r'^%s/default_templates/view/$' % urlpath, 'default_template_view', name="newsletter.default_template"),
+    url(r'^%s/view/(?P<pk>\d+)/$' % urlpath, 'view_email_from_browser', name='newsletter.view_from_browser'),
 
     # marketing actions urls
     url(r'^%s/actions/step1/(?P<pk>\d+)/$' % urlpath, login_required(MarketingActionStepOneView.as_view()), name='newsletter.action.step1'),
