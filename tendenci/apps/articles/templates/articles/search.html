@@ -7,7 +7,13 @@
 {% load search_tags %}
 
 
-{% block title %}{% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %} {% trans "List" %} {{ block.super }}{% endblock %}
+{% block title %}
+    {% if MODULE_ARTICLES_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+    {% else %}
+        {% trans "Articles List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -15,20 +21,29 @@
     <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url 'article.feed' %}" />
 {% endblock %}
 
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-    <h1>{% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</h1>
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_ARTICLES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Articles List" %}
+        {% endif %}
+    </h1>
 
     {% autopaginate articles 10 %}
     {% article_search %}
 
     <h4 class="capitalize">
         {% if MODULE_ARTICLES_LABEL_PLURAL %}
-            <em>{% blocktrans with module_articles_label_plural=MODULE_ARTICLES_LABEL_PLURAL count=paginator.count %}
-                {{ count }} {{ module_articles_label_plural }} Found
+            <em>{% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
             {% endblocktrans %}</em>
         {% else %}
-            <em>{% blocktrans with module_articles_label_plural="Articles" count=paginator.count %}
-                {{ count }} {{ module_articles_label_plural }} Found
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Articles Found
             {% endblocktrans %}</em>
         {% endif %}
     </h4>
@@ -40,8 +55,8 @@
             {% if user.profile.is_superuser %}
                 <p><a href="{% url 'article.add' %}">
                     {% if MODULE_ARTICLES_LABEL %}
-                        {% blocktrans with module_articles_label=MODULE_ARTICLES_LABEL %}
-                            Add a New {{ module_articles_label }}
+                        {% blocktrans with label=MODULE_ARTICLES_LABEL %}
+                            Add a New {{ label }}
                         {% endblocktrans %}
                     {% else %}
                         {% trans "Add a New Article" %}

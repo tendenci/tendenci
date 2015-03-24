@@ -1,8 +1,4 @@
-{% load i18n %}
-
 {% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="search-form" action="{% url "news" %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="{% trans 'Search' %}" />
-</form>
+    {% url "news" as form_action %}
+    {% include "base/simple_search_form.html" with module_name="news" form_action=form_action %}
 {% endif %}

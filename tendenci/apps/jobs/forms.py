@@ -1,16 +1,18 @@
 from datetime import datetime
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
 from django.contrib.admin import widgets
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
+from tinymce.widgets import TinyMCE
+
 from tendenci.apps.categories.models import Category
 from tendenci.apps.jobs.models import Job
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.jobs.models import JobPricing
 from tendenci.apps.jobs.utils import get_payment_method_choices, pricing_choices
 from tendenci.apps.user_groups.models import Group
@@ -347,7 +349,7 @@ class JobPricingForm(forms.ModelForm):
         )
 
 
-class JobSearchForm(forms.Form):
+class JobSearchForm(FormControlWidgetMixin, forms.Form):
     q = forms.CharField(label=_("Search"), required=False, max_length=200,)
     categories = forms.ChoiceField(required=False)
     subcategories = forms.ChoiceField(required=False)

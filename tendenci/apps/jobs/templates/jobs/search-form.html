@@ -1,18 +1,50 @@
 {% load i18n %}
 
+
 {% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="search-form" id="job-search-form" action="{% if my_job %}{% url "myjobs" %}{% else %}{% url "jobs" %}{% endif %}" method="get">
-    <div class="fieldWrapper">
-        {{ form.q }}
-    </div>
-    <div id="categoriesWrapper">
-    <div class="fieldWrapper">
-        {{ form.categories }}
-    </div>
-    <div class="fieldWrapper">
-        {{ form.subcategories }}
-    </div>
-    </div>
-    <input type="submit" value="{% trans 'Search' %}" />
-</form>
+    <form id="t-jobs-search-form" class="form-inline t-search-form" action="{% if my_job %}{% url 'myjobs' %}{% else %}{% url 'jobs' %}{% endif %}" method="get">
+        <div class="form-group{% if form.q.errors %} has-error{% endif %}">
+            {{ form.q }}
+
+            {% if form.q.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.q.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.categories.errors %} has-error{% endif %}">
+            {{ form.categories }}
+
+            {% if form.categories.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.categories.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.subcategories.errors %} has-error{% endif %}">
+            {{ form.subcategories }}
+
+            {% if form.subcategories.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.subcategories.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+    </form>
 {% endif %}

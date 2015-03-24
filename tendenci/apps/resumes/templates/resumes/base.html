@@ -1,37 +1,44 @@
 {% extends "site_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
+
 
 {% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% trans 'Resume Listings for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans 'employment opportunities and resume openings' %}{% endblock %}
 {% block meta_description %}{% trans 'Resume search page for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'listing resume openings and employment opportunities ' %}{% endblock %}
 {% block meta_keywords %}{% trans 'Employment Search, Resume Search,' %} {{SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans 'Employment' %}, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'resumes, employment opportunities, employment, hiring, staffing, agencies' %}{% endblock %}
 
-{% block messages %}{{ block.super }}{% endblock %}
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/resumes.css' %}">
+{% endblock %}
+
+{% block banner %}{% endblock %}
 
 {% block top_bar %}
-{% if request.user.is_authenticated %}
-    {% if request.user.is_superuser %}
-        {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+    {% if request.user.is_authenticated %}
+        {% if request.user.is_superuser %}
+            {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                    {% include "top_menu/user_top.html" %}
+                {% else %}
+                    {% include "resumes/top_nav.html" %}
+                {% endif %}
+            {% else %}
+                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                    {% include "top_menu/admin_top.html" %}
+                {% else %}
+                    {% include "resumes/top_nav.html" %}
+                {% endif %}
+                {% if request.session.theme %}
+                    {% include "themes/theme_top.html" %}
+                {% endif %}
+            {% endif %}
+        {% else %}
             {% if SITE_GLOBAL_SHOWANCIENTMENU %}
                 {% include "top_menu/user_top.html" %}
             {% else %}
                 {% include "resumes/top_nav.html" %}
             {% endif %}
-        {% else %}
-            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                {% include "top_menu/admin_top.html" %}
-            {% else %}
-                {% include "resumes/top_nav.html" %}
-            {% endif %}
-            {% if request.session.theme %}
-                {% include "themes/theme_top.html" %}
-            {% endif %}
-        {% endif %}
-    {% else %}
-        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/user_top.html" %}
-        {% else %}
-            {% include "resumes/top_nav.html" %}
         {% endif %}
     {% endif %}
-{% endif %}
 {% endblock %}

@@ -6,11 +6,6 @@
 
 {% block title %}{% blocktrans %}View Price Details:{% endblocktrans %} {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
-{% endblock %}
-
 {% block content %}
 <div class="t">
     <h1>{% blocktrans %}View Price Details:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} </h1>

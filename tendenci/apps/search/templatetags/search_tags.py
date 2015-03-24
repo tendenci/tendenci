@@ -1,9 +1,8 @@
-import os
 from django.template import TemplateSyntaxError, TemplateDoesNotExist, Variable
-from django.template import Library, Template
+from django.template import Library
 from django.conf import settings
 from django.template.loader import get_template
-from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode
+from django.template.loader_tags import IncludeNode
 from django.utils.translation import ugettext_lazy as _
 
 register = Library()

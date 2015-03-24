@@ -19,7 +19,9 @@
 
 {% block content %}
     <article id="t-articles-article-{{ article.pk }}" class="t-articles-article">
-        <h1>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h1>
+        <div class="page-header">
+            <h1>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h1>
+        </div>
 
         {% if article.google_profile %}
             {% if article.has_google_author %}
@@ -33,6 +35,6 @@
             {% blocktrans with body=article.body|safe %}{{ body }}{% endblocktrans %}
         </div>
 
-        {% include "articles/meta.html" with show_article_source=True show_fb_connect=True %}
+        {% include "articles/meta.html" with show_source=True show_fb_connect=True %}
     </article>
 {% endblock %}

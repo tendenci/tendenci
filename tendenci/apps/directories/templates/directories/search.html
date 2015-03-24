@@ -7,29 +7,42 @@
 {% load search_tags %}
 
 
-{% block title %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %} {% trans "List" %} {{ block.super }}{% endblock %}
-{% block meta_description %}{{ block.super }}{% endblock %}
-{% block meta_keywords %}{{ block.super }}{% endblock %}
+{% block title %}
+    {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_DIRECTORIES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+    {% else %}
+        {% trans "Directories List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
     <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %}  {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}" href="{% url 'directory.feed' %}" />
 {% endblock %}
 
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-    <h1>{% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %}</h1>
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_DIRECTORIES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Directories List" %}
+        {% endif %}
+    </h1>
 
     {% autopaginate directories 10 %}
     {% directory_search %}
 
     <h4 class="capitalize">
         {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
-            <em>{% blocktrans with module_direcotries_label_plural=MODULE_DIRECTORIES_LABEL_PLURAL count=paginator.count %}
-                {{ count }} {{ module_direcotries_label_plural }} Found
+            <em>{% blocktrans with label_plural=MODULE_DIRECTORIES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
             {% endblocktrans %}</em>
         {% else %}
-            <em>{% blocktrans with module_direcotries_label_plural="Directories" count=paginator.count %}
-                {{ count }} {{ module_direcotries_label_plural }} Found
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Directories Found
             {% endblocktrans %}</em>
         {% endif %}
     </h4>
@@ -41,8 +54,8 @@
             {% if user.profile.is_superuser %}
                 <p><a href="{% url 'directory.add' %}">
                     {% if MODULE_DIRECTORIES_LABEL %}
-                        {% blocktrans with module_articles_label=MODULE_DIRECTORIES_LABEL %}
-                            Add a New {{ module_directories_label }}
+                        {% blocktrans with label=MODULE_DIRECTORIES_LABEL %}
+                            Add a New {{ label }}
                         {% endblocktrans %}
                     {% else %}
                         {% trans "Add a New Directory" %}

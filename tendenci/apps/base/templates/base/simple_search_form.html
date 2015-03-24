@@ -1,0 +1,10 @@
+{% load i18n %}
+
+
+<form id="t-{{ module_name }}-search-form" class="form-inline t-search-form" action="{{ form_action }}" method="get">
+    <div class="form-group">
+        <input type="text" name="q" class="form-control" value="{{ request.GET.q|striptags }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+</form>

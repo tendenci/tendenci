@@ -8,7 +8,7 @@
         <li>{% fb_like_button_iframe article.get_absolute_url height=20 %}</li>
     {% endif %}
 
-    {% if show_article_source|default:False and article.source %}
+    {% if show_source|default:False and article.source %}
         <li><strong>{% trans "Source:" %}</strong> <span>{{ article.source|urlize }}</span></li>
     {% endif %}
 
@@ -40,10 +40,10 @@
         {% if article_cat.category %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'articles' %}?category={{ article_cat.category.pk }}">{% blocktrans with category=article_cat.category %}Category{{ category }}{% endblocktrans %}</a></li>
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'articles' %}?category={{ article_cat.category.pk }}">{% blocktrans with category=article_cat.category %}{{ category }}{% endblocktrans %}</a></li>
                     {% if article_cat.sub_category %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.pk }}">{% blocktrans with sub_category=article_cat.subcategory %}Subcategory{{ sub_category }}{% endblocktrans %}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.pk }}">{% blocktrans with sub_category=article_cat.subcategory %}{{ sub_category }}{% endblocktrans %}</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -84,7 +84,7 @@
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=articles&object_id={{ article.pk }}">{% trans "Eventlogs" %}</a></li>
                     <li><a class="t-meta-versions-link" href="{% url 'versions' article.content_type_id article.pk %}">{% trans "Versions" %}</a></li>
                     <li><a class="t-meta-edit-link" href="{% url 'article.edit' article.pk %}">{% trans "Edit" %}</a></li>
-                    <li class="dropdown">
+                    <li class="dropup">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
                             {% trans "Options" %} <span class="caret"></span>
                         {% endspaceless %}</a>
