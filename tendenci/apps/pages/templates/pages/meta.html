@@ -48,7 +48,7 @@
     {% endcomment %}
 
     {% with page.category_set as page_cat %}
-        {% if page_cat %}
+        {% if page_cat.category %}
             <li>
                 <ul class="list-inline">
                     <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'page.search' %}?q=category:{{ page_cat.category }}">{% blocktrans with category=page_cat.category %}{{ category }}{% endblocktrans %}</a></li>
@@ -99,7 +99,7 @@
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=pages&object_id={{ page.pk }}">{% trans "Eventlogs" %}</a></li>
                     <li><a class="t-meta-versions-link" href="{% url 'versions' page.content_type_id page.pk %}">{% trans "Versions" %}</a></li>
                     <li><a class="t-meta-edit-link" href="{% url 'page.edit' page.pk %}">{% trans "Edit" %}</a></li>
-                    <li class="dropdown">
+                    <li class="dropup">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
                             {% trans "Options" %} <span class="caret"></span>
                         {% endspaceless %}</a>

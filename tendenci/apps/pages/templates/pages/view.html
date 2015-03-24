@@ -19,32 +19,37 @@
 {% block banner %}{% endblock %}
 
 {% block content %}
-    {% if page.header_image %}
-        <div class="page-header">
+    <article id="t-pages-page-{{ page.pk }}" class="t-pages-page">
+        {% if page.header_image %}
             <img src="{{ page.get_header_image_url }}" alt="page header" title="page header">
-        </div>
-    {% endif %}
-
-    {% if page.title %}
-        <h1>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
-            {% if request.user.is_authenticated %}
-                {% if request.user.is_superuser %}
-                    {% if page.is_public %}<i class="fa fa-unlock-alt pull-right text-success"></i>{% endif %}
-                {% endif %}
-                {% if not page.is_public %}<i class="fa fa-lock pulll-right text-danger"></i>{% endif %}
-            {% endif %}
-        </h1>
-    {% endif %}
-
-    {% if page.google_profile %}
-        {% if page.has_google_author %}
-            <a href="{{ page.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
-        {% elif page.has_google_publisher %}
-            <a href="{{ page.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
         {% endif %}
-    {% endif %}
 
-    <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
+        {% if page.title %}
+            <div class="page-header">
+                <h1>
+                    {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.is_superuser %}
+                            {% if page.is_public %}<i class="fa fa-unlock-alt pull-right text-success"></i>{% endif %}
+                        {% endif %}
+                        {% if not page.is_public %}<i class="fa fa-lock pulll-right text-danger"></i>{% endif %}
+                    {% endif %}
+                </h1>
+            </div>
+        {% endif %}
 
-    {% include "pages/meta.html" %}
+        {% if page.google_profile %}
+            {% if page.has_google_author %}
+                <a href="{{ page.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
+            {% elif page.has_google_publisher %}
+                <a href="{{ page.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
+            {% endif %}
+        {% endif %}
+
+        <div class="t-pages-page-body">
+            {% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}
+        </div>
+
+        {% include "pages/meta.html" %}
+    </article>
 {% endblock %}

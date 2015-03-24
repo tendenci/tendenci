@@ -50,7 +50,7 @@ def story_current_app(context, user, story=None):
 
 @register.simple_tag
 def story_expiration(obj):
-    t = '<span class="expires-%s">%s</span>'
+    t = '<span class="t-expires t-expires-%s">%s</span>'
 
     if obj.expires:
         if obj.end_dt < datetime.now():

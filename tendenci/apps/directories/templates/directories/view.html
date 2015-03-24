@@ -12,7 +12,9 @@
 
 {% block content %}
     <article id="t-directories-directory-{{ directory.pk }}" class="t-directories-directory">
-        <h1>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h1>
+        <div class="page-header">
+            <h1>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h1>
+        </div>
 
         <div class="t-directories-directory-body">
             {% if directory.logo %}

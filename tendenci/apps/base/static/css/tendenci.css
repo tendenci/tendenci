@@ -145,7 +145,8 @@ html {
 
 .t-perm,
 .t-status,
-.t-role {
+.t-role,
+.t-expires {
     display: block;
     font-weight: bold;
     padding: 15px;
@@ -183,6 +184,14 @@ html {
 
 .t-role-staff {
     color: #e5600d;
+}
+
+.t-expires-active {
+    color: green;
+}
+
+.t-expires-inactive {
+    color: red;
 }
 
 

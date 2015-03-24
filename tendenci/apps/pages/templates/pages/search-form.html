@@ -1,12 +1,4 @@
-{% load i18n %}
-
-
 {% if SITE_GLOBAL_SEARCHINDEX %}
-    <form id="t-pages-search-form" class="form-inline t-search-form" action="{% url 'page.search' %}" method="get">
-        <div class="form-group">
-            <input type="text" name="q" class="form-control" value="{{ request.GET.q|striptags }}">
-        </div>
-
-        <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
-    </form>
+    {% url "page.search" as form_action %}
+    {% include "base/simple_search_form.html" with module_name="pages" form_action=form_action %}
 {% endif %}

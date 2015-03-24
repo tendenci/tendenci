@@ -37,7 +37,7 @@
     {% endif %}
 
     {% with news.category_set as news_cat %}
-        {% if news_cat %}
+        {% if news_cat.category %}
             <li>
                 <ul class="list-inline">
                     <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'news' %}?q=category:{{ news_cat.category }}">{% blocktrans with category=news_cat.category %}{{ category }}{% endblocktrans %}</a></li>
@@ -91,7 +91,7 @@
                 <ul class="nav navbar-nav navbar-right t-meta-edit-links">
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ news.pk }}&source={{ news.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
                     <li><a class="t-meta-edit-link" href="{% url 'news.edit' news.pk %}">{% trans "Edit" %}</a></li>
-                    <li class="dropdown">
+                    <li class="dropup">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
                             {% trans "Options" %} <span class="caret"></span>
                         {% endspaceless %}</a>
