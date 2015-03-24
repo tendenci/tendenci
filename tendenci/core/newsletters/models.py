@@ -275,7 +275,7 @@ class Newsletter(models.Model):
         unsubscribe_txt = render_to_string('newsletters/newsletter_unsubscribe.txt',
                                             context_instance=RequestContext(request))
 
-        view_from_browser_txt = render_to_string('newsletters/newsletter_view_from_browser.txt',
+        view_from_browser_txt = render_to_string('newsletters/view_from_browser.txt',
                                             context_instance=RequestContext(request))
 
         login_content = ""
