@@ -17,7 +17,7 @@ from tendenci.core.files.models import file_directory
 from tendenci.core.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.core.newsletters.utils import apply_template_media
-
+from tendenci.core.site_settings.utils import get_setting
 
 from tendenci.core.newsletters.utils import (
     newsletter_articles_list,
@@ -408,7 +408,8 @@ class Newsletter(models.Model):
         super(Newsletter, self).save(*args, **kwargs)
 
     def get_browser_view_url(self):
-        return "%s?key=%s" % (reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
+        site_url = get_setting('site', 'global', 'siteurl')
+        return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
 
 
 
