@@ -3,9 +3,47 @@
 {% load staticfiles %}
 
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% trans 'Resume Listings for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans 'employment opportunities and resume openings' %}{% endblock %}
-{% block meta_description %}{% trans 'Resume search page for' %} {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'listing resume openings and employment opportunities ' %}{% endblock %}
-{% block meta_keywords %}{% trans 'Employment Search, Resume Search,' %} {{SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans 'Employment' %}, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% trans 'resumes, employment opportunities, employment, hiring, staffing, agencies' %}{% endblock %}
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_RESUMES_LABEL %}
+        {% blocktrans with label=MODULE_RESUMES_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            {{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            Resume Listings for {{ display_name }} - Employment Opportunities and Resume Openings
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if MODULE_RESUMES_LABEL %}
+        {% blocktrans with label=MODULE_RESUMES_LABEL label_lower=MODULE_RESUMES_LABEL|lower display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            {{ label }} search page for {{ display_name }} in {{ location }} listing - {{ label_lower }} openings and employment opportunities
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            Resume search page for {{ display_name }} in {{ location }} listing - resume openings and employment opportunities
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% trans "Employment Search" %},
+    {% if MODULE_RESUMES_LABEL %}
+        {% blocktrans with label=MODULE_RESUMES_LABEL %}
+            {{ label }} Search
+        {% endblocktrans %}
+    {% else %}
+        {% trans "Resume Search" %}
+    {% endif %},
+    {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
+    {% if MODULE_RESUMES_LABEL_PLURAL %}
+        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ location }} {{ label_plural }}{% endblocktrans %}
+    {% else %}
+        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ location }} resumes{% endblocktrans %}
+    {% endif %}, {% trans "employment opportunities, employment, hiring, staffing, agencies" %}
+{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}

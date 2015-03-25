@@ -1,114 +1,133 @@
 {% extends "resumes/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
 {% load resume_tags %}
 {% load tagging_tags %}
-{% load base_tags %}
-{% load base_filters %}
-{% load category_tags %}
-{% load i18n %}
+
 
 {% block title %}{% blocktrans with t=resume.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=resume.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
 {% block meta_keywords %}{% blocktrans with k=resume.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
-{% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}" />{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}">{% endblock %}
 
 {% block content %}
+    <article id="t-resumes-resume-{{ job.pk }}" class="t-resumes-resume">
+        <div class="page-header">
+            <h1>{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</h1>
 
-<div class="t">
+            {% if resume.resume_url or resume.resume_file %}
+                <ul class="list-inline t-resumes-resume-links">
+                    {% if resume.resume_url %}
+                        <li>
+                            <a href="{{ resume.resume_url }}" target="_blank">
+                                <span class="glyphicon glyphicon-link"></span>
+                                {% if resume.contact_name %}
+                                    {% blocktrans with name=contact_name %}
+                                        View {{ contact_name }}'s resume
+                                    {% endblocktrans %}
+                                {% else %}
+                                    {% trans "View this resume's website" %}
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endif %}
 
-    <div class="resume-wrap">
-
-        <h1>{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</h1>
-
-        {% if resume.resume_url %}
-        <div id="resume-link">
-        <a href="{{ resume.resume_url }}" target="_blank">{% trans "View" %} {% if resume.contact_name %}{{ resume.contact_name }}'s {% trans "resume" %} {% else %} {% trans "this resume's" %}{% endif %} {% trans "website" %} &raquo;</a>
+                    {% if resume.resume_file %}
+                        <li>
+                            <a href="{% url 'resume.resume_file' resume.slug %}">
+                                <span class="glyphicon glyphicon-download-alt"></span>
+                                {% if resume.contact_name %}
+                                    {% blocktrans with name=contact_name %}
+                                        Download {{ contact_name }}'s resume
+                                    {% endblocktrans %}
+                                {% else %}
+                                    {% trans "Download this resume" %}
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
         </div>
-        {% endif %}
 
-        {% if resume.resume_file %}
-        <div id="resume-link">
-        <a href="{% url "resume.resume_file" resume.slug %}">{% trans "Download" %} {% if resume.contact_name %}{{ resume.contact_name }}'s {% trans "resume" %} {% else %} {% trans "resume" %}{% endif %} &raquo;</a>
+        <div class="t-resumes-resume-body">
+            {% if resume.description %}
+                <section class="t-resumes-resume-description">
+                    <h2>{% trans "Description" %}</h2>
+                    {% blocktrans with d=resume.description|safe %}{{ d }}{% endblocktrans %}
+                </section>
+            {% endif %}
+
+            {% if resume.location %}
+                <section class="t-resumes-resume-location">
+                    <h2>{% trans "Location" %}</h2>
+                    <p>{{ resume.location }}</p>
+                </section>
+            {% endif %}
+
+            {% if resume.experience %}
+                <section class="t-resumes-resume-experience">
+                    <h2>{% trans "Experience" %}</h2>
+                    {% blocktrans with e=resume.experience|safe|linebreaks %}{{ e }}{% endblocktrans %}
+                </section>
+            {% endif %}
+
+            {% if resume.awards %}
+                <section class="t-resumes-resume-awards">
+                    <h2>{% trans "Awards and Certifications" %}</h2>
+                    {% blocktrans with e=resume.awards|safe|linebreaks %}{{ e }}{% endblocktrans %}
+                </section>
+            {% endif %}
+
+            {% if resume.skills %}
+                <section class="t-resumes-resume-skills">
+                    <h2>{% trans "Skills" %}</h2>
+                    {% blocktrans with s=resume.skills|safe|linebreaks %}{{ s }}{% endblocktrans %}
+                </section>
+            {% endif %}
+
+            {% if resume.education %}
+                <section class="t-resumes-resume-education">
+                    <h2>{% trans "Education" %}</h2>
+                    {% blocktrans with e=resume.education|safe|linebreaks %}{{ e }}{% endblocktrans %}
+                </section>
+            {% endif %}
+
+            {% if resume.contact_name or resume.contact_phone or resume.contact_phone2 or resume.contact_fax or resume.contact_email %}
+                <section class="t-resumes-resume-contact-information">
+                    <h2>{% trans "Contact Information" %}</h2>
+
+                    <ul class="list-unstyled t-resumes-resume-contact-information-list">
+                        <li>
+                            <address>
+                                {% if resume.contact_name %}
+                                    {{ resume.contact_name }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_phone %}
+                                    {{ resume.contact_phone|phonenumber }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_phone2 %}
+                                    <span>{{ resume.contact_phone2|phonenumber }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_fax %}
+                                    <span>{{ resume.contact_fax }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_email %}
+                                    {{ resume.contact_email|obfuscate_email }}
+                                {% endif %}
+                            </address>
+                        </li>
+                    </ul>
+                </section>
+            {% endif %}
         </div>
-        {% endif %}
 
-        {% if resume.description %}
-                <div class="section-block">
-                    <div class="label">{% trans "Description" %}</div>
-                    <div class="value">{% blocktrans with d=resume.description|safe %}{{ d }}{% endblocktrans %}</div>
-                </div>
-        {% endif %}
-
-        {% if resume.location %}
-                <div class="section-block">
-                    <div class="label">{% trans "Location" %}</div>
-                    <div class="value">{{ resume.location }}</div>
-                    <div class="clear"></div>
-                </div>
-        {% endif %}
-
-
-        {% if resume.experience %}
-                <div class="section-block">
-                    <div class="label">{% trans "Experience" %}</div>
-                    <div class="value">{% blocktrans with e=resume.experience|safe|linebreaks %}{{ e }}{% endblocktrans %}</div>
-                </div>
-        {% endif %}
-
-        {% if resume.awards %}
-                <div class="section-block">
-                    <div class="label">{% trans "Awards and Certifications" %}</div>
-                    <div class="value">{% blocktrans with e=resume.awards|safe|linebreaks %}{{ e }}{% endblocktrans %}</div>
-                </div>
-        {% endif %}
-
-        {% if resume.skills %}
-                <div class="section-block">
-                    <div class="label">{% trans "Skills" %}</div>
-                    <div class="value">{% blocktrans with s=resume.skills|safe|linebreaks %}{{ s }}{% endblocktrans %}</div>
-                </div>
-        {% endif %}
-
-        {% if resume.education %}
-                <div class="section-block">
-                    <div class="label">{% trans "Education" %}</div>
-                    <div class="value">{% blocktrans with e=resume.education|safe|linebreaks %}{{ e }}{% endblocktrans %}</div>
-                    <div class="clear"></div>
-                </div>
-        {% endif %}
-
-        <h2>Contact Information</h2>
-        {% if resume.contact_name %}
-                <div class="contact-wrap">
-                    <div>{{ resume.contact_name }}</div>
-                    <div>{{ resume.contact_phone|phonenumber }}</div>
-                    <div>{{ resume.contact_phone2|phonenumber }}</div>
-                    <div>{{ resume.contact_fax }}</div>
-                    <div><a href="">{{ resume.contact_email|obfuscate_email }}</a></div>
-                </div>
-        {% endif %}
-
-        {% include "resumes/meta.html" %}
-
-        {% url "resume" resume.pk as the_url %}
-        <p>{% fb_like_button_iframe the_url %}</p>
-    </div>
-
-    <!-- delete-resume form -->
-    <form name="resume-delete" method="POST" action="{% url "resume.delete" resume.pk %}">{% csrf_token %}
-        <input type="hidden" name="action" value="delete">
-    </form>
-
-</div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-    <script type="text/javascript">
-    var iconrow = new dropdown({
-        container:    'more-options-wrap',
-        trigger:    'more-options-trigger',
-        target:        'more-options-target'
-    });
-    </script>
+        {% include "resumes/meta.html" with show_fb_connect=True %}
+    </article>
 {% endblock %}

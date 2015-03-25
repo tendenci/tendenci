@@ -21,6 +21,7 @@ class ResumeAdmin(TendenciBaseModelAdmin):
                        'contact_website',
                        'tags',
                        'activation_dt',
+                       'expiration_dt',
                 )
         }),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),

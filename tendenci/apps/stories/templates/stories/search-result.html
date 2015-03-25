@@ -6,6 +6,9 @@
 {% has_perm request.user stories.change_story story as can_edit %}
 
 <article class="panel panel-info t-stories-search-result t-search-result">
+    <div class="panel-heading t-search-result-heading">
+        <h1 class="panel-title"><a href="{% if can_edit %}{% url 'story' story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title "Untitled" %}</a></h1>
+    </div>
     <div class="panel-body t-search-result-body">
         {% if story.image %}
             <p class="t-stories-story-image-container">
@@ -14,10 +17,6 @@
         {% endif %}
 
         <p class="item-content">
-            <h2>
-                <a href="{% if can_edit %}{% url 'story' story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title "Untitled" %}</a>
-            </h2>
-
             {% blocktrans with c=story.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}
 
             {% if can_edit %}

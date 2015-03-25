@@ -215,3 +215,10 @@ class ResumeForm(TendenciBaseForm):
             if extension.lower() not in ALLOWED_FILE_EXT:
                 raise forms.ValidationError(_('The file must be of doc, docx, pdf, or rtf format.'))
         return resume
+
+    def clean(self):
+        cleaned_data = super(ResumeForm, self).clean()
+
+        print self.errors
+
+        return cleaned_data

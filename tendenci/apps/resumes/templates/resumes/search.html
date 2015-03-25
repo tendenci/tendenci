@@ -1,49 +1,62 @@
 {% extends "resumes/base.html" %}
-{% load bootstrap_pagination_tags %}
-{% load resume_tags %}
-{% load base_tags %}
-{% load base_filters %}
-{% load perm_tags %}
 {% load i18n %}
+{% load staticfiles %}
+{% load base_filters %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load resume_tags %}
 {% load search_tags %}
 
-{% block title %}{{ block.super }} {% trans 'Search' %}{% endblock %}
-{% block meta_description %}{{ block.super }}{% endblock %}
-{% block meta_keywords %}{{ block.super }}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="alternate" type="application/rss+xml" title="Latest resumes" href="{% url "resume.feed" %}" />
+{% block title %}
+    {% if MODULE_RESUMES_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Resumes Search" %}
+    {% endif %} - {{ block.super }}
 {% endblock %}
 
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="Latest resumes" href="{% url 'resume.feed' %}">
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-<div class="t">
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_RESUMES_LABEL_PLURAL trans 'Resumes' %}</h1>
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_RESUMES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Resumes Search" %}
+        {% endif %}
+    </h1>
 
     {% autopaginate resumes 10 %}
     {% resume_search %}
-    <span><em>{{ paginator.count }} {% firstof MODULE_RESUMES_LABEL_PLURAL trans 'Resumes' %} {% trans "Found" %}</em></span>
 
-    <div class="resumes-wrap">
-    {% for resume in resumes %}
-        {% search_result resume %}
-    {% empty %}
+    <h4 class="capitalize">
+        {% if MODULE_RESUMES_LABEL_PLURAL %}
+            <em>{% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Resumes Found
+            {% endblocktrans %}</em>
+        {% endif %}
+    </h4>
 
-    {% endfor %}
-    </div>
+    <section>
+        {% for resume in resumes %}
+            {% search_result resume %}
+        {% empty %}
+
+        {% endfor %}
+    </section>
 
     {% paginate %}
-</div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-    <script type="text/javascript">
-    var iconrow = new dropdown({
-        container:  'more-options-wrap',
-        trigger:    'more-options-trigger',
-        target:     'more-options-target'
-    });
-    </script>
 {% endblock %}

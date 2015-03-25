@@ -19,7 +19,7 @@
 {% block meta_description %}
     {% if MODULE_JOBS_LABEL %}
         {% blocktrans with label=MODULE_JOBS_LABEL label_lower=MODULE_JOBS_LABEL|lower display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
-            {{ label }} search page for {{ display_name }} in {{ location }} listing {{ label_lower }} openings and employment opportunities
+            {{ label }} search page for {{ display_name }} in {{ location }} listing - {{ label_lower }} openings and employment opportunities
         {% endblocktrans %}
     {% else %}
         {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
@@ -29,7 +29,15 @@
 {% endblock %}
 
 {% block meta_keywords %}
-    {% trans "Employment Search" %}, {% firstof MODULE_JOBS_LABEL trans "Job" %} {% trans "Search" %}, {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
+    {% trans "Employment Search" %},
+    {% if MODULE_JOBS_LABEL %}
+        {% blocktrans with label=MODULE_JOBS_LABEL %}
+            {{ label }} Search
+        {% endblocktrans %}
+    {% else %}
+        {% trans "Job Search" %}
+    {% endif %},
+    {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
     {% if MODULE_JOBS_LABEL_PLURAL %}
         {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_JOBS_LABEL_PLURAL %}{{ location }} {{ label_plural }}{% endblocktrans %}
     {% else %}
