@@ -1,5 +1,6 @@
 import datetime
 import subprocess
+import uuid
 
 from django.conf import settings
 from django.db import models
@@ -8,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
+from django.core.urlresolvers import reverse
 
 from tendenci.apps.articles.models import Article
 from tendenci.apps.emails.models import Email
@@ -15,7 +17,7 @@ from tendenci.apps.files.models import file_directory
 from tendenci.apps.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.newsletters.utils import apply_template_media
-
+from tendenci.apps.site_settings.utils import get_setting
 
 from tendenci.apps.newsletters.utils import (
     newsletter_articles_list,
@@ -44,7 +46,6 @@ DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
 INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
 FORMAT_CHOICES = ((1, 'Detailed - original format View Example'), (0, 'Simplified - removes AUTHOR, POSTED BY, RELEASES DATE, etc from the detailed format View Example'))
-
 
 DEFAULT_TEMPLATE_CHOICES = (
     ('newsletters/templates/default/Big City Newsletter.html', 'Big City Newsletter'),
@@ -76,9 +77,6 @@ NEWSLETTER_SEND_STATUS_CHOICES = (
     ('resending', _('Resending')),
     ('resent', _('Resent'))
 )
-"""
-Choices for Old Form (t4 version)
-"""
 
 
 class NewsletterTemplate(models.Model):
@@ -98,7 +96,7 @@ class NewsletterTemplate(models.Model):
         permissions = (("view_newslettertemplate", _("Can view newsletter template")),)
 
     def __unicode__(self):
-        return self.name
+        return self.name or u"No Name"
 
     @property
     def content_type(self):
@@ -203,13 +201,17 @@ class Newsletter(models.Model):
     # resend_count
     resend_count = models.IntegerField(null=True, blank=True, default=0)
 
+    # security_key will allow any user to view this newsletter from the browser
+    # without logging in.
+    security_key = models.CharField(max_length=50, null=True, blank=True)
+
     class Meta:
         permissions = (("view_newsletter", _("Can view newsletter")),)
         verbose_name = _("Newsletter")
         verbose_name_plural = _("Newsletters")
 
     def __unicode__(self):
-        return self.actionname
+        return self.actionname or u"No Action Name"
 
     @models.permalink
     def get_absolute_url(self):
@@ -230,7 +232,11 @@ class Newsletter(models.Model):
             content = content.replace('[menu]', data.get('jumplink_content'))
 
         if '[content]' in content:
-            full_content = data.get('opening_text') + data.get('login_content') + data.get('footer_text')
+            full_content = data.get('opening_text') + \
+                            data.get('login_content') + \
+                            data.get('footer_text') + \
+                            data.get('unsubscribe_text') + \
+                            data.get('browser_text')
             content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
@@ -264,6 +270,12 @@ class Newsletter(models.Model):
 
         footer_txt = render_to_string('newsletters/footer.txt',
                                             {'newsletter': self },
+                                            context_instance=RequestContext(request))
+
+        unsubscribe_txt = render_to_string('newsletters/newsletter_unsubscribe.txt',
+                                            context_instance=RequestContext(request))
+
+        view_from_browser_txt = render_to_string('newsletters/view_from_browser.txt',
                                             context_instance=RequestContext(request))
 
         login_content = ""
@@ -321,6 +333,8 @@ class Newsletter(models.Model):
         data = {
                 'opening_text': opening_txt,
                 'footer_text' : footer_txt,
+                'unsubscribe_text': unsubscribe_txt,
+                'browser_text': view_from_browser_txt,
                 'login_content': login_content,
                 'jumplink_content': jumplink_content,
                 'articles_content': articles_content,
@@ -366,7 +380,8 @@ class Newsletter(models.Model):
         if self.member_only:
             members = GroupMembership.objects.filter(
                 status=True,
-                status_detail='active').order_by(
+                status_detail='active',
+                is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
 
@@ -375,7 +390,8 @@ class Newsletter(models.Model):
             members = GroupMembership.objects.filter(
                 group=group,
                 status=True,
-                status_detail='active').order_by(
+                status_detail='active',
+                is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
 
@@ -385,6 +401,15 @@ class Newsletter(models.Model):
         subprocess.Popen(["python", "manage.py",
                               "send_newsletter",
                               str(self.pk)])
+
+    def save(self, *args, **kwargs):
+        if self.security_key == '' or self.security_key == None:
+            self.security_key = uuid.uuid1()
+        super(Newsletter, self).save(*args, **kwargs)
+
+    def get_browser_view_url(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
 
 
 

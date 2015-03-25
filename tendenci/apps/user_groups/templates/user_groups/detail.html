@@ -84,9 +84,15 @@
                  {% if can_delete %}
                     &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
                  <!-- delete-member form -->
-                    <form name="member-delete" method="POST" action="{% url "group.deleteuser" group.slug gm.member.id %}">{% csrf_token %}
+                    <form class="delete-member-form" name="member-delete" method="POST" action="{% url "group.deleteuser" group.slug gm.member.id %}">{% csrf_token %}
                         <input type="hidden" name="action" value="delete">
                     </form>
+                {% endif %}
+
+                {% if gm.is_newsletter_subscribed %}
+
+                {% else %}
+                    <span class="unsubscribe-status">{% trans "This User Has Unsubscribed" %}</span>
                 {% endif %}
                 </div>
             {% endfor %}

@@ -43,4 +43,9 @@ urlpatterns = patterns('tendenci.apps.user_groups.views',
     url(r'^%s/(?P<slug>[-.\w]+)/selfremove/(?P<user_id>\d+)/$' % urlpath, 'group_membership_self_remove', name='group.selfremove'),
     url(r'^%s/(?P<group_slug>[-.\w]+)/deleteuser/(?P<user_id>\d+)/$' % urlpath, 'groupmembership_delete', name='group.deleteuser'),
     url(r'^%s/(?P<group_slug>[-.\w]+)/import/status/(?P<task_id>[-\w]+)/$' % urlpath, "subscribers_import_status", name='subscribers_import_status'),
+
+    # newsletter subscription_urls
+    url(r'^%s/(?P<group_slug>[-.\w]+)/newsletters/subscribe/interactive/$' % urlpath, 'subscribe_to_newsletter_interactive', name='group.newsletter_subscribe_interactive'),
+    url(r'^%s/(?P<group_slug>[-.\w]+)/newsletters/unsubscribe/interactive/$' % urlpath, 'unsubscribe_to_newsletter_interactive', name='group.newsletter_unsubscribe_interactive'),
+    url(r'^%s/(?P<group_slug>[-.\w]+)/(?P<newsletter_key>[-.\w]+)/newsletters/unsubscribe/noninteractive/$' % urlpath, 'unsubscribe_to_newsletter_noninteractive', name='group.newsletter_unsubscribe_noninteractive'),
 )

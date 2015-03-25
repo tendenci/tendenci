@@ -50,7 +50,7 @@
                     {% trans 'E-mail to bind to this Marketing Action.' %}
                 </div>
                 <div class="step-content-item">
-                    {% trans 'Sender' %} : <a href="mailto:{{ object.email.sender }}">{{ object.email.sender }}</a>&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url 'email.viewbody' object.email.pk %}">{% trans 'View Email' %}</a>&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url 'email.edit' object.email.pk %}">{% trans 'Edit Email' %}</a>
+                    {% trans 'Sender' %} : <a href="mailto:{{ object.email.sender }}">{{ object.email.sender }}</a>&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url 'email.viewbody' object.email.pk %}">{% trans 'View Email' %}</a>&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url 'email.edit' object.email.pk %}?next={% url 'newsletter.action.step1' object.pk %}">{% trans 'Edit Email' %}</a>
                 </div>
                 <div class="step-content-item">
                     <strong>{{ object.email.subject }}</strong>

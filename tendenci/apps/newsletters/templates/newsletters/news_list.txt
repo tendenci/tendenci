@@ -41,7 +41,7 @@
         <tr><td align="left" valign="top"><div>
         <font face="Arial" size="2" color="#000000">
 
-        {% blocktrans with b=n.body|striptags|truncatewords:60 %}{{ b }}{% endblocktrans %}
+        {% blocktrans with b=n.body|striptags|safe|truncatewords:60 %}{{ b }}{% endblocktrans %}
          <a href="{{ SITE_GLOBAL_SITEURL }}{{ news.get_absolute_url }}">[More Info]</a>
         </font>
 

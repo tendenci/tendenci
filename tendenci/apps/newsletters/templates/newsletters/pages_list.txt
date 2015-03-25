@@ -39,7 +39,7 @@
         <tr><td align="left" valign="top"><div>
         <font face="Arial" size="2" color="#000000">
 
-        {% blocktrans with b=page.content|striptags|truncatewords:60 %}{{ b }}{% endblocktrans %}
+        {% blocktrans with b=page.content|striptags|safe|truncatewords:60 %}{{ b }}{% endblocktrans %}
          <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'page' page.slug %}">[More Info]</a>
         </font>
 
