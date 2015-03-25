@@ -12,6 +12,7 @@ from django.template.loader import render_to_string
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.emails.models import Email
@@ -327,7 +328,7 @@ def template_view(request, template_id, render=True):
         articles_list, articles_content = newsletter_articles_list(request, articles_days, simplified)
     else:
         articles_list = []
-        articles_content = ""
+        articles_content = []
 
     news_content = ""
     news = int(request.GET.get('news', 1))
@@ -336,7 +337,7 @@ def template_view(request, template_id, render=True):
         news_list, news_content = newsletter_news_list(request, news_days, simplified)
     else:
         news_list = []
-        news_content = ""
+        news_content = []
 
     jobs_content = ""
     jobs = int(request.GET.get('jobs', 1))
@@ -345,7 +346,7 @@ def template_view(request, template_id, render=True):
         jobs_list, jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
     else:
         jobs_list = []
-        jobs_content = ""
+        jobs_content = []
 
     pages_content = ""
     pages = int(request.GET.get('pages', 0))
@@ -354,7 +355,7 @@ def template_view(request, template_id, render=True):
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
     else:
         pages_list = []
-        pages_content = ""
+        pages_content = []
 
     directories_content = ""
     directories = int(request.GET.get('directories', 0))
@@ -363,7 +364,7 @@ def template_view(request, template_id, render=True):
         directories_list, directories_content = newsletter_directories_list(request, directories_days, simplified)
     else:
         directories_list = []
-        directories_content = ""
+        directories_content = []
 
     resumes_content = ""
     resumes = int(request.GET.get('resumes', 0))
@@ -372,7 +373,7 @@ def template_view(request, template_id, render=True):
         resumes_list, resumes_content = newsletter_resumes_list(request, resumes_days, simplified)
     else:
         resumes_list = []
-        resumes_content = ""
+        resumes_content = []
 
     try:
         events = int(request.GET.get('events', 1))
@@ -438,3 +439,18 @@ def default_template_view(request):
     if not template_name:
         raise Http404
     return render (request, template_name)
+
+
+def view_email_from_browser(request, pk):
+    nl = get_object_or_404(Newsletter, pk=pk)
+    email = nl.email
+    if email == None:
+        raise Http404
+    if not email.allow_view_by(request.user):
+        # check if security_key is in GET
+        key = request.GET.get("key", "")
+        if key == "" or key != nl.security_key:
+            raise Http403
+
+    return render_to_response("newsletters/viewbody.html", {'email': email},
+                                context_instance=RequestContext(request))

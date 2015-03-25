@@ -1,0 +1,4 @@
+{% load email_filters %}
+{% load i18n %}
+
+{% blocktrans with b=email.body|relative_to_absolute_urls|safe %}{{ b }}{% endblocktrans %}
