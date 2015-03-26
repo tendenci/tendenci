@@ -1,15 +1,11 @@
 {% extends "campaign_monitor/base.html" %}
-{% load base_tags %}
-{% load perm_tags %}
-{% load campaign_monitor_tags %}
 {% load i18n %}
+{% load base_tags %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+
 
 {% block title %}{{ template.name }}{% endblock %}
-
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/campaign_monitor.css">
-{% endblock %}
 
 {% block content %}
 

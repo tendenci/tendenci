@@ -1,5 +1,4 @@
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.conf import settings as d_settings
 from django.template import Context, Template, TemplateDoesNotExist
 from django.template.loader import get_template
@@ -7,6 +6,7 @@ from django.template.loader import get_template
 from tendenci import __version__ as version
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
+
 
 def settings(request):
     """Context processor for settings
@@ -93,5 +93,3 @@ def app_dropdown(request):
             context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'site_settings/top_nav.html'})
 
     return context
-
-

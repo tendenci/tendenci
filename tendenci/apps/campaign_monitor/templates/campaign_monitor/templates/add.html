@@ -1,15 +1,12 @@
 {% extends "campaign_monitor/base.html" %}
+{% load i18n %}
+{% load campaign_monitor_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
-{% load campaign_monitor_tags %}
-{% load i18n %}
+
+
 
 {% block title %}{% trans "Template Add" %}{% endblock %}
-
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/campaign_monitor.css">
-{% endblock %}
 
 {% block content %}
 <div class="t">
@@ -27,8 +24,4 @@
     </div>
 
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
 {% endblock %}

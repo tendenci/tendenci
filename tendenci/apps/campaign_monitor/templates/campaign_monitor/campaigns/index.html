@@ -1,16 +1,12 @@
 {% extends "campaign_monitor/base.html" %}
-{% load bootstrap_pagination_tags %}
-{% load base_tags %}
-{% load perm_tags %}
-{% load campaign_monitor_tags %}
 {% load i18n %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
 
-{% block title %}{{ block.super }} {% trans "Index" %}{% endblock %}
 
-{% block extra_head %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/campaign_monitor.css">
-{% endblock %}
+{% block title %}{% trans "Index" %} - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="t">
@@ -36,8 +32,4 @@
 
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
 {% endblock %}
