@@ -1,18 +1,14 @@
 {% extends "contacts/base.html" %}
+{% load i18n %}
 {% load contact_tags %}
 {% load styled_forms %}
-{% load i18n %}
+
 
 {% block title %}{{ block.super }}Add{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/contacts.css">
-{% endblock %}
-
 {% block content %}
 <div class="t">
-    <h1>{% trans "Add:" %} {% firstof MODULE_CONTACTS_LABEL trans 'Conacts' %}</h1>
+    <h1>{% trans "Add:" %} {% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}</h1>
 
     <div class="contact-wrap">
         <form action="{% url "contact.add" %}" method="post">{% csrf_token %}

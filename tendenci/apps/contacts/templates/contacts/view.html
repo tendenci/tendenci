@@ -1,14 +1,10 @@
 {% extends "contacts/base.html" %}
-{% load contact_tags %}
-{% load base_filters %}
 {% load i18n %}
+{% load base_filters %}
+{% load contact_tags %}
+
 
 {% block title %}{{ block.super }}{{ contact }}{% endblock %}
-
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/contacts.css">
-{% endblock %}
 
 {% block content %}
 

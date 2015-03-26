@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -14,11 +13,11 @@
 {% endif %}
 
 
-<ul class="dropdown-menu">
+<ul id="t-admin-megamenu-contacts-dd" class="dropdown-menu" role="menu">
     <li>
-        <div class="yamm-content custom-yamm-content content-dropdown">
+        <div class="yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'contact.search' %}">{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}</a>

@@ -1,54 +1,73 @@
 {% extends "contacts/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load base_filters %}
 {% load bootstrap_pagination_tags %}
 {% load base_tags %}
-{% load base_filters %}
 {% load contact_tags %}
 {% load perm_tags %}
 
 
-{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
-
-{% block extra_head %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{% static 'css/contacts.css' %}">
+{% block title %}
+    {% if MODULE_CONTACTS_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_CONTACTS_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Contacts Search" %}
+    {% endif %} - {{ block.super }}
 {% endblock %}
 
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-<div class="t">
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %} {% trans "Search" %}</h1>
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_CONTACTS_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_CONTACTS_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Contacts Search" %}
+        {% endif %}
+    </h1>
 
     {% contact_search %}
     {% autopaginate contacts 10 %}
 
-    <div class="contacts-wrap">
-    {% for contact in contacts %}
-        {% has_perm user contacts.view_contact contact as can_view %}
-        {% if can_view %}
-        <div class="contact-wrap">
-            <h2><a href="{% url 'contact' contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
-            <div class="content">{% blocktrans with m=contact.message|linebreaks %}{{ m }}{% endblocktrans %}</div>
-
-            <div class="meta">
-                <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>
-            </div>
-
-            <!-- delete-contact form -->
-            <form name="contact-delete" method="POST" action="{% url 'contact.delete' contact.pk %}">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-
-        </div>
+    <h4 class="capitalize">
+        {% if MODULE_CONTACTS_LABEL_PLURAL %}
+            <em>{% blocktrans with label_plural=MODULE_CONTACTS_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Contacts Found
+            {% endblocktrans %}</em>
         {% endif %}
-    {% empty %}
-        <div>{% trans "0 Results Found" %}</div>
-    {% endfor %}
-    </div>
+    </h4>
+
+    <section>
+        {% for contact in contacts %}
+            {% has_perm user contacts.view_contact contact as can_view %}
+            {% if can_view %}
+            <div class="contact-wrap">
+                <h2><a href="{% url 'contact' contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
+                <div class="content">{% blocktrans with m=contact.message|linebreaks %}{{ m }}{% endblocktrans %}</div>
+
+                <div class="meta">
+                    <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>
+                </div>
+
+                <!-- delete-contact form -->
+                <form name="contact-delete" method="POST" action="{% url 'contact.delete' contact.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                </form>
+
+            </div>
+            {% endif %}
+        {% empty %}
+        {% endfor %}
+    <section>
 
     {% paginate %}
-</div>
 {% endblock %}
 
 {% block extra_body %}
