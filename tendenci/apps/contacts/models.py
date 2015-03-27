@@ -99,4 +99,7 @@ class Contact(TendenciBaseModel):
         super(Contact, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        if self.first_name:
+            return '%s %s' % (self.first_name, self.last_name)
+        else:
+            return '%s' % self.user

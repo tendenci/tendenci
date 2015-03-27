@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load base_filters %}
+
+
+<ul class="list-unstyled t-meta-data">
+    <li><strong>{% trans "Submitted on:" %}</strong> <span>{{ contact.create_dt|date:"long" }}</span></li>
+</ul>
