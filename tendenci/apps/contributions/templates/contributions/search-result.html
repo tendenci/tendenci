@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load perm_tags %}
+
+
+{% has_perm user contributions.view_contribution contribution as can_view %}
+
+{% if can_view %}
+    <article class="panel panel-info t-contributions-search-result t-search-result">
+        <div class="panel-heading t-search-result-heading">
+            <h1 class="panel-title"><span class="t-contribution-content-type">{{ contribution.content_type }}</span>: <a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title trans "Untitled" %}</a></h1>
+        </div>
+
+        <div class="panel-footer t-search-result-footer">
+            {% include "contributions/meta.html" %}
+        </div>
+    </article>
+{% endif %}
