@@ -6,13 +6,38 @@
       <li><a href="../new/">New Query</a></li>
       <li><a href="../play/">Playground</a></li>
     {% endif %}
-    {% if query %}<li class="active"><a href="">Query Detail</a></li>{% endif %}
     <li><a href="../logs/">Logs</a></li>
     <li class="active"><a href="{% url 'explorer_extensions.export_page' %}">Data Export</a></li>
 {% endblock %}
 
 {% block sql_explorer_content %}
 <div class="row">
-    <p>Placeholder text for override</p>
+    {% if enable_form %}
+    <form class="form" action="#">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-default">Generate</button>
+    </form>
+    {% endif %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Current Exports
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Creation Date</td>
+                    <td>Author</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+        {% for obj in objects %}
+            <tr>
+                <td>{{ obj.create_dt }}</td>
+                <td>{{ obj.author }}</td>
+                <td>{{ obj.status }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
 </div>
 {% endblock %}
