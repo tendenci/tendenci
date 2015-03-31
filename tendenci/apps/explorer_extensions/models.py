@@ -9,10 +9,16 @@ class DatabaseDumpFile(models.Model):
         ("failed", _(u"Failed")),
         ("expired", _(u"Expired")),
     )
+    FORMAT_CHOICES = (
+        ("json", "json"),
+        ("xml", "xml")
+    )
     author = models.ForeignKey(User)
     start_dt = models.DateTimeField(auto_now_add=True)
     end_dt = models.DateTimeField(null=True, blank=True)
     dbfile = models.FileField(upload_to='dbdump')
     status = models.CharField(max_length=50,
                 default="pending", choices=STATUS_CHOICES)
+    export_format = models.CharField(max_length=20,
+                default="json", choices=FORMAT_CHOICES)
 

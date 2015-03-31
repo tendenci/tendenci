@@ -13,8 +13,9 @@
 {% block sql_explorer_content %}
 <div class="row">
     {% if enable_form %}
-    <form class="form" action="#">
+    <form class="form" action="{% url 'explorer_extensions.export_page' %}" method="POST">
         {% csrf_token %}
+        {{ form }}
         <button type="submit" class="btn btn-default">Generate</button>
     </form>
     {% endif %}
