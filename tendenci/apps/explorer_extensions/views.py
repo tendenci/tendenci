@@ -1,9 +1,15 @@
+import subprocess
+
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
 from django.db.models import Q
+from django.http import HttpResponse, Http404
+from django.core.servers.basehttp import FileWrapper
 
 from explorer import app_settings
 from explorer.views import change_permission
+
+from tendenci.apps.base.http import Http403
 from tendenci.apps.explorer_extensions.models import DatabaseDumpFile
 from tendenci.apps.explorer_extensions.forms import DatabaseDumpForm
 
@@ -24,6 +30,9 @@ def export_page(request):
             print "Form submitted is valid!"
             if can_create_dump():
                 # TODO: run management command
+                subprocess.Popen(["python", "manage.py",
+                              "create_database_dump",
+                              str(request.user.pk), form.cleaned_data['format'] ])
                 pass
             else:
                 # TODO: throw an error
@@ -44,6 +53,21 @@ def export_page(request):
     return render_to_response("explorer/export_page.html", ctx,
                                 context_instance=RequestContext(request))
 
+
+
+def download_dump(request, dump_id):
+    dbdump = get_object_or_404(DatabaseDumpFile, pk=dump_id)
+    if request.user != dbdump.author and not request.user.is_superuser:
+        raise Http403
+    if not dbdump.dbfile:
+        raise Http404
+    wrapper = FileWrapper(dbdump.dbfile)
+    response = HttpResponse(wrapper, content_type='application/octet-stream')
+    response['Content-Disposition'] = 'attachment; filename=db_export.%s' % dbdump.export_format
+    return response
+
+
 def can_create_dump():
     db_objs = DatabaseDumpFile.objects.filter(~Q(status='expired'))
     return db_objs.count() < 3
+

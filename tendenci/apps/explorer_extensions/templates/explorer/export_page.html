@@ -28,14 +28,18 @@
                 <tr>
                     <td>Creation Date</td>
                     <td>Author</td>
+                    <td>Format</td>
                     <td>Status</td>
+                    <td>Download</td>
                 </tr>
             </thead>
         {% for obj in objects %}
             <tr>
-                <td>{{ obj.create_dt }}</td>
+                <td>{{ obj.start_dt }}</td>
                 <td>{{ obj.author }}</td>
+                <td>{{ obj.export_format }}</td>
                 <td>{{ obj.status }}</td>
+                <td>{% if obj.status == 'completed' %} <a href="{% url 'explorer_extensions.download_dump' obj.pk %}">Click to Download</a> {% endif %}</td>
             </tr>
         {% endfor %}
         </table>

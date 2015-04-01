@@ -22,3 +22,6 @@ class DatabaseDumpFile(models.Model):
     export_format = models.CharField(max_length=20,
                 default="json", choices=FORMAT_CHOICES)
 
+VALID_FORMAT_CHOICES = []
+for choice in DatabaseDumpFile.FORMAT_CHOICES:
+    VALID_FORMAT_CHOICES.append(choice[0])
