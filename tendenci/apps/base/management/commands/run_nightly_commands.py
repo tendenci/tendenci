@@ -26,7 +26,8 @@ class Command(BaseCommand):
                     'delete_soft_deleted_items',
                     'update_dashboard_stats',
                     'collect_metrics',
-                    'captcha_clean'
+                    'captcha_clean',
+                    'cleanup_expired_dbdumps',
                     )
         for c in commands:
             try:

@@ -58,6 +58,7 @@
             <thead>
                 <tr>
                     <td>Creation Date</td>
+                    <td>Expiry Date</td>
                     <td>Author</td>
                     <td>Format</td>
                     <td>Status</td>
@@ -68,11 +69,22 @@
         {% for obj in objects %}
             <tr>
                 <td>{{ obj.start_dt }}</td>
+                <td>
+                    {% if obj.end_dt %}
+                        {{ obj.end_dt }}
+                    {% else %}
+                    -----
+                    {% endif %}
+                </td>
                 <td>{{ obj.author }}</td>
                 <td>{{ obj.export_format }}</td>
                 <td>{{ obj.status }}</td>
                 <td>{% if obj.status == 'completed' %} <a href="{% url 'explorer_extensions.download_dump' obj.pk %}">Click to Download</a> {% endif %}</td>
                 <td><a href="{% url 'explorer_extensions.delete_dump' obj.pk %}">Delete</a></td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7" align="center">None. You can generate an export file by clicking the Generate button above.</td>
             </tr>
         {% endfor %}
         </table>

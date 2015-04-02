@@ -66,6 +66,7 @@ class Command(BaseCommand):
         dump_obj.dbfile.save(str(uuid.uuid1()), File(content))
 
         dump_obj.status = "completed"
+        dump_obj.end_dt = datetime.datetime.now() + datetime.timedelta(days=3)
         dump_obj.save()
 
         # File is created.

@@ -33,7 +33,7 @@ def export_page(request):
                 subprocess.Popen(["python", "manage.py",
                               "create_database_dump",
                               str(request.user.pk), form.cleaned_data['format'] ])
-                messages.add_message(request, messages.INFO, "Success! The system is now generating your export file. Please update in a few seconds to update the list.")
+                messages.add_message(request, messages.INFO, "Success! The system is now generating your export file. Please reload in a few seconds to update the list.")
             else:
                 messages.add_message(request, messages.ERROR, "Cannot create file. You have already reached the limit of existing dump files. Please delete old unused exports and try again.")
     else:
