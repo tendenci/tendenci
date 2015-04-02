@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.core.servers.basehttp import FileWrapper
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from explorer import app_settings
 from explorer.views import change_permission
@@ -53,7 +54,7 @@ def export_page(request):
                                 context_instance=RequestContext(request))
 
 
-
+@login_required
 def download_dump(request, dump_id):
     dbdump = get_object_or_404(DatabaseDumpFile, pk=dump_id)
     if request.user != dbdump.author and not request.user.is_superuser:

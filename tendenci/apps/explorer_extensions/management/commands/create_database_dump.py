@@ -70,6 +70,11 @@ class Command(BaseCommand):
         dump_obj.save()
 
         # File is created.
-        # TODO: Send email to author
+        # Send email to author
+        context = { 'obj':dump_obj, 'author':dump_obj.author }
+        email_subject = "Your database export (id:%d) is ready for download" % dump_obj.id
+        email_body = render_to_string("explorer/dbdump_ready_email_body.html", context)
+        email = Email(recipient=dump_obj.author.email, subject=email_subject, body=email_body)
+        email.send()
 
         print "Done!"

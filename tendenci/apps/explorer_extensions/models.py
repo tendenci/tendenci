@@ -3,6 +3,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.core.urlresolvers import reverse
+
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class DatabaseDumpFile(models.Model):
@@ -24,6 +27,12 @@ class DatabaseDumpFile(models.Model):
                 default="pending", choices=STATUS_CHOICES)
     export_format = models.CharField(max_length=20,
                 default="json", choices=FORMAT_CHOICES)
+
+    @property
+    def get_download_url(self):
+        site_url = get_setting('site', 'global', 'siteurl')
+        return "%s%s" % (site_url, reverse('explorer_extensions.download_dump', args=[self.pk]))
+
 
 VALID_FORMAT_CHOICES = []
 for choice in DatabaseDumpFile.FORMAT_CHOICES:
