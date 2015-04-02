@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.core.servers.basehttp import FileWrapper
+from django.contrib import messages
 
 from explorer import app_settings
 from explorer.views import change_permission
@@ -29,14 +30,12 @@ def export_page(request):
         if form.is_valid():
             print "Form submitted is valid!"
             if can_create_dump():
-                # TODO: run management command
                 subprocess.Popen(["python", "manage.py",
                               "create_database_dump",
                               str(request.user.pk), form.cleaned_data['format'] ])
-                pass
+                messages.add_message(request, messages.INFO, "Success! The system is now generating your export file. Please update in a few seconds to update the list.")
             else:
-                # TODO: throw an error
-                pass
+                messages.add_message(request, messages.ERROR, "Cannot create file. You have already reached the limit of existing dump files. Please delete old unused exports and try again.")
     else:
         form = DatabaseDumpForm()
 
@@ -65,6 +64,15 @@ def download_dump(request, dump_id):
     response = HttpResponse(wrapper, content_type='application/octet-stream')
     response['Content-Disposition'] = 'attachment; filename=db_export.%s' % dbdump.export_format
     return response
+
+
+def delete_dump(request, dump_id):
+    dbdump = get_object_or_404(DatabaseDumpFile, pk=dump_id)
+    if request.user != dbdump.author and not request.user.is_superuser:
+        raise Http403
+    dbdump.delete()
+    messages.add_message(request, messages.INFO, "Successfully deleted export file.")
+    return redirect('explorer_extensions.export_page')
 
 
 def can_create_dump():

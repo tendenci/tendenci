@@ -12,12 +12,43 @@
 
 {% block sql_explorer_content %}
 <div class="row">
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                {% if 'info' in message.tags %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% elif 'error' in message.tags %}
+                    <div class="alert alert-danger" role="alert">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     {% if enable_form %}
-    <form class="form" action="{% url 'explorer_extensions.export_page' %}" method="POST">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit" class="btn btn-default">Generate</button>
+    <form class="form-inline" method="post" action="{% url 'explorer_extensions.export_page' %}">{% csrf_token %}
+        {% for field in form %}
+            {% if field.errors %}
+                <div class="form-group error">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" >Generate</button>
+        </div>
     </form>
+    {% endif %}
+    {% if messages or enable_form %}
+        <hr />
     {% endif %}
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -31,6 +62,7 @@
                     <td>Format</td>
                     <td>Status</td>
                     <td>Download</td>
+                    <td>Delete</td>
                 </tr>
             </thead>
         {% for obj in objects %}
@@ -40,6 +72,7 @@
                 <td>{{ obj.export_format }}</td>
                 <td>{{ obj.status }}</td>
                 <td>{% if obj.status == 'completed' %} <a href="{% url 'explorer_extensions.download_dump' obj.pk %}">Click to Download</a> {% endif %}</td>
+                <td><a href="{% url 'explorer_extensions.delete_dump' obj.pk %}">Delete</a></td>
             </tr>
         {% endfor %}
         </table>

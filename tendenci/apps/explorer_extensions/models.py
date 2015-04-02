@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
 
 class DatabaseDumpFile(models.Model):
     STATUS_CHOICES = (
@@ -25,3 +28,10 @@ class DatabaseDumpFile(models.Model):
 VALID_FORMAT_CHOICES = []
 for choice in DatabaseDumpFile.FORMAT_CHOICES:
     VALID_FORMAT_CHOICES.append(choice[0])
+
+
+@receiver(post_delete, sender=DatabaseDumpFile)
+def dump_post_delete_handler(sender, **kwargs):
+    inst = kwargs['instance']
+    if inst.dbfile:
+        inst.dbfile.delete(save=False)
