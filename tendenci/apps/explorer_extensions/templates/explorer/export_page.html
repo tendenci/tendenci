@@ -1,0 +1,93 @@
+{% extends "explorer/base.html" %}
+{% load url from future %}
+
+{% block sql_explorer_navlinks %}
+    {% if can_change %}
+      <li><a href="../new/">New Query</a></li>
+      <li><a href="../play/">Playground</a></li>
+    {% endif %}
+    <li><a href="../logs/">Logs</a></li>
+    <li class="active"><a href="{% url 'explorer_extensions.export_page' %}">Data Export</a></li>
+{% endblock %}
+
+{% block sql_explorer_content %}
+<div class="row">
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                {% if 'info' in message.tags %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% elif 'error' in message.tags %}
+                    <div class="alert alert-danger" role="alert">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if enable_form %}
+    <form class="form-inline" method="post" action="{% url 'explorer_extensions.export_page' %}">{% csrf_token %}
+        {% for field in form %}
+            {% if field.errors %}
+                <div class="form-group error">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% else %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" >Generate</button>
+        </div>
+    </form>
+    {% endif %}
+    {% if messages or enable_form %}
+        <hr />
+    {% endif %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Current Exports
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Creation Date</td>
+                    <td>Expiry Date</td>
+                    <td>Author</td>
+                    <td>Format</td>
+                    <td>Status</td>
+                    <td>Download</td>
+                    <td>Delete</td>
+                </tr>
+            </thead>
+        {% for obj in objects %}
+            <tr>
+                <td>{{ obj.start_dt }}</td>
+                <td>
+                    {% if obj.end_dt %}
+                        {{ obj.end_dt }}
+                    {% else %}
+                    -----
+                    {% endif %}
+                </td>
+                <td>{{ obj.author }}</td>
+                <td>{{ obj.export_format }}</td>
+                <td>{{ obj.status }}</td>
+                <td>{% if obj.status == 'completed' %} <a href="{% url 'explorer_extensions.download_dump' obj.pk %}">Click to Download</a> {% endif %}</td>
+                <td><a href="{% url 'explorer_extensions.delete_dump' obj.pk %}">Delete</a></td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7" align="center">None. You can generate an export file by clicking the Generate button above.</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
