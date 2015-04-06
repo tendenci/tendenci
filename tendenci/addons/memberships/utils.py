@@ -970,15 +970,10 @@ def check_missing_fields(memb_data, key, **kwargs):
         if not any([memb_data['member_number'],
                     memb_data['email']]):
             missing_field_msg = "Missing key 'member_number' or 'email'"
-    elif key == 'member_number':
-        if not memb_data['member_number']:
-            missing_field_msg = "Missing key 'member_number'"
-    elif key == 'username':
-        if not memb_data['username']:
-            missing_field_msg = "Missing key 'username'"
-    else:  # email
-        if not memb_data['email']:
-            missing_field_msg = "Missing key 'email'"
+
+    elif key in ['member_number', 'username', 'email']:
+        if not memb_data[key]:
+            missing_field_msg = "Missing key '%s" % key
 
     if missing_field_msg:
         is_valid = False
@@ -1267,17 +1262,14 @@ class ImportMembDefault(object):
         return is_valid, _(error_msg)
 
     def clean_corporate_membership(self, memb_data):
-        if 'corporate_membership_id' in memb_data:
-            try:
-                memb_data['corporate_membership_id'] = int(memb_data['corporate_membership_id'])
-            except:
-                memb_data['corporate_membership_id'] = 0
 
-        if 'corp_profile_id' in memb_data:
-            try:
-                memb_data['corp_profile_id'] = int(memb_data['corp_profile_id'])
-            except:
-                memb_data['corp_profile_id'] = 0
+        corporate_data = ['corporate_membership_id', 'corp_profile_id']
+        for item in corporate_data:
+            if item in memb_data:
+                try:
+                    memb_data[item] = int(memb_data[item])
+                except:
+                    memb_data[item] = 0
 
     def has_demographic_fields(self, field_names):
         """
