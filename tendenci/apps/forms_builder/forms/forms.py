@@ -56,6 +56,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         self.user = user
         self.form = form
         self.form_fields = form.fields.visible().order_by('position')
+        self.auto_fields = form.fields.auto_fields().order_by('position')
         super(FormForForm, self).__init__(*args, **kwargs)
 
         def add_fields(form, form_fields):
@@ -219,6 +220,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 value = ','.join(value)
             if not value: value=''
             field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
+            field_entry.save()
+
+        for field in self.auto_fields:
+            value = field.choices
+            field_entry = FieldEntry(field_id = field.id, entry=entry, value=value)
             field_entry.save()
 
         # save selected pricing and payment method if any
@@ -435,7 +441,24 @@ class FormForField(forms.ModelForm):
             else:
                 for val in choices.split(','):
                     try:
-                        Group.objects.get(name=val.strip())
+                        g = Group.objects.get(name=val.strip())
+                        if not g.allow_self_add:
+                            raise forms.ValidationError(_("The group \"%(val)s\" does not allow self-add." % { 'val' : val }))
+                    except Group.DoesNotExist:
+                        raise forms.ValidationError(_("The group \"%(val)s\" does not exist" % { 'val' : val }))
+
+        if field_function == "GroupSubscriptionAuto":
+            # field_type doesn't matter since this field shouldn't be rendered anyway.
+            if visible:
+                raise forms.ValidationError(_("This field must not be visible to users."))
+            if not choices:
+                raise forms.ValidationError(_("This field's function requires at least 1 group specified."))
+            else:
+                for val in choices.split(','):
+                    try:
+                        g = Group.objects.get(name=val.strip())
+                        if not g.allow_self_add:
+                            raise forms.ValidationError(_("The group \"%(val)s\" does not allow self-add." % { 'val' : val }))
                     except Group.DoesNotExist:
                         raise forms.ValidationError(_("The group \"%(val)s\" does not exist" % { 'val' : val }))
 
