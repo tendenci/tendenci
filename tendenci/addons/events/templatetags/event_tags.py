@@ -165,7 +165,7 @@ class EventListNode(Node):
         if type:
             events = events.filter(type=type)
 
-        if weekday == 'Sun' or weekday == 'Sat':
+        if weekday in ['Sat', 'Sun']:
             events = events.filter(on_weekend=True)
 
         if self.ordering == "single_day":
@@ -176,11 +176,10 @@ class EventListNode(Node):
             else:
                 events = events.order_by('-priority', 'start_dt')
 
-
         if cat == 'priority':
-            events = events.filter(**{cat : True })
+            events = events.filter(**{cat: True})
         elif query and cat:
-            events = events.filter(**{cat : query})
+            events = events.filter(**{cat: query})
 
         context[self.context_var] = events
         return ''
