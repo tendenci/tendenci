@@ -1490,7 +1490,7 @@ def delete_recurring(request, id, template_name="events/delete_recurring.html"):
                 connection._rollback()
         recurring_manager.delete()
         msg_string = 'Successfully deleted the recurring event for "%s"' % unicode(event)
-        messages.add_message(request, messages.SUCCESS, -(msg_string))
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('event.search'))
 
