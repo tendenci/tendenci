@@ -1265,10 +1265,11 @@ class ImportMembDefault(object):
 
         corporate_data = ['corporate_membership_id', 'corp_profile_id']
         for item in corporate_data:
-            try:
-                memb_data[item] = int(memb_data[item])
-            except:
-                memb_data[item] = 0
+            if item in memb_data:
+                try:
+                    memb_data[item] = int(memb_data[item])
+                except:
+                    memb_data[item] = 0
 
     def has_demographic_fields(self, field_names):
         """
