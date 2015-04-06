@@ -26,10 +26,7 @@
 
         <div class="description">
         {% if event.meta.description %}
-            {% blocktrans with desc=event.meta.description %}{{ desc }}{% endblocktrans %}
-        {% else %}
-            {% blockrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}
-        {% endif %}
+        	{{ desc }}
         </div>
         {% endfor %}
 
