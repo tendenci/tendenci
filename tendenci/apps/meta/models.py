@@ -40,6 +40,18 @@ class Meta(models.Model):
 
         return getattr(self.object,'get_meta')(meta_name)
 
+    def get_title(self):
+        return self.__get_meta(self.title)
+    
+    def get_keywords(self):
+        return self.__get_meta(self.keywords)
+    
+    def get_description(self):
+        return self.__get_meta(self.description)
+    
+    def get_canonical_url(self):
+        return self.__get_meta(self.canonical_url)
+
     def add_accessor_methods(self):
         """
         Dynamically create Meta methods.
@@ -48,31 +60,6 @@ class Meta(models.Model):
         for field in ('keywords','title','description', 'canonical_url'):
             setattr(self,'get_%s' % field, curry(self.__get_meta, field))
 
-
-def add_methods(sender, instance, signal, *args, **kwargs):
-    """
-    A listener that calls 'add_accessor_method' on
-    post-init signal
-    """
-    if hasattr(instance, 'add_accessor_methods'):
-        instance.add_accessor_methods()
-# connect the add_accessor_methods function to the post_init signal
-post_init.connect(add_methods, sender=Meta)
-
-
-def get_meta_template(object, meta_label):
-    return object.get_meta(meta_label)
-
-def add_remote_methods(sender, instance, signal, *args, **kwargs):
-    """
-    A listener that calls 'add_accessor_method' on post-init signal
-    """
-    if hasattr(instance, 'meta'):
-        # make methods (e.g. get_keywords, get_title, etc ...)
-        for meta_label in ('keywords','title','description', 'canonical_url'):
-            setattr(instance,'get_%s' % meta_label, curry(get_meta_template, instance, meta_label))
-# connect the add_accessor_methods function to the post_init signal
-post_init.connect(add_remote_methods)
 
 
 

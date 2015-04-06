@@ -75,6 +75,22 @@ class TendenciBaseModel(models.Model):
             value = t % ('inactive', 'Inactive')
 
         return mark_safe(value)
+    
+    def get_title(self):
+        if hasattr(self, 'meta'):
+            return self.get_meta('title')
+    
+    def get_keywords(self):
+        if hasattr(self, 'meta'):
+            return self.get_meta('keywords')
+    
+    def get_description(self):
+        if hasattr(self, 'meta'):
+            return self.get_meta('description')
+    
+    def get_canonical_url(self):
+        if hasattr(self, 'meta'):
+            return self.get_meta('canonical_url')
 
     class Meta:
         abstract = True
