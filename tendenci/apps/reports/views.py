@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 
-from johnny.cache import invalidate
+#from johnny.cache import invalidate
 
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.reports.models import Report, Run
@@ -86,7 +86,7 @@ class RunDetailView(DetailView):
         return super(RunDetailView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
-        invalidate('reports_run')
+        #invalidate('reports_run')
         obj = get_object_or_404(Run, pk=self.kwargs['pk'], report_id=self.kwargs['report_id'])
         if obj.status == "unstarted":
             subprocess.Popen(["python", "manage.py", "process_report_run", str(obj.pk)])
@@ -102,6 +102,6 @@ class RunOutputView(DetailView):
         return super(RunOutputView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
-        invalidate('reports_run')
+        #invalidate('reports_run')
         obj = get_object_or_404(Run, pk=self.kwargs['pk'], report_id=self.kwargs['report_id'])
         return obj

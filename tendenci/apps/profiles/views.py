@@ -24,7 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 import simplejson
 
-from johnny.cache import invalidate
+#from johnny.cache import invalidate
 
 from tendenci.apps.base.decorators import ssl_required, password_required
 from tendenci.apps.base.utils import get_pagination_page_range
@@ -1256,7 +1256,7 @@ def merge_process(request, sid):
 
         # log an event
         EventLog.objects.log(description=description[:120])
-        invalidate('profiles_profile')
+        #invalidate('profiles_profile')
         messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
 
     return redirect("profile.search")
@@ -1362,7 +1362,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
     if not request.user.profile.is_superuser:
         raise Http403
 
-    invalidate('profiles_userimport')
+    #invalidate('profiles_userimport')
     uimport = get_object_or_404(UserImport, pk=uimport_id)
     if uimport.group_id:
         uimport.group = Group.objects.get(id=uimport.group_id)
@@ -1469,7 +1469,7 @@ def user_import_process(request, uimport_id):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    invalidate('profiles_userimport')
+    #invalidate('profiles_userimport')
 
     uimport = get_object_or_404(UserImport, pk=uimport_id)
 
@@ -1496,7 +1496,7 @@ def user_import_status(request, uimport_id, template_name='profiles/import/statu
 
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('profiles_userimport')
+    #invalidate('profiles_userimport')
     uimport = get_object_or_404(UserImport,
                                     pk=uimport_id)
     if uimport.group_id:
@@ -1517,7 +1517,7 @@ def user_import_download_recap(request, uimport_id):
 
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('profiles_userimport')
+    #invalidate('profiles_userimport')
     uimport = get_object_or_404(UserImport,
                                     pk=uimport_id)
     uimport.generate_recap()
@@ -1541,7 +1541,7 @@ def user_import_get_status(request, uimport_id):
     """
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('profiles_userimport')
+    #invalidate('profiles_userimport')
     uimport = get_object_or_404(UserImport,
                                     pk=uimport_id)
 
@@ -1566,7 +1566,7 @@ def user_import_check_preprocess_status(request, uimport_id):
     """
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('profiles_userimport')
+    #invalidate('profiles_userimport')
     uimport = get_object_or_404(UserImport,
                                     pk=uimport_id)
 

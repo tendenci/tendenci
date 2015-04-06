@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Count, Q
 
-from johnny.cache import invalidate
+#from johnny.cache import invalidate
 
 
 class Command(BaseCommand):
@@ -142,7 +142,7 @@ class Command(BaseCommand):
         corp_members.value = json.dumps(self.get_top_corp_members(5))
         corp_members.save()
 
-        invalidate('dashboard_dashboardstat')
+        #invalidate('dashboard_dashboardstat')
 
     def get_events(self, items):
         from tendenci.apps.events.models import Event

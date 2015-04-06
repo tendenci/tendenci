@@ -4,13 +4,13 @@ from django.db.models import signals
 from django.conf import settings
 
 from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.search.indexes import CustomSearchIndex
+#from tendenci.apps.search.indexes import CustomSearchIndex
 
 def is_whoosh():
     default_engine = settings.HAYSTACK_CONNECTIONS.get('default', {}).get('ENGINE', '')
     return default_engine and 'whoosh' in default_engine.lower()
 
-class TendenciBaseSearchIndex(CustomSearchIndex):
+class TendenciBaseSearchIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
 
     # TendenciBaseModel Fields

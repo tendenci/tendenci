@@ -14,7 +14,7 @@ from django.utils.http import int_to_base36
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from johnny.cache import invalidate
+#from johnny.cache import invalidate
 from captcha.fields import CaptchaField, CaptchaTextInput
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
@@ -151,7 +151,7 @@ class LoginForm(forms.Form):
     def clean(self):
         if self._errors:
             return
-        invalidate('auth_user')
+        #invalidate('auth_user')
         user = authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"])
 
         if user:

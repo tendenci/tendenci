@@ -29,7 +29,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 
-from johnny.cache import invalidate
+#from johnny.cache import invalidate
 from geraldo.generators import PDFGenerator
 
 from tendenci.apps.site_settings.utils import get_setting
@@ -333,7 +333,7 @@ def membership_default_import_preview(request, mimport_id,
     if not request.user.profile.is_superuser:
         raise Http403
 
-    invalidate('memberships_membershipimport')
+    #invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport, pk=mimport_id)
 
     if mimport.status == 'preprocess_done':
@@ -438,7 +438,7 @@ def membership_default_import_process(request, mimport_id):
     """
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('memberships_membershipimport')
+    #invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport,
                                     pk=mimport_id)
     if mimport.status == 'preprocess_done':
@@ -467,7 +467,7 @@ def membership_default_import_status(request, mimport_id,
     """
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('memberships_membershipimport')
+    #invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport,
                                     pk=mimport_id)
     if mimport.status not in ('processing', 'completed'):
@@ -486,7 +486,7 @@ def membership_default_import_download_recap(request, mimport_id):
 
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('memberships_membershipimport')
+    #invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport,
                                     pk=mimport_id)
     mimport.generate_recap()
@@ -510,7 +510,7 @@ def membership_default_import_get_status(request, mimport_id):
     """
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('memberships_membershipimport')
+    #invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport,
                                     pk=mimport_id)
 
@@ -536,7 +536,7 @@ def membership_default_import_check_preprocess_status(request, mimport_id):
     """
     if not request.user.profile.is_superuser:
         raise Http403
-    invalidate('memberships_membershipimport')
+    #invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport,
                                     pk=mimport_id)
 

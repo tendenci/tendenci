@@ -5,7 +5,7 @@ from django.db.models import Sum, Q
 from django.template import TemplateDoesNotExist, Context
 from django.template.loader import get_template
 
-from johnny.cache import invalidate
+#from johnny.cache import invalidate
 
 from tendenci.apps.reports.utils import get_ct_nice_name
 
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         run.status = "error"
         run.complete_dt = datetime.now()
         run.save()
-        invalidate('reports_run')
+        #invalidate('reports_run')
 
     def report_output_invoices(self, run):
         from tendenci.apps.corporate_memberships.models import CorpMembership
@@ -161,7 +161,7 @@ class Command(BaseCommand):
             run.status = "running"
             run.start_dt = datetime.now()
             run.save()
-            invalidate('reports_run')
+            #invalidate('reports_run')
 
             print "running report"
 
@@ -177,7 +177,7 @@ class Command(BaseCommand):
 
             run.complete_dt = datetime.now()
             run.save()
-            invalidate('reports_run')
+            #invalidate('reports_run')
 
         else:
             print "Report is already running"
