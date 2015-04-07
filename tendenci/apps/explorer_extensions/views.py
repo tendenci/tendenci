@@ -31,9 +31,13 @@ def export_page(request):
         if form.is_valid():
             print "Form submitted is valid!"
             if can_create_dump():
+                new_obj = DatabaseDumpFile()
+                new_obj.author = request.user
+                new_obj.export_format = form.cleaned_data['format']
+                new_obj.save()
                 subprocess.Popen(["python", "manage.py",
                               "create_database_dump",
-                              str(request.user.pk), form.cleaned_data['format'] ])
+                              str(request.user.pk), form.cleaned_data['format'], str(new_obj.pk) ])
                 messages.add_message(request, messages.INFO, "Success! The system is now generating your export file. Please reload in a few seconds to update the list.")
             else:
                 messages.add_message(request, messages.ERROR, "Cannot create file. You have already reached the limit of existing dump files. Please delete old unused exports and try again.")

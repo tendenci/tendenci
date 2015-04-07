@@ -27,7 +27,17 @@ class Command(BaseCommand):
         from tendenci.apps.explorer_extensions.models import DatabaseDumpFile, VALID_FORMAT_CHOICES
         from tendenci.apps.site_settings.utils import get_setting
 
-        dump_obj = DatabaseDumpFile()
+        dump_obj = None
+        if len(args) > 2:
+            d_id = int(args[2])
+            dump_obj = DatabaseDumpFile.objects.filter(pk=d_id)
+            if dump_obj.exists():
+                dump_obj = dump_obj[0]
+            else:
+                dump_obj = None
+
+        if not dump_obj:
+            dump_obj = DatabaseDumpFile()
 
         user_id = int(args[0])
 
