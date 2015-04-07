@@ -1,42 +1,55 @@
 {% extends "site_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
-{% block title %}{% trans "Corporate Memberships" %}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL %}
+        {% blocktrans %}
+            {{ MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL }} for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans %}
+            Corporate Memberhsips for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
+        {% endblocktrans %}
+    {% endif %}
 {% endblock %}
 
-{% block messages %}{{ block.super }}{% endblock %}
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/corporate_memberships.css' %}">
 
-{% block extra_body %}{{ block.super }}{% endblock %}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+{% endblock %}
+
+{% block banner %}{% endblock %}
 
 {% block top_bar %}
-{% if request.user.is_authenticated %}
-    {% if request.user.is_superuser %}
-        {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+    {% if request.user.is_authenticated %}
+        {% if request.user.is_superuser %}
+            {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                    {% include "top_menu/user_top.html" %}
+                {% else %}
+                    {% include "corporate_memberships/top_nav.html" %}
+                {% endif %}
+            {% else %}
+                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
+                    {% include "top_menu/admin_top.html" %}
+                {% else %}
+                    {% include "corporate_memberships/top_nav.html" %}
+                {% endif %}
+                {% if request.session.theme %}
+                    {% include "themes/theme_top.html" %}
+                {% endif %}
+            {% endif %}
+        {% else %}
             {% if SITE_GLOBAL_SHOWANCIENTMENU %}
                 {% include "top_menu/user_top.html" %}
             {% else %}
                 {% include "corporate_memberships/top_nav.html" %}
             {% endif %}
-        {% else %}
-            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                {% include "top_menu/admin_top.html" %}
-            {% else %}
-                {% include "corporate_memberships/top_nav.html" %}
-            {% endif %}
-            {% if request.session.theme %}
-                {% include "themes/theme_top.html" %}
-            {% endif %}
-        {% endif %}
-    {% else %}
-        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-            {% include "top_menu/user_top.html" %}
-        {% else %}
-            {% include "corporate_memberships/top_nav.html" %}
         {% endif %}
     {% endif %}
-{% endif %}
 {% endblock %}

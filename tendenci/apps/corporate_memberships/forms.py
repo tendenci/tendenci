@@ -38,6 +38,7 @@ from tendenci.apps.corporate_memberships.utils import (
     csv_to_dict)
 from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.apps.base.fields import SplitDateTimeField, PriceField
+from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -535,7 +536,7 @@ class RosterSearchAdvancedForm(forms.Form):
         self.fields['cm_id'].choices = choices
 
 
-class CorpMembershipSearchForm(forms.Form):
+class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
     SEARCH_METHOD_CHOICES = (
                              ('starts_with', _('Starts With')),
                              ('contains', _('Contains')),
@@ -545,8 +546,10 @@ class CorpMembershipSearchForm(forms.Form):
                                   required=False)
     search_criteria = forms.ChoiceField(required=False)
     search_text = forms.CharField(max_length=100, required=False)
-    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
-                                        required=False)
+    search_method = forms.ChoiceField(
+        choices=SEARCH_METHOD_CHOICES,
+        required=False
+    )
 
     def __init__(self, *args, **kwargs):
         search_field_names_list = kwargs.pop('names_list')

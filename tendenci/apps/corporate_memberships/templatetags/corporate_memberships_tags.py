@@ -36,7 +36,7 @@ def render_corpmembership_field(request, field_obj,
             'field': field}
 
 
-@register.simple_tag
+@register.assignment_tag
 def individual_pricing_desp(corp_membership):
     """
     Return the description of pricing for the individual memberships
@@ -72,9 +72,9 @@ def individual_pricing_desp(corp_membership):
                                     threshold_limit,
                                     threshold_price
                                     )
-            description += 'then %s ' % membership_price
+            description += 'then %s' % membership_price
         else:
-            description += '%s ' % membership_price
+            description += '%s' % membership_price
     return description
 
 

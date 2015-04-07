@@ -1,112 +1,122 @@
 {% extends "corporate_memberships/base.html" %}
-{% load bootstrap_pagination_tags %}
-{% load bootstrap_pagination_tags %}
-{% load base_filters %}
-{% load perm_tags %}
-{% load corporate_memberships_tags %}
 {% load i18n %}
+{% load static %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load corporate_memberships_tags %}
+{% load perm_tags %}
 
-{% block title %}{{ block.super }}{% trans "Corporate Membership Search" %}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
-<style>
-    #id_search_criteria, #id_search_text{
-        width: 150px;
-    }
-    #id_search_method{
-        width: 100px;
-    }
-    .search-form input[type=submit]{
-       height: 30px;
-       vertical-align: top;
-    }
-</style>
+{% block title %}
+    {% if MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Corporate Memberships Search" %}
+    {% endif %} - {{ block.super }}
 {% endblock %}
 
+{% block extra_head %}
+    {{ block.super }}
+
+    <style>
+        #id_search_criteria, #id_search_text{
+            width: 150px;
+        }
+        #id_search_method{
+            width: 100px;
+        }
+        .search-form input[type=submit]{
+           height: 30px;
+           vertical-align: top;
+        }
+    </style>
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-<div class="t">
-<div class="t-search">
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if pending_only %}
+            {% if MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL %}
+                {% blocktrans %}Pending {{ MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL }} Search{% endblocktrans %}
+            {% else %}
+                {% trans "Pending Corporate Memberships Search" %}
+            {% endif %}
+        {% else %}
+            {% if MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL %}
+                {% blocktrans %}{{ MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL }} Search{% endblocktrans %}
+            {% else %}
+                {% trans "Corporate Memberships Search" %}
+            {% endif %}
+        {% endif %}
+    </h1>
 
-{% if pending_only %}
-<h1>{% trans "Pending Corporate Membership List" %}</h1>
-{% else %}
-<h1>{% trans "Corporate Membership Search" %}</h1>
-{% endif %}
+    {% include "corporate_memberships/applications/search_form.html" %}
 
-<form class="search-form" method="get">
-<p>
-    {% if 'cp_id' in search_form.fields %}
-    {{ search_form.cp_id.label }}: {{ search_form.cp_id }}
-    {% endif %}
+    {% autopaginate corp_members 10 %}
 
-    {% if 'industry' in search_form.fields %}
-    <br />
-    {{ search_form.industry.label }}: {{ search_form.industry }}
-    {% endif %}
+    <h4 class="capitalize">
+        <em>{% spaceless %}
+            {% if MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL and MODULE_CORPORATEMEMBERSHIPS_LABEL %}
+                {% blocktrans count corporatememberiships_count=paginator.count %}
+                    {{ corporatememberiships_count }} {{ MODULE_CORPORATEMEMBERSHIPS_LABEL }} Found
+                {% plural %}
+                    {{ corporatememberiships_count }} {{ MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count corporatememberiships_count=paginator.count %}
+                    {{ corporatememberiships_count }} Corporate Membership Found
+                {% plural %}
+                    {{ corporatememberiships_count }} Corporate Memberships Found
+                {% endblocktrans %}
+            {% endif %}
+        {% endspaceless %}</em>
+    </h4>
 
-    <br />
-   {% trans 'Search By'%}: {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
+    <section>
+        {% for corp_memb in corp_members %}
+            {% with corp_memb|get_object as corporate_membership %}
+                {% include "corporate_memberships/applications/search-result.html" %}
+            {% endwith %}
+        {% empty %}
+        {% endfor %}
+    </section>
 
-    <input type="submit" name="search" value="{% trans 'Submit' %}" />
-</p>
-</form>
-
-{% autopaginate corp_members 10 %}
-<span><em>{{ paginator.count }} {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL 'Corporate Members' %} {% trans "Found" %}</em></span>
-
-<div class="corpmembers-wrap">
-    {% for corp_memb in corp_members %}
-        {% with corp_memb|get_object as corporate_membership %}
-            {% include 'corporate_memberships/applications/search-result.html' %}
-        {% endwith %}
-    {% empty %}
-        <div>{% trans "0 Results Found" %}</div>
-    {% endfor %}
-</div>
-
-
- {% paginate %}
-
- </div>
-</div>
-
+    {% paginate %}
 {% endblock %}
 
 {% block extra_body %}
- <script type="text/javascript">
-    $(document).ready(function(){
+    {{ block.super }}
 
-        // delete confirmation
-        $('.delete').click(function(){
-            var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');   // confirm
-            if(delete_corp_memb) $(this).parents('.wrap-search-item').find('form[name="corp-memb-delete"]').submit(); // delete: if OK
-            return false;   // cancel
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // delete confirmation
+            $('.delete').click(function() {
+                var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');   // confirm
+                if(delete_corp_memb) $(this).parents('.wrap-search-item').find('form[name="corp-memb-delete"]').submit(); // delete: if OK
+                return false;   // cancel
+            });
         });
-    });
-   </script>
-<script>
-    var filename = "{{ STATIC_URL }}js/global/dropdown.js";
+    </script>
 
-    if (typeof dropdown == "undefined")
-    {
-        var fileref=document.createElement('script');
-        fileref.setAttribute("type","text/javascript");
-        fileref.setAttribute("src", filename);
-        var head = document.getElementsByTagName('head')[0];
-        head.appendChild(fileref);
-    }
-</script>
+    <script>
+        var filename = "{% static 'js/global/dropdown.js' %}";
 
-<script type="text/javascript">
-var iconrow = new dropdown({
-    container:  'more-options-wrap',
-    trigger:    'more-options-trigger',
-    target:     'more-options-target'
-});
-</script>
+        if (typeof dropdown == "undefined") {
+            var fileref=document.createElement('script');
+            fileref.setAttribute("type", "text/javascript");
+            fileref.setAttribute("src", filename);
+            var head = document.getElementsByTagName('head')[0];
+            head.appendChild(fileref);
+        }
+    </script>
 
-{{ block.super }}
-
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:  'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:     'more-options-target'
+        });
+    </script>
 {% endblock %}
