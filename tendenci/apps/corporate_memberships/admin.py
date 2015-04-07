@@ -13,6 +13,7 @@ from tendenci.apps.corporate_memberships.models import (
     CorpMembershipApp,
     CorpMembershipAppField,
     CorpMembership,
+    CorpProfile,
     Notice)
 from tendenci.apps.corporate_memberships.forms import (
     CorporateMembershipTypeForm,
@@ -386,8 +387,14 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
         else:
             return super(CorpMembershipAppField2Admin, self).response_change(request, obj)
 
+
+class CorpProfileAdmin(admin.ModelAdmin):
+    model = CorpProfile
+
+
 admin.site.register(CorpMembership, CorpMembershipAdmin)
 admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
 admin.site.register(CorpMembershipApp, CorpMembershipAppAdmin)
 admin.site.register(CorpMembershipAppField, CorpMembershipAppField2Admin)
 admin.site.register(Notice, NoticeAdmin)
+admin.site.register(CorpProfile, CorpProfileAdmin)

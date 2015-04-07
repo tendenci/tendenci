@@ -1237,11 +1237,9 @@ class CorpMembership(TendenciBaseModel):
 
     @property
     def obj_perms(self):
-        t = '<span class="perm-%s">%s</span>'
+        t = '<span class="t-perm t-perm-%s">%s</span>'
 
-        if get_setting('module',
-                     'corporate_memberships',
-                     'anonymoussearchcorporatemembers'):
+        if get_setting('module', 'corporate_memberships', 'anonymoussearchcorporatemembers'):
             value = t % ('public', 'Public')
         else:
             value = t % ('private', 'Private')

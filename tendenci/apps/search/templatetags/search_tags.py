@@ -16,11 +16,12 @@ class SearchResultNode(IncludeNode):
         """
         This does not take into account preview themes.
         """
+
         try:
             result = self.result.resolve(context)
 
             if hasattr(result, 'object'):
-                result_object = result.object
+                result_object = result.object()
             else:
                 result_object = result
 
@@ -55,6 +56,13 @@ class SearchResultNode(IncludeNode):
                 template_name = "memberships/entries/search-result.html"
             else:
                 template_name = "%s/search-result.html" % (result_object._meta.app_label)
+
+            # Special case for Contribution instances
+            if result.__class__.__name__.lower() == 'contribution':
+                var_name = 'contribution'
+                template_name = 'contributions/search-result.html'
+                result_object = result
+
             try:
                 t = get_template(template_name)
             except TemplateDoesNotExist:
@@ -65,11 +73,13 @@ class SearchResultNode(IncludeNode):
                 "result": result,
                 var_name: result_object,
             })
+
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
                 raise
             return ''
+
 
 def search_result(parser, token):
     """

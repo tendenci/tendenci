@@ -1,0 +1,9 @@
+{% load i18n %}
+{% load base_filters %}
+
+
+<ul class="list-unstyled t-meta-data">
+    {% blocktrans with contrib_date=contribution.update_dt|date:"long" creator=contribution.creator %}
+        <li><strong>Last updated on {{ contrib_date }} by:</strong> <span>{{ creator }}</span></li>
+    {% endblocktrans %}
+</ul>
