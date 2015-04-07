@@ -1,0 +1,21 @@
+{% load i18n %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Ready for Download" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+    <p>
+        {% trans 'Hello' %} {{ author.first_name }},<br /><br />
+
+        The database export you started last {{ obj.start_dt }} has finished and is now ready for download.
+        <br />
+        <br />
+        {% trans "Click this link to start the download (requires login)" %}: <a href="{{ obj.get_download_url }}">Download</a>
+    </p>
+
+</body>
+</html>

@@ -49,6 +49,7 @@ FIELD_CHOICES = (
 
 FIELD_FUNCTIONS = (
     ("GroupSubscription", _("Subscribe to Group")),
+    ("GroupSubscriptionAuto", _("Subscribe to Group")),
     ("EmailFirstName", _("First Name")),
     ("EmailLastName", _("Last Name")),
     ("EmailFullName", _("Full Name")),
@@ -189,6 +190,12 @@ class FieldManager(models.Manager):
     def visible(self):
         return self.filter(visible=True)
 
+    """
+    Get all Auto-fields. (As of writing, this is only GroupSubscriptionAuto)
+    """
+    def auto_fields(self):
+        return self.filter(visible=False, field_function="GroupSubscriptionAuto")
+
 
 class Field(OrderingBaseModel):
     """
@@ -259,11 +266,11 @@ class Field(OrderingBaseModel):
         return choices
 
     def execute_function(self, entry, value, user=None):
-        if self.field_function == "GroupSubscription":
+        if self.field_function in ["GroupSubscription", "GroupSubscriptionAuto"]:
             if value:
                 for val in self.choices.split(','):
                     group, created = Group.objects.get_or_create(name=val.strip())
-                    if user:
+                    if user and group.allow_self_add:
                         try:
                             group_membership = GroupMembership.objects.get(group=group, member=user)
                         except GroupMembership.DoesNotExist:
@@ -414,7 +421,7 @@ class FormEntry(models.Model):
         return description
 
     def set_group_subscribers(self):
-        for entry in self.fields.filter(field__field_function="GroupSubscription"):
+        for entry in self.fields.filter(field__field_function__in=["GroupSubscription", "GroupSubscriptionAuto"]):
             entry.field.execute_function(self, entry.value, user=self.creator)
 
 
