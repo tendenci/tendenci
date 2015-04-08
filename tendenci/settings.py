@@ -433,6 +433,7 @@ HAYSTACK_INDEX_LIMITS = {
 }
 
 INDEX_FILE_CONTENT = False
+HAYSTACK_SIGNAL_PROCESSOR = 'tendenci.apps.search.signals.QueuedSignalProcessor'
 
 # --------------------------------------#
 # PAYMENT GATEWAYS
