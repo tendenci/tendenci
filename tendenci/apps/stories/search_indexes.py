@@ -24,6 +24,7 @@ class StoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
     # RSS fields
     can_syndicate = indexes.BooleanField(null=True)
 
+    @classmethod
     def get_model(self):
         return Story
 

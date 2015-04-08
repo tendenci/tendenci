@@ -18,6 +18,7 @@ class ProfileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     last_name = indexes.CharField(faceted=True)
     hide_in_search = indexes.BooleanField(model_attr='hide_in_search', null=True)
 
+    @classmethod
     def get_model(self):
         return Profile
 

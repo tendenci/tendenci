@@ -14,6 +14,7 @@ class BoxIndex(TendenciBaseSearchIndex, indexes.Indexable):
     # RSS fields
     order = indexes.DateTimeField()
 
+    @classmethod
     def get_model(self):
         return Box
 

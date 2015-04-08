@@ -15,6 +15,7 @@ class PhotoSetIndex(TendenciBaseSearchIndex, indexes.Indexable):
     can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
+    @classmethod
     def get_model(self):
         return PhotoSet
 
@@ -45,6 +46,7 @@ class PhotoIndex(TendenciBaseSearchIndex, indexes.Indexable):
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
+    @classmethod
     def get_model(self):
         return Image
 

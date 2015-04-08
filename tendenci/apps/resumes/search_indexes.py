@@ -14,6 +14,7 @@ class ResumeIndex(TendenciBaseSearchIndex, indexes.Indexable):
     expiration_dt = indexes.DateTimeField(model_attr='expiration_dt', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate', null=True)
 
+    @classmethod
     def get_model(self):
         return Resume
 

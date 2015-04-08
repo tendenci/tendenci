@@ -12,6 +12,7 @@ class GroupIndex(TendenciBaseSearchIndex, indexes.Indexable):
     description = indexes.CharField(model_attr='description')
     show_as_option = indexes.BooleanField(model_attr='show_as_option', null=True)
 
+    @classmethod
     def get_model(self):
         return Group
 

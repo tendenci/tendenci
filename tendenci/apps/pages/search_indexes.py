@@ -21,6 +21,7 @@ class PageIndex(TendenciBaseSearchIndex, indexes.Indexable):
     can_syndicate = indexes.BooleanField(null=True)
     order = indexes.DateTimeField()
 
+    @classmethod
     def get_model(self):
         return Page
 

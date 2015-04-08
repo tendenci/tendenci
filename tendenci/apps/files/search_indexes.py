@@ -21,6 +21,7 @@ class FileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     category = indexes.CharField()
     sub_category = indexes.CharField()
 
+    @classmethod
     def get_model(self):
         return File
 

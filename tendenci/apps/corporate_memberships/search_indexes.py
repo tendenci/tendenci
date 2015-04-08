@@ -16,6 +16,7 @@ class CorpMembershipIndex(TendenciBaseSearchIndex, indexes.Indexable):
     is_renewal_pending = indexes.IntegerField(model_attr='is_renewal_pending', default=0)
     is_pending = indexes.IntegerField(model_attr='is_pending', default=0)
 
+    @classmethod
     def get_model(self):
         return CorpMembership
 

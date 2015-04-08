@@ -31,7 +31,7 @@ class JobIndex(TendenciBaseSearchIndex, indexes.Indexable):
     owner = indexes.CharField(model_attr='owner', null=True)
     owner_username = indexes.CharField(model_attr='owner_username', null=True)
 
-
+    @classmethod
     def get_model(self):
         return Job
 

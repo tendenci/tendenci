@@ -10,6 +10,7 @@ class LocationIndex(TendenciBaseSearchIndex, indexes.Indexable):
     description = indexes.CharField(model_attr='description')
     location_name = indexes.CharField(model_attr='location_name')
 
+    @classmethod
     def get_model(self):
         return Location
 

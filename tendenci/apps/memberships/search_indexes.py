@@ -12,6 +12,7 @@ class MembershipDefaultIndex(TendenciBaseSearchIndex, indexes.Indexable):
     last_name = indexes.CharField(null=True)
     email = indexes.CharField(null=True)
 
+    @classmethod
     def get_model(self):
         return MembershipDefault
 

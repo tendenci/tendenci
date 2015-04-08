@@ -7,6 +7,7 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 class ContactIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
+    @classmethod
     def get_model(self):
         return Contact
 

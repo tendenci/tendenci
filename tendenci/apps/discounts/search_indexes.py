@@ -17,6 +17,7 @@ class DiscountIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
     num_of_uses = indexes.IntegerField()
 
+    @classmethod
     def get_model(self):
         return Discount
 

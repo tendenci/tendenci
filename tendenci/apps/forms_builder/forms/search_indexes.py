@@ -10,6 +10,7 @@ class FormsIndex(TendenciBaseSearchIndex, indexes.Indexable):
     intro = indexes.CharField(model_attr='intro')
     response = indexes.CharField(model_attr='response')
 
+    @classmethod
     def get_model(self):
         return Form
 
