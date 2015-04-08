@@ -80,7 +80,7 @@
                     <li>{{ article.obj_status }}</li>
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right t-meta-edit-links">
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=articles&object_id={{ article.pk }}">{% trans "Eventlogs" %}</a></li>
                     <li><a class="t-meta-versions-link" href="{% url 'versions' article.content_type_id article.pk %}">{% trans "Versions" %}</a></li>
                     <li><a class="t-meta-edit-link" href="{% url 'article.edit' article.pk %}">{% trans "Edit" %}</a></li>

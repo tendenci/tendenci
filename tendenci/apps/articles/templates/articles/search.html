@@ -9,8 +9,7 @@
 
 {% block title %}
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
-    {% else %}
+        {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} List{% endblocktrans %} {% else %}
         {% trans "Articles List" %}
     {% endif %} - {{ block.super }}
 {% endblock %}
@@ -27,7 +26,7 @@
     <h1>
         {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
         {% if MODULE_ARTICLES_LABEL_PLURAL %}
-            {% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+            {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} List{% endblocktrans %}
         {% else %}
             {% trans "Articles List" %}
         {% endif %}
@@ -38,8 +37,8 @@
 
     <h4 class="capitalize">
         {% if MODULE_ARTICLES_LABEL_PLURAL %}
-            <em>{% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL count=paginator.count %}
-                {{ count }} {{ label_plural }} Found
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} {{ MODULE_ARTICLES_LABEL_PLURAL }} Found
             {% endblocktrans %}</em>
         {% else %}
             <em>{% blocktrans with count=paginator.count %}
@@ -55,8 +54,8 @@
             {% if user.profile.is_superuser %}
                 <p><a href="{% url 'article.add' %}">
                     {% if MODULE_ARTICLES_LABEL %}
-                        {% blocktrans with label=MODULE_ARTICLES_LABEL %}
-                            Add a New {{ label }}
+                        {% blocktrans  %}
+                            Add a New {{ MODULE_ARTICLES_LABEL }}
                         {% endblocktrans %}
                     {% else %}
                         {% trans "Add a New Article" %}

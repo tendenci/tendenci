@@ -20,7 +20,7 @@ class Discount(TendenciBaseModel):
     apps = models.ManyToManyField(ContentType, verbose_name=_('Applications'), help_text=_('Select the applications that can use this discount.'))
     never_expires = models.BooleanField(_('Never Expires'), help_text=_('Check this box to make the discount code never expire.'), default=False)
     value = models.DecimalField(_('Discount Value'), max_digits=10, decimal_places=2, help_text=_('Enter discount value as a positive number.'))
-    cap = models.IntegerField(_('Maximum Uses'), help_text=_('Enter 0 for unlimited discount code uses.'))
+    cap = models.IntegerField(_('Maximum Uses'), help_text=_('Enter 0 for unlimited discount code uses.'), default=0)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

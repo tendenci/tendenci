@@ -1,19 +1,21 @@
-{% extends 'top_menu/admin_top-new.html' %}
+{% extends "top_menu/admin_top-new.html" %}
 {% load i18n %}
-{% load static from staticfiles %}
+{% load staticfiles %}
 {% load discount_tags %}
 
 
 {% block current_app %}
-<li class="dropdown">
-    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-        <img class="nav-icon" src="{% static 'famfamfam/icons/money_delete.png' %}"/>{% firstof MODULE_DISCOUNTS_LABEL trans "Discounts" %}
-    </a>
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+            <img class="nav-icon" src="{% static 'famfamfam/icons/money_delete.png' %}">
+            <span class="nav-label">{% firstof MODULE_DISCOUNTS_LABEL_PLURAL trans "Discounts" %}</span>
+            <span class="caret"></span>
+        {% endspaceless %}</a>
 
-    {% if discount %}
-        {% discount_current_app request.user discount %}
-    {% else %}
-        {% discount_current_app request.user %}
-    {% endif %}
-</li>
+        {% if discount %}
+            {% discount_current_app request.user discount %}
+        {% else %}
+            {% discount_current_app request.user %}
+        {% endif %}
+    </li>
 {% endblock %}

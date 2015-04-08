@@ -1,0 +1,106 @@
+{% extends "discounts/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load discount_tags %}
+{% load tagging_tags %}
+
+
+{% block title %}{{ discount.discount_code }}{% endblock %}
+
+{% block content %}
+    {% tags_for_object discount as tags %}
+
+    <article id="t-discounts-discount-{{ discount.pk }}" class="t-discounts-discount">
+        <div class="page-header">
+            <h1><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></h1>
+        </div>
+
+        <div class="t-discounts-discount-body">
+            <section class="t-discounts-discount-info">
+                <h2>
+                    {% if MODULE_DISCOUNTS_LABEL %}
+                        {% blocktrans %}
+                            {{ MODULE_DISCOUNTS_LABEL }} Information
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Discount Information" %}
+                    {% endif %}
+                </h2>
+
+                <ul class="list-unstyled t-jobs-job-information-list">
+                    <li>
+                        <strong>{% trans "Discount Code:" %}</strong> <span>{{ discount.discount_code }}</span>
+                    </li>
+
+                    <li>
+                        <strong>{% trans "Discount Value:" %}</strong> <span>{{ discount.value|format_currency }}</span>
+                    </li>
+
+                    <li>
+                        <strong>{% trans "Number of Uses:" %}</strong> <span>{% blocktrans with num=discount.num_of_uses cap=discount.cap %}{{ num }} out of {{ cap }} max{% endblocktrans %}</span>
+                    </li>
+
+                    <li>
+                        <strong>{% trans "Duration:" %}</strong> <span>{% blocktrans with s=discount.start_dt e=discount.end_dt %}{{ s }} to {{ e }}{% endblocktrans %}</span>
+                    </li>
+
+                    <li>
+                        <strong>{% trans "Still Available:" %}</strong> <span>{% if discount.available %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</span>
+                    </li>
+                </ul>
+            </section>
+
+            {% if discount.discountuse_set.count > 0 %}
+                <section class="t-discounts-discount-usage-report">
+                    <h2>
+                        {% if MODULE_DISCOUNTS_LABEL %}
+                            {% blocktrans %}
+                                {{ MODULE_DISCOUNTS_LABEL }} Usage Report
+                            {% endblocktrans %}
+                        {% else %}
+                            {% trans "Discount Usage Report" %}
+                        {% endif %}
+                    </h2>
+
+                    <table class="table table-striped t-discounts-discount-usage-report-table">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Username" %}</th>
+                                <th>{% trans "Url" %}</th>
+                                <th>{% trans "Invoice Url" %}</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for reg in registrant_list %}
+                                <tr>
+                                    <td>
+                                        {% if reg.user %}
+                                            <a href="{% url 'profile' reg.user.username %}">{{ reg.user.username }}</a>
+                                        {% elif reg.get_name %}
+                                            {{ reg.get_name }}
+                                        {% else %}
+                                            {% trans "Guest" %}
+                                        {% endif %}
+                                    </td>
+                                    <td><a href="{{ reg.get_absolute_url }}">{% trans "Registration URL" %}</a></td>
+                                    <td><a href="{{ reg.registration.invoice.get_absolute_url }}">{% trans "Invoice URL" %}</a></td>
+                                </tr>
+                            {% endfor %}
+
+                            {% for mem in membership_list %}
+                                <tr>
+                                    <td><a href="{% url 'profile' mem.user.username %}">{{ mem.user.username }}</a></td>
+                                    <td><a href="{{ mem.get_absolute_url }}">{% trans "Membership URL" %}</a></td>
+                                    <td><a href="{{ mem.get_invoice.get_absolute_url }}">{% trans "Invoice URL" %}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            {% endif %}
+        </div>
+    </article>
+{% endblock %}

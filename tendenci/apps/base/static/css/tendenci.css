@@ -141,19 +141,21 @@ html {
     margin-left: -15px;
 }
 
-.t-meta-editor-bar .t-meta-edit-links > li a {
+.t-meta-editor-bar .t-meta-options-links > li a {
     color: #0066cc;
 }
 
-.t-meta-editor-bar .t-meta-edit-links > li a:hover {
+.t-meta-editor-bar .t-meta-options-links > li a:hover {
     color: #002266;
 }
 
-.t-meta-editor-bar .t-meta-edit-links > li .t-meta-delete-link {
+.t-meta-editor-bar .t-meta-options-links > li .t-meta-delete-link,
+.t-meta-editor-td .t-meta-options-links > li .t-meta-delete-link {
     color: #cc0000;
 }
 
-.t-meta-editor-bar .t-meta-edit-links > li .t-meta-delete-link:hover {
+.t-meta-editor-bar .t-meta-options-links > li .t-meta-delete-link:hover,
+.t-meta-editor-td .t-meta-options-links > li .t-meta-delete-link:hover {
     color: #880000;
 }
 

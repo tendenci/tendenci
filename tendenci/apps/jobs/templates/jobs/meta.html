@@ -58,7 +58,7 @@
                     <li>{{ job.obj_status }}</li>
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right t-meta-edit-links">
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ job.pk }}&source={{ job.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
                     <li><a class="t-meta-edit-link" href="{% url 'job.edit' job.pk %}">{% trans "Edit" %}</a></li>
                     <li class="dropup">
