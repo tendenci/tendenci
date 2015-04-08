@@ -1,56 +1,51 @@
 {% extends "emails/base.html" %}
-{% load bootstrap_pagination_tags %}
-{% load email_tags %}
-{% load perm_tags %}
-{% load base_filters %}
 {% load i18n %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load search_tags %}
 
-{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/emails.css">
+{% block title %}
+    {% if MODULE_EMAILS_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_EMAILS_LABEL_PLURAL }} List{% endblocktrans %} {% else %}
+        {% trans "Emails List" %}
+    {% endif %} - {{ block.super }}
 {% endblock %}
 
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-<div class="t">
-    <h1>{% trans "Emails Search" %}</h1>
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_EMAILS_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_EMAILS_LABEL_PLURAL }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Emails List" %}
+        {% endif %}
+    </h1>
 
     {% autopaginate emails 10 %}
 
-    <div class="emails-wrap">
-    {% for email in emails %}
-        {% has_perm user emails.view_email email as can_view %}
-        {% if can_view %}
-        <div class="email-wrap">
-                <div class="quick-options">
-                     {% emails_options email %}
-                </div>
-
-            <h2><a href="{% url "email.view" email.pk %}">{% blocktrans with s=email.subject %}{{ s }}{% endblocktrans %}</a></h2>
-            <div class="clear-right"></div>
-
-            <div class="content-type">{% blocktrans with email.content_type as emailco %}Content type: {{ emailco }}{% endblocktrans %}</div>
-            <div class="content">{% blocktrans with b=email.body|striptags|truncatewords:30 %}{{ b }}{% endblocktrans %}</div>
-            <div class="meta">
-                <div class="submitted">{% blocktrans with email.create_dt|date:"long" as emailcr and email.creator as email_creator %}Created on {{ emailcr }} by {{ email_creator }}{% endblocktrans %}</div>
-            </div>
-
-            <!-- delete-email form -->
-            <form name="email-delete" method="POST" action="{% url "email.delete" email.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-
-        </div>
+    <h4 class="capitalize">
+        {% if MODULE_EMAILS_LABEL_PLURAL %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} {{ MODULE_EMAILS_LABEL_PLURAL }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Emails Found
+            {% endblocktrans %}</em>
         {% endif %}
-    {% empty %}
-        <div>{% trans "0 Results Found" %}</div>
-    {% endfor %}
-    </div>
+    </h4>
+
+    <section>
+        {% for email in emails %}
+            {% search_result email %}
+        {% endfor %}
+    </section>
 
     {% paginate %}
-</div>
 {% endblock %}
 
 {% block extra_body %}

@@ -7,6 +7,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
 from tendenci.apps.site_settings.utils import get_setting
 
+
 class Email(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     priority = models.IntegerField(default=0)
@@ -29,7 +30,7 @@ class Email(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("email", [self.pk])
+        return ("email.view", [self.pk])
 
     def __unicode__(self):
         return self.subject
@@ -84,7 +85,7 @@ class Email(TendenciBaseModel):
                 msg.attachments = attachments
             msg.send(fail_silently=fail_silently)
 
-    def save(self, user=None):
+    def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = uuid.uuid1()
             if user and not user.is_anonymous():
@@ -94,7 +95,7 @@ class Email(TendenciBaseModel):
             self.owner=user
             self.owner_username=user.username
 
-        super(Email, self).save()
+        super(Email, self).save(*args, **kwargs)
 
     # if this email allows view by user2_compare
     def allow_view_by(self, user2_compare):

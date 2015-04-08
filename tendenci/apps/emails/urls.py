@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url, include
 
+
 urlpatterns = patterns('tendenci.apps.emails.views',
     url(r'^$', 'search', name="emails"),
     url(r'^search/$', 'search', name="email.search"),
