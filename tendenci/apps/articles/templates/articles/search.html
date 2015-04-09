@@ -9,7 +9,8 @@
 
 {% block title %}
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
-        {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} List{% endblocktrans %} {% else %}
+        {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} List{% endblocktrans %}
+    {% else %}
         {% trans "Articles List" %}
     {% endif %} - {{ block.super }}
 {% endblock %}
@@ -36,15 +37,21 @@
     {% article_search %}
 
     <h4 class="capitalize">
-        {% if MODULE_ARTICLES_LABEL_PLURAL %}
-            <em>{% blocktrans with count=paginator.count %}
-                {{ count }} {{ MODULE_ARTICLES_LABEL_PLURAL }} Found
-            {% endblocktrans %}</em>
-        {% else %}
-            <em>{% blocktrans with count=paginator.count %}
-                {{ count }} Articles Found
-            {% endblocktrans %}</em>
-        {% endif %}
+        <em>
+            {% if MODULE_ARTICLES_LABEL_PLURAL and MODULE_ARTICLES_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_ARTICLES_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_ARTICLES_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Article Found
+                {% plural %}
+                    {{ obj_count }} Articles Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
     </h4>
 
     <section>
@@ -54,7 +61,7 @@
             {% if user.profile.is_superuser %}
                 <p><a href="{% url 'article.add' %}">
                     {% if MODULE_ARTICLES_LABEL %}
-                        {% blocktrans  %}
+                        {% blocktrans %}
                             Add a New {{ MODULE_ARTICLES_LABEL }}
                         {% endblocktrans %}
                     {% else %}

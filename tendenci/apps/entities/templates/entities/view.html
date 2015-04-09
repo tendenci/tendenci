@@ -8,11 +8,6 @@
 
 {% block title %}{{ block.super }}{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/entities.css">
-{% endblock %}
-
 {% block content %}
 {% tags_for_object entity as tags %}
 

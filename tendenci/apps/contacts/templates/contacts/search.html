@@ -32,27 +32,26 @@
     {% autopaginate contacts 10 %}
 
     <h4 class="capitalize">
-        <em>{% spaceless %}
+        <em>
             {% if MODULE_CONTACTS_LABEL_PLURAL and MODULE_CONTACTS_LABEL %}
-                {% blocktrans count contacts_count=paginator.count %}
-                    {{ contacts_count }} {{ MODULE_CONTACTS_LABEL }} Found
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_CONTACTS_LABEL }} Found
                 {% plural %}
-                    {{ contacts_count }} {{ MODULE_CONTACTS_LABEL_PLURAL }} Found
+                    {{ obj_count }} {{ MODULE_CONTACTS_LABEL_PLURAL }} Found
                 {% endblocktrans %}
             {% else %}
-                {% blocktrans count contacts_count=paginator.count %}
-                    {{ contacts_count }} Contact Found
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Contact Found
                 {% plural %}
-                    {{ contacts_count }} Contacts Found
+                    {{ obj_count }} Contacts Found
                 {% endblocktrans %}
             {% endif %}
-        {% endspaceless %}</em>
+        </em>
     </h4>
 
     <section>
         {% for contact in contacts %}
             {% search_result contact %}
-        {% empty %}
         {% endfor %}
     <section>
 

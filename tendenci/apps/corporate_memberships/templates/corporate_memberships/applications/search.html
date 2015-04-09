@@ -57,21 +57,21 @@
     {% autopaginate corp_members 10 %}
 
     <h4 class="capitalize">
-        <em>{% spaceless %}
+        <em>
             {% if MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL and MODULE_CORPORATEMEMBERSHIPS_LABEL %}
-                {% blocktrans count corporatememberiships_count=paginator.count %}
-                    {{ corporatememberiships_count }} {{ MODULE_CORPORATEMEMBERSHIPS_LABEL }} Found
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_CORPORATEMEMBERSHIPS_LABEL }} Found
                 {% plural %}
-                    {{ corporatememberiships_count }} {{ MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL }} Found
+                    {{ obj_count }} {{ MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL }} Found
                 {% endblocktrans %}
             {% else %}
-                {% blocktrans count corporatememberiships_count=paginator.count %}
-                    {{ corporatememberiships_count }} Corporate Membership Found
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Corporate Membership Found
                 {% plural %}
-                    {{ corporatememberiships_count }} Corporate Memberships Found
+                    {{ obj_count }} Corporate Memberships Found
                 {% endblocktrans %}
             {% endif %}
-        {% endspaceless %}</em>
+        </em>
     </h4>
 
     <section>
@@ -79,7 +79,6 @@
             {% with corp_memb|get_object as corporate_membership %}
                 {% include "corporate_memberships/applications/search-result.html" %}
             {% endwith %}
-        {% empty %}
         {% endfor %}
     </section>
 
