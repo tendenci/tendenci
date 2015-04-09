@@ -58,7 +58,7 @@ FROM corporate_memberships_corpprofile cp
 INNER JOIN corporate_memberships_corpmembership cm
 ON cp.id=cm.corp_profile_id
 WHERE cm.status_detail <> 'archive'"""),
-('All Users in a Specific Group (replace <YOUR GROUP ID> with Uour Group id)',
+('All Users in a Specific Group (replace <YOUR GROUP ID> with your group id)',
  """SELECT ug.name, u.first_name, u.last_name, u.email, u.username, u.is_staff,
      u.is_superuser, p.salutation, p.company, p.position_title, p.phone,
      p.address, p.address2, p.member_number, p.city, p.state, p.zipcode,
