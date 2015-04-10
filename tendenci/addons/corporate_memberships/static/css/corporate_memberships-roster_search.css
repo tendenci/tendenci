@@ -17,12 +17,14 @@
 .clear-left{
     clear: left;
 }
-.roster-search-wrap .member-line{
+.roster-search-wrap .member-wrap{
     border: 1px solid #ccc;
-    margin-botton: 1em;
-    padding: 5px;
-
+    margin-bottom: 1em;
 }
+.roster-search-wrap .member-line{
+	padding: 5px;
+}
+
 .roster-search-wrap .avatar, .roster-search-wrap .member-details, .roster-search-wrap .member-left, .roster-search-wrap .member-right{
     float: left;
 
@@ -34,7 +36,4 @@
 .member-line .member-name{
     font-size: 1.2em;
     margin-bottom: 5px;
-}
-.member-line{
-    margin-bottom: 1em;
 }

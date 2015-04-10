@@ -120,6 +120,7 @@
 
     {% for membership in memberships %}
         {% with membership|get_object as membership %}
+        <div class="member-wrap">
             <div class="member-line {% if membership.status_detail != 'active' %}inactive{% endif %}">
                 <div class="avatar">{% avatar membership.user 56 %}</div>
                 <div class="member-details">
@@ -157,8 +158,11 @@
                     </div>
 
                 </div>
-
-            <div class="clear-left"></div>
+            <div class="clear-left"></div>            
+            </div>
+            {% if request.user.is_superuser %}
+             {% include 'corporate_memberships/member_meta.html' %}
+             {% endif %}
             </div>
 
         {% endwith %}

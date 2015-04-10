@@ -1,0 +1,20 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load i18n %}
+<div class="meta">
+	<div class="meta-left">
+    </div>
+	<div class="meta-right">
+    </div>
+</div>
+
+{% if request.user.is_superuser %}
+<div class="editor-bar">
+    <div class="edit-links">
+    <ul>
+        <li><a class="edit-link" href="{% url admin:memberships_membershipdefault_change membership.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="edit-link" href="{% url admin:memberships_membershipdefault_delete membership.pk %}">{% trans "Delete" %}</a></li>       
+    </ul>
+    </div>
+</div>
+{% endif %}
