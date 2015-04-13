@@ -5,8 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
-from django.conf import settings
+from django.http import HttpResponse
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.decorators import is_enabled
@@ -19,8 +18,6 @@ from tendenci.apps.events.models import Registration
 from tendenci.apps.memberships.models import MembershipSet
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.forms import DiscountForm, DiscountCodeForm, DiscountHandlingForm
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.redirects.models import Redirect
 
 
 @is_enabled('discounts')
@@ -46,7 +43,7 @@ def search(request, template_name="discounts/search.html"):
 
 @is_enabled('discounts')
 @login_required
-def detail(request, id, template_name="discounts/detail.html"):
+def detail(request, id, template_name="discounts/view.html"):
     discount = get_object_or_404(Discount, id=id)
 
     if not has_perm(request.user, 'discounts.view_discount', discount):

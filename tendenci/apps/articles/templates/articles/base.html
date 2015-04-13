@@ -4,35 +4,35 @@
 
 
 {% block title %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblocktrans %}: {% endif %}
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
-            {{ label_plural }} for {{ display_name }} in {{ location }}
+        {% blocktrans %}
+            {{ MODULE_ARTICLES_LABEL_PLURAL }} for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
         {% endblocktrans %}
     {% else %}
-        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
-            Articles for {{ display_name }} in {{ location }}
+        {% blocktrans %}
+            Articles for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
         {% endblocktrans %}
     {% endif %}
 {% endblock %}
 
 {% block meta_description %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblocktrans %}: {% endif %}
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_ARTICLES_LABEL_PLURAL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
-            {{ label_plural }} and White Papers for {{ display_name }} in {{ location }}
+        {% blocktrans %}
+            {{ MODULE_ARTICLES_LABEL_PLURAL }} and White Papers for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
         {% endblocktrans %}
     {% else %}
-        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
-            Articles and White Papers for {{ display_name }} in {{ location }}
+        {% blocktrans %}
+            Articles and White Papers for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
         {% endblocktrans %}
     {% endif %}
 {% endblock %}
 
 {% block meta_keywords %}
     {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %},
-    {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %}
-        {{ location }}, {{ display_name }}, white papers, {{ keys }}
+    {% blocktrans %}
+        {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{ SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{ SITE_GLOBAL_SITESECONDARYKEYWORDS }}
     {% endblocktrans %}
 {% endblock %}
 

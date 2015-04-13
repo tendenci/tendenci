@@ -26,7 +26,7 @@
                     <li>{{ corporate_membership.obj_status }}</li>
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right t-meta-edit-links">
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
                     {% if user.profile.is_superuser %}
                         <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ corporate_membership.pk }}&source={{ corporate_membership.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
                     {% endif %}

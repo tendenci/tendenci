@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url
 
+
 urlpatterns = patterns('tendenci.apps.discounts.views',
     url(r'^$', 'search', name="discounts"),
     url(r'^add/$', 'add', name="discount.add"),

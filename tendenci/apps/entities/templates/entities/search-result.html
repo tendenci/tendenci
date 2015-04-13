@@ -1,0 +1,25 @@
+{% load i18n %}
+{% load entity_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user entities.view_entity entity as can_view %}
+
+{% if can_view %}
+    <article class="panel panel-info t-entities-search-result t-search-result">
+        <div class="panel-heading t-search-result-heading">
+            <h1 class="panel-title">
+                <a href="{{ entity.get_absolute_url }}">{% blocktrans with n=entity.entity_name|striptags|truncatewords:20|safe %}{{ n }}{% endblocktrans %}</a>
+            </h1>
+        </div>
+
+        <div class="panel-footer t-search-result-footer">
+            {% include "entities/meta.html" %}
+        </div>
+
+        <!-- delete-entity form -->
+        <form name="entity-delete" method="POST" action="{% url "entity.delete" entity.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+        </form>
+    </article>
+{% endif %}

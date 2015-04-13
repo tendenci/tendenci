@@ -95,7 +95,7 @@
                     <li>{{ page.obj_status }}</li>
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right t-meta-edit-links">
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
                     <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=pages&object_id={{ page.pk }}">{% trans "Eventlogs" %}</a></li>
                     <li><a class="t-meta-versions-link" href="{% url 'versions' page.content_type_id page.pk %}">{% trans "Versions" %}</a></li>
                     <li><a class="t-meta-edit-link" href="{% url 'page.edit' page.pk %}">{% trans "Edit" %}</a></li>

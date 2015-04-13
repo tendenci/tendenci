@@ -9,7 +9,7 @@
 
 {% block title %}
     {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_DIRECTORIES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+        {% blocktrans %}{{ MODULE_DIRECTORIES_LABEL_PLURAL }} List{% endblocktrans %}
     {% else %}
         {% trans "Directories List" %}
     {% endif %} - {{ block.super }}
@@ -26,7 +26,7 @@
     <h1>
         {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
         {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
-            {% blocktrans with label_plural=MODULE_DIRECTORIES_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+            {% blocktrans %}{{ MODULE_DIRECTORIES_LABEL_PLURAL }} List{% endblocktrans %}
         {% else %}
             {% trans "Directories List" %}
         {% endif %}
@@ -36,15 +36,21 @@
     {% directory_search %}
 
     <h4 class="capitalize">
-        {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
-            <em>{% blocktrans with label_plural=MODULE_DIRECTORIES_LABEL_PLURAL count=paginator.count %}
-                {{ count }} {{ label_plural }} Found
-            {% endblocktrans %}</em>
-        {% else %}
-            <em>{% blocktrans with count=paginator.count %}
-                {{ count }} Directories Found
-            {% endblocktrans %}</em>
-        {% endif %}
+        <em>
+            {% if MODULE_DIRECTORIES_LABEL_PLURAL and MODULE_DIRECTORIES_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_DIRECTORIES_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Directory Found
+                {% plural %}
+                    {{ obj_count }} Directories Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
     </h4>
 
     <section>
@@ -54,8 +60,8 @@
             {% if user.profile.is_superuser %}
                 <p><a href="{% url 'directory.add' %}">
                     {% if MODULE_DIRECTORIES_LABEL %}
-                        {% blocktrans with label=MODULE_DIRECTORIES_LABEL %}
-                            Add a New {{ label }}
+                        {% blocktrans %}
+                            Add a New {{ MODULE_DIRECTORIES_LABEL }}
                         {% endblocktrans %}
                     {% else %}
                         {% trans "Add a New Directory" %}

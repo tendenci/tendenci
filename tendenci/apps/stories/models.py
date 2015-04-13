@@ -43,8 +43,12 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     expires = models.BooleanField(_('Expires'), default=True)
-    image = models.ForeignKey('StoryPhoto',
-        help_text=_('Photo that represents this story.'), null=True, default=None)
+    image = models.ForeignKey(
+        'StoryPhoto',
+        help_text=_('Photo that represents this story.'),
+        null=True,
+        default=None
+    )
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, default='')
 

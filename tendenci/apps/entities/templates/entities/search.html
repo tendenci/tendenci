@@ -1,70 +1,61 @@
 {% extends "entities/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
 {% load bootstrap_pagination_tags %}
 {% load entity_tags %}
-{% load base_tags %}
-{% load base_filters %}
 {% load perm_tags %}
-{% load i18n %}
+{% load search_tags %}
 
-{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/entities.css">
+{% block title %}
+    {% if MODULE_ENTITIES_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_ENTITIES_LABEL_PLURAL }} List{% endblocktrans %}
+    {% else %}
+        {% trans "Entities List" %}
+    {% endif %} - {{ block.super }}
 {% endblock %}
 
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-<div class="t">
-    <h1>{{ MODULE_ENTITIES_LABEL }} {% trans "Search" %}</h1>
-    {% entity_search %}
-    {% autopaginate entities 10 %}
-    <div class="entities-wrap">
-    {% for entity in entities %}
-
-        {% has_perm user entities.view_entity entity as can_view %}
-        {% if can_view %}
-
-        <div class="entity-wrap-search">
-            <div class="options">
-
-                <div class="dropdown-options">
-                    <div><a href="javascript:;">{% trans "More " %}<span>&#9660;</span></a></div>
-                    <ul>
-                        <li>{% trans "Review Reports" %}</li>
-                        <li>{% trans "Optimize Meta Tags" %}</li>
-                        <li>{% trans "Attach Files" %}</li>
-                        <li>{% trans "View Revisions" %}</li>
-                        <li>{% trans "Delete" %}</li>
-                    </ul>
-                </div>
-
-                <div class="quick-options">
-                    {% entity_options request.user entity %}
-                </div>
-            </div>
-
-
-            <h2><a href="{% url "entity" entity.pk %}">
-            {% blocktrans with n=entity.entity_name|striptags|truncatewords:20|safe %}{{ n }}{% endblocktrans %}</a></h2>
-            <div class="meta">
-                <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as submit_date and entity.creator as entity_creator %} Submitted on {{ submit_date }} by {{ entity_creator }}{% endblocktrans %}</div>
-            </div>
-
-            <!-- delete-entity form -->
-            <form name="entity-delete" method="POST" action="{% url "entity.delete" entity.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-
-        </div>
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_ENTITIES_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_ENTITIES_LABEL_PLURAL }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Entities List" %}
         {% endif %}
+    </h1>
 
-    {% empty %}
-        <div>{% trans "0 Results Found" %}</div>
-    {% endfor %}
-    </div>
+    {% autopaginate entities 10 %}
+    {% entity_search %}
+
+    <h4 class="capitalize">
+        <em>
+            {% if MODULE_ENTITIES_LABEL_PLURAL and MODULE_ENTITIES_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_ENTITIES_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_ENTITIES_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Entity Found
+                {% plural %}
+                    {{ obj_count }} Entities Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
+    </h4>
+
+    <section>
+        {% for entity in entities %}
+            {% search_result entity %}
+        {% endfor %}
+    </section>
 
     {% paginate %}
-</div>
 {% endblock %}
 
 {% block extra_body %}

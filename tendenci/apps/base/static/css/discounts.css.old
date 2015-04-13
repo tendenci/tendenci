@@ -1,0 +1,164 @@
+.t {
+	width: 90%;
+}
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t .discounts-wrap {
+	margin-bottom: 20px;
+}
+
+.t .discounts-wrap .discount-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .discounts-wrap .discount-wrap h2 {
+	width: 85%;
+}
+.t .discounts-wrap .discount-wrap .content {
+	margin-bottom: 10px;
+}
+.t .discounts-wrap .discount-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+
+/* discount Search table 
+ ------------------------- */
+
+table#discounts { width: 100%}
+#discounts td {text-align: center; padding: 3px 0;}
+#discounts td.left {text-align: left;}
+
+
+/* discount View
+ ------------------------- */
+
+/* form */
+div.forms div.form-field div.id_discount_code .field input {
+	width: 70%;
+}
+
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.t .add-discount-link{
+	margin-bottom: 20px;
+}
+
+/* discounts Search */
+.search-text {padding-left:10px;}
+.search-text h2 small {font-weight: normal; font-size: 12px;}
+
+/* discounts Meta */
+.expires-inactive,
+.expires-active {font-weight: bold; padding-left: 10px; border-left: 2px solid #666;}
+
+.expires-active {color: green;}
+.expires-inactive {color: red;}
+
+
+.t ul.discounts-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.discounts-nav li {
+	display: inline;
+}
+
+/* form */
+div.forms div.form-field div.id_start_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+
+div.forms div.form-field div.id_start_dt .field input#id_start_dt_1 {
+	width: 80px;
+}
+
+div.forms div.form-field div.id_end_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+
+div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
+	width: 80px;
+}
+
+div.content table td{
+    padding-bottom: 5px;
+}
+
+div.content table td.label{
+    width: 140px;
+}
+
+/* usage report */
+div.usage-report table {
+    width: 100%;
+}
+div.usage-report table th {
+    background: #EEE;
+}
