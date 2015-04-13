@@ -43,7 +43,7 @@ class Entity(models.Model):
     objects = EntityManager()
 
     class Meta:
-        permissions = (("view_entity",_("Can view entity")),)
+        permissions = (("view_entity", _("Can view entity")),)
         verbose_name_plural = _("entities")
         ordering = ("entity_name",)
 

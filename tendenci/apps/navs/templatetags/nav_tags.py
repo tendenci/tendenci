@@ -8,6 +8,7 @@ from tendenci.apps.navs.utils import get_nav, cache_nav
 
 register = Library()
 
+
 @register.inclusion_tag("navs/options.html", takes_context=True)
 def nav_options(context, user, nav):
     context.update({
@@ -15,6 +16,7 @@ def nav_options(context, user, nav):
         "user": user
     })
     return context
+
 
 @register.inclusion_tag("navs/nav.html", takes_context=True)
 def nav_nav(context, user, nav=None):
@@ -24,9 +26,11 @@ def nav_nav(context, user, nav=None):
     })
     return context
 
+
 @register.inclusion_tag("navs/search-form.html", takes_context=True)
 def nav_search(context):
     return context
+
 
 @register.inclusion_tag("navs/navigation.html", takes_context=True)
 def navigation(context, nav_id):
@@ -62,6 +66,7 @@ def navigation(context, nav_id):
     })
     return context
 
+
 @register.inclusion_tag("navs/load_nav.html", takes_context=True)
 def load_nav(context, nav_id, show_title=False, is_bootstrap=False):
     """
@@ -82,6 +87,7 @@ def load_nav(context, nav_id, show_title=False, is_bootstrap=False):
     })
     return context
 
+
 @register.inclusion_tag("navs/navigation_item.html", takes_context=True)
 def nav_item(context, item, is_bootstrap=False):
     """
@@ -92,6 +98,7 @@ def nav_item(context, item, is_bootstrap=False):
         "is_bootstrap": is_bootstrap
     })
     return context
+
 
 @register.inclusion_tag("navs/cached_nav.html", takes_context=True)
 def nav(context, nav_id, show_title=False):
