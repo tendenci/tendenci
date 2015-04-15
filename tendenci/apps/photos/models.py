@@ -1027,3 +1027,4 @@ def add_methods(sender, instance, signal, *args, **kwargs):
 
 # connect the add_accessor_methods function to the post_init signal
 post_init.connect(add_methods, sender=ImageModel)
+post_init.connect(add_methods, sender=Image)
