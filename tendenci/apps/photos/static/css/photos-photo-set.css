@@ -133,3 +133,6 @@ td.image a {
     text-decoration: none;
     display: block;
 }
+.visibility .t-perm, .visibility .t-status{
+	display: inline;
+}
