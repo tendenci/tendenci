@@ -34,6 +34,9 @@
     .roster-search-form .form-field{
         margin: 3px 0;
     }
+    .btn-renew{
+    	margin-left: 3em;
+    }
 
 </style>
 {% endblock %}
@@ -117,7 +120,7 @@
 {% autopaginate memberships 10 %}
 <div class="roster-search-wrap">
 <span><em>{{ paginator.count }} {% if active_only %}{% trans "Active" %}{% endif %} {% trans "Member" %}{{ paginator.count|pluralize }} {% trans "Found" %}</em></span>
-
+{% with corp_membership.is_expired as corp_is_expired %}
     {% for membership in memberships %}
         {% with membership|get_object as membership %}
         <div class="member-wrap">
@@ -148,13 +151,24 @@
                         </div>
                         <div class="status-{{ membership.status_detail }}">
                             {% trans "Status: " %}
-                            {% if request.user.profile.is_superuser %}
+                            {% if request.user.is_superuser %}
                             <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.status_detail|capfirst }}</a>
 
                             {% else %}
                             {{ membership.status_detail|capfirst }}
                             {% endif %}
-                        </div>
+                            
+                            {% if membership.is_expired and not corp_is_expired %}
+	                            {% if membership.can_renew %}
+	                             <a href="{% url membership_default.renew_under_corp corp_membership.id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}" class="btn btn-default btn-renew">{% trans 'Renew' %}</a>
+	                            {% else %}
+		                            {% if request.user.is_superuser %}
+		                            <a href="{% url membership_default.renew_under_corp corp_membership.id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}" class="btn btn-default btn-renew">{% trans 'Admin: Renew' %}</a>
+		                            {% endif %}
+	                            {% endif %}
+                            {% endif %}
+                        
+                        </div>          
                     </div>
 
                 </div>
@@ -169,6 +183,7 @@
     {% empty %}
         <div>{% trans "0 Results Found" %}</div>
     {% endfor %}
+{% endwith %}
 </div>
 
 
