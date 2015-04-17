@@ -1355,7 +1355,6 @@ def copy_event(event, user, reuse_rel=False):
             use_custom_reg_form = old_regconf.use_custom_reg_form,
             reg_form = old_regconf.reg_form,
             bind_reg_form_to_conf_only = old_regconf.bind_reg_form_to_conf_only,
-            email = old_regconf.email,
             send_reminder = old_regconf.send_reminder,
             reminder_days = old_regconf.reminder_days,
             registration_email_text = old_regconf.registration_email_text,
