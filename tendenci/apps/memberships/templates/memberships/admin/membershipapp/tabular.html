@@ -205,7 +205,7 @@
                url: "{% url "memberships.get_app_fields" %}",
                success: function(status_data){
                   disabledFields = status_data;
-                   var objs = $.parseJSON(status_data);
+                   var objs = status_data;
                     for (var i=0; i<objs.length; i++){
                        addMappedField(objs[i]);
 
