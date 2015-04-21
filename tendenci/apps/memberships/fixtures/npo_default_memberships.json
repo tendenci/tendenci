@@ -1968,12 +1968,512 @@
             "membership_app": 1,
             "required": false,
             "label": "Gender",
-            "position": 90,
+            "position": 91,
             "content_type": null,
             "help_text": "",
             "choices": "",
             "field_name": "sex",
             "display": true
+        }
+    },
+    {
+        "pk": 92,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 6",
+            "position": 92,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud6",
+            "display": false
+        }
+    },
+    {
+        "pk": 93,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 7",
+            "position": 93,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud7",
+            "display": false
+        }
+    },
+    {
+        "pk": 94,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 8",
+            "position": 94,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud8",
+            "display": false
+        }
+    },
+    {
+        "pk": 95,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 9",
+            "position": 95,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud9",
+            "display": false
+        }
+    },
+    {
+        "pk": 96,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 10",
+            "position": 96,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud10",
+            "display": false
+        }
+    },
+    {
+        "pk": 97,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 11",
+            "position": 97,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud11",
+            "display": false
+        }
+    },
+    {
+        "pk": 98,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 12",
+            "position": 98,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud12",
+            "display": false
+        }
+    },
+    {
+        "pk": 99,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 13",
+            "position": 99,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud13",
+            "display": false
+        }
+    },
+    {
+        "pk": 100,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 14",
+            "position": 100,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud14",
+            "display": false
+        }
+    },
+    {
+        "pk": 101,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 15",
+            "position": 101,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud15",
+            "display": false
+        }
+    },
+    {
+        "pk": 102,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 16",
+            "position": 102,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud16",
+            "display": false
+        }
+    },
+    {
+        "pk": 103,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 17",
+            "position": 103,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud17",
+            "display": false
+        }
+    },
+    {
+        "pk": 104,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 18",
+            "position": 104,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud18",
+            "display": false
+        }
+    },
+    {
+        "pk": 105,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 19",
+            "position": 105,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud19",
+            "display": false
+        }
+    },
+    {
+        "pk": 106,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 20",
+            "position": 106,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud20",
+            "display": false
+        }
+    },
+    {
+        "pk": 107,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 21",
+            "position": 107,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud21",
+            "display": false
+        }
+    },
+    {
+        "pk": 108,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 22",
+            "position": 108,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud22",
+            "display": false
+        }
+    },
+    {
+        "pk": 109,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 23",
+            "position": 109,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud23",
+            "display": false
+        }
+    },
+    {
+        "pk": 110,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 24",
+            "position": 110,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud24",
+            "display": false
+        }
+    },
+    {
+        "pk": 111,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 25",
+            "position": 111,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud25",
+            "display": false
+        }
+    },
+    {
+        "pk": 112,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 26",
+            "position": 112,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud26",
+            "display": false
+        }
+    },
+    {
+        "pk": 113,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 27",
+            "position": 113,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud27",
+            "display": false
+        }
+    },
+    {
+        "pk": 92,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 28",
+            "position": 92,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud28",
+            "display": false
+        }
+    },
+    {
+        "pk": 114,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 29",
+            "position": 114,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud29",
+            "display": false
+        }
+    },
+    {
+        "pk": 115,
+        "model": "memberships.membershipappfield",
+        "fields": {
+            "default_value": "",
+            "field_type": "",
+            "admin_only": false,
+            "description": "",
+            "css_class": "",
+            "membership_app": 1,
+            "required": false,
+            "label": "User Defined 30",
+            "position": 115,
+            "content_type": null,
+            "help_text": "",
+            "choices": "",
+            "field_name": "ud30",
+            "display": false
         }
     }
 ]
