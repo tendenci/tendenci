@@ -18,20 +18,13 @@
 {% block content %}
     <div class="t">
         <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
-
-        <div class="clear-right"></div>
-
-        {% if group %}
-            <div class="quick-options">
-                {% user_group_options request.user group %}
-            </div>
-        {% endif %}
-
-        <form action="." method="post">{% csrf_token %}
-            <div class="forms">
-                {{ form|styled_form }}
-                <input type="submit" value="{% trans 'Save' %}" />
-            </div>
-        </form>
+		<div>
+	        <form id="t-user_group-form" class="form-horizontal"  action="." method="post">{% csrf_token %}
+	            <div class="forms">
+	                {{ form|styled_form }}
+	                <input type="submit" value="{% trans 'Save' %}" />
+	            </div>
+	        </form>
+        </div>
     </div>
 {% endblock %}
