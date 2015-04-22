@@ -120,7 +120,7 @@
                             </div>
                         {% endfor %}
                     {% elif field|is_radioselect %}
-                        {% for choice in field.field.choices %}
+                        {% for choice in field.field.widget.choices %}
                             <div class="radio">
                                 <label>
                                     <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
