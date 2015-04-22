@@ -520,6 +520,8 @@ def assign_fields(form, app_field_objs):
                 field.widget.attrs.update({'size': size})
             elif obj.field_stype == 'datetimeinput':
                 field.widget.attrs.update({'class': 'datepicker'})
+            elif 'selectdatewidget' in obj.field_stype:
+                field.widget.years = range(1920, THIS_YEAR + 10)
             label_type = []
             if obj.field_name not in ['payment_method',
                                       'membership_type',
