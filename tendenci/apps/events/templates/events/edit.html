@@ -42,7 +42,7 @@
     </div>
 
     <div class="event-wrap">
-        <form id="event-form" action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+        <form id="event-form" class="form-horizontal"  action="." method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ multi_event_forms|styled_multi_forms }}
             {% if label != "pricing" %}
