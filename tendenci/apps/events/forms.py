@@ -1110,7 +1110,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2)
-    dates = Reg8nDtField(label=_("Start and End"), required=False)
+    #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.MultipleChoiceField(required=False, choices=[])
     payment_required = forms.ChoiceField(required=False,
                             choices=((None,_('Inherit from event')),('True',_('Yes')),('False',_('No'))))
@@ -1123,7 +1123,7 @@ class Reg8nConfPricingForm(BetterModelForm):
         kwargs.update({'initial': {'start_dt':datetime.now(),
                         'end_dt': (datetime(datetime.now().year, datetime.now().month, datetime.now().day, 17, 0, 0)
                         + timedelta(days=29))}})
-        self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
+        #self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
 
         # skip the field if there is no custom registration forms
@@ -1209,7 +1209,9 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'price',
                     'include_tax',
                     'tax_rate',
-                    'dates',
+                    'start_dt',
+                    'end_dt',
+                    #'dates',
                     'reg_form',
                     'groups',
                     'allow_anonymous',
