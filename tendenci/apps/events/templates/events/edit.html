@@ -19,23 +19,23 @@
     <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %}{% trans " Edit" %}</h1>
 
     <div class="event-tabs">
-        <ul class="tabs">
-            <li class="dropdown {% if label == 'overview' %}active{% endif %}">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="dropdown {% if label == 'overview' %}active{% endif %}">
                 <a href="{% url "event.edit" event.pk %}">{% trans "Overview" %}</a>
             </li>
-            <li class="dropdown {% if label == 'location' %}active{% endif %}">
+            <li role="presentation"  class="dropdown {% if label == 'location' %}active{% endif %}">
                 <a href="{% url "event.location_edit" event.pk %}">{% trans "Location" %}</a>
             </li>
-            <li class="dropdown {% if label == 'organizer' %}active{% endif %}">
+            <li role="presentation"  class="dropdown {% if label == 'organizer' %}active{% endif %}">
                 <a href="{% url "event.organizer_edit" event.pk %}">{% trans "Organizer" %}</a>
             </li>
-            <li class="dropdown {% if label == 'speakers' %}active{% endif %}">
+            <li role="presentation"  class="dropdown {% if label == 'speakers' %}active{% endif %}">
                 <a href="{% url "event.speaker_edit" event.pk %}">{% trans "Speaker(s)" %}</a>
             </li>
-            <li class="dropdown {% if label == 'regconf' %}active{% endif %}">
+            <li role="presentation"  class="dropdown {% if label == 'regconf' %}active{% endif %}">
                 <a href="{% url "event.regconf_edit" event.pk %}">{% trans "Registration" %}</a>
             </li>
-            <li class="dropdown {% if label == 'pricing' %}active{% endif %}">
+            <li role="presentation"  class="dropdown {% if label == 'pricing' %}active{% endif %}">
                 <a href="{% url "event.pricing_edit" event.pk %}">{% trans "Pricing(s)" %}</a>
             </li>
         </ul>

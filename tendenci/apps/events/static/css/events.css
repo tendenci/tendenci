@@ -1024,6 +1024,10 @@ table.pricing-list .price-disabled label {
     z-index: 0;
 }
 
+.t .event-tabs .nav-tabs{
+	margin-bottom: 15px;
+}
+
 .t .fb-like-event {
     margin: 0px;
 }
