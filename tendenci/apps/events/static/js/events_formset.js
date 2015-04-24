@@ -46,11 +46,13 @@ function update_form_fields(form, original_form, form_number, total, remove) {
 
     // update the label attribute wrapped on each form input
     form.find('label').each(function() {
-        var newFor = $(this).attr('for').replace(search, replacement);
-        var id = newFor;
-        if (newFor.indexOf('id_') < 0)
-            id = 'id_' + newFor;
-        $(this).attr('for', id);
+    	if ($(this).attr('for')){
+	        var newFor = $(this).attr('for').replace(search, replacement);
+	        var id = newFor;
+	        if (newFor.indexOf('id_') < 0)
+	            id = 'id_' + newFor;
+	        $(this).attr('for', id);
+       }
     });
 
 
