@@ -55,6 +55,21 @@
     width: 200px;
     margin:2px;
 }
+#registrant-forms .form-label{
+	display: inline;
+	inline-height: 1;
+	padding: 0.5em;
+}
+#registrant-forms .form-field{
+	margin-top: 0.7em;
+}
+
+#registrant-forms .required{
+	font-weight: bold;
+}
+#registrant-forms .error{
+	color:#FF0000;
+}
 #registrant-forms{
     width: 70%;
 }

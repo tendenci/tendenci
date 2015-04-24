@@ -231,14 +231,17 @@
                                     <div class="checkbox-input">
                                         <div class="error">{{ field.errors }}</div>
                                         <div class="field">{{ field }}</div>
-                                        <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                                        <div class="form-label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                                         {% if field.help_text %}
                                         <div class="help-text">{{ field.help_text }}</div>
                                         {% endif %}
                                     </div>
                                     <div style="clear: both"><!-- IE7 --></div>
                                     {% else%}
-                                    <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                                    {% if field.errors %}
+                                    <div class="error">{{ field.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                                     <div class="field">{{ field }}</div>
                                     {% endif %}
                                     {% if field.help_text %}
