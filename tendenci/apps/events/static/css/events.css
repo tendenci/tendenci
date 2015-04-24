@@ -42,6 +42,12 @@
     padding: 5px;
     white-space: nowrap;
 }
+
+.event-wrap .t-meta-data{
+	padding: 10px 10px 5px;
+	border-top: 1px solid #ccc;
+}
+
 .t .event-search-wrap .options {
     text-align: right;
     position: absolute;
@@ -112,7 +118,7 @@ form.search-form select {
  
  .t div.event-desc {
     margin-bottom: 10px;
-    border-bottom: 1px solid #CCC;
+    /* border-bottom: 1px solid #CCC; */
 }
 
 .spots-status{

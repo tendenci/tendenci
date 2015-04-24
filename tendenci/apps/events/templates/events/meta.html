@@ -11,91 +11,90 @@
 {% has_perm user events.add_event as can_add %}
 {% tags_for_object event as tags %}
 
-<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
-    <div class="meta-left">
+<ul class="list-unstyled t-meta-data">
 
         {% if tags %}
-        <div class="tags"><strong>{% trans "Tags:" %} </strong>
+        <li><strong>{% trans "Tags:" %} </strong>
             {% for tag in tags %}
-                <a href="{% url "event.search" %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
+                <a class="label label-default" href="{% url "event.search" %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
-        </div>
+        </li>
         {% endif %}
 
         {% if user.is_authenticated %}
-        <div class="submitted">{% blocktrans with event.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+        <li class="submitted">{% blocktrans with event.create_dt|date:"long" as create_date %}Created on {{ create_date }}
             by:{% endblocktrans %} <a href="{{ event.creator.get_absolute_url }}">
             {% if event.creator.first_name %}{{ event.creator.first_name }} {{ event.creator.last_name }}
             {% else %}
-            {{ event.creator }}
+            {% if event.creator %}{{ event.creator }}{% else %}{% trans "Unknown" %}{% endif %}
             {% endif %}</a>
-        </div>
+        </li>
 
-        <div class="submitted">{% blocktrans with event.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+        <li class="submitted">{% blocktrans with event.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
             by:{% endblocktrans %} <a href="{{ event.owner.get_absolute_url }}">
             {% if event.owner.first_name %}{{ event.owner.first_name }} {{ event.owner.last_name }}
             {% else %}
-            {{ event.owner }}
+             {% if event.owner %}{{ event.owner }}{% else %}{% trans "Unknown" %}{% endif %}
             {% endif %}</a>
-        </div>
+        </li>
         {% endif %}
 
-    </div>
-
     {% if user.is_authenticated %}
-        <div class="meta-right">
-            <a class="print-link" href="{% url "event.print_view" event.pk %}">{% trans "Print" %}</a>
-        </div>
+        <li>
+            <a class="t-meta-print-link" href="{% url "event.print_view" event.pk %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a>
+        </li>
     {% else %}
-        <div>
-            <a class="print-link" href="{% url "event.print_view" event.pk %}">{% trans "Print" %}</a>
-        </div>
+        <li>
+            <a class="t-meta-print-link" href="{% url "event.print_view" event.pk %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a>
+        </li>
     {% endif %}
 
     <div style="clear:both;"></div>
-</div>
+</ul>
 {% if can_edit %}
-<div class="editor-bar">
+<nav class="navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <ul class="nav navbar-nav t-meta-perm-status">
+			        <li>{{ event.obj_perms }}</li>
+			        <li>{{ event.obj_status }}</li>
+   			  </ul>
+    
+		     <ul class="nav navbar-nav navbar-right t-meta-options-links">
+		        <li><a class="t-meta-eventlog-link" href="{% url "event_log.search" %}?object_id={{ event.pk }}&source={{ event.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+		        <li><a class="t-meta-edit-link" href="{% url "event.edit" event.pk %}">{% trans "Edit" %}</a></li>
+		        <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
 
-    <div class="perm-status">
-    <ul>
-        <li>{{ event.obj_perms }}</li>
-        <li>{{ event.obj_status }}</li>
-    </ul>
-    </div>
-    <div class="edit-links">
-    <ul>
-        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ event.pk }}&source={{ event.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-        <li><a class="edit-link" href="{% url "event.edit" event.pk %}">{% trans "Edit" %}</a></li>
-        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
-        <div class="options-list">
-            <ul>
-            {% if can_delete %}
-                <li>
-                    <a class="delete" href="{% url "event.delete" event.pk %}">{% trans "Delete" %}</a>
-                </li>
-            {% endif %}
-            {% if can_delete and event.is_recurring_event %}
-                <li>
-                    <a class="delete" href="{% url "event.delete_recurring" event.pk %}">{% trans "Delete Recurring Events" %}</a>
-                </li>
-            {% endif %}
-            {% if request.user.is_superuser and event.status == 0 %}
-                <li><a href="{% url "event.approve" event.pk %}">{% trans "Approve" %}</a></li>
-            {% endif %}
-            {% if can_add %}
-                <li>
-                    <a class="option-link copy" href="{% url "event.copy" event.pk %}">{% trans "Copy" %}</a>
-                </li>
-            {% endif %}
-            <li><a href="{% url "event.ics_single" event.pk %}">{% trans "Export" %}</a></li>
-            <li><a href="{% url "event.edit.meta" event.pk %}">{% trans "Edit Meta" %}</a></li>
-            <li><a href="{% url "event.registrant.search" event.pk %}">{% trans "Registrants" %}</a></li>
-            <li><a href="{% url "event.registrant.roster" event.pk %}">{% trans "Registrant Roster" %}</a></li>
-            </ul>
-        </div>
-        </li>
-    </ul>
-    </div>
-</div>
+                        <ul class="dropdown-menu" role="menu">
+			            {% if can_delete %}
+			                <li>
+			                    <a class="t-meta-delete-link" href="{% url "event.delete" event.pk %}">{% trans "Delete" %}</a>
+			                </li>
+			            {% endif %}
+			            {% if can_delete and event.is_recurring_event %}
+			                <li>
+			                    <a class="t-meta-delete-link" href="{% url "event.delete_recurring" event.pk %}">{% trans "Delete Recurring Events" %}</a>
+			                </li>
+			            {% endif %}
+			            {% if request.user.is_superuser and event.status == 0 %}
+			                <li><a href="{% url "event.approve" event.pk %}">{% trans "Approve" %}</a></li>
+			            {% endif %}
+			            {% if can_add %}
+			                <li>
+			                    <a class="t-meta-option-link copy" href="{% url "event.copy" event.pk %}">{% trans "Copy" %}</a>
+			                </li>
+			            {% endif %}
+			            <li><a href="{% url "event.ics_single" event.pk %}">{% trans "Export" %}</a></li>
+			            <li><a href="{% url "event.edit.meta" event.pk %}">{% trans "Edit Meta" %}</a></li>
+			            <li><a href="{% url "event.registrant.search" event.pk %}">{% trans "Registrants" %}</a></li>
+			            <li><a href="{% url "event.registrant.roster" event.pk %}">{% trans "Registrant Roster" %}</a></li>
+			     	</ul>
+		        </li>
+		    </ul>
+   		 </div>
+   	</div>
+</nav>
 {% endif %}

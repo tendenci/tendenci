@@ -100,7 +100,9 @@
 
     </div>
     <div style="clear:both;"></div>
+    <div class="t-search-result-footer">
     {% include 'events/meta.html' %}
+    </div>
     <!-- delete-event form -->
     <form name="event-delete" method="POST" action="{% url "event.delete" event.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
