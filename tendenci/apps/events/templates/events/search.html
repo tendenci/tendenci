@@ -22,11 +22,11 @@
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL_PLURAL trans 'Events' %}</h1>
 
     <div class="event-tabs">
-        <ul class="tabs">
-            <li class="dropdown {% if not past %}active{% endif %}">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="dropdown {% if not past %}active{% endif %}">
                 <a href="{% url "event.search" %}?{{ request.GET.urlencode }}">{% trans "Ongoing Events" %}</a>
             </li>
-            <li class="dropdown {% if past %}active{% endif %}">
+            <li role="presentation" class="dropdown {% if past %}active{% endif %}">
                 <a href="{% url "event.past_search" %}?{{ request.GET.urlencode }}">{% trans "Past Events" %}</a>
             </li>
         </ul>
