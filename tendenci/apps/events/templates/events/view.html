@@ -44,18 +44,18 @@
             <span itemprop="name">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span></h1>
 
             <div class="event-tabs">
-                <ul class="tabs">
-                    <li class="dropdown active">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" class="dropdown active">
                         <a id="event_detail_tab" href="#">{% trans "Event Details" %}</a>
                     </li>
-                    <li class="dropdown">
+                    <li role="presentation" class="dropdown">
                         <a id="event_files_tab" href="#">{% trans "Event Files" %}</a>
                     </li>
                 </ul>
             </div>
 
             <!-- Event Details -->
-            <div class="details-wrap">
+            <div class="details-wrap clearfix">
                 <!-- event description -->
                 <div class="content">
                     {% if event.image %}
@@ -278,7 +278,7 @@
             $('.files-wrap').hide();
             $('a#event_detail_tab').click(function(){
                 var _this = $(this);
-                $('.event-wrap .tabs .dropdown').removeClass('active');
+                $('.event-wrap .event-tabs .dropdown').removeClass('active');
                 _this.parent().addClass('active');
                 $('.details-wrap').show();
                 $('.files-wrap').hide();
@@ -286,7 +286,7 @@
             });
             $('a#event_files_tab').click(function(){
                 var _this = $(this);
-                $('.event-wrap .tabs .dropdown').removeClass('active');
+               $('.event-wrap .event-tabs .dropdown').removeClass('active');
                 _this.parent().addClass('active');
                 $('.details-wrap').hide();
                 $('.files-wrap').show();
