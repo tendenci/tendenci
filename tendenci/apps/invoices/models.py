@@ -194,7 +194,7 @@ class Invoice(models.Model):
         """
         self.guid = self.guid or uuid.uuid1().get_hex()
 
-        if hasattr(user, 'pk'):
+        if hasattr(user, 'pk') and not user.is_anonymous():
             self.set_creator(user)
             self.set_owner(user)
 
