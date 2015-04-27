@@ -34,11 +34,11 @@
                  <tr>
                    <td colspan="6" ><table width="550" border="0">
                        <tr >
-                         <td class="label"><label for="id_salutation">{% trans 'Salutation'%}{%if from.salutation.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>                               &nbsp;</td>
+                         <td class="profile-label"><label for="id_salutation">{% trans 'Salutation'%}{%if from.salutation.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>                               &nbsp;</td>
                          <td>{{ form.salutation }}</td>
                        </tr>
                        <tr >
-                         <td width="120" class="label" ><label for="id_first_name">{% trans 'First Name'%}{{form.first_name.required}}</label> <span class="body-copy-alerts">*</span></td>
+                         <td width="120" class="profile-label" ><label for="id_first_name">{% trans 'First Name'%}{{form.first_name.required}}</label> <span class="body-copy-alerts">*</span></td>
                          <td>
                           {% if form.first_name.errors %}
                 {{ form.first_name.errors }}
@@ -47,12 +47,12 @@
             </td>
                        </tr>
                        <tr >
-                         <td class="label"><label for="id_initials">{% trans 'Initial'%}{%if form.initial.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+                         <td class="profile-label"><label for="id_initials">{% trans 'Initial'%}{%if form.initial.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
                          </span></td>
                          <td>{{ form.initials }}</td>
                        </tr>
                        <tr >
-                         <td width="120" class="label"><label for="id_last_name">{% trans 'Last Name'%}</label> <span class="body-copy-alerts">*</span></td>
+                         <td width="120" class="profile-label"><label for="id_last_name">{% trans 'Last Name'%}</label> <span class="body-copy-alerts">*</span></td>
                          <td>
                           {% if form.last_name.errors %}
                 {{ form.last_name.errors }}
@@ -61,7 +61,7 @@
                          </td>
                        </tr>
                        <tr >
-                         <td class="label"><label for="id_position_title">{% trans 'Position Title'%}{%if form.position_title.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                         <td class="profile-label"><label for="id_position_title">{% trans 'Position Title'%}{%if form.position_title.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                          <td>
               {% if form.position_title.errors %}
                 {{ form.position_title.errors }}
@@ -71,7 +71,7 @@
                        </tr>
 
                        <tr >
-                         <td class="label"><label for="id_display_name">{% trans 'Display Name'%}{%if form.display_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                         <td class="profile-label"><label for="id_display_name">{% trans 'Display Name'%}{%if form.display_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                          <td>
                          {% if form.display_name.errors %}
                 {{ form.display_name.errors }}
@@ -98,14 +98,14 @@
                       <tr>
                         <td colspan="6" ><table width="550" border="0">
                             <tr >
-                              <td  class="label"><label for="id_phone">{% trans 'Phone'%}{%if form.phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td  class="profile-label"><label for="id_phone">{% trans 'Phone'%}{%if form.phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="180">
                                {% if form.phone.errors %}
                   {{ form.phone.errors }}
                 {% endif %}
                               {{ form.phone }}
                               </td>
-                              <td  class="label"><label for="id_phone2">{% trans 'Phone2'%}{%if form.phone2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %} </td>
+                              <td  class="profile-label"><label for="id_phone2">{% trans 'Phone2'%}{%if form.phone2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %} </td>
                               <td width="186">
                               {% if form.phone2.errors %}
                   {{ form.phone2.errors }}
@@ -114,14 +114,14 @@
                               </td>
                             </tr>
                             <tr >
-                              <td  class="label"><label for="id_home_phone">{% trans 'Home Phone'%}{%if form.home_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td  class="profile-label"><label for="id_home_phone">{% trans 'Home Phone'%}{%if form.home_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="180">
                                {% if form.home_phone.errors %}
                   {{ form.home_phone.errors }}
                 {% endif %}
                               {{ form.home_phone }}
                               </td>
-                              <td  class="label"><label for="id_work_phone">{% trans 'Work Phone'%}{%if form.work_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %} </label></td>
+                              <td  class="profile-label"><label for="id_work_phone">{% trans 'Work Phone'%}{%if form.work_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %} </label></td>
                               <td width="186">
                               {% if form.work_phone.errors %}
                   {{ form.work_phone.errors }}
@@ -130,14 +130,14 @@
                               </td>
                             </tr>
                             <tr >
-                              <td  class="label"><label for="id_fax">{% trans 'Fax'%}{%if form.fax.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td  class="profile-label"><label for="id_fax">{% trans 'Fax'%}{%if form.fax.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="180">
                                {% if form.fax.errors %}
                   {{ form.fax.errors }}
                 {% endif %}
                               {{ form.fax }}
                               </td>
-                              <td  class="label"><label for="id_mobile_phone">{% trans 'Mobile Phone'%}{%if form.mobile_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td  class="profile-label"><label for="id_mobile_phone">{% trans 'Mobile Phone'%}{%if form.mobile_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td width="186">
                               {% if form.mobile_phone.errors %}
                   {{ form.mobile_phone.errors }}
@@ -162,7 +162,7 @@
                       <tr>
                         <td colspan="6" ><table width="550" border="0">
                             <tr >
-                              <td width="120" class="label"><label for="id_email">{% trans 'Email'%} <span class="body-copy-alerts">*</span></label>
+                              <td width="120" class="profile-label"><label for="id_email">{% trans 'Email'%} <span class="body-copy-alerts">*</span></label>
                               </td>
                               <td>
                               {% if form.email.errors %}
@@ -174,7 +174,7 @@
                                 </td>
                             </tr>
                             <tr >
-                              <td width="120" class="label"><label for="id_email2">{% trans 'Secondary Email'%}{%if form.email2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td width="120" class="profile-label"><label for="id_email2">{% trans 'Secondary Email'%}{%if form.email2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td>
                 {% if form.email2.errors %}
                   {{ form.email2.errors }}
@@ -183,7 +183,7 @@
               </td>
                             </tr>
                             <tr >
-                              <td width="120" class="label"><label for="id_url">{% trans 'Web Site'%}{%if form.url.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                              <td width="120" class="profile-label"><label for="id_url">{% trans 'Web Site'%}{%if form.url.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                               <td>
                 {% if form.url.errors %}
                   {{ form.url.errors }}
@@ -209,7 +209,7 @@
                        <tr>
                         <td colspan="6" ><table width="550" border="0">
                         <tr >
-                          <td class="label"><label for="id_company">{% trans 'Company'%}{%if form.company.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                          <td class="profile-label"><label for="id_company">{% trans 'Company'%}{%if form.company.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td>
               {% if form.company.errors %}
                   {{ form.company.errors }}
@@ -219,7 +219,7 @@
               </td>
                         </tr>
                          <tr >
-                          <td class="label"><label for="id_department">{% trans 'Department'%}{%if form.department.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                          <td class="profile-label"><label for="id_department">{% trans 'Department'%}{%if form.department.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td>
               {% if form.department.errors %}
                   {{ form.department.errors }}
@@ -242,7 +242,7 @@
                   <tr>
                     <td colspan="6" ><table width="550" border="0">
                         <tr >
-                          <td width="120" class="label"><label for="id_mailing_name">{% trans 'Mailing Name'%}{%if form.mailing_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                          <td width="120" class="profile-label"><label for="id_mailing_name">{% trans 'Mailing Name'%}{%if form.mailing_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                           <td colspan="2" nowrap>(&quot;Mr &amp; Mrs ?&quot;)
 
               {% if form.mailing_name.errors %}
@@ -252,7 +252,7 @@
             </td>
                         </tr>
                         <tr >
-                          <td class="label"><label for="id_address">{% trans 'Address'%}{%if form.address.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                          <td class="profile-label"><label for="id_address">{% trans 'Address'%}{%if form.address.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td colspan="2">
                           {% if form.address.errors %}
                   {{ form.address.errors }}
@@ -261,7 +261,7 @@
                           <span class="copyright">{% trans '(line 1)'%}</span></td>
                         </tr>
                         <tr >
-                          <td class="label"><label for="id_address2">{% trans 'Address Line 2'%}</label></td>
+                          <td class="profile-label"><label for="id_address2">{% trans 'Address Line 2'%}</label></td>
                           <td colspan="2">
                           {% if form.address2.errors %}
                   {{ form.address2.errors }}
@@ -288,7 +288,7 @@
               </td>
                         </tr>
                         <tr >
-                          <td class="label"><label for="id_country">{% trans 'Country'%}{%if form.country.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                          <td class="profile-label"><label for="id_country">{% trans 'Country'%}{%if form.country.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td colspan="2">
                             {% if form.country.errors %}
                   {{ form.country.errors }}
@@ -297,7 +297,7 @@
                            </td>
                         </tr>
                         <tr >
-                          <td class="label"><label for="id_hide_address">{% trans 'Hide address?'%} </td>
+                          <td class="profile-label"><label for="id_hide_address">{% trans 'Hide address?'%} </td>
                           <td colspan="2">{{form.hide_address}} {% trans "Yes" %}
                           </td>
                         </tr>
@@ -310,7 +310,7 @@
                   <tr class="alternate-address">
                     <td colspan="6" ><table width="550" border="0">
                         <tr >
-                          <td class="label"><label for="id_address_2">{% trans 'Address'%}{%if form.address_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                          <td class="profile-label"><label for="id_address_2">{% trans 'Address'%}{%if form.address_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td colspan="2">
                           {% if form.address_2.errors %}
                   {{ form.address_2.errors }}
@@ -319,7 +319,7 @@
                           <span class="copyright">{% trans '(line 1)'%}</span></td>
                         </tr>
                         <tr >
-                          <td class="label"><label for="id_address2_2">{% trans 'Address Line 2'%}</label></td>
+                          <td class="profile-label"><label for="id_address2_2">{% trans 'Address Line 2'%}</label></td>
                           <td colspan="2">
                           {% if form.address2_2.errors %}
                   {{ form.address2_2.errors }}
@@ -346,7 +346,7 @@
               </td>
                         </tr>
                         <tr >
-                          <td class="label"><label for="id_country_2">{% trans 'Country'%}{%if form.country_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
+                          <td class="profile-label"><label for="id_country_2">{% trans 'Country'%}{%if form.country_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label></td>
                           <td colspan="2">
                             {% if form.country_2.errors %}
                   {{ form.country_2.errors }}
@@ -363,7 +363,7 @@
                        <tr>
                         <td colspan="6" ><table width="550" border="0">
                            <tr >
-                             <td width="120" class="label"><label for="id_username">{% trans 'Username'%}</label> <span class="body-copy-alerts">*</span></td>
+                             <td width="120" class="profile-label"><label for="id_username">{% trans 'Username'%}</label> <span class="body-copy-alerts">*</span></td>
                              <td >
                 {% if form.username.errors %}
                   {{ form.username.errors }}
@@ -378,19 +378,19 @@
                           </tr>
 
                            <tr id="tr-password1">
-                             <td width="120" class="label"><label for="id_password1">{% trans 'Password'%}</label> <span class="body-copy-alerts">*</span></td>
+                             <td width="120" class="profile-label"><label for="id_password1">{% trans 'Password'%}</label> <span class="body-copy-alerts">*</span></td>
                              <td>
                              {{ form.password1 }}
               </td>
                            </tr>
                            <tr id="tr-password2">
-                             <td width="120" nowrap class="label"><label for="id_password2">{% trans 'Confirm Password'%}</label> <span class="body-copy-alerts">*</span></td>
+                             <td width="120" nowrap class="profile-label"><label for="id_password2">{% trans 'Confirm Password'%}</label> <span class="body-copy-alerts">*</span></td>
                              <td>{{ form.password2 }}</td>
                            </tr>
 
 
                            <tr >
-                             <td nowrap class="label"><label for="id_interactive">{% trans 'Interactive'%}</label> </td>
+                             <td nowrap class="profile-label"><label for="id_interactive">{% trans 'Interactive'%}</label> </td>
                              <td>
                              {% if form.interactive.errors %}
                   {{ form.interactive.errors }}
@@ -399,7 +399,7 @@
                              </td>
                            </tr>
                            <tr >
-                             <td nowrap class="label"><label for="id_status_detail">{% trans 'Status Detail'%}</label> </td>
+                             <td nowrap class="profile-label"><label for="id_status_detail">{% trans 'Status Detail'%}</label> </td>
                              <td>
                              {% if form.status_detail.errors %}
                   {{ form.status_detail.errors }}
@@ -420,7 +420,7 @@
                       <tr>
                         <td colspan="6" ><table width="550" border="0">
                             <tr >
-                              <td width="50" colspan="3" valign="top" class="label"><label for="id_notes">{% trans 'Notes'%}</label> </td>
+                              <td width="50" colspan="3" valign="top" class="profile-label"><label for="id_notes">{% trans 'Notes'%}</label> </td>
                               <td>{{ form.notes }} </td>
                             </tr>
 
@@ -437,7 +437,7 @@
                       <tr>
                         <td colspan="6" ><table width="550" border="0">
                             <tr >
-                              <td width="80" nowrap class="label"><label for="id_time_zone">{% trans 'Time Zone'%}</label> </td>
+                              <td width="80" nowrap class="profile-label"><label for="id_time_zone">{% trans 'Time Zone'%}</label> </td>
                               <td colspan="3" >
                                {% if form.time_zone.errors %}
                   {{ form.time_zone.errors }}
@@ -445,14 +445,14 @@
                               {{ form.time_zone }}</td>
                             </tr>
                             <tr >
-                              <td width="80" class="label"><label for="id_language">{% trans 'Language'%} </td>
+                              <td width="80" class="profile-label"><label for="id_language">{% trans 'Language'%} </td>
                               <td width="191" >
                               {% if form.language.errors %}
                   {{ form.language.errors }}
                 {% endif %}
                               {{ form.language }}
                               </td>
-                              <td width="58" class="label"><label for="id_sex">{% trans 'Gender'%}</label>
+                              <td width="58" class="profile-label"><label for="id_sex">{% trans 'Gender'%}</label>
                                </td>
                               <td width="203" >
                               {% if form.sex.errors %}
@@ -462,14 +462,14 @@
                               </td>
                             </tr>
                             <tr >
-                              <td  class="label"><label for="id_spouse">{% trans 'Spouse'%}{%if form.spouse.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td  class="profile-label"><label for="id_spouse">{% trans 'Spouse'%}{%if form.spouse.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td >
                               {% if form.spouse.errors %}
                   {{ form.spouse.errors }}
                 {% endif %}
                               {{ form.spouse }}
                               </td>
-                              <td class="label"><label for="id_dob">{% trans 'DOB'%}{%if form.dob.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td class="profile-label"><label for="id_dob">{% trans 'DOB'%}{%if form.dob.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td >
                               {{ form.dob }}
                               </td>
@@ -506,7 +506,7 @@
                                        <td colspan="4">&nbsp;</td>
                                      </tr>
                                      <tr >
-                                       <td width="130" class="label"><label for="id_security_level">{% trans 'Security Level'%}</label> </td>
+                                       <td width="130" class="profile-label"><label for="id_security_level">{% trans 'Security Level'%}</label> </td>
                                        <td colspan="3"><b>
                                          {{ form.security_level }}
                                        </b> </td>
