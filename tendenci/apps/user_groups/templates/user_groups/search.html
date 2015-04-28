@@ -14,26 +14,26 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/usergroups.css">
 {% endblock %}
 
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
 {% block content %}
-<div class="t">
- <div class="t-group">
- <div class="t-search">
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %}</h1>
 
     {% autopaginate groups 10 %}
     {% group_search %}
+    
+     <h4 class="capitalize">
     <span><em>{{ paginator.count }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %} {% trans "Found" %}</em></span>
-
-    <div class="groups-wrap">
+	</h4>
+	
+    <section>
     {% for group in groups %}
             {% search_result group %}
     {% empty %}
 
     {% endfor %}
-    </div>
+    </section>
 
     {% paginate %}
- </div>
-</div>
-</div>
+
 {% endblock %}

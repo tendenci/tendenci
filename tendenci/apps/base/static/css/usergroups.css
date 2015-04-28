@@ -309,3 +309,7 @@
 }
 
 .qmark { font-size: 20px;}
+
+.t-group-search-result .panel-heading a{
+	color: #fff;
+}
