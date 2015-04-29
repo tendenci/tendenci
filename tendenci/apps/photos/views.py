@@ -492,7 +492,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
                                        Q(description__icontains=query)|
                                        Q(tags__icontains=query))
 
-    photo_sets = photo_sets.order_by('-create_dt')
+    photo_sets = photo_sets.order_by('position', '-create_dt')
 
     EventLog.objects.log()
 

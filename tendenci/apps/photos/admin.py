@@ -10,8 +10,8 @@ from tendenci.apps.perms.utils import get_notice_recipients, update_perms_and_sa
 from tendenci.apps.notifications.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('name', 'update_dt', 'create_dt', 'tags',)
-
+    list_display = ('name', 'update_dt', 'create_dt', 'tags', 'position')
+    list_editable = ['tags', 'position']
     fieldsets = (
         (_('Photo Set Information'), {
                       'fields': ('name',
@@ -31,6 +31,18 @@ class PhotoAdmin(admin.ModelAdmin):
         )}),
     )
     form = PhotoSetAddForm
+    ordering = ['position']
+    
+    class Media:
+        css = {
+            "all": ("css/websymbols.css",)
+        }
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
+            'js/admin/admin-list-reorder.js',
+        )
+
 
     def log_deletion(self, request, object, object_repr):
         super(PhotoAdmin, self).log_deletion(request, object, object_repr)
