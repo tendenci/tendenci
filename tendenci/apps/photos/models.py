@@ -42,6 +42,7 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.photos.utils import EXIF
 from tendenci.apps.photos.utils.reflection import add_reflection
 from tendenci.apps.photos.utils.watermark import apply_watermark
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 # max_length setting for the ImageModel ImageField
 IMAGE_FIELD_MAX_LENGTH = getattr(settings, 'PHOTOS_IMAGE_FIELD_MAX_LENGTH', 100)
@@ -544,7 +545,7 @@ class PhotoSizeCache(object):
         self.sizes = {}
 
 
-class PhotoSet(TendenciBaseModel):
+class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     """
     A set of photos
     """
