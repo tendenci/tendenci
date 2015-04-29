@@ -10,7 +10,7 @@ from tendenci.apps.perms.utils import get_notice_recipients, update_perms_and_sa
 from tendenci.apps.notifications.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('update_dt', 'create_dt', 'tags',)
+    list_display = ('name', 'update_dt', 'create_dt', 'tags',)
 
     fieldsets = (
         (_('Photo Set Information'), {
