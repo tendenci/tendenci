@@ -23,7 +23,7 @@
 }
 
 #t-admin-megamenu .dropdown-toggle, #t-megamenu-logout{
-	color: #fff;
+	color: #d8d8d8;
 }
 #t-admin-megamenu .dropdown-toggle:hover, #t-megamenu-logout:hover{
 	color: #9d9d9d;
