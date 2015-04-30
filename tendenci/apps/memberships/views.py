@@ -115,7 +115,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     # get the membership app for this membership
     app = membership.app
-     # get the fields for the app
+    # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
     if not request.user.profile.is_superuser:
