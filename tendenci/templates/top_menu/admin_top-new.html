@@ -28,10 +28,12 @@
                 {% include 'top_menu/_profile_dropdown.html' %}
 
                 {% include 'top_menu/_community_dropdown.html' %}
-
+				
+				{% if USER_IS_SUPERUSER %}
                 {% include 'top_menu/_apps_dropdown.html' %}
-
+				
                 {% include 'top_menu/_support_dropdown.html' %}
+                {% endif %}
 
                 {# Block containing the navigation for the current app #}
                 {% block current_app %}{% endblock %}
