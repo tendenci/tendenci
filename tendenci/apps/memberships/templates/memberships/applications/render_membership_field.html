@@ -12,7 +12,7 @@
     {% if field %}
         <div class="form-group{% if field_obj.admin_only %} t-membershipapp-admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
             {% if field_obj.field_stype == 'checkboxinput' %}
-                <div class="checkbox-input">
+                <div class="col-sm-offset-2 col-sm-10">
                     {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
@@ -21,11 +21,10 @@
                         </div>
                     {% endif %}
 
-                    <div class="field">
-                        {{ field }}
-                        <span class="label label-default{% if field.field.required %} required{% endif %}">
-                            {{ field.label_tag }}
-                        </span>
+                    <div class="checkbox">
+                        <label {% if field.field.required %} class="required"{% endif %}>
+                            {{ field }} {{ field.label_tag }}
+                        </label>
                     </div>
 
                     {% if field.help_text %}
