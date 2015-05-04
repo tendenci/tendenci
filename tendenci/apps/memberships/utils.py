@@ -1770,3 +1770,20 @@ def get_membership_type_by_name(name):
     [memb_type] = MembershipType.objects.filter(name=name)[:1] or [None]
 
     return memb_type
+
+def get_membership_app(membership):
+    """
+    Get app for membership if it is not associated with any app.
+    """
+    if not membership.app:
+        apps = MembershipApp.objects.filter(status=True,
+                                            status_detail__in=['active', 'published'])
+        if membership.corporate_membership_id:
+            apps = apps.filter(use_for_corp=True)
+
+        for app in apps:
+            mt_ids = app.membership_types.all().values_list('id', flat=True)
+            if membership.membership_type_id in mt_ids:
+                return app
+                
+    return None 

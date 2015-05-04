@@ -60,7 +60,8 @@ from tendenci.apps.memberships.forms import (
     MembershipDefault2Form)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
-    get_membership_stats, ImportMembDefault)
+    get_membership_stats, ImportMembDefault,
+    get_membership_app)
 from tendenci.apps.base.forms import CaptchaForm
 
 
@@ -115,6 +116,11 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     # get the membership app for this membership
     app = membership.app
+    if not app:
+        app = get_membership_app(membership)
+        # this membership is not associated with any app
+        # figure out which app it belongs to
+        
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
