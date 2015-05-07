@@ -21,43 +21,51 @@
 <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
 {% endif %}
 
-{% if request.user.is_superuser or can_edit_invoice %}
-<div class="invoice-options">
-  <ul>
-    {% if invoice.is_tendered %}
-      <li><a class="admin-option" href="{% url 'invoice.adjust' invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
-    {% endif%}
-    <li><a class="admin-option" href="{% url 'invoice.detail' invoice.id%}">{% trans "Accounting Entries" %}</a></li>
-    <li><a class="admin-option" href="{% url 'invoice.detail' invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">{% trans "Make Notes" %}</a></li>
-  </ul>
-</div>
+{% if invoice.balance > 0 and can_pay %}
+{% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
+	<div class="invoice-options">
+	    <ul>
+	        <li><a class="admin-options" href="{% url 'payment.pay_online' invoice.pk %}">{% trans "Pay Online" %}</a></li>
+	    </ul>
+	</div>
+{% endif %}
 {% endif %}
 
-{% if invoice.balance > 0 %}
-<div class="invoice-options">
-    <ul>
-        <li><a class="admin-options" href="{% url 'invoice.mark_as_paid' invoice.pk %}">{% trans "Mark as Paid" %}</a></li>
-    </ul>
-</div>
-{% endif %}
+{% if request.user.is_superuser %}
+	<div class="invoice-options">
+	    <ul>
+	        <li><a class="admin-options" href="{% url 'invoice.mark_as_paid' invoice.pk %}">{% trans "Mark as Paid" %}</a></li>
+	    </ul>
+	</div>
+	
+	<div class="invoice-options">
+	  <ul>
+	    {% if invoice.is_tendered %}
+	      <li><a class="admin-option" href="{% url 'invoice.adjust' invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
+	    {% endif%}
+	    <li><a class="admin-option" href="{% url 'invoice.detail' invoice.id%}">{% trans "Accounting Entries" %}</a></li>
+	    <li><a class="admin-option" href="{% url 'invoice.detail' invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">{% trans "Make Notes" %}</a></li>
+	  </ul>
+	</div>
 
-{% if request.user.is_superuser and invoice.payments_credits > 0 %}
-<div class="invoice-options">
-    <ul>
-        <li><a class="admin-option" href="{% url 'invoice.void_payment' invoice.id %}"> {% trans "Void Payment" %}</a></li>
-    </ul>
-</div>
+	{% if invoice.payments_credits > 0 %}
+	<div class="invoice-options">
+	    <ul>
+	        <li><a class="admin-option" href="{% url 'invoice.void_payment' invoice.id %}"> {% trans "Void Payment" %}</a></li>
+	    </ul>
+	</div>
+	{% endif %}
+	
+	<div class="invoice-options">
+	    <ul>
+	        {% if invoice.is_void %}
+	        <li><a href="{% url 'invoice.unvoid_invoice' invoice.pk %}">{% trans 'Un-Void Invoice' %}</a></li>
+	        {% else %}
+	        <li><a href="{% url 'invoice.void_invoice' invoice.pk %}">{% trans 'Void Invoice' %}</a></li>
+	        {% endif %}
+	    </ul>
+	</div>
 {% endif %}
-
-<div class="invoice-options">
-    <ul>
-        {% if invoice.is_void %}
-        <li><a href="{% url 'invoice.unvoid_invoice' invoice.pk %}">{% trans 'Un-Void Invoice' %}</a></li>
-        {% else %}
-        <li><a href="{% url 'invoice.void_invoice' invoice.pk %}">{% trans 'Void Invoice' %}</a></li>
-        {% endif %}
-    </ul>
-</div>
 
 <div class="invoice-options">
     <ul>

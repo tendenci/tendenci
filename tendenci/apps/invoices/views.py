@@ -73,6 +73,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         'guid': guid,
         'notify': notify,
         'form': form,
+        'can_pay': invoice.allow_payment_by(request.user, guid),
         'merchant_login': merchant_login},
         context_instance=RequestContext(request))
 
