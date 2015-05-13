@@ -33,3 +33,8 @@ class Redirect(models.Model):
             return "Redirect from App: %s" % self.from_app
         else:
             return "Redirect from URL: %s" % self.from_url
+        
+    def save(self, *args, **kwargs):
+        if 'log' in kwargs:
+            kwargs.pop('log')
+        super(Redirect, self).save(*args, **kwargs)
