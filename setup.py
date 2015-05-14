@@ -162,7 +162,7 @@ setup(
         "django-pagination>=1.0.7",
         "django-picklefield>=0.1.6",
         "django-simple-captcha==0.4.2",
-        "django-tagging>=0.3.1",
+        "django-tagging==0.3.4",
         "django-tinymce==1.5.2",
         "django-haystack==2.3.1",
         "feedparser>=4.1",
