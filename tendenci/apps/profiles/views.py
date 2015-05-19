@@ -1128,6 +1128,7 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
 
 
 @login_required
+@password_required
 def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 
     if not request.user.profile.is_superuser:
@@ -1149,117 +1150,102 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                             list=(request.session[sid]).get('users', []))
     if request.method == 'POST':
         if form.is_valid():
-            sid = str(int(time.time()))
-            request.session[sid] = {'master': form.cleaned_data["master_record"],
-                                    'users': form.cleaned_data['user_list']}
+            master = form.cleaned_data["master_record"]
+            users = form.cleaned_data['user_list']
 
-            return HttpResponseRedirect(reverse(
-                                    'profile.merge_process',
-                                    args=[sid]))
+            if master and users:
+                # get description for event log before users get deleted
+                description = 'Master user: %s, merged user(s): %s.' % (
+                                '%s %s (%s)(id=%d)' % (master.user.first_name,
+                                               master.user.last_name,
+                                               master.user.username,
+                                               master.user.id),
+                                ', '.join(['%s %s (%s)(id=%d)' % (
+                                profile.user.first_name,
+                                profile.user.last_name,
+                                profile.user.username,
+                                profile.user.id
+                                ) for profile in users if profile != master]))
+        
+                related = master.user._meta.get_all_related_objects()
+                field_names = master._meta.get_all_field_names()
+        
+                valnames = dict()
+                for r in related:
+                    if not r.model is Profile:
+                        valnames.setdefault(r.model, []).append(r.field)
+        
+                for profile in users:
+                    if profile != master:
+                        for field in field_names:
+                            if getattr(master, field) == '':
+                                setattr(master, field, getattr(profile, field))
+        
+                        for model, fields in valnames.iteritems():
+        
+                            for field in fields:
+                                if not isinstance(field, models.OneToOneField):
+                                    objs = model.objects.filter(**{field.name: profile.user})
+        
+                                    # handle unique_together fields. for example, GroupMembership
+                                    # unique_together = ('group', 'member',)
+                                    [unique_together] = model._meta.unique_together[:1] or [None]
+                                    if unique_together and field.name in unique_together:
+                                        for obj in objs:
+                                            field_values = [getattr(obj, field_name) for field_name in unique_together]
+                                            field_dict = dict(zip(unique_together, field_values))
+                                            # switch to master user
+                                            field_dict[field.name] = master.user
+                                            # check if the master record exists
+                                            if model.objects.filter(**field_dict).exists():
+                                                obj.delete()
+                                            else:
+                                                setattr(obj, field.name, master.user)
+                                                obj.save()
+                                    else:
+                                        if objs.exists():
+                                            try:
+                                                objs.update(**{field.name: master.user})
+                                            except Exception:
+                                                connection._rollback()
+                                else:  # OneToOne
+                                    [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
+                                    if obj:
+                                        [master_obj] = model.objects.filter(**{field.name: master.user})[:1] or [None]
+                                        if not master_obj:
+                                            setattr(obj, field.name, master.user)
+                                            obj.save()
+                                        else:
+                                            obj_fields = master_obj._meta.get_all_field_names()
+                                            updated = False
+                                            for fld in obj_fields:
+                                                master_val = getattr(master_obj, fld)
+                                                if master_val == '' or master_val is None:
+                                                    val = getattr(obj, fld)
+                                                    if val != '' and not val is None:
+                                                        setattr(master_obj, fld, val)
+                                                        updated = True
+                                            if updated:
+                                                master_obj.save()
+                                            # delete obj
+                                            obj.delete()
+        
+                        master.save()
+                        profile.user.delete()
+                        profile.delete()
+        
+                # log an event
+                EventLog.objects.log(description=description[:120])
+                #invalidate('profiles_profile')
+                messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
+        
+            return redirect("profile.search")
 
     return render_to_response(template_name, {
         'form': form,
         'profiles': profiles,
     }, context_instance=RequestContext(request))
 
-
-@login_required
-@password_required
-def merge_process(request, sid):
-    if not request.user.profile.is_superuser:
-        raise Http403
-
-    sid = str(sid)
-    master = (request.session[sid]).get('master', '')
-    users = (request.session[sid]).get('users', '')
-
-    if master and users:
-        # get description for event log before users get deleted
-        description = 'Master user: %s, merged user(s): %s.' % (
-                        '%s %s (%s)(id=%d)' % (master.user.first_name,
-                                       master.user.last_name,
-                                       master.user.username,
-                                       master.user.id),
-                        ', '.join(['%s %s (%s)(id=%d)' % (
-                        profile.user.first_name,
-                        profile.user.last_name,
-                        profile.user.username,
-                        profile.user.id
-                        ) for profile in users if profile != master]))
-
-        related = master.user._meta.get_all_related_objects()
-        field_names = master._meta.get_all_field_names()
-
-        valnames = dict()
-        for r in related:
-            if not r.model is Profile:
-                valnames.setdefault(r.model, []).append(r.field)
-
-        for profile in users:
-            if profile != master:
-                for field in field_names:
-                    if getattr(master, field) == '':
-                        setattr(master, field, getattr(profile, field))
-
-                for model, fields in valnames.iteritems():
-
-                    for field in fields:
-                        if not isinstance(field, models.OneToOneField):
-                            objs = model.objects.filter(**{field.name: profile.user})
-
-                            # handle unique_together fields. for example, GroupMembership
-                            # unique_together = ('group', 'member',)
-                            [unique_together] = model._meta.unique_together[:1] or [None]
-                            if unique_together and field.name in unique_together:
-                                for obj in objs:
-                                    field_values = [getattr(obj, field_name) for field_name in unique_together]
-                                    field_dict = dict(zip(unique_together, field_values))
-                                    # switch to master user
-                                    field_dict[field.name] = master.user
-                                    # check if the master record exists
-                                    if model.objects.filter(**field_dict).exists():
-                                        obj.delete()
-                                    else:
-                                        setattr(obj, field.name, master.user)
-                                        obj.save()
-                            else:
-                                if objs.exists():
-                                    try:
-                                        objs.update(**{field.name: master.user})
-                                    except Exception:
-                                        connection._rollback()
-                        else:  # OneToOne
-                            [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
-                            if obj:
-                                [master_obj] = model.objects.filter(**{field.name: master.user})[:1] or [None]
-                                if not master_obj:
-                                    setattr(obj, field.name, master.user)
-                                    obj.save()
-                                else:
-                                    obj_fields = master_obj._meta.get_all_field_names()
-                                    updated = False
-                                    for fld in obj_fields:
-                                        master_val = getattr(master_obj, fld)
-                                        if master_val == '' or master_val is None:
-                                            val = getattr(obj, fld)
-                                            if val != '' and not val is None:
-                                                setattr(master_obj, fld, val)
-                                                updated = True
-                                    if updated:
-                                        master_obj.save()
-                                    # delete obj
-                                    obj.delete()
-
-                master.save()
-                profile.user.delete()
-                profile.delete()
-
-        # log an event
-        EventLog.objects.log(description=description[:120])
-        #invalidate('profiles_profile')
-        messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
-
-    return redirect("profile.search")
 
 
 @login_required
