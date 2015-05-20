@@ -1,5 +1,11 @@
 # Tendenci Installation
 
+# NOTE - These are for Tendenci 5.x. For Tendenci 6 Please Read Notes Here:
+
+https://github.com/tendenci/tendenci-project-template
+
+# Tendenci 5 Installation Notes:
+
 You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs. From the Terminal prompt on a Mac or Linux follow these steps.
 
 ## Pre-config
