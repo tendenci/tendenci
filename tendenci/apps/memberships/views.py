@@ -1024,6 +1024,8 @@ def membership_default_add(request, slug='', membership_id=None,
         'corp_membership': corp_membership,
         'is_renewal': is_renewal,
     }
+    if is_renewal:
+        params.update({'renew_from_id': membership.id})
 
     if join_under_corporate:
         params['authentication_method'] = authentication_method

@@ -962,6 +962,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         self.membership_app = kwargs.pop('membership_app')
         multiple_membership = kwargs.pop('multiple_membership', False)
         self.is_renewal = kwargs.pop('is_renewal', False)
+        self.renew_from_id = kwargs.pop('renew_from_id', None)
 
         if 'join_under_corporate' in kwargs.keys():
             self.join_under_corporate = kwargs.pop('join_under_corporate')
@@ -1101,6 +1102,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         # adding membership record
         membership.renewal = self.is_renewal
+        if self.renew_from_id:
+            membership.renew_from_id = self.renew_from_id
 
         # set app
         membership.app = self.membership_app

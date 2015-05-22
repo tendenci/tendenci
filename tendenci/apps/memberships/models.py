@@ -437,6 +437,7 @@ class MembershipDefault(TendenciBaseModel):
     membership_type = models.ForeignKey(MembershipType)
     user = models.ForeignKey(User, editable=False)
     renewal = models.BooleanField(blank=True, default=False)
+    renew_from_id = models.IntegerField(blank=True, null=True)
     certifications = models.CharField(max_length=500, blank=True)
     work_experience = models.TextField(blank=True)
     referer_url = models.CharField(max_length=500, blank=True, editable=False)
@@ -857,6 +858,9 @@ class MembershipDefault(TendenciBaseModel):
 
         dupe.status = True,
         dupe.status_detail = 'active'
+        
+        dupe.renewal = True
+        dupe.renew_from_id = self.id
 
         # application approved ---------------
         dupe.application_approved = True
@@ -1139,6 +1143,17 @@ class MembershipDefault(TendenciBaseModel):
                 membership.status_detail = 'archive'
                 membership.save()
 
+        # sometimes they renewed from a different membership type
+        if self.renew_from_id:
+            [membership_from] = MembershipDefault.objects.filter(
+                                id=self.renew_from_id).exclude(
+                                status_detail='archive'
+                                )[:1] or [None]
+            if membership_from:
+                membership_from.status_detail = 'archive'
+                membership_from.save()
+                
+
     def approval_required(self):
         """
         Returns a boolean value on whether approval is required
@@ -1275,6 +1290,9 @@ class MembershipDefault(TendenciBaseModel):
         Checks if there are active or expired memberships
         of this same membership type bound to this user
         """
+        if self.renew_from_id:
+            return True
+        
         return self.user.membershipdefault_set.filter(
             membership_type=self.membership_type).filter(
                 Q(status_detail='active') | Q(status_detail='expired')).exists()
@@ -1608,7 +1626,7 @@ class MembershipDefault(TendenciBaseModel):
         if self.pk:
             memberships = memberships.exclude(pk=self.pk)
 
-        if memberships:
+        if memberships or self.renew_from_id:
             self.renew_dt = self.application_approved_dt
 
     def set_expire_dt(self):
