@@ -260,6 +260,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'user__last_name',
         'user__email',
         'member_number',
+        'user__username'
     ]
 
     list_display = [
