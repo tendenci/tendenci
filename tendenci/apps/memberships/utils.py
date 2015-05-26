@@ -1596,6 +1596,8 @@ class ImportMembDefault(object):
             assign_to_fields = self.user_fields
         elif instance.__class__ == Profile:
             assign_to_fields = self.profile_fields
+        elif instance.__class__ == MembershipDemographic:
+            assign_to_fields =self.membershipdemographic_fields
         else:
             assign_to_fields = self.membership_fields
         assign_to_fields_names = assign_to_fields.keys()
