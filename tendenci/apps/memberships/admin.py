@@ -268,6 +268,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'member_number',
         'membership_type_link',
         'get_approve_dt',
+        'get_expire_dt',
         'get_status',
         'get_invoice',
     ]
@@ -355,6 +356,14 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         return u''
     get_approve_dt.short_description = u'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
+    
+    def get_expire_dt(self, instance):
+        dt = instance.expire_dt
+
+        if dt:
+            return dt.strftime('%m/%d/%Y')
+        return u''
+    get_expire_dt.short_description = u'Expire Date'
 
     def get_actions(self, request):
         actions = super(MembershipDefaultAdmin, self).get_actions(request)
