@@ -745,7 +745,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
 
 
 YEAR_CHOICES = [(i, i) for i in range(1900, THIS_YEAR + 50)]
-YEAR_CHOICES = [('', '?')] + YEAR_CHOICES
+YEAR_CHOICES = [(0, '?')] + YEAR_CHOICES
 class EducationForm(FormControlWidgetMixin, forms.Form):
 
     school1 = forms.CharField(label=_('School'), max_length=200, required=False, initial='')
