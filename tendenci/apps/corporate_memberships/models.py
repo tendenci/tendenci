@@ -128,9 +128,11 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                  null=True,
                                  default=0,
                                  help_text=_(
-                                 "All individual members applying " + \
-                                 "under or equal to the threshold " + \
-                                 "limit receive the threshold prices."))
+"""All individual members applying under or equal to the threshold limit
+receive the threshold prices. Additional employees can join but will be
+charged the full individual corporate membership rate.
+"""))
+                                
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
