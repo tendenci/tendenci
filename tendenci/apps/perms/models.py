@@ -133,9 +133,9 @@ class TendenciBaseModel(models.Model):
             if 'SlugField' == f.get_internal_type():
                 # the length of slug field is 100. make sure the length of modified slug <= 100
                 if len(getattr(self, f.name)) + len(str(self.pk)) >= 99:
-                    setattr(self, f.name, '%s@%s' % (getattr(self, f.name)[:99-len(str(self.pk))], self.pk))
+                    setattr(self, f.name, '%s-%s' % (getattr(self, f.name)[:99-len(str(self.pk))], self.pk))
                 else:
-                    setattr(self, f.name, '%s@%s' % (getattr(self, f.name), self.pk))
+                    setattr(self, f.name, '%s-%s' % (getattr(self, f.name), self.pk))
 
         try:
             self.save(**{'log': False})
