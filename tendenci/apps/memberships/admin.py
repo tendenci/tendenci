@@ -147,17 +147,17 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         {'fields': (
             ('first_name', 'last_name'),
             ('email', 'email2'),
-            ('company', 'department', 'position_title'),
-            ('address', 'address2', 'address_type'),
-            ('city', 'state', 'zipcode', 'country'),
+            ('company', 'department'), ('position_title',),
+            ('address', 'address2'), ('address_type',),
+            ('city', 'state'), ('zipcode', 'country'),
             ('phone', 'phone2'),
-            ('work_phone', 'home_phone', 'mobile_phone'),
+            ('work_phone', 'home_phone'), ('mobile_phone',),
             ('fax'),
             ('url', 'url2'),
-            ('dob', 'sex', 'spouse'),
-            ('hide_in_search', 'hide_address', 'hide_email', 'hide_phone'),
+            ('dob', 'sex'), ('spouse',),
+            ('hide_in_search', 'hide_address'), ('hide_email', 'hide_phone'),
             ('address_2', 'address2_2'),
-            ('city_2', 'state_2', 'zipcode_2', 'country_2'),
+            ('city_2', 'state_2'), ('zipcode_2', 'country_2'),
         )}
     )
 
@@ -200,10 +200,10 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     education = (
         _('Education History'),
         {'fields': (
-            ('school1', 'major1', 'degree1', 'graduation_dt1'),
-            ('school2', 'major2', 'degree2', 'graduation_dt2'),
-            ('school3', 'major3', 'degree3', 'graduation_dt3'),
-            ('school4', 'major4', 'degree4', 'graduation_dt4'),
+            ('school1', 'major1'), ('degree1', 'graduation_dt1'),
+            ('school2', 'major2'), ('degree2', 'graduation_dt2'),
+            ('school3', 'major3'), ('degree3', 'graduation_dt3'),
+            ('school4', 'major4'), ('degree4', 'graduation_dt4'),
         )}
     )
 
