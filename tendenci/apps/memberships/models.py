@@ -286,7 +286,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
                 if self.fixed_option2_can_rollover:
                     if not self.fixed_option2_rollover_days:
                         self.fixed_option2_rollover_days = 0
-                    if (now - expiration_dt).days <= self.fixed_option2_rollover_days:
+                    if (expiration_dt - now).days <= self.fixed_option2_rollover_days:
                         expiration_dt = expiration_dt + relativedelta(years=1)
 
                 return expiration_dt
