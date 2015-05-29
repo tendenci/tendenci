@@ -1344,19 +1344,23 @@ class MembershipDefaultForm(TendenciBaseForm):
     school1 = forms.CharField(initial=u'', required=False)
     major1 = forms.CharField(initial=u'', required=False)
     degree1 = forms.CharField(initial=u'', required=False)
-    graduation_dt1 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
+    graduation_dt1 = forms.ChoiceField(label=_('Graduation Year1'),
+                                       required=False, choices=YEAR_CHOICES)
     school2 = forms.CharField(initial=u'', required=False)
     major2 = forms.CharField(initial=u'', required=False)
     degree2 = forms.CharField(initial=u'', required=False)
-    graduation_dt2 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
+    graduation_dt2 = forms.ChoiceField(label=_('Graduation Year2'),
+                                       required=False, choices=YEAR_CHOICES)
     school3 = forms.CharField(initial=u'', required=False)
     major3 = forms.CharField(initial=u'', required=False)
     degree3 = forms.CharField(initial=u'', required=False)
-    graduation_dt3 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
+    graduation_dt3 = forms.ChoiceField(label=_('Graduation Year3'),
+                                       required=False, choices=YEAR_CHOICES)
     school4 = forms.CharField(initial=u'', required=False)
     major4 = forms.CharField(initial=u'', required=False)
     degree4 = forms.CharField(initial=u'', required=False)
-    graduation_dt4 = forms.ChoiceField(required=False, choices=YEAR_CHOICES)
+    graduation_dt4 = forms.ChoiceField(label=_('Graduation Year4'),
+                                       required=False, choices=YEAR_CHOICES)
 
     # manually add ud fields here because admin.site.register requires it
     ud1 = forms.CharField(widget=forms.TextInput, required=False)
