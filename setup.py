@@ -208,7 +208,7 @@ setup(
         "selenium==2.37.2",
         "raven==5.1.1",
         "django-admin-bootstrapped==2.3.3",
-        "django-bootstrap3==5.1.1",
+        "django-bootstrap3==5.4.0",
         "django-app-namespace-template-loader==0.2",
     ],
 )
