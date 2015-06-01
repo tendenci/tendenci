@@ -147,12 +147,12 @@ setup(
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     install_requires=[
-        "Django==1.6.11",
+        "Django>=1.8,<1.9",
+        "django-formtools>=1.0",
         "pisa",
         "Reportlab==2.5",
         "html5lib",
         "Pillow==2.3.0",
-        "South==1.0",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
         "django-avatar==2.0",
