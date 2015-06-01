@@ -46,6 +46,8 @@ class PricingAdmin(admin.StackedInline):
 class FieldAdminForm(FormForField):
     class Meta:
         model = Field
+        # django 1.8 requires either 'fields' or 'exclude' for ModelForm
+        exclude = ()
 
 
 class FieldAdmin(admin.TabularInline):

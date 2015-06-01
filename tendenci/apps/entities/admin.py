@@ -21,6 +21,12 @@ class EntityAdminForm(forms.ModelForm):
 
     class Meta:
         model = Entity
+        # django 1.8 requires either 'fields' or 'exclude' for ModelForm
+        fields = (
+            'entity_name',
+            'entity_type',
+            'entity_parent',
+            'status_detail',)
 
 
 class EntityAdmin(admin.ModelAdmin):
