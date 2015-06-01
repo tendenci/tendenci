@@ -6,7 +6,7 @@ from django.contrib.contenttypes import generic
 
 from django.shortcuts import get_object_or_404
 
-from django_countries.countries import COUNTRIES
+from django_countries import countries as COUNTRIES
 from localflavor.us.us_states import STATE_CHOICES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 

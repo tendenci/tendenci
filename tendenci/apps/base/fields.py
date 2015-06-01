@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import simplejson
 from django.core import exceptions
-from django_countries.countries import COUNTRIES
+from django_countries import countries as COUNTRIES
 
 from tendenci.apps.base import forms
 from tendenci.apps.base.widgets import SplitDateTimeWidget, EmailVerificationWidget, PriceWidget
