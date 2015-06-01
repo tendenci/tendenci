@@ -63,7 +63,7 @@ class Invoice(models.Model):
     tax_exemptid = models.CharField(max_length=50, blank=True, null=True)
     tax_rate = models.FloatField(blank=True, default=0)
     taxable = models.BooleanField(default=False)
-    tax = models.DecimalField(max_digits=6, decimal_places=4, default=0)
+    tax = models.DecimalField(max_digits=15, decimal_places=4, default=0)
     bill_to = models.CharField(max_length=120, blank=True)
     bill_to_first_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_last_name = models.CharField(max_length=100, blank=True, null=True)
