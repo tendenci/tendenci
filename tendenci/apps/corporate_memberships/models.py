@@ -146,8 +146,6 @@ charged the full individual corporate membership rate.
             self.guid = str(uuid.uuid1())
         super(CorporateMembershipType, self).save(*args, **kwargs)
 
-    # added here temporarily because i cannot use the one in memberships now
-    # switch later if the function in memberships is restored.
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
@@ -161,122 +159,7 @@ charged the full individual corporate membership rate.
                                         join_dt=membership.join_dt,
                                         renew_dt=membership.renew_dt)
         """
-        mt = self.membership_type
-        now = datetime.now()
-
-        if not join_dt or not isinstance(join_dt, datetime):
-            join_dt = now
-        if renewal and (not renew_dt or not isinstance(renew_dt, datetime)):
-            renew_dt = now
-
-        if mt.never_expires:
-            return None
-
-        if mt.period_type == 'rolling':
-            if mt.period_unit == 'days':
-                return now + timedelta(days=mt.period)
-
-            elif mt.period_unit == 'months':
-                return now + relativedelta(months=mt.period)
-
-            else:  # if self.period_unit == 'years':
-                if not renewal:
-                    if mt.rolling_option == '0':
-                        # expires on end of full period
-                        return join_dt + relativedelta(years=mt.period)
-                    else:   # self.expiration_method == '1':
-                        # expires on ? days at signup (join) month
-                        if not mt.rolling_option1_day:
-                            mt.rolling_option1_day = 1
-                        expiration_dt = join_dt + relativedelta(
-                                                    years=mt.period)
-                        mt.rolling_option1_day = day_validate(
-                                                datetime(expiration_dt.year,
-                                                         join_dt.month, 1),
-                                                mt.rolling_option1_day)
-
-                        return datetime(expiration_dt.year, join_dt.month,
-                                                 mt.rolling_option1_day,
-                                                 expiration_dt.hour,
-                                                 expiration_dt.minute,
-                                                 expiration_dt.second)
-                else:   # renewal = True
-                    if mt.rolling_renew_option == '0':
-                        # expires on the end of full period
-                        return renew_dt + relativedelta(years=mt.period)
-                    elif mt.rolling_renew_option == '1':
-                        # expires on the ? days at signup (join) month
-                        if not mt.rolling_renew_option1_day:
-                            mt.rolling_renew_option1_day = 1
-                        expiration_dt = renew_dt + relativedelta(
-                                                    years=mt.period)
-                        mt.rolling_renew_option1_day = day_validate(
-                                            datetime(expiration_dt.year,
-                                                     join_dt.month, 1),
-                                            mt.rolling_renew_option1_day)
-                        return datetime(expiration_dt.year, join_dt.month,
-                                                 mt.rolling_renew_option1_day,
-                                                 expiration_dt.hour,
-                                                 expiration_dt.minute,
-                                                 expiration_dt.second)
-                    else:
-                        # expires on the ? days at renewal month
-                        if not mt.rolling_renew_option2_day:
-                            mt.rolling_renew_option2_day = 1
-                        expiration_dt = renew_dt + relativedelta(
-                                                    years=mt.period)
-                        mt.rolling_renew_option2_day = day_validate(
-                                                datetime(expiration_dt.year,
-                                                         renew_dt.month, 1),
-                                                mt.rolling_renew_option2_day)
-                        return datetime(expiration_dt.year, renew_dt.month,
-                                                 mt.rolling_renew_option2_day,
-                                                 expiration_dt.hour,
-                                                 expiration_dt.minute,
-                                                 expiration_dt.second)
-
-        else:    # self.period_type == 'fixed':
-            if mt.fixed_option == '0':
-                # expired on the fixed day, fixed month, fixed year
-                if not mt.fixed_option1_day:
-                    mt.fixed_option1_day = 1
-                if not mt.fixed_option1_month:
-                    mt.fixed_option1_month = 1
-                if mt.fixed_option1_month > 12:
-                    mt.fixed_option1_month = 12
-                if not mt.fixed_option1_year:
-                    mt.fixed_option1_year = now.year
-
-                mt.fixed_option1_day = day_validate(
-                                    datetime(mt.fixed_option1_year,
-                                          mt.fixed_option2_month, 1),
-                                    mt.fixed_option2_day)
-
-                return datetime(mt.fixed_option1_year, mt.fixed_option1_month,
-                                mt.fixed_option1_day)
-            else:   # self.fixed_option == '1'
-                # expired on the fixed day, fixed month of current year
-                if not mt.fixed_option2_day:
-                    mt.fixed_option2_day = 1
-                if not mt.fixed_option2_month:
-                    mt.fixed_option2_month = 1
-                if mt.fixed_option2_month > 12:
-                    mt.fixed_option2_month = 12
-
-                mt.fixed_expiration_day2 = day_validate(
-                                                datetime(now.year,
-                                                mt.fixed_option2_month, 1),
-                                                mt.fixed_option2_day)
-
-                expiration_dt = datetime(now.year, mt.fixed_option2_month,
-                                        mt.fixed_option2_day)
-                if mt.fixed_option2_can_rollover:
-                    if not mt.fixed_option2_rollover_days:
-                        mt.fixed_option2_rollover_days = 0
-                    if (now - expiration_dt).days <= mt.fixed_option2_rollover_days:
-                        expiration_dt = expiration_dt + relativedelta(years=1)
-
-                return expiration_dt
+        return self.membership_type.get_expiration_dt(renewal=renewal, join_dt=join_dt, renew_dt=renew_dt)
 
 
 class CorpProfile(TendenciBaseModel):
