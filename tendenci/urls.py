@@ -78,7 +78,7 @@ urlpatterns += patterns('',
     url(r'social_auth/', include('tendenci.apps.social_auth.urls')),
     url(r'navs/', include('tendenci.apps.navs.urls')),
     url(r'tendenci/', include('tendenci.apps.tendenci_guide.urls')),
-    url(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),
+    #url(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
