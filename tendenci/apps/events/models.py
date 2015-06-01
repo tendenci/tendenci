@@ -37,8 +37,8 @@ from tendenci.apps.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
+# from south.modelsinspector import add_introspection_rules
+# add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
 
 EMAIL_DEFAULT_ONLY = 'default'
 EMAIL_CUSTOM_ONLY = 'custom'

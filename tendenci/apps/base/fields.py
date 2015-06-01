@@ -1,6 +1,6 @@
 import re
 from time import strptime, strftime
-from south.modelsinspector import add_introspection_rules
+#from south.modelsinspector import add_introspection_rules
 
 from django.forms import fields, ValidationError
 from django.db.models import CharField
@@ -15,9 +15,9 @@ from tendenci.apps.base.widgets import SplitDateTimeWidget, EmailVerificationWid
 from tendenci.apps.site_settings.utils import get_setting
 
 
-# introspection rules for south migration for the slugfield
-add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.SlugField'])
-add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.DictField'])
+# # introspection rules for south migration for the slugfield
+# add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.SlugField'])
+# add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.DictField'])
 
 
 class SlugField(CharField):
