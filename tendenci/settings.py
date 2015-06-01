@@ -233,7 +233,6 @@ INSTALLED_APPS = (
     'tendenci.apps.regions',
     'tendenci.apps.educations',
     'tendenci.apps.careers',
-    'tendenci.apps.site_settings',
     'tendenci.apps.make_payments',
     'tendenci.apps.accountings',
     'tendenci.apps.emails',
