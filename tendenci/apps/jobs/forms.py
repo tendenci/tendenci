@@ -52,7 +52,7 @@ class JobForm(TendenciBaseForm):
         required=False,
         widget=TinyMCE(
             attrs={'style': 'width:100%'},
-            mce_attrs={'storme_app_label': Job._meta.app_label, 'storme_model': Job._meta.module_name.lower()}
+            mce_attrs={'storme_app_label': Job._meta.app_label, 'storme_model': Job._meta.model_name.lower()}
         )
     )
 

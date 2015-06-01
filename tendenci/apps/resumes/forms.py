@@ -24,7 +24,7 @@ class ResumeForm(TendenciBaseForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Resume._meta.app_label,
-        'storme_model':Resume._meta.module_name.lower()}))
+        'storme_model':Resume._meta.model_name.lower()}))
 
     resume_url = forms.CharField(
         label=_('Resume URL'),

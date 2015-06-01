@@ -566,7 +566,7 @@ class Registration(models.Model):
 
     def get_invoice(self):
         object_type = ContentType.objects.get(app_label=self._meta.app_label,
-            model=self._meta.module_name)
+            model=self._meta.model_name)
 
         try:
             invoice = Invoice.objects.get(
@@ -583,7 +583,7 @@ class Registration(models.Model):
         admin_notes = kwargs.get('admin_notes', None)
 
         object_type = ContentType.objects.get(app_label=self._meta.app_label,
-            model=self._meta.module_name)
+            model=self._meta.model_name)
 
         try: # get invoice
             invoice = Invoice.objects.get(

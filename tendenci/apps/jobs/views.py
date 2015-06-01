@@ -153,7 +153,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
     content_type = get_object_or_404(
         ContentType,
         app_label=object_type._meta.app_label,
-        model=object_type._meta.module_name
+        model=object_type._meta.model_name
     )
 
     if request.user.profile.is_superuser:
@@ -327,7 +327,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
                         user=request.user)
 
     #setup categories
-    content_type = get_object_or_404(ContentType, app_label=object_type._meta.app_label, model=object_type._meta.module_name)
+    content_type = get_object_or_404(ContentType, app_label=object_type._meta.app_label, model=object_type._meta.model_name)
 
     category = Category.objects.get_for_object(job,'category')
     sub_category = Category.objects.get_for_object(job,'sub_category')

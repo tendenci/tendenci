@@ -80,7 +80,7 @@ def directory_set_inv_payment(user, directory, pricing):
         if not directory.invoice:
             inv = Invoice()
             inv.object_type = ContentType.objects.get(app_label=directory._meta.app_label,
-                                              model=directory._meta.module_name)
+                                              model=directory._meta.model_name)
             inv.object_id = directory.id
             profile = user.profile
             inv.title = "Directory Add Invoice"

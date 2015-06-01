@@ -32,7 +32,7 @@ class PageAdminForm(TendenciBaseForm):
     content = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Page._meta.app_label,
-        'storme_model':Page._meta.module_name.lower()}))
+        'storme_model':Page._meta.model_name.lower()}))
 
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
@@ -125,7 +125,7 @@ class PageForm(TendenciBaseForm):
     content = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Page._meta.app_label,
-        'storme_model':Page._meta.module_name.lower()}))
+        'storme_model':Page._meta.model_name.lower()}))
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
                                          initial=Page.CONTRIBUTOR_AUTHOR,

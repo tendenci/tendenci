@@ -90,13 +90,13 @@ class CorpMembershipAppForm(TendenciBaseForm):
                     attrs={'style': 'width:70%'},
                     mce_attrs={
                    'storme_app_label': CorpMembershipApp._meta.app_label,
-                   'storme_model': CorpMembershipApp._meta.module_name.lower()}),
+                   'storme_model': CorpMembershipApp._meta.model_name.lower()}),
                    help_text=_('Will show at the top of the application form.'))
     confirmation_text = forms.CharField(required=False,
                  widget=TinyMCE(
                     attrs={'style': 'width:70%'},
                     mce_attrs={'storme_app_label': CorpMembershipApp._meta.app_label,
-                               'storme_model': CorpMembershipApp._meta.module_name.lower()}),
+                               'storme_model': CorpMembershipApp._meta.model_name.lower()}),
                                help_text=_('Will show on the confirmation page.'))
     notes = forms.CharField(label=_('Notes'), required=False,
                widget=forms.Textarea(attrs={'rows': '3'}),
@@ -887,7 +887,7 @@ class NoticeForm(forms.ModelForm):
     email_content = forms.CharField(
         widget=TinyMCE(attrs={'style':'width:70%'},
                        mce_attrs={'storme_app_label': Notice._meta.app_label,
-                                  'storme_model':Notice._meta.module_name.lower()}),
+                                  'storme_model':Notice._meta.model_name.lower()}),
         help_text=_("Click here to view available tokens"))
 
     class Meta:

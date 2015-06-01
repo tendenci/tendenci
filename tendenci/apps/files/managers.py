@@ -22,7 +22,7 @@ def save_to_disk(f, instance):
     relative_directory = os.path.join(
         'files',
         instance._meta.app_label,
-        instance._meta.module_name,
+        instance._meta.model_name,
     )
 
     # make directory with pk

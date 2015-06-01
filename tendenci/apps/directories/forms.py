@@ -115,7 +115,7 @@ class DirectoryForm(TendenciBaseForm):
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Directory._meta.app_label,
-        'storme_model':Directory._meta.module_name.lower()}))
+        'storme_model':Directory._meta.model_name.lower()}))
 
     logo = forms.FileField(
       required=False,
@@ -335,7 +335,7 @@ class DirectoryForm(TendenciBaseForm):
 
         content_type = ContentType.objects.get(
                 app_label=Directory._meta.app_label,
-                model=Directory._meta.module_name)
+                model=Directory._meta.model_name)
 
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration

@@ -10,7 +10,7 @@ class EmergencyAnnouncementAdminForm(TendenciBaseForm):
     content = forms.CharField(
         widget=TinyMCE(attrs={'style': 'width:100%'},
         mce_attrs={'storme_app_label': EmergencyAnnouncement._meta.app_label,
-        'storme_model': EmergencyAnnouncement._meta.module_name.lower()}))
+        'storme_model': EmergencyAnnouncement._meta.model_name.lower()}))
 
     class Meta:
         model = EmergencyAnnouncement

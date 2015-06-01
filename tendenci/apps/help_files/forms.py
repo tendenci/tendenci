@@ -17,7 +17,7 @@ class HelpFileAdminForm(TendenciBaseForm):
     answer = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':HelpFile._meta.app_label,
-        'storme_model':HelpFile._meta.module_name.lower()}))
+        'storme_model':HelpFile._meta.model_name.lower()}))
 
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=False)
 
@@ -72,7 +72,7 @@ class HelpFileForm(TendenciBaseForm):
     answer = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':HelpFile._meta.app_label,
-        'storme_model':HelpFile._meta.module_name.lower()}))
+        'storme_model':HelpFile._meta.model_name.lower()}))
 
     status_detail = forms.ChoiceField(
         choices=(('draft',_('Draft')),('active',_('Active'))))

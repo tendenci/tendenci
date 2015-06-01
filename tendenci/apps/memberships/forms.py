@@ -346,12 +346,12 @@ class MembershipAppForm(TendenciBaseForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style': 'width:100%'},
         mce_attrs={'storme_app_label': MembershipApp._meta.app_label,
-        'storme_model': MembershipApp._meta.module_name.lower()}))
+        'storme_model': MembershipApp._meta.model_name.lower()}))
 
     confirmation_text = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style': 'width:100%'},
         mce_attrs={'storme_app_label': MembershipApp._meta.app_label,
-        'storme_model': MembershipApp._meta.module_name.lower()}))
+        'storme_model': MembershipApp._meta.model_name.lower()}))
 
     status_detail = forms.ChoiceField(
         choices=(
@@ -1147,7 +1147,7 @@ class NoticeForm(forms.ModelForm):
                                           widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(widget=TinyMCE(attrs={'style': 'width:70%'},
         mce_attrs={'storme_app_label': Notice._meta.app_label,
-        'storme_model': Notice._meta.module_name.lower()}), help_text=_("Click here to view available tokens"))
+        'storme_model': Notice._meta.model_name.lower()}), help_text=_("Click here to view available tokens"))
 
     class Meta:
         model = Notice

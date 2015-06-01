@@ -730,9 +730,7 @@ class UserUploadForm(forms.ModelForm):
                ('first_name,last_name,phone', _('First Name and Last Name and Phone')),
                ('first_name,last_name,company', _('First Name and Last Name and Company')),
                ('username', 'Username'),)
-    GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in \
-                     Group.objects.filter(status=True, status_detail='active'
-                                          ).exclude(type='membership')]
+    
     interactive = forms.BooleanField(widget=forms.RadioSelect(
                                     choices=((True, _('Interactive')),
                                             (False,_('Not Interactive (no login)')),)),
@@ -740,7 +738,7 @@ class UserUploadForm(forms.ModelForm):
     key = forms.ChoiceField(label="Key",
                             choices=KEY_CHOICES)
     group_id = forms.ChoiceField(label=_("Add Users to Group"),
-                            choices=GROUP_CHOICES, required=False)
+                            required=False)
     clear_group_membership = forms.BooleanField(initial=False, required=False)
 
     class Meta:
@@ -757,6 +755,12 @@ class UserUploadForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserUploadForm, self).__init__(*args, **kwargs)
         self.fields['key'].initial = 'email'
+        # move the choices down here to fix the error 
+        #  django.db.utils.ProgrammingError: relation "user_groups_group" does not exist
+        GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in \
+                     Group.objects.filter(status=True, status_detail='active'
+                                          ).exclude(type='membership')]
+        self.fields['group_id'].choices = GROUP_CHOICES
 
     def clean_upload_file(self):
         key = self.cleaned_data['key']

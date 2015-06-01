@@ -1076,7 +1076,7 @@ def membership_default_add(request, slug='', membership_id=None,
         del captcha_form.fields['captcha']
 
     if (not app.discount_eligible or
-        not Discount.has_valid_discount(model=MembershipSet._meta.module_name)):
+        not Discount.has_valid_discount(model=MembershipSet._meta.model_name)):
         del membership_form.fields['discount_code']
 
     if request.method == 'POST':
@@ -1142,7 +1142,7 @@ def membership_default_add(request, slug='', membership_id=None,
             discount_list = [Decimal(0) for i in range(len(amount_list))]
             if discount_code:
                 [discount] = Discount.objects.filter(
-                    discount_code=discount_code, apps__model=MembershipSet._meta.module_name)[:1] or [None]
+                    discount_code=discount_code, apps__model=MembershipSet._meta.model_name)[:1] or [None]
                 if discount and discount.available_for(1):
                     amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
                     # apply discount to invoice

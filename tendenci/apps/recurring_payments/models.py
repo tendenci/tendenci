@@ -394,7 +394,7 @@ class RecurringPayment(models.Model):
         inv.ship_date = billing_dt
 
         inv.object_type = ContentType.objects.get(app_label=self._meta.app_label,
-                                                  model=self._meta.module_name)
+                                                  model=self._meta.model_name)
         inv.object_id = self.id
         inv.title = "Recurring Payment Invoice for Billing Cycle %s - %s" % (
                                            billing_cycle['start'].strftime('%m/%d/%Y'),

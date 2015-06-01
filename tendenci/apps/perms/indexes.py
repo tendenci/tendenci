@@ -108,12 +108,12 @@ class TendenciBaseSearchIndex(indexes.SearchIndex):
         This needs to be overwritten if 'view' permission label does not follow the standard convention:
         (app_label).view_(module_name)
         """
-        return ObjectPermission.objects.users_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.module_name), obj)
+        return ObjectPermission.objects.users_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.model_name), obj)
 
     def prepare_groups_can_view(self, obj):
         """
         This needs to be overwritten if 'view' permission label does not follow the standard convention:
         (app_label).view_(module_name)
         """
-        return ObjectPermission.objects.groups_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.module_name), obj)
+        return ObjectPermission.objects.groups_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.model_name), obj)
 

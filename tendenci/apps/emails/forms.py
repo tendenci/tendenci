@@ -12,7 +12,7 @@ class EmailForm(forms.ModelForm):
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style': 'width:80%'},
         mce_attrs={'storme_app_label': Email._meta.app_label,
-        'storme_model': Email._meta.module_name.lower()}))
+        'storme_model': Email._meta.model_name.lower()}))
 
     class Meta:
         model = Email

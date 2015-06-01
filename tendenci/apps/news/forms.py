@@ -36,7 +36,7 @@ class NewsForm(TendenciBaseForm):
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style': 'width:100%;'},
         mce_attrs={'storme_app_label': News._meta.app_label,
-        'storme_model': News._meta.module_name.lower()}))
+        'storme_model': News._meta.model_name.lower()}))
     release_dt = SplitDateTimeField(label=_('Release Date/Time'), initial=datetime.now())
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))

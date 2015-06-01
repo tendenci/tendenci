@@ -36,7 +36,7 @@ class TendenciBaseModel(models.Model):
 
     @property
     def opt_module_name(self):
-        return self._meta.module_name
+        return self._meta.model_name
 
     def content_type(self):
         return ContentType.objects.get_for_model(self)

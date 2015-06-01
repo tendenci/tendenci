@@ -189,7 +189,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv = Invoice()
         inv.object_type = ContentType.objects.get(
                                       app_label=corp_memb._meta.app_label,
-                                      model=corp_memb._meta.module_name)
+                                      model=corp_memb._meta.model_name)
         inv.object_id = corp_memb.id
         inv.title = corp_memb.corp_profile.name
 

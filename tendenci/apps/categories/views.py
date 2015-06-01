@@ -22,7 +22,7 @@ def edit_categories(request, app_label, model, pk, form_class=CategoryForm, temp
     except: raise Http404
 
     # check permissions
-    perm_tuple = (object._meta.app_label, object._meta.module_name)
+    perm_tuple = (object._meta.app_label, object._meta.model_name)
     if not request.user.has_perm('%s.change_%s' % perm_tuple, object):
         raise Http403
 

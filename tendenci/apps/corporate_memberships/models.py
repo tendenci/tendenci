@@ -500,7 +500,7 @@ class CorpMembership(TendenciBaseModel):
 
     @property
     def module_name(self):
-        return self._meta.module_name
+        return self._meta.model_name
 
     @property
     def free_pass_used(self):

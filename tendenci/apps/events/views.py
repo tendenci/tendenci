@@ -1785,7 +1785,7 @@ def register(request, event_id=0,
     # check if we have any valid discount code for the event.
     # if not, we don't have to display the discount code box.
     if reg_conf.discount_eligible:
-        reg_conf.discount_eligible = Discount.has_valid_discount(model=reg_conf._meta.module_name)
+        reg_conf.discount_eligible = Discount.has_valid_discount(model=reg_conf._meta.model_name)
 
     # Setting up the formset
     registrant = RegistrantFormSet(post_data or None, **params)

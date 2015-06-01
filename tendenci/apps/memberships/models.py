@@ -374,7 +374,7 @@ class MembershipSet(models.Model):
         self.save()
 
         self.invoice.object_type = ContentType.objects.get(
-            app_label=self._meta.app_label, model=self._meta.module_name)
+            app_label=self._meta.app_label, model=self._meta.model_name)
 
         self.invoice.object_id = self.pk
         self.invoice.save()
@@ -1416,7 +1416,7 @@ class MembershipDefault(TendenciBaseModel):
 
         # Check if there is an invoice bound to by content_type
         content_type = ContentType.objects.get(
-            app_label=self._meta.app_label, model=self._meta.module_name)
+            app_label=self._meta.app_label, model=self._meta.model_name)
 
         [invoice] = Invoice.objects.filter(
                 object_type=content_type, object_id=self.pk
@@ -1437,7 +1437,7 @@ class MembershipDefault(TendenciBaseModel):
         status_detail = kwargs.get('status_detail', 'estimate')
 
         content_type = ContentType.objects.get(
-            app_label=self._meta.app_label, model=self._meta.module_name)
+            app_label=self._meta.app_label, model=self._meta.model_name)
 
         invoice = self.get_invoice()
 

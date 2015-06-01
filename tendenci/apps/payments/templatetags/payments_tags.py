@@ -29,7 +29,7 @@ def payment_thankyou_display(request, payment):
         obj = None
     else:
         obj = payment.invoice.get_object()
-        if obj._meta.module_name == 'membershipset':
+        if obj._meta.model_name == 'membershipset':
             [obj] = obj.memberships()[:1] or [None]
 
         if obj:

@@ -17,7 +17,7 @@ def save_files(sender, **kwargs):
     file_ct = ContentType.objects.get_for_model(File)
 
     perm_attrs = []
-    if 'tendencibasemodel' in [s._meta.module_name for s in sender.__bases__ if hasattr(s, '_meta')]:
+    if 'tendencibasemodel' in [s._meta.model_name for s in sender.__bases__ if hasattr(s, '_meta')]:
         # if model (aka sender) inherits from TendenciBaseModel
         perm_attrs = [
             'allow_anonymous_view',
@@ -83,7 +83,7 @@ def init_signals():
 
     for app in apps:
 
-        if app['model']._meta.module_name in ('file', 'invoice',):
+        if app['model']._meta.model_name in ('file', 'invoice',):
             continue  # go to next app
 
         #signals.post_save.connect(save_files, sender=app['model'], weak=False)

@@ -574,7 +574,7 @@ class EventForm(TendenciBaseForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Event._meta.app_label,
-        'storme_model':Event._meta.module_name.lower()}))
+        'storme_model':Event._meta.model_name.lower()}))
 
     start_dt = SplitDateTimeField(label=_('Start Date/Time'),
                                   initial=datetime.now()+timedelta(days=30))
@@ -908,7 +908,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style': 'width:100%'},
         mce_attrs={'storme_app_label': Place._meta.app_label,
-        'storme_model': Place._meta.module_name.lower()}))
+        'storme_model': Place._meta.model_name.lower()}))
     country = CountrySelectField(label=_('Country'), required=False)
     label = _('Location Information')
 
@@ -1019,7 +1019,7 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Speaker._meta.app_label,
-        'storme_model':Speaker._meta.module_name.lower()}))
+        'storme_model':Speaker._meta.model_name.lower()}))
     label = _('Speaker')
     file = forms.FileField(required=False)
 
@@ -1081,7 +1081,7 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Organizer._meta.app_label,
-        'storme_model':Organizer._meta.module_name.lower()}))
+        'storme_model':Organizer._meta.model_name.lower()}))
     label = 'Organizer'
 
     class Meta:
@@ -1265,7 +1265,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     registration_email_text = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':RegistrationConfiguration._meta.app_label,
-        'storme_model':RegistrationConfiguration._meta.module_name.lower()}))
+        'storme_model':RegistrationConfiguration._meta.model_name.lower()}))
 
     class Meta:
         model = RegistrationConfiguration
@@ -1601,7 +1601,7 @@ class RegistrationForm(forms.Form):
                 self.cleaned_data['discount_code']:
             try:
                 discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'],
-                                                apps__model=RegistrationConfiguration._meta.module_name)
+                                                apps__model=RegistrationConfiguration._meta.model_name)
                 if discount.available_for(self.count):
                     return discount
             except:
@@ -1995,7 +1995,7 @@ class MessageAddForm(forms.ModelForm):
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
-        'storme_model':Email._meta.module_name.lower()}),
+        'storme_model':Email._meta.model_name.lower()}),
         label=_('Email Content'))
 
     payment_status = forms.ChoiceField(
@@ -2022,7 +2022,7 @@ class EmailForm(forms.ModelForm):
     #events = forms.CharField()
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
-        'storme_model':Email._meta.module_name.lower()}),
+        'storme_model':Email._meta.model_name.lower()}),
         label=_('Message'), help_text=_('Available tokens: <br />' + \
         ', '.join(['{{ %s }}' % token for token in EMAIL_AVAILABLE_TOKENS])))
 

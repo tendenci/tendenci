@@ -152,11 +152,11 @@ class Registry(object):
         }
         admin_add = 'admin:%s_%s_add' % (
             self.model._meta.app_label,
-            self.model._meta.module_name,
+            self.model._meta.model_name,
         )
         admin_index = 'admin:%s_%s_changelist' % (
             self.model._meta.app_label,
-            self.model._meta.module_name,
+            self.model._meta.model_name,
         )
         if self.has_admin:
             url.update({

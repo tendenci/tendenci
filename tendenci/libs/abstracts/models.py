@@ -36,7 +36,7 @@ class TendenciBaseModel(models.Model):
 
     @property
     def opt_module_name(self):
-        return self._meta.module_name
+        return self._meta.model_name
 
     @property
     def obj_perms(self):

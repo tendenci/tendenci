@@ -98,7 +98,7 @@ def make_invoice_for_entry(entry, **kwargs):
 
     inv = Invoice()
     inv.title = "%s Invoice" % (entry.form.title)
-    inv.object_type = ContentType.objects.get(app_label=entry._meta.app_label, model=entry._meta.module_name)
+    inv.object_type = ContentType.objects.get(app_label=entry._meta.app_label, model=entry._meta.model_name)
     inv.object_id = entry.id
     inv.subtotal = price
     inv.total = price

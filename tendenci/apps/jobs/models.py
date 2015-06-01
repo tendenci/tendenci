@@ -160,7 +160,7 @@ class BaseJob(TendenciBaseModel):
 
     @property
     def opt_module_name(self):
-        return self._meta.module_name
+        return self._meta.model_name
 
     @property
     def category_set(self):

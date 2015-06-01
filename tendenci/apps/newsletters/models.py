@@ -111,7 +111,7 @@ class NewsletterTemplate(models.Model):
         from django.contrib.contenttypes.models import ContentType
         return ContentType.objects.get(
             app_label=cls._meta.app_label,
-            model=cls._meta.module_name)
+            model=cls._meta.model_name)
 
     @models.permalink
     def get_content_url(self):
