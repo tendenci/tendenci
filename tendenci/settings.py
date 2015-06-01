@@ -182,11 +182,11 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.sitemaps',
     'django.contrib.messages',
-    'django.contrib.formtools',
     'django.contrib.admindocs',
     'django.contrib.staticfiles',
 
     # applications
+    'formtools',
     'bootstrap3',
     'pagination',
     'tagging',
