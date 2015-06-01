@@ -1,7 +1,7 @@
 # ISSUE: http://south.aeracode.org/ticket/211
 # South does not track new/removed permissions
 
-from south.signals import post_migrate
+#from south.signals import post_migrate
 
 def update_permissions_after_migration(app,**kwargs):
     """
@@ -13,4 +13,4 @@ def update_permissions_after_migration(app,**kwargs):
 
     create_permissions(get_app(app), get_models(), 2 if settings.DEBUG else 0)
 
-post_migrate.connect(update_permissions_after_migration)
+#post_migrate.connect(update_permissions_after_migration)
