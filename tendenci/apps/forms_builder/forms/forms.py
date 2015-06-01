@@ -253,12 +253,12 @@ class FormAdminForm(TendenciBaseForm):
     intro = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
-        'storme_model':Form._meta.module_name.lower()}))
+        'storme_model':Form._meta.model_name.lower()}))
 
     response = forms.CharField(required=False, label=_('Confirmation Text'),
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
-        'storme_model':Form._meta.module_name.lower()}))
+        'storme_model':Form._meta.model_name.lower()}))
 
     template = forms.ChoiceField(choices=template_choices, required=False)
 
