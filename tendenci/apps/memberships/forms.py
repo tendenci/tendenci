@@ -1609,6 +1609,12 @@ class MembershipDefaultForm(TendenciBaseForm):
                 else:
                     self.fields[field_name].initial = getattr(demographics, field_name)
         # end demographic
+        
+        # industry field
+        industry_field = MembershipAppField.objects.get(field_name='industry',
+                    membership_app=app, display=True)
+        if industry_field:
+            self.fields['industry'].label = industry_field.label
 
     def clean(self):
         """
