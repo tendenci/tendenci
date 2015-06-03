@@ -15,16 +15,6 @@ DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
 INCLUDE_CHOICES = ((1, _('Include')),(0, _('Skip')),)
 
 
-types_list = [('',_('All'))]
-try:
-    from tendenci.apps.events.models import Type
-    types = Type.objects.all()
-    for type in types:
-        types_list.append((int(type.pk),type.name))
-except ImportError:
-    pass
-TYPE_CHOICES = tuple(types_list)
-
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 CreateSend.api_key = api_key
@@ -42,7 +32,7 @@ class CampaignForm(forms.Form):
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
     event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
-    events_type = forms.ChoiceField(initial='', choices=TYPE_CHOICES, required=False)
+    events_type = forms.ChoiceField(initial='', choices=(), required=False)
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
     news = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
@@ -55,4 +45,16 @@ class CampaignForm(forms.Form):
     #Campaign Monitor Template
     template = forms.ModelChoiceField(queryset=Template.objects.all())
 
-
+    def __init__(self, *args, **kwargs):
+        super(CampaignForm, self).__init__(*args, **kwargs)
+        
+        types_list = [('',_('All'))]
+        try:
+            from tendenci.apps.events.models import Type
+            types = Type.objects.all()
+            for type in types:
+                types_list.append((int(type.pk),type.name))
+        except ImportError:
+            pass
+        TYPE_CHOICES = tuple(types_list)
+        self.fields['events_type'].choices = TYPE_CHOICES
