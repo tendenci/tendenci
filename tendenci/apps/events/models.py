@@ -257,8 +257,8 @@ class RegConfPricing(OrderingBaseModel):
                                  related_name='regconfpricings',
                                  help_text=_("You'll have the chance to edit the selected form"))
 
-    start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
-    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
+    start_dt = models.DateTimeField(_('Start Date'))
+    end_dt = models.DateTimeField(_('End Date'))
 
     allow_anonymous = models.BooleanField(_("Public can use this pricing"), default=False)
     allow_user = models.BooleanField(_("Signed in user can use this pricing"), default=False)

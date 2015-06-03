@@ -155,8 +155,8 @@ class Newsletter(models.Model):
     # module content
     jump_links = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
     events = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
-    event_start_dt = models.DateField(default=datetime.date.today())
-    event_end_dt = models.DateField(default=datetime.date.today()+datetime.timedelta(days=90))
+    event_start_dt = models.DateField()
+    event_end_dt = models.DateField()
     events_type = models.IntegerField(default=1, null=True, blank=True)
     articles = models.IntegerField(default=1, choices=INCLUDE_CHOICES)
     articles_days = models.IntegerField(default=60, choices=DAYS_CHOICES)
