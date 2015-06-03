@@ -512,7 +512,7 @@ class MembershipDefault(TendenciBaseModel):
     groups = models.ManyToManyField(Group)
 
     membership_set = models.ForeignKey(MembershipSet, blank=True, null=True)
-    app = models.ForeignKey("MembershipApp", null=True)
+    app = models.ForeignKey("MembershipApp", null=True, on_delete=models.SET_NULL)
 
     objects = MembershipDefaultManager()
 
