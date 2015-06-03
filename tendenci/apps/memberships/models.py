@@ -33,6 +33,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.emails.models import Email
 from tendenci.apps.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
+from .signals import init_signals
 from tendenci.apps.base.utils import fieldify
 from tinymce import models as tinymce_models
 from tendenci.apps.payments.models import PaymentMethod
@@ -2496,3 +2497,5 @@ def assign_permissions(app, created_models, verbosity, **kwargs):
 from django.db.models.signals import post_syncdb
 #from memberships import models as membership_models
 post_syncdb.connect(assign_permissions, sender=__file__)
+
+init_signals()
