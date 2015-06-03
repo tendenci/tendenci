@@ -509,7 +509,7 @@ class MembershipDefault(TendenciBaseModel):
     company_size = models.CharField(max_length=50, blank=True, default=u'')
     promotion_code = models.CharField(max_length=50, blank=True, default=u'')
     directory = models.ForeignKey(Directory, blank=True, null=True)
-    groups = models.ManyToManyField(Group, null=True)
+    groups = models.ManyToManyField(Group)
 
     membership_set = models.ForeignKey(MembershipSet, blank=True, null=True)
     app = models.ForeignKey("MembershipApp", null=True)

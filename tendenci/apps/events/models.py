@@ -243,7 +243,7 @@ class RegConfPricing(OrderingBaseModel):
     title = models.CharField(_('Pricing display name'), max_length=500, blank=True)
     description = models.TextField(_("Pricing description"), blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
-    groups = models.ManyToManyField(Group, blank=True, null=True)
+    groups = models.ManyToManyField(Group, blank=True)
 
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     include_tax = models.BooleanField(default=False)
