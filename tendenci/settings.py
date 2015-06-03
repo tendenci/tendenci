@@ -237,7 +237,7 @@ INSTALLED_APPS = (
     'tendenci.apps.accountings',
     'tendenci.apps.emails',
     'tendenci.apps.email_blocks',
-    'tendenci.apps.subscribers',
+    #'tendenci.apps.subscribers',
     'tendenci.apps.contacts',
     'tendenci.apps.robots',
     'tendenci.apps.versions',
