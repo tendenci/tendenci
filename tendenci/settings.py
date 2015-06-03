@@ -211,7 +211,7 @@ INSTALLED_APPS = (
     'tendenci.apps.payments',
     'tendenci.apps.recurring_payments',
     'tendenci.apps.forms_builder.forms',
-    'tendenci.apps.pluginmanager',
+    #'tendenci.apps.pluginmanager',
     'tendenci.apps.accounts',
     'tendenci.apps.files',
     'tendenci.apps.user_groups',
