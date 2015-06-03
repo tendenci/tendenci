@@ -890,6 +890,8 @@ class TypeForm(forms.ModelForm):
 
     class Meta:
         model = Type
+        # django 1.8 requires fields or exclude
+        exclude = ()
 
 class ReassignTypeForm(forms.Form):
     type = forms.ModelChoiceField(empty_label=None, initial=1, queryset=Type.objects.none(), label=_('Reassign To'))
@@ -914,6 +916,8 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
 
     class Meta:
         model = Place
+        # django 1.8 requires fields or exclude
+        exclude = ()
 
     def __init__(self, *args, **kwargs):
         super(PlaceForm, self).__init__(*args, **kwargs)
@@ -974,6 +978,8 @@ class SponsorForm(forms.ModelForm):
     label = _('Sponsor')
     class Meta:
         model = Sponsor
+        # django 1.8 requires fields or exclude
+        exclude = ()
 
 
 class SpeakerBaseFormSet(BaseModelFormSet):
@@ -1103,6 +1109,8 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
+        # django 1.8 requires fields or exclude
+        exclude = ()
 
 
 class Reg8nConfPricingForm(BetterModelForm):

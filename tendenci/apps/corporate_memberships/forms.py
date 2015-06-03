@@ -292,6 +292,7 @@ def assign_fields(form, app_field_objs, instance=None):
 class CorpProfileForm(forms.ModelForm):
     class Meta:
         model = CorpProfile
+        fields = "__all__"
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request_user = kwargs.pop('request_user')
@@ -388,6 +389,7 @@ class CorpMembershipForm(forms.ModelForm):
 
     class Meta:
         model = CorpMembership
+        fields = "__all__"
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request_user = kwargs.pop('request_user')

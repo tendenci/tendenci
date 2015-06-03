@@ -12,6 +12,7 @@ class RequestForm(forms.ModelForm):
     captcha = CaptchaField()
     class Meta:
         model = Request
+        fields = "__all__"
 
 class HelpFileAdminForm(TendenciBaseForm):
     answer = forms.CharField(required=False,

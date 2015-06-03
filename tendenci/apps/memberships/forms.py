@@ -546,6 +546,7 @@ def assign_fields(form, app_field_objs):
 class UserForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = User
+        fields = "__all__" 
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -711,6 +712,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
     country_2 = CountrySelectField(label=_('Country'), required=False)
     class Meta:
         model = Profile
+        fields = "__all__" 
 
     def __init__(self, app_field_objs, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
@@ -836,6 +838,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
 class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = MembershipDemographic
+        fields = "__all__" 
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request', None)
@@ -955,6 +958,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
     class Meta:
         model = MembershipDefault
+        fields = "__all__" 
 
     def __init__(self, app_field_objs, *args, **kwargs):
         request_user = kwargs.pop('request_user')
@@ -1134,12 +1138,17 @@ class MembershipExportForm(forms.Form):
         ('all_fields', _('Export All Fields')),
     )
 
-    EXPORT_TYPE_CHOICES = [(u'all', _('Export All Types'))] + list(MembershipType.objects.values_list('pk', 'name'))
-
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
     export_status_detail = forms.ChoiceField(choices=STATUS_DETAIL_CHOICES)
     export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
-    export_type = forms.ChoiceField(choices=EXPORT_TYPE_CHOICES)
+    export_type = forms.ChoiceField(choices=())
+    
+    def __init__(self, *args, **kwargs):
+        super(MembershipExportForm, self).__init__(*args, **kwargs)
+        EXPORT_TYPE_CHOICES = [(u'all', _('Export All Types'))] + \
+                list(MembershipType.objects.values_list('pk', 'name'))
+        self.fields['export_type'].choices = EXPORT_TYPE_CHOICES
+        
 
 
 class NoticeForm(forms.ModelForm):

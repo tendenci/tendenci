@@ -60,6 +60,8 @@ admin.site.register(Type, EventTypeAdmin)
 class CustomRegFieldAdminForm(CustomRegFormForField):
     class Meta:
         model = CustomRegField
+        # django 1.8 requires fields or exclude
+        exclude = ()
 
 
 class CustomRegFieldAdmin(admin.TabularInline):

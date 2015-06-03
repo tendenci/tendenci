@@ -56,3 +56,4 @@ class RedirectForm(forms.ModelForm):
 
     class Meta:
         model = Redirect
+        fields = "__all__"
