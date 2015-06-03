@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django import forms
-from django.forms.widgets import RadioFieldRenderer, RadioInput
+from django.forms.widgets import RadioFieldRenderer, RadioSelect
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
@@ -341,7 +341,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         return None
 
 # removed the label when any of the radio select contains another input field
-class CustomRadioInput(RadioInput):
+class CustomRadioInput(RadioSelect):
     def __unicode__(self):
         #if 'id' in self.attrs:
         #    label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
