@@ -1,7 +1,11 @@
 import re
 from django.template import TemplateDoesNotExist, Context
-from django.template.loader import find_template, find_template_loader, \
-    get_template_from_string, select_template, make_origin
+from django.template import engines
+engine = engines['django'].engine
+find_template = engine.find_template
+find_template_loader = engine.find_template_loader
+get_template_from_string = engine.from_string
+make_origin = engine.make_origin
 from django.http import HttpResponse
 from django.conf import settings
 from tendenci.apps.theme.utils import get_theme_template, get_theme_root
