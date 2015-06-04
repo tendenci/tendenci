@@ -138,38 +138,48 @@ AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 # default image url (relative to the static folder)
 DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 
-# TEMPLATE DIRECTORIES AND PROCESSORS
+# TEMPLATES
+TEMPLATES = [
+    {
+     'BACKEND': 'django.template.backends.django.DjangoTemplates',
+     'APP_DIRS': True,
+     'DIRS': [
+            os.path.join(TENDENCI_ROOT, "themes"),
+            os.path.join(TENDENCI_ROOT, "templates"),
+            # Put strings here, like "/home/html/django_templates"
+            # or "C:/www/django/templates".
+            # Always use forward slashes, even on Windows.
+            # Don't forget to use absolute paths, not relative paths.
+            ],
+     'OPTIONS': 
+        {
+           'context_processors':
+                (
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.media',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+            
+                # tendenci context processors
+                'tendenci.apps.theme.context_processors.theme',
+                'tendenci.apps.site_settings.context_processors.settings',
+                'tendenci.apps.site_settings.context_processors.app_dropdown',
+                'tendenci.apps.base.context_processors.static_url',
+                'tendenci.apps.base.context_processors.index_update_note',
+                'tendenci.apps.base.context_processors.today',
+                'tendenci.apps.base.context_processors.site_admin_email',
+                'tendenci.apps.base.context_processors.user_classification',
+                'tendenci.apps.base.context_processors.display_name',
+                'tendenci.apps.registry.context_processors.registered_apps',
+                'tendenci.apps.registry.context_processors.enabled_addons',
+                )
+                 
+        }
+     }                
+]
 
-TEMPLATE_DIRS = (
-    os.path.join(TENDENCI_ROOT, "themes"),
-    os.path.join(TENDENCI_ROOT, "templates"),
-    # Put strings here, like "/home/html/django_templates"
-    # or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-
-    # tendenci context processors
-    'tendenci.apps.theme.context_processors.theme',
-    'tendenci.apps.site_settings.context_processors.settings',
-    'tendenci.apps.site_settings.context_processors.app_dropdown',
-    'tendenci.apps.base.context_processors.static_url',
-    'tendenci.apps.base.context_processors.index_update_note',
-    'tendenci.apps.base.context_processors.today',
-    'tendenci.apps.base.context_processors.site_admin_email',
-    'tendenci.apps.base.context_processors.user_classification',
-    'tendenci.apps.base.context_processors.display_name',
-    'tendenci.apps.registry.context_processors.registered_apps',
-    'tendenci.apps.registry.context_processors.enabled_addons',
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
