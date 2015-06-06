@@ -62,6 +62,7 @@ class GenerateForm(forms.Form):
 class OldGenerateForm(forms.ModelForm):
     class Meta:
         model = Newsletter
+        fields = "__all__"
         widgets = {
             'subject': forms.TextInput(attrs={'size': 50}),
             'event_start_dt': SelectDateWidget(None, range(1920, THIS_YEAR+10)),
