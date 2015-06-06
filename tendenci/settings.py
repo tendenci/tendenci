@@ -8,7 +8,6 @@ TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
 SITE_ADDONS_PATH = ''
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['*']
 
@@ -66,15 +65,6 @@ MEDIA_URL = '/site_media/media/'
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 's$6*!=msW0__=51^w@_tbaconjm4+fg@0+ic#bx^3rj)zc$a6i'
 SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
-
-## Django 1.4
-TEMPLATE_LOADERS = (
-    'app_namespace.Loader',
-    'tendenci.apps.theme.template_loaders.load_template_source',
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    #'django.template.loaders.eggs.load_template_source',
-)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
@@ -142,7 +132,7 @@ DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 TEMPLATES = [
     {
      'BACKEND': 'django.template.backends.django.DjangoTemplates',
-     'APP_DIRS': True,
+#      'APP_DIRS': True,
      'DIRS': [
             os.path.join(TENDENCI_ROOT, "themes"),
             os.path.join(TENDENCI_ROOT, "templates"),
@@ -151,15 +141,13 @@ TEMPLATES = [
             # Always use forward slashes, even on Windows.
             # Don't forget to use absolute paths, not relative paths.
             ],
-     'OPTIONS': 
-        {
-           'context_processors':
-                (
+     'OPTIONS': {
+        'context_processors': [
                 'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.debug',
-                'django.core.context_processors.i18n',
-                'django.core.context_processors.media',
-                'django.core.context_processors.request',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             
                 # tendenci context processors
@@ -174,8 +162,15 @@ TEMPLATES = [
                 'tendenci.apps.base.context_processors.display_name',
                 'tendenci.apps.registry.context_processors.registered_apps',
                 'tendenci.apps.registry.context_processors.enabled_addons',
-                )
-                 
+                ],
+         'loaders':  [
+                'app_namespace.Loader',
+                #'tendenci.apps.theme.template_loaders.load_template_source',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                #'django.template.loaders.eggs.load_template_source',
+            ],
+         'debug': DEBUG
         }
      }                
 ]
