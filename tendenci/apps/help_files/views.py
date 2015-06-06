@@ -13,7 +13,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
-from tendenci.apps.help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
+from tendenci.apps.help_files.models import Topic, HelpFile, HelpFileMigration, Request
 from tendenci.apps.help_files.forms import RequestForm, HelpFileForm
 from tendenci.apps.notifications import models as notification
 
@@ -27,6 +27,7 @@ def index(request, template_name="help_files/index.html"):
     # Access the join table and iterate over a dict to avoid
     # n+1 queries to get all of the correct topics.
     byhelpfile = {}
+    # TODO: fix non-existent later
     for tp in HelpFile_Topics.objects.select_related('helpfile', 'topic').all():
         byhelpfile.setdefault(tp.helpfile.id, []).append(tp.topic)
     # Use stored lists
