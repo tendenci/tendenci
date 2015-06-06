@@ -23,7 +23,7 @@ def auth(request, backend):
     return auth_process(request, backend, complete_url)
 
 
-@transaction.commit_on_success
+@transaction.atomic
 def complete(request, backend):
     """Authentication complete view, override this view if transaction
     management doesn't suit your needs."""
