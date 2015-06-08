@@ -165,6 +165,7 @@ TEMPLATES = [
                 ],
          'loaders':  [
                 'app_namespace.Loader',
+                'tendenci.apps.theme.template_loaders.Loader',
                 #'tendenci.apps.theme.template_loaders.load_template_source',
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',

@@ -5,8 +5,13 @@ import os
 
 from django.conf import settings
 from django.template import TemplateDoesNotExist
-from django.template.loader import (BaseLoader, get_template_from_string,
-    find_template_loader, make_origin)
+from django.template.loader import BaseLoader
+from django.template import engines
+engine = engines['django'].engine
+find_template_loader = engine.find_template_loader
+get_template_from_string = engine.from_string
+make_origin = engine.make_origin
+
 from django.utils._os import safe_join
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
@@ -42,7 +47,7 @@ class Loader(BaseLoader):
         article view. - @jennyq)
         """
         self.theme_root = get_theme_root()
-        super(Loader, self).__init__(*args, **kwargs)
+        super(Loader, self).__init__(engine)
 
 
     def get_template_sources(self, template_name, template_dirs=None):
