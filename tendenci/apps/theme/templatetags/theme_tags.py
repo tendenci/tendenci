@@ -4,7 +4,7 @@ from django.template import Library, Template, Variable
 from django.conf import settings
 from django.template.base import TextNode
 from django.template.loader import get_template
-from django.template.loader_tags import (ExtendsNode, IncludeNode, ConstantIncludeNode,
+from django.template.loader_tags import (ExtendsNode, IncludeNode,
                                          BlockNode, BlockContext,
                                          BLOCK_CONTEXT_KEY,)
 from django.contrib.auth.models import AnonymousUser, User
@@ -110,7 +110,7 @@ class ThemeExtendsNode(ExtendsNode):
         return compiled_parent._render(context)
 
 
-class ThemeConstantIncludeNode(ConstantIncludeNode):
+class ThemeConstantIncludeNode(IncludeNode):
     def __init__(self, template_path):
         self.template_path = template_path
 
