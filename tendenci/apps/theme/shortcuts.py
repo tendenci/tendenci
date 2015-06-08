@@ -1,14 +1,16 @@
 import re
 from django.template import TemplateDoesNotExist, Context
-from django.template import engines
-engine = engines['django'].engine
+from django.template import Engine
+engine = Engine.get_default()
 find_template = engine.find_template
 find_template_loader = engine.find_template_loader
 get_template_from_string = engine.from_string
+select_template = engine.select_template
 make_origin = engine.make_origin
 from django.http import HttpResponse
 from django.conf import settings
 from tendenci.apps.theme.utils import get_theme_template, get_theme_root
+from tendenci.apps.site_settings.utils import get_setting
 
 non_theme_source_loaders = None
 
@@ -101,7 +103,8 @@ def render_to_theme(template_name, dictionary={}, context_instance=Context):
 
     context_instance.update(dictionary)
     toggle = 'TOGGLE_TEMPLATE' in context_instance
-    theme = context_instance['THEME']
+    #theme = context_instance['THEME']
+    theme = get_setting('module', 'theme_editor', 'theme')
     theme_template = get_theme_template(template_name, theme=theme)
     context_instance["THEME_TEMPLATE"] = template_name
     context_instance["CUSTOM_TEMPLATE"] = False
