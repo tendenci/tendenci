@@ -72,8 +72,8 @@ def themed_response(*args, **kwargs):
     """Returns a HttpResponse whose content is filled with the result of calling
     django.template.loader.render_to_string() with the passed arguments.
     """
-    httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
-    return HttpResponse(render_to_theme(*args, **kwargs), **httpresponse_kwargs)
+    content_type = kwargs.get('content_type', None) or kwargs.get('mimetype', None)
+    return HttpResponse(render_to_theme(*args, **kwargs), content_type=content_type)
 
 
 def strip_content_above_doctype(html):
