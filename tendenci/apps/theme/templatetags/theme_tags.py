@@ -75,12 +75,11 @@ class ThemeExtendsNode(ExtendsNode):
 
         theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
         theme_template = get_theme_template(parent, theme=theme)
-
         try:
-            template = get_template(theme_template)
+            template = context.template.engine.get_template(theme_template)
         except TemplateDoesNotExist:
             # to be sure that we are not loadnig the active theme's template
-            template = get_default_template(parent)
+            template = context.template.engine.get_template(parent)
 
         return template
 
