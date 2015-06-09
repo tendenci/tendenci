@@ -89,7 +89,7 @@ urlpatterns += patterns('',
     url(r'^(?P<file_name>[\w-]+\.[\w]{2,4})$', 'tendenci.apps.base.views.base_file'),
 
     # legacy redirects
-    url(r'^login/$', RedirectView.as_view(url='/accounts/login/')),
+    url(r'^login/$', RedirectView.as_view(url='/accounts/login/', permanent=True)),
 
     url(r'^', include('tendenci.apps.articles.urls')),
     url(r'^', include('tendenci.apps.corporate_memberships.urls')),
@@ -174,7 +174,7 @@ except ImportError:
 from tendenci.apps.registry.utils import get_url_patterns
 urlpatterns += get_url_patterns()
 
-urlpatterns += patterns('', url(r'^en/$', RedirectView.as_view(url='/accounts/login/')),)
+urlpatterns += patterns('', url(r'^en/$', RedirectView.as_view(url='/accounts/login/', permanent=True)),)
 
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first

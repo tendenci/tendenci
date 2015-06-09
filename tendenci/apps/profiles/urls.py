@@ -59,5 +59,5 @@ urlpatterns = patterns('tendenci.apps.profiles.views',
 
 urlpatterns += patterns('',
     # Special redirect for user.get_absolute_url
-    url(r'^users/(?P<username>[+-.\w\d@\s]+)/$', RedirectView.as_view(url='/%s/%s/' % (urlpath, '%(username)s'))),
+    url(r'^users/(?P<username>[+-.\w\d@\s]+)/$', RedirectView.as_view(url='/%s/%s/' % (urlpath, '%(username)s'), permanent=True)),
 )
