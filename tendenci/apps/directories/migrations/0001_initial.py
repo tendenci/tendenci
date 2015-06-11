@@ -13,11 +13,11 @@ import tagging.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('invoices', '0001_initial'),
+        ('files', '0002_auto_20150611_1537'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('meta', '0001_initial'),
         ('entities', '0001_initial'),
-        ('files', '0001_initial'),
+        ('invoices', '0001_initial'),
     ]
 
     operations = [

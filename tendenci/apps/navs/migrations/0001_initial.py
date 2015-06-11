@@ -9,7 +9,7 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pages', '0001_initial'),
+        ('pages', '0002_auto_20150611_1537'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('entities', '0001_initial'),
     ]

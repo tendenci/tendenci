@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import tendenci.apps.user_groups.utils
 import django.db.models.deletion
 from django.conf import settings
 import tagging.fields
@@ -11,10 +10,9 @@ import tagging.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user_groups', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('entities', '0001_initial'),
         ('files', '0001_initial'),
+        ('entities', '0001_initial'),
     ]
 
     operations = [
@@ -54,7 +52,6 @@ class Migration(migrations.Migration):
                 ('rotator_position', models.IntegerField(default=0, verbose_name='Rotator Position', blank=True)),
                 ('creator', models.ForeignKey(related_name='stories_story_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='stories_story_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
             ],
             options={
                 'ordering': ['position'],
@@ -71,20 +68,5 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
             bases=('files.file',),
-        ),
-        migrations.AddField(
-            model_name='story',
-            name='image',
-            field=models.ForeignKey(default=None, to='stories.StoryPhoto', help_text='Photo that represents this story.', null=True),
-        ),
-        migrations.AddField(
-            model_name='story',
-            name='owner',
-            field=models.ForeignKey(related_name='stories_story_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
-        ),
-        migrations.AddField(
-            model_name='story',
-            name='rotator',
-            field=models.ForeignKey(default=None, blank=True, to='stories.Rotator', help_text='The rotator where this story belongs.', null=True),
         ),
     ]

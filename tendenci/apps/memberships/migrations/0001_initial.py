@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import tinymce.models
-import django.db.models.deletion
 from django.conf import settings
+import django.db.models.deletion
+import tinymce.models
 import tendenci.apps.base.fields
 
 
@@ -13,14 +13,12 @@ class Migration(migrations.Migration):
     dependencies = [
         ('payments', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('files', '0001_initial'),
-        ('directories', '__first__'),
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('industries', '__first__'),
-        ('invoices', '0001_initial'),
         ('user_groups', '0001_initial'),
+        ('directories', '__first__'),
         ('entities', '0001_initial'),
-        ('regions', '__first__'),
+        ('invoices', '0001_initial'),
+        ('files', '0002_auto_20150611_1537'),
+        ('industries', '0001_initial'),
     ]
 
     operations = [
@@ -51,8 +49,6 @@ class Migration(migrations.Migration):
                 ('tax_rate', models.DecimalField(default=0, help_text='Example: 0.0825 for 8.25%.', max_digits=5, decimal_places=4, blank=True)),
                 ('discount_eligible', models.BooleanField(default=False)),
                 ('use_for_corp', models.BooleanField(default=True, verbose_name='Use for Corporate Individuals')),
-                ('creator', models.ForeignKey(related_name='memberships_membershipapp_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('entity', models.ForeignKey(related_name='memberships_membershipapp_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
             ],
             options={
                 'verbose_name': 'Membership Application',
@@ -75,8 +71,6 @@ class Migration(migrations.Migration):
                 ('choices', models.CharField(help_text='Comma separated options where applicable', max_length=1000, verbose_name='Choices', blank=True)),
                 ('default_value', models.CharField(default=b'', max_length=200, verbose_name='Default Value', blank=True)),
                 ('css_class', models.CharField(default=b'', max_length=200, verbose_name='CSS Class', blank=True)),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType', null=True)),
-                ('membership_app', models.ForeignKey(related_name='fields', to='memberships.MembershipApp')),
             ],
             options={
                 'ordering': ('position',),
@@ -220,8 +214,8 @@ class Migration(migrations.Migration):
             name='MembershipImport',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('upload_file', models.FileField(max_length=260, null=True, verbose_name='Upload File', upload_to=b'imports/memberships/3a53e521')),
-                ('recap_file', models.FileField(max_length=260, null=True, verbose_name='Recap File', upload_to=b'imports/memberships/3a53e521')),
+                ('upload_file', models.FileField(max_length=260, null=True, verbose_name='Upload File', upload_to=b'imports/memberships/ec1cd8e3')),
+                ('recap_file', models.FileField(max_length=260, null=True, verbose_name='Recap File', upload_to=b'imports/memberships/ec1cd8e3')),
                 ('header_line', models.CharField(default=b'', max_length=3000, verbose_name='Header Line')),
                 ('interactive', models.IntegerField(default=0, choices=[(1, 'Interactive'), (0, 'Not Interactive (no login)')])),
                 ('override', models.IntegerField(default=0, choices=[(0, 'Blank Fields'), (1, 'All Fields (override)')])),
@@ -386,30 +380,5 @@ class Migration(migrations.Migration):
             model_name='membershipdefault',
             name='payment_method',
             field=models.ForeignKey(to='payments.PaymentMethod', null=True),
-        ),
-        migrations.AddField(
-            model_name='membershipdefault',
-            name='region',
-            field=models.ForeignKey(blank=True, to='regions.Region', null=True),
-        ),
-        migrations.AddField(
-            model_name='membershipdefault',
-            name='user',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AddField(
-            model_name='membershipapp',
-            name='membership_types',
-            field=models.ManyToManyField(to='memberships.MembershipType', verbose_name=b'Membership Types'),
-        ),
-        migrations.AddField(
-            model_name='membershipapp',
-            name='owner',
-            field=models.ForeignKey(related_name='memberships_membershipapp_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
-        ),
-        migrations.AddField(
-            model_name='membershipapp',
-            name='payment_methods',
-            field=models.ManyToManyField(to='payments.PaymentMethod', verbose_name='Payment Methods'),
         ),
     ]

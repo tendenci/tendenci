@@ -113,7 +113,7 @@ class Migration(migrations.Migration):
             name='CorpMembershipImport',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('upload_file', models.FileField(upload_to=b'imports/corpmemberships/3a5df3a8', max_length=260, verbose_name='Upload File')),
+                ('upload_file', models.FileField(upload_to=b'imports/corpmemberships/ec286b45', max_length=260, verbose_name='Upload File')),
                 ('override', models.IntegerField(default=0, choices=[(0, 'Blank Fields'), (1, 'All Fields (override)')])),
                 ('key', models.CharField(default=b'name', max_length=50, verbose_name='Key')),
                 ('bind_members', models.BooleanField(default=False, verbose_name='Bind members to corporations by their company names')),

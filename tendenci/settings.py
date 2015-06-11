@@ -178,13 +178,13 @@ TEMPLATES = [
 
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django_admin_bootstrapped.bootstrap3', # must be added before django.contrib.admin
     'django_admin_bootstrapped',
-    'django.contrib.admin',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
     'django.contrib.messages',

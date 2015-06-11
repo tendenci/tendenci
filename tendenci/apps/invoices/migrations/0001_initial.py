@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ('tax_exemptid', models.CharField(max_length=50, null=True, blank=True)),
                 ('tax_rate', models.FloatField(default=0, blank=True)),
                 ('taxable', models.BooleanField(default=False)),
-                ('tax', models.DecimalField(default=0, max_digits=6, decimal_places=4)),
+                ('tax', models.DecimalField(default=0, max_digits=15, decimal_places=4)),
                 ('bill_to', models.CharField(max_length=120, blank=True)),
                 ('bill_to_first_name', models.CharField(max_length=100, null=True, blank=True)),
                 ('bill_to_last_name', models.CharField(max_length=100, null=True, blank=True)),

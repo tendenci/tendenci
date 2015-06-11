@@ -2,20 +2,17 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import timezones.fields
-import tinymce.models
-import tagging.fields
-import tendenci.apps.user_groups.utils
 import tendenci.apps.base.fields
 import django.db.models.deletion
+import tinymce.models
 from django.conf import settings
+import timezones.fields
+import tagging.fields
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user_groups', '0001_initial'),
-        ('meta', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('entities', '0001_initial'),
     ]
@@ -63,9 +60,6 @@ class Migration(migrations.Migration):
                 ('not_official_content', models.BooleanField(default=True, verbose_name='Official Content')),
                 ('creator', models.ForeignKey(related_name='articles_article_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='articles_article_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
-                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
-                ('owner', models.ForeignKey(related_name='articles_article_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Article',

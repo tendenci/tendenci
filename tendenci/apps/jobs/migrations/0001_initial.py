@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import tendenci.apps.user_groups.utils
 import tendenci.apps.base.fields
 import django.db.models.deletion
 import tinymce.models
@@ -13,11 +12,8 @@ import tagging.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user_groups', '0001_initial'),
-        ('meta', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('entities', '0001_initial'),
-        ('invoices', '0001_initial'),
     ]
 
     operations = [
@@ -82,10 +78,6 @@ class Migration(migrations.Migration):
                 ('non_member_count', models.IntegerField(null=True, blank=True)),
                 ('creator', models.ForeignKey(related_name='jobs_job_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='jobs_job_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
-                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True)),
-                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
-                ('owner', models.ForeignKey(related_name='jobs_job_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Job',
@@ -120,10 +112,5 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Job Pricings',
                 'permissions': (('view_jobpricing', 'Can view job pricing'),),
             },
-        ),
-        migrations.AddField(
-            model_name='job',
-            name='pricing',
-            field=models.ForeignKey(to='jobs.JobPricing', null=True),
         ),
     ]
