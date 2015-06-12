@@ -16,6 +16,7 @@ from django.contrib.contenttypes import generic
 from django.core.files.storage import default_storage
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.fields.related import ManyToOneRel
 
 from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -78,13 +79,12 @@ class File(TendenciBaseModel):
         permissions = (("view_file", _("Can view file")),)
 
     def __init__(self, *args, **kwargs):
-        from django.db.models.related import RelatedObject
         super(File, self).__init__(*args, **kwargs)
 
         self._originaldict = {}
         for field_name in self._meta.get_all_field_names():
 
-            if isinstance(self._meta.get_field_by_name(field_name)[0], RelatedObject):
+            if isinstance(self._meta.get_field_by_name(field_name)[0], ManyToOneRel):
                 continue  # preventing circular reference
 
             if hasattr(self, field_name):
