@@ -2,10 +2,10 @@
 {% load reports_tags %}
 {% load humanize %}
 {% load i18n %}
-{% url "reports-events-summary-historical" as hist_logs_url %}
-{% url "event_log.search" as logs_search %}
 
 {% block content %}
+{% url "reports-events-summary-historical" as hist_logs_url %}
+{% url "event_log.search" as logs_search %}
 <h1>{% trans "Tendenci&reg; Event Log Summary Report" %}</h1>
 {% blocktrans %}
 <div>
