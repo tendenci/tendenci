@@ -7,9 +7,6 @@ from tendenci.libs.model_report import report
 
 from tendenci.apps.registry import autodiscover as reg_autodiscover
 
-# load the apps that are in Django Admin
-admin.autodiscover()
-
 # load the app_registry
 reg_autodiscover()
 
