@@ -85,8 +85,8 @@ class TendenciBaseForm(FormControlWidgetMixin, BetterModelForm):
         if 'group_perms' in self.fields:
             self.fields['group_perms'].choices = group_choices()
 
-        if 'instance' in kwargs:
-            instance = kwargs['instance']
+        instance = kwargs.get('instance', None)
+        if instance:
             if 'group_perms' in self.fields:
                 self.fields['group_perms'].initial = groups_with_perms(instance)
             if 'user_perms' in self.fields:
