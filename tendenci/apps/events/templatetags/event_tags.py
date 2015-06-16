@@ -163,6 +163,7 @@ class EventListNode(Node):
 
         filters = get_query_filters(context['user'], 'events.view_event')
         events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt).distinct().extra(select={'hour': 'extract( hour from start_dt )'}).extra(select={'minute': 'extract( minute from start_dt )'})
+        events = events.filter(enable_private_slug=False)
 
         if type:
             events = events.filter(type=type)

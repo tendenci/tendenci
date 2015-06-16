@@ -344,6 +344,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
     filters = get_query_filters(request.user, 'events.view_event')
     events = Event.objects.filter(filters).distinct()
+    events = events.filter(enable_private_slug=False)
     if request.user.is_authenticated():
         events = events.select_related()
 
