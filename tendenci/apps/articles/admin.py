@@ -36,6 +36,12 @@ class ArticleAdmin(TendenciBaseModelAdmin):
                      ),
                     'classes': ('contact',),
         }),
+        (_('Contributor'), {
+            'fields': ('contributor_type',
+                     'google_profile',
+                     ),
+                    'classes': ('contact',),
+        }),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
