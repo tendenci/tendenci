@@ -1324,7 +1324,7 @@ class Event(TendenciBaseModel):
         if absolute_url:
             return '%s/%s/%s/%s' % (
                 get_global_setting('siteurl'),
-                get_module_setting('events', 'url'),
+                get_module_setting('events', 'url') or 'events',
                 pk,
                 private_slug)
 
