@@ -310,7 +310,7 @@ def entries_export(request, id, include_files=False):
             return redirect('form_entries_export_status', task_id)
     else:
         # blank csv document
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=export_entries_%d.csv' % time()
         writer = csv.writer(response, delimiter=',')
 
@@ -675,6 +675,6 @@ def files(request, id):
     f = ContentFile(data)
 
     EventLog.objects.log()
-    response = HttpResponse(f.read(), mimetype=mime_type)
+    response = HttpResponse(f.read(), content_type=mime_type)
     response['Content-Disposition'] = 'filename=%s' % base_name
     return response

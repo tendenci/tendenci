@@ -133,7 +133,7 @@ class FormEntriesExportTask(Task):
 
     def run(self, form_instance, entries, include_files, **kwargs):
 
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=export_entries_%d.csv' % time()
         headers = []
         has_files = form_instance.has_files() and include_files

@@ -596,7 +596,7 @@ def download_file(request, cm_id, field_id):
                 if not mimetype:
                     mimetype = 'application/octet-stream'
                 response = HttpResponse(default_storage.open(value).read(),
-                                        mimetype=mimetype)
+                                        content_type=mimetype)
                 response['Content-Disposition'] = 'attachment; filename=%s' % file_name
                 return response
 
@@ -1472,7 +1472,7 @@ def corpmembership_export(request,
             #fks = [field for field in fks]
 
             filename = 'corporate_memberships_export.csv'
-            response = HttpResponse(mimetype='text/csv')
+            response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=' + filename
 
             csv_writer = csv.writer(response)
@@ -1574,7 +1574,7 @@ def corp_reps_lookup(request):
         u_dict = {'id': u.id, 'label': value, 'value': value}
         results.append(u_dict)
     return HttpResponse(simplejson.dumps(results),
-                        mimetype='application/json')
+                        content_type='application/json')
 
 
 @is_enabled('corporate_memberships')
@@ -1823,7 +1823,7 @@ def reps_lookup(request):
         value = '%s, %s (%s) - %s' % (u.last_name, u.first_name, u.username, u.email)
         u_dict = {'id': u.id, 'label': value, 'value': value}
         results.append(u_dict)
-    return HttpResponse(simplejson.dumps(results),mimetype='application/json')
+    return HttpResponse(simplejson.dumps(results), content_type='application/json')
 
 
 @is_enabled('corporate_memberships')

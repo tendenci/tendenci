@@ -153,17 +153,17 @@ def discounted_price(request, form_class=DiscountCodeForm):
                     "price": unicode(form.new_price()[0]),
                     "discount": unicode(form.new_price()[1]),
                     "message": _("Your discount of $ %(p)s has been added." % {'p': unicode(form.new_price()[1])}),
-                }), mimetype="text/plain")
+                }), content_type="text/plain")
         return HttpResponse(json.dumps(
             {
                 "error": True,
                 "message": _("This is not a valid discount code."),
-            }), mimetype="text/plain")
+            }), content_type="text/plain")
     else:
         form = form_class()
     return HttpResponse(
         "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
-        mimetype="text/html")
+        content_type="text/html")
 
 
 @is_enabled('discounts')
@@ -177,7 +177,7 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                 {
                     "error": False,
                     "message": _("A discount of $%(d)s has been added." % { 'd': form.discount.value}),
-                }), mimetype="text/plain")
+                }), content_type="text/plain")
 
             price_list, discount_total, discount_list, msg = form.get_discounted_prices()
             total = sum(price_list)
@@ -196,17 +196,17 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                         'm' : unicode(msg),
                         'dt' : unicode(discount_total),
                         'dd' : discount_detail }),
-                }), mimetype="text/plain")
+                }), content_type="text/plain")
         return HttpResponse(json.dumps(
             {
                 "error": True,
                 "message": _("This is not a valid discount code."),
-            }), mimetype="text/plain")
+            }), content_type="text/plain")
     else:
         form = form_class()
     return HttpResponse(
         "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
-        mimetype="text/html")
+        content_type="text/html")
 
 @is_enabled('discounts')
 @login_required

@@ -608,7 +608,7 @@ def group_members_export_download(request, group_slug, export_target, identifier
     if not default_storage.exists(export_path):
         raise Http404
 
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
     response.content = default_storage.open(export_path).read()
     return response
@@ -692,7 +692,7 @@ def group_member_export(request, group_slug):
                     style = default_style
                 sheet.write(row, col, val, style=style)
 
-    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=group_%s_member_export.xls' % group.pk
     book.save(response)
     return response
@@ -756,7 +756,7 @@ def group_subscriber_export(request, group_slug):
 
         sheet.write(row, col, val, style=style)
 
-    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=group_%s_subscriber_export.xls' % group.pk
     book.save(response)
     return response
@@ -893,7 +893,7 @@ def group_all_export(request, group_slug):
 
         sheet.write(row, col, val, style=style)
 
-    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=group_%s_all_export.xls' % group.pk
     book.save(response)
     return response

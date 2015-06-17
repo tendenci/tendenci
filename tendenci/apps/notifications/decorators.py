@@ -54,7 +54,7 @@ def basic_auth_required(realm=None, test_func=None, callback_func=None):
                                 callback_func(request, user, *args, **kwargs)
                             return view_func(request, *args, **kwargs)
 
-            response =  HttpResponse(_('Authorization Required'), mimetype="text/plain")
+            response =  HttpResponse(_('Authorization Required'), content_type="text/plain")
             response.status_code = 401
             response['WWW-Authenticate'] = 'Basic realm="%s"' % realm
             return response

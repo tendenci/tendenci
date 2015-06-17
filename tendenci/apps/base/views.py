@@ -84,7 +84,7 @@ def image_preview(request, app_label, model, id,  size):
         content_type = ContentType.objects.get(app_label=app_label, model=model)
         instance = content_type.get_object_for_this_type(id=id)
     except:
-        return HttpResponseNotFound(_("Image not found."), mimetype="text/plain")
+        return HttpResponseNotFound(_("Image not found."), content_type="text/plain")
 
     keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
     key = '.'.join(keys)
@@ -122,7 +122,7 @@ def image_preview(request, app_label, model, id,  size):
             if image.mode != "RGB":
                 image = image.convert("RGB")
 
-            response = HttpResponse(mimetype='image/jpeg')
+            response = HttpResponse(content_type='image/jpeg')
 
             image.save(response, "JPEG", quality=100)
 
@@ -133,7 +133,7 @@ def image_preview(request, app_label, model, id,  size):
             return response
 
         else: # raise http 404 error (returns page not found)
-            return HttpResponseNotFound(_("Image not found."), mimetype="text/plain")
+            return HttpResponseNotFound(_("Image not found."), content_type="text/plain")
     else:
         return response
 
@@ -203,9 +203,9 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     mimetype = mimetypes.guess_type(fullpath)[0] or 'application/octet-stream'
     if not was_modified_since(request.META.get('HTTP_IF_MODIFIED_SINCE'),
                               statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):
-        return HttpResponseNotModified(mimetype=mimetype)
+        return HttpResponseNotModified(content_type=mimetype)
     contents = open(fullpath, 'rb').read()
-    response = HttpResponse(contents, mimetype=mimetype)
+    response = HttpResponse(contents, content_type=mimetype)
     response["Last-Modified"] = http_date(statobj[stat.ST_MTIME])
     response["Content-Length"] = len(contents)
     return response
@@ -291,7 +291,7 @@ def robots_txt(request):
         template_name = robots_setting
 
     site_url = get_setting('site', 'global', 'siteurl')
-    return render_to_response(template_name, {'site_url': site_url}, context_instance=RequestContext(request), mimetype="text/plain")
+    return render_to_response(template_name, {'site_url': site_url}, context_instance=RequestContext(request), content_type="text/plain")
 
 
 def base_file(request, file_name):
@@ -333,7 +333,7 @@ def file_display(request, file_path):
 
     data = default_storage.open(file_path).read()
 
-    response = HttpResponse(data, mimetype=mime_type)
+    response = HttpResponse(data, content_type=mime_type)
     response['Content-Disposition'] = 'filename=%s' % base_name
 
     return response

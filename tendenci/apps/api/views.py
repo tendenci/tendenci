@@ -70,5 +70,5 @@ def api_rp(request):
     else:
         ret_data.update(result_code_invalid)
 
-    return HttpResponse(simplejson.dumps(ret_data), mimetype='application/json')
+    return HttpResponse(simplejson.dumps(ret_data), content_type='application/json')
 

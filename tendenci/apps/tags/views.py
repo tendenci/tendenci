@@ -39,5 +39,5 @@ def autocomplete(request):
     if request.is_ajax() and q:
         tags = Tag.objects.filter(name__istartswith=q)
         tag_list = [{'id':tag.pk, 'label':tag.name, 'value':tag.name} for tag in tags]
-        return HttpResponse(simplejson.dumps(tag_list),mimetype='application/json')
+        return HttpResponse(simplejson.dumps(tag_list), content_type='application/json')
     raise Http404

@@ -199,10 +199,10 @@ def page_select(request, form_class=PageSelectForm):
                 })
             return HttpResponse(json.dumps({
                 "pages": infos,
-            }), mimetype="text/plain")
+            }), content_type="text/plain")
     return HttpResponse(json.dumps({
                 "error": True
-            }), mimetype="text/plain")
+            }), content_type="text/plain")
 
 
 @is_enabled('navs')

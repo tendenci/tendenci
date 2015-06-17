@@ -450,7 +450,7 @@ def export_download(request, identifier):
     if not default_storage.exists(file_path):
         raise Http404
 
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=articles_export_%s' % file_name
     response.content = default_storage.open(file_path).read()
     return response

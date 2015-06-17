@@ -113,7 +113,7 @@ def colored_image(request, color):
     if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
         rgb = hex_to_rgb('#%s' % color)
         image = Image.new('RGB', (1, 1), rgb)
-        response = HttpResponse(mimetype="image/png")
+        response = HttpResponse(content_type="image/png")
         image.save(response, "PNG")
         return response
     else:
@@ -133,7 +133,7 @@ def colored_image(request, color):
             data = f.read()
             f.close()
 
-    return HttpResponse(data, mimetype="image/png")
+    return HttpResponse(data, content_type="image/png")
 
 
 def source_colors(data):

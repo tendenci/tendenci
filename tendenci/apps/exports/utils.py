@@ -39,7 +39,7 @@ def render_csv(filename, title_list, data_list):
     """
     Returns .csv response
     """
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=' + filename
 
     csv_writer = csv.writer(response)

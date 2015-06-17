@@ -225,7 +225,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     if not image:
         raise Http404
 
-    response = HttpResponse(mimetype='image/jpeg')
+    response = HttpResponse(content_type='image/jpeg')
     response['Content-Disposition'] = '%s filename=%s' % (attachment, photo.image.file.name)
     image.save(response, "JPEG", quality=quality)
 
@@ -273,7 +273,7 @@ def photo_original(request, id):
     if ext == "jpg":
         ext = "jpeg"
 
-    return HttpResponse(image_data, mimetype="image/%s" % ext)
+    return HttpResponse(image_data, content_type="image/%s" % ext)
 
 @login_required
 def memberphotos(request, username, template_name="photos/memberphotos.html", group_slug=None, bridge=None):
@@ -609,9 +609,9 @@ def photos_batch_add(request, photoset_id=0):
 
                 # returning a response of "ok" (flash likes this)
                 # response is for flash, not humans
-                return HttpResponse(data, mimetype="text/plain")
+                return HttpResponse(data, content_type="text/plain")
             else:
-                return HttpResponse("photo is not valid", mimetype="text/plain")
+                return HttpResponse("photo is not valid", content_type="text/plain")
 
     else:
         if not photoset_id:
@@ -794,5 +794,5 @@ def photoset_zip_status(request, id, task_id):
 
     if task and task.status == "SUCCESS":
         file_path = task.result
-        return HttpResponse(json.dumps(file_path), mimetype='application/json')
-    return HttpResponse(json.dumps('DNE'), mimetype='application/json')
+        return HttpResponse(json.dumps(file_path), content_type='application/json')
+    return HttpResponse(json.dumps('DNE'), content_type='application/json')

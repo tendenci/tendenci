@@ -205,7 +205,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         form = get_object_or_404(CustomRegForm, id=regform_id)
         if not form.has_regconf:
             raise Http404
-        response = HttpResponse(mimetype="text/csv")
+        response = HttpResponse(content_type="text/csv")
         csvname = "%s-%s.csv" % (form.for_event, slugify(datetime.now().ctime()))
         response["Content-Disposition"] = "attachment; filename=%s" % csvname
         csv = writer(response)

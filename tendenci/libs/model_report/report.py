@@ -326,7 +326,7 @@ class ReportAdmin(object):
 
                 if not context_request.GET.get('export', None) is None and not self.parent_report:
                     if context_request.GET.get('export') == 'excel':
-                        response = HttpResponse(mimetype='text/csv')
+                        response = HttpResponse(content_type='text/csv')
                         response['Content-Disposition'] = 'attachment; filename=%s.csv' % self.slug
 
                         writer = csv.writer(response)

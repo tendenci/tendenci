@@ -81,7 +81,7 @@ def ajax_user(request, event_id):
         else:
             data = json.dumps({"error":"SHARED"})
 
-    return HttpResponse(data, mimetype="text/plain")
+    return HttpResponse(data, content_type="text/plain")
 
 
 @csrf_exempt
@@ -170,7 +170,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
         'pricings':pricing_list,
         'add-addons-form':form,
     })
-    return HttpResponse(data, mimetype="text/plain")
+    return HttpResponse(data, content_type="text/plain")
 
 def multi_register(request, event_id, template_name="events/registration/multi_register.html"):
     """

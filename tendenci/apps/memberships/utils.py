@@ -885,7 +885,7 @@ def render_to_max_types(*args, **kwargs):
         args = []
         args.append('memberships/max_types.html')
 
-    httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
+    httpresponse_kwargs = {'content_type': kwargs.pop('mimetype', None)}
 
     response = HttpResponseServerError(loader.render_to_string(*args, **kwargs), **httpresponse_kwargs)
 

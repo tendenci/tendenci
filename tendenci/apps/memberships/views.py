@@ -501,7 +501,7 @@ def membership_default_import_download_recap(request, mimport_id):
     recap_path = mimport.recap_file.name
     if default_storage.exists(recap_path):
         response = HttpResponse(default_storage.open(recap_path).read(),
-                                mimetype='text/csv')
+                                content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         return response
     else:
@@ -736,7 +736,7 @@ def membership_default_export_download(request, identifier):
     if not default_storage.exists(file_path):
         raise Http404
 
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
     response.content = default_storage.open(file_path).read()
     return response
@@ -1628,7 +1628,7 @@ def membership_join_report_pdf(request):
         raise Http404
 
     report = ReportNewMems(queryset=mems)
-    response = HttpResponse(mimetype='application/pdf')
+    response = HttpResponse(content_type='application/pdf')
     report.generate_by(PDFGenerator, filename=response)
 
     EventLog.objects.log()

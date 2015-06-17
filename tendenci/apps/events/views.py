@@ -1089,18 +1089,18 @@ def get_place(request):
                     "zip": place.zip,
                     "country": place.country,
                     "url": place.url,
-                }), mimetype="text/plain")
+                }), content_type="text/plain")
             except Place.DoesNotExist:
                 return HttpResponse(json.dumps({
                     "error": True,
                     "message": "Place does not exist.",
-                }), mimetype="text/plain")
+                }), content_type="text/plain")
 
         return HttpResponse(json.dumps(
             {
                 "error": True,
                 "message": "No id provided.",
-            }), mimetype="text/plain")
+            }), content_type="text/plain")
 
     return HttpResponse('Requires POST method.')
 
@@ -3297,7 +3297,7 @@ def registrant_check_in(request):
                     response_d['checked_in_dt'] = ''
                 response_d['error'] = False
 
-    return HttpResponse(json.dumps(response_d), mimetype="text/plain")
+    return HttpResponse(json.dumps(response_d), content_type="text/plain")
 
 
 @is_enabled('events')
@@ -3613,7 +3613,7 @@ def registrant_export(request, event_id, roster_view=''):
 
     EventLog.objects.log(instance=event)
 
-    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s' % file_name
     book.save(response)
     return response
@@ -3827,7 +3827,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
     EventLog.objects.log(instance=event)
 
-    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s' % file_name
     book.save(response)
     return response
@@ -4384,7 +4384,7 @@ def export_download(request, identifier):
     if not default_storage.exists(file_path):
         raise Http404
 
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=events_export_%s' % file_name
     response.content = default_storage.open(file_path).read()
     return response

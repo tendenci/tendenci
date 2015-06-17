@@ -77,7 +77,7 @@ def get_user_import_settings(request, id):
 
 def render_excel(filename, title_list, data_list, file_extension='.xls'):
     if file_extension == '.csv':
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=' + filename
         csv_writer = csv.writer(response)
 
