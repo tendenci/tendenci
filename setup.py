@@ -172,7 +172,6 @@ setup(
         "webcolors>=1.3.1",
         "xlrd==0.7.3",
         "xlwt>=0.7.2",
-        "pyparseuri>=0.1",
         "pysolr==2.0.15",
         "BeautifulSoup==3.2.1",
         "beautifulsoup4==4.3.2",
