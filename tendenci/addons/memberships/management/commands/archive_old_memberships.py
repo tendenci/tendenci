@@ -60,6 +60,7 @@ class Command(BaseCommand):
                 if not first_membership.renewal:
                     if not skip_renewal_bit_update:
                         first_membership.renewal = True
+                        first_membership.save()
                         if verbosity > 1:
                             print 'Set renewal=True for membership ID=%d' % first_membership.id
         print 'Done'
