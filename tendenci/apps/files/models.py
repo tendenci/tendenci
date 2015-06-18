@@ -340,8 +340,8 @@ class File(TendenciBaseModel):
                 return None
         else:
             for r_object in self._meta.get_all_related_objects():
-                if hasattr(self, r_object.var_name):
-                    return getattr(self, r_object.var_name)
+                if hasattr(self, r_object.name):
+                    return getattr(self, r_object.name)
             return None
 
     def get_binary(self, **kwargs):
