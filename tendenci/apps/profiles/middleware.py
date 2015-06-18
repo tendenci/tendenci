@@ -12,11 +12,13 @@ class ProfileMiddleware(object):
     """
     def process_request(self, request):
         from tendenci.apps.profiles.models import Profile
-        if not request.user.is_anonymous():
+        if request.user.is_anonymous():
+            request.user.profile = Profile(status=False, status_detail="inactive", user=User(is_staff=False, is_superuser=False, is_active=False))
+        else:
             try:
-                request.user.profile
+                profile = request.user.profile
             except Profile.DoesNotExist:
-                Profile.objects.create_profile(user=request.user)
+                profile = Profile.objects.create_profile(user=request.user)
 
 
 class ProfileLanguageMiddleware(object):
