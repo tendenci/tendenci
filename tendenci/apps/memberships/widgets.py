@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django import forms
-from django.forms.widgets import RadioFieldRenderer, RadioSelect
+from django.forms.widgets import RadioFieldRenderer, RadioChoiceInput
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
@@ -341,7 +341,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         return None
 
 # removed the label when any of the radio select contains another input field
-class CustomRadioInput(RadioSelect):
+class CustomRadioInput(RadioChoiceInput):
     def __unicode__(self):
         #if 'id' in self.attrs:
         #    label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
@@ -352,23 +352,8 @@ class CustomRadioInput(RadioSelect):
 
 
 class CustomRadioFieldRenderer(RadioFieldRenderer):
-    def __iter__(self):
-        for i, choice in enumerate(self.choices):
-            attrs_copy = self.attrs.copy()
-            if 'class' not in attrs_copy:
-                attrs_copy['class'] = "radio"
-            else:
-                attrs_copy['class'] = "%s radio" % attrs_copy['class']
-            yield CustomRadioInput(self.name, self.value, attrs_copy, choice, i)
+    choice_input_class = CustomRadioInput
 
-    def __getitem__(self, idx):
-        choice = self.choices[idx] # Let the IndexError propogate
-        attrs_copy = self.attrs.copy()
-        if 'class' not in attrs_copy:
-            attrs_copy['class'] = "radio"
-        else:
-            attrs_copy['class'] = "%s radio" % attrs_copy['class']
-        return CustomRadioInput(self.name, self.value, attrs_copy, choice, idx)
 
 class CustomRadioSelect(forms.RadioSelect):
     renderer = CustomRadioFieldRenderer
