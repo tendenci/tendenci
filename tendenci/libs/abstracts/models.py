@@ -91,9 +91,12 @@ class TendenciBaseModel(models.Model):
         super(TendenciBaseModel, self).delete(*args, **kwargs)
 
 
+class UnsavedOneToOne(models.OneToOneField):
+    # A ForeignKey which can point to an unsaved object
+    allow_unsaved_instance_assignment = True
 
 class Person(TendenciBaseModel):
-    user = models.OneToOneField(User, related_name="profile", verbose_name=_('user'))
+    user = UnsavedOneToOne(User, related_name="profile", verbose_name=_('user'))
     phone = models.CharField(_('phone'), max_length=50, blank=True)
     address = models.CharField(_('address'), max_length=150, blank=True)
     address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
