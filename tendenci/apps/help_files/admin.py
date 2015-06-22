@@ -16,7 +16,7 @@ class HelpFileAdmin(TendenciBaseModelAdmin):
     fieldsets = (
         (None, {'fields': ('question', 'slug', 'answer', 'group', 'level', 'topics')}),
         (_('Flags'), {'fields': (
-            ('is_faq', 'is_featured', 'is_video', 'syndicate'),)}),
+            'is_faq', 'is_featured', 'is_video', 'syndicate',)}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
