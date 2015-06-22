@@ -12,13 +12,12 @@ class RedirectMiddleware(object):
         path = urlquote(request.get_full_path())
         from tendenci.apps.handler404.models import Report404
         try:
-            redirect, args, kwargs = resolve(path, urlconf='tendenci.apps.redirects.dynamic_urls')
-            args = [value for value in kwargs.values()]
-            to_url = kwargs.pop('url')
-            for key in kwargs.keys():
-                to_url = to_url.replace("(%s)" % key, kwargs[key])
-            args[0] = to_url
-            return redirect(request, *args)
+            view, args, kwargs = resolve(path, urlconf='tendenci.apps.redirects.dynamic_urls')
+            kwargs['request'] = request
+            try:
+                return view(*args, **kwargs)
+            except:
+                raise
         except Exception, e:
             # No redirect was found. Return the response.
             # Log the 404
