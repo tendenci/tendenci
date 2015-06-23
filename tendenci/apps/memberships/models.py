@@ -1533,9 +1533,13 @@ class MembershipDefault(TendenciBaseModel):
         Get all memberships of this type for this user.
         Breaks if self.user is not set.
         """
-        return MembershipDefault.objects.filter(
-            user=self.user, membership_type=self.membership_type
-        )
+        if MembershipApp.objects.filter(allow_multiple_membership=True).exists():
+            return MembershipDefault.objects.filter(
+                user=self.user,
+                membership_type=self.membership_type)
+        else:
+            return MembershipDefault.objects.filter(
+                user=self.user)
 
     def create_member_number(self):
         """
