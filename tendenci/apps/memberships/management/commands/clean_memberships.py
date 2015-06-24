@@ -24,9 +24,12 @@ class Command(BaseCommand):
             memberships = MembershipDefault.objects.filter(
                 membership_type=membership_type,
                 expire_dt__lt=datetime.now() - relativedelta(days=grace_period),
-                status=True).exclude(Q(status_detail='pending') | Q(status_detail='archive'))
+                status=True).filter(status_detail='active')
 
             for membership in memberships:
+                membership.status_detail = 'expired'
+                membership.save()
+
                 # update profile
                 # added try-except block due to error encountered
                 # on a site that might also be replicated tendenci wide
@@ -34,9 +37,6 @@ class Command(BaseCommand):
                     membership.user.profile.refresh_member_number()
                 except Profile.DoesNotExist:
                     pass
-
-                membership.status_detail = 'expired'
-                membership.save()
 
                 # remove from group
                 GroupMembership.objects.filter(
