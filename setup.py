@@ -156,7 +156,7 @@ setup(
         "anyjson>=0.2.4",
         "django-authority>=0.4",
         "django-avatar==2.0",
-        "django-countries==1.5",
+        "django-countries==3.3",
         "django-form-utils>=0.1.8",
         "django-localflavor==1.1",
         "django-pagination>=1.0.7",
