@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 class UnindexedItem(models.Model):
@@ -7,4 +7,4 @@ class UnindexedItem(models.Model):
     object_id = models.PositiveIntegerField()
     create_dt = models.DateTimeField(auto_now_add=True)
 
-    object = generic.GenericForeignKey('content_type', 'object_id')
+    object = GenericForeignKey('content_type', 'object_id')
