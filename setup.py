@@ -196,6 +196,7 @@ setup(
         'chardet==2.3.0',
         "psycopg2==2.6.1",
         "gunicorn==19.3.0",
+        "django-storages==1.1.8",
         "python-memcached==1.54",
         "Whoosh==2.7.0",
         "simple-salesforce==0.67.2",
