@@ -33,7 +33,6 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.emails.models import Email
 from tendenci.apps.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
-from .signals import init_signals
 from tendenci.apps.base.utils import fieldify
 from tinymce import models as tinymce_models
 from tendenci.apps.payments.models import PaymentMethod
@@ -2491,15 +2490,3 @@ class MembershipFile(File):
     """
     pass
 
-
-# Moved from management/__init__.py to here because it breaks
-# the management commands due to the ImportError.
-# assign models permissions to the admin auth group
-def assign_permissions(app, created_models, verbosity, **kwargs):
-    from tendenci.apps.perms.utils import update_admin_group_perms
-    update_admin_group_perms()
-from django.db.models.signals import post_syncdb
-#from memberships import models as membership_models
-post_syncdb.connect(assign_permissions, sender=__file__)
-
-init_signals()
