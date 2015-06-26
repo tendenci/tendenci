@@ -8,61 +8,87 @@ https://github.com/tendenci/tendenci-project-template
 
 -------------
 
-Tendenci 5.+ is the next iteration of a product started in 2001 and released open source in 2012. It is built specifically for NPOs (Non Profit Organizations.) We started with a focus completely on associations but now being open source GPL it is much broader in scope. 
-It is a content management system (CMS) with powerful features for event registration, membership management, donations, payments, email integration and much more.
+Changes needed to upgrade tendenci 5 to tendenci 6. Programming notes from Jayjay Montalbo.
 
-Tendenci allows membership management organizations to communicate, manage and conduct transactions with web site visitors. Tendenci is easy to use and offers many modules as one customizable software package. The 5.x version is open source and built on Django/Python/Postgres and Ubuntu.
+There will be some issues on the installed external module such as committees and donations on first install of the tendenci6.0 branch. To resolve this, we should update the requirements/common.txt of the client site to have this https://github.com/tendenci/tendenci/blob/tendenci6.0/tendenci/project_template/requirements/common.txt . Run 
 
-[![Downloads](https://pypip.in/d/tendenci/badge.png)](https://pypi.python.org/pypi/tendenci/)
+	pip install -r requirements.txt afterwards.
 
+Issue --- gevent/libevent.h:9:19: fatal error: event.h: No such file or directory . Solution is just run
 
-## Demo?  
+	sudo apt-get install libevent-dev
 
-Got tired of spammers so pulled the demo. Sheesh people. Get a life. Anyway, you can do a free 30 day trial without risk at 
-[https://tendenci.com/forms/tendenci-free-trial/](https://tendenci.com/forms/tendenci-free-trial/)
+Issue --- _pylibmcmodule.h:42:36: fatal error: libmemcached/memcached.h: No such file or directory . Solution is just run
 
-## Impatient Developer?  
+	sudo apt-get install libmemcached-dev
 
-If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP three ways (do NOT use thse in production).  
+Update the conf/urls.py and conf/local_urls.py files on the client site files should be updated in preparation for the update. All urls.py files inside the addons directory should be updated first. 
 
-1) Vagrant Box [https://github.com/tendenci/tendenci-vagrant/blob/master/README.md](https://github.com/tendenci/tendenci-vagrant/blob/master/README.md)  
-2) Virtual Machine Version here: [https://github.com/tendenci/tendenci/blob/master/demostrator.md](https://github.com/tendenci/tendenci/blob/master/demostrator.md)  
-3) TKL version is out of date so pulled the link.
+A sample update that we could include is this. From this code snippet, that exists on urls.py,
 
-## Developer Installing Tendenci?  
+	from django.conf.urls.defaults import *
 
-Community forums for questions that may not fit in issues on github or solutions to questions on installation. We check these more frequently than the issues on github and it is also where you can read about the Roadmap going forward. Your input is greatly appreciated! (Seriously - this changing the world stuff is hard and we could use your input and maybe a few pull requests too!)
-[https://community.tendenci.com/](https://community.tendenci.com/)
+We update that snippet to the one shown below so that we have backward compatibilities (just preparing the site and not yet updating)
 
-Detailed installation docs at [https://tendenci.readthedocs.org/en/latest/](https://tendenci.readthedocs.org/en/latest/). 
-You will need to install the server on Ubuntu 14.04 LTS (or later) and Postgres 9.3 (or later.) Cloud hypervisors work fine.  
+	try:
+	    from django.conf.urls.defaults import *
+	except:
+	    from django.conf.urls import *
 
-Dockers? We are using them in our test environments now. We'll have a public docker file up soon in the dockers.io registry. Testing internally currently and I want it to come out on Django 1.6at a minimum. So until we get the migrations set up please hang on. It is based on the phusion/basebox so feel free to play with that in the meanttime. Or make a container and do an install with netsetter on your own docker.
+Update all the templates on the custom addons that has templates that used the old url resolvers. Add the quotation marks so that there will no rendering issues of the template.
 
-Have you deployed Tendenci in a Production Environment? Tell us in the forums please! There are no "trackers" in Tendenci as that goes against our values. So we really only know if you have a site up if you tell us. 
-[http://tendenci.com/directories/](http://tendenci.com/directories/)
+	from {% url go-to-something %} we will have {% url 'go-to-something' %} 
 
-## Humans Looking for a Hosted Solution?  
+Update conf/settings.py of the client site. Edit this:
 
-Not a programmer and you just want to host it somewhere else? You can ask your currentfavorite web developer who you already work with. Or do a free trial on tendenci.com. Cool with us either way. We'll even help them set you up if needed. Geek to Geek.  
+	from tendenci.core.registry.utils import update_addons
 
-## Why Did We Make Tendenci Open Source?  
+to this
 
-Tendenci was built by the team at Schipul.com iteratively by releasing the core for event registrations. We listened to our clients and over the last 12+ years it has evolved. From LISTENING.  
+	from tendenci.apps.registry.utils import update_addons
 
-Our vision: "Connect and Oragnize the World's People" 
-Our mission: "To make Tendenci the number 1 platform for NPOs/NGOs/Arts organizations globally."  
+Update haystack config on the conf/settings.py from this:
 
-Um... and we can't do that without you and the community. How can your organization help Tendenci? Fork it. Build and extend on it. Deploy it. Translate it. Or simply submit an issue if you find a bug.  
-Be part of a global movement to reclaim the NGO online space from proprietary companies holding your data hostage.
+	HAYSTACK_SEARCH_ENGINE = env('HAYSTACK_SEARCH_ENGINE', 'solr')
+	HAYSTACK_URL = env('WEBSOLR_URL', 'http://localhost')
 
-## License
+	if HAYSTACK_SEARCH_ENGINE == "solr":
+	    HAYSTACK_SOLR_URL = HAYSTACK_URL
 
-The License information (Open Source GPL) can be found at [https://github.com/tendenci/tendenci/blob/master/LICENSE.md](https://github.com/tendenci/tendenci/blob/master/LICENSE.md)
+	if HAYSTACK_SEARCH_ENGINE == 'whoosh':
+	    HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, 'index.whoosh')
 
-## Who's started all of this?
+to this:
 
-The [http://www.tendenci.com](http://www.tendenci.com) team. We like to LISTEN to you and then make it real. We like to change the world.
+	__engine = env('HAYSTACK_SEARCH_ENGINE', 'solr')
+	if __engine == "solr":
+	    HAYSTACK_CONNECTIONS = {
+	        'default': {
+	            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+	            'URL': env('WEBSOLR_URL', 'http://localhost'),
+	        }
+	    }
+	elif __engine == "whoosh":
+	    HAYSTACK_CONNECTIONS = {
+	        'default': {
+	            'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+	            'PATH': os.path.join(PROJECT_ROOT, 'index.whoosh'),
+	        }
+	    }
+
+Might encounter migration error with djcelery. To solve the issue, run 
+
+	python manage.py migrate djcelery 0001 --fake and re-run deploy.py
+
+Truncate Words deprecated - truncate_words removed in Django 1.6
+
+	try:
+	    from django.utils.text import truncate_words
+	except ImportError:
+	    from django.template.defaultfilters import truncatewords as truncate_words
+
+Expect major issues on migrations. Use "--fake" as needed until this can be scripted
+
 
 ## Credits
 
