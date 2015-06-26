@@ -1,4 +1,4 @@
-from tendenci.apps.registry import site
+from tendenci.apps.registry.sites import site
 from tendenci.apps.registry.base import LogRegistry, lazy_reverse
 from tendenci.apps.payments.models import Payment
 

@@ -78,7 +78,7 @@ def delete_files(sender, **kwargs):
 
 
 def init_signals():
-    from tendenci.apps.registry import site
+    from tendenci.apps.registry.sites import site
     apps = site.get_registered_apps()
 
     for app in apps:
