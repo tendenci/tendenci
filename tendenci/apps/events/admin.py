@@ -123,14 +123,9 @@ class CustomRegFormAdmin(admin.ModelAdmin):
     preview_link.short_description = _('Preview Link')
 
     def for_event(self, obj):
-        event = None
-        regconf = obj.regconfs.all()[:1]
+        [regconf] = obj.regconfs.all()[:1] or [None]
         if regconf:
-            event = regconf[0].event
-        regconfpricing = obj.regconfpricings.all()[:1]
-        if regconfpricing:
-            event = regconfpricing[0].reg_conf.event
-        if event:
+            event = regconf.event
             return """<a href="%s">%s(ID:%d)</a>
             """ % (reverse('event', args=[event.id]), event.title, event.id)
         return ''
