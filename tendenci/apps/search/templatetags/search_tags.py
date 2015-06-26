@@ -21,7 +21,7 @@ class SearchResultNode(IncludeNode):
             result = self.result.resolve(context)
 
             if hasattr(result, 'object'):
-                result_object = result.object()
+                result_object = result.object
             else:
                 result_object = result
 
