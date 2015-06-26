@@ -5,11 +5,6 @@ from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin
 from tendenci.libs.model_report import report
 
-from tendenci.apps.registry import autodiscover as reg_autodiscover
-
-# load the app_registry
-reg_autodiscover()
-
 # django model report
 report.autodiscover()
 
