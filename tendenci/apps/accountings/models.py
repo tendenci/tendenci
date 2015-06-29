@@ -8,6 +8,9 @@ class Acct(models.Model):
     account_number = models.IntegerField(unique=True)
     description = models.TextField()
     type = models.CharField(max_length=5)
+    
+    class Meta:
+        app_label = 'accountings'
 
 
 class AcctEntry(models.Model):
@@ -28,6 +31,9 @@ class AcctEntry(models.Model):
 
     objects = AcctEntryManager()
 
+    class Meta:
+        app_label = 'accountings'
+
 
 class AcctTran(models.Model):
     acct_entry = models.ForeignKey(AcctEntry,
@@ -46,6 +52,9 @@ class AcctTran(models.Model):
     status = models.BooleanField(default=True)
 
     objects = AcctTranManager()
+
+    class Meta:
+        app_label = 'accountings'
 
     @property
     def debit(self):

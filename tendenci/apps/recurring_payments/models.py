@@ -96,6 +96,9 @@ class RecurringPayment(models.Model):
     objects = RecurringPaymentManager()
 
 
+    class Meta:
+        app_label = 'recurring_payments'
+
     def __unicode__(self):
         return '%s - %s' % (self.user, self.description)
 
@@ -502,6 +505,9 @@ class PaymentProfile(models.Model):
     status_detail = models.CharField(max_length=50, default='active')
     status = models.BooleanField(default=True)
 
+    class Meta:
+        app_label = 'recurring_payments'
+
     def update_local(self, request):
         cim_payment_profile = CIMCustomerPaymentProfile(
                                 self.recurring_payment.customer_profile_id,
@@ -531,6 +537,9 @@ class RecurringPaymentInvoice(models.Model):
     payment_received_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     #is_paid = models.NullBooleanField(default=False)
+
+    class Meta:
+        app_label = 'recurring_payments'
 
     def make_payment_transaction(self, payment_profile_id):
         """
@@ -633,6 +642,8 @@ class PaymentTransaction(models.Model):
     status = models.BooleanField(default=True)
     #status_detail = models.CharField(max_length=50,  null=True)
 
+    class Meta:
+        app_label = 'recurring_payments'
 
 
 from django.db.models.signals import post_save, post_delete

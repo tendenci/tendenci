@@ -2,7 +2,7 @@ import os
 from django.forms.models import model_to_dict
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from celery.task import Task
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.exports.utils import render_csv
@@ -43,7 +43,7 @@ class TendenciExportTask(Task):
                         value = ["%s" % obj for obj in f.value_from_object(item)]
                     if isinstance(f, ForeignKey):
                         value = getattr(item, f.name)
-                    if isinstance(f, generic.GenericRelation):
+                    if isinstance(f, GenericRelation):
                         generics = f.value_from_object(item).all()
                         value = ["%s" % obj for obj in generics]
                     if isinstance(f, DateTimeField):

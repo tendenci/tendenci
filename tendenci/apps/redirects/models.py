@@ -28,6 +28,9 @@ class Redirect(models.Model):
 
     objects = RedirectManager()
 
+    class Meta:
+        app_label = 'redirects'
+
     def __unicode__(self):
         if self.from_app:
             return "Redirect from App: %s" % self.from_app

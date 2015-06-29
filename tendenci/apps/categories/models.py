@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
 
@@ -131,13 +131,19 @@ class Category(models.Model):
 
     def __unicode__(self):
         return self.name
+    
+    class Meta:
+        app_label = 'categories'
 
 class CategoryItem(models.Model):
     content_type = models.ForeignKey(ContentType, db_index=True)
     object_id = models.PositiveIntegerField()
     category = models.ForeignKey(Category, related_name='%(class)s_category',null=True,blank=True)
     parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True,blank=True)
-    object = generic.GenericForeignKey('content_type', 'object_id')
+    object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        app_label = 'categories'
 
     def __unicode__(self):
         if self.category:

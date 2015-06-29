@@ -17,6 +17,9 @@ class Meta(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        app_label = 'meta'
+
     def generate_keywords(self, value):
         return generate_meta_keywords(value)
 

@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.core.urlresolvers import reverse
@@ -138,6 +138,9 @@ charged the full individual corporate membership rate.
                                                blank=True)
 
 
+    class Meta:
+        app_label = 'corporate_memberships'
+
     def __unicode__(self):
         return self.name
 
@@ -219,9 +222,12 @@ class CorpProfile(TendenciBaseModel):
     ud7 = models.TextField(blank=True, default='', null=True)
     ud8 = models.TextField(blank=True, default='', null=True)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
                                       content_type_field="content_type")
+
+    class Meta:
+        app_label = 'corporate_memberships'
 
     def save(self, *args, **kwargs):
         if not self.guid:
@@ -323,7 +329,7 @@ class CorpMembership(TendenciBaseModel):
                                                default=0,
                                                blank=True)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
                                       content_type_field="content_type")
 
@@ -347,6 +353,7 @@ class CorpMembership(TendenciBaseModel):
         else:
             verbose_name = _("Corporate Member")
             verbose_name_plural = _("Corporate Members")
+        app_label = 'corporate_memberships'
 
     def __unicode__(self):
         return "%s" % (self.corp_profile.name)
@@ -1150,6 +1157,9 @@ class FreePassesStat(TendenciBaseModel):
     event = models.ForeignKey(Event, related_name="passes_used")
     registrant = models.ForeignKey(Registrant, null=True)
 
+    class Meta:
+        app_label = 'corporate_memberships'
+ 
     def set_creator_owner(self, request_user):
         if request_user and not request_user.is_anonymous():
             self.creator = request_user
@@ -1197,6 +1207,7 @@ class CorpMembershipApp(TendenciBaseModel):
         verbose_name = _("Corporate Membership Application")
         verbose_name_plural = _("Corporate Membership Applications")
         ordering = ('name',)
+        app_label = 'corporate_memberships'
 
     def __unicode__(self):
         return self.name
@@ -1294,6 +1305,7 @@ class CorpMembershipAppField(OrderingBaseModel):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         ordering = ('position',)
+        app_label = 'corporate_memberships'
 
     def __unicode__(self):
         if self.field_name:
@@ -1390,6 +1402,8 @@ class CorpMembershipAuthDomain(models.Model):
                                         related_name="authorized_domains")
     name = models.CharField(max_length=100)
 
+    class Meta:
+        app_label = 'corporate_memberships'
 
 class CorpMembershipRep(models.Model):
     corp_profile = models.ForeignKey("CorpProfile",
@@ -1402,6 +1416,7 @@ class CorpMembershipRep(models.Model):
 
     class Meta:
         unique_together = (("corp_profile", "user"),)
+        app_label = 'corporate_memberships'
 
     def __unicode__(self):
         return 'Rep: %s for "%s"' % (self.user, self.corp_profile.name)
@@ -1423,6 +1438,8 @@ class IndivEmailVerification(models.Model):
                                    related_name="corp_email_veri8n_updator",
                                    null=True,
                                    on_delete=models.SET_NULL)
+    class Meta:
+        app_label = 'corporate_memberships'
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -1445,6 +1462,9 @@ class IndivMembershipRenewEntry(models.Model):
     status_detail = models.CharField(max_length=50,
                                      choices=STATUS_DETAIL_CHOICES,
                                      default='pending')
+
+    class Meta:
+        app_label = 'corporate_memberships'
 
 
 class CorpMembershipImport(models.Model):
@@ -1485,6 +1505,9 @@ class CorpMembershipImport(models.Model):
     creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        app_label = 'corporate_memberships'
+
     def get_file(self):
         return self.upload_file
 
@@ -1503,6 +1526,8 @@ class CorpMembershipImportData(models.Model):
     action_taken = models.CharField(_('Action Taken'),
                                     max_length=20, null=True)
 
+    class Meta:
+        app_label = 'corporate_memberships'
 
 
 class Creator(models.Model):
@@ -1518,6 +1543,9 @@ class Creator(models.Model):
     last_name = models.CharField(_('Contact last name') , max_length=30, blank=True)
     email = models.EmailField(_('Contact e-mail address'))
     hash = models.CharField(max_length=32, default='')
+
+    class Meta:
+        app_label = 'corporate_memberships'
 
 
 class Notice(models.Model):
@@ -1562,6 +1590,9 @@ class Notice(models.Model):
         choices=(('active', _('Active')), ('admin_hold', _('Admin Hold'))),
         default='active', max_length=50)
     status = models.BooleanField(default=True)
+
+    class Meta:
+        app_label = 'corporate_memberships'
 
     def __unicode__(self):
         return self.notice_name
@@ -1781,6 +1812,9 @@ class NoticeLog(models.Model):
     notice_sent_dt = models.DateTimeField(auto_now_add=True)
     num_sent = models.IntegerField()
 
+    class Meta:
+        app_label = 'corporate_memberships'
+
 
 class NoticeLogRecord(models.Model):
     guid = models.CharField(max_length=50, editable=False)
@@ -1791,6 +1825,9 @@ class NoticeLogRecord(models.Model):
     action_taken = models.BooleanField(default=False)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'corporate_memberships'
 
 
 def delete_corp_profile(sender, **kwargs):

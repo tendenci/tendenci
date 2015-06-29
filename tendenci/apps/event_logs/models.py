@@ -45,6 +45,7 @@ class EventLog(models.Model):
 
     class Meta:
         permissions = (("view_eventlog", _("Can view eventlog")),)
+        app_label="event_logs"
 
     def save(self, *args, **kwargs):
         if not self.uuid:
@@ -104,6 +105,9 @@ class EventLogBaseColor(CachedColorModel):
     def get_color(cls, source):
         return cls.cache_get(source, 'source') or '17ABB9'  # indeed some
 
+    class Meta:
+        app_label="event_logs"
+
 
 class EventLogColor(CachedColorModel):
     """
@@ -116,3 +120,6 @@ class EventLogColor(CachedColorModel):
     @classmethod
     def get_color(cls, event_id):
         return cls.cache_get(event_id, 'event_id') or '333333'
+
+    class Meta:
+        app_label="event_logs"

@@ -1,4 +1,4 @@
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from tinymce import models as tinymce_models
@@ -13,7 +13,7 @@ class EmergencyAnnouncement(TendenciBaseModel):
     content = tinymce_models.HTMLField(_('Content'))
     enabled = models.BooleanField(_('Enabled'), default=True)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                     object_id_field="object_id",
                                     content_type_field="content_type")
     objects = EmergencyAnnouncementManager()

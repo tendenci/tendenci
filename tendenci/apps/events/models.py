@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import AutoField
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
 
 from tagging.fields import TagField
@@ -59,6 +59,9 @@ class TypeColorSet(models.Model):
     bg_color = models.CharField(max_length=20)
     border_color = models.CharField(max_length=20)
 
+    class Meta:
+        app_label = 'events'
+
     def __unicode__(self):
         return '%s #%s' % (self.pk, self.bg_color)
 
@@ -74,6 +77,9 @@ class Type(models.Model):
     color_set = models.ForeignKey('TypeColorSet')
 
     objects = EventTypeManager()
+
+    class Meta:
+        app_label = 'events'
 
     @property
     def fg_color(self):
@@ -118,6 +124,9 @@ class Place(models.Model):
 
     # online location
     url = models.URLField(blank=True)
+
+    class Meta:
+        app_label = 'events'
 
     def __init__(self, *args, **kwargs):
         super(Place, self).__init__(*args, **kwargs)
@@ -185,6 +194,9 @@ class RegistrationConfiguration(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'events'
 
     @property
     def can_pay_online(self):
@@ -265,6 +277,9 @@ class RegConfPricing(OrderingBaseModel):
     allow_member = models.BooleanField(_("All members can use this pricing"), default=False)
 
     status = models.BooleanField(default=True)
+
+    class Meta:
+        app_label = 'events'
 
     def delete(self, *args, **kwargs):
         """
@@ -421,6 +436,7 @@ class Registration(models.Model):
 
     class Meta:
         permissions = (("view_registration",_("Can view registration")),)
+        app_label = 'events'
 
     def __unicode__(self):
         return 'Registration - %s' % self.event.title
@@ -747,6 +763,7 @@ class Registrant(models.Model):
 
     class Meta:
         permissions = (("view_registrant", _("Can view registrant")),)
+        app_label = 'events'
 
     def __unicode__(self):
         if self.custom_reg_form_entry:
@@ -887,6 +904,9 @@ class Payment(models.Model):
     """
     registration = models.OneToOneField('Registration')
 
+    class Meta:
+        app_label = 'events'
+
 
 class PaymentMethod(models.Model):
     """
@@ -896,6 +916,9 @@ class PaymentMethod(models.Model):
     Soft Deletes required; For historical purposes.
     """
     label = models.CharField(max_length=50, blank=False)
+
+    class Meta:
+        app_label = 'events'
 
     def __unicode__(self):
         return self.label
@@ -909,6 +932,9 @@ class Sponsor(models.Model):
     """
     event = models.ManyToManyField('Event')
 
+    class Meta:
+        app_label = 'events'
+
 
 class Discount(models.Model):
     """
@@ -920,6 +946,8 @@ class Discount(models.Model):
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=50)
 
+    class Meta:
+        app_label = 'events'
 
 class Organizer(models.Model):
     """
@@ -933,6 +961,9 @@ class Organizer(models.Model):
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
+
+    class Meta:
+        app_label = 'events'
 
     def __init__(self, *args, **kwargs):
         super(Organizer, self).__init__(*args, **kwargs)
@@ -957,6 +988,9 @@ class Speaker(models.Model):
     featured = models.BooleanField(
         default=False,
         help_text=_("All speakers marked as featured will be displayed when viewing the event."))
+
+    class Meta:
+        app_label = 'events'
 
     def __init__(self, *args, **kwargs):
         super(Speaker, self).__init__(*args, **kwargs)
@@ -1003,6 +1037,7 @@ class RecurringEvent(models.Model):
     class Meta:
         verbose_name = _("Recurring Event")
         verbose_name_plural = _("Recurring Events")
+        app_label = 'events'
 
     def get_info(self):
         if self.repeat_type == self.RECUR_DAILY:
@@ -1061,7 +1096,7 @@ class Event(TendenciBaseModel):
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -1069,6 +1104,7 @@ class Event(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_event",_("Can view event")),)
+        app_label = 'events'
 
     def __init__(self, *args, **kwargs):
         super(Event, self).__init__(*args, **kwargs)
@@ -1351,6 +1387,7 @@ class StandardRegForm(models.Model):
         managed = False
         verbose_name = _("Standard Registration Form")
         verbose_name_plural = _("Standard Registration Form")
+        app_label = 'events'
 
 
 class CustomRegForm(models.Model):
@@ -1384,6 +1421,7 @@ class CustomRegForm(models.Model):
     class Meta:
         verbose_name = _("Custom Registration Form")
         verbose_name_plural = _("Custom Registration Forms")
+        app_label = 'events'
 
     def __unicode__(self):
         return self.name
@@ -1450,6 +1488,7 @@ class CustomRegField(OrderingBaseModel):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         ordering = ('position',)
+        app_label = 'events'
 
     def clone(self, form=None):
         """
@@ -1485,6 +1524,9 @@ class CustomRegField(OrderingBaseModel):
 class CustomRegFormEntry(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
+
+    class Meta:
+        app_label = 'events'
 
     def __unicode__(self):
         name = self.get_name()
@@ -1567,14 +1609,24 @@ class CustomRegFieldEntry(models.Model):
     field = models.ForeignKey("CustomRegField", related_name="entries")
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
+    class Meta:
+        app_label = 'events'
 
 class EventPhoto(File):
     pass
+
+    class Meta:
+        app_label = 'events'
 
 
 class Addon(models.Model):
     event = models.ForeignKey(Event)
     title = models.CharField(max_length=50)
+
+    class Meta:
+        app_label = 'events'
+
+    
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields
     group = models.ForeignKey(Group, blank=True, null=True)
@@ -1618,6 +1670,9 @@ class AddonOption(models.Model):
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
 
+    class Meta:
+        app_label = 'events'
+
     def __unicode__(self):
         return self.title
 
@@ -1637,6 +1692,9 @@ class RegAddon(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = 'events'
+
     def __unicode__(self):
         return "%s: %s" % (self.registration.pk, self.addon.title)
 
@@ -1651,6 +1709,7 @@ class RegAddonOption(models.Model):
 
     class Meta:
         unique_together = (('regaddon', 'option'),)
+        app_label = 'events'
 
     def __unicode__(self):
         return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)

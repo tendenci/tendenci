@@ -166,6 +166,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
     class Meta:
         verbose_name = _("Membership Type")
         permissions = (("view_membershiptype", _("Can view membership type")),)
+        app_label = 'memberships'
 
     def __unicode__(self):
         return self.name
@@ -324,6 +325,7 @@ class MembershipSet(models.Model):
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
+        app_label = 'memberships'
 
     @property
     def group(self):
@@ -520,6 +522,7 @@ class MembershipDefault(TendenciBaseModel):
         verbose_name = _(u'Membership')
         verbose_name_plural = _(u'Memberships')
         permissions = (("approve_membershipdefault", _("Can approve memberships")),)
+        app_label = 'memberships'
 
     def __unicode__(self):
         """
@@ -1897,6 +1900,9 @@ class MembershipImport(models.Model):
     creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        app_label = 'memberships'
+
     def get_file(self):
         if self.upload_file:
             return self.upload_file
@@ -1943,6 +1949,9 @@ class MembershipImportData(models.Model):
     # action_taken can be 'insert', 'update' or 'mixed'
     action_taken = models.CharField(_('Action Taken'), max_length=20, null=True)
     error = models.CharField(_('Error'), max_length=500, default='')
+
+    class Meta:
+        app_label = 'memberships'
 
 
 NOTICE_TYPES = (
@@ -1991,6 +2000,9 @@ class Notice(models.Model):
     status_detail = models.CharField(choices=(('active', _('Active')), ('admin_hold', _('Admin Hold'))),
                                      default='active', max_length=50)
     status = models.BooleanField(default=True)
+
+    class Meta:
+        app_label = 'memberships'
 
     def __unicode__(self):
         return self.notice_name
@@ -2218,6 +2230,9 @@ class NoticeLog(models.Model):
     notice_sent_dt = models.DateTimeField(auto_now_add=True)
     num_sent = models.IntegerField()
 
+    class Meta:
+        app_label = 'memberships'
+
 
 class NoticeDefaultLogRecord(models.Model):
     guid = models.CharField(max_length=50, editable=False)
@@ -2228,6 +2243,9 @@ class NoticeDefaultLogRecord(models.Model):
     action_taken = models.BooleanField(default=False)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'memberships'
 
 
 class MembershipApp(TendenciBaseModel):
@@ -2258,6 +2276,7 @@ class MembershipApp(TendenciBaseModel):
     class Meta:
         verbose_name = _("Membership Application")
         permissions = (("view_app", _("Can view membership application")),)
+        app_label = 'memberships'
 
     def __unicode__(self):
         return self.name
@@ -2351,6 +2370,7 @@ class MembershipAppField(OrderingBaseModel):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         ordering = ('position',)
+        app_label = 'memberships'
 
     def __unicode__(self):
         if self.field_name:
@@ -2482,6 +2502,8 @@ class MembershipDemographic(models.Model):
     ud29 = models.TextField(blank=True, default=u'', null=True)
     ud30 = models.TextField(blank=True, default=u'', null=True)
 
+    class Meta:
+        app_label = 'memberships'
 
 class MembershipFile(File):
     """
@@ -2490,3 +2512,5 @@ class MembershipFile(File):
     """
     pass
 
+    class Meta:
+        app_label = 'memberships'

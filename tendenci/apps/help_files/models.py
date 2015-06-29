@@ -2,7 +2,7 @@ from django.db import models
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -17,6 +17,7 @@ class Topic(models.Model):
 
     class Meta:
         ordering = ['title']
+        app_label = 'help_files'
 
     @models.permalink
     def get_absolute_url(self):
@@ -42,7 +43,7 @@ class HelpFile(TendenciBaseModel):
     view_totals = models.PositiveIntegerField(default=0)
 
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -50,6 +51,7 @@ class HelpFile(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_helpfile",_("Can view help file")),)
+        app_label = 'help_files'
 
     @models.permalink
     def get_absolute_url(self):
@@ -80,6 +82,9 @@ class HelpFile(TendenciBaseModel):
 class Request(models.Model):
     question = models.TextField()
 
+    class Meta:
+        app_label = 'help_files'
+
     def __unicode__(self):
         return self.question
 
@@ -95,5 +100,6 @@ class HelpFileMigration(models.Model):
     class Meta:
         managed = False
         db_table = 'mig_help_files_helpfile_t4_to_t5'
+        app_label = 'help_files'
 
 

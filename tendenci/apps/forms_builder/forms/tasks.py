@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 from django.conf import settings
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno

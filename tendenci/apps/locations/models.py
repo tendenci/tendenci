@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
@@ -38,7 +38,7 @@ class Location(TendenciBaseModel):
                              help_text=_('Only jpg, gif, or png images.'))
     hq = models.BooleanField(_('Headquarters'), default=False)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -46,6 +46,7 @@ class Location(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_location",_("Can view location")),)
+        app_label = 'locations'
 
     def __unicode__(self):
         return self.location_name
@@ -155,6 +156,9 @@ class LocationImport(models.Model):
     creator = models.ForeignKey(User)
     create_dt = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        app_label = 'locations'
+
     def get_file(self):
         file = File.objects.get_for_model(self)[0]
         return file
@@ -168,6 +172,9 @@ class Distance(models.Model):
     zip_code = models.CharField(max_length=7)
     location = models.ForeignKey(Location)
     distance = models.PositiveSmallIntegerField()
+
+    class Meta:
+        app_label = 'locations'
 
     def get_locations(zip_code):
         return Distance.objects.filter(zip_code=zip_code).order_by('distance')

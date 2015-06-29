@@ -8,3 +8,6 @@ class UnindexedItem(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
 
     object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        app_label = 'search'

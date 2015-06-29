@@ -2,7 +2,7 @@ import os
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from celery.task import Task
 from celery.registry import tasks

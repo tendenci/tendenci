@@ -12,7 +12,7 @@ from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 from django.utils.importlib import import_module
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.safestring import mark_safe

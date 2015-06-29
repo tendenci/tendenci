@@ -26,6 +26,7 @@ class Contribution(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_contribution",_("Can view contribution")),)
+        app_label = 'contributions'
 
     @models.permalink
     def get_absolute_url(self):

@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 import json
 
 from tendenci.apps.versions.managers import VersionManager
@@ -26,9 +26,12 @@ class Version(models.Model):
     object_value = models.TextField(_('changed object'), blank=True)
     hash = models.CharField(max_length=40, null=True, default='')
 
-    _object = generic.GenericForeignKey('content_type', 'object_id')
+    _object = GenericForeignKey('content_type', 'object_id')
 
     objects = VersionManager()
+
+    class Meta:
+        app_label = 'versions'
 
     def get_object(self):
         _object = None

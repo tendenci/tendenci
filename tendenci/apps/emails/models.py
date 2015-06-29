@@ -28,6 +28,10 @@ class Email(TendenciBaseModel):
     #create_dt = models.DateTimeField(auto_now_add=True)
     #status = models.NullBooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
 
+    class Meta:
+        app_label = 'emails'
+
+
     @models.permalink
     def get_absolute_url(self):
         return ("email.view", [self.pk])

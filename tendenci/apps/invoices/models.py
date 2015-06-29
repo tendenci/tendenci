@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models.signals import post_save
 
 from tendenci.apps.perms.utils import has_perm
@@ -24,7 +24,7 @@ class Invoice(models.Model):
 
     object_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(default=0, blank=True, null=True)
-    _object = generic.GenericForeignKey('object_type', 'object_id')
+    _object = GenericForeignKey('object_type', 'object_id')
     title = models.CharField(max_length=200, blank=True, null=True)
     creator = models.ForeignKey(User, related_name="invoice_creator", null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
@@ -99,6 +99,7 @@ class Invoice(models.Model):
 
     class Meta:
         permissions = (("view_invoice", _("Can view invoice")), )
+        app_label = 'invoices'
 
     def __unicode__(self):
         return "Invoice %s" % self.pk

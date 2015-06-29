@@ -46,6 +46,7 @@ class Entity(models.Model):
         permissions = (("view_entity", _("Can view entity")),)
         verbose_name_plural = _("entities")
         ordering = ("entity_name",)
+        app_label='entities'
 
     @models.permalink
     def get_absolute_url(self):

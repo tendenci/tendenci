@@ -3,7 +3,7 @@ import re
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 
 from tagging.fields import TagField
 from tendenci.apps.base.fields import SlugField
@@ -90,7 +90,7 @@ class Resume(TendenciBaseModel):
     meta = models.OneToOneField(MetaTags, null=True)
     tags = TagField(blank=True)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -98,6 +98,7 @@ class Resume(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_resume", _("Can view resume")),)
+        app_label = 'resumes'
 
     def get_meta(self, name):
         """

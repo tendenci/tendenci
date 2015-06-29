@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 
@@ -81,10 +81,10 @@ class Directory(TendenciBaseModel):
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
-    categories = generic.GenericRelation(CategoryItem,
+    categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -94,6 +94,7 @@ class Directory(TendenciBaseModel):
         permissions = (("view_directory",_("Can view directory")),)
         verbose_name = _("Directory")
         verbose_name_plural = _("Directories")
+        app_label = 'directories'
 
     def get_meta(self, name):
         """
@@ -234,6 +235,7 @@ class DirectoryPricing(models.Model):
 
     class Meta:
         permissions = (("view_directorypricing", _("Can view directory pricing")),)
+        app_label = 'directories'
 
     def __unicode__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')

@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 
 from django.shortcuts import get_object_or_404
 
@@ -120,7 +120,7 @@ class Form(TendenciBaseModel):
         help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount. Please also add an email field as a required field with type 'email'"))
     payment_methods = models.ManyToManyField("payments.PaymentMethod", blank=True)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
         object_id_field="object_id", content_type_field="content_type")
 
     # positions for displaying the fields
@@ -142,6 +142,7 @@ class Form(TendenciBaseModel):
         verbose_name = _("Form")
         verbose_name_plural = _("Forms")
         permissions = (("view_form", _("Can view form")),)
+        app_label = 'forms'
 
     def __unicode__(self):
         return self.title
@@ -229,6 +230,7 @@ class Field(OrderingBaseModel):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         #order_with_respect_to = "form"
+        app_label = 'forms'
 
     def __unicode__(self):
         return self.label
@@ -300,6 +302,7 @@ class FormEntry(models.Model):
     class Meta:
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
+        app_label = 'forms'
 
     def __unicode__(self):
         return unicode(self.id)
@@ -437,6 +440,7 @@ class FieldEntry(models.Model):
     class Meta:
         verbose_name = _("Form field entry")
         verbose_name_plural = _("Form field entries")
+        app_label = 'forms'
 
     def __unicode__(self):
         return ('%s: %s' % (self.field.label, self.value))
@@ -484,6 +488,7 @@ class Pricing(models.Model):
 
     class Meta:
         ordering = ["pk"]
+        app_label = 'forms'
 
     def __unicode__(self):
         currency_symbol = get_setting("site", "global", "currencysymbol")

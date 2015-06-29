@@ -2,7 +2,7 @@ import uuid
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
@@ -33,11 +33,12 @@ class BasePage(TendenciBaseModel):
     template = models.CharField(_('Template'), max_length=50, blank=True)
     tags = TagField(blank=True)
     meta = models.OneToOneField(MetaTags, null=True)
-    categories = generic.GenericRelation(CategoryItem,
+    categories = GenericRelation(CategoryItem,
         object_id_field="object_id", content_type_field="content_type")
 
     class Meta:
         abstract = True
+        app_label = 'pages'
 
     def save(self, *args, **kwargs):
         if not self.guid:
@@ -95,13 +96,14 @@ class Page(BasePage):
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
     google_profile = models.URLField(_('Google+ URL'), blank=True)
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
                                       content_type_field="content_type")
     objects = PageManager()
 
     class Meta:
         permissions = (("view_page", _("Can view page")),)
+        app_label = 'pages'
 
     def get_meta(self, name):
         """
@@ -130,3 +132,6 @@ class Page(BasePage):
 
 class HeaderImage(File):
     pass
+
+    class Meta:
+        app_label = 'pages'

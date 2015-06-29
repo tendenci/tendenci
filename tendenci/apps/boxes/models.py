@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tagging.fields import TagField
@@ -18,7 +18,7 @@ class Box(OrderingBaseModel, TendenciBaseModel):
     tags = TagField(blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -28,6 +28,7 @@ class Box(OrderingBaseModel, TendenciBaseModel):
         permissions = (("view_box",_("Can view box")),)
         verbose_name_plural = _("Boxes")
         ordering = ['position']
+        app_label = 'boxes'
 
     def __unicode__(self):
         return self.title

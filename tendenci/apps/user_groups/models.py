@@ -48,6 +48,7 @@ class Group(TendenciBaseModel):
         verbose_name = _("Group")
         verbose_name_plural = _("Groups")
         ordering = ("name",)
+        app_label = 'user_groups'
 
     def __unicode__(self):
         return self.label or self.name
@@ -168,6 +169,7 @@ class GroupMembership(models.Model):
         unique_together = ('group', 'member',)
         verbose_name = _("Group Membership")
         verbose_name_plural = _("Group Memberships")
+        app_label = 'user_groups'
 
     @classmethod
     def add_to_group(cls, **kwargs):

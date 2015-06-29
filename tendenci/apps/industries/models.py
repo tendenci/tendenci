@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -15,7 +15,7 @@ class Industry(OrderingBaseModel, TendenciBaseModel):
     industry_code = models.CharField(_('Industry Code'), max_length=200)
     description = models.TextField(blank=True, default='')
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                   object_id_field="object_id",
                                   content_type_field="content_type")
 
@@ -26,6 +26,7 @@ class Industry(OrderingBaseModel, TendenciBaseModel):
         verbose_name = _("Industry")
         verbose_name_plural = _("Industries")
         ordering = ('position','-update_dt')
+        app_label = 'industries'
 
     def __unicode__(self):
         return self.industry_name

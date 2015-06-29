@@ -84,6 +84,10 @@ class Payment(models.Model):
     status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
 
+
+    class Meta:
+        app_label = 'payments'
+
     def save(self, user=None):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -232,6 +236,9 @@ class PaymentMethod(models.Model):
     admin_only = models.BooleanField(default=False,
                                      help_text=_(
                         "if checked, it will only show for administrators"))
+
+    class Meta:
+        app_label = 'payments'
 
     def __unicode__(self):
         name = "%s" % (self.human_name, )

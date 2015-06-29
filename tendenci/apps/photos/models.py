@@ -12,7 +12,7 @@ from cStringIO import StringIO
 from django.db import models
 from django.db.models.signals import post_init
 from django.contrib.auth.models import User, AnonymousUser
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -434,6 +434,7 @@ class PhotoEffect(BaseEffect):
     class Meta:
         verbose_name = _("photo effect")
         verbose_name_plural = _("photo effects")
+        app_label = 'photos'
 
     def pre_process(self, im):
         if self.transpose_method != '':
@@ -468,6 +469,7 @@ class Watermark(BaseEffect):
     class Meta:
         verbose_name = _('watermark')
         verbose_name_plural = _('watermarks')
+        app_label = 'photos'
 
     def post_process(self, im):
         try:
@@ -495,6 +497,7 @@ class PhotoSize(models.Model):
         ordering = ['width', 'height']
         verbose_name = _('photo size')
         verbose_name_plural = _('photo sizes')
+        app_label = 'photos'
 
     def __unicode__(self):
         return self.name
@@ -561,7 +564,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     tags = TagField(blank=True, help_text=_("Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3"))
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -569,6 +572,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
         verbose_name = _('Photo Album')
         verbose_name_plural = _('Photo Album')
         permissions = (("view_photoset", _("Can view photoset")),)
+        app_label = 'photos'
 
     objects = PhotoSetManager()
 
@@ -714,7 +718,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -728,6 +732,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
 
     class Meta:
         permissions = (("view_image", "Can view image"),)
+        app_label = 'photos'
 
     def save(self, *args, **kwargs):
         initial_save = not self.id
@@ -984,6 +989,9 @@ class License(models.Model):
     deed = models.URLField(_('license deed'), blank=True)
     legal_code = models.URLField(_('legal code'), blank=True)
 
+    class Meta:
+        app_label = 'photos'
+
     def __unicode__(self):
        return "%s" % (self.name)
 
@@ -996,7 +1004,7 @@ class Pool(models.Model):
     photo = models.ForeignKey(Image)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
     created_at = models.DateTimeField(_('created_at'), default=datetime.now)
 
     class Meta:
@@ -1005,6 +1013,7 @@ class Pool(models.Model):
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')
+        app_label = 'photos'
 
 class AlbumCover(models.Model):
     """
@@ -1012,6 +1021,9 @@ class AlbumCover(models.Model):
     """
     photoset = models.OneToOneField(PhotoSet)
     photo = models.ForeignKey(Image)
+
+    class Meta:
+        app_label = 'photos'
 
     def __unicode__(self):
         return self.photo.title

@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -14,7 +14,7 @@ class Region(TendenciBaseModel):
     region_code = models.CharField(_('Region Code'), max_length=200)
     description = models.TextField(blank=True, default='')
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                   object_id_field="object_id",
                                   content_type_field="content_type")
 
@@ -24,6 +24,7 @@ class Region(TendenciBaseModel):
         permissions = (("view_region", _("Can view region")),)
         verbose_name = _("Region")
         verbose_name_plural = _("Regions")
+        app_label = 'regions'
 
     def __unicode__(self):
         return self.region_name

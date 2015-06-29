@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import User
 
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -41,7 +41,7 @@ class Career(TendenciBaseModel):
                                            default='')
     user = models.ForeignKey(User, related_name="careers")
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                   object_id_field="object_id",
                                   content_type_field="content_type")
 

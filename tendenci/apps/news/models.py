@@ -4,7 +4,7 @@ from django.db import models
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
 
 from tagging.fields import TagField
@@ -63,19 +63,20 @@ class News(TendenciBaseModel):
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
-    categories = generic.GenericRelation(CategoryItem,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    categories = GenericRelation(CategoryItem,
+                                  object_id_field="object_id",
+                                  content_type_field="content_type")
 
-    perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    perms = GenericRelation(ObjectPermission,
+                              object_id_field="object_id",
+                              content_type_field="content_type")
 
     objects = NewsManager()
 
     class Meta:
         permissions = (("view_news",_("Can view news")),)
         verbose_name_plural = _("News")
+        app_label = 'news'
 
     def get_meta(self, name):
         """
@@ -176,3 +177,6 @@ class News(TendenciBaseModel):
 
 class NewsImage(File):
     pass
+
+    class Meta:
+        app_label = 'news'

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import User
 
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -22,7 +22,7 @@ class Education(TendenciBaseModel):
     graduation_year = models.IntegerField(_('Graduation Year'), null=True, blank=True)
     user = models.ForeignKey(User, related_name="educations")
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                   object_id_field="object_id",
                                   content_type_field="content_type")
 

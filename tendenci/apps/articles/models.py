@@ -4,7 +4,7 @@ from django.db import models
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from timezones.utils import adjust_datetime_to_timezone
 from django.conf import settings
 
@@ -61,10 +61,10 @@ class Article(TendenciBaseModel):
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
-    categories = generic.GenericRelation(CategoryItem,
+    categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -74,6 +74,7 @@ class Article(TendenciBaseModel):
         permissions = (("view_article", _("Can view article")),)
         verbose_name = _("Article")
         verbose_name_plural = _("Articles")
+        app_label = 'articles'
 
     def get_meta(self, name):
         """

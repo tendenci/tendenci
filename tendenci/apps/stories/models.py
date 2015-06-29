@@ -6,7 +6,7 @@ from django.db import models
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -56,11 +56,11 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         help_text=_('The rotator where this story belongs.'))
     rotator_position = models.IntegerField(_('Rotator Position'), default=0, blank=True)
 
-    categories = generic.GenericRelation(CategoryItem,
+    categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
@@ -70,6 +70,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         permissions = (("view_story", _("Can view story")),)
         verbose_name_plural = _("stories")
         ordering = ['position']
+        app_label = 'stories'
 
     def __unicode__(self):
         return self.title
@@ -149,9 +150,15 @@ class Story(OrderingBaseModel, TendenciBaseModel):
 class StoryPhoto(File):
     pass
 
+    class Meta:
+        app_label = 'stories'
+
 
 class Rotator(models.Model):
     name = models.CharField(max_length=200)
+
+    class Meta:
+        app_label = 'stories'
 
     def __unicode__(self):
         return self.name

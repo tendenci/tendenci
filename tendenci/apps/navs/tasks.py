@@ -1,7 +1,7 @@
 import os
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from celery.task import Task
 from celery.registry import tasks
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv

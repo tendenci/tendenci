@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
@@ -11,9 +11,6 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.discounts.managers import DiscountManager
 
 class Discount(TendenciBaseModel):
-    class Meta:
-        permissions = (("view_discount",_("Can view discount")),)
-
     discount_code = models.CharField(max_length=100, unique=True, help_text=_('Discount codes must be unique.'))
     start_dt = models.DateTimeField(_('Start Date/Time'))
     end_dt = models.DateTimeField(_('Start Date/Time'))
@@ -22,11 +19,15 @@ class Discount(TendenciBaseModel):
     value = models.DecimalField(_('Discount Value'), max_digits=10, decimal_places=2, help_text=_('Enter discount value as a positive number.'))
     cap = models.IntegerField(_('Maximum Uses'), help_text=_('Enter 0 for unlimited discount code uses.'), default=0)
 
-    perms = generic.GenericRelation(ObjectPermission,
+    perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 
     objects = DiscountManager()
+
+    class Meta:
+        permissions = (("view_discount",_("Can view discount")),)
+        app_label = 'discounts'
 
     def num_of_uses(self):
         return self.discountuse_set.count()
@@ -74,6 +75,9 @@ class DiscountUse(models.Model):
     invoice = models.ForeignKey(Invoice)
     discount = models.ForeignKey(Discount)
     create_dt = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'discounts'
 
     def __unicode__(self):
         return "%s:%s" % (self.invoice, self.discount)

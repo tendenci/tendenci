@@ -81,6 +81,7 @@ class Profile(Person):
         permissions = (("view_profile", _("Can view profile")),)
         verbose_name = _("User")
         verbose_name_plural = _("Users")
+        app_label = 'profiles'
 
     def __unicode__(self):
         if hasattr(self, 'user'):
@@ -413,6 +414,9 @@ class UserImport(BaseImport):
 
     clear_group_membership = models.BooleanField(default=False)
 
+    class Meta:
+        app_label = 'profiles'
+
     def generate_recap(self):
         if not self.recap_file and self.header_line:
             file_name = 'user_import_%d_recap.csv' % self.id
@@ -443,3 +447,7 @@ class UserImport(BaseImport):
 
 class UserImportData(BaseImportData):
     uimport = models.ForeignKey(UserImport, related_name="user_import_data")
+
+    class Meta:
+        app_label = 'profiles'
+

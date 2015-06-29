@@ -12,7 +12,7 @@ from django.db import models, connection
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.storage import default_storage
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
@@ -61,14 +61,14 @@ class File(TendenciBaseModel):
     group = models.ForeignKey(
         Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
-    categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
+    categories = GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
 
     file_cat = models.ForeignKey('FilesCategory', verbose_name=_("Files Category"),
                                  related_name="file_cat", null=True, on_delete=models.SET_NULL)
     file_sub_cat = models.ForeignKey('FilesCategory', verbose_name=_("Files Sub Category"),
                                      related_name="file_subcat", null=True, on_delete=models.SET_NULL)
 
-    perms = generic.GenericRelation(
+    perms = GenericRelation(
         ObjectPermission,
         object_id_field="object_id",
         content_type_field="content_type")
@@ -77,6 +77,7 @@ class File(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_file", _("Can view file")),)
+        app_label = 'files'
 
     def __init__(self, *args, **kwargs):
         super(File, self).__init__(*args, **kwargs)
@@ -362,6 +363,7 @@ class MultipleFile(models.Model):
     """
     class Meta:
         managed = False
+        app_label = 'files'
 
 
 # These two auto-delete files from filesystem when they are unneeded:
@@ -401,6 +403,7 @@ class FilesCategory(models.Model):
     class Meta:
         verbose_name_plural = _("File Categories")
         ordering = ('name',)
+        app_label = 'files'
 
     def __unicode__(self):
         return self.name

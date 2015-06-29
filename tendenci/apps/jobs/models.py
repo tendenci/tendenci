@@ -6,7 +6,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
 
 from tendenci.apps.categories.models import CategoryItem
@@ -81,12 +81,12 @@ class BaseJob(TendenciBaseModel):
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
 
-    categories = generic.GenericRelation(
+    categories = GenericRelation(
         CategoryItem,
         object_id_field="object_id",
         content_type_field="content_type"
     )
-    perms = generic.GenericRelation(
+    perms = GenericRelation(
         ObjectPermission,
         object_id_field="object_id",
         content_type_field="content_type"
@@ -179,6 +179,7 @@ class Job(BaseJob):
         permissions = (("view_job", _("Can view job")),)
         verbose_name = _("Job")
         verbose_name_plural = _("Jobs")
+        app_label = 'jobs'
 
     def get_meta(self, name):
         """
@@ -221,6 +222,7 @@ class JobPricing(models.Model):
         permissions = (("view_jobpricing", _("Can view job pricing")),)
         verbose_name = _("Job Pricing")
         verbose_name_plural = _("Job Pricings")
+        app_label = 'jobs'
 
     def __unicode__(self):
         price = "%s/%s" % (self.regular_price, self.premium_price)

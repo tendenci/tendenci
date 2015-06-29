@@ -40,6 +40,9 @@ class Setting(models.Model):
     parent_id = models.IntegerField(blank=True, default=0)
     is_secure = models.BooleanField(default=False)
 
+    class Meta:
+        app_label = 'site_settings'
+
     def get_absolute_url(self):
         return ("setting.permalink",
                 [self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
