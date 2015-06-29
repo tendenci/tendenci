@@ -2081,6 +2081,7 @@ class PendingEventForm(EventForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+        self.fields['title'].required = True
 
         if 'status_detail' in self.fields:
             self.fields.pop('status_detail')
@@ -2092,6 +2093,13 @@ class PendingEventForm(EventForm):
             self.fields.pop('end_recurring')
         if 'recurs_on' in self.fields:
             self.fields.pop('recurs_on')
+        if 'start_event_date' in self.fields:
+            self.fields.pop('start_event_date')
+        if 'end_event_date' in self.fields:
+            self.fields.pop('end_event_date')
+        if 'all_day' in self.fields:
+            self.fields.pop('all_day')
+
 
 class AddonForm(BetterModelForm):
     class Meta:
