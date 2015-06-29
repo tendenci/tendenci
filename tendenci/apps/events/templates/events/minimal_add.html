@@ -50,7 +50,7 @@
         function find_field(name) {
             //finds a field given a label
             //don't use if multiple fields share the same label
-            labels = $(".label").find("label");
+            labels = $(".form-group").find("label");
             label = labels[0];
             i = 0;
             while((label.innerHTML!=name) && (i < labels.length)) {
