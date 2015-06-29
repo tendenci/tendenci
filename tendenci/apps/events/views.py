@@ -3918,12 +3918,26 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, user=request.user, prefix="event")
         form_place = PlaceForm(request.POST, prefix="place")
-
         if form.is_valid() and form_place.is_valid():
             event = form.save(commit=False)
 
             # update all permissions and save the model
             event = update_perms_and_save(request, form, event)
+            
+            # handle image
+            photo = form.cleaned_data['photo_upload']
+            if photo:
+                image = EventPhoto()
+                image.object_id = event.id
+                image.content_type = ContentType.objects.get_for_model(event.__class__)
+                image.creator = request.user
+                image.creator_username = request.user.username
+                image.owner = request.user
+                image.owner_username = request.user.username
+                filename = "%s-%s" % (event.id, photo.name)
+                photo.file.seek(0)
+                image.file.save(filename, photo)
+                event.image = image
 
             # save place
             place = form_place.save()
@@ -3933,10 +3947,6 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             event.status = True
             event.status_detail = 'pending'
             event.save(log=False)
-
-            # save photo
-            photo = form.cleaned_data['photo_upload']
-            if photo: event.save(photo=photo)
 
             messages.add_message(request, messages.SUCCESS,
                 _('Your event submission has been received. It is now subject to approval.'))

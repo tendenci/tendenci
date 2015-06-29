@@ -20,12 +20,10 @@
     <p>{% trans 'Adding events are subject to the approval of the Administrators.' %}</p>
 
     <div class="event-wrap">
-        <form action="{% url "event.minimal_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-        <div class="forms">
+        <form class="form-horizontal" action="{% url "event.minimal_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
             {{ form|styled_form }}
             {{ form_place|styled_form }}
             <input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL trans 'Event' %}" />
-        </div>
         </form>
     </div>
 
