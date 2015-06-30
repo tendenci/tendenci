@@ -3948,8 +3948,16 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             event.status_detail = 'pending'
             event.save(log=False)
 
+            if request.user.is_superuser:
+                msg_string = 'Successfully added %s.\n ' % unicode(event)
+                msg_string += 'Note that this event is in pending. '
+                msg_string += 'You can activate/edit if needed.'
+            else:
+                msg_string = 'Your event submission has been received. '
+                msg_string += 'It is now subject to approval.'
             messages.add_message(request, messages.SUCCESS,
-                _('Your event submission has been received. It is now subject to approval.'))
+                _(msg_string))
+
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             admin_emails = get_setting('module', 'events', 'admin_emails').replace(" ", "").split(",")
 
@@ -3964,6 +3972,8 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
                     'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                     'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                 })
+            if request.user.is_superuser:
+                return redirect(reverse('event', args=[event.pk]))
             return redirect('events')
     else:
         form = form_class(user=request.user, prefix="event")
