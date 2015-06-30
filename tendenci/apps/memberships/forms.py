@@ -1620,8 +1620,8 @@ class MembershipDefaultForm(TendenciBaseForm):
         # end demographic
         
         # industry field
-        industry_field = MembershipAppField.objects.get(field_name='industry',
-                    membership_app=app, display=True)
+        [industry_field] = MembershipAppField.objects.filter(field_name='industry',
+                    membership_app=app, display=True)[:1] or [None]
         if industry_field:
             self.fields['industry'].label = industry_field.label
 
