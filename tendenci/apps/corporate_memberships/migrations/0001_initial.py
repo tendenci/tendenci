@@ -2,16 +2,23 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import tendenci.apps.base.fields
+from django.conf import settings
 import django.db.models.deletion
 import tinymce.models
-from django.conf import settings
+import tendenci.apps.base.fields
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('payments', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('memberships', '0001_initial'),
+        ('industries', '0001_initial'),
+        ('events', '0001_initial'),
+        ('entities', '0001_initial'),
+        ('invoices', '0001_initial'),
+        ('regions', '0001_initial'),
     ]
 
     operations = [
@@ -95,6 +102,7 @@ class Migration(migrations.Migration):
                 ('default_value', models.CharField(default=b'', max_length=100, verbose_name='Default Value', blank=True)),
                 ('css_class', models.CharField(default=b'', max_length=50, verbose_name='CSS Class Name', blank=True)),
                 ('description', models.TextField(default=b'', max_length=200, verbose_name='Description', blank=True)),
+                ('corp_app', models.ForeignKey(related_name='fields', to='corporate_memberships.CorpMembershipApp')),
             ],
             options={
                 'ordering': ('position',),
@@ -113,7 +121,7 @@ class Migration(migrations.Migration):
             name='CorpMembershipImport',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('upload_file', models.FileField(upload_to=b'imports/corpmemberships/ec286b45', max_length=260, verbose_name='Upload File')),
+                ('upload_file', models.FileField(upload_to=b'imports/corpmemberships/093aeb8a', max_length=260, verbose_name='Upload File')),
                 ('override', models.IntegerField(default=0, choices=[(0, 'Blank Fields'), (1, 'All Fields (override)')])),
                 ('key', models.CharField(default=b'name', max_length=50, verbose_name='Key')),
                 ('bind_members', models.BooleanField(default=False, verbose_name='Bind members to corporations by their company names')),
@@ -123,6 +131,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(default=b'not_started', max_length=50, choices=[(b'not_started', 'Not Started'), (b'preprocessing', 'Pre_processing'), (b'preprocess_done', 'Pre_process Done'), (b'processing', 'Processing'), (b'completed', 'Completed')])),
                 ('complete_dt', models.DateTimeField(null=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
+                ('creator', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -132,6 +141,7 @@ class Migration(migrations.Migration):
                 ('row_data', tendenci.apps.base.fields.DictField(verbose_name='Row Data')),
                 ('row_num', models.IntegerField(verbose_name='Row #')),
                 ('action_taken', models.CharField(max_length=20, null=True, verbose_name='Action Taken')),
+                ('mimport', models.ForeignKey(related_name='corp_membership_import_data', to='corporate_memberships.CorpMembershipImport')),
             ],
         ),
         migrations.CreateModel(
@@ -168,11 +178,11 @@ class Migration(migrations.Migration):
                 ('individual_threshold', models.IntegerField(default=0, null=True, verbose_name='Threshold Limit', blank=True)),
                 ('individual_threshold_price', models.DecimalField(decimal_places=2, default=0, max_digits=15, blank=True, help_text='All individual members applying under or equal to the threshold limit\nreceive the threshold prices. Additional employees can join but will be\ncharged the full individual corporate membership rate.\n', null=True, verbose_name='Threshold Price')),
                 ('number_passes', models.PositiveIntegerField(default=0, verbose_name='Number Passes', blank=True)),
+                ('creator', models.ForeignKey(related_name='corporate_memberships_corporatemembershiptype_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='corporate_memberships_corporatemembershiptype_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('membership_type', models.ForeignKey(help_text='Bind individual memberships to this membership type.', to='memberships.MembershipType')),
+                ('owner', models.ForeignKey(related_name='corporate_memberships_corporatemembershiptype_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
-            options={
-                'ordering': ('position',),
-                'abstract': False,
-            },
         ),
         migrations.CreateModel(
             name='CorpProfile',
@@ -221,10 +231,12 @@ class Migration(migrations.Migration):
                 ('ud6', models.TextField(default=b'', null=True, blank=True)),
                 ('ud7', models.TextField(default=b'', null=True, blank=True)),
                 ('ud8', models.TextField(default=b'', null=True, blank=True)),
+                ('creator', models.ForeignKey(related_name='corporate_memberships_corpprofile_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='corporate_memberships_corpprofile_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('industry', models.ForeignKey(blank=True, to='industries.Industry', null=True)),
+                ('owner', models.ForeignKey(related_name='corporate_memberships_corpprofile_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('region', models.ForeignKey(blank=True, to='regions.Region', null=True)),
             ],
-            options={
-                'abstract': False,
-            },
         ),
         migrations.CreateModel(
             name='Creator',
@@ -251,10 +263,14 @@ class Migration(migrations.Migration):
                 ('owner_username', models.CharField(max_length=50)),
                 ('status', models.BooleanField(default=True, verbose_name=b'Active')),
                 ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('corp_membership', models.ForeignKey(related_name='passes_used', to='corporate_memberships.CorpMembership')),
+                ('creator', models.ForeignKey(related_name='corporate_memberships_freepassesstat_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='corporate_memberships_freepassesstat_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('event', models.ForeignKey(related_name='passes_used', to='events.Event')),
+                ('owner', models.ForeignKey(related_name='corporate_memberships_freepassesstat_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
+                ('registrant', models.ForeignKey(to='events.Registrant', null=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
             ],
-            options={
-                'abstract': False,
-            },
         ),
         migrations.CreateModel(
             name='IndivEmailVerification',
@@ -266,6 +282,9 @@ class Migration(migrations.Migration):
                 ('verified_dt', models.DateTimeField(null=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
+                ('corp_profile', models.ForeignKey(to='corporate_memberships.CorpProfile')),
+                ('creator', models.ForeignKey(related_name='corp_email_veri8n_creator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('updated_by', models.ForeignKey(related_name='corp_email_veri8n_updator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -274,6 +293,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('status_detail', models.CharField(default=b'pending', max_length=50, choices=[(b'pending', 'Pending'), (b'approved', 'Approved'), (b'disapproved', 'Disapproved')])),
                 ('corp_membership', models.ForeignKey(to='corporate_memberships.CorpMembership')),
+                ('membership', models.ForeignKey(to='memberships.MembershipDefault')),
             ],
         ),
         migrations.CreateModel(
@@ -323,5 +343,99 @@ class Migration(migrations.Migration):
                 ('corp_membership', models.ForeignKey(related_name='log_records', to='corporate_memberships.CorpMembership')),
                 ('notice_log', models.ForeignKey(related_name='log_records', to='corporate_memberships.NoticeLog')),
             ],
+        ),
+        migrations.AddField(
+            model_name='corpmembershiprep',
+            name='corp_profile',
+            field=models.ForeignKey(related_name='reps', to='corporate_memberships.CorpProfile'),
+        ),
+        migrations.AddField(
+            model_name='corpmembershiprep',
+            name='user',
+            field=models.ForeignKey(verbose_name='Representative', to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AddField(
+            model_name='corpmembershipauthdomain',
+            name='corp_profile',
+            field=models.ForeignKey(related_name='authorized_domains', to='corporate_memberships.CorpProfile'),
+        ),
+        migrations.AddField(
+            model_name='corpmembershipapp',
+            name='corp_memb_type',
+            field=models.ManyToManyField(to='corporate_memberships.CorporateMembershipType', verbose_name='Corp. Memb. Type'),
+        ),
+        migrations.AddField(
+            model_name='corpmembershipapp',
+            name='creator',
+            field=models.ForeignKey(related_name='corporate_memberships_corpmembershipapp_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembershipapp',
+            name='entity',
+            field=models.ForeignKey(related_name='corporate_memberships_corpmembershipapp_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembershipapp',
+            name='memb_app',
+            field=models.OneToOneField(related_name='corp_app', default=1, to='memberships.MembershipApp', help_text='App for individual memberships.', verbose_name='Membership Application'),
+        ),
+        migrations.AddField(
+            model_name='corpmembershipapp',
+            name='owner',
+            field=models.ForeignKey(related_name='corporate_memberships_corpmembershipapp_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembershipapp',
+            name='payment_methods',
+            field=models.ManyToManyField(to='payments.PaymentMethod', verbose_name=b'Payment Methods'),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='anonymous_creator',
+            field=models.ForeignKey(to='corporate_memberships.Creator', null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='approved_denied_user',
+            field=models.ForeignKey(verbose_name='Approved or Denied User', to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='corp_profile',
+            field=models.ForeignKey(related_name='corp_memberships', to='corporate_memberships.CorpProfile'),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='corporate_membership_type',
+            field=models.ForeignKey(verbose_name='MembershipType', to='corporate_memberships.CorporateMembershipType'),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='creator',
+            field=models.ForeignKey(related_name='corporate_memberships_corpmembership_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='entity',
+            field=models.ForeignKey(related_name='corporate_memberships_corpmembership_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='invoice',
+            field=models.ForeignKey(blank=True, to='invoices.Invoice', null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='owner',
+            field=models.ForeignKey(related_name='corporate_memberships_corpmembership_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='corpmembership',
+            name='payment_method',
+            field=models.ForeignKey(default=None, verbose_name='Payment Method', to='payments.PaymentMethod', null=True),
+        ),
+        migrations.AlterUniqueTogether(
+            name='corpmembershiprep',
+            unique_together=set([('corp_profile', 'user')]),
         ),
     ]

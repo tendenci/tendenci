@@ -5,6 +5,7 @@ from django.db import models, migrations
 import datetime
 import tagging.fields
 import tendenci.apps.photos.models
+import tendenci.apps.user_groups.utils
 from django.conf import settings
 import django.db.models.deletion
 import tendenci.apps.base.fields
@@ -13,8 +14,10 @@ import tendenci.apps.base.fields
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('user_groups', '0001_initial'),
         ('contenttypes', '0002_remove_content_type_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('meta', '0001_initial'),
         ('entities', '0001_initial'),
     ]
 
@@ -55,6 +58,7 @@ class Migration(migrations.Migration):
                 ('tags', tagging.fields.TagField(help_text='Comma delimited (eg. mickey, donald, goofy)', max_length=255, blank=True)),
                 ('exif_data', tendenci.apps.base.fields.DictField(null=True, verbose_name='exif')),
                 ('photographer', models.CharField(max_length=100, null=True, verbose_name='Photographer', blank=True)),
+                ('creator', models.ForeignKey(related_name='photos_image_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'permissions': (('view_image', 'Can view image'),),
@@ -116,6 +120,8 @@ class Migration(migrations.Migration):
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
                 ('creator', models.ForeignKey(related_name='photos_photoset_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='photos_photoset_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
+                ('owner', models.ForeignKey(related_name='photos_photoset_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Photo Album',
@@ -177,5 +183,59 @@ class Migration(migrations.Migration):
             model_name='photosize',
             name='watermark',
             field=models.ForeignKey(related_name='photo_sizes', verbose_name='watermark image', blank=True, to='photos.Watermark', null=True),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='effect',
+            field=models.ForeignKey(related_name='image_related', verbose_name='effect', blank=True, to='photos.PhotoEffect', null=True),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='entity',
+            field=models.ForeignKey(related_name='photos_image_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='group',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, blank=True, to='user_groups.Group', null=True),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='license',
+            field=models.ForeignKey(blank=True, to='photos.License', null=True),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='member',
+            field=models.ForeignKey(related_name='added_photos', on_delete=django.db.models.deletion.SET_NULL, blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='meta',
+            field=models.OneToOneField(null=True, blank=True, to='meta.Meta'),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='owner',
+            field=models.ForeignKey(related_name='photos_image_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='image',
+            name='photoset',
+            field=models.ManyToManyField(to='photos.PhotoSet', verbose_name='photo set', blank=True),
+        ),
+        migrations.AddField(
+            model_name='albumcover',
+            name='photo',
+            field=models.ForeignKey(to='photos.Image'),
+        ),
+        migrations.AddField(
+            model_name='albumcover',
+            name='photoset',
+            field=models.OneToOneField(to='photos.PhotoSet'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='pool',
+            unique_together=set([('photo', 'content_type', 'object_id')]),
         ),
     ]

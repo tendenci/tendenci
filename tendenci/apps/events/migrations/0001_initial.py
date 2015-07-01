@@ -5,11 +5,22 @@ from django.db import models, migrations
 import datetime
 import timezones.fields
 import tagging.fields
+import tendenci.apps.user_groups.utils
+import django.db.models.deletion
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('payments', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('files', '0001_initial'),
+        ('user_groups', '0001_initial'),
+        ('emails', '0001_initial'),
+        ('entities', '0001_initial'),
+        ('invoices', '0001_initial'),
+        ('meta', '0001_initial'),
     ]
 
     operations = [
@@ -41,6 +52,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=100)),
+                ('addon', models.ForeignKey(related_name='options', to='events.Addon')),
             ],
         ),
         migrations.CreateModel(
@@ -96,6 +108,8 @@ class Migration(migrations.Migration):
                 ('company_name', models.BooleanField(default=False, verbose_name='Company')),
                 ('meal_option', models.BooleanField(default=False, verbose_name='Meal Option')),
                 ('comments', models.BooleanField(default=False, verbose_name='Comments')),
+                ('creator', models.ForeignKey(related_name='custom_reg_creator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('owner', models.ForeignKey(related_name='custom_reg_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'verbose_name': 'Custom Registration Form',
@@ -107,6 +121,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('entry_time', models.DateTimeField(verbose_name='Date/time')),
+                ('form', models.ForeignKey(related_name='entries', to='events.CustomRegForm')),
             ],
         ),
         migrations.CreateModel(
@@ -136,9 +151,9 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=150, blank=True)),
                 ('description', models.TextField(blank=True)),
                 ('all_day', models.BooleanField(default=False)),
-                ('start_dt', models.DateTimeField(default=datetime.datetime(2015, 7, 11, 15, 37, 20, 953859))),
-                ('end_dt', models.DateTimeField(default=datetime.datetime(2015, 7, 11, 17, 37, 20, 953890))),
-                ('timezone', timezones.fields.TimeZoneField(default=b'US/Central', max_length=100, verbose_name='Time Zone', choices=[(b'Pacific/Midway', b'(GMT-1100) Pacific/Midway'), (b'Pacific/Niue', b'(GMT-1100) Pacific/Niue'), (b'Pacific/Pago_Pago', b'(GMT-1100) Pacific/Pago_Pago'), (b'Pacific/Honolulu', b'(GMT-1000) Pacific/Honolulu'), (b'Pacific/Johnston', b'(GMT-1000) Pacific/Johnston'), (b'Pacific/Rarotonga', b'(GMT-1000) Pacific/Rarotonga'), (b'Pacific/Tahiti', b'(GMT-1000) Pacific/Tahiti'), (b'US/Hawaii', b'(GMT-1000) US/Hawaii'), (b'Pacific/Marquesas', b'(GMT-0930) Pacific/Marquesas'), (b'America/Adak', b'(GMT-0900) America/Adak'), (b'Pacific/Gambier', b'(GMT-0900) Pacific/Gambier'), (b'America/Anchorage', b'(GMT-0800) America/Anchorage'), (b'America/Juneau', b'(GMT-0800) America/Juneau'), (b'America/Metlakatla', b'(GMT-0800) America/Metlakatla'), (b'America/Nome', b'(GMT-0800) America/Nome'), (b'America/Sitka', b'(GMT-0800) America/Sitka'), (b'America/Yakutat', b'(GMT-0800) America/Yakutat'), (b'Pacific/Pitcairn', b'(GMT-0800) Pacific/Pitcairn'), (b'US/Alaska', b'(GMT-0800) US/Alaska'), (b'America/Creston', b'(GMT-0700) America/Creston'), (b'America/Dawson', b'(GMT-0700) America/Dawson'), (b'America/Dawson_Creek', b'(GMT-0700) America/Dawson_Creek'), (b'America/Hermosillo', b'(GMT-0700) America/Hermosillo'), (b'America/Los_Angeles', b'(GMT-0700) America/Los_Angeles'), (b'America/Phoenix', b'(GMT-0700) America/Phoenix'), (b'America/Santa_Isabel', b'(GMT-0700) America/Santa_Isabel'), (b'America/Tijuana', b'(GMT-0700) America/Tijuana'), (b'America/Vancouver', b'(GMT-0700) America/Vancouver'), (b'America/Whitehorse', b'(GMT-0700) America/Whitehorse'), (b'Canada/Pacific', b'(GMT-0700) Canada/Pacific'), (b'US/Arizona', b'(GMT-0700) US/Arizona'), (b'US/Pacific', b'(GMT-0700) US/Pacific'), (b'America/Belize', b'(GMT-0600) America/Belize'), (b'America/Boise', b'(GMT-0600) America/Boise'), (b'America/Cambridge_Bay', b'(GMT-0600) America/Cambridge_Bay'), (b'America/Chihuahua', b'(GMT-0600) America/Chihuahua'), (b'America/Costa_Rica', b'(GMT-0600) America/Costa_Rica'), (b'America/Denver', b'(GMT-0600) America/Denver'), (b'America/Edmonton', b'(GMT-0600) America/Edmonton'), (b'America/El_Salvador', b'(GMT-0600) America/El_Salvador'), (b'America/Guatemala', b'(GMT-0600) America/Guatemala'), (b'America/Inuvik', b'(GMT-0600) America/Inuvik'), (b'America/Managua', b'(GMT-0600) America/Managua'), (b'America/Mazatlan', b'(GMT-0600) America/Mazatlan'), (b'America/Ojinaga', b'(GMT-0600) America/Ojinaga'), (b'America/Regina', b'(GMT-0600) America/Regina'), (b'America/Shiprock', b'(GMT-0600) America/Shiprock'), (b'America/Swift_Current', b'(GMT-0600) America/Swift_Current'), (b'America/Tegucigalpa', b'(GMT-0600) America/Tegucigalpa'), (b'America/Yellowknife', b'(GMT-0600) America/Yellowknife'), (b'Canada/Mountain', b'(GMT-0600) Canada/Mountain'), (b'Pacific/Easter', b'(GMT-0600) Pacific/Easter'), (b'Pacific/Galapagos', b'(GMT-0600) Pacific/Galapagos'), (b'US/Mountain', b'(GMT-0600) US/Mountain'), (b'America/Atikokan', b'(GMT-0500) America/Atikokan'), (b'America/Bahia_Banderas', b'(GMT-0500) America/Bahia_Banderas'), (b'America/Bogota', b'(GMT-0500) America/Bogota'), (b'America/Cancun', b'(GMT-0500) America/Cancun'), (b'America/Cayman', b'(GMT-0500) America/Cayman'), (b'America/Chicago', b'(GMT-0500) America/Chicago'), (b'America/Guayaquil', b'(GMT-0500) America/Guayaquil'), (b'America/Indiana/Knox', b'(GMT-0500) America/Indiana/Knox'), (b'America/Indiana/Tell_City', b'(GMT-0500) America/Indiana/Tell_City'), (b'America/Jamaica', b'(GMT-0500) America/Jamaica'), (b'America/Lima', b'(GMT-0500) America/Lima'), (b'America/Matamoros', b'(GMT-0500) America/Matamoros'), (b'America/Menominee', b'(GMT-0500) America/Menominee'), (b'America/Merida', b'(GMT-0500) America/Merida'), (b'America/Mexico_City', b'(GMT-0500) America/Mexico_City'), (b'America/Monterrey', b'(GMT-0500) America/Monterrey'), (b'America/North_Dakota/Beulah', b'(GMT-0500) America/North_Dakota/Beulah'), (b'America/North_Dakota/Center', b'(GMT-0500) America/North_Dakota/Center'), (b'America/North_Dakota/New_Salem', b'(GMT-0500) America/North_Dakota/New_Salem'), (b'America/Panama', b'(GMT-0500) America/Panama'), (b'America/Port-au-Prince', b'(GMT-0500) America/Port-au-Prince'), (b'America/Rainy_River', b'(GMT-0500) America/Rainy_River'), (b'America/Rankin_Inlet', b'(GMT-0500) America/Rankin_Inlet'), (b'America/Resolute', b'(GMT-0500) America/Resolute'), (b'America/Winnipeg', b'(GMT-0500) America/Winnipeg'), (b'Canada/Central', b'(GMT-0500) Canada/Central'), (b'US/Central', b'(GMT-0500) US/Central'), (b'America/Caracas', b'(GMT-0430) America/Caracas'), (b'America/Anguilla', b'(GMT-0400) America/Anguilla'), (b'America/Antigua', b'(GMT-0400) America/Antigua'), (b'America/Aruba', b'(GMT-0400) America/Aruba'), (b'America/Asuncion', b'(GMT-0400) America/Asuncion'), (b'America/Barbados', b'(GMT-0400) America/Barbados'), (b'America/Blanc-Sablon', b'(GMT-0400) America/Blanc-Sablon'), (b'America/Boa_Vista', b'(GMT-0400) America/Boa_Vista'), (b'America/Campo_Grande', b'(GMT-0400) America/Campo_Grande'), (b'America/Cuiaba', b'(GMT-0400) America/Cuiaba'), (b'America/Curacao', b'(GMT-0400) America/Curacao'), (b'America/Detroit', b'(GMT-0400) America/Detroit'), (b'America/Dominica', b'(GMT-0400) America/Dominica'), (b'America/Eirunepe', b'(GMT-0400) America/Eirunepe'), (b'America/Grand_Turk', b'(GMT-0400) America/Grand_Turk'), (b'America/Grenada', b'(GMT-0400) America/Grenada'), (b'America/Guadeloupe', b'(GMT-0400) America/Guadeloupe'), (b'America/Guyana', b'(GMT-0400) America/Guyana'), (b'America/Havana', b'(GMT-0400) America/Havana'), (b'America/Indiana/Indianapolis', b'(GMT-0400) America/Indiana/Indianapolis'), (b'America/Indiana/Marengo', b'(GMT-0400) America/Indiana/Marengo'), (b'America/Indiana/Petersburg', b'(GMT-0400) America/Indiana/Petersburg'), (b'America/Indiana/Vevay', b'(GMT-0400) America/Indiana/Vevay'), (b'America/Indiana/Vincennes', b'(GMT-0400) America/Indiana/Vincennes'), (b'America/Indiana/Winamac', b'(GMT-0400) America/Indiana/Winamac'), (b'America/Iqaluit', b'(GMT-0400) America/Iqaluit'), (b'America/Kentucky/Louisville', b'(GMT-0400) America/Kentucky/Louisville'), (b'America/Kentucky/Monticello', b'(GMT-0400) America/Kentucky/Monticello'), (b'America/Kralendijk', b'(GMT-0400) America/Kralendijk'), (b'America/La_Paz', b'(GMT-0400) America/La_Paz'), (b'America/Lower_Princes', b'(GMT-0400) America/Lower_Princes'), (b'America/Manaus', b'(GMT-0400) America/Manaus'), (b'America/Marigot', b'(GMT-0400) America/Marigot'), (b'America/Martinique', b'(GMT-0400) America/Martinique'), (b'America/Montreal', b'(GMT-0400) America/Montreal'), (b'America/Montserrat', b'(GMT-0400) America/Montserrat'), (b'America/Nassau', b'(GMT-0400) America/Nassau'), (b'America/New_York', b'(GMT-0400) America/New_York'), (b'America/Nipigon', b'(GMT-0400) America/Nipigon'), (b'America/Pangnirtung', b'(GMT-0400) America/Pangnirtung'), (b'America/Port_of_Spain', b'(GMT-0400) America/Port_of_Spain'), (b'America/Porto_Velho', b'(GMT-0400) America/Porto_Velho'), (b'America/Puerto_Rico', b'(GMT-0400) America/Puerto_Rico'), (b'America/Rio_Branco', b'(GMT-0400) America/Rio_Branco'), (b'America/Santiago', b'(GMT-0400) America/Santiago'), (b'America/Santo_Domingo', b'(GMT-0400) America/Santo_Domingo'), (b'America/St_Barthelemy', b'(GMT-0400) America/St_Barthelemy'), (b'America/St_Kitts', b'(GMT-0400) America/St_Kitts'), (b'America/St_Lucia', b'(GMT-0400) America/St_Lucia'), (b'America/St_Thomas', b'(GMT-0400) America/St_Thomas'), (b'America/St_Vincent', b'(GMT-0400) America/St_Vincent'), (b'America/Thunder_Bay', b'(GMT-0400) America/Thunder_Bay'), (b'America/Toronto', b'(GMT-0400) America/Toronto'), (b'America/Tortola', b'(GMT-0400) America/Tortola'), (b'Antarctica/Palmer', b'(GMT-0400) Antarctica/Palmer'), (b'Canada/Eastern', b'(GMT-0400) Canada/Eastern'), (b'US/Eastern', b'(GMT-0400) US/Eastern'), (b'America/Araguaina', b'(GMT-0300) America/Araguaina'), (b'America/Argentina/Buenos_Aires', b'(GMT-0300) America/Argentina/Buenos_Aires'), (b'America/Argentina/Catamarca', b'(GMT-0300) America/Argentina/Catamarca'), (b'America/Argentina/Cordoba', b'(GMT-0300) America/Argentina/Cordoba'), (b'America/Argentina/Jujuy', b'(GMT-0300) America/Argentina/Jujuy'), (b'America/Argentina/La_Rioja', b'(GMT-0300) America/Argentina/La_Rioja'), (b'America/Argentina/Mendoza', b'(GMT-0300) America/Argentina/Mendoza'), (b'America/Argentina/Rio_Gallegos', b'(GMT-0300) America/Argentina/Rio_Gallegos'), (b'America/Argentina/Salta', b'(GMT-0300) America/Argentina/Salta'), (b'America/Argentina/San_Juan', b'(GMT-0300) America/Argentina/San_Juan'), (b'America/Argentina/San_Luis', b'(GMT-0300) America/Argentina/San_Luis'), (b'America/Argentina/Tucuman', b'(GMT-0300) America/Argentina/Tucuman'), (b'America/Argentina/Ushuaia', b'(GMT-0300) America/Argentina/Ushuaia'), (b'America/Bahia', b'(GMT-0300) America/Bahia'), (b'America/Belem', b'(GMT-0300) America/Belem'), (b'America/Cayenne', b'(GMT-0300) America/Cayenne'), (b'America/Fortaleza', b'(GMT-0300) America/Fortaleza'), (b'America/Glace_Bay', b'(GMT-0300) America/Glace_Bay'), (b'America/Goose_Bay', b'(GMT-0300) America/Goose_Bay'), (b'America/Halifax', b'(GMT-0300) America/Halifax'), (b'America/Maceio', b'(GMT-0300) America/Maceio'), (b'America/Moncton', b'(GMT-0300) America/Moncton'), (b'America/Montevideo', b'(GMT-0300) America/Montevideo'), (b'America/Paramaribo', b'(GMT-0300) America/Paramaribo'), (b'America/Recife', b'(GMT-0300) America/Recife'), (b'America/Santarem', b'(GMT-0300) America/Santarem'), (b'America/Sao_Paulo', b'(GMT-0300) America/Sao_Paulo'), (b'America/Thule', b'(GMT-0300) America/Thule'), (b'Antarctica/Rothera', b'(GMT-0300) Antarctica/Rothera'), (b'Atlantic/Bermuda', b'(GMT-0300) Atlantic/Bermuda'), (b'Atlantic/Stanley', b'(GMT-0300) Atlantic/Stanley'), (b'Canada/Atlantic', b'(GMT-0300) Canada/Atlantic'), (b'America/St_Johns', b'(GMT-0230) America/St_Johns'), (b'Canada/Newfoundland', b'(GMT-0230) Canada/Newfoundland'), (b'America/Godthab', b'(GMT-0200) America/Godthab'), (b'America/Miquelon', b'(GMT-0200) America/Miquelon'), (b'America/Noronha', b'(GMT-0200) America/Noronha'), (b'Atlantic/South_Georgia', b'(GMT-0200) Atlantic/South_Georgia'), (b'Atlantic/Cape_Verde', b'(GMT-0100) Atlantic/Cape_Verde'), (b'Africa/Abidjan', b'(GMT+0000) Africa/Abidjan'), (b'Africa/Accra', b'(GMT+0000) Africa/Accra'), (b'Africa/Bamako', b'(GMT+0000) Africa/Bamako'), (b'Africa/Banjul', b'(GMT+0000) Africa/Banjul'), (b'Africa/Bissau', b'(GMT+0000) Africa/Bissau'), (b'Africa/Conakry', b'(GMT+0000) Africa/Conakry'), (b'Africa/Dakar', b'(GMT+0000) Africa/Dakar'), (b'Africa/El_Aaiun', b'(GMT+0000) Africa/El_Aaiun'), (b'Africa/Freetown', b'(GMT+0000) Africa/Freetown'), (b'Africa/Lome', b'(GMT+0000) Africa/Lome'), (b'Africa/Monrovia', b'(GMT+0000) Africa/Monrovia'), (b'Africa/Nouakchott', b'(GMT+0000) Africa/Nouakchott'), (b'Africa/Ouagadougou', b'(GMT+0000) Africa/Ouagadougou'), (b'Africa/Sao_Tome', b'(GMT+0000) Africa/Sao_Tome'), (b'America/Danmarkshavn', b'(GMT+0000) America/Danmarkshavn'), (b'America/Scoresbysund', b'(GMT+0000) America/Scoresbysund'), (b'Atlantic/Azores', b'(GMT+0000) Atlantic/Azores'), (b'Atlantic/Reykjavik', b'(GMT+0000) Atlantic/Reykjavik'), (b'Atlantic/St_Helena', b'(GMT+0000) Atlantic/St_Helena'), (b'GMT', b'(GMT+0000) GMT'), (b'UTC', b'(GMT+0000) UTC'), (b'Africa/Algiers', b'(GMT+0100) Africa/Algiers'), (b'Africa/Bangui', b'(GMT+0100) Africa/Bangui'), (b'Africa/Brazzaville', b'(GMT+0100) Africa/Brazzaville'), (b'Africa/Casablanca', b'(GMT+0100) Africa/Casablanca'), (b'Africa/Douala', b'(GMT+0100) Africa/Douala'), (b'Africa/Kinshasa', b'(GMT+0100) Africa/Kinshasa'), (b'Africa/Lagos', b'(GMT+0100) Africa/Lagos'), (b'Africa/Libreville', b'(GMT+0100) Africa/Libreville'), (b'Africa/Luanda', b'(GMT+0100) Africa/Luanda'), (b'Africa/Malabo', b'(GMT+0100) Africa/Malabo'), (b'Africa/Ndjamena', b'(GMT+0100) Africa/Ndjamena'), (b'Africa/Niamey', b'(GMT+0100) Africa/Niamey'), (b'Africa/Porto-Novo', b'(GMT+0100) Africa/Porto-Novo'), (b'Africa/Tunis', b'(GMT+0100) Africa/Tunis'), (b'Africa/Windhoek', b'(GMT+0100) Africa/Windhoek'), (b'Atlantic/Canary', b'(GMT+0100) Atlantic/Canary'), (b'Atlantic/Faroe', b'(GMT+0100) Atlantic/Faroe'), (b'Atlantic/Madeira', b'(GMT+0100) Atlantic/Madeira'), (b'Europe/Dublin', b'(GMT+0100) Europe/Dublin'), (b'Europe/Guernsey', b'(GMT+0100) Europe/Guernsey'), (b'Europe/Isle_of_Man', b'(GMT+0100) Europe/Isle_of_Man'), (b'Europe/Jersey', b'(GMT+0100) Europe/Jersey'), (b'Europe/Lisbon', b'(GMT+0100) Europe/Lisbon'), (b'Europe/London', b'(GMT+0100) Europe/London'), (b'Africa/Blantyre', b'(GMT+0200) Africa/Blantyre'), (b'Africa/Bujumbura', b'(GMT+0200) Africa/Bujumbura'), (b'Africa/Cairo', b'(GMT+0200) Africa/Cairo'), (b'Africa/Ceuta', b'(GMT+0200) Africa/Ceuta'), (b'Africa/Gaborone', b'(GMT+0200) Africa/Gaborone'), (b'Africa/Harare', b'(GMT+0200) Africa/Harare'), (b'Africa/Johannesburg', b'(GMT+0200) Africa/Johannesburg'), (b'Africa/Kigali', b'(GMT+0200) Africa/Kigali'), (b'Africa/Lubumbashi', b'(GMT+0200) Africa/Lubumbashi'), (b'Africa/Lusaka', b'(GMT+0200) Africa/Lusaka'), (b'Africa/Maputo', b'(GMT+0200) Africa/Maputo'), (b'Africa/Maseru', b'(GMT+0200) Africa/Maseru'), (b'Africa/Mbabane', b'(GMT+0200) Africa/Mbabane'), (b'Africa/Tripoli', b'(GMT+0200) Africa/Tripoli'), (b'Arctic/Longyearbyen', b'(GMT+0200) Arctic/Longyearbyen'), (b'Asia/Gaza', b'(GMT+0200) Asia/Gaza'), (b'Asia/Hebron', b'(GMT+0200) Asia/Hebron'), (b'Europe/Amsterdam', b'(GMT+0200) Europe/Amsterdam'), (b'Europe/Andorra', b'(GMT+0200) Europe/Andorra'), (b'Europe/Belgrade', b'(GMT+0200) Europe/Belgrade'), (b'Europe/Berlin', b'(GMT+0200) Europe/Berlin'), (b'Europe/Bratislava', b'(GMT+0200) Europe/Bratislava'), (b'Europe/Brussels', b'(GMT+0200) Europe/Brussels'), (b'Europe/Budapest', b'(GMT+0200) Europe/Budapest'), (b'Europe/Copenhagen', b'(GMT+0200) Europe/Copenhagen'), (b'Europe/Gibraltar', b'(GMT+0200) Europe/Gibraltar'), (b'Europe/Ljubljana', b'(GMT+0200) Europe/Ljubljana'), (b'Europe/Luxembourg', b'(GMT+0200) Europe/Luxembourg'), (b'Europe/Madrid', b'(GMT+0200) Europe/Madrid'), (b'Europe/Malta', b'(GMT+0200) Europe/Malta'), (b'Europe/Monaco', b'(GMT+0200) Europe/Monaco'), (b'Europe/Oslo', b'(GMT+0200) Europe/Oslo'), (b'Europe/Paris', b'(GMT+0200) Europe/Paris'), (b'Europe/Podgorica', b'(GMT+0200) Europe/Podgorica'), (b'Europe/Prague', b'(GMT+0200) Europe/Prague'), (b'Europe/Rome', b'(GMT+0200) Europe/Rome'), (b'Europe/San_Marino', b'(GMT+0200) Europe/San_Marino'), (b'Europe/Sarajevo', b'(GMT+0200) Europe/Sarajevo'), (b'Europe/Skopje', b'(GMT+0200) Europe/Skopje'), (b'Europe/Stockholm', b'(GMT+0200) Europe/Stockholm'), (b'Europe/Tirane', b'(GMT+0200) Europe/Tirane'), (b'Europe/Vaduz', b'(GMT+0200) Europe/Vaduz'), (b'Europe/Vatican', b'(GMT+0200) Europe/Vatican'), (b'Europe/Vienna', b'(GMT+0200) Europe/Vienna'), (b'Europe/Warsaw', b'(GMT+0200) Europe/Warsaw'), (b'Europe/Zagreb', b'(GMT+0200) Europe/Zagreb'), (b'Europe/Zurich', b'(GMT+0200) Europe/Zurich'), (b'Africa/Addis_Ababa', b'(GMT+0300) Africa/Addis_Ababa'), (b'Africa/Asmara', b'(GMT+0300) Africa/Asmara'), (b'Africa/Dar_es_Salaam', b'(GMT+0300) Africa/Dar_es_Salaam'), (b'Africa/Djibouti', b'(GMT+0300) Africa/Djibouti'), (b'Africa/Juba', b'(GMT+0300) Africa/Juba'), (b'Africa/Kampala', b'(GMT+0300) Africa/Kampala'), (b'Africa/Khartoum', b'(GMT+0300) Africa/Khartoum'), (b'Africa/Mogadishu', b'(GMT+0300) Africa/Mogadishu'), (b'Africa/Nairobi', b'(GMT+0300) Africa/Nairobi'), (b'Antarctica/Syowa', b'(GMT+0300) Antarctica/Syowa'), (b'Asia/Aden', b'(GMT+0300) Asia/Aden'), (b'Asia/Amman', b'(GMT+0300) Asia/Amman'), (b'Asia/Baghdad', b'(GMT+0300) Asia/Baghdad'), (b'Asia/Bahrain', b'(GMT+0300) Asia/Bahrain'), (b'Asia/Beirut', b'(GMT+0300) Asia/Beirut'), (b'Asia/Damascus', b'(GMT+0300) Asia/Damascus'), (b'Asia/Jerusalem', b'(GMT+0300) Asia/Jerusalem'), (b'Asia/Kuwait', b'(GMT+0300) Asia/Kuwait'), (b'Asia/Nicosia', b'(GMT+0300) Asia/Nicosia'), (b'Asia/Qatar', b'(GMT+0300) Asia/Qatar'), (b'Asia/Riyadh', b'(GMT+0300) Asia/Riyadh'), (b'Europe/Athens', b'(GMT+0300) Europe/Athens'), (b'Europe/Bucharest', b'(GMT+0300) Europe/Bucharest'), (b'Europe/Chisinau', b'(GMT+0300) Europe/Chisinau'), (b'Europe/Helsinki', b'(GMT+0300) Europe/Helsinki'), (b'Europe/Istanbul', b'(GMT+0300) Europe/Istanbul'), (b'Europe/Kaliningrad', b'(GMT+0300) Europe/Kaliningrad'), (b'Europe/Kiev', b'(GMT+0300) Europe/Kiev'), (b'Europe/Mariehamn', b'(GMT+0300) Europe/Mariehamn'), (b'Europe/Minsk', b'(GMT+0300) Europe/Minsk'), (b'Europe/Riga', b'(GMT+0300) Europe/Riga'), (b'Europe/Simferopol', b'(GMT+0300) Europe/Simferopol'), (b'Europe/Sofia', b'(GMT+0300) Europe/Sofia'), (b'Europe/Tallinn', b'(GMT+0300) Europe/Tallinn'), (b'Europe/Uzhgorod', b'(GMT+0300) Europe/Uzhgorod'), (b'Europe/Vilnius', b'(GMT+0300) Europe/Vilnius'), (b'Europe/Zaporozhye', b'(GMT+0300) Europe/Zaporozhye'), (b'Indian/Antananarivo', b'(GMT+0300) Indian/Antananarivo'), (b'Indian/Comoro', b'(GMT+0300) Indian/Comoro'), (b'Indian/Mayotte', b'(GMT+0300) Indian/Mayotte'), (b'Asia/Dubai', b'(GMT+0400) Asia/Dubai'), (b'Asia/Muscat', b'(GMT+0400) Asia/Muscat'), (b'Asia/Tbilisi', b'(GMT+0400) Asia/Tbilisi'), (b'Asia/Yerevan', b'(GMT+0400) Asia/Yerevan'), (b'Europe/Moscow', b'(GMT+0400) Europe/Moscow'), (b'Europe/Samara', b'(GMT+0400) Europe/Samara'), (b'Europe/Volgograd', b'(GMT+0400) Europe/Volgograd'), (b'Indian/Mahe', b'(GMT+0400) Indian/Mahe'), (b'Indian/Mauritius', b'(GMT+0400) Indian/Mauritius'), (b'Indian/Reunion', b'(GMT+0400) Indian/Reunion'), (b'Asia/Kabul', b'(GMT+0430) Asia/Kabul'), (b'Asia/Tehran', b'(GMT+0430) Asia/Tehran'), (b'Antarctica/Mawson', b'(GMT+0500) Antarctica/Mawson'), (b'Asia/Aqtau', b'(GMT+0500) Asia/Aqtau'), (b'Asia/Aqtobe', b'(GMT+0500) Asia/Aqtobe'), (b'Asia/Ashgabat', b'(GMT+0500) Asia/Ashgabat'), (b'Asia/Baku', b'(GMT+0500) Asia/Baku'), (b'Asia/Dushanbe', b'(GMT+0500) Asia/Dushanbe'), (b'Asia/Karachi', b'(GMT+0500) Asia/Karachi'), (b'Asia/Oral', b'(GMT+0500) Asia/Oral'), (b'Asia/Samarkand', b'(GMT+0500) Asia/Samarkand'), (b'Asia/Tashkent', b'(GMT+0500) Asia/Tashkent'), (b'Indian/Kerguelen', b'(GMT+0500) Indian/Kerguelen'), (b'Indian/Maldives', b'(GMT+0500) Indian/Maldives'), (b'Asia/Colombo', b'(GMT+0530) Asia/Colombo'), (b'Asia/Kolkata', b'(GMT+0530) Asia/Kolkata'), (b'Asia/Kathmandu', b'(GMT+0545) Asia/Kathmandu'), (b'Antarctica/Vostok', b'(GMT+0600) Antarctica/Vostok'), (b'Asia/Almaty', b'(GMT+0600) Asia/Almaty'), (b'Asia/Bishkek', b'(GMT+0600) Asia/Bishkek'), (b'Asia/Dhaka', b'(GMT+0600) Asia/Dhaka'), (b'Asia/Qyzylorda', b'(GMT+0600) Asia/Qyzylorda'), (b'Asia/Thimphu', b'(GMT+0600) Asia/Thimphu'), (b'Asia/Yekaterinburg', b'(GMT+0600) Asia/Yekaterinburg'), (b'Indian/Chagos', b'(GMT+0600) Indian/Chagos'), (b'Asia/Rangoon', b'(GMT+0630) Asia/Rangoon'), (b'Indian/Cocos', b'(GMT+0630) Indian/Cocos'), (b'Antarctica/Davis', b'(GMT+0700) Antarctica/Davis'), (b'Asia/Bangkok', b'(GMT+0700) Asia/Bangkok'), (b'Asia/Ho_Chi_Minh', b'(GMT+0700) Asia/Ho_Chi_Minh'), (b'Asia/Hovd', b'(GMT+0700) Asia/Hovd'), (b'Asia/Jakarta', b'(GMT+0700) Asia/Jakarta'), (b'Asia/Novokuznetsk', b'(GMT+0700) Asia/Novokuznetsk'), (b'Asia/Novosibirsk', b'(GMT+0700) Asia/Novosibirsk'), (b'Asia/Omsk', b'(GMT+0700) Asia/Omsk'), (b'Asia/Phnom_Penh', b'(GMT+0700) Asia/Phnom_Penh'), (b'Asia/Pontianak', b'(GMT+0700) Asia/Pontianak'), (b'Asia/Vientiane', b'(GMT+0700) Asia/Vientiane'), (b'Indian/Christmas', b'(GMT+0700) Indian/Christmas'), (b'Antarctica/Casey', b'(GMT+0800) Antarctica/Casey'), (b'Asia/Brunei', b'(GMT+0800) Asia/Brunei'), (b'Asia/Choibalsan', b'(GMT+0800) Asia/Choibalsan'), (b'Asia/Chongqing', b'(GMT+0800) Asia/Chongqing'), (b'Asia/Harbin', b'(GMT+0800) Asia/Harbin'), (b'Asia/Hong_Kong', b'(GMT+0800) Asia/Hong_Kong'), (b'Asia/Kashgar', b'(GMT+0800) Asia/Kashgar'), (b'Asia/Krasnoyarsk', b'(GMT+0800) Asia/Krasnoyarsk'), (b'Asia/Kuala_Lumpur', b'(GMT+0800) Asia/Kuala_Lumpur'), (b'Asia/Kuching', b'(GMT+0800) Asia/Kuching'), (b'Asia/Macau', b'(GMT+0800) Asia/Macau'), (b'Asia/Makassar', b'(GMT+0800) Asia/Makassar'), (b'Asia/Manila', b'(GMT+0800) Asia/Manila'), (b'Asia/Shanghai', b'(GMT+0800) Asia/Shanghai'), (b'Asia/Singapore', b'(GMT+0800) Asia/Singapore'), (b'Asia/Taipei', b'(GMT+0800) Asia/Taipei'), (b'Asia/Ulaanbaatar', b'(GMT+0800) Asia/Ulaanbaatar'), (b'Asia/Urumqi', b'(GMT+0800) Asia/Urumqi'), (b'Australia/Perth', b'(GMT+0800) Australia/Perth'), (b'Australia/Eucla', b'(GMT+0845) Australia/Eucla'), (b'Asia/Dili', b'(GMT+0900) Asia/Dili'), (b'Asia/Irkutsk', b'(GMT+0900) Asia/Irkutsk'), (b'Asia/Jayapura', b'(GMT+0900) Asia/Jayapura'), (b'Asia/Pyongyang', b'(GMT+0900) Asia/Pyongyang'), (b'Asia/Seoul', b'(GMT+0900) Asia/Seoul'), (b'Asia/Tokyo', b'(GMT+0900) Asia/Tokyo'), (b'Pacific/Palau', b'(GMT+0900) Pacific/Palau'), (b'Australia/Adelaide', b'(GMT+0930) Australia/Adelaide'), (b'Australia/Broken_Hill', b'(GMT+0930) Australia/Broken_Hill'), (b'Australia/Darwin', b'(GMT+0930) Australia/Darwin'), (b'Antarctica/DumontDUrville', b'(GMT+1000) Antarctica/DumontDUrville'), (b'Asia/Yakutsk', b'(GMT+1000) Asia/Yakutsk'), (b'Australia/Brisbane', b'(GMT+1000) Australia/Brisbane'), (b'Australia/Currie', b'(GMT+1000) Australia/Currie'), (b'Australia/Hobart', b'(GMT+1000) Australia/Hobart'), (b'Australia/Lindeman', b'(GMT+1000) Australia/Lindeman'), (b'Australia/Melbourne', b'(GMT+1000) Australia/Melbourne'), (b'Australia/Sydney', b'(GMT+1000) Australia/Sydney'), (b'Pacific/Chuuk', b'(GMT+1000) Pacific/Chuuk'), (b'Pacific/Guam', b'(GMT+1000) Pacific/Guam'), (b'Pacific/Port_Moresby', b'(GMT+1000) Pacific/Port_Moresby'), (b'Pacific/Saipan', b'(GMT+1000) Pacific/Saipan'), (b'Australia/Lord_Howe', b'(GMT+1030) Australia/Lord_Howe'), (b'Antarctica/Macquarie', b'(GMT+1100) Antarctica/Macquarie'), (b'Asia/Sakhalin', b'(GMT+1100) Asia/Sakhalin'), (b'Asia/Vladivostok', b'(GMT+1100) Asia/Vladivostok'), (b'Pacific/Efate', b'(GMT+1100) Pacific/Efate'), (b'Pacific/Guadalcanal', b'(GMT+1100) Pacific/Guadalcanal'), (b'Pacific/Kosrae', b'(GMT+1100) Pacific/Kosrae'), (b'Pacific/Noumea', b'(GMT+1100) Pacific/Noumea'), (b'Pacific/Pohnpei', b'(GMT+1100) Pacific/Pohnpei'), (b'Pacific/Norfolk', b'(GMT+1130) Pacific/Norfolk'), (b'Antarctica/McMurdo', b'(GMT+1200) Antarctica/McMurdo'), (b'Antarctica/South_Pole', b'(GMT+1200) Antarctica/South_Pole'), (b'Asia/Anadyr', b'(GMT+1200) Asia/Anadyr'), (b'Asia/Kamchatka', b'(GMT+1200) Asia/Kamchatka'), (b'Asia/Magadan', b'(GMT+1200) Asia/Magadan'), (b'Pacific/Auckland', b'(GMT+1200) Pacific/Auckland'), (b'Pacific/Fiji', b'(GMT+1200) Pacific/Fiji'), (b'Pacific/Funafuti', b'(GMT+1200) Pacific/Funafuti'), (b'Pacific/Kwajalein', b'(GMT+1200) Pacific/Kwajalein'), (b'Pacific/Majuro', b'(GMT+1200) Pacific/Majuro'), (b'Pacific/Nauru', b'(GMT+1200) Pacific/Nauru'), (b'Pacific/Tarawa', b'(GMT+1200) Pacific/Tarawa'), (b'Pacific/Wake', b'(GMT+1200) Pacific/Wake'), (b'Pacific/Wallis', b'(GMT+1200) Pacific/Wallis'), (b'Pacific/Chatham', b'(GMT+1245) Pacific/Chatham'), (b'Pacific/Apia', b'(GMT+1300) Pacific/Apia'), (b'Pacific/Enderbury', b'(GMT+1300) Pacific/Enderbury'), (b'Pacific/Fakaofo', b'(GMT+1300) Pacific/Fakaofo'), (b'Pacific/Tongatapu', b'(GMT+1300) Pacific/Tongatapu'), (b'Pacific/Kiritimati', b'(GMT+1400) Pacific/Kiritimati')])),
+                ('start_dt', models.DateTimeField(default=datetime.datetime(2015, 7, 30, 14, 47, 38, 7993))),
+                ('end_dt', models.DateTimeField(default=datetime.datetime(2015, 7, 30, 16, 47, 38, 8026))),
+                ('timezone', timezones.fields.TimeZoneField(default=b'US/Central', max_length=100, verbose_name='Time Zone', choices=[(b'Pacific/Midway', b'(GMT-1100) Pacific/Midway'), (b'Pacific/Niue', b'(GMT-1100) Pacific/Niue'), (b'Pacific/Pago_Pago', b'(GMT-1100) Pacific/Pago_Pago'), (b'Pacific/Honolulu', b'(GMT-1000) Pacific/Honolulu'), (b'Pacific/Johnston', b'(GMT-1000) Pacific/Johnston'), (b'Pacific/Rarotonga', b'(GMT-1000) Pacific/Rarotonga'), (b'Pacific/Tahiti', b'(GMT-1000) Pacific/Tahiti'), (b'US/Hawaii', b'(GMT-1000) US/Hawaii'), (b'Pacific/Marquesas', b'(GMT-0930) Pacific/Marquesas'), (b'America/Adak', b'(GMT-0900) America/Adak'), (b'Pacific/Gambier', b'(GMT-0900) Pacific/Gambier'), (b'America/Anchorage', b'(GMT-0800) America/Anchorage'), (b'America/Juneau', b'(GMT-0800) America/Juneau'), (b'America/Metlakatla', b'(GMT-0800) America/Metlakatla'), (b'America/Nome', b'(GMT-0800) America/Nome'), (b'America/Sitka', b'(GMT-0800) America/Sitka'), (b'America/Yakutat', b'(GMT-0800) America/Yakutat'), (b'Pacific/Pitcairn', b'(GMT-0800) Pacific/Pitcairn'), (b'US/Alaska', b'(GMT-0800) US/Alaska'), (b'America/Creston', b'(GMT-0700) America/Creston'), (b'America/Dawson', b'(GMT-0700) America/Dawson'), (b'America/Dawson_Creek', b'(GMT-0700) America/Dawson_Creek'), (b'America/Hermosillo', b'(GMT-0700) America/Hermosillo'), (b'America/Los_Angeles', b'(GMT-0700) America/Los_Angeles'), (b'America/Phoenix', b'(GMT-0700) America/Phoenix'), (b'America/Santa_Isabel', b'(GMT-0700) America/Santa_Isabel'), (b'America/Tijuana', b'(GMT-0700) America/Tijuana'), (b'America/Vancouver', b'(GMT-0700) America/Vancouver'), (b'America/Whitehorse', b'(GMT-0700) America/Whitehorse'), (b'Canada/Pacific', b'(GMT-0700) Canada/Pacific'), (b'US/Arizona', b'(GMT-0700) US/Arizona'), (b'US/Pacific', b'(GMT-0700) US/Pacific'), (b'America/Belize', b'(GMT-0600) America/Belize'), (b'America/Boise', b'(GMT-0600) America/Boise'), (b'America/Cambridge_Bay', b'(GMT-0600) America/Cambridge_Bay'), (b'America/Chihuahua', b'(GMT-0600) America/Chihuahua'), (b'America/Costa_Rica', b'(GMT-0600) America/Costa_Rica'), (b'America/Denver', b'(GMT-0600) America/Denver'), (b'America/Edmonton', b'(GMT-0600) America/Edmonton'), (b'America/El_Salvador', b'(GMT-0600) America/El_Salvador'), (b'America/Guatemala', b'(GMT-0600) America/Guatemala'), (b'America/Inuvik', b'(GMT-0600) America/Inuvik'), (b'America/Managua', b'(GMT-0600) America/Managua'), (b'America/Mazatlan', b'(GMT-0600) America/Mazatlan'), (b'America/Ojinaga', b'(GMT-0600) America/Ojinaga'), (b'America/Regina', b'(GMT-0600) America/Regina'), (b'America/Swift_Current', b'(GMT-0600) America/Swift_Current'), (b'America/Tegucigalpa', b'(GMT-0600) America/Tegucigalpa'), (b'America/Yellowknife', b'(GMT-0600) America/Yellowknife'), (b'Canada/Mountain', b'(GMT-0600) Canada/Mountain'), (b'Pacific/Galapagos', b'(GMT-0600) Pacific/Galapagos'), (b'US/Mountain', b'(GMT-0600) US/Mountain'), (b'America/Atikokan', b'(GMT-0500) America/Atikokan'), (b'America/Bahia_Banderas', b'(GMT-0500) America/Bahia_Banderas'), (b'America/Bogota', b'(GMT-0500) America/Bogota'), (b'America/Cancun', b'(GMT-0500) America/Cancun'), (b'America/Cayman', b'(GMT-0500) America/Cayman'), (b'America/Chicago', b'(GMT-0500) America/Chicago'), (b'America/Eirunepe', b'(GMT-0500) America/Eirunepe'), (b'America/Guayaquil', b'(GMT-0500) America/Guayaquil'), (b'America/Indiana/Knox', b'(GMT-0500) America/Indiana/Knox'), (b'America/Indiana/Tell_City', b'(GMT-0500) America/Indiana/Tell_City'), (b'America/Jamaica', b'(GMT-0500) America/Jamaica'), (b'America/Lima', b'(GMT-0500) America/Lima'), (b'America/Matamoros', b'(GMT-0500) America/Matamoros'), (b'America/Menominee', b'(GMT-0500) America/Menominee'), (b'America/Merida', b'(GMT-0500) America/Merida'), (b'America/Mexico_City', b'(GMT-0500) America/Mexico_City'), (b'America/Monterrey', b'(GMT-0500) America/Monterrey'), (b'America/North_Dakota/Beulah', b'(GMT-0500) America/North_Dakota/Beulah'), (b'America/North_Dakota/Center', b'(GMT-0500) America/North_Dakota/Center'), (b'America/North_Dakota/New_Salem', b'(GMT-0500) America/North_Dakota/New_Salem'), (b'America/Panama', b'(GMT-0500) America/Panama'), (b'America/Rainy_River', b'(GMT-0500) America/Rainy_River'), (b'America/Rankin_Inlet', b'(GMT-0500) America/Rankin_Inlet'), (b'America/Resolute', b'(GMT-0500) America/Resolute'), (b'America/Rio_Branco', b'(GMT-0500) America/Rio_Branco'), (b'America/Winnipeg', b'(GMT-0500) America/Winnipeg'), (b'Canada/Central', b'(GMT-0500) Canada/Central'), (b'Pacific/Easter', b'(GMT-0500) Pacific/Easter'), (b'US/Central', b'(GMT-0500) US/Central'), (b'America/Caracas', b'(GMT-0430) America/Caracas'), (b'America/Anguilla', b'(GMT-0400) America/Anguilla'), (b'America/Antigua', b'(GMT-0400) America/Antigua'), (b'America/Aruba', b'(GMT-0400) America/Aruba'), (b'America/Asuncion', b'(GMT-0400) America/Asuncion'), (b'America/Barbados', b'(GMT-0400) America/Barbados'), (b'America/Blanc-Sablon', b'(GMT-0400) America/Blanc-Sablon'), (b'America/Boa_Vista', b'(GMT-0400) America/Boa_Vista'), (b'America/Campo_Grande', b'(GMT-0400) America/Campo_Grande'), (b'America/Cuiaba', b'(GMT-0400) America/Cuiaba'), (b'America/Curacao', b'(GMT-0400) America/Curacao'), (b'America/Detroit', b'(GMT-0400) America/Detroit'), (b'America/Dominica', b'(GMT-0400) America/Dominica'), (b'America/Grand_Turk', b'(GMT-0400) America/Grand_Turk'), (b'America/Grenada', b'(GMT-0400) America/Grenada'), (b'America/Guadeloupe', b'(GMT-0400) America/Guadeloupe'), (b'America/Guyana', b'(GMT-0400) America/Guyana'), (b'America/Havana', b'(GMT-0400) America/Havana'), (b'America/Indiana/Indianapolis', b'(GMT-0400) America/Indiana/Indianapolis'), (b'America/Indiana/Marengo', b'(GMT-0400) America/Indiana/Marengo'), (b'America/Indiana/Petersburg', b'(GMT-0400) America/Indiana/Petersburg'), (b'America/Indiana/Vevay', b'(GMT-0400) America/Indiana/Vevay'), (b'America/Indiana/Vincennes', b'(GMT-0400) America/Indiana/Vincennes'), (b'America/Indiana/Winamac', b'(GMT-0400) America/Indiana/Winamac'), (b'America/Iqaluit', b'(GMT-0400) America/Iqaluit'), (b'America/Kentucky/Louisville', b'(GMT-0400) America/Kentucky/Louisville'), (b'America/Kentucky/Monticello', b'(GMT-0400) America/Kentucky/Monticello'), (b'America/Kralendijk', b'(GMT-0400) America/Kralendijk'), (b'America/La_Paz', b'(GMT-0400) America/La_Paz'), (b'America/Lower_Princes', b'(GMT-0400) America/Lower_Princes'), (b'America/Manaus', b'(GMT-0400) America/Manaus'), (b'America/Marigot', b'(GMT-0400) America/Marigot'), (b'America/Martinique', b'(GMT-0400) America/Martinique'), (b'America/Montserrat', b'(GMT-0400) America/Montserrat'), (b'America/Nassau', b'(GMT-0400) America/Nassau'), (b'America/New_York', b'(GMT-0400) America/New_York'), (b'America/Nipigon', b'(GMT-0400) America/Nipigon'), (b'America/Pangnirtung', b'(GMT-0400) America/Pangnirtung'), (b'America/Port-au-Prince', b'(GMT-0400) America/Port-au-Prince'), (b'America/Port_of_Spain', b'(GMT-0400) America/Port_of_Spain'), (b'America/Porto_Velho', b'(GMT-0400) America/Porto_Velho'), (b'America/Puerto_Rico', b'(GMT-0400) America/Puerto_Rico'), (b'America/Santo_Domingo', b'(GMT-0400) America/Santo_Domingo'), (b'America/St_Barthelemy', b'(GMT-0400) America/St_Barthelemy'), (b'America/St_Kitts', b'(GMT-0400) America/St_Kitts'), (b'America/St_Lucia', b'(GMT-0400) America/St_Lucia'), (b'America/St_Thomas', b'(GMT-0400) America/St_Thomas'), (b'America/St_Vincent', b'(GMT-0400) America/St_Vincent'), (b'America/Thunder_Bay', b'(GMT-0400) America/Thunder_Bay'), (b'America/Toronto', b'(GMT-0400) America/Toronto'), (b'America/Tortola', b'(GMT-0400) America/Tortola'), (b'Canada/Eastern', b'(GMT-0400) Canada/Eastern'), (b'US/Eastern', b'(GMT-0400) US/Eastern'), (b'America/Araguaina', b'(GMT-0300) America/Araguaina'), (b'America/Argentina/Buenos_Aires', b'(GMT-0300) America/Argentina/Buenos_Aires'), (b'America/Argentina/Catamarca', b'(GMT-0300) America/Argentina/Catamarca'), (b'America/Argentina/Cordoba', b'(GMT-0300) America/Argentina/Cordoba'), (b'America/Argentina/Jujuy', b'(GMT-0300) America/Argentina/Jujuy'), (b'America/Argentina/La_Rioja', b'(GMT-0300) America/Argentina/La_Rioja'), (b'America/Argentina/Mendoza', b'(GMT-0300) America/Argentina/Mendoza'), (b'America/Argentina/Rio_Gallegos', b'(GMT-0300) America/Argentina/Rio_Gallegos'), (b'America/Argentina/Salta', b'(GMT-0300) America/Argentina/Salta'), (b'America/Argentina/San_Juan', b'(GMT-0300) America/Argentina/San_Juan'), (b'America/Argentina/San_Luis', b'(GMT-0300) America/Argentina/San_Luis'), (b'America/Argentina/Tucuman', b'(GMT-0300) America/Argentina/Tucuman'), (b'America/Argentina/Ushuaia', b'(GMT-0300) America/Argentina/Ushuaia'), (b'America/Bahia', b'(GMT-0300) America/Bahia'), (b'America/Belem', b'(GMT-0300) America/Belem'), (b'America/Cayenne', b'(GMT-0300) America/Cayenne'), (b'America/Fortaleza', b'(GMT-0300) America/Fortaleza'), (b'America/Glace_Bay', b'(GMT-0300) America/Glace_Bay'), (b'America/Goose_Bay', b'(GMT-0300) America/Goose_Bay'), (b'America/Halifax', b'(GMT-0300) America/Halifax'), (b'America/Maceio', b'(GMT-0300) America/Maceio'), (b'America/Moncton', b'(GMT-0300) America/Moncton'), (b'America/Montevideo', b'(GMT-0300) America/Montevideo'), (b'America/Paramaribo', b'(GMT-0300) America/Paramaribo'), (b'America/Recife', b'(GMT-0300) America/Recife'), (b'America/Santarem', b'(GMT-0300) America/Santarem'), (b'America/Santiago', b'(GMT-0300) America/Santiago'), (b'America/Sao_Paulo', b'(GMT-0300) America/Sao_Paulo'), (b'America/Thule', b'(GMT-0300) America/Thule'), (b'Antarctica/Palmer', b'(GMT-0300) Antarctica/Palmer'), (b'Antarctica/Rothera', b'(GMT-0300) Antarctica/Rothera'), (b'Atlantic/Bermuda', b'(GMT-0300) Atlantic/Bermuda'), (b'Atlantic/Stanley', b'(GMT-0300) Atlantic/Stanley'), (b'Canada/Atlantic', b'(GMT-0300) Canada/Atlantic'), (b'America/St_Johns', b'(GMT-0230) America/St_Johns'), (b'Canada/Newfoundland', b'(GMT-0230) Canada/Newfoundland'), (b'America/Godthab', b'(GMT-0200) America/Godthab'), (b'America/Miquelon', b'(GMT-0200) America/Miquelon'), (b'America/Noronha', b'(GMT-0200) America/Noronha'), (b'Atlantic/South_Georgia', b'(GMT-0200) Atlantic/South_Georgia'), (b'Atlantic/Cape_Verde', b'(GMT-0100) Atlantic/Cape_Verde'), (b'Africa/Abidjan', b'(GMT+0000) Africa/Abidjan'), (b'Africa/Accra', b'(GMT+0000) Africa/Accra'), (b'Africa/Bamako', b'(GMT+0000) Africa/Bamako'), (b'Africa/Banjul', b'(GMT+0000) Africa/Banjul'), (b'Africa/Bissau', b'(GMT+0000) Africa/Bissau'), (b'Africa/Casablanca', b'(GMT+0000) Africa/Casablanca'), (b'Africa/Conakry', b'(GMT+0000) Africa/Conakry'), (b'Africa/Dakar', b'(GMT+0000) Africa/Dakar'), (b'Africa/El_Aaiun', b'(GMT+0000) Africa/El_Aaiun'), (b'Africa/Freetown', b'(GMT+0000) Africa/Freetown'), (b'Africa/Lome', b'(GMT+0000) Africa/Lome'), (b'Africa/Monrovia', b'(GMT+0000) Africa/Monrovia'), (b'Africa/Nouakchott', b'(GMT+0000) Africa/Nouakchott'), (b'Africa/Ouagadougou', b'(GMT+0000) Africa/Ouagadougou'), (b'Africa/Sao_Tome', b'(GMT+0000) Africa/Sao_Tome'), (b'America/Danmarkshavn', b'(GMT+0000) America/Danmarkshavn'), (b'America/Scoresbysund', b'(GMT+0000) America/Scoresbysund'), (b'Atlantic/Azores', b'(GMT+0000) Atlantic/Azores'), (b'Atlantic/Reykjavik', b'(GMT+0000) Atlantic/Reykjavik'), (b'Atlantic/St_Helena', b'(GMT+0000) Atlantic/St_Helena'), (b'GMT', b'(GMT+0000) GMT'), (b'UTC', b'(GMT+0000) UTC'), (b'Africa/Algiers', b'(GMT+0100) Africa/Algiers'), (b'Africa/Bangui', b'(GMT+0100) Africa/Bangui'), (b'Africa/Brazzaville', b'(GMT+0100) Africa/Brazzaville'), (b'Africa/Douala', b'(GMT+0100) Africa/Douala'), (b'Africa/Kinshasa', b'(GMT+0100) Africa/Kinshasa'), (b'Africa/Lagos', b'(GMT+0100) Africa/Lagos'), (b'Africa/Libreville', b'(GMT+0100) Africa/Libreville'), (b'Africa/Luanda', b'(GMT+0100) Africa/Luanda'), (b'Africa/Malabo', b'(GMT+0100) Africa/Malabo'), (b'Africa/Ndjamena', b'(GMT+0100) Africa/Ndjamena'), (b'Africa/Niamey', b'(GMT+0100) Africa/Niamey'), (b'Africa/Porto-Novo', b'(GMT+0100) Africa/Porto-Novo'), (b'Africa/Tunis', b'(GMT+0100) Africa/Tunis'), (b'Africa/Windhoek', b'(GMT+0100) Africa/Windhoek'), (b'Atlantic/Canary', b'(GMT+0100) Atlantic/Canary'), (b'Atlantic/Faroe', b'(GMT+0100) Atlantic/Faroe'), (b'Atlantic/Madeira', b'(GMT+0100) Atlantic/Madeira'), (b'Europe/Dublin', b'(GMT+0100) Europe/Dublin'), (b'Europe/Guernsey', b'(GMT+0100) Europe/Guernsey'), (b'Europe/Isle_of_Man', b'(GMT+0100) Europe/Isle_of_Man'), (b'Europe/Jersey', b'(GMT+0100) Europe/Jersey'), (b'Europe/Lisbon', b'(GMT+0100) Europe/Lisbon'), (b'Europe/London', b'(GMT+0100) Europe/London'), (b'Africa/Blantyre', b'(GMT+0200) Africa/Blantyre'), (b'Africa/Bujumbura', b'(GMT+0200) Africa/Bujumbura'), (b'Africa/Cairo', b'(GMT+0200) Africa/Cairo'), (b'Africa/Ceuta', b'(GMT+0200) Africa/Ceuta'), (b'Africa/Gaborone', b'(GMT+0200) Africa/Gaborone'), (b'Africa/Harare', b'(GMT+0200) Africa/Harare'), (b'Africa/Johannesburg', b'(GMT+0200) Africa/Johannesburg'), (b'Africa/Kigali', b'(GMT+0200) Africa/Kigali'), (b'Africa/Lubumbashi', b'(GMT+0200) Africa/Lubumbashi'), (b'Africa/Lusaka', b'(GMT+0200) Africa/Lusaka'), (b'Africa/Maputo', b'(GMT+0200) Africa/Maputo'), (b'Africa/Maseru', b'(GMT+0200) Africa/Maseru'), (b'Africa/Mbabane', b'(GMT+0200) Africa/Mbabane'), (b'Africa/Tripoli', b'(GMT+0200) Africa/Tripoli'), (b'Antarctica/Troll', b'(GMT+0200) Antarctica/Troll'), (b'Arctic/Longyearbyen', b'(GMT+0200) Arctic/Longyearbyen'), (b'Europe/Amsterdam', b'(GMT+0200) Europe/Amsterdam'), (b'Europe/Andorra', b'(GMT+0200) Europe/Andorra'), (b'Europe/Belgrade', b'(GMT+0200) Europe/Belgrade'), (b'Europe/Berlin', b'(GMT+0200) Europe/Berlin'), (b'Europe/Bratislava', b'(GMT+0200) Europe/Bratislava'), (b'Europe/Brussels', b'(GMT+0200) Europe/Brussels'), (b'Europe/Budapest', b'(GMT+0200) Europe/Budapest'), (b'Europe/Busingen', b'(GMT+0200) Europe/Busingen'), (b'Europe/Copenhagen', b'(GMT+0200) Europe/Copenhagen'), (b'Europe/Gibraltar', b'(GMT+0200) Europe/Gibraltar'), (b'Europe/Kaliningrad', b'(GMT+0200) Europe/Kaliningrad'), (b'Europe/Ljubljana', b'(GMT+0200) Europe/Ljubljana'), (b'Europe/Luxembourg', b'(GMT+0200) Europe/Luxembourg'), (b'Europe/Madrid', b'(GMT+0200) Europe/Madrid'), (b'Europe/Malta', b'(GMT+0200) Europe/Malta'), (b'Europe/Monaco', b'(GMT+0200) Europe/Monaco'), (b'Europe/Oslo', b'(GMT+0200) Europe/Oslo'), (b'Europe/Paris', b'(GMT+0200) Europe/Paris'), (b'Europe/Podgorica', b'(GMT+0200) Europe/Podgorica'), (b'Europe/Prague', b'(GMT+0200) Europe/Prague'), (b'Europe/Rome', b'(GMT+0200) Europe/Rome'), (b'Europe/San_Marino', b'(GMT+0200) Europe/San_Marino'), (b'Europe/Sarajevo', b'(GMT+0200) Europe/Sarajevo'), (b'Europe/Skopje', b'(GMT+0200) Europe/Skopje'), (b'Europe/Stockholm', b'(GMT+0200) Europe/Stockholm'), (b'Europe/Tirane', b'(GMT+0200) Europe/Tirane'), (b'Europe/Vaduz', b'(GMT+0200) Europe/Vaduz'), (b'Europe/Vatican', b'(GMT+0200) Europe/Vatican'), (b'Europe/Vienna', b'(GMT+0200) Europe/Vienna'), (b'Europe/Warsaw', b'(GMT+0200) Europe/Warsaw'), (b'Europe/Zagreb', b'(GMT+0200) Europe/Zagreb'), (b'Europe/Zurich', b'(GMT+0200) Europe/Zurich'), (b'Africa/Addis_Ababa', b'(GMT+0300) Africa/Addis_Ababa'), (b'Africa/Asmara', b'(GMT+0300) Africa/Asmara'), (b'Africa/Dar_es_Salaam', b'(GMT+0300) Africa/Dar_es_Salaam'), (b'Africa/Djibouti', b'(GMT+0300) Africa/Djibouti'), (b'Africa/Juba', b'(GMT+0300) Africa/Juba'), (b'Africa/Kampala', b'(GMT+0300) Africa/Kampala'), (b'Africa/Khartoum', b'(GMT+0300) Africa/Khartoum'), (b'Africa/Mogadishu', b'(GMT+0300) Africa/Mogadishu'), (b'Africa/Nairobi', b'(GMT+0300) Africa/Nairobi'), (b'Antarctica/Syowa', b'(GMT+0300) Antarctica/Syowa'), (b'Asia/Aden', b'(GMT+0300) Asia/Aden'), (b'Asia/Amman', b'(GMT+0300) Asia/Amman'), (b'Asia/Baghdad', b'(GMT+0300) Asia/Baghdad'), (b'Asia/Bahrain', b'(GMT+0300) Asia/Bahrain'), (b'Asia/Beirut', b'(GMT+0300) Asia/Beirut'), (b'Asia/Damascus', b'(GMT+0300) Asia/Damascus'), (b'Asia/Gaza', b'(GMT+0300) Asia/Gaza'), (b'Asia/Hebron', b'(GMT+0300) Asia/Hebron'), (b'Asia/Jerusalem', b'(GMT+0300) Asia/Jerusalem'), (b'Asia/Kuwait', b'(GMT+0300) Asia/Kuwait'), (b'Asia/Nicosia', b'(GMT+0300) Asia/Nicosia'), (b'Asia/Qatar', b'(GMT+0300) Asia/Qatar'), (b'Asia/Riyadh', b'(GMT+0300) Asia/Riyadh'), (b'Europe/Athens', b'(GMT+0300) Europe/Athens'), (b'Europe/Bucharest', b'(GMT+0300) Europe/Bucharest'), (b'Europe/Chisinau', b'(GMT+0300) Europe/Chisinau'), (b'Europe/Helsinki', b'(GMT+0300) Europe/Helsinki'), (b'Europe/Istanbul', b'(GMT+0300) Europe/Istanbul'), (b'Europe/Kiev', b'(GMT+0300) Europe/Kiev'), (b'Europe/Mariehamn', b'(GMT+0300) Europe/Mariehamn'), (b'Europe/Minsk', b'(GMT+0300) Europe/Minsk'), (b'Europe/Moscow', b'(GMT+0300) Europe/Moscow'), (b'Europe/Riga', b'(GMT+0300) Europe/Riga'), (b'Europe/Simferopol', b'(GMT+0300) Europe/Simferopol'), (b'Europe/Sofia', b'(GMT+0300) Europe/Sofia'), (b'Europe/Tallinn', b'(GMT+0300) Europe/Tallinn'), (b'Europe/Uzhgorod', b'(GMT+0300) Europe/Uzhgorod'), (b'Europe/Vilnius', b'(GMT+0300) Europe/Vilnius'), (b'Europe/Volgograd', b'(GMT+0300) Europe/Volgograd'), (b'Europe/Zaporozhye', b'(GMT+0300) Europe/Zaporozhye'), (b'Indian/Antananarivo', b'(GMT+0300) Indian/Antananarivo'), (b'Indian/Comoro', b'(GMT+0300) Indian/Comoro'), (b'Indian/Mayotte', b'(GMT+0300) Indian/Mayotte'), (b'Asia/Dubai', b'(GMT+0400) Asia/Dubai'), (b'Asia/Muscat', b'(GMT+0400) Asia/Muscat'), (b'Asia/Tbilisi', b'(GMT+0400) Asia/Tbilisi'), (b'Asia/Yerevan', b'(GMT+0400) Asia/Yerevan'), (b'Europe/Samara', b'(GMT+0400) Europe/Samara'), (b'Indian/Mahe', b'(GMT+0400) Indian/Mahe'), (b'Indian/Mauritius', b'(GMT+0400) Indian/Mauritius'), (b'Indian/Reunion', b'(GMT+0400) Indian/Reunion'), (b'Asia/Kabul', b'(GMT+0430) Asia/Kabul'), (b'Asia/Tehran', b'(GMT+0430) Asia/Tehran'), (b'Antarctica/Mawson', b'(GMT+0500) Antarctica/Mawson'), (b'Asia/Aqtau', b'(GMT+0500) Asia/Aqtau'), (b'Asia/Aqtobe', b'(GMT+0500) Asia/Aqtobe'), (b'Asia/Ashgabat', b'(GMT+0500) Asia/Ashgabat'), (b'Asia/Baku', b'(GMT+0500) Asia/Baku'), (b'Asia/Dushanbe', b'(GMT+0500) Asia/Dushanbe'), (b'Asia/Karachi', b'(GMT+0500) Asia/Karachi'), (b'Asia/Oral', b'(GMT+0500) Asia/Oral'), (b'Asia/Samarkand', b'(GMT+0500) Asia/Samarkand'), (b'Asia/Tashkent', b'(GMT+0500) Asia/Tashkent'), (b'Asia/Yekaterinburg', b'(GMT+0500) Asia/Yekaterinburg'), (b'Indian/Kerguelen', b'(GMT+0500) Indian/Kerguelen'), (b'Indian/Maldives', b'(GMT+0500) Indian/Maldives'), (b'Asia/Colombo', b'(GMT+0530) Asia/Colombo'), (b'Asia/Kolkata', b'(GMT+0530) Asia/Kolkata'), (b'Asia/Kathmandu', b'(GMT+0545) Asia/Kathmandu'), (b'Antarctica/Vostok', b'(GMT+0600) Antarctica/Vostok'), (b'Asia/Almaty', b'(GMT+0600) Asia/Almaty'), (b'Asia/Bishkek', b'(GMT+0600) Asia/Bishkek'), (b'Asia/Dhaka', b'(GMT+0600) Asia/Dhaka'), (b'Asia/Novosibirsk', b'(GMT+0600) Asia/Novosibirsk'), (b'Asia/Omsk', b'(GMT+0600) Asia/Omsk'), (b'Asia/Qyzylorda', b'(GMT+0600) Asia/Qyzylorda'), (b'Asia/Thimphu', b'(GMT+0600) Asia/Thimphu'), (b'Asia/Urumqi', b'(GMT+0600) Asia/Urumqi'), (b'Indian/Chagos', b'(GMT+0600) Indian/Chagos'), (b'Asia/Rangoon', b'(GMT+0630) Asia/Rangoon'), (b'Indian/Cocos', b'(GMT+0630) Indian/Cocos'), (b'Antarctica/Davis', b'(GMT+0700) Antarctica/Davis'), (b'Asia/Bangkok', b'(GMT+0700) Asia/Bangkok'), (b'Asia/Ho_Chi_Minh', b'(GMT+0700) Asia/Ho_Chi_Minh'), (b'Asia/Jakarta', b'(GMT+0700) Asia/Jakarta'), (b'Asia/Krasnoyarsk', b'(GMT+0700) Asia/Krasnoyarsk'), (b'Asia/Novokuznetsk', b'(GMT+0700) Asia/Novokuznetsk'), (b'Asia/Phnom_Penh', b'(GMT+0700) Asia/Phnom_Penh'), (b'Asia/Pontianak', b'(GMT+0700) Asia/Pontianak'), (b'Asia/Vientiane', b'(GMT+0700) Asia/Vientiane'), (b'Indian/Christmas', b'(GMT+0700) Indian/Christmas'), (b'Antarctica/Casey', b'(GMT+0800) Antarctica/Casey'), (b'Asia/Brunei', b'(GMT+0800) Asia/Brunei'), (b'Asia/Chita', b'(GMT+0800) Asia/Chita'), (b'Asia/Hong_Kong', b'(GMT+0800) Asia/Hong_Kong'), (b'Asia/Hovd', b'(GMT+0800) Asia/Hovd'), (b'Asia/Irkutsk', b'(GMT+0800) Asia/Irkutsk'), (b'Asia/Kuala_Lumpur', b'(GMT+0800) Asia/Kuala_Lumpur'), (b'Asia/Kuching', b'(GMT+0800) Asia/Kuching'), (b'Asia/Macau', b'(GMT+0800) Asia/Macau'), (b'Asia/Makassar', b'(GMT+0800) Asia/Makassar'), (b'Asia/Manila', b'(GMT+0800) Asia/Manila'), (b'Asia/Shanghai', b'(GMT+0800) Asia/Shanghai'), (b'Asia/Singapore', b'(GMT+0800) Asia/Singapore'), (b'Asia/Taipei', b'(GMT+0800) Asia/Taipei'), (b'Australia/Perth', b'(GMT+0800) Australia/Perth'), (b'Australia/Eucla', b'(GMT+0845) Australia/Eucla'), (b'Asia/Choibalsan', b'(GMT+0900) Asia/Choibalsan'), (b'Asia/Dili', b'(GMT+0900) Asia/Dili'), (b'Asia/Jayapura', b'(GMT+0900) Asia/Jayapura'), (b'Asia/Khandyga', b'(GMT+0900) Asia/Khandyga'), (b'Asia/Pyongyang', b'(GMT+0900) Asia/Pyongyang'), (b'Asia/Seoul', b'(GMT+0900) Asia/Seoul'), (b'Asia/Tokyo', b'(GMT+0900) Asia/Tokyo'), (b'Asia/Ulaanbaatar', b'(GMT+0900) Asia/Ulaanbaatar'), (b'Asia/Yakutsk', b'(GMT+0900) Asia/Yakutsk'), (b'Pacific/Palau', b'(GMT+0900) Pacific/Palau'), (b'Australia/Adelaide', b'(GMT+0930) Australia/Adelaide'), (b'Australia/Broken_Hill', b'(GMT+0930) Australia/Broken_Hill'), (b'Australia/Darwin', b'(GMT+0930) Australia/Darwin'), (b'Antarctica/DumontDUrville', b'(GMT+1000) Antarctica/DumontDUrville'), (b'Asia/Magadan', b'(GMT+1000) Asia/Magadan'), (b'Asia/Sakhalin', b'(GMT+1000) Asia/Sakhalin'), (b'Asia/Ust-Nera', b'(GMT+1000) Asia/Ust-Nera'), (b'Asia/Vladivostok', b'(GMT+1000) Asia/Vladivostok'), (b'Australia/Brisbane', b'(GMT+1000) Australia/Brisbane'), (b'Australia/Currie', b'(GMT+1000) Australia/Currie'), (b'Australia/Hobart', b'(GMT+1000) Australia/Hobart'), (b'Australia/Lindeman', b'(GMT+1000) Australia/Lindeman'), (b'Australia/Melbourne', b'(GMT+1000) Australia/Melbourne'), (b'Australia/Sydney', b'(GMT+1000) Australia/Sydney'), (b'Pacific/Chuuk', b'(GMT+1000) Pacific/Chuuk'), (b'Pacific/Guam', b'(GMT+1000) Pacific/Guam'), (b'Pacific/Port_Moresby', b'(GMT+1000) Pacific/Port_Moresby'), (b'Pacific/Saipan', b'(GMT+1000) Pacific/Saipan'), (b'Australia/Lord_Howe', b'(GMT+1030) Australia/Lord_Howe'), (b'Antarctica/Macquarie', b'(GMT+1100) Antarctica/Macquarie'), (b'Asia/Srednekolymsk', b'(GMT+1100) Asia/Srednekolymsk'), (b'Pacific/Bougainville', b'(GMT+1100) Pacific/Bougainville'), (b'Pacific/Efate', b'(GMT+1100) Pacific/Efate'), (b'Pacific/Guadalcanal', b'(GMT+1100) Pacific/Guadalcanal'), (b'Pacific/Kosrae', b'(GMT+1100) Pacific/Kosrae'), (b'Pacific/Noumea', b'(GMT+1100) Pacific/Noumea'), (b'Pacific/Pohnpei', b'(GMT+1100) Pacific/Pohnpei'), (b'Pacific/Norfolk', b'(GMT+1130) Pacific/Norfolk'), (b'Antarctica/McMurdo', b'(GMT+1200) Antarctica/McMurdo'), (b'Asia/Anadyr', b'(GMT+1200) Asia/Anadyr'), (b'Asia/Kamchatka', b'(GMT+1200) Asia/Kamchatka'), (b'Pacific/Auckland', b'(GMT+1200) Pacific/Auckland'), (b'Pacific/Fiji', b'(GMT+1200) Pacific/Fiji'), (b'Pacific/Funafuti', b'(GMT+1200) Pacific/Funafuti'), (b'Pacific/Kwajalein', b'(GMT+1200) Pacific/Kwajalein'), (b'Pacific/Majuro', b'(GMT+1200) Pacific/Majuro'), (b'Pacific/Nauru', b'(GMT+1200) Pacific/Nauru'), (b'Pacific/Tarawa', b'(GMT+1200) Pacific/Tarawa'), (b'Pacific/Wake', b'(GMT+1200) Pacific/Wake'), (b'Pacific/Wallis', b'(GMT+1200) Pacific/Wallis'), (b'Pacific/Chatham', b'(GMT+1245) Pacific/Chatham'), (b'Pacific/Apia', b'(GMT+1300) Pacific/Apia'), (b'Pacific/Enderbury', b'(GMT+1300) Pacific/Enderbury'), (b'Pacific/Fakaofo', b'(GMT+1300) Pacific/Fakaofo'), (b'Pacific/Tongatapu', b'(GMT+1300) Pacific/Tongatapu'), (b'Pacific/Kiritimati', b'(GMT+1400) Pacific/Kiritimati')])),
                 ('mark_registration_ended', models.BooleanField(default=False, verbose_name='Registration Ended')),
                 ('enable_private_slug', models.BooleanField(default=False, verbose_name='Enable Private URL')),
                 ('private_slug', models.CharField(default='', max_length=500, blank=True)),
@@ -150,9 +165,340 @@ class Migration(migrations.Migration):
                 ('is_recurring_event', models.BooleanField(default=False, verbose_name='Is Recurring Event')),
                 ('display_event_registrants', models.BooleanField(default=False, verbose_name='Display Attendees')),
                 ('display_registrants_to', models.CharField(default=b'admin', max_length=6, choices=[(b'public', 'Everyone'), (b'user', 'Users Only'), (b'member', 'Members Only'), (b'admin', 'Admin Only')])),
+                ('creator', models.ForeignKey(related_name='events_event_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
+                ('entity', models.ForeignKey(related_name='events_event_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
             ],
             options={
                 'permissions': (('view_event', 'Can view event'),),
             },
+        ),
+        migrations.CreateModel(
+            name='EventPhoto',
+            fields=[
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+            ],
+            bases=('files.file',),
+        ),
+        migrations.CreateModel(
+            name='Organizer',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=100, blank=True)),
+                ('description', models.TextField(blank=True)),
+                ('event', models.ManyToManyField(to='events.Event', blank=True)),
+                ('user', models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Payment',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='PaymentMethod',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('label', models.CharField(max_length=50)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Place',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=150, blank=True)),
+                ('description', models.TextField(blank=True)),
+                ('address', models.CharField(max_length=150, blank=True)),
+                ('city', models.CharField(max_length=150, blank=True)),
+                ('state', models.CharField(max_length=150, blank=True)),
+                ('zip', models.CharField(max_length=150, blank=True)),
+                ('country', models.CharField(max_length=150, blank=True)),
+                ('url', models.URLField(blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='RecurringEvent',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('repeat_type', models.IntegerField(verbose_name='Repeats', choices=[(1, 'Day(s)'), (2, 'Week(s)'), (3, 'Month(s)'), (4, 'Year(s)')])),
+                ('frequency', models.IntegerField(verbose_name='Repeats every')),
+                ('starts_on', models.DateTimeField(default=datetime.datetime(2015, 7, 30, 14, 47, 38, 7206))),
+                ('ends_on', models.DateTimeField()),
+            ],
+            options={
+                'verbose_name': 'Recurring Event',
+                'verbose_name_plural': 'Recurring Events',
+            },
+        ),
+        migrations.CreateModel(
+            name='RegAddon',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('amount', models.DecimalField(default=0, verbose_name='Amount', max_digits=21, decimal_places=2)),
+                ('create_dt', models.DateTimeField(auto_now_add=True)),
+                ('update_dt', models.DateTimeField(auto_now=True)),
+                ('addon', models.ForeignKey(to='events.Addon')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='RegAddonOption',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('option', models.ForeignKey(to='events.AddonOption')),
+                ('regaddon', models.ForeignKey(to='events.RegAddon')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='RegConfPricing',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('position', models.IntegerField(default=0, null=True, verbose_name='Position', blank=True)),
+                ('title', models.CharField(max_length=500, verbose_name='Pricing display name', blank=True)),
+                ('description', models.TextField(verbose_name='Pricing description', blank=True)),
+                ('quantity', models.IntegerField(default=1, help_text=b'Total people included in each registration for this pricing group. Ex: Table or Team.', verbose_name='Number of attendees', blank=True)),
+                ('price', models.DecimalField(default=0, verbose_name='Price', max_digits=21, decimal_places=2)),
+                ('include_tax', models.BooleanField(default=False)),
+                ('tax_rate', models.DecimalField(default=0, help_text='Example: 0.0825 for 8.25%.', max_digits=5, decimal_places=4, blank=True)),
+                ('payment_required', models.BooleanField(default=False, help_text='A payment required before registration is accepted.')),
+                ('start_dt', models.DateTimeField(verbose_name='Start Date')),
+                ('end_dt', models.DateTimeField(verbose_name='End Date')),
+                ('allow_anonymous', models.BooleanField(default=False, verbose_name='Public can use this pricing')),
+                ('allow_user', models.BooleanField(default=False, verbose_name='Signed in user can use this pricing')),
+                ('allow_member', models.BooleanField(default=False, verbose_name='All members can use this pricing')),
+                ('status', models.BooleanField(default=True)),
+                ('groups', models.ManyToManyField(to='user_groups.Group', blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Registrant',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('amount', models.DecimalField(default=0, verbose_name='Amount', max_digits=21, decimal_places=2, blank=True)),
+                ('name', models.CharField(max_length=100)),
+                ('first_name', models.CharField(max_length=100)),
+                ('last_name', models.CharField(max_length=100)),
+                ('mail_name', models.CharField(max_length=100, blank=True)),
+                ('address', models.CharField(max_length=200, blank=True)),
+                ('city', models.CharField(max_length=100, blank=True)),
+                ('state', models.CharField(max_length=100, blank=True)),
+                ('zip', models.CharField(max_length=50, blank=True)),
+                ('country', models.CharField(max_length=100, blank=True)),
+                ('phone', models.CharField(max_length=50, blank=True)),
+                ('email', models.CharField(max_length=100)),
+                ('groups', models.CharField(max_length=100)),
+                ('position_title', models.CharField(max_length=100, blank=True)),
+                ('company_name', models.CharField(max_length=100, blank=True)),
+                ('meal_option', models.CharField(default=b'', max_length=200, blank=True)),
+                ('comments', models.TextField(default=b'', blank=True)),
+                ('is_primary', models.BooleanField(default=False, verbose_name='Is primary registrant')),
+                ('override', models.BooleanField(default=False, verbose_name='Admin Price Override?')),
+                ('override_price', models.DecimalField(default=0, verbose_name='Override Price', max_digits=21, decimal_places=2, blank=True)),
+                ('discount_amount', models.DecimalField(default=0, verbose_name='Discount Amount', max_digits=10, decimal_places=2)),
+                ('cancel_dt', models.DateTimeField(null=True, editable=False)),
+                ('memberid', models.CharField(max_length=50, null=True, verbose_name='Member ID', blank=True)),
+                ('use_free_pass', models.BooleanField(default=False)),
+                ('checked_in', models.BooleanField(default=False, verbose_name='Is Checked In?')),
+                ('checked_in_dt', models.DateTimeField(null=True)),
+                ('reminder', models.BooleanField(default=False, verbose_name='Receive event reminders')),
+                ('create_dt', models.DateTimeField(auto_now_add=True)),
+                ('update_dt', models.DateTimeField(auto_now=True)),
+                ('custom_reg_form_entry', models.ForeignKey(related_name='registrants', to='events.CustomRegFormEntry', null=True)),
+                ('pricing', models.ForeignKey(to='events.RegConfPricing', null=True)),
+            ],
+            options={
+                'permissions': (('view_registrant', 'Can view registrant'),),
+            },
+        ),
+        migrations.CreateModel(
+            name='Registration',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('guid', models.TextField(max_length=40, editable=False)),
+                ('note', models.TextField(blank=True)),
+                ('reminder', models.BooleanField(default=False)),
+                ('amount_paid', models.DecimalField(verbose_name='Amount Paid', max_digits=21, decimal_places=2)),
+                ('is_table', models.BooleanField(default=False, verbose_name='Is table registration')),
+                ('quantity', models.IntegerField(default=1, verbose_name='Number of registrants for a table')),
+                ('override_table', models.BooleanField(default=False, verbose_name='Admin Price Override?')),
+                ('override_price_table', models.DecimalField(default=0, verbose_name='Override Price', max_digits=21, decimal_places=2, blank=True)),
+                ('canceled', models.BooleanField(default=False, verbose_name='Canceled')),
+                ('create_dt', models.DateTimeField(auto_now_add=True)),
+                ('update_dt', models.DateTimeField(auto_now=True)),
+                ('addons_added', models.TextField(null=True, blank=True)),
+                ('creator', models.ForeignKey(related_name='created_registrations', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('event', models.ForeignKey(to='events.Event')),
+                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True)),
+                ('owner', models.ForeignKey(related_name='owned_registrations', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('payment_method', models.ForeignKey(to='payments.PaymentMethod', null=True)),
+                ('reg_conf_price', models.ForeignKey(to='events.RegConfPricing', null=True)),
+            ],
+            options={
+                'permissions': (('view_registration', 'Can view registration'),),
+            },
+        ),
+        migrations.CreateModel(
+            name='RegistrationConfiguration',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('payment_required', models.BooleanField(default=True, help_text='A payment required before registration is accepted.')),
+                ('limit', models.IntegerField(default=0, verbose_name='Registration Limit')),
+                ('enabled', models.BooleanField(default=False, verbose_name='Enable Registration')),
+                ('require_guests_info', models.BooleanField(default=False, help_text='If checked, the required fields in registration form are also required for guests.  ', verbose_name='Require Guests Info')),
+                ('is_guest_price', models.BooleanField(default=False, verbose_name='Guests Pay Registrant Price')),
+                ('discount_eligible', models.BooleanField(default=True)),
+                ('allow_free_pass', models.BooleanField(default=False)),
+                ('display_registration_stats', models.BooleanField(default=False, help_text=b'Display the number of spots registered and the number of spots left to the public.', verbose_name='Publicly Show Registration Stats')),
+                ('use_custom_reg_form', models.BooleanField(default=False, verbose_name='Use Custom Registration Form')),
+                ('bind_reg_form_to_conf_only', models.BooleanField(default=True, verbose_name=' ', choices=[(True, 'Use one form for all pricings'), (False, 'Use separate form for each pricing')])),
+                ('send_reminder', models.BooleanField(default=False, verbose_name='Send Email Reminder to attendees')),
+                ('reminder_days', models.CharField(help_text='Comma delimited. Ex: 7,1', max_length=20, null=True, verbose_name='Specify when (? days before the event starts) the reminder should be sent ', blank=True)),
+                ('registration_email_type', models.CharField(default=b'default', max_length=20, verbose_name='Registration Email', choices=[(b'default', 'Default Email Only'), (b'custom', 'Custom Email Only'), (b'both', 'Default and Custom Email')])),
+                ('registration_email_text', models.TextField(verbose_name='Registration Email Text', blank=True)),
+                ('create_dt', models.DateTimeField(auto_now_add=True)),
+                ('update_dt', models.DateTimeField(auto_now=True)),
+                ('email', models.ForeignKey(to='emails.Email', null=True)),
+                ('payment_method', models.ManyToManyField(to='payments.PaymentMethod')),
+                ('reg_form', models.ForeignKey(related_name='regconfs', blank=True, to='events.CustomRegForm', help_text="You'll have the chance to edit the selected form", null=True, verbose_name='Custom Registration Form')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Speaker',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=100, verbose_name='Speaker Name', blank=True)),
+                ('description', models.TextField(blank=True)),
+                ('featured', models.BooleanField(default=False, help_text='All speakers marked as featured will be displayed when viewing the event.')),
+                ('event', models.ManyToManyField(to='events.Event', blank=True)),
+                ('user', models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Sponsor',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('event', models.ManyToManyField(to='events.Event')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Type',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=50)),
+                ('slug', models.SlugField(editable=False)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='TypeColorSet',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('fg_color', models.CharField(max_length=20)),
+                ('bg_color', models.CharField(max_length=20)),
+                ('border_color', models.CharField(max_length=20)),
+            ],
+        ),
+        migrations.AddField(
+            model_name='type',
+            name='color_set',
+            field=models.ForeignKey(to='events.TypeColorSet'),
+        ),
+        migrations.AddField(
+            model_name='registrant',
+            name='registration',
+            field=models.ForeignKey(to='events.Registration'),
+        ),
+        migrations.AddField(
+            model_name='registrant',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='regconfpricing',
+            name='reg_conf',
+            field=models.ForeignKey(blank=True, to='events.RegistrationConfiguration', null=True),
+        ),
+        migrations.AddField(
+            model_name='regconfpricing',
+            name='reg_form',
+            field=models.ForeignKey(related_name='regconfpricings', blank=True, to='events.CustomRegForm', help_text="You'll have the chance to edit the selected form", null=True, verbose_name='Custom Registration Form'),
+        ),
+        migrations.AddField(
+            model_name='regaddon',
+            name='registration',
+            field=models.ForeignKey(to='events.Registration'),
+        ),
+        migrations.AddField(
+            model_name='payment',
+            name='registration',
+            field=models.OneToOneField(to='events.Registration'),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='image',
+            field=models.ForeignKey(blank=True, to='events.EventPhoto', help_text='Photo that represents this event.', null=True),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='meta',
+            field=models.OneToOneField(null=True, to='meta.Meta'),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='owner',
+            field=models.ForeignKey(related_name='events_event_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='place',
+            field=models.ForeignKey(to='events.Place', null=True),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='recurring_event',
+            field=models.ForeignKey(to='events.RecurringEvent', null=True),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='registration_configuration',
+            field=models.OneToOneField(null=True, editable=False, to='events.RegistrationConfiguration'),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='type',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='events.Type', null=True),
+        ),
+        migrations.AddField(
+            model_name='discount',
+            name='event',
+            field=models.ForeignKey(to='events.Event'),
+        ),
+        migrations.AddField(
+            model_name='customregfieldentry',
+            name='entry',
+            field=models.ForeignKey(related_name='field_entries', to='events.CustomRegFormEntry'),
+        ),
+        migrations.AddField(
+            model_name='customregfieldentry',
+            name='field',
+            field=models.ForeignKey(related_name='entries', to='events.CustomRegField'),
+        ),
+        migrations.AddField(
+            model_name='customregfield',
+            name='form',
+            field=models.ForeignKey(related_name='fields', to='events.CustomRegForm'),
+        ),
+        migrations.AddField(
+            model_name='addon',
+            name='event',
+            field=models.ForeignKey(to='events.Event'),
+        ),
+        migrations.AddField(
+            model_name='addon',
+            name='group',
+            field=models.ForeignKey(blank=True, to='user_groups.Group', null=True),
+        ),
+        migrations.AlterUniqueTogether(
+            name='regaddonoption',
+            unique_together=set([('regaddon', 'option')]),
         ),
     ]

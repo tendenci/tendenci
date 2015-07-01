@@ -2,19 +2,22 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.conf import settings
+import tagging.fields
+import tendenci.apps.user_groups.utils
 import tendenci.apps.base.fields
 import django.db.models.deletion
 import tinymce.models
-from django.conf import settings
-import tagging.fields
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('user_groups', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('files', '0001_initial'),
+        ('meta', '0001_initial'),
         ('entities', '0001_initial'),
+        ('files', '0001_initial'),
     ]
 
     operations = [
@@ -23,9 +26,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
             ],
-            options={
-                'abstract': False,
-            },
             bases=('files.file',),
         ),
         migrations.CreateModel(
@@ -56,6 +56,10 @@ class Migration(migrations.Migration):
                 ('google_profile', models.URLField(verbose_name='Google+ URL', blank=True)),
                 ('creator', models.ForeignKey(related_name='pages_page_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='pages_page_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
+                ('group', models.ForeignKey(default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
+                ('header_image', models.ForeignKey(to='pages.HeaderImage', null=True)),
+                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
+                ('owner', models.ForeignKey(related_name='pages_page_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
                 'permissions': (('view_page', 'Can view page'),),
