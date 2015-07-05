@@ -22,13 +22,17 @@ class Command(BaseCommand):
         python manage.py membership_import_preprocess 56
     """
 
+    def add_arguments(self, parser):
+        parser.add_argument('import_id', type=int)
+
     def handle(self, *args, **options):
         from tendenci.apps.memberships.models import MembershipImport
         from tendenci.apps.memberships.models import MembershipImportData
         from tendenci.apps.memberships.utils import memb_import_parse_csv
 
+        import_id = options['import_id']
         mimport = get_object_or_404(MembershipImport,
-                                        pk=args[0])
+                                        pk=import_id)
         if mimport.status == 'not_started':
             if mimport.upload_file:
                 mimport.status = 'preprocessing'

@@ -28,20 +28,30 @@ def is_valid_email(value):
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('--username', dest='username', default=None,
-            help='Specifies the username for the superuser.'),
-        make_option('--email', dest='email', default=None,
-            help='Specifies the email address for the superuser.'),
-        make_option('--noinput', action='store_false', dest='interactive', default=True,
+    help = 'User to create low level user with profile'
+    
+    def add_arguments(self, parser):
+        parser.add_argument('--username',
+                            dest='username',
+                            required=True,
+            help='Specifies the username for the superuser.')
+        parser.add_argument('--email',
+                            dest='email',
+                            required=True,
+            help='Specifies the email address for the superuser.')
+        parser.add_argument('--noinput',
+                            action='store_false',
+                            dest='interactive',
+                            default=True,
             help=('Tells Django to NOT prompt the user for input of any kind. '
                   'You must use --username and --email with --noinput, and '
                   'superusers created with --noinput will not be able to log '
-                  'in until they\'re given a valid password.')),
-        make_option('--database', action='store', dest='database',
+                  'in until they\'re given a valid password.'))
+        parser.add_argument('--database',
+                            action='store',
+                            dest='database',
             default=DEFAULT_DB_ALIAS, help='Specifies the database to use. Default is "default".'),
-    )
-    help = 'User to create low level user with profile'
+        
 
     def handle(self, *args, **options):
         from tendenci.apps.profiles.models import Profile

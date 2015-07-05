@@ -5,14 +5,17 @@ class Command(BaseCommand):
     args = '<import_pk>'
     help = "Runs an import task for the specified model."
 
+    def add_arguments(self, parser):
+        parser.add_argument('import_id', type=int)
+
     def handle(self, *args, **options):
         from tendenci.apps.imports.models import Import
         from tendenci.apps.user_groups.importer.utils import user_groups_import_process
-
-        if args:
+        import_id = options['import_id']
+        if import_id:
 
             try:
-                import_i = Import.objects.get(pk=int(args[0]))
+                import_i = Import.objects.get(pk=import_id)
             except Import.DoesNotExist:
                 raise CommandError('Export not specified')
 

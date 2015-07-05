@@ -18,19 +18,15 @@ class Command(BaseCommand):
         * Sets is_active to 0
         * Removes them from all tendenci user_groups
     """
-    option_list = BaseCommand.option_list + (
-        make_option('--username',
-            action='store',
+    def add_arguments(self, parser):
+        parser.add_argument('--username',
             dest='username',
             default=None,
-            help='Username of the user account being disabled'),
-        make_option('--email',
-            action='store',
+            help='Username of the user account being disabled')
+        parser.add_argument('--email',
             dest='email',
             default=None,
-            help='Email of the user account being disabled'),
-        )
-
+            help='Email of the user account being disabled')
 
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import GroupMembership

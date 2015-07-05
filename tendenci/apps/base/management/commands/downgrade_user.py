@@ -18,13 +18,11 @@ class Command(BaseCommand):
         * Sets is_active to 1
         * Removes them from all tendenci user_groups
     """
-    option_list = BaseCommand.option_list + (
-        make_option('--username',
-            action='store',
+    def add_arguments(self, parser):
+        parser.add_argument('--username',
             dest='username',
-            default=None,
-            help='Username of the user account being downgraded'),
-        )
+            required=True,
+            help='Username of the user account being downgraded')
 
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import GroupMembership

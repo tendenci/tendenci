@@ -14,24 +14,17 @@ class Command(BaseCommand):
         python manage.py membership_export_process --identifier 1359048111
                                                    --user 1
 
-    """
-    option_list = BaseCommand.option_list + (
-
-        make_option(
-            '--identifier',
-            action='store',
+    """ 
+    def add_arguments(self, parser):
+        parser.add_argument('--identifier',
             dest='identifier',
             default='',
-            help='Export file identifier'),
-
-        make_option(
-            '--user',
-            action='store',
+            help='Export file identifier')
+        parser.add_argument('--user',
+            type=int,
             dest='user',
             default='1',
-            help='Request user'),
-
-    )
+            help='Request user')
 
     def handle(self, *args, **options):
         from tendenci.apps.articles.utils import process_export

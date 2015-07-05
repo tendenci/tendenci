@@ -6,20 +6,24 @@ class Command(BaseCommand):
     args = '<export_pk, start_dt, end_dt>'
     help = "Runs an export task for invoices."
 
+    def add_arguments(self, parser):
+        parser.add_argument('export_id', type=int)
+        parser.add_argument('start_dt')
+        parser.add_argument('end_dt')
+        
     def handle(self, *args, **options):
         from tendenci.apps.exports.models import Export
         from tendenci.apps.invoices.tasks import InvoiceExportTask
-        if args:
-
+        export_id = options['export_id']
+        start_dt = options['start_dt']
+        end_dt = options['end_dt']
+        if export_id:
             try:
-                export = Export.objects.get(pk=int(args[0]))
+                export = Export.objects.get(pk=export_id)
             except Export.DoesNotExist:
                 raise CommandError('Export not specified')
 
             self.stdout.write('Started compiling export file...')
-
-            start_dt = args[1]
-            end_dt = args[2]
 
             model = get_model(export.app_label, export.model_name)
             result = InvoiceExportTask()

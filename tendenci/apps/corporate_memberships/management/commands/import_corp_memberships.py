@@ -16,15 +16,22 @@ class Command(BaseCommand):
         example:
         python manage.py import_corp_memberships 10 1
     """
+ 
+    def add_arguments(self, parser):
+        parser.add_argument('import_id', type=int)
+        parser.add_argument('user_id', type=int)
+
 
     def handle(self, *args, **options):
         from tendenci.apps.corporate_memberships.models import CorpMembershipImport
         from tendenci.apps.corporate_memberships.models import CorpMembershipImportData
         from tendenci.apps.corporate_memberships.import_processor import CorpMembershipImportProcessor
 
+        import_id = options['import_id']
+        user_id = options['user_id']
         mimport = get_object_or_404(CorpMembershipImport,
-                                        pk=args[0])
-        request_user = User.objects.get(pk=args[1])
+                                        pk=import_id)
+        request_user = User.objects.get(pk=user_id)
 
 #        fieldnames, data_list = memb_import_parse_csv(mimport)
         data_list = CorpMembershipImportData.objects.filter(

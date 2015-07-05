@@ -16,13 +16,20 @@ class Command(BaseCommand):
         python manage.py import_users 10 1
     """
 
+
+    def add_arguments(self, parser):
+        parser.add_argument('import_id', type=int)
+        parser.add_argument('user_id', type=int)
+
     def handle(self, *args, **options):
         from tendenci.apps.profiles.models import UserImport, UserImportData
         from tendenci.apps.profiles.utils import ImportUsers
         from tendenci.apps.user_groups.models import GroupMembership
 
-        uimport = get_object_or_404(UserImport, pk=args[0])
-        request_user = User.objects.get(pk=args[1])
+        import_id = options['import_id']
+        user_id = options['user_id']
+        uimport = get_object_or_404(UserImport, pk=import_id)
+        request_user = User.objects.get(pk=user_id)
         data_list = UserImportData.objects.filter(uimport=uimport).order_by('pk')
         imu = ImportUsers(request_user, uimport, dry_run=False)
 

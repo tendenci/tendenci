@@ -16,6 +16,9 @@ class Command(BaseCommand):
         python manage.py send_newsletter 1
 
     """
+    def add_arguments(self, parser):
+        parser.add_argument('newsletter_id', type=int)
+
     def handle(self, *args, **options):
         import datetime
         from tendenci.apps.emails.models import Email
@@ -32,8 +35,7 @@ class Command(BaseCommand):
 
         print "Started sending newsletter..."
 
-        newsletter_id = int(args[0])
-
+        newsletter_id = options['newsletter_id']
         if newsletter_id == 0:
             raise CommandError('Newsletter ID is required. Usage: ./manage.py send_newsletter <newsletter_id>')
 

@@ -11,10 +11,13 @@ class Command(BaseCommand):
     Usage:
         .manage.py add_ud_fields_to_mem_app 1
     """
+    def add_arguments(self, parser):
+        parser.add_argument('app_id', type=int)
+
     def handle(self, *args, **options):
         from tendenci.apps.memberships.models import MembershipAppField
         
-        app_id = args[0]
+        app_id = options['app_id']
         po = 92
         for i in xrange(6, 31):
             if not MembershipAppField.objects.filter(

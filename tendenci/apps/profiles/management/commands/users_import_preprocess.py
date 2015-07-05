@@ -22,12 +22,16 @@ class Command(BaseCommand):
         python manage.py users_import_preprocess 9
     """
 
+    def add_arguments(self, parser):
+        parser.add_argument('import_id', type=int)
+
     def handle(self, *args, **options):
         from tendenci.apps.profiles.models import UserImport, UserImportData
         from tendenci.apps.profiles.utils import user_import_parse_csv
 
+        import_id = options['import_id']
         uimport = get_object_or_404(UserImport,
-                                        pk=args[0])
+                                        pk=import_id)
         if uimport.status == 'not_started':
             if uimport.upload_file:
                 uimport.status = 'preprocessing'

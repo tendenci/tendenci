@@ -15,14 +15,20 @@ class Command(BaseCommand):
         example:
         python manage.py import_membership_defaults 10 1
     """
+    def add_arguments(self, parser):
+        parser.add_argument('import_id', type=int)
+        parser.add_argument('user_id', type=int)
 
-    def handle(self, *args, **options):
+
+    def handle(self, *args,  **options):
         from tendenci.apps.memberships.models import MembershipImport
         from tendenci.apps.memberships.models import MembershipImportData
         from tendenci.apps.memberships.utils import ImportMembDefault
 
-        mimport = get_object_or_404(MembershipImport, pk=args[0])
-        request_user = User.objects.get(pk=args[1])
+        import_id = options['import_id']
+        user_id = options['user_id']
+        mimport = get_object_or_404(MembershipImport, pk=import_id)
+        request_user = User.objects.get(pk=user_id)
         data_list = MembershipImportData.objects.filter(mimport=mimport).order_by('pk')
         imd = ImportMembDefault(request_user, mimport, dry_run=False)
 

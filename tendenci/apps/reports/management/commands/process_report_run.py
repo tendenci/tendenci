@@ -145,13 +145,13 @@ class Command(BaseCommand):
             'totals': totals,
             'run': run}))
 
+    def add_arguments(self, parser):
+        parser.add_argument('run_id', type=int)
+
     def handle(self, *args, **options):
         from tendenci.apps.reports.models import Run
-        try:
-            run_id = args[0]
-        except Exception:
-            raise CommandError('You need to pass a report run as an argument.')
-
+        
+        run_id = options['run_id']
         try:
             run = Run.objects.get(pk=run_id)
         except (Run.DoesNotExist, Run.MultipleObjectsReturned):
