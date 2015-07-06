@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         try:
             print "Updating tendenci"
-            subprocess.check_output("pip install tendenci --upgrade", stderr=subprocess.STDOUT, shell=True)
+            subprocess.check_output("pip install tendenci<6.0.0 --upgrade", stderr=subprocess.STDOUT, shell=True)
             pass_update_tendenci = True
 
         except subprocess.CalledProcessError as e:
