@@ -1466,6 +1466,8 @@ class MembershipDefaultForm(TendenciBaseForm):
 
         # initialize field widgets ---------------------------
         self.fields['payment_method'].empty_label = None
+        # make payment_method not required for admin - this form is used only at admin backend
+        self.fields['payment_method'].required = False
         self.fields['industry'].empty_label = 'Select One'
         self.fields['region'].empty_label = 'Select One'
 
