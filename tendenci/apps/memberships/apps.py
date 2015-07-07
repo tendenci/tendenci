@@ -1,8 +1,9 @@
 from django.apps import AppConfig
 
 class MembershipsConfig(AppConfig):
-    name = 'memberships'
+    name = 'tendenci.apps.memberships'
     verbose_name = 'Memberships Application'
     
     def ready(self):
-        import memberships.signals
+        super(MembershipsConfig, self).ready()
+        import tendenci.apps.memberships.signals

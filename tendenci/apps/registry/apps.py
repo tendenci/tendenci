@@ -1,9 +1,10 @@
 from django.apps import AppConfig
 
 class RegistryConfig(AppConfig):
-    name = 'Registry'
+    name = 'tendenci.apps.registry'
     verbose_name = 'Registry Application'
     
     def ready(self):
-        import registry.register
-        register.autodiscover()
+        #super(RegistryConfig, self).ready()
+        from tendenci.apps.registry.register import autodiscover
+        autodiscover()
