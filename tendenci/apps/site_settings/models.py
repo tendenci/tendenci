@@ -92,7 +92,7 @@ class Setting(models.Model):
             from tendenci.apps.theme.utils import theme_options
             self.input_value = theme_options()
             super(Setting, self).save(*args, **kwargs)
-            call_command('touch_settings')
+            call_command('clear_theme_cache')
         else:
             super(Setting, self).save(*args, **kwargs)
 
