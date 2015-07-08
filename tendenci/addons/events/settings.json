@@ -687,7 +687,7 @@
         "input_type": "select",
         "client_editable": false,
         "name": "regform_position_title_visible",
-        "value": "false",
+        "value": "true",
         "label": "Standard Registration Form - Position Title Visible",
         "input_value": "true,false",
         "parent_id": 0,
