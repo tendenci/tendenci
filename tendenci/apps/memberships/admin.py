@@ -702,6 +702,7 @@ class NoticeAdmin(admin.ModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/admin/membnotices.js' % settings.STATIC_URL,
         )
 
     def save_model(self, request, object, form, change):
