@@ -1109,11 +1109,12 @@ class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
-    price = PriceField(label=_('Price'), max_digits=21, decimal_places=2)
+    price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.MultipleChoiceField(required=False, choices=[])
     payment_required = forms.ChoiceField(required=False,
-                            choices=(('True',_('Yes')),('False',_('No'))))
+                                         choices=(('True', _('Yes')), ('False', _('No'))),
+                                         initial='True')
 
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
