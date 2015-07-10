@@ -16,10 +16,12 @@ event_handler = function(e){
 };
 
 resize = function(el) {
-	if(el.src.search(/\d+x\d+/) != -1) new_url = el.src.replace(/\d+x\d+/, el.width+'x'+el.height);
-	else new_url = el.src + el.width + 'x' + el.height + '/';
-    el.setAttribute("src", new_url);
-    el.setAttribute("mce_src", new_url);
+	if (el != undefined){
+		if(el.src.search(/\d+x\d+/) != -1) new_url = el.src.replace(/\d+x\d+/, el.width+'x'+el.height);
+		else new_url = el.src + el.width + 'x' + el.height + '/';
+	    el.setAttribute("src", new_url);
+	    el.setAttribute("mce_src", new_url);
+   }
 }
 
 /*
