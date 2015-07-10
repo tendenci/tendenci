@@ -820,12 +820,14 @@ def get_notice_token_help_text(notice=None):
 
     help_text += """
                 <script>
-                    $(document).ready(function() {
-                        $('#notice_token_list').hide();
-                         $('#toggle_token_view').click(function () {
-                        $('#notice_token_list').toggle();
-                         });
-                    });
+                    (function($) {
+                        $(document).ready(function() {
+                            $('#notice_token_list').hide();
+                                 $('#toggle_token_view').click(function () {
+                                $('#notice_token_list').toggle();
+                            });
+                        });
+                    }(jQuery));                  
                 </script>
                 """
 
