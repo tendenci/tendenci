@@ -21,3 +21,13 @@ resize = function(el) {
     el.setAttribute("src", new_url);
     el.setAttribute("mce_src", new_url);
 }
+
+/*
+	Temp fix for TinyMCE not being able to pass HTML5 validation
+	with the "required" attribute  - Jenny Q. 07/10/2015
+*/
+(function($) {
+    $(document).ready(function() {
+        $('textarea').removeAttr('required');
+    });
+}(jQuery));
