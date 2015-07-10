@@ -1113,7 +1113,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.MultipleChoiceField(required=False, choices=[])
     payment_required = forms.ChoiceField(required=False,
-                            choices=((None,_('Inherit from event')),('True',_('Yes')),('False',_('No'))))
+                            choices=(('True',_('Yes')),('False',_('No'))))
 
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
