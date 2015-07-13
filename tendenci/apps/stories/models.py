@@ -1,6 +1,6 @@
 import uuid
 
-from parse_uri import ParseUri
+from urlparse import urlparse
 
 from django.db import models
 from tendenci.apps.user_groups.models import Group
@@ -90,9 +90,9 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         url = reverse("story", args=[self.pk])
         if self.full_story_link:
             url = self.full_story_link
-            parsed_url = ParseUri().parse(url)
+            o = urlparse(url)
 
-            if not parsed_url.protocol:  # if relative URL
+            if not o.scheme:  # if relative URL
                 url = '%s%s' % (get_setting('site', 'global', 'siteurl'), url)
 
         return url
