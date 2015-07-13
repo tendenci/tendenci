@@ -7,6 +7,8 @@ from decimal import Decimal
 import codecs
 import cStringIO
 import csv
+from urlparse import urlparse
+import requests
 import chardet
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
@@ -444,29 +446,15 @@ def dec_pass(password):
     return urlsafe_b64decode(''.join(pw_list))
 
 def url_exists(url):
-    import socket
-    import httplib
-    from parse_uri import ParseUri
-    from django.contrib.sites.models import Site
+    o = urlparse(url)
+    
+    if not o.scheme:
+        # doesn't have a scheme, relative url
+        url = '%s%s' %  (get_setting('site', 'global', 'siteurl'), url)
+        
+    r = requests.head(url)
+    return r.status_code == 200
 
-    # parse url
-    p = ParseUri()
-    parsed_url = p.parse(url)
-
-    # doesn't have a host so it's relative to the website
-    if not parsed_url.host:
-        parsed_url = p.parse(Site.objects.get_current().domain + url)
-
-    conn = httplib.HTTPConnection(parsed_url.authority)
-    conn.request("HEAD", parsed_url.path)
-
-    try:
-        socket.setdefaulttimeout(1.5)
-        response = conn.getresponse()
-        if response.status == 200:
-            return True
-    except:
-        return False
 
 def parse_image_sources(string):
     p = re.compile('<img[^>]* src=\"([^\"]*)\"[^>]*>')
