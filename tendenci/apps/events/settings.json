@@ -704,7 +704,7 @@
         "input_type": "select",
         "client_editable": false,
         "name": "regform_position_title_required",
-        "value": "false",
+        "value": "true",
         "label": "Standard Registration Form - Position Title Required",
         "input_value": "true,false",
         "parent_id": 0,
