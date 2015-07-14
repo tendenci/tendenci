@@ -2,6 +2,7 @@ import os
 import urllib2
 import uuid
 import re
+from urlparse import urlparse
 
 from tendenci.apps.pages.models import Page
 from tendenci.apps.articles.models import Article
@@ -23,7 +24,7 @@ def replace_short_code(body):
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body
 
-def get_posts(item, uri_parser, user):
+def get_posts(item, user):
     """
     If the given Article has already been created, skip it.
     If not, create Article object and Redirect object.
@@ -32,7 +33,7 @@ def get_posts(item, uri_parser, user):
 
     if item.find('link'):
         link = unicode(item.find('link').contents[0])
-        slug = uri_parser.parse(link).path.strip('/')
+        slug = urlparse(link).path.strip('/')
     else:
         # if no slug, grab the post id
         slug = unicode(item.find('wp:post_id').contents[0])
@@ -104,7 +105,7 @@ def get_posts(item, uri_parser, user):
         r = Redirect(**redirect)
         r.save()
 
-def get_pages(item, uri_parser, user):
+def get_pages(item, user):
     """
     Find each item marked "page" in items.
     If that Page has already been created, do nothing.
@@ -112,7 +113,7 @@ def get_pages(item, uri_parser, user):
     """
     alreadyThere = False
     link = unicode(item.find('link').contents[0])
-    slug = uri_parser.parse(link).path.strip('/')
+    slug = urlparse(link).path.strip('/')
 
     for page in Page.objects.all():
         if page.slug == slug[:100]:
@@ -158,7 +159,7 @@ def get_pages(item, uri_parser, user):
         p = Page(**page)
         p.save()
 
-def get_media(item, uri_parser, user):
+def get_media(item, user):
     """
     Find any URL contained in an "attachment."
     If that File has already been created, skip it.
@@ -166,7 +167,7 @@ def get_media(item, uri_parser, user):
     Loop through Articles and Pages and replace links.
     """
     media_url_in_attachment = item.find('wp:attachment_url').string
-    media_url = uri_parser.parse(media_url_in_attachment).file
+    media_url = urlparse(media_url_in_attachment).file
     media_url = os.path.join(settings.MEDIA_ROOT, media_url)
 
     post_id = item.find('wp:post_parent').string

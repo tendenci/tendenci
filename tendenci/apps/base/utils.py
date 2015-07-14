@@ -8,8 +8,11 @@ import codecs
 import cStringIO
 import csv
 from urlparse import urlparse
+import urllib2
+import socket
+from PIL import Image
+from StringIO import StringIO
 import requests
-import chardet
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -462,24 +465,14 @@ def parse_image_sources(string):
     return image_sources
 
 def make_image_object_from_url(image_url):
-    import urllib2
-    import socket
-    from parse_uri import ParseUri
-    from PIL import Image
-    from StringIO import StringIO
-    from django.contrib.sites.models import Site
-
     # parse url
-    p = ParseUri()
-    parsed_url = p.parse(image_url)
+    parsed_url = urlparse(image_url)
 
     # handle absolute and relative urls, Assuming http for now.
-    if not parsed_url.host:
-        parsed_url = p.parse(Site.objects.get_current().domain + image_url)
-        parsed_url.protocol = "http"
-        parsed_url.source = parsed_url.protocol + "://" + parsed_url.source
+    if not parsed_url.scheme:
+        image_url = '%s%s' %  (get_setting('site', 'global', 'siteurl'), image_url)
 
-    request = urllib2.Request(parsed_url.source)
+    request = urllib2.Request(image_url)
     request.add_header('User-Agent', settings.TENDENCI_USER_AGENT)
     opener = urllib2.build_opener()
 

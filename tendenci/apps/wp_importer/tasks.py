@@ -1,7 +1,6 @@
 from celery.task import Task
 from celery.registry import tasks
 from BeautifulSoup import BeautifulStoneSoup
-from parse_uri import ParseUri
 from tendenci.apps.wp_importer.utils import get_media, get_posts, get_pages
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -18,7 +17,6 @@ class WPImportTask(Task):
         xml = f.read()
         f.close()
 
-        uri_parser = ParseUri()
         soup = BeautifulStoneSoup(xml)
         items = soup.findAll('item')
 
@@ -27,14 +25,14 @@ class WPImportTask(Task):
             post_status = item.find('wp:status').string
 
             if post_type == 'attachment':
-                get_media(item, uri_parser, user)
+                get_media(item, user)
                 # Note! This script assumes all the attachments come before
                 # posts and pages in the xml. If this ends up changing,
                 # do two loops, one with attachments and the second with posts and pages.
             elif post_type == 'post' and post_status == 'publish':
-                get_posts(item, uri_parser, user)
+                get_posts(item, user)
             elif post_type == 'page' and post_status == 'publish':
-                get_pages(item, uri_parser, user)
+                get_pages(item, user)
 
         if user.email:
             context_instance = {
