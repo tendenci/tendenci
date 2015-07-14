@@ -1,24 +1,15 @@
 import os
 import urllib2
-import time
 import uuid
-import sys
 import re
-
-from dateutil import parser
-from datetime import datetime
-from BeautifulSoup import BeautifulStoneSoup
-from parse_uri import ParseUri
 
 from tendenci.apps.pages.models import Page
 from tendenci.apps.articles.models import Article
 from tendenci.apps.redirects.models import Redirect
 from tendenci.apps.files.models import File
 from tendenci.apps.wp_importer.models import AssociatedFile
-
-from django.contrib.auth.models import User
 from django.conf import settings
-from django.template import RequestContext
+
 
 def replace_short_code(body):
     """

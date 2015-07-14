@@ -1,4 +1,3 @@
-import os
 from celery.task import Task
 from celery.registry import tasks
 from BeautifulSoup import BeautifulStoneSoup
