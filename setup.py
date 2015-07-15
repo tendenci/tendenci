@@ -192,7 +192,7 @@ setup(
         "Geraldo==0.4.16",
         "django-tastypie==0.12.1",
         "johnny-cache==1.6.1a",
-        "docutils==0.9.1",
+        "docutils==0.12",
         'chardet==2.3.0',
         "psycopg2==2.6.1",
         "gunicorn==19.3.0",
