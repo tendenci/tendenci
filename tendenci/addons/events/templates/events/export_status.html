@@ -3,7 +3,6 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load i18n %}
-{% url event.export_download identifier as dl_url %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,6 +13,7 @@
 {% endblock %}
 
 {% block body %}
+{% url event.export_download identifier as dl_url %}
 <div class="t">
     {% event_nav request.user %}
     <div class="events-wrap">
