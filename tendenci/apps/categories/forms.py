@@ -21,7 +21,7 @@ category_defaults = {
     'help_text': format_html(u'{0}{1}{2}',
         mark_safe('''
             <span id="t-categories-add-category-help-text" class="help-block">
-                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#t-categories-add-category-modal">
+                <button type="button" class="btn btn-link add-category" data-toggle="modal" data-target="#t-categories-add-category-modal">
         '''),
         _(u'Add Category'),
         mark_safe('''
@@ -37,7 +37,7 @@ sub_category_defaults = {
     'help_text': format_html(u'{0}{1}{2}',
         mark_safe('''
             <span id="t-categories-add-subcategory-help-text" class="help-block">
-                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#t-categories-add-subcategory-modal">
+                <button type="button" class="btn btn-link add-sub-category" data-toggle="modal" data-target="#t-categories-add-subcategory-modal">
         '''),
         _(u'Add Subcategory'),
         mark_safe('''

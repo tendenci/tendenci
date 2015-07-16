@@ -28,9 +28,8 @@
     {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function(){
-            // delete confirmation
             $('.add-category').click(function(){
-                select_box = $(this).parent().prev().find('select');
+                select_box = $(this).closest(".form-group").find('select#id_category');
                 var category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 category = category.replace('"','')
                 var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
@@ -38,7 +37,7 @@
                 return false;
             });
             $('.add-sub-category').click(function(){
-                select_box = $(this).parent().prev().find('select');
+                select_box = $(this).closest(".form-group").find('select#id_sub_category');
                 var sub_category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 sub_category = sub_category.replace('"','')
                 var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';

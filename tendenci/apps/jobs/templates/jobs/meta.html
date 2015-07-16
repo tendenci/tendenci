@@ -15,7 +15,7 @@
                     <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'jobs' %}?q=category:{{ job_cat.category }}">{% blocktrans with category=job_cat.category %}{{ category }}{% endblocktrans %}</a></li>
                     {% if job_cat.sub_category %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'jobs' %}?q=sub_category:{{ job_cat.sub_category }}">{% blocktrans with sub_category=job_cat.subcategory %}{{ sub_category }}{% endblocktrans %}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'jobs' %}?q=sub_category:{{ job_cat.sub_category }}">{% blocktrans with sub_category=job_cat.sub_category %}{{ sub_category }}{% endblocktrans %}</a></li>
                     {% endif %}
                 </ul>
             </li>
