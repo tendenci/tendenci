@@ -211,7 +211,7 @@ INSTALLED_APPS = (
     'tendenci.apps.notifications',
     'tendenci.apps.registration',
     'tendenci.apps.registry',
-    #'tendenci.apps.api_tasty',
+    'tendenci.apps.api_tasty',
     'tendenci.apps.invoices',
     'tendenci.apps.payments',
     'tendenci.apps.recurring_payments',
