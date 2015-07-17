@@ -190,7 +190,7 @@ setup(
         "django-timezones==0.2",
         "django-ses==0.7.0",
         "Geraldo==0.4.16",
-        "django-tastypie==0.12.1",
+        "django-tastypie==0.12.2",
         "johnny-cache==1.6.1a",
         "docutils==0.12",
         'chardet==2.3.0',
