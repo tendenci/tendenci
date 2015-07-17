@@ -28,3 +28,4 @@ class TendenciForm(forms.ModelForm):
 
     class Meta:
         model = TendenciBaseModel
+        fields = "__all__" 
