@@ -55,7 +55,7 @@ copyright = u'2015, Tendenci'
 # built documents.
 #
 # The short X.Y version.
-version = '5.1'
+version = '7.0'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 
