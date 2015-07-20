@@ -1,0 +1,4 @@
+Upgrading from 6.0.x
+====================
+
+Coming soon...

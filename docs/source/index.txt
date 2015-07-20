@@ -18,6 +18,16 @@ Setup and Installation
    installation/*
 
 
+Upgrade
+----------------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   upgrade/*
+
+
 Topic Guides
 ------------
 
