@@ -1,7 +1,7 @@
 Remote Installation
 ===================
 
-Below are some instructions to create a Tendenci site on an Ubuntu server. 12.04 is recommended, though 10.04 will work as well.
+Below are some instructions to create a Tendenci site on an Ubuntu server. 14.04 is recommended.
 
 All of the commands below should be run on the command line after you are connected to the server.
 
@@ -22,39 +22,30 @@ Along with this, add the necessary symlinks for the jpeg and freetype libraries:
     sudo ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib
 
 
-Creating the Tendenci site folder
----------------------------------
+Creating a new tendenci project
+-------------------------------
 
-Go to the path on the server where the site should be installed. For this example, use ``/var/www``. Make a folder for the site, update it's permissions, and cd into it. Replace 'sitename' with the name of the site.
+We recommend using virtualenv http://docs.python-guide.org/en/latest/dev/virtualenvs/ with virtualenvwrapper https://virtualenvwrapper.readthedocs.org/en/latest/ for your development environment.
+Make sure Django 1.8 is installed in your environment.
 ::
 
-    cd /var/www
-    mkdir sitename
-    chown root:www-data sitename
-    chmod 755 sitename
-    cd sitename
+    pip install "Django>=1.8,<1.9"
 
-It's best practice to make a virtual environment for the site. You will need `virtualenv <http://www.virtualenv.org/>`_ installed for the next step. If you don't have it, you can install it with ``pip install virtualenv``. Make a virtual environment called 'venv' and activate it.
+
+In your environment, start a new tendenci project with the template (replace <project_name> with your project name).
 ::
 
-    virtualenv venv
-    source venv/bin/activate
-    pip install setuptools --upgrade
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci7 <project_name>
 
-Install Tendenci. This download and install step may take a few minutes.
+
+Installing the requirements
+---------------------------
+
+Install the requirements with the following commands.
 ::
 
-    pip install tendenci
-
-Once this is done, you can setup django project with the following:
-::
-
-    create-tendenci-project
-
-Next, install requirements for the project.
-::
-
-    pip install -r requirements/dev.txt
+    cd <project_name>
+    pip install -r requirements/prod.txt
 
 
 Setting up the Database
@@ -62,50 +53,27 @@ Setting up the Database
 
 The Postgres database server was installed as part of the step to install server packages. It is a separate application from Tendenci, but is needed as the database backend that will be used for Tendenci.
 
-The steps to configure Postgres can be run from anywhere (i.e. you do not need to be in the tendenci folder at /var/www/sitename to configure postgres).
-
-Change the postgres default user password as the postgres user. Lines that start postgres=# are prompts:
+Create the database and a new postgres user with the following commands (replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user and password):
 ::
 
-    sudo -u postgres psql postgres
-    postgres=# \password postgres
-    Enter new password: your-pgsql-password-here
-    Enter it again: your-pgsql-password-here
+    sudo -u postgres psql postgres -c "CREATE USER <DB_USER> WITH PASSWORD '<DB_PASS>';"
+    sudo -u postgres psql postgres -c "CREATE DATABASE <DB_NAME> WITH OWNER <DB_USER>;"
+    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE <DB_NAME> TO <DB_USER>;"
 
-Type Control+D to exit the posgreSQL prompt.
+Next update the ``conf/local_settings.py`` file in the site folder (``/var/www/<project_name>``). Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` for the setting ``DATABASE`` with the newly created database name, user and password.
 
-From here, create the database and a new postgres user with the following commands:
+
+Setting up SECRET_KEY and SITE_SETTINGS_KEY
+-------------------------------------------
+
+The ``SECRET_KEY`` or ``SITE_SETTINGS_KEY`` is a random string with the length of 32. You can update them manually in the ``conf/local_settings.py`` file. Or automatically update it with the following script.
 ::
 
-    sudo -u postgres psql postgres -c "CREATE USER tendenci WITH PASSWORD 'yourgreatpassword';"
-    sudo -u postgres psql postgres -c "CREATE DATABASE tendenci WITH OWNER tendenci;"
-    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE tendenci TO tendenci;"
+    curl https://gist.githubusercontent.com/jennyq/45de71a93cff774c593d/raw/30ede14eb133de66cc839cc0458a1e915368534e/setup_keys.sh | bash
 
-This will create a database named ``tendenci`` with the user named ``tendenci``. Next update the ``.env`` file in the site folder (``/var/www/sitename``). First, list files with ``ls -a`` then open the file for editing with ``nano /var/www/sitename/.env`` which will allow editing of the contents. Replace the following line:
-::
 
-    DATABASE_URL='postgres://localhost/tendenci'
-
-with this (including the real password):
-::
-
-    DATABASE_URL='postgres://tendenci:yourgreatpassword@localhost/tendenci'
-
-Finally, save the file with Control+O and exit nano with Control+X.
-
-Creating the database tables
-----------------------------
-
-Along with that, the following lines should be added to the ``.env`` file, using ``nano`` like in the previous step with the DATABASE_URL:
-::
-
-    LOCAL_MEMCACHED_URL = '127.0.0.1:11211'
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = '25'
-    HAYSTACK_SEARCH_ENGINE='whoosh'
-    SECRET_KEY='random_16_characters'
-
-The ``random_16_characters`` should be replaced with a real random 16 characters. Then save the changes to the file.
+Setting up the site
+-------------------
 
 Now, use the deploy script to create the database tables and static media.
 ::
@@ -114,7 +82,7 @@ Now, use the deploy script to create the database tables and static media.
 
 .. Note:: 
 
-    If this is your first time using Tendenci, it's **recommended** to install the available default data and the twenty-thirteen theme to get a feel of what a full Tendenci site is like. You can install this data and theme with the command:
+    If this is your first time using Tendenci, it's **recommended** to install the available default data.
     ::
 
         python manage.py load_npo_defaults
@@ -145,31 +113,20 @@ The contents of that file should match the example below:
     stop on runlevel [06]
     respawn
     respawn limit 10 5
-    exec /var/www/sitename/.upstart.sh
+    script
+        cd /var/www/tendenci
+        . venv/bin/activate
+        exec gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
+    end script
 
 You will need to replace the ``/var/www/sitename`` with the location of the site.
-
-Along with this, create a ``.upstart.sh`` to the site folder. This will live at ``/var/www/sitename/.upstart.sh`` or whatever the location of the path. This ``.upstart.sh`` file should match the example below:
-::
-
-    #!/bin/bash
-    set -e
-    cd /var/www/sitename
-    . venv/bin/activate
-    exec gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi
-
-Again, replace ``/var/www/sitename`` with the real path. Next, adjust the permissions on the new file:
-::
-
-    chown root:www-data /var/www/sitename/.upstart.sh
-    chmod u+x /var/www/sitename/.upstart.sh
 
 To start this service, use the following command:
 ::
 
     sudo service tendenci start
 
-If any changes in the future are made to the environment file (``.env``), the service should be restarted with this command:
+If any changes in the future are made to the file ``conf/local_settings.py``, the service should be restarted with this command:
 ::
 
     sudo service tendenci restart
