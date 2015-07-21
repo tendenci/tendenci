@@ -75,14 +75,14 @@ For more on installing PostgreSQL for Django check the docs at https://docs.djan
 Creating a new tendenci project
 --------------------
 
-We recommend using [http://docs.python-guide.org/en/latest/dev/virtualenvs/](virtualenv) with [https://virtualenvwrapper.readthedocs.org/en/latest/](virtualenvwrapper) for your development environment.
+We recommend using virtualenv http://docs.python-guide.org/en/latest/dev/virtualenvs/ with virtualenvwrapper https://virtualenvwrapper.readthedocs.org/en/latest/ for your development environment.
 Make sure Django 1.8 is installed in your environment.
 ::
 
     pip install "Django>=1.8,<1.9"
 
 
-In your virtualenv, start a new tendenci project with the template (replace <project_name> with your project name)
+In your environment, start a new tendenci project with the template (replace <project_name> with your project name)
 ::
 
     django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci7 <project_name>
@@ -91,10 +91,12 @@ In your virtualenv, start a new tendenci project with the template (replace <pro
 Installing the requirements
 --------------------
 
+Install the requirements with the following commands.
+::
     cd <project_name>
     pip install -r requirements/dev.txt
 
-Update your database name, user and password for the `DATABASES` setting in the ``conf/local_settings.py``.
+Update your database name, database user and database password for the `DATABASES` setting in the ``conf/local_settings.py``.
 ::
 
 Update the settings SECRET_KEY and SITE_SETTINGS_KEY.
