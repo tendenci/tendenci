@@ -16,7 +16,7 @@ Got tired of spammers so pulled the demo. Sheesh people. Get a life. Anyway, you
 
 ## Impatient Developer?  
 
-If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP by following the instructions on [https://github.com/tendenci/tendenci-project-template/tree/tendenci7](https://github.com/tendenci/tendenci-project-template/tree/tendenci7).  
+If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP by following the instructions on [https://github.com/tendenci/tendenci-project-template/tree/master](https://github.com/tendenci/tendenci-project-template/tree/master).  
 
 
 ## Developer Installing Tendenci?  
@@ -24,7 +24,7 @@ If you want to test it locally quickly (e.g. client demo etc), you can try it AS
 Community forums for questions that may not fit in issues on github or solutions to questions on installation. We check these more frequently than the issues on github and it is also where you can read about the Roadmap going forward. Your input is greatly appreciated! (Seriously - this changing the world stuff is hard and we could use your input and maybe a few pull requests too!)
 [https://community.tendenci.com/](https://community.tendenci.com/)
 
-Detailed installation docs are located at docs/source/installation directory. (They will be published to [https://tendenci.readthedocs.org/en/latest/](https://tendenci.readthedocs.org/en/latest/) once this branch is switched to master). 
+Detailed installation documentation is in the docs/source/installation directory and online at [https://tendenci.readthedocs.org/en/latest/](https://tendenci.readthedocs.org/en/latest/). 
 You will need to install the server on Ubuntu 14.04 LTS (or later) and Postgres 9.3 (or later.) Cloud hypervisors work fine.  
 
 Dockers? We are using them in our test environments now. We'll have a public docker file up soon in the dockers.io registry. Testing internally currently. It is based on the phusion/basebox so feel free to play with that in the meanttime.
