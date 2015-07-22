@@ -100,7 +100,8 @@ class Command(BaseCommand):
             counter += 1
             print "Newsletter sent to %s" % recipient.member.email
 
-            if newsletter.send_to_email2 and recipient.member.profile.email2:
+            if newsletter.send_to_email2 and hasattr(recipient.member, 'profile') \
+                and recipient.member.profile.email2:
                 email_to_send.recipient = recipient.member.profile.email2
                 email_to_send.send(connection=connection)
                 counter += 1
