@@ -444,7 +444,7 @@ MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
 
 # AUTHORIZE.NET
-AUTHNET_POST_URL = "https://secure.authorize.net/gateway/transact.dll"
+AUTHNET_POST_URL = "https://secure2.authorize.net/gateway/transact.dll"
 AUTHNET_MD5_HASH_VALUE = ''
 
 # FIRSTDATA
