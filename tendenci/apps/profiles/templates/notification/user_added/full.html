@@ -24,11 +24,13 @@
     <td width="23%"> {% trans "Last name:" %}</td>
     <td width="75%"><b>{{ object.user.last_name }}</b></td>
   </tr>
+  {% if object.phone %}
   <tr>
     <td>&nbsp;</td>
     <td> {% trans "Phone:" %}</td>
     <td><b>{{ object.phone|phonenumber }}</b></td>
   </tr>
+  {% endif %}
   <tr>
     <td>&nbsp;</td>
     <td> {% trans "Email:" %}</td>
