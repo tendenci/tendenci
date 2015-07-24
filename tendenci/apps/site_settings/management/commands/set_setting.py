@@ -6,6 +6,13 @@ class Command(BaseCommand):
     """
     Example: python manage.py set_setting site global siteurl http://example.com
     """
+    
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('scope')
+        parser.add_argument('scope_category')
+        parser.add_argument('name')
+        parser.add_argument('value')
 
     def handle(self, scope=None, scope_category=None, name=None, value=None, **options):
         """
