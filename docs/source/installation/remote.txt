@@ -12,7 +12,7 @@ You can install all of the necessary Ubuntu packages with the following commands
 ::
 
     sudo apt-get update
-    sudo apt-get install git python-pip postgresql-9.3 postgresql-contrib-9.3 postgresql-9.3-postgis-2.1 build-essential python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
+    sudo apt-get install build-essential git python-pip postgresql-9.3 postgresql-contrib-9.3 postgresql-9.3-postgis-2.1 python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
 
 Along with this, add the necessary symlinks for the jpeg and freetype libraries:
 ::
@@ -22,20 +22,36 @@ Along with this, add the necessary symlinks for the jpeg and freetype libraries:
     sudo ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib
 
 
+Setting up the Database
+-----------------------
+
+The Postgres database server was installed as part of the step to install server packages. It is a separate application from Tendenci, but is needed as the database backend that will be used for Tendenci.
+
+Create the database and a new postgres user with the following commands (replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user and password):
+::
+
+    DB_USER=<DB_USER>
+    DB_PASS=<DB_PASS>
+    DB_NAME=<DB_NAME>
+    sudo -u postgres psql postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+    sudo -u postgres psql postgres -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
+    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+    sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION postgis;"
+    
+
 Creating a new tendenci project
 -------------------------------
 
-We recommend using virtualenv http://docs.python-guide.org/en/latest/dev/virtualenvs/ with virtualenvwrapper https://virtualenvwrapper.readthedocs.org/en/latest/ for your development environment.
 Make sure Django 1.8 is installed in your environment.
 ::
 
     pip install "Django>=1.8,<1.9"
 
 
-In your environment, start a new tendenci project with the template (replace <project_name> with your project name).
+In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name).
 ::
 
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci7 <project_name>
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci <project_name>
 
 
 Installing the requirements
@@ -48,17 +64,7 @@ Install the requirements with the following commands.
     pip install -r requirements/prod.txt
 
 
-Setting up the Database
------------------------
 
-The Postgres database server was installed as part of the step to install server packages. It is a separate application from Tendenci, but is needed as the database backend that will be used for Tendenci.
-
-Create the database and a new postgres user with the following commands (replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user and password):
-::
-
-    sudo -u postgres psql postgres -c "CREATE USER <DB_USER> WITH PASSWORD '<DB_PASS>';"
-    sudo -u postgres psql postgres -c "CREATE DATABASE <DB_NAME> WITH OWNER <DB_USER>;"
-    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE <DB_NAME> TO <DB_USER>;"
 
 Next update the ``conf/local_settings.py`` file in the site folder (``/var/www/<project_name>``). Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` for the setting ``DATABASE`` with the newly created database name, user and password.
 
@@ -79,10 +85,17 @@ Now, use the deploy script to create the database tables and static media.
 ::
 
     python deploy.py
+    
 
-.. Note:: 
+Load some defaults.
+::
 
-    If this is your first time using Tendenci, it's **recommended** to install the available default data.
+    python manage.py load_base_defaults
+
+
+.. Alternatively:: 
+
+    You can run the following command to load more data.
     ::
 
         python manage.py load_npo_defaults

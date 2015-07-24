@@ -62,10 +62,12 @@ Setting up the database
 
 Tendenci is designed for use with PostgreSQL. You will need to have a PostgreSQL server running locally. If you are on OS X, we recommend `Postgres.app <http://postgresapp.com/>`_ to get up and running fast.
 
-With Postgres.app installed, you can create a database from Terminal:
+With Postgres.app installed, you can create a database from Terminal (replace ``<DB_NAME>`` with your database name):
 ::
 
-    psql -h localhost -c "CREATE DATABASE tendenci"
+    DB_NAME=<DB_NAME>
+    psql -h localhost -c "CREATE DATABASE $DB_NAME"
+    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis;"
 
 You can also create a database in your GUI of choice (recommended: `PGAdmin <http://www.pgadmin.org/>`_).
 
@@ -75,14 +77,13 @@ For more on installing PostgreSQL for Django check the docs at https://docs.djan
 Creating a new tendenci project
 --------------------
 
-We recommend using virtualenv http://docs.python-guide.org/en/latest/dev/virtualenvs/ with virtualenvwrapper https://virtualenvwrapper.readthedocs.org/en/latest/ for your development environment.
 Make sure Django 1.8 is installed in your environment.
 ::
 
     pip install "Django>=1.8,<1.9"
 
 
-In your environment, start a new tendenci project with the template (replace <project_name> with your project name)
+In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
 ::
 
     django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci7 <project_name>
@@ -109,9 +110,15 @@ Now we are ready to use our deploy script.
 
     python deploy.py
 
-.. Note:: 
+Load some defaults.
+::
 
-    If this is your first time using Tendenci, we **recommend** you install some default data to get a feel of what a full Tendenci site is like. You can install this data with the command:
+    python manage.py load_base_defaults
+
+
+.. Alternatively:: 
+
+    You can run the following command to load more data.
     ::
 
         python manage.py load_npo_defaults
