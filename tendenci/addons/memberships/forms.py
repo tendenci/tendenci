@@ -545,6 +545,7 @@ class UserForm(forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request')
+        self.is_corp_rep = kwargs.pop('is_corp_rep')
         super(UserForm, self).__init__(*args, **kwargs)
 
         del self.fields['groups']
@@ -670,7 +671,8 @@ class UserForm(forms.ModelForm):
             user.email = user.email or user_attrs['email']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
-        elif self.request.user.is_authenticated() and not self.request.user.is_superuser:
+        elif self.request.user.is_authenticated() and \
+                not (self.request.user.is_superuser or self.is_corp_rep):
             created = False
             user = self.request.user
             user.email = user.email or user_attrs['email']

@@ -837,29 +837,15 @@ def membership_default_add(request, slug='', membership_id=None,
                                 request.get_full_path()))
         is_renewal = True
 
-    if not request.user.is_superuser:
-        if request.user.is_authenticated():
-            username = username or request.user.username
-
     membership_type_id = request.GET.get('membership_type_id', u'')
     if membership_type_id.isdigit():
         membership_type_id = int(membership_type_id)
     else:
         membership_type_id = 0
 
-    allowed_users = (
-        request.user.profile.is_superuser,
-        username == request.user.username,
-    )
-
-    if is_renewal:
-        user = membership.user
-    else:
-        if any(allowed_users) and username:
-            [user] = User.objects.filter(username=username)[:1] or [None]
-
     join_under_corporate = kwargs.get('join_under_corporate', False)
     corp_membership = None
+    is_corp_rep = False
 
     if join_under_corporate:
         corp_app = CorpMembershipApp.objects.current_app()
@@ -883,6 +869,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
         # check if they have verified their email or entered the secret code
         corp_membership = get_object_or_404(CorpMembership, id=cm_id)
+        is_corp_rep = corp_membership.corp_profile.is_rep(request.user)
 
         authentication_method = corp_app.authentication_method
 
@@ -932,6 +919,22 @@ def membership_default_add(request, slug='', membership_id=None,
                     '%s?username=%s' % (redirect_url, username))
             return redirect(redirect_url)
 
+    if not (request.user.is_superuser or (join_under_corporate and is_corp_rep)):
+        if request.user.is_authenticated():
+            username = username or request.user.username
+
+    allowed_users = (
+        request.user.profile.is_superuser,
+        join_under_corporate and is_corp_rep,
+        username == request.user.username,
+    )
+       
+    if is_renewal:
+        user = membership.user
+    else:
+        if any(allowed_users) and username:
+            [user] = User.objects.filter(username=username)[:1] or [None]
+
     if not app:
         raise Http404
 
@@ -962,6 +965,7 @@ def membership_default_add(request, slug='', membership_id=None,
         app_fields,
         request.POST or None,
         request=request,
+        is_corp_rep=is_corp_rep,
         initial=user_initial)
 
     profile_form = ProfileForm(app_fields, request.POST or None)
