@@ -116,9 +116,9 @@ Load some defaults.
     python manage.py load_base_defaults
 
 
-.. Alternatively:: 
+.. Note:: 
 
-    You can run the following command to load more data.
+    Alternatively, you can load more data with the following command.
     ::
 
         python manage.py load_npo_defaults
