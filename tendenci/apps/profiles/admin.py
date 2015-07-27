@@ -66,6 +66,14 @@ class ProfileAdmin(TendenciBaseModelAdmin):
 
     ordering = ('user__last_name', 'user__first_name')
 
+    def get_object(self, request, object_id):
+        obj = super(ProfileAdmin, self).get_object(request, object_id)
+        # Avoid language being accidentally set to the first option 'ar'
+        # because en-us is not an option in the language dropdown
+        if obj and obj.language == 'en-us':
+            obj.language = 'en'
+        return obj
+
     def save_model(self, request, object, form, change):
         instance = form.save(request=request, commit=False)
         instance = update_perms_and_save(request, form, instance, log=False)
