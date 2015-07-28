@@ -679,9 +679,11 @@ class ImportUsers(object):
         if 'password' in self.field_names and self.uimport.override and user.password:
             user.set_password(user.password)
 
-        # is_active; unless forced via import
-        if 'is_active' not in self.field_names:
+        # is_active; interactive or non-interactive
+        if self.uimport.interactive:
             user.is_active = True
+        else:
+            user.is_active = False
 
         user.save()
 
