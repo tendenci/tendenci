@@ -78,7 +78,7 @@ class Command(BaseCommand):
             # if a previous added list is deleted on campaign monitor, add it back
             # TODO: we might need a setting to decide whether we want to add it back or not.
 
-            a_list = List(list_id)
+            a_list = List(auth, list_id)
             try:
                 list_stats = a_list.stats()
                 # set up custom fields
