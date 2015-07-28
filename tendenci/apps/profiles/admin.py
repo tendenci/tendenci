@@ -66,8 +66,8 @@ class ProfileAdmin(TendenciBaseModelAdmin):
 
     ordering = ('user__last_name', 'user__first_name')
 
-    def get_object(self, request, object_id):
-        obj = super(ProfileAdmin, self).get_object(request, object_id)
+    def get_object(self, request, object_id, from_field=None):
+        obj = super(ProfileAdmin, self).get_object(request, object_id, from_field=from_field)
         # Avoid language being accidentally set to the first option 'ar'
         # because en-us is not an option in the language dropdown
         if obj and obj.language == 'en-us':
