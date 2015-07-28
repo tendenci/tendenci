@@ -218,6 +218,9 @@ class GroupMembership(models.Model):
     @property
     def noninteractive_unsubscribe_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
+        if not self.newsletter_key:
+            self.newsletter_key = uuid.uuid1()
+            self.save()
         unsubscribe_path = reverse('group.newsletter_unsubscribe_noninteractive', kwargs={
             'group_slug': self.group.slug,
             'newsletter_key': self.newsletter_key
