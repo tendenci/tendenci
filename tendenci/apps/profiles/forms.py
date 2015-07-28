@@ -735,8 +735,8 @@ class UserUploadForm(forms.ModelForm):
                                           ).exclude(type='membership')]
     interactive = forms.BooleanField(widget=forms.RadioSelect(
                                     choices=((True, _('Interactive')),
-                                            (False,_('Not Interactive (no login)')),)),
-                                  initial=True,)
+                                            (False, _('Not Interactive (no login)')),)),
+                                  initial=False, required=False)
     key = forms.ChoiceField(label="Key",
                             choices=KEY_CHOICES)
     group_id = forms.ChoiceField(label=_("Add Users to Group"),
