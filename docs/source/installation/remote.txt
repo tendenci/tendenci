@@ -51,7 +51,7 @@ Make sure Django 1.8 is installed in your environment.
 In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name).
 ::
 
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci <project_name>
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip <project_name>
 
 
 Installing the requirements
@@ -128,7 +128,6 @@ The contents of that file should match the example below:
     respawn limit 10 5
     script
         cd /var/www/tendenci
-        . venv/bin/activate
         exec gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
     end script
 
