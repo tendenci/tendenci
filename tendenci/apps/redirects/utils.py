@@ -24,7 +24,10 @@ def get_redirect_patterns():
         extra = {}
 
         # use urlquote so we can support '?' in the redirect
-        pattern = r'^%s/?$' % urlquote(redirect.from_url)
+        if not redirect.uses_regex:
+            pattern = r'^%s/?$' % urlquote(redirect.from_url)
+        else:
+            pattern = r'^%s/?$' % redirect.from_url
 
         if 'http' in redirect.to_url:
             extra.update({'url':'%s' % redirect.to_url})
