@@ -1,7 +1,6 @@
 from django.core.urlresolvers import resolve
 from django.utils.http import urlquote
 
-
 class RedirectMiddleware(object):
     def process_response(self, request, response):
         """ search url in redirects for 404 or 302 custom redirect """
@@ -16,7 +15,8 @@ class RedirectMiddleware(object):
             args = [value for value in kwargs.values()]
             to_url = kwargs.pop('url')
             for key in kwargs.keys():
-                to_url = to_url.replace("(%s)" % key, kwargs[key])
+                if key != 'permanent':
+                    to_url = to_url.replace("(%s)" % key, kwargs[key])
             args[0] = to_url
             return redirect(request, *args)
         except Exception, e:
