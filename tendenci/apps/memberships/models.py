@@ -1851,6 +1851,12 @@ class MembershipDefault(TendenciBaseModel):
     #     return self.membershipfield_set.order_by('field__position')
 
 
+def get_import_file_path(instance, filename):
+    return "imports/memberships/{uuid}/{filename}".format(
+                            uuid=uuid.uuid1().get_hex()[:8],
+                            filename=filename)
+
+
 class MembershipImport(models.Model):
     INTERACTIVE_CHOICES = (
         (1, _('Interactive')),
@@ -1870,14 +1876,12 @@ class MembershipImport(models.Model):
         ('completed', _('Completed')),
     )
 
-    UPLOAD_DIR = "imports/memberships/%s" % uuid.uuid1().get_hex()[:8]
-
 #     app = models.ForeignKey('App', null=True)
     upload_file = models.FileField(_("Upload File"), max_length=260,
-                                   upload_to=UPLOAD_DIR,
+                                   upload_to=get_import_file_path,
                                    null=True)
     recap_file = models.FileField(_("Recap File"), max_length=260,
-                                   upload_to=UPLOAD_DIR, null=True)
+                                   null=True)
     # store the header line to assist in generating recap
     header_line = models.CharField(_('Header Line'), max_length=3000, default='')
     # active users

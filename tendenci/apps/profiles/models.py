@@ -395,19 +395,25 @@ class Profile(Person):
                 return role
 
 
+def get_import_file_path(instance, filename):
+    return "imports/profiles/{uuid}/{filename}".format(
+                            uuid=uuid.uuid1().get_hex()[:8],
+                            filename=filename)
+
+
 class UserImport(BaseImport):
     INTERACTIVE_CHOICES = (
         (True, _('Interactive')),
         (False, _('Not Interactive (no login)')),
     )
 
-    UPLOAD_DIR = "imports/profiles/%s" % uuid.uuid1().get_hex()[:8]
+#     UPLOAD_DIR = "imports/profiles/%s" % uuid.uuid1().get_hex()[:8]
 
     upload_file = models.FileField(_("Upload File"), max_length=260,
-                                   upload_to=UPLOAD_DIR,
+                                   upload_to=get_import_file_path,
                                    null=True)
     recap_file = models.FileField(_("Recap File"), max_length=260,
-                                   upload_to=UPLOAD_DIR, null=True)
+                                   null=True)
 
     interactive = models.BooleanField(choices=INTERACTIVE_CHOICES, default=False)
     group_id = models.IntegerField(default=0)

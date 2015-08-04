@@ -1467,6 +1467,12 @@ class IndivMembershipRenewEntry(models.Model):
         app_label = 'corporate_memberships'
 
 
+def get_import_file_path(instance, filename):
+    return "imports/corpmemberships/{uuid}/{filename}".format(
+                            uuid=uuid.uuid1().get_hex()[:8],
+                            filename=filename)
+
+
 class CorpMembershipImport(models.Model):
     OVERRIDE_CHOICES = (
         (0, _('Blank Fields')),
@@ -1481,10 +1487,8 @@ class CorpMembershipImport(models.Model):
         ('completed', _('Completed')),
     )
 
-    UPLOAD_DIR = "imports/corpmemberships/%s" % uuid.uuid1().get_hex()[:8]
-
     upload_file = models.FileField(_("Upload File"), max_length=260,
-                                   upload_to=UPLOAD_DIR)
+                                   upload_to=get_import_file_path)
     # overwrite already existing fields if match
     override = models.IntegerField(choices=OVERRIDE_CHOICES, default=0)
     # uniqueness key
