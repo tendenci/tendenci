@@ -1031,7 +1031,7 @@ class RecurringEvent(models.Model):
     )
     repeat_type = models.IntegerField(_("Repeats"), choices=RECURRENCE_CHOICES)
     frequency = models.IntegerField(_("Repeats every"))
-    starts_on = models.DateTimeField(default=datetime.now()+timedelta(days=30))
+    starts_on = models.DateTimeField()
     ends_on = models.DateTimeField()
 
     class Meta:
@@ -1064,8 +1064,8 @@ class Event(TendenciBaseModel):
     title = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     all_day = models.BooleanField(default=False)
-    start_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30))
-    end_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30, hours=2))
+    start_dt = models.DateTimeField()
+    end_dt = models.DateTimeField()
     timezone = TimeZoneField(_('Time Zone'))
     place = models.ForeignKey('Place', null=True)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
