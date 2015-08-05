@@ -11,6 +11,10 @@ class Command(BaseCommand):
     """
     Example: python manage.py set_theme thinksmart
     """
+    
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('theme_name')
 
     def handle(self, theme_name, **options):
         """

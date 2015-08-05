@@ -140,16 +140,19 @@ class Command(BaseCommand):
                     setting['scope_category']
                 )
 
+    def add_arguments(self, parser):
+        # optional arguments
+        parser.add_argument('appnames',
+            nargs='*',
+            help='app names to update')
 
-    def handle(self, *args, **options):
+    def handle(self, appnames, **options):
         try:
             verbosity = int(options['verbosity'])
         except:
             verbosity = 1
 
-        if args:
-            appnames = args
-        else:
+        if not appnames:
             appnames = django_settings.INSTALLED_APPS
             # exclude django native apps
             appnames = [app for app in appnames if not app.startswith('django.')]

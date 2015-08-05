@@ -14,6 +14,10 @@ class Command(BaseCommand):
     """
     help = 'Hide settings (client_editable = false) in the site_settings_setting table'
 
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('scope_category')
+        
     def handle(self, scope_category, **options):
         try:
             verbosity = int(options['verbosity'])
