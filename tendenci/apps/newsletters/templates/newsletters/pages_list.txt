@@ -20,8 +20,7 @@
         <tr><td>&nbsp;</td></tr>
         <tr><td align="left" valign="top">
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'page' page.slug %}" >
-        <font face="Arial" size="2"><b> {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
-        </b></font></a>
+        <font face="Arial" size="2"><b>{{ page.title }}</b></font></a>
 
         {# show member icon if not allowanonymousview/allowsiteuserview #}
         {% if not page.allow_anonymous_view and page.allow_user_view   %}
