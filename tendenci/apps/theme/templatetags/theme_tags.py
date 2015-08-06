@@ -151,9 +151,9 @@ class ThemeIncludeNode(IncludeNode):
 
 class SpaceIncludeNode(IncludeNode):
     def render(self, context):
-        context['setting_name'] = unicode(self.template_name).replace('MODULE_THEME_', '').lower()
+        context['setting_name'] = unicode(self.template).replace('MODULE_THEME_', '').lower()
         try:
-            setting_value = Variable(self.template_name).resolve(context)
+            setting_value = Variable(self.template).resolve(context)
         except VariableDoesNotExist:
             setting_value = None
 
