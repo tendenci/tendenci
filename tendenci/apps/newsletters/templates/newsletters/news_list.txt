@@ -18,9 +18,8 @@
         <table width="100%"  border="0" cellpadding="0" cellspacing="0" class="body_copy">
         <tr><td>&nbsp;</td></tr>
         <tr><td align="left" valign="top">
-        <a href="{{ SITE_GLOBAL_SITEURL }}{{ news.get_absolute_url }}" >
-        <font face="Arial" size="2"><b> {% blocktrans with h=n.headline %}{{ h }}{% endblocktrans %}
-        </b></font></a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{{ n.get_absolute_url }}" >
+        <font face="Arial" size="2"><b>{{ n.headline}}</b></font></a>
 
         {# show member icon if not allowanonymousview/allowsiteuserview #}
         {% if not n.allow_anonymous_view and n.allow_user_view   %}
@@ -42,7 +41,7 @@
         <font face="Arial" size="2" color="#000000">
 
         {% blocktrans with b=n.body|striptags|safe|truncatewords:60 %}{{ b }}{% endblocktrans %}
-         <a href="{{ SITE_GLOBAL_SITEURL }}{{ news.get_absolute_url }}">[More Info]</a>
+         <a href="{{ SITE_GLOBAL_SITEURL }}{{ n.get_absolute_url }}">[More Info]</a>
         </font>
 
         {#  posted by #}
