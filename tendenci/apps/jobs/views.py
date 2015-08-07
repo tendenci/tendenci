@@ -61,8 +61,9 @@ def search(request, template_name="jobs/search.html"):
     my_pending_jobs = request.GET.get('my_pending_jobs', False)
     category = None
     subcategory = None
+    use_search_index = get_setting('site', 'global', 'searchindex') and query
 
-    if get_setting('site', 'global', 'searchindex') and query:
+    if use_search_index:
         jobs = Job.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'jobs.view_job')
@@ -88,8 +89,12 @@ def search(request, template_name="jobs/search.html"):
             creator_username=request.user.username,
             status_detail__contains='pending'
         )
-
-    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+    
+    if use_search_index:
+        # reversing is an all-or-nothing action in Whoosh, unfortunately
+        jobs = jobs.order_by('-status_detail', '-list_type', '-post_dt')
+    else:
+        jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
 
     EventLog.objects.log()
 
