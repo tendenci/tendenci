@@ -144,6 +144,55 @@ If any changes in the future are made to the file ``conf/local_settings.py``, th
 
     sudo service tendenci restart
 
+Setting up SystemD
+------------------
+
+On most distributions (Including recent Ubuntu systems) Systemd is the default
+init system.
+
+Systemd Unit files should be created in /etc/systemd/system/ with a name of
+your choice (eg tendenci-test.service ). The contents of your unit file should
+look like this
+
+::
+    [Unit]
+    Description=Start Tendenci instance
+    Requires=nginx.service postgresql.service
+    Wants=memcached.service
+    Before=nginx.service
+    After=postgresql.service
+
+    [Service]
+    WorkingDirectory=/var/www/sitename
+    PIDFile=/run/tendenci-test.pid
+    Type=forking
+    KillMode=process
+    Restart=restart-always
+    ExecStart=/srv/venv_tendenci_test_site/bin/gunicorn    \
+              --group www-data                             \
+              --user www-data                              \
+              --workers 4                                  \
+              --bind=127.0.0.1:8000                        \
+              --pid=/run/tendenci-test.pid                 \
+              --pythonpath=/var/www/sitename               \
+              --error-logfile=/var/log/tendenci-test.error \
+              --daemon                                     \
+             conf.wsgi 
+
+    [Install]
+    WantedBy=multi-user.target
+ 
+To start the service run
+
+::
+
+    systemctl enable tendenci-test
+
+and to enable it so it starts on boot use
+
+::
+
+    systemctl enable tendenci-test
 
 Setting up nginx
 ----------------
