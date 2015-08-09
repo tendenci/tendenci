@@ -1,25 +1,95 @@
-Remote Installation
-===================
+Tendenci can be installed in two ways. The first is a quick and easy setup for
+development and basic testing, the second is a more scaleable aproach for live
+deployments where the heavy lifting is done by other services.
 
-Below are some instructions to create a Tendenci site on an Ubuntu server. 14.04 is recommended.
+Since teh second category is effectively an extension of the first both sets of
+instructions are presented below.
 
-All of the commands below should be run on the command line after you are connected to the server.
 
-Server packages
----------------
+Testing Installation
+==================
 
-You can install all of the necessary Ubuntu packages with the following commands:
+You can use the following installation instructions to install a local Tendenci site on Ubuntu (deb). 
+This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, 
+but it's recommended that you install locally first in order to test your themes and designs.
+
+If working on a Mac or PC, or even Ubuntu, we strongly recommend using VMWare Fusion, or at least
+VirtualBox at a minimum to test different configurations. (Hint: VMWare handles bridge IPs much better
+than VirtualBox which matters if you travel a lot and bounce between networks like us.)
+
+System update
+------------
+
+Before installing it is recommended you update your server to ensure you have the latest packages.
+
 ::
 
     sudo apt-get update
-    sudo apt-get install build-essential git python-pip postgresql-9.3 postgresql-contrib-9.3 postgresql-9.3-postgis-2.1 python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
 
-Along with this, add the necessary symlinks for the jpeg and freetype libraries:
+
+Pre-config
+----------
+
+Install distribute if not already installed. Required to install easy_install.
 ::
 
-    sudo ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib
-    sudo ln -s /usr/lib/`uname -i`-linux-gnu/libjpeg.so /usr/lib
-    sudo ln -s /usr/lib/`uname -i`-linux-gnu/libfreetype.so /usr/lib
+    sudo wget http://python-distribute.org/distribute_setup.py
+    python distribute_setup.py
+
+Install `pip <http://www.pip-installer.org/>`_:
+::
+
+    sudo easy_install pip
+
+Install `virtualenv <http://www.virtualenv.org/>`_:
+::
+
+    pip install virtualenv
+
+If you are using OS X, you may need to sudo that command with:
+::
+
+    sudo pip install virtualenv
+
+You'll also need to have Git set up (see `this Github help article <https://help.github.com/articles/set-up-git>`_ for instructions).
+
+OS X Pre-config
+~~~~~~~~~~~~~~~
+
+In order for images to correctly render, you will need to install the jpeg libraries with the commands below:
+::
+
+    curl -O http://www.ijg.org/files/jpegsrc.v9.tar.gz
+    tar -xvzf jpegsrc.v9.tar.gz
+    cd jpeg-9
+    ./configure
+    make
+    sudo make install
+
+You can remove the downloaded files with these commands:
+::
+
+    cd ..
+    rm -r jpeg-9
+    rm jpegsrc.v9.tar.gz
+
+On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
+
+Setting up the database
+-----------------------
+
+Tendenci is designed for use with PostgreSQL. You will need to have a PostgreSQL server running locally. If you are on OS X, we recommend `Postgres.app <http://postgresapp.com/>`_ to get up and running fast.
+
+With Postgres.app installed, you can create a database from Terminal (replace ``<DB_NAME>`` with your database name):
+::
+
+    DB_NAME=<DB_NAME>
+    psql -h localhost -c "CREATE DATABASE $DB_NAME"
+    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis;"
+
+You can also create a database in your GUI of choice (recommended: `PGAdmin <http://www.pgadmin.org/>`_).
+
+For more on installing PostgreSQL for Django check the docs at https://docs.djangoproject.com/en/dev/ref/databases/#postgresql-notes.
 
 
 Setting up the Database
@@ -38,9 +108,8 @@ Create the database and a new postgres user with the following commands (replace
     sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
     sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION postgis;"
     
-
 Creating a new tendenci project
--------------------------------
+--------------------
 
 Make sure Django 1.8 is installed in your environment.
 ::
@@ -48,25 +117,23 @@ Make sure Django 1.8 is installed in your environment.
     pip install "Django>=1.8,<1.9"
 
 
-In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name).
+In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
 ::
 
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci <project_name>
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci7 <project_name>
 
 
 Installing the requirements
----------------------------
+--------------------
 
 Install the requirements with the following commands.
 ::
-
     cd <project_name>
-    pip install -r requirements/prod.txt
-
-
-
+    pip install -r requirements/dev.txt
 
 Next update the ``conf/local_settings.py`` file in the site folder (``/var/www/<project_name>``). Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` for the setting ``DATABASE`` with the newly created database name, user and password.
+
+Update your database name, database user and database password for the `DATABASES` setting in the ``conf/local_settings.py``.
 
 
 Setting up SECRET_KEY and SITE_SETTINGS_KEY
@@ -85,7 +152,6 @@ Now, use the deploy script to create the database tables and static media.
 ::
 
     python deploy.py
-    
 
 Load some defaults.
 ::
@@ -101,10 +167,44 @@ Load some defaults.
         python manage.py load_npo_defaults
 
 
-To create an administrator login, run the following command and fill in the prompts:
+To create your login, run the following command and fill in the prompts:
 ::
 
     python manage.py createsuperuser
+
+Finally, we can use the runserver command so that we can view the site in our browser:
+::
+
+    python manage.py runserver
+
+Open http://127.0.0.1:8000/ in your browser to see your tendenci site!
+
+
+Theming Options
+----------------
+
+**Optional:** If you want to use a different theme, you can set that theme with the following command, replacing `my-theme-name` with the name of your theme:
+::
+
+    python manage.py set_theme my-theme-name
+
+Scalable Installation
+===================
+
+With a working test setup you can upgrade it to a fully functional, scalable install.
+
+Below are some instructions to create a Tendenci site on an Ubuntu server (14.04 is recommended).
+
+All of the commands below should be run on the command line after you are
+connected to the server and build on the work done in the previous sections.
+
+Estra packages
+---------------
+
+You can install all of the necessary Ubuntu packages with the following commands:
+
+::
+    sudo apt-get install build-essential git python-pip postgresql-9.3 postgresql-contrib-9.3 postgresql-9.3-postgis-2.1 python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
 
 
 Setting up Upstart
