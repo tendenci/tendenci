@@ -200,20 +200,25 @@ Finally, restart the nginx service:
     sudo service nginx restart
 
 
-Setup Mail and Memcached
-------------------------
+Setup Mail
+----------
 
 For a mail server, install postfix. This package has 3 steps that you must respond to in order to complete the installation. If the server is alreadly configured with a domain name, enter that domain in the prompts. Otherwise, leave the defaults in place. To install the package, run this command:
 ::
 
     apt-get install postfix
 
-Memcache was already installed at the server packages step. Turn the service on with this command:
-::
 
-    service memcached start
+Memcached
+---------
 
-if you wish you increase the amount of memory memcache uses edit /etc/memcached.conf and change the '-m' value from 64 to your desired cache size.
+Memcache is a service that can be used to speed up access to web pages by
+caching them in the systems memory for future use. Because tendenci is set up
+to use memcache by default, all that is required to enable it is installing it.
+
+if you wish you increase the amount of memory memcache uses edit
+/etc/memcached.conf and change the '-m' value from 64 to your desired cache
+size.
 
 Load the site
 --------------
