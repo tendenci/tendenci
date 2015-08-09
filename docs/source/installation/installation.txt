@@ -210,7 +210,7 @@ Below are some instructions to create a Tendenci site on an Ubuntu server (14.04
 All of the commands below should be run on the command line after you are
 connected to the server and build on the work done in the previous sections.
 
-Estra packages
+Extra packages
 ---------------
 
 You can install all of the necessary Ubuntu packages with the following commands:
