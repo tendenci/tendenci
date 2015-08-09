@@ -1,8 +1,9 @@
 Tendenci can be installed in two ways. The first is a quick and easy setup for
-development and basic testing, the second is a more scaleable aproach for live
-deployments where the heavy lifting is done by other services.
+development and basic testing, the second is a more scalable aproach for live
+deployments where the heavy lifting is done by services other than the Django
+built in web server.
 
-Since teh second category is effectively an extension of the first both sets of
+Since the second category is effectively an extension of the first both sets of
 instructions are presented below.
 
 
@@ -20,11 +21,13 @@ than VirtualBox which matters if you travel a lot and bounce between networks li
 System update
 ------------
 
-Before installing it is recommended you update your server to ensure you have the latest packages.
+Before installing it is recommended you update your system to ensure you have
+the latest packages. For Ubuntu this is done by
 
 ::
 
     sudo apt-get update
+    sudo apt-get dist-upgrade
 
 
 Pre-config
@@ -78,9 +81,18 @@ On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) an
 Setting up the database
 -----------------------
 
-Tendenci is designed for use with PostgreSQL. You will need to have a PostgreSQL server running locally. If you are on OS X, we recommend `Postgres.app <http://postgresapp.com/>`_ to get up and running fast.
+Tendenci is designed for use with PostgreSQL. You will need to have a
+PostgreSQL server you can connect your tendenci install too. Instructions are
+provided for OSX and Ubuntu below or for more on installing PostgreSQL for
+Django check the docs at
+https://docs.djangoproject.com/en/dev/ref/databases/#postgresql-notes.
 
-With Postgres.app installed, you can create a database from Terminal (replace ``<DB_NAME>`` with your database name):
+OS X
+~~~~
+
+If you are on OS X, we recommend `Postgres.app <http://postgresapp.com/>`_ to get up and running fast.
+
+With Postgres installed, you can create a database from Terminal (replace ``<DB_NAME>`` with your database name):
 ::
 
     DB_NAME=<DB_NAME>
@@ -89,13 +101,13 @@ With Postgres.app installed, you can create a database from Terminal (replace ``
 
 You can also create a database in your GUI of choice (recommended: `PGAdmin <http://www.pgadmin.org/>`_).
 
-For more on installing PostgreSQL for Django check the docs at https://docs.djangoproject.com/en/dev/ref/databases/#postgresql-notes.
+Ubuntu
+~~~~~~
 
+To installing postgres and required packages on Ubuntu
+::
 
-Setting up the Database
------------------------
-
-The Postgres database server was installed as part of the step to install server packages. It is a separate application from Tendenci, but is needed as the database backend that will be used for Tendenci.
+    sudo apt-get install postgresql postgresql-contrib-9.3 postgresql-9.3-postgis-2.1
 
 Create the database and a new postgres user with the following commands (replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user and password):
 ::
@@ -167,7 +179,7 @@ Load some defaults.
         python manage.py load_npo_defaults
 
 
-To create your login, run the following command and fill in the prompts:
+To create an adminstrator login, run the following command and fill in the prompts:
 ::
 
     python manage.py createsuperuser
@@ -188,11 +200,11 @@ Theming Options
 
     python manage.py set_theme my-theme-name
 
+
 Scalable Installation
 ===================
 
 With a working test setup you can upgrade it to a fully functional, scalable install.
-
 Below are some instructions to create a Tendenci site on an Ubuntu server (14.04 is recommended).
 
 All of the commands below should be run on the command line after you are
@@ -204,8 +216,10 @@ Estra packages
 You can install all of the necessary Ubuntu packages with the following commands:
 
 ::
-    sudo apt-get install build-essential git python-pip postgresql-9.3 postgresql-contrib-9.3 postgresql-9.3-postgis-2.1 python-dev libevent-dev libpq-dev openssh-server memcached libmemcached-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev nginx
+    sudo apt-get install openssh-server memcached nginx
 
+This will install openssh-server to allow remote connections to the server
+along with memcache (a caching system) and nginx the web server.
 
 Setting up Upstart
 ------------------
