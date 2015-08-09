@@ -213,6 +213,7 @@ Memcache was already installed at the server packages step. Turn the service on 
 
     service memcached start
 
+if you wish you increase the amount of memory memcache uses edit /etc/memcached.conf and change the '-m' value from 64 to your desired cache size.
 
 Load the site
 --------------
@@ -232,3 +233,6 @@ When installing any additional Tendenci sites, replace the ``sitename`` used thr
 When creating the database for any additional sites, be sure to use a unique database name and username. In the instructions above, the database name and username were both ``tendenci``. Change this to something unique for each site.
 
 Each additional Tendenci site will need to run on a different port internally. In the instructions, port 8000 was used. This will be changed for additional sites in the nginx configuration file as well as the ``.upstart.sh`` file for each new site.
+
+You should also consider running a separate memcache instance for each tendenci install. This will increase the dedicated cache vailable for each instance and improve site performance.
+
