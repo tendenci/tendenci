@@ -9,6 +9,17 @@ If working on a Mac or PC, or even Ubuntu, we strongly recommend using VMWare Fu
 VirtualBox at a minimum to test different configurations. (Hint: VMWare handles bridge IPs much better
 than VirtualBox which matters if you travel a lot and bounce between networks like us.)
 
+System requirements
+-------------------
+
+The following are recommended system specifications for a server that will run a test tendenci install
+* 1 CPU core for every 2 django workers
+* 2GB of RAM (Relying on swap will hurt performance)
+* 3GB of storage
+
+These values are minimums and its recommended you use at least double the
+minimum CPU cores and storage.
+
 Pre-config
 ----------
 
