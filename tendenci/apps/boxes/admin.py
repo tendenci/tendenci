@@ -25,6 +25,7 @@ class BoxAdmin(TendenciBaseModelAdmin):
             'status_detail',
         )}),
     )
+    view_on_site = False
     form = BoxForm
     ordering = ['-position']
 
