@@ -1295,10 +1295,15 @@ class MembershipDefault(TendenciBaseModel):
         """
         if self.renew_from_id:
             return True
+
+        m_exists = self.user.membershipdefault_set.filter(
+                    Q(status_detail='active') | Q(status_detail='expired')).exists()
         
-        return self.user.membershipdefault_set.filter(
-            membership_type=self.membership_type).filter(
-                Q(status_detail='active') | Q(status_detail='expired')).exists()
+        if MembershipApp.objects.filter(allow_multiple_membership=True).exists(): 
+            m_exists = m_exists.filter(
+                membership_type=self.membership_type)
+        
+        return m_exists
 
     def can_renew(self):
         """
