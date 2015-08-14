@@ -941,6 +941,7 @@ def create_registrant_from_form(*args, **kwargs):
             entry.set_group_subscribers(user)
         registrant.initialize_fields()
     else:
+        registrant.salutation = form.cleaned_data.get('salutation', '')
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')
         registrant.mail_name = form.cleaned_data.get('mail_name', '')

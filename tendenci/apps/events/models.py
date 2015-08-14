@@ -712,6 +712,8 @@ class Registrant(models.Model):
         "CustomRegFormEntry", related_name="registrants", null=True)
 
     name = models.CharField(max_length=100)
+    salutation = models.CharField(_('salutation'), max_length=15,
+                                  blank=True, default='')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     mail_name = models.CharField(max_length=100, blank=True)
