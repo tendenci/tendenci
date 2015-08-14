@@ -44,6 +44,13 @@
           <td>{% blocktrans with last_name_visible=adminform.last_name_visible %}{{ last_name_visible }}{% endblocktrans %}</td>
         </tr>
         <tr>
+          <td>{% trans 'Salutation' %}</td>
+          <td>{{ adminform.salutation_type }}</td>
+          <td>{{ adminform.salutation_choices }}</td>
+          <td>{{ adminform.salutation_required }}</td>
+          <td>{{ adminform.salutation_visible }}</td>
+        </tr>
+        <tr>
           <td>{% trans 'Mail Name' %}</td>
           <td>{% blocktrans with mail_name_type=adminform.mail_name_type %}{{ mail_name_type }}{% endblocktrans %}</td>
           <td>{% blocktrans with mail_name_choices=adminform.mail_name_choices %}{{ mail_name_choices }}{% endblocktrans %}</td>

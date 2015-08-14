@@ -1634,7 +1634,7 @@ class RegistrantForm(forms.Form):
     """
     Registrant form.
     """
-    FIELD_NAMES = ['first_name', 'last_name', 'email', 'mail_name',
+    FIELD_NAMES = ['salutation', 'first_name', 'last_name', 'email', 'mail_name',
                    'position_title', 'company_name', 'phone', 'address',
                    'city', 'state', 'zip_code', 'country', 'meal_option',
                    'comments']
