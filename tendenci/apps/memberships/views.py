@@ -1065,6 +1065,8 @@ def membership_default_add(request, slug='', membership_id=None,
             'government_agency': membership.government_agency,
             'license_number': membership.license_number,
             'license_state': membership.license_state,
+            'industry': membership.industry,
+            'region': membership.region,
         }
     multiple_membership = app.allow_multiple_membership
     if membership or join_under_corporate:
