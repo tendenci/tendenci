@@ -1174,6 +1174,11 @@ class Reg8nConfPricingForm(BetterModelForm):
 
         return Group.objects.filter(pk__in=groups)
 
+    def clean_tax_rate(self):
+        tax_rate = self.cleaned_data['tax_rate']
+        if tax_rate is None:
+            tax_rate = 0
+        return tax_rate
 
     def clean_quantity(self):
         # make sure that quantity is always a positive number
