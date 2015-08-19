@@ -231,12 +231,16 @@ def get_ievent(request, d, event_id):
         e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
 
     # date time
+    time_zone = event.timezone
+    if not time_zone:
+        time_zone = settings.TIME_ZONE
+
     if event.start_dt:
-        start_dt = adjust_datetime_to_timezone(event.start_dt, settings.TIME_ZONE, 'GMT')
+        start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'GMT')
         start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
         e_str += "DTSTART:%s\n" % (start_dt)
     if event.end_dt:
-        end_dt = adjust_datetime_to_timezone(event.end_dt, settings.TIME_ZONE, 'GMT')
+        end_dt = adjust_datetime_to_timezone(event.end_dt, time_zone, 'GMT')
         end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
         e_str += "DTEND:%s\n" % (end_dt)
 
@@ -294,12 +298,16 @@ def get_vevents(user, d):
             e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
 
         # date time
+        time_zone = event.timezone
+        if not time_zone:
+            time_zone = settings.TIME_ZONE
+
         if event.start_dt:
-            start_dt = adjust_datetime_to_timezone(event.start_dt, settings.TIME_ZONE, 'GMT')
+            start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'GMT')
             start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
             e_str += "DTSTART:%s\n" % (start_dt)
         if event.end_dt:
-            end_dt = adjust_datetime_to_timezone(event.end_dt, settings.TIME_ZONE, 'GMT')
+            end_dt = adjust_datetime_to_timezone(event.end_dt, time_zone, 'GMT')
             end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
             e_str += "DTEND:%s\n" % (end_dt)
 
