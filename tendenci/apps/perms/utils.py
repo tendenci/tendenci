@@ -248,7 +248,7 @@ def get_query_filters(user, perm, **kwargs):
                 status_detail_q = Q(status_detail='active')
 
                 if perms_field:
-                    group_ids = [int(g.group_id) for g in user.group_member.select_related('pk', 'group_id')]
+                    group_ids = [int(g.group.id) for g in user.group_member.select_related('group')]
                     group_q = Q(perms__group__in=group_ids)
 
                 creator_perm_q = Q(creator=user)
@@ -263,7 +263,7 @@ def get_query_filters(user, perm, **kwargs):
                 status_detail_q = Q(status_detail='active')
 
                 if perms_field:
-                    group_ids = [int(g.group_id) for g in user.group_member.select_related('pk', 'group_id')]
+                    group_ids = [int(g.group.id) for g in user.group_member.select_related('group')]
                     group_q = Q(perms__group__in=group_ids)
 
                 creator_perm_q = Q(creator=user)
