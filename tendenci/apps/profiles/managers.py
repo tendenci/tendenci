@@ -22,5 +22,5 @@ class ProfileManager(TendenciBaseManager):
         return sqs
 
 class ProfileActiveManager(TendenciBaseManager):
-    def get_query_set(self):
-        return super(ProfileActiveManager, self).get_query_set().filter(status=True, status_detail='active', user__is_active=True)
+    def get_queryset(self):
+        return super(ProfileActiveManager, self).get_queryset().filter(status=True, status_detail='active', user__is_active=True)

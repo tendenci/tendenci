@@ -41,20 +41,20 @@ class InvoiceManager(Manager):
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
         Exclude void invoices by default
         """
-        return super(InvoiceManager, self).get_query_set().filter(is_void=False)
+        return super(InvoiceManager, self).get_queryset().filter(is_void=False)
 
     def all_invoices(self):
       """
       Returns ALL invoice records
       """
-      return super(InvoiceManager, self).get_query_set()
+      return super(InvoiceManager, self).get_queryset()
 
     def void(self):
       """
       Returns ALL invoice records
       """
-      return super(InvoiceManager, self).get_query_set().filter(is_void=True)
+      return super(InvoiceManager, self).get_queryset().filter(is_void=True)

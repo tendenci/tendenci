@@ -586,13 +586,13 @@ class TendenciBaseManager(models.Manager):
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
         Returns the queryset only with active objects that have
         a status=True. Objects with status=False are considered
         deleted and should not appear in querysets.
         """
-        return super(TendenciBaseManager, self).get_query_set().filter(status=True)
+        return super(TendenciBaseManager, self).get_queryset().filter(status=True)
 
     def all_inactive(self):
         """
@@ -600,5 +600,5 @@ class TendenciBaseManager(models.Manager):
         a status=False. It can be chained with filter and other functions,
         but be sure to call this function first.
         """
-        return super(TendenciBaseManager, self).get_query_set().filter(status=False)
+        return super(TendenciBaseManager, self).get_queryset().filter(status=False)
 
