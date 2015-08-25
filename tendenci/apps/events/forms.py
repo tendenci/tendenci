@@ -1390,10 +1390,6 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
         data_list = value.split(',')
-        if data_list[0] == 'on':
-            data_list[0] = '1'
-        else:
-            data_list[0] = '0'
 
         d = {'use_custom_reg_form': data_list[0],
              'reg_form_id': data_list[1],
