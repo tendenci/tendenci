@@ -815,7 +815,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
                 extra_fields.remove('choices')
                 extra_fields.remove('default_value')
         fields = ('membership_app', 'label', 'field_name', 'field_type',
-                    ('display', 'required', 'admin_only'),
+                    'display', 'required', 'admin_only',
                              ) + tuple(extra_fields)
 
         return ((None, {'fields': fields
