@@ -40,7 +40,7 @@
     <form action="" method="post">{% csrf_token %}
     <div>
     <input type="hidden" name="id" value="{{group.id}}" />
-    <input type="submit" value='{% trans "Yes, I'm sure" %}' />
+    <input type="submit" value="{% trans "Yes, I'm sure" %}" />
     </div>
     </form>
 {% endif %}

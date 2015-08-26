@@ -273,8 +273,8 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
         group.delete()
         return HttpResponseRedirect(reverse('group.search'))
 
-    (deleted_objects, perms_needed, protected) = get_deleted_objects(
-            group, request.user)
+    (deleted_objects, count, perms_needed, protected) = get_deleted_objects(
+            [group], request.user)
     object_name = group.label or group.name
 
     if perms_needed or protected:

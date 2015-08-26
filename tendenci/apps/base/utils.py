@@ -32,6 +32,9 @@ from django.utils.safestring import mark_safe
 from django.utils.text import capfirst, Truncator
 from django.utils.encoding import force_unicode
 from django.db import router
+from django.utils.encoding import force_text
+from django.contrib.auth import get_permission_codename
+from django.utils.html import format_html
 
 from simple_salesforce import Salesforce
 
@@ -67,45 +70,90 @@ def get_languages_with_local_name():
              for l in settings.LANGUAGES]]
 
 
-def get_deleted_objects(obj, user):
+def get_deleted_objects(objs, user):
     """
-    Find all objects related to ``obj`` that should also be deleted.
+    Find all objects related to ``objs`` that should also be deleted. ``objs``
+    must be a homogeneous iterable of objects (e.g. a QuerySet).
 
     Returns a nested list of strings suitable for display in the
     template with the ``unordered_list`` filter.
 
-    Copied and updated from django.contrib.admin.util for front end display.
-
+    Copied and updated from django.contrib.admin.utils for front end display.
     """
-    using = router.db_for_write(obj.__class__)
+    using = router.db_for_write(objs[0].__class__)
     collector = NestedObjects(using=using)
-    collector.collect([obj])
+    collector.collect(objs)
     perms_needed = set()
 
     def format_callback(obj):
         opts = obj._meta
 
+        no_edit_link = '%s: %s' % (capfirst(opts.verbose_name),
+                                   force_text(obj))
+
+        p = '%s.%s' % (opts.app_label,
+                           get_permission_codename('delete', opts))
+        if not user.has_perm(p):
+            perms_needed.add(opts.verbose_name)
+                
         if hasattr(obj, 'get_absolute_url'):
             url = obj.get_absolute_url()
-            p = '%s.%s' % (opts.app_label,
-                           opts.get_delete_permission())
-            if not user.has_perm(p):
-                perms_needed.add(opts.verbose_name)
             # Display a link to the admin page.
-            return mark_safe(u'%s: <a href="%s">%s</a>' %
-                             (escape(capfirst(opts.verbose_name)),
-                              url,
-                              escape(obj)))
+            return format_html('{}: <a href="{}">{}</a>',
+                               capfirst(opts.verbose_name),
+                               url,
+                               obj)
         else:
-            # no link
-            return u'%s: %s' % (capfirst(opts.verbose_name),
-                                force_unicode(obj))
+            # Don't display link to edit, because it either has no
+            # admin or is edited inline.
+            return no_edit_link
 
     to_delete = collector.nested(format_callback)
 
     protected = [format_callback(obj) for obj in collector.protected]
 
-    return to_delete, perms_needed, protected
+    return to_delete, collector.model_count, perms_needed, protected
+
+
+# def get_deleted_objects(obj, user):
+#     """
+#     Find all objects related to ``obj`` that should also be deleted.
+# 
+#     Returns a nested list of strings suitable for display in the
+#     template with the ``unordered_list`` filter.
+# 
+#     Copied and updated from django.contrib.admin.util for front end display.
+# 
+#     """
+#     using = router.db_for_write(obj.__class__)
+#     collector = NestedObjects(using=using)
+#     collector.collect([obj])
+#     perms_needed = set()
+# 
+#     def format_callback(obj):
+#         opts = obj._meta
+# 
+#         if hasattr(obj, 'get_absolute_url'):
+#             url = obj.get_absolute_url()
+#             p = '%s.%s' % (opts.app_label,
+#                            opts.get_delete_permission())
+#             if not user.has_perm(p):
+#                 perms_needed.add(opts.verbose_name)
+#             # Display a link to the admin page.
+#             return mark_safe(u'%s: <a href="%s">%s</a>' %
+#                              (escape(capfirst(opts.verbose_name)),
+#                               url,
+#                               escape(obj)))
+#         else:
+#             # no link
+#             return u'%s: %s' % (capfirst(opts.verbose_name),
+#                                 force_unicode(obj))
+# 
+#     to_delete = collector.nested(format_callback)
+# 
+#     protected = [format_callback(obj) for obj in collector.protected]
+# 
+#     return to_delete, perms_needed, protected
 
 
 # this function is not necessary - datetime.now() *is* localized in django
