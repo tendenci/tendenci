@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 from django.forms.util import ErrorList
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import pluralize
 
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.utils import member_choices
@@ -170,10 +171,10 @@ class GroupMembershipForm(forms.ModelForm):
         if group:
             # exclude those already joined
             exclude_userid = [user.id for user in group.members.all()]
-            self.fields['member'].queryset = User.objects.filter(is_active=1
+            self.fields['member'].queryset = User.objects.filter(is_active=True
                                         ).exclude(id__in=exclude_userid)
         else:
-            self.fields['member'].queryset = User.objects.filter(is_active=1)
+            self.fields['member'].queryset = User.objects.filter(is_active=True)
         if user_id:
             del self.fields["member"]
 
@@ -190,7 +191,7 @@ class GroupMembershipBulkForm(forms.Form):
         self.fields['members'].choices = member_choices(group, member_label)
 
     members = forms.ModelMultipleChoiceField(
-                    queryset=User.objects.filter(is_active=1),
+                    queryset=User.objects.filter(is_active=True),
                     required=False)
     role = forms.CharField(required=False, max_length=255)
     status = forms.BooleanField(required=False, initial=True)
@@ -221,21 +222,20 @@ class GroupMembershipEditForm(forms.ModelForm):
 
 
 class MessageForm(forms.Form):
-  """Handles Message Form"""
-  to_addr = forms.CharField(label=_(u'To'))
-  from_addr = forms.CharField(label=_(u'From'))
-  subject = forms.CharField()
-  body = forms.CharField(widget=forms.Textarea)
-  is_test = forms.BooleanField(label=_(u'Send test email to me only'), required=False, initial=True)
+    """Handles Message Form"""
+    to_addr = forms.CharField(label=_(u'To'))
+    from_addr = forms.CharField(label=_(u'From'))
+    subject = forms.CharField()
+    body = forms.CharField(widget=forms.Textarea)
+    is_test = forms.BooleanField(label=_(u'Send test email to me only'), required=False, initial=True)
 
-  def __init__(self, *args, **kwargs):
-    from django.template.defaultfilters import pluralize
-    request = kwargs.pop('request')
-    num_members = kwargs.pop('num_members')
-    super(MessageForm, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('request')
+        num_members = kwargs.pop('num_members')
+        super(MessageForm, self).__init__(*args, **kwargs)
 
-    self.fields['to_addr'].initial = 'All %s member%s' % (num_members, pluralize(num_members))
-    self.fields['to_addr'].widget.attrs['readonly'] = True
+        self.fields['to_addr'].initial = 'All %s member%s' % (num_members, pluralize(num_members))
+        self.fields['to_addr'].widget.attrs['readonly'] = True
 
-    self.fields['from_addr'].initial = get_setting('site', 'global', 'siteemailnoreplyaddress')
-    self.fields['from_addr'].widget.attrs['readonly'] = True
+        self.fields['from_addr'].initial = get_setting('site', 'global', 'siteemailnoreplyaddress')
+        self.fields['from_addr'].widget.attrs['readonly'] = True
