@@ -61,7 +61,6 @@ urlpatterns += patterns('',
     (r'^sitemap.xml', include('tendenci.apps.sitemaps.urls')),
     (r'^404/', include('tendenci.apps.handler404.urls')),
 
-    (r'^subscribers/', include('tendenci.apps.subscribers.urls')),
     (r'^redirects/', include('tendenci.apps.redirects.urls')),
     (r'^mobile/', include('tendenci.apps.mobile.urls')),
     (r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
