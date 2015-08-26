@@ -851,11 +851,11 @@ class MembershipAppField2Admin(admin.ModelAdmin):
         if "_save" in request.POST:
             opts = obj._meta
             verbose_name = opts.verbose_name
-            module_name = opts.module_name
+            module_name = opts.model_name
             if obj._deferred:
                 opts_ = opts.proxy_for_model._meta
                 verbose_name = opts_.verbose_name
-                module_name = opts_.module_name
+                module_name = opts_.model_name
 
             msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
                         'name': force_unicode(verbose_name),
