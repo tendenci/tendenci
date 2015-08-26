@@ -1135,14 +1135,6 @@ class Reg8nConfPricingForm(BetterModelForm):
         #self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
 
-        # skip the field if there is no custom registration forms
-        if not reg_form_queryset:
-            del self.fields['reg_form']
-        else:
-            self.fields['reg_form'].queryset = reg_form_queryset
-            if self.reg_form_required:
-                self.fields['reg_form'].required = True
-
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if self.user and not self.user.profile.is_superuser:
@@ -1207,7 +1199,6 @@ class Reg8nConfPricingForm(BetterModelForm):
             'tax_rate',
             'start_dt',
             'end_dt',
-            'reg_form',
             'groups',
             'allow_anonymous',
             'allow_user',
@@ -1226,7 +1217,6 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'start_dt',
                     'end_dt',
                     #'dates',
-                    'reg_form',
                     'groups',
                     'allow_anonymous',
                     'allow_user',
