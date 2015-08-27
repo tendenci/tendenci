@@ -194,7 +194,7 @@ Update your database name, database user and database password for the `DATABASE
 Setting up SECRET_KEY and SITE_SETTINGS_KEY
 -------------------------------------------
 
-The ``SECRET_KEY`` or ``SITE_SETTINGS_KEY`` is a random string with the length of 32. You can update them manually in the ``conf/local_settings.py`` file. Or automatically update it with the following script.
+``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` are random strings 32 characters in length. You can update them manually in ``conf/local_settings.py`` or automatically update them with the following script.
 ::
 
     cd /var/www/<project_name>/
