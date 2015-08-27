@@ -48,11 +48,22 @@ the latest packages. For Ubuntu this is done by
 Pre-config
 ----------
 
+For development install required packages
+::
+
+    sudo apt-get install gcc make build-essential
+    sudo apt-get install unattended-upgrades update-notifier-common
+    sudo dpkg-reconfigure -plow unattended-upgrades
+
+Note: Say 'Yes' when it asks about security updates. Without security we have nothing.
+
 Install distribute if not already installed. Required to install easy_install.
 ::
 
     sudo wget http://python-distribute.org/distribute_setup.py
     python distribute_setup.py
+
+    sudo apt-get install python-setuptools python-dev build-essential
 
 Install `pip <http://www.pip-installer.org/>`_:
 ::
@@ -139,7 +150,13 @@ Create the database and a new postgres user with the following commands (replace
     sudo -u postgres psql postgres -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
     sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
     sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION postgis;"
-    
+    psql -d <DB_NAME> -c "CREATE EXTENSION postgis;"
+    psql -d <DB_NAME> -c "CREATE EXTENSION postgis_topology;"
+    psql -d <DB_NAME> -c "CREATE EXTENSION fuzzystrmatch;"
+    psql -d <DB_NAME> -c "CREATE EXTENSION postgis_tiger_geocoder;"
+
+
+
 Creating a new tendenci project
 --------------------
 
@@ -149,10 +166,16 @@ Make sure Django 1.8 is installed in your environment.
     pip install "Django>=1.8,<1.9"
 
 
+Create a directory for your installation.
+::
+
+    mkdir -p /var/www
+    cd /var/www
+
 In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
 ::
 
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/zipball/tendenci7 <project_name>
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip tendenci
 
 
 Installing the requirements
@@ -174,6 +197,7 @@ Setting up SECRET_KEY and SITE_SETTINGS_KEY
 The ``SECRET_KEY`` or ``SITE_SETTINGS_KEY`` is a random string with the length of 32. You can update them manually in the ``conf/local_settings.py`` file. Or automatically update it with the following script.
 ::
 
+    cd /var/www/<project_name>/
     curl https://gist.githubusercontent.com/jennyq/45de71a93cff774c593d/raw/30ede14eb133de66cc839cc0458a1e915368534e/setup_keys.sh | bash
 
 
