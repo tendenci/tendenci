@@ -6,6 +6,7 @@ built in web server.
 Since the second category is effectively an extension of the first both sets of
 instructions are presented below.
 
+These instructions create a Tendenci site on an Ubuntu server (14.04 is recommended).
 
 Testing Installation
 ==================
@@ -225,7 +226,6 @@ Scalable Installation
 ===================
 
 With a working test setup you can upgrade it to a fully functional, scalable install.
-Below are some instructions to create a Tendenci site on an Ubuntu server (14.04 is recommended).
 
 All of the commands below should be run on the command line after you are
 connected to the server and build on the work done in the previous sections.
