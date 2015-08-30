@@ -59,10 +59,12 @@ urlpatterns = patterns(
     url(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, 'views.speaker_list', name="event.speakers"),
     url(r'^%s/(?P<event_id>\d+)/attendees$' % urlpath, 'views.view_attendees', name="event.attendees"),
 
-    #delete
+    # delete
     url(r'^%s/speaker/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_speaker', name='event.delete_speaker'),
-    url(r'^%s/group_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_group_pricing', name='event.delete_group_pricing'),
-    url(r'^%s/special_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_special_pricing', name='event.delete_special_pricing'),
+    url(r'^%s/group_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_group_pricing',
+        name='event.delete_group_pricing'),
+    url(r'^%s/special_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_special_pricing',
+        name='event.delete_special_pricing'),
 
     # registration confirmation
     url(r'^%s/(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$' % urlpath,
@@ -72,16 +74,20 @@ urlpatterns = patterns(
 
     # month-view(s) / day-view
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.day_view', name='event.day'),
-    url(r'^%s/week/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.week_view', name='event.week'),
+    url(r'^%s/week/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.week_view',
+        name='event.week'),
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/$' % urlpath, 'views.month_view', name='event.month'),
-    url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view', name='event.month'),
+    url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view',
+        name='event.month'),
 
     # register for event
     url(r'^%s/member-register/(?P<event_id>\d+)/$' % urlpath, 'views.member_register', name='event.member_register'),
     url(r'^%s/register/(?P<event_id>\d+)/$' % urlpath, 'views.register', name='event.register'),
     url(r'^%s/register/(?P<event_id>\d+)/pre/$' % urlpath, 'views.register_pre', name='event.register_pre'),
-    url(r'^%s/register/(?P<event_id>\d+)/individual/(?P<pricing_id>\d+)/$' % urlpath, 'views.register', {'individual': True}, name='event.register_individual'),
-    url(r'^%s/register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$' % urlpath, 'views.register', {'is_table': True}, name='event.register_table'),
+    url(r'^%s/register/(?P<event_id>\d+)/individual/(?P<pricing_id>\d+)/$' % urlpath, 'views.register',
+        {'individual': True}, name='event.register_individual'),
+    url(r'^%s/register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$' % urlpath, 'views.register', {'is_table': True},
+        name='event.register_table'),
 
     url(r'^%s/registration/(?P<reg8n_id>\d+)/edit/$' % urlpath, 'views.registration_edit',
         name="event.registration_edit"),
@@ -105,7 +111,8 @@ urlpatterns = patterns(
 
     # registrants (search/view); admin-only
     url(r'^%s/registrants/search/$' % urlpath, 'views.global_registrant_search', name="event.global.registrant.search"),
-    url(r'^%s/(?P<event_id>\d+)/registrants/search/$' % urlpath, 'views.registrant_search', name="event.registrant.search"),
+    url(r'^%s/(?P<event_id>\d+)/registrants/search/$' % urlpath, 'views.registrant_search',
+        name="event.registrant.search"),
 
     url(r'^%s/(?P<event_id>\d+)/registrants/roster/$' % urlpath,
         'views.registrant_roster',
@@ -146,10 +153,14 @@ urlpatterns = patterns(
     # addons
     url(r'^%s/(?P<event_id>\d+)/addons/list/$' % urlpath, 'views.list_addons', name='event.list_addons'),
     url(r'^%s/(?P<event_id>\d+)/addons/add/$' % urlpath, 'views.add_addon', name='event.add_addon'),
-    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/edit/$' % urlpath, 'views.edit_addon', name='event.edit_addon'),
-    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$' % urlpath, 'views.disable_addon', name='event.disable_addon'),
-    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$' % urlpath, 'views.enable_addon', name='event.enable_addon'),
-    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/delete/$' % urlpath, 'views.delete_addon', name='event.delete_addon'),
+    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/edit/$' % urlpath, 'views.edit_addon',
+        name='event.edit_addon'),
+    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$' % urlpath, 'views.disable_addon',
+        name='event.disable_addon'),
+    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$' % urlpath, 'views.enable_addon',
+        name='event.enable_addon'),
+    url(r'^%s/(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/delete/$' % urlpath, 'views.delete_addon',
+        name='event.delete_addon'),
 
     # pending events
     url(r'^%s/minimal_add/$' % urlpath, 'views.minimal_add', name='event.minimal_add'),
@@ -161,12 +172,15 @@ urlpatterns = patterns(
     url(r'^%s/message/(?P<event_id>\d+)/$' % urlpath, 'views.message_add', name='event.message'),
 
     # custom registration form preview
-    url(r'^%s/custom_reg_form/preview/(?P<id>\d+)/$' % urlpath, 'views.custom_reg_form_preview', name='event.custom_reg_form_preview'),
+    url(r'^%s/custom_reg_form/preview/(?P<id>\d+)/$' % urlpath, 'views.custom_reg_form_preview',
+        name='event.custom_reg_form_preview'),
     # custom registration form preview
-    url(r'^%s/custom_reg_form/list/(?P<event_id>\d+)/$' % urlpath, 'views.event_custom_reg_form_list', name='event.event_custom_reg_form_list'),
+    url(r'^%s/custom_reg_form/list/(?P<event_id>\d+)/$' % urlpath, 'views.event_custom_reg_form_list',
+        name='event.event_custom_reg_form_list'),
 
     # free type
-    url(r'^%s/check_free_pass_eligibility/$' % urlpath, 'views.check_free_pass_eligibility', name='event.check_free_pass_eligibility'),
+    url(r'^%s/check_free_pass_eligibility/$' % urlpath, 'views.check_free_pass_eligibility',
+        name='event.check_free_pass_eligibility'),
 
     # event types, need to be the last in the urls
     url(r'^%s/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view', name='event.month'),

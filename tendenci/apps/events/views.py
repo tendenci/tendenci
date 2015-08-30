@@ -1900,7 +1900,7 @@ def register(request, event_id=0,
                                     True, # save notice in db
 
                                 )
-                                #email the admins as well
+                                # email the admins as well
 
 
                                 # fix the price
@@ -1936,8 +1936,7 @@ def register(request, event_id=0,
     individual_price = event_price
 
     if is_table:
-#        individual_price_first, individual_price = split_table_price(
-#                                                event_price, pricing.quantity)
+        # individual_price_first, individual_price = split_table_price(#event_price, pricing.quantity)
         individual_price_first, individual_price = event_price, Decimal('0')
 
     # total price calculation when invalid
