@@ -21,7 +21,7 @@
     <div class="requests-wrap">
         {% for r in requests %}
         <div class="request-wrap">
-            <p>{% blocktrans with q=r.question %}{{ q }}{% endblocktrans %}</p>
+            <p>{{ r.question }}</p>
         </div>
         {% endfor %}
     </div>
