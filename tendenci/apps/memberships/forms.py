@@ -990,6 +990,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         )
         mt_choices_pks = [mt_choice[0] for mt_choice in mt_choices]
         mt_choices = MembershipType.objects.filter(pk__in=mt_choices_pks).order_by('position')
+        if not self.is_renewal:
+            mt_choices = mt_choices.exclude(renewal=True)
 
         self.fields['membership_type'].queryset = mt_choices
 
