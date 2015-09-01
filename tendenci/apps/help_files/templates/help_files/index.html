@@ -21,13 +21,13 @@
             <h3>{% trans "Topics" %}</h3>
             <div class="col">
             {% for topic in topics.0 %}
-                <a href="{% url "help_files.topic" topic.pk %}">{% blocktrans with t=topic %}{{ t }}{% endblocktrans %}</a>
+                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>
                 <br>
             {% endfor %}
             </div>
             <div class="col">
             {% for topic in topics.1 %}
-                <a href="{% url "help_files.topic" topic.pk %}">{% blocktrans with t=topic %}{{ t }}{% endblocktrans %}</a>
+                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>
                 <br>
             {% endfor %}
             </div>
@@ -44,7 +44,7 @@
                 <h3>{% trans "Featured" %}</h3>
                 <ul>
                 {% for hfile in featured %}
-                    <li><a href="{{ hfile.get_absolute_url }}">{% blocktrans with q=hfile.question %}{{ q }}{% endblocktrans %}</a></li>
+                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
                 {% endfor %}
                 </ul>
             </div>
@@ -52,7 +52,7 @@
                 <h3>{% trans "FAQ" %}</h3>
                 <ul>
                 {% for hfile in faq %}
-                    <li><a href="{{ hfile.get_absolute_url }}">{% blocktrans with q=hfile.question %}{{ q }}{% endblocktrans %}</a></li>
+                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
                 {% endfor %}
                 </ul>
             </div>
@@ -60,7 +60,7 @@
                 <h3>{% trans "Most viewed" %}</h3>
                 <ul>
                 {% for hfile in most_viewed %}
-                    <li><a href="{{ hfile.get_absolute_url }}">{% blocktrans with q=hfile.question %}{{ q }}{% endblocktrans %}{{ hfile }}</a></li>
+                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}{{ hfile }}</a></li>
                 {% endfor %}
                 </ul>
             </div>
