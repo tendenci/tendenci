@@ -73,6 +73,7 @@ urlpatterns += patterns('',
     url(r'navs/', include('tendenci.apps.navs.urls')),
     url(r'tendenci/', include('tendenci.apps.tendenci_guide.urls')),
     url(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),
+    url(r'^forums/', include('tendenci.apps.forums.urls', namespace="pybb")),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),

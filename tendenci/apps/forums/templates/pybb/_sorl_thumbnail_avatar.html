@@ -1,0 +1,4 @@
+{% load thumbnail %}
+{% thumbnail user_profile.avatar PYBB_AVATAR_DIMENSIONS as avatar %}
+    <img src="{{ avatar.url }}" alt="{{ user_profile.get_display_name }} avatar"/>
+{% endthumbnail %}

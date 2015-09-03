@@ -1,0 +1,9 @@
+{% load i18n pybb_tags %}
+{% pybb_get_profile user=post.user as profile %}
+
+{% trans "User" %} {{ profile.get_display_name }} {% trans "replied in topic to which you are subscribed." %} ({{ post.topic.name }})
+{% trans "Link to post:" %} http://{{site}}{{ post.get_absolute_url }}
+{% trans "Link to topic:" %} http://{{site}}{{ post.topic.get_absolute_url }}
+
+-----
+{% trans "If you don't want to recive notifications on new messages in this topic visit following link:" %} http://{{site}}{{ delete_url }}

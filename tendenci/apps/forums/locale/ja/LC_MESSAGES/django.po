@@ -1,0 +1,670 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-01-31 17:09-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: admin.py:41 admin.py:67 admin.py:95 admin.py:117
+msgid "Additional options"
+msgstr "追加オプション"
+
+#: admin.py:100 models.py:244
+msgid "Message"
+msgstr "メッセージ"
+
+#: admin.py:131
+msgid "View post"
+msgstr "投稿を閲覧"
+
+#: admin.py:136
+msgid "Edit post"
+msgstr "投稿を編集"
+
+#: feeds.py:27 feeds.py:28 templates/pybb/base.html:12
+msgid "Latest posts on forum"
+msgstr "フォーラムの最新投稿"
+
+#: feeds.py:41 feeds.py:42 templates/pybb/base.html:13
+msgid "Latest topics on forum"
+msgstr "フォーラムの最新トピック"
+
+#: forms.py:29
+msgid "Attachment is too big"
+msgstr "添付ファイルが大きすぎます"
+
+#: forms.py:49
+#, python-format
+msgid "You cant add more than %s answers for poll"
+msgstr "投票に対して%s以上の回答を追加することはできません"
+
+#: forms.py:51
+msgid "Add two or more answers for this poll"
+msgstr "この投票に2つ以上の回答を追加する"
+
+#: forms.py:59 models.py:151
+msgid "Subject"
+msgstr "件名"
+
+#: forms.py:60 models.py:163
+msgid "Poll type"
+msgstr "投票タイプ"
+
+#: forms.py:62 models.py:164
+msgid "Poll question"
+msgstr "質問"
+
+#: forms.py:115
+msgid "Polls question is required when adding a poll"
+msgstr "質問内容は投票に必須の項目です"
+
+#: forms.py:166 models.py:154 models.py:259 models.py:332 models.py:465
+#: templates/pybb/mail_templates/subscription_email_body.html:3
+msgid "User"
+msgstr "ユーザ"
+
+#: forms.py:202
+#, python-format
+msgid "Avatar is too large, max size: %s bytes"
+msgstr "アバターが大きすぎます。最大サイズ:%sバイト"
+
+#: models.py:47 models.py:81
+msgid "Name"
+msgstr "名前"
+
+#: models.py:48 models.py:82
+msgid "Position"
+msgstr "位置"
+
+#: models.py:49 models.py:88 templates/pybb/category.html:5
+#: templates/pybb/forum_list.html:26
+msgid "Hidden"
+msgstr "非表示"
+
+#: models.py:50
+msgid "If checked, this category will be visible only for staff"
+msgstr "このカテゴリをスタッフのみに公開する"
+
+#: models.py:55 models.py:78
+msgid "Category"
+msgstr "カテゴリ"
+
+#: models.py:56
+msgid "Categories"
+msgstr "カテゴリ"
+
+#: models.py:79
+msgid "Parent forum"
+msgstr "親のフォーラム"
+
+#: models.py:83
+msgid "Description"
+msgstr "説明"
+
+#: models.py:84
+msgid "Moderators"
+msgstr "モデレータ"
+
+#: models.py:85 models.py:153 models.py:261
+msgid "Updated"
+msgstr "更新日時"
+
+#: models.py:86 models.py:160 profiles.py:48
+msgid "Post count"
+msgstr "投稿数"
+
+#: models.py:87
+msgid "Topic count"
+msgstr "トピック数"
+
+#: models.py:90
+msgid "Headline"
+msgstr "ヘッドライン"
+
+#: models.py:94 models.py:150 templates/pybb/forum_list.html:8
+msgid "Forum"
+msgstr "フォーラム"
+
+#: models.py:95
+msgid "Forums"
+msgstr "フォーラム"
+
+#: models.py:145
+msgid "None"
+msgstr "なし"
+
+#: models.py:146
+msgid "Single answer"
+msgstr "単一回答"
+
+#: models.py:147
+msgid "Multiple answers"
+msgstr "複数回答"
+
+#: models.py:152 models.py:260
+msgid "Created"
+msgstr "作成日時"
+
+#: models.py:155
+msgid "Views count"
+msgstr "閲覧数"
+
+#: models.py:156 templates/pybb/topic_list.html:27
+msgid "Sticky"
+msgstr "最上位表示"
+
+#: models.py:157 templates/pybb/topic_list.html:28
+msgid "Closed"
+msgstr "クローズ済み"
+
+#: models.py:158 templates/pybb/topic.html:93
+msgid "Subscribers"
+msgstr "購読者"
+
+#: models.py:162 models.py:263
+msgid "On moderation"
+msgstr "モデレーション中"
+
+#: models.py:168 models.py:258 models.py:441 templates/pybb/topic_list.html:7
+msgid "Topic"
+msgstr "トピック"
+
+#: models.py:169 templates/pybb/forum_list.html:11
+#: templates/pybb/user_topics.html:8
+msgid "Topics"
+msgstr "トピック"
+
+#: models.py:245
+msgid "HTML version"
+msgstr "HTML版"
+
+#: models.py:246
+msgid "Text version"
+msgstr "テキスト版"
+
+#: models.py:262
+msgid "User IP"
+msgstr "ユーザIP"
+
+#: models.py:267 models.py:348
+msgid "Post"
+msgstr "投稿"
+
+#: models.py:268 templates/pybb/forum_list.html:14
+#: templates/pybb/topic.html:24 templates/pybb/topic.html.py:44
+#: templates/pybb/topic_list.html:10 templates/pybb/user_posts.html:8
+msgid "Posts"
+msgstr "投稿"
+
+#: models.py:335
+msgid "Profile"
+msgstr "プロファイル"
+
+#: models.py:336
+msgid "Profiles"
+msgstr "プロファイル"
+
+#: models.py:345
+msgid "Attachment"
+msgstr "添付ファイル"
+
+#: models.py:346
+msgid "Attachments"
+msgstr "添付ファイル"
+
+#: models.py:349
+msgid "Size"
+msgstr "サイズ"
+
+#: models.py:350
+msgid "File"
+msgstr "ファイル"
+
+#: models.py:398
+msgid "Topic read tracker"
+msgstr "トピックのリード・トラッカー"
+
+#: models.py:399
+msgid "Topic read trackers"
+msgstr "トピックのリード・トラッカー"
+
+#: models.py:434
+msgid "Forum read tracker"
+msgstr "フォーラムのリード・トラッカー"
+
+#: models.py:435
+msgid "Forum read trackers"
+msgstr "フォーラムのリード・トラッカー"
+
+#: models.py:442
+msgid "Text"
+msgstr "テキスト"
+
+#: models.py:445 models.py:464
+msgid "Poll answer"
+msgstr "投票の選択肢"
+
+#: models.py:446
+msgid "Polls answers"
+msgstr "投票の選択肢"
+
+#: models.py:469
+msgid "Poll answer user"
+msgstr "回答ユーザ"
+
+#: models.py:470
+msgid "Polls answers users"
+msgstr "回答ユーザ"
+
+#: profiles.py:37
+msgid "Signature"
+msgstr "署名"
+
+#: profiles.py:39
+msgid "Signature HTML Version"
+msgstr "署名(HTML版)"
+
+#: profiles.py:41
+msgid "Time zone"
+msgstr "タイムゾーン"
+
+#: profiles.py:43
+msgid "Language"
+msgstr "言語"
+
+#: profiles.py:46
+msgid "Show signatures"
+msgstr ""
+
+#: profiles.py:49
+msgid "Avatar"
+msgstr "アバター"
+
+#: profiles.py:51
+msgid "Automatically subscribe"
+msgstr "自動購読"
+
+#: profiles.py:52
+msgid "Automatically subscribe to topics that you answer"
+msgstr "回答したトピックを自動購読"
+
+#: util.py:60
+msgid "Can't get profile for anonymous user"
+msgstr "匿名ユーザのプロファイルは取得できません"
+
+#: views.py:673
+msgid "All forums marked as read"
+msgstr "全てのフォーラムを既読にする"
+
+#: views.py:693
+msgid "User successfuly blocked"
+msgstr "ユーザをブロックしました"
+
+#: views.py:706
+msgid "User successfuly unblocked"
+msgstr "ユーザのブロックを解除しました"
+
+#: templates/pybb/_button_new_topic.html:2 templates/pybb/add_post.html:5
+#: templates/pybb/add_post.html.py:28
+msgid "New topic"
+msgstr "新規トピック"
+
+#: templates/pybb/_button_save.html:1
+msgid "Save"
+msgstr "保存"
+
+#: templates/pybb/_button_submit.html:1
+msgid "Submit"
+msgstr "送信"
+
+#: templates/pybb/_markitup.html:15
+msgid "Bold"
+msgstr "ボールド"
+
+#: templates/pybb/_markitup.html:16
+msgid "Italic"
+msgstr "イタリック"
+
+#: templates/pybb/_markitup.html:17
+msgid "Underline"
+msgstr "アンダーライン"
+
+#: templates/pybb/_markitup.html:18
+msgid "Stroke"
+msgstr "ストローク"
+
+#: templates/pybb/_markitup.html:20
+msgid "Picture"
+msgstr "ピクチャ"
+
+#: templates/pybb/_markitup.html:21
+msgid "Link"
+msgstr "リンク"
+
+#: templates/pybb/_markitup.html:23
+msgid "Bulleted list"
+msgstr "箇条書きリスト"
+
+#: templates/pybb/_markitup.html:24
+msgid "Numeric list"
+msgstr "数字付きリスト"
+
+#: templates/pybb/_markitup.html:25
+msgid "List item"
+msgstr "リスト項目"
+
+#: templates/pybb/_markitup.html:27
+msgid "Quotes"
+msgstr "引用"
+
+#: templates/pybb/_markitup.html:28
+msgid "Code"
+msgstr "コード"
+
+#: templates/pybb/_markitup.html:30
+msgid "Clean"
+msgstr "消去"
+
+#: templates/pybb/_markitup.html:31
+msgid "Preview"
+msgstr "プレビュー"
+
+#: templates/pybb/_need_to_login_message.html:3
+msgid "Register"
+msgstr "登録"
+
+#: templates/pybb/_need_to_login_message.html:3
+msgid "or"
+msgstr "もしくは"
+
+#: templates/pybb/_need_to_login_message.html:3
+msgid "login"
+msgstr "ログイン"
+
+#: templates/pybb/_need_to_login_message.html:3
+msgid "to create to post a reply"
+msgstr "返信を投稿するには"
+
+#: templates/pybb/add_post.html:5 templates/pybb/add_post.html.py:28
+msgid "New reply"
+msgstr "新規リプライ"
+
+#: templates/pybb/attachments_formset.html:6
+msgid "Add attachments"
+msgstr "添付ファイルを追加"
+
+#: templates/pybb/attachments_formset.html:12
+#: templates/pybb/edit_profile.html:27
+msgid "delete"
+msgstr "削除"
+
+#: templates/pybb/breadcrumb.html:5
+msgid "Home"
+msgstr "ホーム"
+
+#: templates/pybb/delete_post.html:5
+msgid "Are you sure you want to delete this message?"
+msgstr "このメッセージを削除しますか？"
+
+#: templates/pybb/delete_post.html:12
+msgid "No, take me back"
+msgstr "いいえ"
+
+#: templates/pybb/delete_post.html:13
+msgid "Yes, I am sure"
+msgstr "はい"
+
+#: templates/pybb/edit_post.html:4 templates/pybb/edit_post.html.py:13
+msgid "Editing the post"
+msgstr "投稿を編集する"
+
+#: templates/pybb/edit_profile.html:7 templates/pybb/edit_profile.html:10
+#: templates/pybb/edit_profile.html:15
+msgid "Profile editing"
+msgstr "プロファイル編集"
+
+#: templates/pybb/edit_profile.html:20
+msgid "Subscriptions on topics"
+msgstr "トピックの購読"
+
+#: templates/pybb/forum_list.html:17
+msgid "Last posts"
+msgstr "最新の投稿"
+
+#: templates/pybb/forum_list.html:43
+msgid "No forums created"
+msgstr "フォーラムは作成されていません"
+
+#: templates/pybb/forum_list.html:44
+msgid "Add forum now"
+msgstr "フォーラムを追加する"
+
+#: templates/pybb/index.html:19
+msgid "Forum categories are not created"
+msgstr "フォーラム カテゴリは作成されていません"
+
+#: templates/pybb/index.html:20
+msgid "Add a category now"
+msgstr "カテゴリを追加する"
+
+#: templates/pybb/index.html:25 templates/pybb/latest_topics.html:7
+#: templates/pybb/latest_topics.html:10 templates/pybb/latest_topics.html:17
+msgid "Last updates in topics"
+msgstr "トピック毎の最終更新"
+
+#: templates/pybb/index.html:28
+msgid "Mark all forums as read"
+msgstr "全てのフォーラムを既読にする"
+
+#: templates/pybb/latest_topics.html:33
+msgid "Mark all topics as read"
+msgstr "全てのトピックを既読にする"
+
+#: templates/pybb/pagination.html:7
+msgid "previous page"
+msgstr "前ページ"
+
+#: templates/pybb/pagination.html:21
+msgid "next page"
+msgstr "次ページ"
+
+#: templates/pybb/poll.html:5
+msgid "Poll"
+msgstr "投票"
+
+#: templates/pybb/poll.html:36
+msgid "Cancel my poll vote"
+msgstr "投票を取り消す"
+
+#: templates/pybb/poll_edit_form.html:7
+msgid "Poll answers"
+msgstr "投票の選択肢"
+
+#: templates/pybb/poll_edit_form.html:20
+msgid "remove answer"
+msgstr "回答を削除する"
+
+#: templates/pybb/poll_edit_form.html:21
+msgid "add answer"
+msgstr "回答を追加する"
+
+#: templates/pybb/post_template.html:25
+msgid "Rank"
+msgstr "ランク"
+
+#: templates/pybb/post_template.html:38 templates/pybb/user.html:46
+msgid "Edit"
+msgstr "編集"
+
+#: templates/pybb/post_template.html:42
+msgid "Delete post?"
+msgstr "投稿を削除しますか？"
+
+#: templates/pybb/post_template.html:43
+msgid "Delete"
+msgstr "削除"
+
+#: templates/pybb/post_template.html:45
+msgid "Approve post"
+msgstr "投稿を承認する"
+
+#: templates/pybb/post_template.html:50 templates/pybb/topic.html:63
+msgid "Admin"
+msgstr "管理画面"
+
+#: templates/pybb/post_template.html:66
+msgid "Edited"
+msgstr "編集済み"
+
+#: templates/pybb/post_template.html:79
+msgid "quote"
+msgstr "引用"
+
+#: templates/pybb/post_template.html:80
+msgid "quote selected"
+msgstr "選択して引用"
+
+#: templates/pybb/topic.html:52
+msgid "Unstick topic"
+msgstr "トピックを最上位表示しない"
+
+#: templates/pybb/topic.html:54
+msgid "Stick topic"
+msgstr "トピックを最上位表示する"
+
+#: templates/pybb/topic.html:58
+msgid "Open topic"
+msgstr "トピックを開く"
+
+#: templates/pybb/topic.html:60
+msgid "Close topic"
+msgstr "トピックを閉じる"
+
+#: templates/pybb/topic.html:72
+msgid "Unsubscribe"
+msgstr "購読をやめる"
+
+#: templates/pybb/topic.html:74
+msgid "Subscribe"
+msgstr "購読する"
+
+#: templates/pybb/topic_list.html:13
+msgid "Views"
+msgstr "閲覧数"
+
+#: templates/pybb/topic_list.html:16
+msgid "Last post"
+msgstr "最新の投稿"
+
+#: templates/pybb/topic_list.html:26
+msgid "Go to first unread post"
+msgstr "最初の未読投稿へ"
+
+#: templates/pybb/topic_list.html:32
+msgid "pages"
+msgstr "ページ"
+
+#: templates/pybb/user.html:15
+msgid "Statistics"
+msgstr "統計"
+
+#: templates/pybb/user.html:18
+msgid "Number of topics"
+msgstr "トピック数"
+
+#: templates/pybb/user.html:24
+msgid "Number of posts"
+msgstr "投稿数"
+
+#: templates/pybb/user.html:28
+msgid "Date of registration"
+msgstr "登録日"
+
+#: templates/pybb/user.html:36
+msgid "Block"
+msgstr "ブロック"
+
+#: templates/pybb/user.html:37
+msgid "Block and delete all messages"
+msgstr "全てのメッセージをブロック＆削除"
+
+#: templates/pybb/user.html:41
+msgid "Unblock"
+msgstr "ブロック解除"
+
+#: templates/pybb/user_posts.html:13
+msgid "All posts created by"
+msgstr "の全ての投稿"
+
+#: templates/pybb/user_topics.html:11 templates/pybb/user_topics.html.py:15
+msgid "All topics created by"
+msgstr "の全てのトピック"
+
+#: templates/pybb/users.html:8 templates/pybb/users.html.py:24
+msgid "Users"
+msgstr "ユーザ"
+
+#: templates/pybb/users.html:12
+msgid "Search"
+msgstr "検索"
+
+#: templates/pybb/mail_templates/subscription_email_body.html:3
+msgid "replied in topic to which you are subscribed."
+msgstr "購読中のトピックへの返信"
+
+#: templates/pybb/mail_templates/subscription_email_body.html:4
+msgid "Link to post:"
+msgstr "投稿へ:"
+
+#: templates/pybb/mail_templates/subscription_email_body.html:5
+msgid "Link to topic:"
+msgstr "トピックへ:"
+
+#: templates/pybb/mail_templates/subscription_email_body.html:8
+msgid ""
+"If you don't want to recive notifications on new messages in this topic "
+"visit following link:"
+msgstr "このトピックの新しいメッセージへの通知を受けとりたくない場合は、以下のリンクをクリック:"
+
+#: templates/pybb/mail_templates/subscription_email_subject.html:2
+msgid "New answer in topic that you subscribed."
+msgstr "購読中のトピックの新しい回答"
+
+#: templatetags/pybb_tags.py:64
+msgid "seconds ago,seconds ago,seconds ago"
+msgstr "秒前,秒前,秒前"
+
+#: templatetags/pybb_tags.py:67
+msgid "seconds ago"
+msgstr "秒前"
+
+#: templatetags/pybb_tags.py:73
+msgid "minutes ago,minutes ago,minutes ago"
+msgstr "分前,分前,分前"
+
+#: templatetags/pybb_tags.py:76
+msgid "minutes ago"
+msgstr "分前"
+
+#: templatetags/pybb_tags.py:86
+#, python-format
+msgid "today, %s"
+msgstr "今日, %s"
+
+#: templatetags/pybb_tags.py:88
+#, python-format
+msgid "yesterday, %s"
+msgstr "昨日, %s"

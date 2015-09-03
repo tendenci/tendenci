@@ -1,0 +1,26 @@
+{% extends 'pybb/base.html' %}
+
+{% load url from future %}
+{% load pybb_tags i18n %}
+
+{% block breadcrumb %}
+    {% pybb_get_profile target_user as target_profile %}
+    {% include "pybb/breadcrumb.html" with object=target_profile extra_crumb=_('Topics') %}
+{% endblock %}
+
+{% block title %}
+    {% pybb_get_profile target_user as target_profile %}
+    {% trans "All topics created by" %} {{ target_profile.get_display_name }}
+{% endblock %}
+
+{% block content %}
+    {% pybb_get_profile target_user as target_profile %}
+    <h1>{% trans "All topics created by" %} <a href="{{ target_profile.get_absolute_url }}">{{ target_profile.get_display_name }}</a></h1>
+
+    {% include "pybb/pagination.html" %}
+
+    {% include 'pybb/topic_list.html' with topic_list=object_list %}
+
+    {% include "pybb/pagination.html" %}
+
+{% endblock %}

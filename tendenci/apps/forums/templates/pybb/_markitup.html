@@ -1,0 +1,48 @@
+{% load url from future %}
+{% load i18n %}
+
+{% comment %}
+TODO : delete this template in the next major release
+This template will not exist anymore in the next release. Please do not use it.
+See docs about PYBB_MARKUP_ENGINES_PATHS setting and pybb.markup.bbcode.py
+{% endcomment %}
+
+<script type="text/javascript" src="{{ STATIC_URL }}markitup/ajax_csrf.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}markitup/jquery.markitup.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}markitup/skins/simple/style.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}markitup/sets/{{ PYBB_MARKUP }}/style.css">
+<script type="text/javascript" src="{{ STATIC_URL }}markitup/sets/{{ PYBB_MARKUP }}/set.js"></script>
+
+<script type="text/javascript">
+$(function() {
+    mySettings['previewParserPath'] = '{% url 'pybb:post_ajax_preview' %}';
+    mySettings['previewPosition'] = 'before';
+    mySettings['resizeHandle'] = true;
+    mySettings['markupSet'] = [
+        {name:'{% trans 'Bold' %}', key:'B', openWith:'[b]', closeWith:'[/b]'},
+        {name:'{% trans 'Italic' %}', key:'I', openWith:'[i]', closeWith:'[/i]'},
+        {name:'{% trans 'Underline' %}', key:'U', openWith:'[u]', closeWith:'[/u]'},
+        {name:'{% trans 'Stroke' %}', key:'S', openWith:'[s]', closeWith:'[/s]'},
+        {separator:'---------------' },
+        {name:'{% trans 'Picture' %}', key:'P', replaceWith:'[img][![Url]!][/img]'},
+        {name:'{% trans 'Link' %}', key:'L', openWith:'[url=[![Url]!]]', closeWith:'[/url]', placeHolder:'Your text to link here...'},
+        {separator:'---------------' },
+        {name:'{% trans 'Bulleted list' %}', openWith:'[list]\n', closeWith:'\n[/list]'},
+        {name:'{% trans 'Numeric list' %}', openWith:'[list=[![Starting number]!]]\n', closeWith:'\n[/list]'},
+        {name:'{% trans 'List item' %}', openWith:'[*] '},
+        {separator:'---------------' },
+        {name:'{% trans 'Quotes' %}', openWith:'[quote]', closeWith:'[/quote]'},
+        {name:'{% trans 'Code' %}', openWith:'[code]', closeWith:'[/code]'},
+        {separator:'---------------' },
+        {name:'{% trans 'Clean' %}', className:"clean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } },
+        {name:'{% trans 'Preview' %}', className:"preview", call:'preview' }
+    ];
+    $('textarea:not([class="no-markitup"])').markItUp(mySettings);
+
+    $('#emoticons a').click(function() {
+        var emoticon = $(this).attr("title");
+        $.markItUp({replaceWith: emoticon});
+        return false;
+    });
+});
+</script>

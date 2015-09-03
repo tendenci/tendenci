@@ -1,0 +1,53 @@
+{% load url from future %}
+{% load i18n %}
+
+{{ widget_output }}
+
+<script type="text/javascript">
+if(!window.pybb){
+    window.pybb = {};
+}
+if(!window.pybb.get_markitup_settings){
+    window.pybb.get_markitup_settings = function() {
+        var mySettings = new Array();
+        mySettings['previewParserPath'] = '{% url "pybb:post_ajax_preview" %}';
+        mySettings['previewPosition'] = 'before';
+        mySettings['resizeHandle'] = true;
+        mySettings['markupSet'] = [
+            {name:'{% trans "Bold" %}', key:'B', openWith:'[b]', closeWith:'[/b]'},
+            {name:'{% trans "Italic" %}', key:'I', openWith:'[i]', closeWith:'[/i]'},
+            {name:'{% trans "Underline" %}', key:'U', openWith:'[u]', closeWith:'[/u]'},
+            {name:'{% trans "Stroke" %}', key:'S', openWith:'[s]', closeWith:'[/s]'},
+            {separator:'---------------' },
+            {name:'{% trans "Picture" %}', key:'P', replaceWith:'[img][![Url]!][/img]'},
+            {name:'{% trans "Link" %}', key:'L', openWith:'[url=[![Url]!]]', closeWith:'[/url]', placeHolder:'{% trans "Your text to link here..." %}'},
+            {separator:'---------------' },
+            {name:'{% trans "Bulleted list" %}', openWith:'[list]\n', closeWith:'\n[/list]'},
+            {name:'{% trans "Numeric list" %}', openWith:'[list=[![Starting number]!]]\n', closeWith:'\n[/list]'},
+            {name:'{% trans "List item" %}', openWith:'[*] '},
+            {separator:'---------------' },
+            {name:'{% trans "Quotes" %}', openWith:'[quote]', closeWith:'[/quote]'},
+            {name:'{% trans "Code" %}', openWith:'[code]', closeWith:'[/code]'},
+            {separator:'---------------' },
+            {name:'{% trans "Clean" %}', className:"clean", replaceWith:function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, "") } },
+            {name:'{% trans "Preview" %}', className:"preview", call:'preview' }
+        ];
+        return mySettings ;
+    };
+}
+
+if (!window.pybb.markup) {
+    /*
+     This object will be used to perform some action specific to the current Markup engine.
+     eg : quote button, SHIT + click on an username, etc.
+     */
+    window.pybb.markup = {
+        quote: function (text, username) {
+            return '[quote' + (username ? ('="' + username + '"') : '') + ']' + text + '[/quote]\n';
+        },
+        username: function (username) {
+            return '[b]' + username + '[/b], ';
+        }
+    }
+}
+</script>

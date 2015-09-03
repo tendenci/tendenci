@@ -1,0 +1,28 @@
+{% extends 'pybb/base.html' %}
+
+{# DEPRECATED AND WILL BE REMOVED IN NEXT VERSION #}
+
+{% load pybb_tags i18n %}
+
+{% block content %}
+    <h1>{% trans "Users" %}</h1>
+    <form method="get" class="filter_form">
+        {% csrf_token %}
+        {{ form.query }}
+        <input type="submit" class="btn btn-primary" value="{% trans "Search" %}"/>
+    </form>
+    <ul class="users">
+        {% for profile in page.object_list %}
+            <li class="user">
+                <span class="author">{{ profile.get_display_name }}</span>
+                <span class="post_count">{{ profile.post_count }}</span>
+                <span class="updated">{{ profile.date_joined|date:"d M Y" }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% with _('Users') as label %}
+        {% include "pybb/pagination.html" %}
+    {% endwith %}
+
+{% endblock %}

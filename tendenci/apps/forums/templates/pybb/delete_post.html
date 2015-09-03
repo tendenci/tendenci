@@ -1,0 +1,16 @@
+{% extends 'pybb/base.html' %}
+{% load i18n pybb_tags %}
+
+{% block content %}
+    <h1>{% trans "Are you sure you want to delete this message?" %}</h1>
+    <div class="post-preview well">
+        {{ post.body_html|safe }}
+    </div>
+    <form method="post" action=".">
+        {% csrf_token %}
+        <p>
+            <a class='btn' href="{{ post.get_absolute_url }}">← {% trans "No, take me back" %}</a>
+            <input type="submit" class='btn btn-danger' value="{% trans 'Yes, I am sure' %}" />
+        </p>
+    </form>
+{% endblock content %}

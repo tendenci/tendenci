@@ -1,0 +1,35 @@
+{% extends 'pybb/base.html' %}
+{% load i18n pybb_tags %}
+
+{% block title %}
+{% if forum %}{% trans "New topic" %}{% else %}{% trans "New reply" %}{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    {{ form.media.css }}
+{% endblock %}
+{% block extra_script %}
+    {{ block.super }}
+    {{ form.media.js }}
+    <script type="text/javascript" src="{{ STATIC_URL }}pybb/js/jquery.formset.min.js"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {% if forum %}
+        {% with object=forum extra_crumb="New topic" %}
+            {% include 'pybb/breadcrumb.html' %}
+        {% endwith %}
+    {% else %}
+        {% with object=topic extra_crumb="New reply" %}
+            {% include 'pybb/breadcrumb.html' %}
+        {% endwith %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<h1>{% if forum %}{% trans "New topic" %}{% else %}{% trans "New reply" %}{% endif %}</h1>
+
+{% include "pybb/post_form.html" %}
+{% endblock content %}

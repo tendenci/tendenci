@@ -1,0 +1,30 @@
+{% extends 'pybb/base.html' %}
+
+{% load url from future %}
+{% load pybb_tags i18n %}
+
+{% block breadcrumb %}
+    {% pybb_get_profile target_user as target_profile %}
+    {% include "pybb/breadcrumb.html" with object=target_profile extra_crumb=_('Posts') %}
+{% endblock %}
+
+{% block title %}
+    {% pybb_get_profile target_user as target_profile %}
+    {% trans "All posts created by" %} {{ target_profile.get_display_name }}
+{% endblock %}
+
+{% block content %}
+    {% pybb_get_profile target_user as target_profile %}
+    <h1>{% trans "All posts created by" %} <a href="{{ target_profile.get_absolute_url }}">{{ target_profile.get_display_name }}</a></h1>
+    <div class="userinfo">
+        {% include "pybb/pagination.html" %}
+
+        {% for post in object_list %}
+            {% cycle 'odd' 'even' as rowcolors silent %}
+            {% include "pybb/post_template.html" with topic=post.topic %}
+        {% endfor %}
+
+        {% include "pybb/pagination.html" %}
+
+    </div>
+{% endblock %}

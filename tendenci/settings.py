@@ -88,6 +88,7 @@ MIDDLEWARE_CLASSES = (
     'tendenci.apps.theme.middleware.RequestMiddleware',
     'tendenci.apps.base.middleware.MissingAppMiddleware',
     'tendenci.apps.memberships.middleware.ExceededMaxTypesMiddleware',
+    'tendenci.apps.forums.middleware.PybbMiddleware',
 )
 
 ROOT_URLCONF = 'tendenci.urls'
@@ -162,6 +163,7 @@ TEMPLATES = [
                 'tendenci.apps.base.context_processors.display_name',
                 'tendenci.apps.registry.context_processors.registered_apps',
                 'tendenci.apps.registry.context_processors.enabled_addons',
+                'tendenci.apps.forums.context_processors.processor',
                 ],
          'loaders':  [
                 ('django.template.loaders.cached.Loader', [
@@ -275,6 +277,7 @@ INSTALLED_APPS = (
     'tendenci.apps.dashboard',
     'tendenci.apps.social_media',
     'tendenci.apps.announcements',
+    'tendenci.apps.forums',
     # celery task system, must stay at the bottom of installed apps
     'djkombu',
     'djcelery',
@@ -563,3 +566,10 @@ NEWSLETTER_EMAIL_HOST_USER = ''
 NEWSLETTER_EMAIL_HOST_PASSWORD = ''
 NEWSLETTER_EMAIL_USE_TLS = True
 NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend'
+
+# -------------------------------------- #
+# pybb forum
+# -------------------------------------- #
+PYBB_MARKUP = 'markdown'
+PYBB_NICE_URL = True
+PYBB_ATTACHMENT_ENABLE = True

@@ -1,0 +1,17 @@
+{% load pybb_tags %}
+
+{% if request.user|pybb_may_attach_files %}
+    {% load i18n %}
+    <div class='attachments-form'>
+        <a class='attachment-link' onclick='$("div.attachments-form table").toggle();return false;' href='#'>{% trans "Add attachments" %}</a>
+        {{ aformset.management_form }}
+            <table style='display:none;'>
+            {% for form in aformset %}
+                <tr>
+                    <td>{{ form.id }} {{ form.file }}</td>
+                    <td>{% if form.instance.pk %}{{ form.DELETE }} {% trans "delete" %}{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </table>
+    </div>
+{% endif %}

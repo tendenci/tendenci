@@ -1,0 +1,692 @@
+# Ukrainian translation for pybb forum
+# Copyright (C) 2009 Mykola Zamkovoi
+# This file is distributed under the same license as the pybb package.
+# Grigoriy Petukhov <lizendir@gmail.com>, 2008
+# Mykola Zamkovoi <nickzam@gmail.com>, 2009
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pybb\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-12-14 06:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\admin.py:28 .\admin.py:48 .\admin.py:68 .\admin.py:91
+msgid "Additional options"
+msgstr "Додатково"
+
+#: .\admin.py:73 .\models.py:178
+msgid "Message"
+msgstr "Повідомлення"
+
+#: .\admin.py:96
+msgid "Ban options"
+msgstr "Опції блокування (бана)"
+
+#: .\admin.py:112 .\admin.py:117 .\models.py:276
+msgid "Path"
+msgstr "Шлях"
+
+#: .\admin.py:122
+msgid "View post"
+msgstr "Кількість переглядів"
+
+#: .\admin.py:127
+msgid "Edit post"
+msgstr "Редагування повідомлення"
+
+#: .\feeds.py:21 .\feeds.py:22 .\templates\pybb\base.html.py:11
+msgid "Latest posts on forum"
+msgstr "Останні повідомлення на форумі"
+
+#: .\feeds.py:31 .\feeds.py:32 .\templates\pybb\base.html.py:12
+msgid "Latest topics on forum"
+msgstr "Останні теми на форумі"
+
+#: .\forms.py:14 .\forms.py:112 .\models.py:107
+msgid "Subject"
+msgstr "Заголовок"
+
+#: .\forms.py:15 .\models.py:307 .\templates\pybb\post_template.html.py:61
+msgid "Attachment"
+msgstr "Доданий файл"
+
+#: .\forms.py:42
+msgid "Attachment is too big"
+msgstr "Файл занадто великий"
+
+#: .\models.py:40 .\models.py:68 .\models.py:277
+msgid "Name"
+msgstr "Ім'я"
+
+#: .\models.py:41 .\models.py:69
+msgid "Position"
+msgstr "Позиція"
+
+#: .\models.py:45 .\models.py:67
+msgid "Category"
+msgstr "Категорія"
+
+#: .\models.py:46
+msgid "Categories"
+msgstr "Категорії"
+
+#: .\models.py:70
+msgid "Description"
+msgstr "Опис"
+
+#: .\models.py:71
+msgid "Moderators"
+msgstr "Модератори"
+
+#: .\models.py:72 .\models.py:109 .\models.py:176
+msgid "Updated"
+msgstr "Дата оновлення"
+
+#: .\models.py:73 .\models.py:115 .\models.py:247
+msgid "Post count"
+msgstr "Кількість повідомлень"
+
+#: .\models.py:74
+msgid "Topic count"
+msgstr "Кількість повідомлень"
+
+#: .\models.py:78 .\models.py:106
+msgid "Forum"
+msgstr "Форум"
+
+#: .\models.py:79
+msgid "Forums"
+msgstr "Форуми"
+
+#: .\models.py:108 .\models.py:175
+msgid "Created"
+msgstr "Дата створення"
+
+#: .\models.py:110 .\models.py:174 .\models.py:236
+msgid "User"
+msgstr "Користувач"
+
+#: .\models.py:111
+msgid "Views count"
+msgstr "Кількість переглядів"
+
+#: .\models.py:112
+msgid "Sticky"
+msgstr "Закріплено"
+
+#: .\models.py:113 .\templates\pybb\forum.html.py:24
+msgid "Closed"
+msgstr "Закрито"
+
+#: .\models.py:114
+msgid "Subscribers"
+msgstr "Підписалися на отримання повідомлень"
+
+#: .\models.py:119 .\models.py:173
+msgid "Topic"
+msgstr "Тема"
+
+#: .\models.py:120 .\templates\pybb\forum.html.py:36
+#: .\templates\pybb\user_posts.html.py:20
+#: .\templates\pybb\user_topics.html.py:26
+msgid "Topics"
+msgstr "Теми"
+
+#: .\models.py:177
+msgid "Markup"
+msgstr "Розмітка"
+
+#: .\models.py:179
+msgid "HTML version"
+msgstr "HTML версія"
+
+#: .\models.py:180
+msgid "Text version"
+msgstr "Текстова версія"
+
+#: .\models.py:181
+msgid "User IP"
+msgstr "IP автора"
+
+#: .\models.py:186 .\models.py:273
+msgid "Post"
+msgstr "Повідомлення"
+
+#: .\models.py:187 .\templates\pybb\topic.html.py:23
+#: .\templates\pybb\topic.html.py:38
+msgid "Posts"
+msgstr "Повідомлення"
+
+#: .\models.py:231
+msgid "No"
+msgstr "Ні"
+
+#: .\models.py:232
+msgid "Caution"
+msgstr "Попередження"
+
+#: .\models.py:233
+msgid "Ban"
+msgstr "Бан"
+
+#: .\models.py:237
+msgid "Signature"
+msgstr "Підпис"
+
+#: .\models.py:238
+msgid "Signature HTML Version"
+msgstr "HTML версія"
+
+#: .\models.py:239
+msgid "Time zone"
+msgstr "Часова зона"
+
+#: .\models.py:240
+msgid "Language"
+msgstr "Мова"
+
+#: .\models.py:242
+msgid "Avatar"
+msgstr "Аватар"
+
+#: .\models.py:243
+msgid "Show signatures"
+msgstr "Показувати підписи"
+
+#: .\models.py:244
+msgid "Default markup"
+msgstr "Розмітка за замовчуванням"
+
+#: .\models.py:245
+msgid "Ban status"
+msgstr "Статус блокування"
+
+#: .\models.py:246
+msgid "Ban till"
+msgstr "Забанений до"
+
+#: .\models.py:250
+msgid "Profile"
+msgstr "Профіль"
+
+#: .\models.py:251
+msgid "Profiles"
+msgstr "Профілі"
+
+#: .\models.py:274
+msgid "Size"
+msgstr "Розмір"
+
+#: .\models.py:275
+msgid "Content type"
+msgstr ""
+
+#: .\models.py:278
+msgid "Hash"
+msgstr "Хеш"
+
+#: .\models.py:308
+msgid "Attachments"
+msgstr "Додані файли"
+
+#: .\models.py:324 .\models.py:325
+msgid "Read tracking"
+msgstr "Відстеження прочитаних тем"
+
+#: .\subscription.py:10
+#, python-format
+msgid ""
+"New reply from %(username)s to topic that you have subscribed on.\n"
+"---\n"
+"%(message)s\n"
+"---\n"
+"See topic: %(post_url)s\n"
+"Unsubscribe %(unsubscribe_url)s"
+msgstr ""
+"Нова відповідь від %(username)s в тему, на яку ви підписані.\n"
+"---\n"
+"%(message)s\n"
+"---\n"
+"Переглянути тему: %(post_url)s\n"
+"Відписатися %(unsubscribe_url)s"
+
+#: .\views.py:176
+#, python-format
+msgid "Added after %s minute"
+msgid_plural "Added after %s minutes"
+msgstr[0] "Додано %s хвилина тому"
+msgstr[1] "Додано %s хвилин тому"
+
+#: .\templates\pybb\add_post.html.py:17
+msgid "You banned"
+msgstr "Ви заблоковані"
+
+#: .\templates\pybb\add_post.html.py:21 .\templates\pybb\add_post.html.py:23
+#: .\templates\pybb\category.html.py:11 .\templates\pybb\create_pm.html.py:7
+#: .\templates\pybb\edit_post.html.py:19 .\templates\pybb\forum.html.py:12
+#: .\templates\pybb\topic.html.py:20
+msgid "Root"
+msgstr "Початок"
+
+#: .\templates\pybb\add_post.html.py:27
+#: .\templates\pybb\add_post_form.html.py:9 .\templates\pybb\forum.html.py:42
+msgid "New topic"
+msgstr "Нова тема"
+
+#: .\templates\pybb\add_post.html.py:27
+#: .\templates\pybb\add_post_form.html.py:9
+msgid "New reply"
+msgstr "Нова відповідь"
+
+#: .\templates\pybb\add_post_form.html.py:5
+#: .\templates\pybb\add_post_form.html.py:13
+#: .\templates\pybb\merge_topics.html.py:35
+msgid "Preview"
+msgstr "Попередній перегляд"
+
+#: .\templates\pybb\add_post_form.html.py:12
+#: .\templates\pybb\create_pm.html.py:14
+msgid "Submit"
+msgstr "Відправити"
+
+#: .\templates\pybb\add_post_form.html.py:40
+msgid "Remove"
+msgstr "Видалити"
+
+#: .\templates\pybb\create_pm.html.py:7 .\templates\pybb\create_pm.html.py:12
+msgid "New private message"
+msgstr "Створення повідомлення"
+
+#: .\templates\pybb\delete_post.html.py:5
+msgid "Are you sure you want to delete this message?"
+msgstr "Вы впевнені, що хочете видалити це повідомлення?"
+
+#: .\templates\pybb\delete_post.html.py:10
+msgid "Yes, I am sure."
+msgstr "Так, хочу видалити."
+
+#: .\templates\pybb\edit_post.html.py:22 .\templates\pybb\edit_post.html.py:26
+msgid "Editing the post"
+msgstr "Редагування повідомлення"
+
+#: .\templates\pybb\edit_post.html.py:28
+#: .\templates\pybb\edit_profile.html.py:25
+msgid "Save"
+msgstr "Зберегти"
+
+#: .\templates\pybb\edit_profile.html.py:15
+#: .\templates\pybb\edit_profile.html.py:23
+msgid "Profile editing"
+msgstr "Редагувати профіль"
+
+#: .\templates\pybb\edit_profile.html.py:19
+msgid "Change the password"
+msgstr "Змініти пароль"
+
+#: .\templates\pybb\edit_profile.html.py:28
+msgid "Subscriptions on topics"
+msgstr "Повідомлення"
+
+#: .\templates\pybb\edit_profile.html.py:35
+msgid "delete"
+msgstr "видалити"
+
+#: .\templates\pybb\forum.html.py:25
+msgid "Important"
+msgstr "Важливо"
+
+#: .\templates\pybb\head.html.py:10 .\templates\pybb\head.html.py:46
+#: .\templates\pybb\users.html.py:9
+msgid "Search"
+msgstr "Пошук"
+
+#: .\templates\pybb\head.html.py:11 .\templates\pybb\users.html.py:6
+#: .\templates\pybb\users.html.py:21
+msgid "Users"
+msgstr "Користувачі"
+
+#: .\templates\pybb\head.html.py:13
+msgid "My profile"
+msgstr "Мій профіль"
+
+#: .\templates\pybb\head.html.py:15
+msgid "Admin CP"
+msgstr "Адміністрування"
+
+#: .\templates\pybb\head.html.py:17
+msgid "Log out"
+msgstr "Вийти"
+
+#: .\templates\pybb\head.html.py:18
+msgid "Logged in as "
+msgstr "Ваш логін"
+
+#: .\templates\pybb\head.html.py:20
+msgid "Sign up"
+msgstr "Рееєстрація"
+
+#: .\templates\pybb\head.html.py:21
+msgid "Log in"
+msgstr "Увійти"
+
+#: .\templates\pybb\head.html.py:47
+msgid "Search powered by Google"
+msgstr "Пошук з використанням Google"
+
+#: .\templates\pybb\last_topics.html.py:7
+#, python-format
+msgid "Last topics in category %(category)s"
+msgstr "Останні теми в категорії %(category)s"
+
+#: .\templates\pybb\last_topics.html.py:10
+msgid "Last updated topics"
+msgstr "Останні оновлені теми"
+
+#: .\templates\pybb\last_topics.html.py:12
+msgid "Last topics"
+msgstr "Останні теми"
+
+#: .\templates\pybb\merge_topics.html.py:11
+msgid "Enter topic id for add to merged topics"
+msgstr "Введіть id теми для додавання до списку тем, що об'єднуються"
+
+#: .\templates\pybb\merge_topics.html.py:16
+msgid "Add"
+msgstr "Додати"
+
+#: .\templates\pybb\merge_topics.html.py:24
+msgid "Choose main topic to merge"
+msgstr "Оберіть головну тему, в якій опиняться всі теми"
+
+#: .\templates\pybb\merge_topics.html.py:31
+msgid "Merge"
+msgstr "Об'єднання"
+
+#: .\templates\pybb\merge_topics.html.py:35
+msgid "Posts from changed topics"
+msgstr "Повідомлення зі з'єднаних тем"
+
+#: .\templates\pybb\merge_topics.html.py:36 .\templates\pybb\user.html.py:26
+msgid "Number of posts"
+msgstr "Кількість повідомлень"
+
+#: .\templates\pybb\pagination.html.py:6
+msgid "Enter page number"
+msgstr "Введіть номер сторінки"
+
+#: .\templates\pybb\pagination.html.py:15
+#: .\templates\pybb\pagination.html.py:23
+msgid "of"
+msgstr "з"
+
+#: .\templates\pybb\pagination.html.py:21
+msgid "Go to page..."
+msgstr "Перейти на сторінку..."
+
+#: .\templates\pybb\pagination.html.py:22
+#: .\templates\pybb\topic_mini_pagination.html.py:3
+msgid "Page"
+msgstr "Сторінка"
+
+#: .\templates\pybb\post_template.html.py:26 .\templates\pybb\user.html.py:19
+msgid "Expire"
+msgstr "Закінчується"
+
+#: .\templates\pybb\post_template.html.py:34
+msgid "Edit"
+msgstr "Редагувати"
+
+#: .\templates\pybb\post_template.html.py:39
+msgid "Delete post?"
+msgstr "Видалити повідомлення?"
+
+#: .\templates\pybb\post_template.html.py:40
+msgid "Delete"
+msgstr "Видалити"
+
+#: .\templates\pybb\post_template.html.py:55
+msgid "Edited"
+msgstr "Відредаговано"
+
+#: .\templates\pybb\post_template.html.py:66
+msgid "quote"
+msgstr "цитувати"
+
+#: .\templates\pybb\topic.html.py:46
+msgid "Unstick topic"
+msgstr "Зняти закріплення з теми?"
+
+#: .\templates\pybb\topic.html.py:48
+msgid "Stick topic"
+msgstr "Закріпити тему"
+
+#: .\templates\pybb\topic.html.py:52
+msgid "Open topic"
+msgstr "Відкрити тему"
+
+#: .\templates\pybb\topic.html.py:54
+msgid "Close topic"
+msgstr "Закрити тему"
+
+#: .\templates\pybb\topic.html.py:57
+msgid "Merge topics"
+msgstr "Об'єднати теми"
+
+#: .\templates\pybb\topic.html.py:61
+msgid "Unsubscribe"
+msgstr "Заборонити повідомлення"
+
+#: .\templates\pybb\topic.html.py:63
+msgid "Subscribe"
+msgstr "Отримувати повідомлення"
+
+#: .\templates\pybb\user.html.py:25
+msgid "Statistics"
+msgstr "Статистика"
+
+#: .\templates\pybb\user.html.py:28
+msgid "Number of topics"
+msgstr "Кількість тем"
+
+#: .\templates\pybb\user.html.py:31
+msgid "Find all topics"
+msgstr "Знайти всі теми"
+
+#: .\templates\pybb\user.html.py:34
+msgid "Date of registration"
+msgstr "Дата реєстрації"
+
+#: .\templates\pybb\user_topics.html.py:6
+#: .\templates\pybb\user_topics.html.py:11
+msgid "All topics created by"
+msgstr "Теми, що створені користувачем"
+
+#: .\templatetags\pybb_tags.py:60
+msgid "seconds ago,seconds ago,seconds ago"
+msgstr "секунду тому,секунди тому,секунд тому"
+
+#: .\templatetags\pybb_tags.py:63
+msgid "seconds ago"
+msgstr "секунди тому"
+
+#: .\templatetags\pybb_tags.py:69
+msgid "minutes ago,minutes ago,minutes ago"
+msgstr "хвилину тому,хвилини тому,хвилин тому"
+
+#: .\templatetags\pybb_tags.py:72
+msgid "minutes ago"
+msgstr "хвилини тому"
+
+#: .\templatetags\pybb_tags.py:82
+#, python-format
+msgid "today, %s"
+msgstr "сьогодні, %s"
+
+#: .\templatetags\pybb_tags.py:84
+#, python-format
+msgid "yesterday, %s"
+msgstr "вчора, %s"
+
+#~ msgid "IM"
+#~ msgstr "IM"
+
+#~ msgid "Site"
+#~ msgstr "Сайт"
+
+#~ msgid "Jabber"
+#~ msgstr "Jabber"
+
+#~ msgid "ICQ"
+#~ msgstr "ICQ"
+
+#~ msgid "MSN"
+#~ msgstr "MSN"
+
+#~ msgid "AIM"
+#~ msgstr "AIM"
+
+#~ msgid "Yahoo"
+#~ msgstr "Yahoo"
+
+#~ msgid "Location"
+#~ msgstr "Звідки"
+
+#~ msgid "Time"
+#~ msgstr "Час"
+
+#~ msgid "Read"
+#~ msgstr "Перегляд"
+
+#~ msgid "Reads"
+#~ msgstr "Перегляди"
+
+#~ msgid "PYBB - django forum engine"
+#~ msgstr "PYBB - форум на django"
+
+#~ msgid "Last posts"
+#~ msgstr "Останні повідомлення"
+
+#~ msgid "Find all posts"
+#~ msgstr "Знайти всі повідомлення"
+
+#~ msgid "Contacts"
+#~ msgstr "Контакти"
+
+#~ msgid "Recipient"
+#~ msgstr "Отримувач"
+
+#~ msgid "User with login %s does not exist"
+#~ msgstr "Користувач на ім'я %s не існує"
+
+#~ msgid "You can't send PM to yourself"
+#~ msgstr "Ви не можете відіслати повідомлення самому собі"
+
+#~ msgid "Invalid thread ID"
+#~ msgstr "Невірний ID ланцюга"
+
+#~ msgid "Inbox"
+#~ msgstr "Вхідні повідомлення"
+
+#~ msgid "Outbox"
+#~ msgstr "Вихідні повідомлення"
+
+#~ msgid "Trash"
+#~ msgstr "Видалені"
+
+#~ msgid "Author"
+#~ msgstr "Автор"
+
+#~ msgid "Private message"
+#~ msgstr "Приватне повідомлення"
+
+#~ msgid "Private messages"
+#~ msgstr "Приватні повідомлення"
+
+#~ msgid "Messagebox"
+#~ msgstr "Поштова скринька"
+
+#~ msgid ""
+#~ "User %(username)s have sent your the new private message.\n"
+#~ "---\n"
+#~ "%(message)s\n"
+#~ "---\n"
+#~ "See message online: %(pm_url)s"
+#~ msgstr ""
+#~ "Користувач %(username)s надіслав вам нове приватне повідомлення.\n"
+#~ "---\n"
+#~ "%(message)s\n"
+#~ "---\n"
+#~ "Переглянути повідомлення online: %(pm_url)s"
+
+#~ msgid "New private message for you"
+#~ msgstr "Нове приватне повідомлення для вас"
+
+#~ msgid "PM"
+#~ msgstr "ПП"
+
+#~ msgid "Send PM"
+#~ msgstr "Відправити ПП"
+
+#~ msgid "Select messages:"
+#~ msgstr "Обрати повідомлення: "
+
+#~ msgid "All"
+#~ msgstr "Всі"
+
+#~ msgid "None"
+#~ msgstr "Ніякі"
+
+#~ msgid "Read messages"
+#~ msgstr "Прочитані"
+
+#~ msgid "Unread messages"
+#~ msgstr "Непрочитані"
+
+#~ msgid "With selected:"
+#~ msgstr "З обраними:"
+
+#~ msgid "Mark as read"
+#~ msgstr "Відмітити як прочитані"
+
+#~ msgid "Mark as unread"
+#~ msgstr "Відмітити як непрочитані"
+
+#~ msgid "Inbox is empty"
+#~ msgstr "Нема повідомлень у Вхідних"
+
+#~ msgid "Message from"
+#~ msgstr "Повідомлення від"
+
+#~ msgid "Message for"
+#~ msgstr "Повідомлення для"
+
+#~ msgid "Reply"
+#~ msgstr "Відповідь"
+
+#~ msgid "to"
+#~ msgstr "для"
+
+#~ msgid "Are you sure you want to delete these messages?"
+#~ msgstr "Вы впевнені, що хочете видалити ці повідомлення?"
+
+#~ msgid "Messages"
+#~ msgstr "Повідомлення"
+
+#~ msgid "From"
+#~ msgstr "Від"
+
+#~ msgid "This messagebox is empty"
+#~ msgstr "Ця скринька пуста"
+
+#~ msgid "Sent messages"
+#~ msgstr "Надіслані повідомлення"
+
+#~ msgid "outbox"
+#~ msgstr "вихідні повідомлення"

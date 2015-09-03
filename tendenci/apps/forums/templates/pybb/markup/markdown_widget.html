@@ -1,0 +1,66 @@
+{% load url from future %}
+{% load i18n %}
+
+{{ widget_output }}
+
+
+<script type="text/javascript">
+if(!window.pybb){
+    window.pybb = {};
+}
+if(!window.pybb.get_markitup_settings){
+    window.pybb.get_markitup_settings = function() {
+        var mySettings = new Array();
+        mySettings['previewParserPath'] = '{% url "pybb:post_ajax_preview" %}';
+        mySettings['previewPosition'] = 'before';
+        mySettings['resizeHandle'] = true;
+        mySettings['markupSet'] = [
+            {name:'{% trans "First Level Heading" %}', key:'1', placeHolder:'{% trans "Your title here..." %}', closeWith:function(markItUp) { return miu.markdownTitle(markItUp, '=') } },
+            {name:'{% trans "Second Level Heading" %}', key:'2', placeHolder:'{% trans "Your title here..." %}', closeWith:function(markItUp) { return miu.markdownTitle(markItUp, '-') } },
+            {name:'{% trans "Heading 3" %}', key:'3', openWith:'### ', placeHolder:'{% trans "Your title here..." %}' },
+            {name:'{% trans "Heading 4" %}', key:'4', openWith:'#### ', placeHolder:'{% trans "Your title here..." %}' },
+            {name:'{% trans "Heading 5" %}', key:'5', openWith:'##### ', placeHolder:'{% trans "Your title here..." %}' },
+            {name:'{% trans "Heading 6" %}', key:'6', openWith:'###### ', placeHolder:'{% trans "Your title here..." %}' },
+            {separator:'---------------' },        
+            {name:'{% trans "Bold" %}', key:'B', openWith:'**', closeWith:'**'},
+            {name:'{% trans "Italic" %}', key:'I', openWith:'_', closeWith:'_'},
+            {separator:'---------------' },
+            {name:'{% trans "Bulleted List" %}', openWith:'- ' },
+            {name:'{% trans "Numeric List" %}', openWith:function(markItUp) {
+                return markItUp.line+'. ';
+            }},
+            {separator:'---------------' },
+            {name:'{% trans "Picture" %}', key:'P', replaceWith:'![[![Alternative text]!]]([![Url:!:http://]!] "[![Title]!]")'},
+            {name:'{% trans "Link" %}', key:'L', openWith:'[', closeWith:']([![Url:!:http://]!] "[![Title]!]")', placeHolder:'{% trans "Your text to link here..." %}' },
+            {separator:'---------------'},    
+            {name:'{% trans "Quotes" %}', openWith:'> '},
+            {name:'{% trans "Code Block / Code" %}', openWith:'(!(\t|!|`)!)', closeWith:'(!(`)!)'},
+            {separator:'---------------'},
+            {name:'{% trans "Preview" %}', call:'preview', className:"preview"}
+        ];
+        return mySettings ;
+    };
+}
+
+if (!window.pybb.markup) {
+    /*
+     This object will be used to perform some action specific to the current Markup engine.
+     eg : quote button, SHIT + click on an username, etc.
+     */
+    window.pybb.markup = {
+        quote: function (text, username) {
+            var output = '';
+            if (username) {
+                output += '> **' + username + '**: ';
+            } else {
+                output += '> ';
+            }
+            output += text.replace(/\n/g, '  \n> ');
+            return output;
+        },
+        username: function (username) {
+            return '**' + username + '**, ';
+        }
+    }
+}
+</script>
