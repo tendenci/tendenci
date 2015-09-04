@@ -1,0 +1,104 @@
+/* --- Topic/Forum table --- */
+.forum-description {
+  margin: 5px;
+  font-size: 12px;
+}
+.forum-row,
+.topic-row {
+  width: 100%;
+}
+.forum-name,
+.topic-name {
+  width: 40%;
+}
+.forum-topic-count,
+.forum-post-count,
+.topic-post-count,
+.topic-view-count {
+  width: 16%;
+  text-align: center;
+}
+.forum-last-post,
+.topic-last-post {
+  width: 20%;
+}
+.first-unread-post-link,
+.first-unread-post-link:hover {
+  color: #333333;
+  text-decoration: none;
+}
+.forum-headline {
+  margin-top: 10px;
+}
+.attachments-form {
+  padding-bottom: 15px;
+}
+.attachment-link {
+  border-bottom: 1px dotted;
+}
+/* --- Unread --- */
+.state-indicator {
+  display: block;
+  float: left;
+  background-color: #eeeeee;
+  height: 10px;
+  width: 10px;
+  border-radius: 4px;
+  margin: 3px 5px;
+}
+.topic-unread a,
+.forum-unread a {
+  font-weight: bold;
+}
+.topic-unread .state-indicator,
+.forum-unread .state-indicator {
+  background-color: #5bc0de;
+}
+/* --- Moderation --- */
+.on-moderation {
+  background: #ffcccc;
+}
+/* --- Mini pagination --- */
+.mini-pagination {
+  padding: 3px 0 3px 10px;
+  font-size: 12px;
+}
+.post {
+  margin: 3px 0 5px 0;
+}
+.post-header {
+  padding: 3px 0 3px 20px;
+  font-size: 12px;
+  background-color: #f5f5f5;
+}
+.post tbody tr:hover td {
+  background-color: inherit;
+}
+.post-info {
+  width: 200px;
+  padding: 10px;
+}
+.post-info .post-author {
+  font-size: 15px;
+  padding: 5px 0;
+}
+.post-info .post-extra-info {
+  font-size: 12px;
+  color: #999999;
+}
+.post-info .post-controls {
+  font-size: 12px;
+}
+.post-content {
+  vertical-align: top;
+  padding: 10px;
+}
+.post-signature {
+  color: #CCC;
+  margin-top: 15px;
+  border-top: 1px dotted #CCC;
+  display: block;
+}
+.post-related {
+  margin-top: 20px;
+}

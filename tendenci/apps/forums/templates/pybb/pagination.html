@@ -1,8 +1,8 @@
 {% load i18n %}
 
 {% if is_paginated %}
-    <div class="pagination">
-        <ul>
+    <nav>
+    <ul class="pagination">
             <li class="prev {% if not page_obj.has_previous %}disabled{% endif %}">
                 <a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% endif %}">← {% trans "previous page" %}</a>
             </li>
@@ -21,5 +21,5 @@
                 <a href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% endif %}" >{% trans "next page" %} →</a>
             </li>
         </ul>
-    </div>
+    </nav>
 {% endif %}

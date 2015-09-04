@@ -89,12 +89,12 @@
         {% endif %}
 
         {% if user.is_staff %}
-            <div class="subscriber-list">
+            <div class="subscriber-list col-sm-9">
                 {% trans "Subscribers" %}:
                 {% for subscriber in topic.subscribers.all %}
                     {% pybb_get_profile user=subscriber as subscriber_profile %}
-                    <a href="{% url 'pybb:user' subscriber.get_username %}">
-                        {{ subscriber.get_display_name }}
+                    <a href="{% url 'pybb:user' subscriber.username %}">
+                        {{ subscriber.get_display_name }} ({{ subscriber.username }})
                     </a>
                     {% if not forloop.last %},{% endif %}
                 {% endfor %}

@@ -1,7 +1,7 @@
 {% load pybb_tags i18n %}
 
 {% if forum_list %}
-    <table class="table {% if category %}category-table{% elif parent_forum %}child-forums-table{% endif %}">
+    <table class="table table-hover {% if category %}category-table{% elif parent_forum %}child-forums-table{% endif %}">
         <thead>
             <tr class="forum-row head-row">
                 <th class="forum-name">
@@ -23,9 +23,8 @@
             <tr class="forum-row">
                 <td class="forum-name {% if forum.unread %} forum-unread{% endif %}">
                     <div class="state-indicator"></div>
-                    <a href="{{ forum.get_absolute_url }}">{{ forum.name }}</a> {% if forum.hidden %}[{% trans "Hidden" %}]{% endif %}
-                    <div class="forum-description">
-                        {{ forum.description|safe }}
+                    <div>
+                    	<a href="{{ forum.get_absolute_url }}">{{ forum.name }}</a> {% if forum.hidden %}[{% trans "Hidden" %}]{% endif %}
                     </div>
                 </td>
                 <td class="forum-topic-count">

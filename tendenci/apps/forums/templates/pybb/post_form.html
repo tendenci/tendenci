@@ -1,5 +1,6 @@
 {% load url from future %}
 {% load i18n pybb_tags %}
+<div class="col-sm-9">
 <form class="post-form" action="
     {% if forum %}
         {% url 'pybb:add_topic' forum.pk %}
@@ -11,7 +12,6 @@
         {% endif %}
     {% endif %}" method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  <fieldset>
     {% include "pybb/form_errors.html" %}
     {% if form.name %} {% include "pybb/form_field.html" with field=form.name %} {% endif %}
     {% if form.slug %} {% include "pybb/form_field.html" with field=form.slug %} {% endif %}
@@ -25,8 +25,9 @@
 
     {% if request.user|pybb_may_create_poll and form.poll_type %}
       {% include "pybb/poll_edit_form.html" %}
+    
     {% endif %}
     {% include "pybb/attachments_formset.html" %}
     <p class="submit">{% include "pybb/_button_submit.html" %}</p>
-  </fieldset>
 </form>
+</div>

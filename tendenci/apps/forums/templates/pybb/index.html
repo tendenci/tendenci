@@ -7,7 +7,9 @@
 {% block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
 
 {% block breadcrumb %}
-    {% with extra_crumb="Forum" %}{% include "pybb/breadcrumb.html" %}{% endwith %}
+	{% if category  %}
+	{% include "pybb/breadcrumb.html" %}
+	{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -15,11 +17,8 @@
         {% for category in categories %}
             {% include 'pybb/category.html' %}
         {% endfor %}
-    {% else %}
-        <h2>{% trans "Forum categories are not created" %}</h2>
-        <a href="{% url 'admin:forums_category_add' %}">{% trans "Add a category now" %}</a>
-    {% endif %}
-    {% if user.is_authenticated %}
+        
+        {% if user.is_authenticated %}
         <div id='mark-all-as-read'>
             <a href='{% url 'pybb:topic_latest' %}'>
                 {% trans "Last updates in topics" %}
@@ -28,5 +27,11 @@
                 {% trans "Mark all forums as read" %}
             </a>
         </div>
+    	{% endif %}
+    
+    {% else %}
+        <h2>{% trans "Forum categories are not created" %}</h2>
+        <a href="{% url 'admin:forums_category_add' %}">{% trans "Add a category now" %}</a>
     {% endif %}
+    
 {% endblock content %}
