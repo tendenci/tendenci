@@ -205,5 +205,8 @@ setup(
         "django-admin-bootstrapped==2.5.2",
         "django-bootstrap3==5.4.0",
         "django-app-namespace-template-loader==0.3",
+        'django-annoying',
+        'unidecode',
+        'Markdown',
     ],
 )
