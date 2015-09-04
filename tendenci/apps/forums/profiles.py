@@ -1,4 +1,5 @@
 # coding=utf-8
+import urllib, hashlib
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
@@ -63,3 +64,18 @@ class PybbProfile(models.Model):
                 return self.get_username()
         except Exception:
             return unicode(self)
+
+    def getMD5(self):
+        m = hashlib.md5()
+        m.update(self.user.email)        
+        return m.hexdigest()
+    
+    def get_gravatar_url(self):
+        size = defaults.PYBB_AVATAR_WIDTH
+        default = defaults.PYBB_DEFAULT_AVATAR_URL
+        gravatar_url = "http://www.gravatar.com/avatar/" + self.getMD5() + "?"
+        gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+        return gravatar_url
+        
+        
+        
