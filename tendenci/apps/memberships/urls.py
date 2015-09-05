@@ -124,21 +124,25 @@ urlpatterns = patterns(
     url(r'^%s/reports/member_roster/$' % urlpath, 'report_member_roster', name='reports-member-roster'),
     url(r'^%s/reports/member_quick_list/$' % urlpath, 'report_member_quick_list', name='reports-members-quick-list'),
     url(r'^%s/reports/members_by_company/$' % urlpath, 'report_members_by_company', name='reports-members-by-company'),
-    url(r'^%s/reports/members_in_renewal_period/$' % urlpath, 'report_renewal_period_members', name='reports-renewal-period-members'),
-    url(r'^%s/reports/members_in_grace_period/$' % urlpath, 'report_grace_period_members', name='reports-grace-period-members'),
+    url(r'^%s/reports/members_in_renewal_period/$' % urlpath, 'report_renewal_period_members',
+        name='reports-renewal-period-members'),
+    url(r'^%s/reports/members_in_grace_period/$' % urlpath, 'report_grace_period_members',
+        name='reports-grace-period-members'),
     url(r'^%s/reports/renewed_members/$' % urlpath, 'report_renewed_members', name='reports-renewed-members'),
     url(r'^%s/reports/active_members_ytd/$' % urlpath, 'report_active_members_ytd', name='reports-active-members-ytd'),
     url(r'^%s/reports/members_ytd_type/$' % urlpath, 'report_members_ytd_type', name='reports-members-ytd-type'),
 
-     url(r"^%s/entries/search/$" % urlpath, "application_entries_search", name="membership.application_entries_search"),
+    url(r"^%s/entries/search/$" % urlpath, "application_entries_search", name="membership.application_entries_search"),
 
     # notice
     (r'^%s/notices/' % urlpath, include('tendenci.apps.memberships.notices.urls')),
-    url(r"^%s/notices/(?P<id>\d+)/email_content/$" % urlpath, "notice_email_content", name="membership.notice_email_content"),
+    url(r"^%s/notices/(?P<id>\d+)/email_content/$" % urlpath, "notice_email_content",
+        name="membership.notice_email_content"),
 
-
-#     # application
-     url(r"^%s/default-confirmation/(?P<hash>[\w]+)/$" % urlpath, "application_confirmation_default", name="membership.application_confirmation_default"),
-     url(r"^%s/default-application/(?P<cmb_id>\d+)?/?$" % urlpath, "application_detail_default", name="membership.application_detail_default"),
+    #     # application
+    url(r"^%s/default-confirmation/(?P<hash>[\w]+)/$" % urlpath, "application_confirmation_default",
+        name="membership.application_confirmation_default"),
+    url(r"^%s/default-application/(?P<cmb_id>\d+)?/?$" % urlpath, "application_detail_default",
+        name="membership.application_detail_default"),
 
 )
