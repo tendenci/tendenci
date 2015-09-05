@@ -7,7 +7,7 @@
         <li>
             <strong>{% trans 'Tags' %}: </strong>
             {% for tag in help_file.tags|tag_split %}
-                <a href="{% url "help_files" %}?q=tag:{{ tag }}">{% blocktrans with t=tag %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url "help_files" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </li>
         {% endif %}
@@ -16,7 +16,7 @@
             {% if topics %}
             <li><strong>{% trans 'Topics' %}: </strong>
             {% for topic in topics %}
-                <a href="{% url "help_files.topic" topic.pk %}">{% blocktrans with t=topic %}{{ t }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
              </li>
             {% endif %}
