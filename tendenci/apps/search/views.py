@@ -118,7 +118,7 @@ class SearchView(object):
         context = {
             'query': self.query,
             'form': self.form,
-            'page': page,
+            'ppage': page,
             'paginator': paginator,
         }
         context.update(self.extra_context())
