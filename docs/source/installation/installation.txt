@@ -170,6 +170,20 @@ Create the database and a new postgres user with the following commands (replace
     sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION postgis;"
 
 
+Creating a Virtualenv
+---------------------
+
+It's best practice to make a virtual environment for your site. Make a folder to hold your virtual environment and cd into it. This can go anywhere but avoid /var/www or anywhere inside your tendenci site directory.
+
+    mkdir /srv/tendenci/
+    cd /srv/tendenci/
+
+Make a virtual environment called 'venv' and activate it.
+
+    virtualenv venv
+    source venv/bin/activate
+
+
 Creating a new tendenci project
 --------------------
 
@@ -179,7 +193,8 @@ Make sure Django 1.8 is installed in your environment.
     pip install "Django>=1.8,<1.9"
 
 
-Create a directory for your installation.
+In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name).
+This download and install step will take some time and download around 70MB of packages.
 ::
 
     mkdir -p /var/www
