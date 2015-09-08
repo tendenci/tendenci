@@ -16,13 +16,13 @@
     <script type="text/javascript" src="{{ STATIC_URL }}pybb/js/jquery.formset.min.js"></script>
 {% endblock %}
 
-{% block breadcrumb %}
-    {% with object=topic %}
-        {% include "pybb/breadcrumb.html" %}
-    {% endwith %}
-{% endblock %}
-
 {% block content %}
+	{% block breadcrumb %}
+	    {% with object=topic %}
+	        {% include "pybb/breadcrumb.html" %}
+	    {% endwith %}
+	{% endblock %}
+
     <div class="topic">
         <h1>{{ topic.name }}</h1>
         {% with _('Posts') as label %}

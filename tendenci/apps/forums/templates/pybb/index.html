@@ -6,13 +6,13 @@
 
 {% block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
 
-{% block breadcrumb %}
-	{% if category  %}
-	{% include "pybb/breadcrumb.html" %}
-	{% endif %}
-{% endblock %}
-
 {% block content %}
+	{% block breadcrumb %}
+		{% if category  %}
+		{% include "pybb/breadcrumb.html" %}
+		{% endif %}
+	{% endblock %}
+	
     {% if categories %}
         {% for category in categories %}
             {% include 'pybb/category.html' %}

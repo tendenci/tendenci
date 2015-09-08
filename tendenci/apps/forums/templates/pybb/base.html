@@ -15,9 +15,9 @@
 
 {% endblock %}
 
-{% block breadcrumb %}
-    {% include "pybb/breadcrumb.html" %}
-{% endblock %}
-
-{% block content %}{% endblock content %}
+{% block content %}
+	{% block breadcrumb %}
+	    {% include "pybb/breadcrumb.html" %}
+	{% endblock %}
+{% endblock content %}
 

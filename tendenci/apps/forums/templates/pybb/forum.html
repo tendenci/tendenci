@@ -3,13 +3,13 @@
 
 {% block title %}{{ forum.name }}{% endblock title %}
 
-{% block breadcrumb %}
-    {% with forum as object %}
-        {% include "pybb/breadcrumb.html" %}
-    {% endwith %}
-{% endblock %}
-
 {% block content %}
+	{% block breadcrumb %}
+	    {% with forum as object %}
+	        {% include "pybb/breadcrumb.html" %}
+	    {% endwith %}
+	{% endblock %}
+
     <div class="forum">
         <h1>{{ forum.name }}</h1>
         {% if forum.headline %}
