@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 import defaults, util
 from .compat import get_image_field_class, get_username_field
+from tendenci.apps.site_settings.utils import get_setting
 
 
 TZ_CHOICES = [(float(x[0]), x[1]) for x in (
@@ -72,7 +73,7 @@ class PybbProfile(models.Model):
     
     def get_gravatar_url(self):
         size = defaults.PYBB_AVATAR_WIDTH
-        default = defaults.PYBB_DEFAULT_AVATAR_URL
+        default = get_setting('site', 'global', 'siteurl') +  defaults.PYBB_DEFAULT_AVATAR_URL
         gravatar_url = "http://www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
         return gravatar_url
