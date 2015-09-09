@@ -188,7 +188,7 @@ Create a directory for your installation.
 In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
 ::
 
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip tendenci
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip <project_name>
 
 
 Installing the requirements
@@ -298,11 +298,11 @@ The contents of that file should match the example below:
     respawn
     respawn limit 10 5
     script
-        cd /var/www/sitename
+        cd /var/www/<project_name>
         exec gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
     end script
 
-You will need to replace the ``/var/www/sitename`` with the location of the site.
+You will need to replace the ``/var/www/<project_name>`` with the location of the site.
 
 To start this service, use the following command:
 ::
@@ -333,8 +333,8 @@ look like this
     After=postgresql.service
 
     [Service]
-    WorkingDirectory=/var/www/sitename
-    PIDFile=/run/tendenci-test.pid
+    WorkingDirectory=/var/www/<project_name>
+    PIDFile=/run/<project_name>.pid
     Type=forking
     KillMode=process
     Restart=restart-always
@@ -343,9 +343,9 @@ look like this
               --user www-data                              \
               --workers 4                                  \
               --bind=127.0.0.1:8000                        \
-              --pid=/run/tendenci-test.pid                 \
-              --pythonpath=/var/www/sitename               \
-              --error-logfile=/var/log/tendenci-test.error \
+              --pid=/run/<project_name>.pid                \
+              --pythonpath=/var/www/<project_name>         \
+              --error-logfile=/var/log/<project_name>.error \
               --daemon                                     \
              conf.wsgi 
 
@@ -367,7 +367,7 @@ and to enable it so it starts on boot use
 Setting up nginx
 ----------------
 
-First, make an nginx configuration file for the site. This will be created at ``/etc/nginx/sites-available/sitename`` and should match the example below:
+First, make an nginx configuration file for the site. This will be created at ``/etc/nginx/sites-available/<project_name>`` and should match the example below:
 ::
 
     server {
@@ -377,7 +377,7 @@ First, make an nginx configuration file for the site. This will be created at ``
         charset   utf-8;
         keepalive_timeout  65;
         client_max_body_size  30M;
-        root /var/www/sitename/;
+        root /var/www/<project_name>/;
 
         location /static/ {
             access_log off;
@@ -401,12 +401,12 @@ First, make an nginx configuration file for the site. This will be created at ``
         }
     }
 
-Again, replace ``/var/www/sitename/`` with the real path. If you have a domain name like ``example.com`` pointed at the server, add it to the ``server_name`` line in the place of ``localhost``.
+Again, replace ``/var/www/<project_name>/`` with the real path. If you have a domain name like ``example.com`` pointed at the server, add it to the ``server_name`` line in the place of ``localhost``.
 
-Next, create a symlink to the new file at ``/etc/nginx/sites-enabled/sitename`` with this command:
+Next, create a symlink to the new file at ``/etc/nginx/sites-enabled/<project_name>`` with this command:
 ::
 
-    ln -s /etc/nginx/sites-available/sitename /etc/nginx/sites-enabled/sitename
+    ln -s /etc/nginx/sites-available/<project_name> /etc/nginx/sites-enabled/<project_name>
 
 Remove the default record from the sites-enabled with this command:
 ::
@@ -452,7 +452,7 @@ The process outlined above to install Tendenci can be used multiple times on a s
 
 The steps to install Server Packages and the steps to replace the main postgres password do not need to be repeated.
 
-When installing any additional Tendenci sites, replace the ``sitename`` used throughout the examples with a unique name.
+When installing any additional Tendenci sites, replace the ``<project_name>`` used throughout the examples with a unique name.
 
 When creating the database for any additional sites, be sure to use a unique database name and username. In the instructions above, the database name and username were both ``tendenci``. Change this to something unique for each site.
 
