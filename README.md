@@ -40,7 +40,7 @@ Not a programmer and you just want to host it somewhere else? You can ask your c
 
 ## Vision 
 
-"Connect and Oragnize the World's People" 
+"Connect and Organize the World's People" 
 
 
 ## Mission
