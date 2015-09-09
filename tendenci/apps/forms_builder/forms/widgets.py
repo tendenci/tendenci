@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.encoding import force_unicode
+from django.utils import formats
 
 class Output(forms.Widget):
     """
