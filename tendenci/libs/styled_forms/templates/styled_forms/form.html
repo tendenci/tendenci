@@ -99,9 +99,9 @@
         {% if field.is_hidden %}
             {{ field }}
         {% elif field|is_header %}
-            <legend>{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</legend>
+            <legend>{{ l }}</legend>
         {% elif field|is_description %}
-            <p>{% blocktrans with l=filed.label %}{{ l }}{% endblocktrans %}</p>
+            <p class="section-description">{{ field.label }}</p>
         {% else %}
             <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
                 <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
