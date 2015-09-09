@@ -39,11 +39,11 @@
         {% if fieldset.boundfields %}
             <fieldset class="{{ fieldset.classes }}">
                 {% if fieldset.legend %}
-                    <legend>{% blocktrans with l=fieldset.legend %}{{ l }}{% endblocktrans %}</legend>
+                    <legend>{{ fieldset.legend }}</legend>
                 {% endif %}
 
                 {% if fieldset.description %}
-                    <p class="section-description">{% blocktrans with d=fieldset.description %}{{ d }}{% endblocktrans %}</p>
+                    <p class="section-description">{{ fieldset.description }}</p>
                 {% endif %}
 
                 {% for field in fieldset %}
@@ -51,7 +51,7 @@
                         {{ field }}
                     {% else %}
                         <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
-                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
+                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
 
                             <div class="col-sm-9">
                                 {% if field|is_checkbox %}
@@ -80,12 +80,12 @@
 
                                 {% if field.errors %}
                                     {% for error in field.errors %}
-                                        <span class="help-block">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</span>
+                                        <span class="help-block">{{ error }}</span>
                                     {% endfor %}
                                 {% endif %}
 
                                 {% if field.help_text %}
-                                    <span class="help-block">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</span>
+                                    <span class="help-block">{{ field.help_text|safe }}</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -99,12 +99,12 @@
         {% if field.is_hidden %}
             {{ field }}
         {% elif field|is_header %}
-            <legend>{{ l }}</legend>
+            <h3 class="section-header">{{ field.label }}</h3>
         {% elif field|is_description %}
             <p class="section-description">{{ field.label }}</p>
         {% else %}
             <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
-                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
+                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
 
                 <div class="col-sm-9">
                     {% if field|is_checkbox %}
@@ -133,12 +133,12 @@
 
                     {% if field.errors %}
                         {% for error in field.errors %}
-                            <span class="help-block">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</span>
+                            <span class="help-block">{{ error }}</span>
                         {% endfor %}
                     {% endif %}
 
                     {% if field.help_text %}
-                        <span class="help-block">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</span>
+                        <span class="help-block">{{ field.help_text|safe }}</span>
                     {% endif %}
                 </div>
             </div>
