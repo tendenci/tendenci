@@ -5,8 +5,8 @@
 {% load styled_forms %}
 
 
-{% block title %}{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with i=form.intro %}{{ i }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ form.title }}{% endblock %}
+{% block meta_description %}{{ form.intro }}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -14,13 +14,13 @@
 {% endblock extra_head %}
 
 {% block content %}
-    <h1>{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}</h1>
+    <h1>{{ form.title }}</h1>
 
     <section>
-        <h1 class="h2 t-forms-builder-form-intro-name">{% blocktrans with i=form.intro_name %}{{ i }}{% endblocktrans %}</h1>
+        <h1 class="h2 t-forms-builder-form-intro-name">{{ form.intro_name }}</h1>
 
         {% if form.intro %}
-            {% blocktrans with i=form.intro|safe|urlize %}{{ i }}{% endblocktrans %}
+            {{ form.intro|safe|urlize }}
         {% endif %}
     </section>
 
@@ -69,8 +69,8 @@
                 {% endif %}
             {% endwith %}
 
-            var fieldsName = $("<h2>{% blocktrans with n=form.fields_name %}{{ n }}{% endblocktrans %}</h2>");
-            var pricingName = $("<h2>{% blocktrans with n=form.pricing_name %}{{ n }}{% endblocktrans %}</h2>");
+            var fieldsName = $("<h2>{{ form.fields_name }}</h2>");
+            var pricingName = $("<h2>{{ form.pricing_name }}</h2>");
 
             var fieldsOption = $('.formforform-field:first');
             fieldsName.insertBefore(fieldsOption.parents('.form-field'));

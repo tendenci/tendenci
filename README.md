@@ -14,6 +14,12 @@ Got tired of spammers so pulled the demo. Sheesh people. Get a life. Anyway, you
 [https://tendenci.com/forms/tendenci-free-trial/](https://tendenci.com/forms/tendenci-free-trial/)
 
 
+## Installation
+
+Please see install documents located at:
+
+https://github.com/tendenci/tendenci/blob/master/docs/source/installation/installation.txt
+
 ## Developers 
 
 If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP by following the instructions on [https://github.com/tendenci/tendenci-project-template/tree/master](https://github.com/tendenci/tendenci-project-template/tree/master). 
@@ -34,7 +40,7 @@ Not a programmer and you just want to host it somewhere else? You can ask your c
 
 ## Vision 
 
-"Connect and Oragnize the World's People" 
+"Connect and Organize the World's People" 
 
 
 ## Mission
