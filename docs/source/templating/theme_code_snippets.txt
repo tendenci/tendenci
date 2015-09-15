@@ -1,3 +1,5 @@
+EXAMPLE CODE SNIPPETS TO PULL DYNAMIC CONTENT INTO THEMES
+
 Event Feed
 ------------
 {% list_events as events_list limit=3 %}
