@@ -1,6 +1,6 @@
-EXAMPLE CODE SNIPPETS TO PULL DYNAMIC CONTENT INTO THEMES 
----------------------------------------------------------
----------------------------------------------------------
+Theme: Code Snippets for Dynamic Content
+========================================
+
 
 Event Feed
 ------------
