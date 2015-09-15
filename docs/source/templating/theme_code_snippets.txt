@@ -1,25 +1,36 @@
 Theme: Code Snippets for Dynamic Content
 ========================================
 
+You can pull various pieces of dynamic content into your Tendenci theme template. 
+Before adding the snippets below be sure that your template file is has the "load" tag for that module at the top of your page. Example: if you were to add an event feed you would want {% load event_tags %} pasted at the very top of your html doc. 
 
 Event Feed
 ------------
+Add {% load event_tags %} to the very top of your html page
+
+Then add the following code snippet where you want to place your event feed:
+
 {% list_events as events_list limit=3 %}
     <ul class="list-unstyled">
-                          {% for event in events_list %}
-                            <li><a href="{{ event.get_absolute_url }}"><strong>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</strong><br>
-                              <em>{{ event.start_dt|date:"F j, Y - P" }}</em>
-                            </a></li>
-                          {% empty %}
-                          {% trans 'Events will be shown here. <a href="/events/add/">Start adding events now!</a>' %}
-                          {% endfor %}
+       {% for event in events_list %}
+           <li><a href="{{ event.get_absolute_url }}"><strong>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</strong><br>
+             <em>{{ event.start_dt|date:"F j, Y - P" }}</em>
+          </a></li>
+              {% empty %}
+               {% trans 'Events will be shown here. <a href="/events/add/">Start adding events now!</a>' %}
+         {% endfor %}
     </ul>
-                          {% if event_list %}
-                          <a href="{% url 'event.search' %}">{% trans 'View more events' %} »</a>
-                          {% endif %}
+         {% if event_list %}
+              <a href="{% url 'event.search' %}">{% trans 'View more events' %} »</a>
+         {% endif %}
 
 Single Event (featured event)
-----------
+----------------------------
+Add {% load event_tags %} to the very top of your html page
+
+
+Then add the following code snippet where you want to place your event feed:
+
            {% list_events as events_list limit=1 %}
            <section id="single-event">
              <h3>Featured Event</h3>
@@ -52,6 +63,11 @@ Single Event (featured event)
 
 Articles Feed
 ------------
+Add {% load article_tags %} to the very top of your html page
+
+Then add the following code snippet where you want to place your articles feed:
+
+
 {% list_articles as articles_list limit=3 %}
                   <ul class="list-unstyled">
   {% for article in articles_list %}
@@ -62,10 +78,20 @@ Articles Feed
 
 Insert Box
 -----------
+Add {% load box_tags %} to the very top of your html page
+
+Then add the following code snippet where you want to place your box:
+(The number 13 should be replaced with the number associated with the box you would like to load)
+
 {% box 13 %}
 
 Directories Carousel
 ----------
+Add {% load directory_tags %} to the very top of your html page
+
+Then add the following code snippet where you want to place your directories:
+
+
 <div id="directories" class="clearfix">   
          <div class="col eleven columns alpha omega">
            <div id="carousel-container">
@@ -88,8 +114,14 @@ Directories Carousel
          </div><!--/.col -->   
       </div><!--/ #directories -->
 
+
+
 Directories (use with flexslider)
 ----------
+Add {% load directory_tags %} to the very top of your html page
+
+Then add the following code snippet where you want to place your directories:
+
  {% list_directories as directories_list limit=20 tags="sponsor" %}
        
             <ul class="slides">
@@ -106,6 +138,10 @@ Directories (use with flexslider)
 
 Jobs Feed
 ----------
+Add {% load job_tags %} to the very top of your html page
+
+Then add the following code snippet where you want to place your jobas:
+
    {% list_jobs as jobs_list limit=3 %}
              {% for job in jobs_list %}
              <h3><a href="{{ job.get_absolute_url }}">{{ job.title }} &raquo;</a></h3>
@@ -117,6 +153,11 @@ Jobs Feed
 
 Photos Feed
 ----------
+
+Add {% load photo_tags %} to the very top of your html page
+
+Then add the following code snippet where you want to place your photos:
+
  {% list_photos as photos_list limit=6 random=True %}
            <ul>
              {% for photo in photos_list %}
@@ -125,6 +166,11 @@ Photos Feed
 
 Videos Feed
 ----------
+Add {% load video_tags %} to the very top of your html page
+Also add {% load video_filters %} to the very top of your html page 
+
+Then add the following code snippet where you want to place your videos:
+
  <ul id="video-urls">
              {% list_videos as videos_list limit=1 tags="featured"  %}
              {% for video in videos_list %}
@@ -133,28 +179,3 @@ Videos Feed
              </li>
              {% endfor %}
            </ul>
-
-News Feed
-----------
-<div>
-  <h3 class="headline">{% trans 'Latest News' %}</h3>
-  {% list_articles as article_list limit=2 %}
-  {% for article in article_list %}
-  <h5><a href="{{ article.get_absolute_url }}">{% blocktrans with h=article.headline %}{{ h }}{% endblocktrans %}</a></h5>
-  <p>{% blocktrans with c=article.summary|striptags|safe|truncatewords:"20" %}{{ c }}{% endblocktrans %}</p>
-  {% endfor %}
-  <p style="text-align:right"><a href="/news/" class="read-more">{% trans 'View more news' %} &raquo;</a></p>
-</div><!--/#news-list-->​
-
-Testimonials
------------
-{% list_testimonials as testimonials_list limit=5 tags="cool" %}
-       {% for testimonial in testimonials_list %}
-           {{ testimonial.testimonial }}
-       {% endfor %}
-
-if you want to display title
-{{ testimonial.title }}
-
-if you need to strip HTML tags
-{{ testimonial.testimonial|striptags }}
