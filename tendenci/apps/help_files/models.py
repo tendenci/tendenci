@@ -64,20 +64,6 @@ class HelpFile(TendenciBaseModel):
         "Template helper: {% if file.level_is.basic %}..."
         return dict([i, self.level==i] for i in HelpFile.LEVELS)
 
-#
-# Commenting out due to RuntimeError: Conflicting 'helpfile_topics' models in application 'help_files': <class 'tendenci.apps.help_files.models.HelpFile_topics'> and <class 'tendenci.apps.help_files.models.HelpFile_Topics'>.
-# 
-# class HelpFile_Topics(models.Model):
-#     """
-#     This table is created automatically by the Many To
-#     Many Relationship. It is added here to use in the
-#     views to help optimize for certain queries.
-#     """
-#     helpfile = models.ForeignKey(HelpFile)
-#     topic = models.ForeignKey(Topic)
-# 
-#     class Meta:
-#         managed = False
 
 class Request(models.Model):
     question = models.TextField()
