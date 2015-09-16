@@ -74,7 +74,7 @@ class PybbProfile(models.Model):
     def get_gravatar_url(self):
         size = defaults.PYBB_AVATAR_WIDTH
         default = get_setting('site', 'global', 'siteurl') +  defaults.PYBB_DEFAULT_AVATAR_URL
-        gravatar_url = "http://www.gravatar.com/avatar/" + self.getMD5() + "?"
+        gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
         return gravatar_url
         
