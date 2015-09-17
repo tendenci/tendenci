@@ -527,18 +527,18 @@ class TendenciBaseManager(models.Manager):
                 user = user.impersonated_user
         return user
 
-    def _permissions_sqs(self, sqs, user, status, status_detail, **kwargs):
+    def _permissions_sqs(self, sqs, user, status_detail, **kwargs):
         if user.is_authenticated() and user.profile.is_superuser:
-            sqs = sqs.filter(status=status)
+            return sqs
+
+        if user.is_anonymous():
+            sqs = self._anon_sqs(sqs, status_detail=status_detail)
+        elif user.profile.is_member:
+            sqs = self._member_sqs(sqs, user,
+                status_detail=status_detail)
         else:
-            if user.is_anonymous():
-                sqs = self._anon_sqs(sqs, status=status, status_detail=status_detail)
-            elif user.profile.is_member:
-                sqs = self._member_sqs(sqs, user, status=status,
-                    status_detail=status_detail)
-            else:
-                sqs = self._user_sqs(sqs, user, status=status,
-                    status_detail=status_detail)
+            sqs = self._user_sqs(sqs, user,
+                status_detail=status_detail)
 
         return sqs
 
@@ -563,7 +563,6 @@ class TendenciBaseManager(models.Manager):
         # if the status_detail is something like "published"
         # then you can specify the kwargs to override
         status_detail = kwargs.get('status_detail', 'active')
-        status = True
 
         if query:
             tags_query = kwargs.get('tags-query', False)
@@ -573,7 +572,7 @@ class TendenciBaseManager(models.Manager):
             else:
                 sqs = sqs.auto_query(sqs.query.clean(query))
 
-        sqs = self._permissions_sqs(sqs, user, status, status_detail, direct_db=direct_db)
+        sqs = self._permissions_sqs(sqs, user, status_detail, direct_db=direct_db)
 
         return sqs
 
