@@ -55,6 +55,9 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
     if (article.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
+    if not article.release_dt_local:
+        article.assign_release_dt_local()
+
     if article.release_dt_local >= datetime.now():
         if not any([
             has_perm(request.user, 'articles.view_article'),
