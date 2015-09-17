@@ -23,22 +23,8 @@ def index(request, template_name="help_files/index.html"):
     """List all topics and all links"""
     topic_pks = []
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
-
-    # Access the join table and iterate over a dict to avoid
-    # n+1 queries to get all of the correct topics.
-    byhelpfile = {}
-    # TODO: fix non-existent later
-    for tp in HelpFile_Topics.objects.select_related('helpfile', 'topic').all():
-        byhelpfile.setdefault(tp.helpfile.id, []).append(tp.topic)
-    # Use stored lists
-    for hf in HelpFile.objects.filter(filters).distinct():
-        if byhelpfile.get(hf.id, ''):
-            for topic in byhelpfile[hf.id]:
-                topic_pks.append(topic.pk)
-
-    topic_pks = sorted(list(set(topic_pks)))
-
-    topics = Topic.objects.filter(pk__in=topic_pks)
+    
+    topics = Topic.objects.filter(id__in=HelpFile.objects.values_list('topics')).order_by('title')
     m = len(topics) / 2
     topics = topics[:m], topics[m:] # two columns
     most_viewed = HelpFile.objects.filter(filters).order_by('-view_totals').distinct()[:5]

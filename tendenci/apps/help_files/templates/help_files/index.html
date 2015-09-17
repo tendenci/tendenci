@@ -60,7 +60,7 @@
                 <h3>{% trans "Most viewed" %}</h3>
                 <ul>
                 {% for hfile in most_viewed %}
-                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}{{ hfile }}</a></li>
+                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
                 {% endfor %}
                 </ul>
             </div>
