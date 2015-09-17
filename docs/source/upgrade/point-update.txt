@@ -1,0 +1,21 @@
+Performing a minor update
+=========================
+
+When a minor update comes out the following steps will upgrade tendenci and its dependencies
+::
+    pip install tendenci --upgrade
+    python deploy.py
+
+If dependencies need to be upgraded at the same tiem run pip against the requirements file.
+::
+    pip install -r requirements.txt --upgrade
+    python deploy.py
+
+To ensure no stale data is carried over in caches between versions clear the application cache and restart.
+::
+    python manage.py clear_cache
+    service tendenci restart
+
+
+These steps come from Issue #341 and Issue #373 and more or less match those in update_tendenci.py
+
