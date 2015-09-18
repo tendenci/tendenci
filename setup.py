@@ -208,5 +208,6 @@ setup(
         'django-annoying',
         'unidecode',
         'Markdown',
+        'unicodecsv',
     ],
 )

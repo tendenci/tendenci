@@ -1,4 +1,127 @@
 Upgrading from 5.1.x
 ====================
 
-Coming soon...
+If you want to migrate your site from T5 to the latest version of tendenci T7, you'd need to take two steps:
+
+1) Migrate from T5 to T6
+2) Migrate from T6 to T7
+
+In this guide, we'll show you how to migrate from T5 to T6. 
+
+In general, to migrate your site from T5 to T6, you'd need to set up a T6 site, 
+update the theme to fit your needs, then move the database and media files from your
+T5 site to the new T6 site.
+
+
+1. Set up a T6 site
+-------------------
+The instruction `here`_ can help you to get your T6 site set up.
+
+.. _here: https://github.com/tendenci/tendenci-project-template/tree/tendenci6
+
+You might also need to look at this `guide`_ for information on server setup.
+
+.. _guide: https://github.com/tendenci/tendenci/blob/tendenci6/docs/source/installation/remote.txt
+
+Note: Please write down your T6's current theme name, you will need it in the last step. 
+The current theme name can be found in the theme editor.
+
+
+2. Dump database and zip the media files on your T5 site
+--------------------------------------------------------
+::
+
+    mkdir /tmp/<site_name> && cd /tmp/<site_name>
+    sudo -u postgres pg_dump <db_name>  --file=<db_name>.dump --host=localhost --username=<db_user>
+    tar -C <path-to-site>/media -czvf <site_name>_media.tar.gz .
+
+If your T5 and T6 sites are not on the same server, you'll need to move (with scp) the database dump and media .gz file
+to your T6 server. 
+
+
+3. Restore database on your T6 site
+-----------------------------------
+If your T5 and T6 sites are on the same server, skip this step.
+::
+
+	# create and restore database
+	sudo -u postgres psql 
+	CREATE USER <db_user> WITH PASSWORD '<db_password>';
+	CREATE DATABASE <db_name> WITH OWNER <db_user>;
+	GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <db_user>;
+	# type '\q' to quit psql
+	sudo -u postgres psql -d <db_name> --file=<db_name>.dump
+	sudo -u postgres psql -d <db_name> -c "CREATE EXTENSION postgis;"
+	
+	# restore media files
+	tar -C <path-to-site>/media -xzvf /tmp/<site_name>/<site_name>_media.tar.gz
+	
+After that, update the `DATABASES` setting in the conf/local_settings.py.
+
+
+4. Copy over site specific settings from T5 .env and conf/local_settings.py
+---------------------------------------------------------------------------
+It can include but may not limit to the following:
+
+  - SECRET_KEY
+  - SITE_SETTINGS_KEY 
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - DEFAULT_FROM_EMAIL
+  - # payment gateway settings
+  - # newsletters settings
+
+
+5. Migrate database
+-------------------
+::
+
+    # set alias dj for less typing.
+    alias dj="python manage.py"
+    dj clear_cache
+    dj syncdb
+    dj migrate
+
+    # We had to run the following commands. But your mileage may vary.
+    dj migrate social_auth 0001 --fake
+    dj migrate wp_exporter 0001 --fake
+    dj migrate djcelery 0001 --fake
+    dj migrate --delete-ghost-migrations
+    dj migrate user_groups 0012 --fake
+    dj migrate social_auth 0001 --fake
+    dj migrate wp_exporter 0001 --fake
+    dj migrate djcelery 0001 --fake
+    dj migrate wp_importer 0001 --fake
+    dj migrate wp_importer 0001 --fake
+
+
+6. Run deploy.py
+----------------
+::
+
+    python deploy.py
+
+
+7. Set theme
+------------
+Use the theme name you wrote down in step 1. 
+::
+
+    dj set_theme <your current theme>
+
+
+8. Clear caches
+----------------
+::
+
+    dj clear_cache
+    dj clear_theme_cache
+
+
+Sometimes things can be bumpy depending on your database's state. Stay cool and try to debug.
+Seek help if you're not able to resolve yourself.
+
+Finally, restart your new T6 site.
+
+
+
