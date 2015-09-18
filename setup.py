@@ -210,5 +210,6 @@ setup(
         "django-admin-bootstrapped==2.3.3",
         "django-bootstrap3==5.4.0",
         "django-app-namespace-template-loader==0.2",
+        'unicodecsv'
     ],
 )
