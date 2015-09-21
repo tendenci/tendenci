@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 from django.db.models import Q
-from django.conf import settings
 
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
@@ -19,7 +18,7 @@ from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.memberships.models import MembershipDefault
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile, UserImport
-from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
+from tendenci.apps.profiles.utils import update_user
 from tendenci.apps.base.utils import get_languages_with_local_name
 
 attrs_dict = {'class': 'required' }
