@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* SELECTOR (FILTER INTERFACE) */
 
 .selector {
-    width: 580px;
+    width: 840px;
     float: left;
 }
 
@@ -84,7 +84,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     width: 22px;
     height: 50px;
     background: url(/static/images/admin/chooser-bg.gif) top center no-repeat;
-    margin: 8em 3px 0 3px;
+    margin: 8em 3px 0 3px !important;
     padding: 0;
 }
 
