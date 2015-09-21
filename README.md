@@ -4,6 +4,17 @@ Tendenci built for non-profits, associations and cause-based sites like in the m
 
 Tendenci 7+ is the latest version that is compatible with Django 1.8. Currently, it's only available on github - hasn't been pushed to pypi yet. 
 
+## Important Update for Self Hosted Tendenci Sites (Posted 9.21.15)
+We will be refactoring the Tendenci code starting October 1, 2015
+
+This will make it easier for you to work with the Tendenci code as a developer!
+
+We appreciate your participation in our community and have created documentation to allow you to manually update your site to the latest version of Tendenci https://tendenci.readthedocs.org/en/latest/upgrade/5.1.html
+
+After October 1, 2015 automatic updates should not be run if you are self hosting on Tendenci 5. Please manually update instead.
+
+You can read more about why we are making this change and further details on our blog: http://blog.tendenci.com/refactoring-tendenci-7-1/
+
 
 ## Demo?  
 
