@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
+from django.db.models import Q
 from django.conf import settings
 
 from tendenci.apps.base.fields import SplitDateTimeField
@@ -562,25 +563,52 @@ class UserPermissionForm(forms.ModelForm):
 
 
 class UserGroupsForm(forms.Form):
-    groups = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required=False)
+    groups = forms.ModelMultipleChoiceField(queryset=Group.objects.all(
+                                        ).exclude(type__in=['system_generated', 'membership']),
+                                            required=False)
 
     def __init__(self, user, editor, request, *args, **kwargs):
         self.user = user
         self.editor = editor
         self.request = request
         super(UserGroupsForm, self).__init__(*args, **kwargs)
-        self.old_groups = get_groups(self.user, filter=Group.objects.search(user=editor))
-        self.old_memberships = get_memberships(self.user, filter=Group.objects.search(user=editor))
-        self.fields['groups'].initial = self.old_groups
-        self.fields['groups'].choices = group_choices(editor)
+        
+        self.fields['groups'].initial = self.fields['groups'].queryset.filter(members__in=[self.user])
+
+        if not self.editor.is_superuser:
+            queryset = self.fields['groups'].queryset
+            queryset = queryset.filter(show_as_option=True, allow_self_add=True)
+            if self.editor.profile.is_member:
+                queryset = queryset.filter(Q(allow_anonymous_view=True) 
+                                           | Q(allow_user_view=True)
+                                           | Q(allow_member_view=True))
+            else:
+                queryset = queryset.filter(Q(allow_anonymous_view=True) 
+                                           | Q(allow_user_view=True))
+            self.fields['groups'].queryset = queryset
+        
 
     def save(self):
         data = self.cleaned_data
 
         #delete old memberships
-        for old_m in self.old_memberships:
+        old_memberships = GroupMembership.objects.filter(member=self.user
+                                ).exclude(group__type__in=['system_generated', 'membership'])
+        if not self.editor.is_superuser:
+            old_memberships = old_memberships.filter(group__show_as_option=True,
+                                                     group__allow_self_remove=True)
+            if self.editor.profile.is_member:
+                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True) 
+                                           | Q(group__allow_user_view=True)
+                                           | Q(group__allow_member_view=True))
+            else:
+                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True) 
+                                           | Q(group__allow_user_view=True))
+                                
+
+        for old_m in old_memberships:
             if old_m.group not in data['groups']:
-                print "membership to %s deleted" % old_m.group
+                #print "membership to %s deleted" % old_m.group
                 log_defaults = {
                     'event_id' : 223000,
                     'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, self.editor),
@@ -594,9 +622,8 @@ class UserGroupsForm(forms.Form):
 
         #create new memberships
         for group in data['groups']:
-            try:
-                group_membership = GroupMembership.objects.get(group=group, member=self.user)
-            except GroupMembership.DoesNotExist:
+            [group_membership] = GroupMembership.objects.filter(group=group, member=self.user)[:1] or [None]
+            if not group_membership:
                 group_membership = GroupMembership(group=group, member=self.user)
                 group_membership.creator_id = self.editor.id
                 group_membership.creator_username = self.editor.username
