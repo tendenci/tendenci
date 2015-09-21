@@ -26,13 +26,8 @@ You can self install of course. Or you can do a free 30 day trial without risk a
 
 Please see install documents located at:
 
-https://github.com/tendenci/tendenci/blob/master/docs/source/installation/installation.txt
+https://tendenci.readthedocs.org
 
-## Developers 
-
-If you want to test it locally quickly (e.g. client demo etc), you can try it ASAP by following the instructions on [https://github.com/tendenci/tendenci-project-template/tree/master](https://github.com/tendenci/tendenci-project-template/tree/master). 
-
-Dockers? We are using them in our test environments now. We'll have a public docker file up soon.
 
 ## Vision 
 
