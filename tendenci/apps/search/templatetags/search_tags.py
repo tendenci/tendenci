@@ -57,8 +57,6 @@ class SearchResultNode(IncludeNode):
             else:
                 template_name = "%s/search-result.html" % (result_object._meta.app_label)
 
-            print template_name
-
             # Special case for Contribution instances
             if result.__class__.__name__.lower() == 'contribution':
                 var_name = 'contribution'
