@@ -36,7 +36,7 @@
 			            <td class="officer-position">{{ officer.position }}</td>
 
 			            <td class="officer-name">
-			                <a href="{{ officer.user.get_profile.get_absolute_url }}">
+			                <a href="{% url 'profile' officer.user.username  %}">
 			                    {% if officer.user.get_full_name %}
                                 {{ officer.user.get_full_name }}
                                 {% else %}
