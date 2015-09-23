@@ -1,0 +1,171 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-24 23:01+0000\n"
+"PO-Revision-Date: 2014-10-04 12:31+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/tendenci/language/pa/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pa\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:55
+msgid "title"
+msgstr "ਦਾ ਸਿਰਲੇਖ"
+
+#: templates/committees/add.html:20
+msgid "Add"
+msgstr "ਸ਼ਾਮਲ ਕਰੋ"
+
+#: templates/committees/add.html:28 templates/committees/edit.html:27
+msgid "Category"
+msgstr "ਸ਼੍ਰੇਣੀ"
+
+#: templates/committees/add.html:34 templates/committees/edit.html:33
+msgid "SEO Meta"
+msgstr "ਐਸਈਓ ਮੈਟਾ"
+
+#: templates/committees/delete.html:5 templates/committees/nav.html:68
+msgid "Delete Committee"
+msgstr ""
+
+#: templates/committees/delete.html:16
+msgid "Delete a Committee"
+msgstr ""
+
+#: templates/committees/delete.html:20
+msgid "Are you sure you want to permanently delete this committee?"
+msgstr ""
+
+#: templates/committees/delete.html:25
+msgid "Confirm Delete"
+msgstr "ਹਟਾਓ ਪੁਸ਼ਟੀ"
+
+#: templates/committees/delete.html:28
+msgid "Back to committee"
+msgstr ""
+
+#: templates/committees/delete.html:29
+msgid "Back to all"
+msgstr "ਵਾਪਸ ਸਭ ਨੂੰ"
+
+#: templates/committees/detail.html:10
+msgid "COMMITTEE"
+msgstr ""
+
+#: templates/committees/edit-meta.html:16
+msgid "Meta Information for"
+msgstr "ਲਈ ਮੈਟਾ ਜਾਣਕਾਰੀ"
+
+#: templates/committees/edit-meta.html:30
+msgid "Cancel"
+msgstr "ਰੱਦ ਕਰੋ"
+
+#: templates/committees/edit.html:19 templates/committees/options.html:15
+msgid "Edit"
+msgstr "ਸੋਧ"
+
+#: templates/committees/edit.html:39
+msgid "Save Committee Changes"
+msgstr ""
+
+#: templates/committees/edit.html:42
+msgid "Link to delete confirmation page"
+msgstr "ਪੁਸ਼ਟੀ ਸਫ਼ੇ ਨੂੰ ਹਟਾਉਣ ਲਈ ਲਿੰਕ ਕਰੋ"
+
+#: templates/committees/edit.html:43 templates/committees/options.html:28
+msgid "Delete"
+msgstr "ਹਟਾਓ"
+
+#: templates/committees/meta.html:17
+msgid "Category:"
+msgstr "ਸ਼੍ਰੇਣੀ:"
+
+#: templates/committees/meta.html:19
+msgid "Sub Category:"
+msgstr "ਸਬ ਸ਼੍ਰੇਣੀ:"
+
+#: templates/committees/meta.html:85 templates/committees/nav.html:63
+#: templates/committees/options.html:24
+msgid "Edit Meta"
+msgstr "ਸੋਧ ਮੈਟਾ"
+
+#: templates/committees/meta.html:86 templates/committees/nav.html:64
+msgid "Edit Categories"
+msgstr "ਸੋਧ ਵਰਗ"
+
+#: templates/committees/nav.html:23
+msgid "Tendenci"
+msgstr "ਝੁਕਾਅ"
+
+#: templates/committees/nav.html:25
+msgid "Dashboard"
+msgstr "ਡੈਸ਼ਬੋਰਡ"
+
+#: templates/committees/nav.html:26
+msgid "My Profile"
+msgstr "ਵਾਪਸ ਮੇਰੇ ਪ੍ਰੋਫ਼ਾਈਲ &#39;"
+
+#: templates/committees/nav.html:27
+msgid "Log Off"
+msgstr "ਲਾਗ ਆਫ"
+
+#: templates/committees/nav.html:36
+msgid "All Committees"
+msgstr ""
+
+#: templates/committees/nav.html:43
+msgid "Settings"
+msgstr "ਸੈਟਿੰਗ"
+
+#: templates/committees/nav.html:45
+msgid "Search Committees"
+msgstr ""
+
+#: templates/committees/nav.html:47
+msgid "Add Committee"
+msgstr ""
+
+#: templates/committees/nav.html:50
+msgid "Add Position"
+msgstr ""
+
+#: templates/committees/nav.html:56
+msgid "This Committee"
+msgstr ""
+
+#: templates/committees/nav.html:59
+msgid "View Committee"
+msgstr ""
+
+#: templates/committees/nav.html:62
+msgid "Edit Committee"
+msgstr ""
+
+#: templates/committees/nav.html:76
+msgid "Files"
+msgstr "ਫਾਇਲ"
+
+#: templates/committees/options.html:20
+msgid "More options"
+msgstr "ਹੋਰ ਵਿਕਲਪ"
+
+#: templates/committees/search.html:10
+msgid "Committees"
+msgstr ""
+
+#: templates/committees/search.html:17
+msgid "Committee List"
+msgstr ""
+
+#: templates/committees/search.html:25
+msgid "0 committees found"
+msgstr ""

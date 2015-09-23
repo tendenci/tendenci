@@ -1,0 +1,57 @@
+{% extends "committees/base.html" %}
+{% load committee_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_COMMITTEE_LABEL 'Committee' %} Edit Meta Information{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_COMMITTEES_LABEL 'COMMITTEE' %} {% trans "Meta Information for" %}<br />
+    {{ committee.title }}</h1>
+
+    <div class="committee-wrap">
+        <div class="options">
+            <div class="quick-options">
+                {% committee_options request.user committee %}
+            </div>
+        </div>
+
+        <form action="{% url "committees.edit.meta" committee.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="Save Changes" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_committee = confirm("Permenantly delete {% firstof MODULE_COMMITTEES_LABEL 'Committee' %}?");   // confirm
+                if(delete_committee) $(this).parents('.committee-wrap').find('form[name="committee-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:  'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:     'more-options-target'
+        });
+    </script>
+{% endblock %}

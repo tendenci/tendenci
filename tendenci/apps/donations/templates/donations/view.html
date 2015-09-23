@@ -1,0 +1,56 @@
+{% extends "donations/base.html" %}
+{% load i18n %}
+{% load donation_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'View a Donation' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/donations.css">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans 'View a Donation' %}</h1>
+<div class="donation-view">
+<div class="label">{% trans 'Donation Amount' %}:</div><div><b>{{ donation.donation_amount }}</b></div>
+<div class="clear-left"></div>
+{% if donation.allocation %}
+<div class="label">{% trans 'Allocated to' %}:</div><div>{{donation.allocation }}</div>
+<div class="clear-left"></div>
+{% endif %}
+<div class="label">{% trans 'Invoice ID' %}:</div>
+{% if donation.invoice %}
+	<div><a href="{% url 'invoice.view' donation.invoice.id %}">{{ donation.invoice.id }}</a></div>
+{% else %}
+	<div>n/a</div>
+{% endif %}
+<div class="clear-left"></div>
+{% if donation.user %}
+<div class="label">{% trans 'User' %}:</div><div><a href="{% url 'profile' donation.user.username %}">{{donation.user.username }}</a></div>
+<div class="clear-left"></div>
+{% endif %}
+<br />
+<div class="label">{% trans 'Name' %}:</div><div>{{ donation.first_name }} {{ donation.last_name }}</div>
+<div class="clear-left"></div>
+<div class="label">{% trans 'Company' %}:</div><div>{{ donation.company }}</div>
+<div class="clear-left"></div>
+<div class="label">{% trans 'Address' %}:</div><div>{{ donation.address }} {{ donation.address2 }}
+		{{ donation.city }} {{ donation.state }} {{ donation.zip_code }} {{ donation.country }}</div>
+<div class="clear-left"></div>
+<div class="label">{% trans 'Phone' %}:</div><div>{{ donation.phone }}</div>
+<div class="clear-left"></div>
+<div class="label">{% trans 'Email' %}:</div><div>{{ donation.email|obfuscate_email }}</div>
+<div class="clear-left"></div>
+<br />
+<div class="label">{% trans 'Referred By' %}:</div><div>{{ donation.referral_source }}</div>
+<div class="clear-left"></div>
+<div class="label">{% trans 'Comments' %}:</div><div>{{ donation.comments|safe }}</div>
+<div class="clear-left"></div>
+<br />
+<div class="label">{% trans 'Create Date' %}:</div><div>{{ donation.create_dt|date:"long" }}</div>
+<div class="clear-left"></div>
+</div>
+</div>
+{% endblock %}

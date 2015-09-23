@@ -1,0 +1,139 @@
+{% extends "staff/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load staff_tags %}
+{% load tagging_tags %}
+{% load i18n %}
+
+{% block title %}
+    {% nowhitespace %}
+        {{ staff.name|safe }}
+        {% if staff.positions %}
+            {% for position in staff.positions.all %}
+                &nbsp;&ndash;&nbsp;{{ staff.position }}
+            {% endfor %}
+        {% endif %}
+        {% if staff.department %}
+            &nbsp;&ndash;&nbsp;{{ staff.department }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        staff {{ staff.name }}
+    {% if staff.positions %}
+        {% for position in staff.positions.all %}
+                ,{{ position }}
+            {% endfor %}
+        {% endif %}
+        {% if staff.tags %}
+            {{ staff.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ staff.name }}
+        {% if staff.positions %}
+            {% for position in staff.positions.all %}
+                ,{{ position }}
+            {% endfor %}
+        {% endif %}
+        {% if staff.department %}
+            ,{{ staff.department }}
+        {% endif %}
+        {{ staff.biography|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/staff-view.css">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="view-staff-member">
+
+        <div id="staff-top" class="clearfix">
+            {% for img in staff.stafffile_set.all %}
+                {% if img.photo_type == "featured" %}
+                    <div class="member-photo">
+                        <img alt="{{ staff.name }}" src="{% url "file" img.pk %}190x190" /><br />
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        <div class="member-info">
+            {% spaceless %}
+                <h1 style="border: none;">
+                    {{ staff.name|safe }}
+                </h1>
+            {% endspaceless %}
+            {% if staff.positions %}{% for position in staff.positions.all %}<h2>{{ position }}</h2>{% endfor %}{% endif %}
+            {% if staff.department %}<h3>{{ staff.department }}</h3>{% endif %}
+            {% if staff.phone or staff.email %}
+                <div id="staff-contact">
+                    {% if staff.phone %}<p><strong>{% trans 'Phone' %}: </strong>{{ staff.phone }}</p>{% endif %}
+                    {% if staff.email %}<p><strong>{% trans 'Email' %}: </strong>{{ staff.email|obfuscate_email }}</p>{% endif %}
+                </div>
+            {% endif %}
+        </div>
+        </div><!-- /staff-top -->
+
+        <div id="main-staff-info" class="clearfix">
+            {% if staff.personal_sites %}
+                <strong>{% trans 'Websites' %}: </strong>{{ staff.personal_sites|urlize }}
+            {% endif %}
+
+            {% if staff.biography %}
+                <div id="staff-bio">
+                    <h2>{{ staff.name|striptags }}'s Biography</h2>
+                    <div class="staff-story"> {{ staff.biography|safe }}</div>
+                    {% if staff.cv %}
+                    <p class="cv-link"><a href="{{ staff.get_absolute_url }}cv/">View {{ staff.name|striptags }}'s CV</a></p>
+                    {% endif %}
+
+                </div><!-- /staff-bio -->
+            {% endif %}
+
+        </div><!-- /main-staff-info -->
+
+        <div id="staff-photos" class="clearfix">
+            {% for img in staff.stafffile_set.all %}
+            {% if img.photo_type == "other" %}
+            <a rel="staff-photos" title="{{ staff.description }}" href="{% url "file" img.pk %}?.jpg"><img alt="{{ staff.description }}" height="190" width="190" src="{% url "file" img.pk %}{{ forloop.counter|add:"190" }}x{{ forloop.counter|add:"190" }}/" /></a>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="staff-meta">
+            <a href="{% url "staff.search" %}">&laquo;&nbsp;{% trans 'Search other staff' %}</a>
+        </div>
+        <div class="view-options clearfix" style="position: relative;">
+           <div class="quick-options">{% staff_options request.user staff %}</div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script src="{{ THEME_URL }}media/js/jquery.colorbox-min.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("a[rel='staff-photos']").colorbox({ height: '80%', width: '780' });
+});
+</script>
+
+<!--[if lt IE 7 ]>
+    <script src="{{ THEME_URL }}media/js/libs/dd_belatedpng.js"></script>
+    <script> DD_belatedPNG.fix('img, .png_bg');</script>
+<![endif]-->
+
+{% endblock %}

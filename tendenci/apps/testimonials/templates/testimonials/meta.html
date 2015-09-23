@@ -1,0 +1,64 @@
+{% load testimonial_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user testimonials.change_testimonial testimonial as can_edit %}
+{% has_perm user testimonials.delete_testimonial testimonial as can_delete %}
+
+<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <div class="meta-left">
+        
+        {% if user.is_authenticated %}
+            <div class="submitted">{% blocktrans with testimonial.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+            by:{% endblocktrans %} <a href="{{ testimonial.creator.get_absolute_url }}">
+            {% if testimonial.creator.first_name %}{{ testimonial.creator.first_name }} {{ testimonial.creator.last_name }}
+            {% else %}
+            {{ testimonial.creator }}
+            {% endif %}</a>
+            </div>
+            <div class="submitted">{% blocktrans with testimonial.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+            by:{% endblocktrans %} <a href="{{ testimonial.owner.get_absolute_url }}">
+            {% if testimonial.owner.first_name %}{{ testimonial.owner.first_name }} {{ testimonial.owner.last_name }}
+            {% else %}
+            {{ testimonial.owner }}
+            {% endif %}</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="meta-right">
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+    
+</div>
+{% if can_edit %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ testimonial.obj_perms }}</li>
+        <li>{{ testimonial.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ testimonial.pk }}&source={{ testimonial.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url admin:testimonials_testimonial_change testimonial.pk %}?next={{ request.path }}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                {% if can_delete %}
+                <li>
+                    <a class="delete" href="{% url admin:testimonials_testimonial_delete testimonial.pk %}">{% trans "Delete" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}

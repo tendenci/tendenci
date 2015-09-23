@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Jenny Qian <jqian@tendenci.com>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-24 23:01+0000\n"
+"PO-Revision-Date: 2014-10-13 19:51+0000\n"
+"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/projects/p/tendenci/language/zh_CN/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: models.py:22
+msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
+msgstr ""
+
+#: models.py:106
+msgid "File type"
+msgstr ""
+
+#: templates/case_studies/meta.html:25
+msgid "Share"
+msgstr "共享"
+
+#: templates/case_studies/meta.html:40
+msgid "Eventlogs"
+msgstr "事件日志"
+
+#: templates/case_studies/meta.html:41
+msgid "Edit"
+msgstr "编辑"
+
+#: templates/case_studies/meta.html:42
+msgid "Options"
+msgstr "选项"
+
+#: templates/case_studies/meta.html:46
+msgid "Delete"
+msgstr "删除"
+
+#: templates/case_studies/print-view.html:36
+msgid "Case Study Print View"
+msgstr ""
+
+#: templates/case_studies/print-view.html:39
+msgid "Back to regular case study view"
+msgstr ""
+
+#: templates/case_studies/print-view.html:40
+msgid "Your printed page will look <em>something</em> like this."
+msgstr "打印的页面的外观的 <em>事 </em>的这个样子。"
+
+#: templates/case_studies/print-view.html:46
+msgid "Case Study"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:18
+msgid "Home"
+msgstr "首页"
+
+#: templates/case_studies/admin/change_form.html:21
+msgid "Add"
+msgstr "增添"
+
+#: templates/case_studies/admin/change_form.html:28
+msgid "History"
+msgstr "历史"
+
+#: templates/case_studies/admin/change_form.html:29
+msgid "View on site"
+msgstr "在站点上查看"
+
+#: templates/case_studies/admin/change_form.html:39
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""

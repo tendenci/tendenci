@@ -1,0 +1,18 @@
+{% load tagging_tags %}
+{% load base_filters %}
+
+{{ object.name }}
+{{ object.biography|striptags|stripentities }}
+
+{% if object.department %}
+department:{{ object.department }}
+{% endif %}
+
+{% if object.position %}
+position:{{ object.position }}
+{% endif %}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }} 
+{% endfor %}

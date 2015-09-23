@@ -1,0 +1,14 @@
+{{ object.donation_amount }} 
+{{ object.payment_method }} 
+{{ object.allocation }} 
+{{ object.first_name }} 
+{{ object.last_name }} 
+{{ object.email }} 
+{{ object.phone }} 
+{{ object.company }} 
+{{ object.address }} 
+{{ object.city }}  
+{{ object.state }}
+{{ object.zip_code }}
+{{ object.creator.get_full_name }} 
+{{ object.creator.username }}

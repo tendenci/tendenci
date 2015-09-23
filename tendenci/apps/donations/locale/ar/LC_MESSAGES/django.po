@@ -1,0 +1,162 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-08-12 20:53+0000\n"
+"PO-Revision-Date: 2014-10-19 22:56+0000\n"
+"Last-Translator: Team Tendenci <programmers@tendenci.com>\n"
+"Language-Team: Arabic (http://www.transifex.com/projects/p/tendenci/language/ar/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: forms.py:10 forms.py:68
+msgid "Please enter the donation amount."
+msgstr ""
+
+#: forms.py:11 forms.py:69
+msgid "Please select a payment method."
+msgstr "يرجى تحديد طريقة الدفع."
+
+#: forms.py:12 forms.py:70
+msgid "Paid by Check"
+msgstr ""
+
+#: forms.py:13 forms.py:71
+msgid "Make Online Payment"
+msgstr "جعل الدفع الإلكتروني"
+
+#: forms.py:19 forms.py:77
+msgid "A valid e-mail address, please."
+msgstr "عنوان البريد الإلكتروني صحيح، الرجاء."
+
+#: forms.py:61 forms.py:144
+msgid "Please enter a positive number"
+msgstr ""
+
+#: forms.py:63 forms.py:146
+msgid "Please enter a numeric positive number"
+msgstr ""
+
+#: management.py:9
+msgid "Donation Added"
+msgstr ""
+
+#: management.py:9
+msgid "A donation has been added."
+msgstr ""
+
+#: models.py:15
+msgid "address line 2"
+msgstr "العنوان سطر 2"
+
+#: models.py:22
+msgid "referred by"
+msgstr "يحيلها"
+
+#: templates/donations/add.html:43
+msgid "Donation Amount"
+msgstr ""
+
+#: templates/donations/add.html:54
+msgid "Donate to"
+msgstr ""
+
+#: templates/donations/add.html:66
+msgid "Payment Method"
+msgstr "طريقة الدفع"
+
+#: templates/donations/add.html:80
+msgid "First Name"
+msgstr "الاسم الأول"
+
+#: templates/donations/add.html:90
+msgid "Last Name"
+msgstr "اسم العائلة"
+
+#: templates/donations/add.html:99
+msgid "Company"
+msgstr "شركة"
+
+#: templates/donations/add.html:108
+msgid "Address"
+msgstr "عنوان"
+
+#: templates/donations/add.html:117
+msgid "Address Line 2"
+msgstr "سطر العنوان 2"
+
+#: templates/donations/add.html:133
+msgid "City"
+msgstr "المدينة"
+
+#: templates/donations/add.html:134
+msgid "State"
+msgstr "الدولة"
+
+#: templates/donations/add.html:135
+msgid "Zip Code"
+msgstr "الرمز البريدي"
+
+#: templates/donations/add.html:145
+msgid "Country"
+msgstr "بلد"
+
+#: templates/donations/add.html:155
+msgid "Phone"
+msgstr "الهاتف"
+
+#: templates/donations/add.html:165
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#: templates/donations/add.html:174
+msgid "Email Receipt?"
+msgstr ""
+
+#: templates/donations/add.html:187
+msgid "Referred by"
+msgstr ""
+
+#: templates/donations/add.html:196
+msgid "Comments"
+msgstr "تعليقات"
+
+#: templates/donations/add.html:206
+msgid "Captcha"
+msgstr ""
+
+#: templates/donations/nav.html:18
+msgid "Tendenci"
+msgstr "الميل"
+
+#: templates/donations/nav.html:20
+msgid "Dashboard"
+msgstr "لوحة القيادة"
+
+#: templates/donations/nav.html:21
+msgid "My Profile"
+msgstr "ملفي الشخصي"
+
+#: templates/donations/nav.html:22
+msgid "Log Off"
+msgstr "تسجيل الخروج"
+
+#: templates/donations/nav.html:32
+msgid "All Donations"
+msgstr ""
+
+#: templates/donations/nav.html:39
+msgid "Settings"
+msgstr "إعدادات"
+
+#: templates/donations/nav.html:47
+msgid "This Donation"
+msgstr ""

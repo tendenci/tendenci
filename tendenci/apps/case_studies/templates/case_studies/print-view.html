@@ -1,0 +1,95 @@
+{% extends "base-print.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load i18n %}
+
+{% block title %}
+        {{ case_study.client }} - {% for tech in case_study.technologies.all %}
+                {% if forloop.first %}{{ tech.title }}{% endif %} {% endfor %} Case Study
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        casestudy {{ case_study.client }}
+        {% if case_study.tags %}
+            {{ case_study.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ case_study.client }} case study
+        {{ case_study.overview|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/casestudy.css">
+{% endblock %}
+
+{% block content %}
+<div class="t-print">
+
+	<div class='hide-this'>
+		<h1>{{ case_study.client }} {% trans "Case Study Print View" %}</h1>
+
+		<div class="guide">
+			<div><a href="{{ case_study.get_absolute_url }}">&laquo; {% trans "Back to regular case study view" %}</a></div>
+			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
+		</div>
+	</div>
+
+    <div class="casestudy-wrap">
+        <p>{{SITE_GLOBAL_SITEURL}}{{ case_study.get_absolute_url }}</p>
+        <h2>{{ case_study.client }} {% trans "Case Study" %}</h2>
+        <section id="case-study-text" class="clearfix">
+          
+              <div id="service-tech">
+              
+                {% for img in case_study.featured_screenshots %}
+                  {% if forloop.first %}
+                  <div id="featured-screenshot">
+                      <a rel="cs-photos" title="{{ img.description }}" href="{% url "file" img.pk %}?.jpg"><img alt="{{ img.description }}" height="156" width="200" src="{% url "file" img.pk %}{{ forloop.counter|add:"200" }}x{{ forloop.counter|add:"156" }}/" /></a>
+                  </div>
+                  {% endif %}
+                  {% endfor %}
+              <h2>URL</h2>
+                  {{ case_study.url }}
+              </div>
+
+              {% if case_study.overview %}
+                  <h2>Overview</h2>
+                  <p>{{ case_study.overview|safe }}</p>
+              {% endif %}
+              {% if case_study.execution %}
+                  <h2>Execution</h2>
+                  <p>{{ case_study.execution|safe }}</p>
+              {% endif %}
+              {% if case_study.results %}
+                  <h2>Results</h2>
+                  <p>{{ case_study.results|safe }}</p>
+              {% endif %}
+        
+          </section><!-- /case-study-text -->
+          
+          <h2>Screenshots</h2>
+          <div id="cs-photos" class="clearfix">
+              {% for img in case_study.screenshots %}
+              <a rel="cs-photos" title="{{ img.description }}" href="{% url "file" img.pk %}?.jpg"><img alt="{{ img.description }}" height="210" width="270" src="{% url "file" img.pk %}{{ forloop.counter|add:"270" }}x{{ forloop.counter|add:"210" }}/" /></a>
+              {% endfor %}
+          </div>
+          {% if tags %}
+        <div class="tags">
+            Tags: 
+            {% for tag in tags %}
+              <a href="{% url "case_study" %}?q=tag:{{ tag }}">{{ tag }}</a>
+            {% endfor %}  
+        </div>
+        {% endif %}
+        
+    </div>
+
+</div>
+{% endblock %}

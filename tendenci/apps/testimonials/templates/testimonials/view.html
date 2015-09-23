@@ -1,0 +1,92 @@
+{% extends "testimonials/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load testimonial_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+     {% nowhitespace %}
+        {{ testimonial.first_last_name }}
+        &nbsp;&ndash;&nbsp;{{ testimonial.testimonial|striptags|truncatewords:"10" }}
+        &nbsp;&ndash;&nbsp;Testimonial
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        testimonial {{ testimonial.first_last_name }}
+        {% if testimonial.tags %}
+            {{ testimonial.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ testimonial.first_last_name }} testimonial
+        {{ testimonial.testimonial|striptags|truncatewords:"50" }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/testimonial.css">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="tsm-view">
+        <div class="quick-options">
+            {% testimonial_options request.user testimonial %}
+        </div>
+        <h1>
+            {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }} Testimonial
+        </h1>
+        <span class="tsm-quotation">&ldquo;</span>
+        <div class="tsm-testimonial">{{ testimonial.testimonial|safe }}</div>
+        {% if testimonial.photo %}
+        <p>
+            <img src="{% url 'file' testimonial.image.pk %}" alt="{{ testimonial.first_last_name }}" title="{{ testimonial.first_last_name }}">
+        </p>
+        {% endif %}
+        <p class="tsm-person-info">
+            {% if testimonial.email %}
+                {{  testimonial.email|obfuscate_email:testimonial.first_last_name }}
+            {% else %}
+                {{ testimonial.first_last_name }}
+            {% endif %}
+            {% if testimonial.title %}
+                &nbsp;&ndash;&nbsp;{{ testimonial.title }}
+            {% endif %}
+            {% if testimonial.company %}
+                &nbsp;&ndash;&nbsp;{{ testimonial.company }}
+            {% endif %}
+        </p>
+        {% if testimonial.website %}
+        <p class="tsm-person-info">
+            {{ testimonial.website|urlize }}
+        </p>
+        {% endif %}
+        {%  if testimonial.country or testimonial.city or testimonial.state %}
+        <p class="tsm-person-info">
+            {% if testimonial.city %}
+                {{ testimonial.city }}
+            {% endif %}
+            {% if testimonial.state and testimonial.city %}
+                ,&nbsp;{{ testimonial.state }}
+            {% else %}
+                &nbsp;{{ testimonial.state }}
+            {% endif %}
+            {% if testimonial.country %}
+                &nbsp;{{ testimonial.country }}
+            {% endif %}
+        </p>
+        {% endif %}
+        <div style="clear: both">&nbsp;</div>
+        <div class="tsm-meta">
+            <a href="{% url 'testimonial.search' %}">&laquo;&nbsp;Search other testimonials</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

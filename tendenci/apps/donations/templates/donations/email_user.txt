@@ -1,0 +1,42 @@
+{% load base_filters %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Email Notification</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+
+	<p><font face="Arial, Helvetica, sans-serif" size="2">
+	{{ donation.first_name }} {{ donation.last_name }},
+	</font></p>
+
+	<p><font face="Arial, Helvetica, sans-serif" size="2">
+	{{ SITE_GLOBAL_SITEDISPLAYNAME }} thanks you for your donation of
+	{% if donation.allocation %} 
+		{{ donation.donation_amount|format_currency }} to be allocated to {{ donation.allocation }}.
+	{% else %}
+		{{ donation.donation_amount|format_currency }}.
+	{% endif %}
+	This e-mail does not confirm payment approval.
+	</font></p>
+
+	<p><font face="Arial, Helvetica, sans-serif" size="2">
+	To check the status of your payment, click here:  
+	<a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.id invoice.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.id invoice.guid %}</a>					
+	</font></p>
+
+	<p><font face="Arial, Helvetica, sans-serif" size="2" color="red">
+	*** Important Note: this is your private link, please DO NOT share it with anybody publicly.		
+	</font></p>
+	
+	<p><font face="Arial, Helvetica, sans-serif" size="2">
+	To view and print your receipt, click here, 
+	<a href="{{ SITE_GLOBAL_SITEURL }}{% url "donation.receipt" donation.id donation.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url "donation.receipt" donation.id donation.guid %}</a>					
+	</font></p>
+
+</body>
+</html>

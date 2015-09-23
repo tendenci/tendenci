@@ -1,0 +1,14 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user staff.change_staff opt_object as can_edit %}
+{% has_perm user staff.delete_staff opt_object as can_delete %}
+
+<div class="t-iconrow">
+	{% if can_edit %}
+		<a class="option-link edit" href="{% url 'admin:testimonials_testimonial_change' opt_object.pk %}?next={{ request.path }}">Edit</a>
+	{% endif %}
+    {% if can_delete %}
+        <a class="option-link delete" href="{% url 'admin:testimonials_testimonial_delete' opt_object.pk %}">Delete</a>
+    {% endif %}
+</div>

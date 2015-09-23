@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-22 20:19+0000\n"
+"PO-Revision-Date: 2014-10-20 15:08+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Latvian (Latvia) (http://www.transifex.com/projects/p/tendenci/language/lv_LV/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: lv_LV\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
+
+#: models.py:37
+msgid "Personal Sites"
+msgstr ""
+
+#: models.py:42
+msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
+msgstr ""
+
+#: templates/staff/meta.html:12
+msgid "Owned by you"
+msgstr ""
+
+#: templates/staff/meta.html:12
+msgid "status"
+msgstr ""
+
+#: templates/staff/meta.html:24
+msgid "Share"
+msgstr ""
+
+#: templates/staff/meta.html:39
+msgid "Eventlogs"
+msgstr ""
+
+#: templates/staff/meta.html:40
+msgid "Edit"
+msgstr ""
+
+#: templates/staff/meta.html:41
+msgid "Options"
+msgstr ""
+
+#: templates/staff/meta.html:45
+msgid "Delete"
+msgstr ""
+
+#: templates/staff/search.html:25
+msgid "Add"
+msgstr ""
+
+#: templates/staff/search.html:31
+msgid "Found"
+msgstr ""

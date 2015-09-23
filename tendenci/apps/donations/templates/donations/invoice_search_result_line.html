@@ -1,0 +1,29 @@
+{% load base_filters %}
+{% load invoice_tags %}
+{% load i18n %}
+
+<table width="100%">
+     {% invoices_search_line_header request invoice '#663300' %}
+
+     {# display donation info #}
+
+     <tr>
+     	<td>{% trans 'DonationID' %}</td>
+     	<td>{% trans 'First Name' %}</td>
+     	<td>{% trans 'Last Name' %}</td>
+     	<td>{% trans 'Date' %}</td>
+     	<td>{% trans 'Amount' %}</td>
+     	<td>{% trans 'Balance' %}</td>
+     </tr>
+     {% if obj %}
+      <tr>
+      	<td><a href="{% url 'donation.view' obj.id %}">{{obj.id}}</a></td>
+      	<td>{{obj.first_name}}</td>
+      	<td>{{obj.last_name}}</td>
+      	<td>{{obj.create_dt|date:'long'}}</td>
+      	<td>{{obj.donation_amount|format_currency}}</td>
+      	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+      </tr>
+      {% endif %}
+
+ </table>

@@ -1,0 +1,162 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-08-12 20:53+0000\n"
+"PO-Revision-Date: 2014-10-20 14:41+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/tendenci/language/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: forms.py:10 forms.py:68
+msgid "Please enter the donation amount."
+msgstr ""
+
+#: forms.py:11 forms.py:69
+msgid "Please select a payment method."
+msgstr ""
+
+#: forms.py:12 forms.py:70
+msgid "Paid by Check"
+msgstr ""
+
+#: forms.py:13 forms.py:71
+msgid "Make Online Payment"
+msgstr ""
+
+#: forms.py:19 forms.py:77
+msgid "A valid e-mail address, please."
+msgstr ""
+
+#: forms.py:61 forms.py:144
+msgid "Please enter a positive number"
+msgstr ""
+
+#: forms.py:63 forms.py:146
+msgid "Please enter a numeric positive number"
+msgstr ""
+
+#: management.py:9
+msgid "Donation Added"
+msgstr ""
+
+#: management.py:9
+msgid "A donation has been added."
+msgstr ""
+
+#: models.py:15
+msgid "address line 2"
+msgstr ""
+
+#: models.py:22
+msgid "referred by"
+msgstr ""
+
+#: templates/donations/add.html:43
+msgid "Donation Amount"
+msgstr ""
+
+#: templates/donations/add.html:54
+msgid "Donate to"
+msgstr ""
+
+#: templates/donations/add.html:66
+msgid "Payment Method"
+msgstr ""
+
+#: templates/donations/add.html:80
+msgid "First Name"
+msgstr ""
+
+#: templates/donations/add.html:90
+msgid "Last Name"
+msgstr ""
+
+#: templates/donations/add.html:99
+msgid "Company"
+msgstr ""
+
+#: templates/donations/add.html:108
+msgid "Address"
+msgstr ""
+
+#: templates/donations/add.html:117
+msgid "Address Line 2"
+msgstr ""
+
+#: templates/donations/add.html:133
+msgid "City"
+msgstr ""
+
+#: templates/donations/add.html:134
+msgid "State"
+msgstr ""
+
+#: templates/donations/add.html:135
+msgid "Zip Code"
+msgstr ""
+
+#: templates/donations/add.html:145
+msgid "Country"
+msgstr ""
+
+#: templates/donations/add.html:155
+msgid "Phone"
+msgstr ""
+
+#: templates/donations/add.html:165
+msgid "Email"
+msgstr ""
+
+#: templates/donations/add.html:174
+msgid "Email Receipt?"
+msgstr ""
+
+#: templates/donations/add.html:187
+msgid "Referred by"
+msgstr ""
+
+#: templates/donations/add.html:196
+msgid "Comments"
+msgstr ""
+
+#: templates/donations/add.html:206
+msgid "Captcha"
+msgstr ""
+
+#: templates/donations/nav.html:18
+msgid "Tendenci"
+msgstr ""
+
+#: templates/donations/nav.html:20
+msgid "Dashboard"
+msgstr ""
+
+#: templates/donations/nav.html:21
+msgid "My Profile"
+msgstr ""
+
+#: templates/donations/nav.html:22
+msgid "Log Off"
+msgstr ""
+
+#: templates/donations/nav.html:32
+msgid "All Donations"
+msgstr ""
+
+#: templates/donations/nav.html:39
+msgid "Settings"
+msgstr ""
+
+#: templates/donations/nav.html:47
+msgid "This Donation"
+msgstr ""

@@ -1,0 +1,36 @@
+[
+    {
+        "default_value": "true", 
+        "description": "Module is enabled or not.", 
+        "data_type": "boolean", 
+        "update_dt": "2010-08-12 17:19:12", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "enabled", 
+        "value": "true", 
+        "label": "Enabled", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "case_studies", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "case-studies", 
+        "description": "A global site setting for a url for the case_studies plugin", 
+        "data_type": "string",
+        "update_dt": "2012-03-07 15:38:23",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "case_studies_url", 
+        "value": "case-studies", 
+        "label": "Case Studies URL", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "case_studies", 
+        "store": true, 
+        "updated_by": ""
+    }
+]

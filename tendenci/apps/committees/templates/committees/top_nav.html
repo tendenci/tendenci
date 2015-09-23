@@ -1,0 +1,19 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load committee_tags %}
+
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/>{% trans 'Committees' %}
+    </a>
+
+    {% if committee %}
+        {% committee_current_app request.user committee %}
+    {% else %}
+        {% committee_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}

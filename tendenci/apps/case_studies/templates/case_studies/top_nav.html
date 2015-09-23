@@ -1,0 +1,19 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load case_study_tags %}
+
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/folder_table.png' %}"/>{% trans 'Case Studies' %}
+    </a>
+
+    {% if case_study %}
+        {% case_study_current_app request.user case_study %}
+    {% else %}
+        {% case_study_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}

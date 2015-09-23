@@ -1,0 +1,77 @@
+{% extends "studygroups/base.html" %}
+{% load studygroup_tags %}
+{% load i18n %}
+
+{% block content %}
+<div class="t">
+    <div class="studygroup-wrap">
+        <div class="studygroup-title">
+            {% trans 'STUDY GROUP' %} {{ study_group.title }}
+        </div>
+
+        <div class="studygroup-mission">
+            {{ study_group.mission|safe }}
+        </div>
+
+        <div class="studygroup-content">
+            {{ study_group.content|safe }}
+        </div>
+
+        <div class="studygroup-officers">
+            <div class="label">
+                <label for="officer-table">{% trans 'OFFICERS' %}</label>
+            </div>
+			<table id="officer-table">
+			    <thead>
+			        <tr>
+			            <th class="officer-position">{% trans 'Position' %}</th>
+                        <th class="officer-name">{% trans 'Name' %}</th>
+                        <th class="officer-phone">{% trans 'Phone' %}</th>
+			        </tr>
+			    </thead>
+
+			    <tbody>
+			        {% for officer in officers %}
+			        <tr>
+			            <td class="officer-position">{{ officer.position }}</td>
+
+			            <td class="officer-name">
+			                <a href="{{ officer.user.get_profile.get_absolute_url }}">
+			                    {% if officer.user.get_full_name %}
+                                {{ officer.user.get_full_name }}
+                                {% else %}
+                                {{ officer.user }}
+                                {% endif %}
+			                </a>
+			            </td>
+
+			            <td class="officer-phone">{{ officer.phone }}</td>
+			        </tr>
+			        {% endfor %}
+			    </tbody>
+			</table>
+        </div>
+
+        {% if admin %}
+        <div class="studygroup-notes">
+            {{ study_group.notes|safe }}
+        </div>
+        {% endif %}
+
+        <div class="studygroup-files">
+            {% trans 'Files' %} {% if admin %}<a href="{% url 'file.add' %}">{% trans 'Add a File' %}</a>{% endif %}
+            <ul class="file-list">
+            {% for file in files %}
+                <li class="file-list">
+                    <a href="{% url 'file' file.pk %}">{{ file.get_name }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+
+
+
+        {% include "studygroups/meta.html" %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-24 23:01+0000\n"
+"PO-Revision-Date: 2014-07-22 17:14+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Arabic (http://www.transifex.com/projects/p/tendenci/language/ar/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: models.py:22
+msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
+msgstr ""
+
+#: models.py:106
+msgid "File type"
+msgstr ""
+
+#: templates/case_studies/meta.html:25
+msgid "Share"
+msgstr ""
+
+#: templates/case_studies/meta.html:40
+msgid "Eventlogs"
+msgstr "و eventlogs"
+
+#: templates/case_studies/meta.html:41
+msgid "Edit"
+msgstr "تحرير"
+
+#: templates/case_studies/meta.html:42
+msgid "Options"
+msgstr "خيارات"
+
+#: templates/case_studies/meta.html:46
+msgid "Delete"
+msgstr "حذف"
+
+#: templates/case_studies/print-view.html:36
+msgid "Case Study Print View"
+msgstr ""
+
+#: templates/case_studies/print-view.html:39
+msgid "Back to regular case study view"
+msgstr ""
+
+#: templates/case_studies/print-view.html:40
+msgid "Your printed page will look <em>something</em> like this."
+msgstr "الصفحة المطبوعة سوف ننظر <em> شيئا </em> مثل هذا."
+
+#: templates/case_studies/print-view.html:46
+msgid "Case Study"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:18
+msgid "Home"
+msgstr "الصفحة الرئيسية"
+
+#: templates/case_studies/admin/change_form.html:21
+msgid "Add"
+msgstr "إضافة"
+
+#: templates/case_studies/admin/change_form.html:28
+msgid "History"
+msgstr "التاريخ"
+
+#: templates/case_studies/admin/change_form.html:29
+msgid "View on site"
+msgstr "عرض في الموقع"
+
+#: templates/case_studies/admin/change_form.html:39
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] "يرجى تصحيح الأخطاء أدناه."

@@ -1,0 +1,57 @@
+{% extends "studygroups/base.html" %}
+{% load studygroup_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_STUDYGROUP_LABEL 'Study Group' %} {% trans 'Edit Meta Information' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_STUDYGROUPS_LABEL 'STUDY GROUP' %} {% trans "Meta Information for" %}<br />
+    {{ study_group.title }}</h1>
+
+    <div class="studygroup-wrap">
+        <div class="options">
+            <div class="quick-options">
+                {% studygroup_options request.user study_group %}
+            </div>
+        </div>
+
+        <form action="{% url "studygroups.edit.meta" study_group.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="Save Changes" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_studygroup = confirm("Permenantly delete {% firstof MODULE_STUDYGROUPS_LABEL 'Study Group' %}?");   // confirm
+                if(delete_studygroup) $(this).parents('.studygroup-wrap').find('form[name="studygroup-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:  'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:     'more-options-target'
+        });
+    </script>
+{% endblock %}

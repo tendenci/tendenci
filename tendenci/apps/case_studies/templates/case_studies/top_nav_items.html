@@ -1,0 +1,98 @@
+{% load i18n %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user case_studies.add_casestudy as can_add_casestudy %}
+
+{% if app_object %}
+    {% has_perm user case_studies.view_casestudy app_object as can_view_casestudy %}
+    {% has_perm user case_studies.change_casestudy app_object as can_edit_casestudy %}
+    {% has_perm user case_studies.delete_casestudy app_object as can_delete_casestudy %}
+{% else %}
+    {% has_perm user case_studies.view_casestudy as can_view_casestudy %}
+    {% has_perm user case_studies.change_casestudy as can_edit_casestudy %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans 'All Case Studies' %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'case_studies' %}">{% trans 'Settings' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'case_study' %}">{% trans 'Search' %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_casestudy %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:case_studies_casestudy_add' %}">{% trans "Add" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_casestudy or can_edit_casestudy %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans 'This Case Study' %}</span>
+                            </li>
+
+                            {% if can_view_casestudy %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans 'View Case Study' %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'case_study.print_view' app_object.pk %}">{% trans 'Print View' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_casestudy %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:case_studies_casestudy_change' app_object.pk %}">{% trans 'Edit Case Study' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_casestudy %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'admin:case_studies_casestudy_delete' app_object.pk %}">{% trans "Delete Case Study" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

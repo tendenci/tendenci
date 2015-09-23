@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-24 23:01+0000\n"
+"PO-Revision-Date: 2014-10-13 20:23+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Hindi (http://www.transifex.com/projects/p/tendenci/language/hi/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hi\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:22
+msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
+msgstr ""
+
+#: models.py:106
+msgid "File type"
+msgstr ""
+
+#: templates/case_studies/meta.html:25
+msgid "Share"
+msgstr ""
+
+#: templates/case_studies/meta.html:40
+msgid "Eventlogs"
+msgstr "Eventlogs"
+
+#: templates/case_studies/meta.html:41
+msgid "Edit"
+msgstr "संपादित करें"
+
+#: templates/case_studies/meta.html:42
+msgid "Options"
+msgstr "विकल्प"
+
+#: templates/case_studies/meta.html:46
+msgid "Delete"
+msgstr "हटाएं"
+
+#: templates/case_studies/print-view.html:36
+msgid "Case Study Print View"
+msgstr ""
+
+#: templates/case_studies/print-view.html:39
+msgid "Back to regular case study view"
+msgstr ""
+
+#: templates/case_studies/print-view.html:40
+msgid "Your printed page will look <em>something</em> like this."
+msgstr "अपने मुद्रित पृष्ठ इस तरह &lt;उन्हें&gt; कुछ &lt;/ उन्हें&gt; दिखेगा."
+
+#: templates/case_studies/print-view.html:46
+msgid "Case Study"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:18
+msgid "Home"
+msgstr "होम"
+
+#: templates/case_studies/admin/change_form.html:21
+msgid "Add"
+msgstr "जोड़ें"
+
+#: templates/case_studies/admin/change_form.html:28
+msgid "History"
+msgstr "इतिहास"
+
+#: templates/case_studies/admin/change_form.html:29
+msgid "View on site"
+msgstr "साइट पर देखें"
+
+#: templates/case_studies/admin/change_form.html:39
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] "नीचे त्रुटियां ठीक करें."

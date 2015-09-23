@@ -1,0 +1,97 @@
+{% load i18n %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user staff.add_staff as can_add_staff %}
+
+{% if app_object %}
+    {% has_perm user staff.view_staff app_object as can_view_staff %}
+    {% has_perm user staff.change_staff app_object as can_edit_staff %}
+    {% has_perm user staff.delete_staff app_object as can_delete_staff %}
+{% else %}
+    {% has_perm user staff.view_staff as can_view_staff %}
+    {% has_perm user staff.change_staff as can_edit_staff %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans 'All Staff' %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'staff' %}">{% trans 'Settings' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'staff' %}">{% trans 'Search' %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_staff %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:staff_staff_add' %}">{% trans "Add" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'staff.feed' %}">{% trans "Feed" %}</a>
+                        </span>
+                    </li>
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_staff or can_edit_staff %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans 'This staff' %}</span>
+                            </li>
+
+                            {% if can_view_staff %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans 'View staff' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_staff %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:staff_staff_change' app_object.pk %}">{% trans 'Edit staff' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_staff %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'admin:staff_staff_delete' app_object.pk %}">{% trans "Delete staff" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

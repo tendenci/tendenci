@@ -1,0 +1,48 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-22 12:12-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/videos/meta.html:16
+msgid "Category:"
+msgstr ""
+
+#: templates/videos/meta.html:21
+#, python-format
+msgid ""
+"Created on %(create_date)s\n"
+"            by:"
+msgstr ""
+
+#: templates/videos/meta.html:28
+#, python-format
+msgid ""
+"Last updated %(update_date)s\n"
+"            by:"
+msgstr ""
+
+#: templates/videos/meta.html:39
+msgid "Share"
+msgstr ""
+
+#: templates/videos/meta.html:54
+msgid "Eventlogs"
+msgstr ""
+
+#: templates/videos/meta.html:56
+msgid "Options"
+msgstr ""

@@ -1,0 +1,79 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user studygroups.add_studygroup as can_add_studygroup %}
+{% has_perm user studygroups.add_position as can_add_position %}
+
+{% if nav_object %}
+    {% has_perm user studygroups.view_studygroup nav_object as can_view_studygroup %}
+    {% has_perm user studygroups.change_studygroup nav_object as can_edit_studygroup %}
+    {% has_perm user studygroups.delete_studygroup nav_object as can_delete_studygroup %}
+{% else %}
+    {% has_perm user studygroups.view_studygroup as can_view_studygroup %}
+    {% has_perm user studygroups.change_studygroup as can_edit_studygroup %}
+{% endif %}
+
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_STUDYGROUPS_LABEL 'Study Groups' %}</a>
+        {% if nav_object %}
+        <div class="dropdown-menu">
+        <ul class="first">
+            <li class="heading">{% trans "All Study Groups" %}</li>
+            <li class="divider"></li>
+        {% else %}
+            <div>
+            <ul class="dropdown-menu">
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "studygroups" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "studygroups.search" %}">{% trans "Search Study Groups" %}</a></li>
+            {% if can_add_studygroup %}
+                <li><a href="{% url "studygroups.add" %}">{% trans "Add Study Group" %}</a></li>
+            {% endif %}
+            {% if can_add_position %}
+                <li><a href="{% url "admin:studygroups_position_add" %}">{% trans "Add Position" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_studygroup or can_edit_studygroup %}
+            <ul>
+                <li class="heading">{% trans "This Study Group" %}</li>
+                <li class="divider"></li>
+                {% if can_view_studygroup %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Study Group" %}</a></li>
+                {% endif %}
+                {% if can_edit_studygroup %}
+                    <li><a href="{% url "studygroups.edit" nav_object.pk %}">{% trans "Edit Study Group" %}</a></li>
+                    <li><a href="{% url "studygroups.edit.meta" nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+                    <li><a href="{% url "category.update" nav_object.opt_app_label study_group.opt_module_name nav_object.pk %}">{% trans "Edit Categories" %}</a></li>
+                {% endif %}
+                {% if can_delete_studygroup %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "studygroups.delete" nav_object.pk %}">{% trans "Delete Study Group" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if nav_object and request.user.is_authenticated %}
+    <li><a href="{% url "files" %}?group={{ nav_object.group_id }}">{% trans 'Files' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

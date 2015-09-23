@@ -1,0 +1,48 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-22 20:29+0000\n"
+"PO-Revision-Date: 2014-10-19 00:30+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Korean (http://www.transifex.com/projects/p/tendenci/language/ko/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ko\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: templates/videos/meta.html:16
+msgid "Category:"
+msgstr "카테고리 :"
+
+#: templates/videos/meta.html:21
+#, python-format
+msgid ""
+"Created on %(create_date)s\n"
+"            by:"
+msgstr "%(create_date)s 작성일             기준 :"
+
+#: templates/videos/meta.html:28
+#, python-format
+msgid ""
+"Last updated %(update_date)s\n"
+"            by:"
+msgstr "마지막 업데이트 %(update_date)s             기준 :"
+
+#: templates/videos/meta.html:39
+msgid "Share"
+msgstr ""
+
+#: templates/videos/meta.html:54
+msgid "Eventlogs"
+msgstr "에서는 Eventlogs"
+
+#: templates/videos/meta.html:56
+msgid "Options"
+msgstr "옵션"

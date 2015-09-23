@@ -1,0 +1,9 @@
+{% load base_tags %}
+<div class="wrap-search-item">
+    <div class="search-item studygroups-search-item">
+        <div>
+            <a href="{{ study_group.get_absolute_url }}">{{ study_group.title }}</a>
+        </div>
+    </div>
+    {% include "studygroups/meta.html" %}
+</div>

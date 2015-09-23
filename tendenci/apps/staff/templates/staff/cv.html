@@ -1,0 +1,72 @@
+{% extends "staff/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load staff_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+    {% nowhitespace %}
+        {{ staff.name }} Curriculum Vitae (CV)
+        {% if staff.position %}
+            &nbsp;&ndash;&nbsp;{{ staff.position }}
+        {% endif %}
+        {% if staff.department %}
+            &nbsp;&ndash;&nbsp;{{ staff.department }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        staff {{ staff.name }}
+        {% if staff.position %}
+            {{ staff.position }}
+        {% endif %}
+        {% if staff.department %}
+            {{ staff.department }}
+        {% endif %}
+        {% if staff.tags %}
+            {{ staff.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ staff.name }}
+        {% if staff.position %}
+            ,{{ staff.position }}
+        {% endif %}
+        {% if staff.department %}
+            ,{{ staff.department }}
+        {% endif %}
+        {{ staff.biography|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/staff.css">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="view-staff-member">
+        <div class="quick-options">
+            {% staff_options request.user staff %}
+        </div>
+        <h1>
+            {{ staff.name }} Curriculum Vitae (CV)
+        </h1>
+        {% if staff.cv %}
+        <p class="staff-bio">
+            {{ staff.cv|safe }}
+        </p>
+        {% endif %}
+        <div class="staff-meta">
+            <a href="{% url "staff.search" %}">&laquo;&nbsp;Search other staff</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

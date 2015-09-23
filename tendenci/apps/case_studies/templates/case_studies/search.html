@@ -1,0 +1,69 @@
+{% extends "case_studies/base.html" %}
+{% load pagination_tags %}
+{% load case_study_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% trans 'Case Studies' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/casestudy.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/casestudy-search.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Case Studies" href="{% url "case_study.feed" %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate case_studies 12 %}
+{% has_perm user case_studies.add_casestudy as can_add_case_study %}
+
+<div class="t">
+    <h1>{% trans 'Case Studies Search' %}</h1>
+    {% case_study_search %}
+    {% if can_add_case_study %}
+    <div class="clearfix"><a id="add-case-study" href="{% url "admin:case_studies_casestudy_add" %}">{% trans 'Add Case Study' %} &raquo;</a></div>
+    {% endif %}
+    <div class="cs-search-wrap clearfix">
+        {% for case_study in case_studies %}
+        <ul>
+        {% with case_study|get_object as case_study %}
+        <li class="cs-search-item">
+            <div class="cs-item">
+                {% for img in case_study.featured_screenshots %}
+                        {% if forloop.first %}
+                    <a class="cs-img-link" href="{{ case_study.get_absolute_url }}"><img alt="{{ case_study.client }}" src="{% url "file" img.pk %}180x130" /></a>
+                    {% endif %}
+                {% endfor %}
+                <h3><a href="{{ case_study.get_absolute_url }}" title="{{ case_study.client }}">{{ case_study.client }}</a></h3>
+            </div>
+            <div class="cs-full">
+                <p style="margin-top: 6px; border-top: 1px dashed #fff; padding-top: 6px;"><a href="{{ case_study.url }}">{% trans 'View this Website' %} &raquo;</a></p>
+            </div>
+        </li>
+        {% endwith %}
+        </ul>
+        {% empty %}
+            <p>{% trans '0 Case Studies Found' %}</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+  <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+  <script type="text/javascript">
+    var iconrow = new dropdown({
+      container:  'more-options-wrap',
+      trigger:  'more-options-trigger',
+      target:    'more-options-target'
+    });
+	var lis = $('.cs-search-wrap ul');
+	for(var i = 0; i < lis.length; i+=3) {
+	  lis.slice(i, i+3)
+		 .wrapAll('<div class="row clearfix"></div>');
+	}
+  </script>
+{% endblock %}

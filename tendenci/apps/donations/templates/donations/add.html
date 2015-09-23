@@ -1,0 +1,221 @@
+{% extends "donations/base.html" %}
+{% load i18n %}
+{% load donation_tags %}
+
+{% block title %}{% trans 'Make a Donation' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/donations.css">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="donation-add">
+
+<h1>{% trans 'Make a Donation' %}</h1>
+{% blocktrans %}
+<p>Complete the form below to make a donation.
+The required fields are marked with <em class="body-copy-alert">*</em>. <br />Thank You!</p>
+{% endblocktrans %}
+<br />
+    {% if form.errors or captcha_form.captcha.errors %}
+        <div class="errors">
+            <p>{% trans 'Please review the fields below. Thank you.' %}</p>
+            <ul>
+            {% for field in form %}
+                {% if field.errors %}
+                    <li><a href="javascript:;">{{ field.label_tag }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if captcha_form.captcha.errors %}
+                	<li><a href="javascript:;">{% trans 'Captcha' %}</a></li>
+            {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+
+<form method="post" action=".">{% csrf_token %}
+<div class="field-wrapper">
+    {% if form.donation_amount.errors %}
+        <div class="errs">{{ form.donation_amount.errors }}</div>
+    {% endif %}
+    <label for="id_donation_amount" class="field-label"><em class="body-copy-alert">*</em>
+    {% trans 'Donation Amount'%} ({{currency_symbol}})</label>
+    {{ form.donation_amount }}
+</div>
+<div class="clear-left"></div>
+
+{% if form.allocation %}
+    <div class="field-wrapper">
+        {% if form.form.allocation.errors %}
+            <div class="errs">{{ form.form.allocation.errors }}</div>
+        {% endif %}
+        <label for="id_form.allocation" class="field-label">
+        {% trans 'Donate to'%}</label>
+        {{ form.allocation }}
+    </div>
+    <div class="clear-left"></div>
+
+{% endif %}
+
+<div class="field-wrapper">
+    {% if form.payment_method.errors %}
+        <div class="errs">{{ form.payment_method.errors }}</div>
+    {% endif %}
+    <label for="id_payment_method" class="field-label"><em class="body-copy-alert">*</em>
+    {% trans 'Payment Method'%}</label>
+    <div class="payment-method-list">{{ form.payment_method }}</div>
+</div>
+<div class="clear-left"></div>
+
+<div class="section-header">
+    {% trans 'Billing Information' %}
+</div>
+
+<div class="field-wrapper">
+    {% if form.first_name.errors %}
+        <div class="errs">{{ form.first_name.errors }}</div>
+    {% endif %}
+    <label for="id_first_name" class="field-label"><em class="body-copy-alert">*</em>
+    {% trans 'First Name'%}</label>
+    {{ form.first_name }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.last_name.errors %}
+        <div class="errs">{{ form.last_name.errors }}</div>
+    {% endif %}
+    <label for="id_last_name" class="field-label"><em class="body-copy-alert">*</em>
+    {% trans 'Last Name'%}</label>
+    {{ form.last_name }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.company.errors %}
+        <div class="errs">{{ form.company.errors }}</div>
+    {% endif %}
+    <label for="id_company" class="field-label">{% trans 'Company'%}</label>
+    {{ form.company }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.address.errors %}
+        <div class="errs">{{ form.address.errors }}</div>
+    {% endif %}
+    <label for="id_address" class="field-label">{% trans 'Address'%}</label>
+    {{ form.address }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.address2.errors %}
+        <div class="errs">{{ form.address2.errors }}</div>
+    {% endif %}
+    <label for="id_address2" class="field-label">{% trans 'Address Line 2'%}</label>
+    {{ form.address2 }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.city.errors %}
+        {{ form.city.errors }}
+    {% endif %}
+    {% if form.state.errors %}
+        {{ form.state.errors }}
+    {% endif %}
+    {% if form.zip_code %}
+        {{ form.zip_code.errors }}
+    {% endif %}
+    <div  class="field-label">
+    <label for="id_city">{% trans 'City'%}</label>
+    /<label for="id_state">{% trans 'State'%}</label>
+    /<label for="id_zip_code">{% trans 'Zip Code'%}</label>
+    </div>
+    {{ form.city }} / {{ form.state }} / {{ form.zip_code }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.country.errors %}
+        <div class="errs">{{ form.country.errors }}</div>
+    {% endif %}
+    <label for="id_country" class="field-label">{% trans 'Country'%}</label>
+    {{ form.country }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.phone.errors %}
+        <div class="errs">{{ form.phone.errors }}</div>
+    {% endif %}
+    <label for="id_phone" class="field-label"><em class="body-copy-alert">*</em>
+    {% trans 'Phone'%}</label>
+    {{ form.phone }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.email.errors %}
+        <div class="errs">{{ form.email.errors }}</div>
+    {% endif %}
+    <label for="id_email" class="field-label"><em class="body-copy-alert">*</em>
+    {% trans 'Email'%}</label>
+    {{ form.email }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.email_receipt.errors %}
+        <div class="errs">{{ form.email_receipt.errors }}</div>
+    {% endif %}
+    <label for="id_email_receipt" class="field-label">{% trans 'Email Receipt?'%}</label>
+    {{ form.email_receipt }}
+</div>
+<div class="clear-left"></div>
+
+<div class="section-header">
+    {% trans 'Other Information' %}
+</div>
+
+<div class="field-wrapper">
+    {% if form.referral_source.errors %}
+        <div class="errs">{{ form.referral_source.errors }}</div>
+    {% endif %}
+    <label for="id_referral_source" class="field-label">{% trans 'Referred by'%}</label>
+    {{ form.referral_source }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+    {% if form.comments.errors %}
+        <div class="errs">{{ form.comments.errors }}</div>
+    {% endif %}
+    <label for="id_comments" class="field-label">{% trans 'Comments'%}</label>
+    {{ form.comments }}
+</div>
+<div class="clear-left"></div>
+
+{% if use_captcha %}
+<div class="field-wrapper">
+    {% if captcha_form.captcha.errors %}
+        <div class="errs">{{ captcha_form.captcha.errors }}</div>
+    {% endif %}
+    <label for="id_captcha" class="field-label">{% trans 'Captcha'%}</label>
+    {{ captcha_form.captcha }}
+</div>
+<div class="clear-left"></div>
+{% endif %}
+
+<div class="submitbutton">
+<input type="submit" name="submit" value="{% trans 'Submit' %}" />
+</div>
+<div class="clear-right"></div>
+</form>
+
+</div>
+</div>
+{% endblock %}

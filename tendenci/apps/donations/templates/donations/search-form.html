@@ -1,0 +1,8 @@
+{% load i18n %}
+
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="search-form" action="{% url 'donation.search' %}" method="get">
+<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+<input type="submit" value="{% trans 'Search' %}" />
+</form>
+{% endif %}

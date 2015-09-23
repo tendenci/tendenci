@@ -1,0 +1,112 @@
+{% extends "case_studies/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load case_study_tags %}
+{% load tagging_tags %}
+{% load forms_tags %}
+{% load i18n %}
+
+{% block title %}
+        {{ case_study.client }} - {% trans 'Case Study' %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        casestudy {{ case_study.client }}
+        {% if case_study.tags %}
+            {{ case_study.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ case_study.client }} case study
+        {{ case_study.overview|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/casestudy.css">
+{% endblock %}
+
+
+
+{% block content %}
+{% tags_for_object case_study as tags %}
+<div class="t">
+    <div class="cs-view">
+        <div class="quick-options">{% case_study_options request.user case_study %}</div>
+
+        <h1>{{ case_study.client }} Case Study</h1>
+
+        <section id="case-study-text" class="clearfix">
+
+            <div id="service-tech">
+
+            {% spaceless %}
+              {% for img in case_study.featured_screenshots %}
+                {% if forloop.first %}
+                <div id="featured-screenshot">
+                    <a rel="cs-photos" title="{{ img.description }}" href="{% url "file" img.pk %}?.jpg"><img alt="{{ img.description }}" height="156" width="200" src="{% url "file" img.pk %}{{ forloop.counter|add:"200" }}x{{ forloop.counter|add:"156" }}/" /></a>
+                </div>
+                {% endif %}
+                {% endfor %}
+            {% endspaceless %}
+
+                <a id="case-study-view-site" href="{{ case_study.url }}">View this Website &rarr;</a>
+            </div>
+
+            {% if case_study.overview %}
+                <h2>{% trans 'Overview' %}</h2>
+                <p>{{ case_study.overview|safe }}</p>
+            {% endif %}
+            {% if case_study.execution %}
+                <h2>{% trans 'Execution' %}</h2>
+                <p>{{ case_study.execution|safe }}</p>
+            {% endif %}
+            {% if case_study.results %}
+                <h2>{% trans 'Results' %}</h2>
+                <p>{{ case_study.results|safe }}</p>
+            {% endif %}
+
+        </section><!-- /case-study-text -->
+
+        <h2>{% trans 'Screenshots' %}</h2>
+        <div id="cs-photos" class="clearfix">
+            {% for img in case_study.screenshots %}
+            <a rel="cs-photos" title="{{ img.description }}" href="{% url "file" img.pk %}?.jpg"><img alt="{{ img.description }}" height="210" width="270" src="{% url "file" img.pk %}{{ forloop.counter|add:"270" }}x{{ forloop.counter|add:"210" }}/" /></a>
+            {% endfor %}
+        </div>
+        {% if tags %}
+      <div class="tags">
+          {% trans 'Tags' %}:
+          {% for tag in tags %}
+            <a href="{% url "case_study" %}?q=tag:{{ tag }}">{{ tag }}</a>
+          {% endfor %}
+      </div>
+      {% endif %}
+
+        <div class="case-meta">
+            <a href="{% url "case_study" %}">&laquo;&nbsp;{% trans 'Search other case studies' %}</a>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script src="{{ THEME_URL }}media/js/jquery.colorbox-min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $("a[rel='cs-photos']").colorbox({width: '80%',height: '66%'});
+
+});
+</script>
+{% endblock %}

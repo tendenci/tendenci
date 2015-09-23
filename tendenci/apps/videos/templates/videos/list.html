@@ -1,0 +1,40 @@
+{% extends "videos/base.html" %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}{% if category %}{{category|title}} {% endif %}{% trans 'Videos' %}{% endblock %}
+
+{% block content %}
+<div class="t">
+<h1>{% if category %}{{category|title}} {% endif %}{% trans 'Videos' %}</h1>
+{% if can_add_video %}
+    <div><a href="{% url 'admin:videos_video_add' %}">{% trans 'Add Video' %}</a></div>
+{% endif %}
+<form class="search-form" action="{% url 'video.search' %}" method="get">
+    <div>
+        <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+        <input type="submit" value="{% trans 'Search' %}" />
+    </div>
+    <div>
+        <select name="cat">
+            <option value="">{% trans 'All Categories' %}</option>
+            {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if cat.slug == category.slug %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+        <select name="type">
+            <option value="">{% trans 'All Video Types' %}</option>
+            {% for type in video_types %}
+                <option value="{{ type.slug }}" {% if type.slug == video_type.slug %}selected{% endif %}>{{ type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</form>
+<div class="clearfix">
+    {% for video in videos %}
+        {% search_result video %}
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
+

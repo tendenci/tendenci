@@ -1,0 +1,34 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-22 20:15+0000\n"
+"PO-Revision-Date: 2014-10-20 15:18+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Vietnamese (http://www.transifex.com/projects/p/tendenci/language/vi/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: vi\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: models.py:31
+msgid "order"
+msgstr ""
+
+#: models.py:42
+msgid "Personal Sites"
+msgstr ""
+
+#: models.py:47
+msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
+msgstr ""
+
+#: templates/speakers/search.html:36
+msgid "Speakers Found"
+msgstr ""

@@ -1,0 +1,58 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+{% if nav_object %}
+	{% has_perm user donations.view_donation nav_object as can_view_donation %}
+{% else %}
+	{% has_perm user donations.view_donation as can_view_donation %}
+	{% has_perm user donations.change_donation as can_edit_donation %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+{% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+<li class="dropdown" data-dropdown="dropdown">
+    <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+    <ul class="dropdown-menu">
+        <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+        <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+        <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+    </ul>
+</li>
+{% endif %}
+
+<li class="dropdown active" data-dropdown="dropdown">
+    <a href="#" class="dropdown-toggle">{% firstof MODULE_DONATIONS_LABEL 'Donations' %}</a>
+    {% if nav_object %}
+    <div class="dropdown-menu">
+    <ul class="first">
+        <li class="heading">{% trans "All Donations" %}</li>
+        <li class="divider"></li>
+    {% else %}
+        <div>
+        <ul class="dropdown-menu">
+    {% endif %}
+        {% if can_edit_setting %}
+            <li><a href="{% url "settings.index" "module" "donations" %}">{% trans "Settings" %}</a></li>
+            <li><a href="{% url "donation.search" %}">Search</a></li>
+            <li><a href="{% url "donation.add" %}">Add</a></li>
+        {% endif %}
+    </ul>
+    {% if nav_object %}
+        {% if can_view_page or can_edit_page %}
+        <ul>
+            <li class="heading">{% trans "This Donation" %}</li>
+            <li class="divider"></li>
+            {% if can_view_donation %}
+            <li><a href="{% url "donation.view" nav_object.id %}">View</a></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    {% endif %}
+    </div>
+</li>
+</ul>
+{% endif %}

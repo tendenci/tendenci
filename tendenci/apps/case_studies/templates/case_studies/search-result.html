@@ -1,0 +1,16 @@
+{% load i18n %}
+
+<div class="wrap-search-item">
+    <div class="case-study-item search-item">
+        {% for img in case_study.featured_screenshots %}
+            {% if forloop.first %}
+                <a class="cs-img-link" href="{{ case_study.get_absolute_url }}"><img alt="{{ case_study.client }}" src="{% url "file" img.pk %}180x130" /></a>
+            {% endif %}
+        {% endfor %}
+        <h3><a href="{{ case_study.get_absolute_url }}" title="{{ case_study.client }}">{{ case_study.client }}</a></h3>
+        <div class="cs-full">
+            <p style="margin-top: 6px; border-top: 1px dashed #fff; padding-top: 6px;"><a href="{{ case_study.url }}">{% trans 'View this Website' %} &raquo;</a></p>
+        </div>
+    </div>
+    {% include 'case_studies/meta.html' %}
+</div>

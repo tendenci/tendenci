@@ -1,0 +1,171 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-24 23:01+0000\n"
+"PO-Revision-Date: 2014-07-22 17:20+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/tendenci/language/it/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:55
+msgid "title"
+msgstr ""
+
+#: templates/committees/add.html:20
+msgid "Add"
+msgstr "Aggiungere"
+
+#: templates/committees/add.html:28 templates/committees/edit.html:27
+msgid "Category"
+msgstr "Categoria"
+
+#: templates/committees/add.html:34 templates/committees/edit.html:33
+msgid "SEO Meta"
+msgstr ""
+
+#: templates/committees/delete.html:5 templates/committees/nav.html:68
+msgid "Delete Committee"
+msgstr ""
+
+#: templates/committees/delete.html:16
+msgid "Delete a Committee"
+msgstr ""
+
+#: templates/committees/delete.html:20
+msgid "Are you sure you want to permanently delete this committee?"
+msgstr ""
+
+#: templates/committees/delete.html:25
+msgid "Confirm Delete"
+msgstr "Confirmare la cancellazione"
+
+#: templates/committees/delete.html:28
+msgid "Back to committee"
+msgstr ""
+
+#: templates/committees/delete.html:29
+msgid "Back to all"
+msgstr "Ritorna a tutto"
+
+#: templates/committees/detail.html:10
+msgid "COMMITTEE"
+msgstr ""
+
+#: templates/committees/edit-meta.html:16
+msgid "Meta Information for"
+msgstr ""
+
+#: templates/committees/edit-meta.html:30
+msgid "Cancel"
+msgstr "Annullare"
+
+#: templates/committees/edit.html:19 templates/committees/options.html:15
+msgid "Edit"
+msgstr "Modificare"
+
+#: templates/committees/edit.html:39
+msgid "Save Committee Changes"
+msgstr ""
+
+#: templates/committees/edit.html:42
+msgid "Link to delete confirmation page"
+msgstr ""
+
+#: templates/committees/edit.html:43 templates/committees/options.html:28
+msgid "Delete"
+msgstr "Cancellare"
+
+#: templates/committees/meta.html:17
+msgid "Category:"
+msgstr "Categoria"
+
+#: templates/committees/meta.html:19
+msgid "Sub Category:"
+msgstr "Sottocategoria"
+
+#: templates/committees/meta.html:85 templates/committees/nav.html:63
+#: templates/committees/options.html:24
+msgid "Edit Meta"
+msgstr "Modificare il Meta"
+
+#: templates/committees/meta.html:86 templates/committees/nav.html:64
+msgid "Edit Categories"
+msgstr "Modificare le Categorie"
+
+#: templates/committees/nav.html:23
+msgid "Tendenci"
+msgstr "Tendenci"
+
+#: templates/committees/nav.html:25
+msgid "Dashboard"
+msgstr "Cruscotto"
+
+#: templates/committees/nav.html:26
+msgid "My Profile"
+msgstr "Il mio Profilo"
+
+#: templates/committees/nav.html:27
+msgid "Log Off"
+msgstr "Fare Logout"
+
+#: templates/committees/nav.html:36
+msgid "All Committees"
+msgstr ""
+
+#: templates/committees/nav.html:43
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: templates/committees/nav.html:45
+msgid "Search Committees"
+msgstr ""
+
+#: templates/committees/nav.html:47
+msgid "Add Committee"
+msgstr ""
+
+#: templates/committees/nav.html:50
+msgid "Add Position"
+msgstr ""
+
+#: templates/committees/nav.html:56
+msgid "This Committee"
+msgstr ""
+
+#: templates/committees/nav.html:59
+msgid "View Committee"
+msgstr ""
+
+#: templates/committees/nav.html:62
+msgid "Edit Committee"
+msgstr ""
+
+#: templates/committees/nav.html:76
+msgid "Files"
+msgstr ""
+
+#: templates/committees/options.html:20
+msgid "More options"
+msgstr ""
+
+#: templates/committees/search.html:10
+msgid "Committees"
+msgstr ""
+
+#: templates/committees/search.html:17
+msgid "Committee List"
+msgstr ""
+
+#: templates/committees/search.html:25
+msgid "0 committees found"
+msgstr ""

@@ -1,0 +1,54 @@
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+
+<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <div class="meta-left">
+        {% if case_study.tags %}
+        <div class="tags">
+            <strong>Tags: </strong>
+            {% for tag in case_study.tags|tag_split %}
+                <a href="{% url "case_study" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+             {% if user.profile.is_superuser or user == case_study.creator or user == case_study.owner %}
+                {% meta_creator_owner case_study %}
+            {% endif %}       
+        {% endif %}
+    </div>
+    
+    <div class="meta-right">
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+    
+</div>
+{% if user.profile.is_superuser %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ case_study.obj_perms }}</li>
+        <li>{{ case_study.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ case_study.pk }}&source={{ case_study.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url "admin:case_studies_casestudy_change" case_study.pk %}?next={{ request.path }}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                <li>
+                    <a class="delete" href="{% url "admin:case_studies_casestudy_delete" case_study.pk %}">{% trans "Delete" %}</a>
+                </li>
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}

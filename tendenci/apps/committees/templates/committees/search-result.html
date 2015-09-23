@@ -1,0 +1,9 @@
+{% load base_tags %}
+<div class="wrap-search-item">
+    <div class="search-item committees-search-item">
+        <div>
+            <a href="{{ committee.get_absolute_url }}">{{ committee.title }}</a>
+        </div>
+    </div>
+    {% include "committees/meta.html" %}
+</div>

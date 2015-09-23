@@ -1,0 +1,95 @@
+{% load nexus_helpers %}
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}{% if title %}{{ title }} | {% endif %}Nexus{% endblock %}</title>
+
+        <link rel="stylesheet" href="{% nexus_media_prefix %}/nexus/css/nexus.css">
+        <link rel="stylesheet" href="{% nexus_media_prefix %}/nexus/css/facebox.css">
+        <link href='//fonts.googleapis.com/css?family=Yanone+Kaffeesatz:light,regular&amp;subset=latin' rel='stylesheet'>
+        <link href='//fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+
+        <meta name="robots" content="NONE,NOARCHIVE">
+        
+        <script>
+            var GARGOYLE = {
+                facebox: {
+                    loadingImage: "{% nexus_media_prefix %}/nexus/img/facebox/loading.gif",
+                    closeImage:   "{% nexus_media_prefix %}/nexus/img/facebox/closelabel.png"
+                }
+            };
+        </script>
+
+        <script src="{% nexus_media_prefix %}/nexus/js/lib/jquery.js"></script>
+        <script src="{% nexus_media_prefix %}/nexus/js/lib/jquery.tmpl.js"></script>
+        <script src="{% nexus_media_prefix %}/nexus/js/lib/facebox/facebox.js"></script>
+        <script src="{% nexus_media_prefix %}/nexus/js/nexus.js"></script>
+        
+        {% block head %}
+        {% endblock %}
+    </head>
+
+    <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+        <div id="header">
+            <div class="wrapper">
+                <h2>{% block heading %}{% if module_title %}{{ module_title }}{% endif %}{% endblock %}</h2>
+                <ul class="nav" id="account">
+                    {% if request.user.is_authenticated %}
+                        <li>Logged in as {{ request.user.username }} (<a href="{% url "nexus:logout" %}">Logout</a>)
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        {% block navigation %}
+            {% show_navigation %}
+        {% endblock %}
+
+        {% block container %}
+            <div id="container">
+                <div class="wrapper">
+                    <div id="status">Saving...</div>
+                    {% if messages %}
+                        <ul class="messagelist">
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% block breadcrumbs %}
+                        <ul id="breadcrumbs">
+<!--                             <li><a href="{% url "nexus:index" %}">Nexus</a></li> -->
+                            {% block breadcrumb_bits %}
+                                {% for title, link in trail_bits %}
+                                    <li><a href="{{ link }}">{{ title }}</a></li>
+                                {% endfor %}
+                            {% endblock %}
+                        </ul>
+                    {% endblock %}
+                    <div class="clearfix">
+                        {% block base_content %}
+                            {% block pretitle %}{% endblock %}
+                            {% block content_title %}
+                                {% if title %}<h1>{{ title }}</h1>{% endif %}
+                            {% endblock %}
+                            {% block content %}
+                                {% block object-tools %}{% endblock %}
+                                {{ content }}
+                            {% endblock %}
+                            {% block sidebar %}{% endblock %}
+                            <br class="clear" />
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+        <div id="footer">
+            <!-- <div class="wrapper">
+                Nexus | Powered by sexy Django magic | Conjured up by the <a href="http://code.disqus.com">DISQUS</a> team and other noble <a href="https://github.com/dcramer/nexus/contributors">sorcerers</a>.
+            </div> -->
+        </div>
+    </body>
+</html>

@@ -1,0 +1,91 @@
+{% load i18n %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user videos.add_video as can_add_video %}
+
+{% if app_object %}
+    {% has_perm user videos.view_video app_object as can_view_video %}
+    {% has_perm user videos.change_video app_object as can_edit_video %}
+    {% has_perm user videos.delete_video app_object as can_delete_video %}
+{% else %}
+    {% has_perm user videos.view_video as can_view_video %}
+    {% has_perm user videos.change_video as can_edit_video %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans 'All Videos' %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'videos' %}">{% trans 'Settings' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'video.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_video %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:videos_video_add' %}">{% trans "Add Video" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_video or can_edit_video %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Video" %}</span>
+                            </li>
+
+                            {% if can_view_video %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Video" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_video %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:videos_video_change' app_object.pk %}">{% trans "Edit Video" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_video %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'admin:videos_video_delete' app_object.pk %}">{% trans "Delete Video" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

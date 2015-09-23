@@ -1,0 +1,93 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load studygroup_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+{% load i18n %}
+
+{% has_perm user studygroups.change_studygroup study_group as can_edit %}
+{% has_perm user studygroups.delete_studygroup study_group as can_delete %}
+{% tags_for_object study_group as tags %}
+
+<div class="meta {% if not user.is_authenticated and not tags %}anon{% endif %}">
+    <div class="meta-left">
+    {% with study_group.category_set as study_group_cat %}
+        {% if study_group_cat %}
+        <div class="categories">
+            <strong>{% trans "Category:" %} </strong><a href="{% url 'studygroups.search' %}?q=category:{{ study_group_cat.category }}">{{ study_group_cat.category }}</a>
+        {% if study_group_cat.sub_category %}
+            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url 'studygroups.search' %}?q=sub_category:{{ study_group_cat.sub_category }}">{{ study_group_cat.sub_category }}</a>
+        {% endif %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if tags %}
+        <div class="tags">
+            <strong>{% trans 'Tags' %}: </strong>
+        {% for tag in tags %}
+            <a href="{% url 'studygroups.search' %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <div class="submitted">
+            Created {{ study_group.create_dt|date:"long" }} by
+            <a href="{{ studygroup.creator.get_absolute_url }}">
+                {% if study_group.creator.first_name %}
+                    {{ study_group.creator.first_name }} {{ study_group.creator.last_name }}
+                {% else %}
+                    {{ study_group.creator }}
+                {% endif %}
+            </a>
+        </div>
+
+        <div class="submitted">
+            Last updated {{ study_group.update_dt|date:"long" }} by
+            <a href="{{ study_group.owner.get_absolute_url }}">
+                {% if study_group.owner.first_name %}
+                    {{ study_group.owner.first_name }} {{ study_group.owner.last_name }}
+                {% else %}
+                    {{ study_group.owner }}
+                {% endif %}
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="meta-right">
+        <a class="share-link"></a>
+    </div>
+</div>
+
+{% if can_edit %}
+<div class="editor-bar">
+    <div class="perm-status">
+        <ul>
+            <li>{% obj_perms study_group %}</li>
+            <li>{% obj_status study_group %}</li>
+        </ul>
+    </div>
+    <div class="edit-links">
+        <ul>
+            <li><a class="eventlog-link" href="{% url 'event_log.search' %}?q=app-id:%20studygroups-{{ study_group.pk }}">{% trans 'Eventlogs' %}</a></li>
+            <li><a class="edit-link" href="{% url 'studygroups.edit' study_group.pk %}">{% trans 'Edit' %}</a></li>
+            <li><a class="options-link" href="#">{% trans 'Options' %} <small>&#9650;</small></a>
+                <div class="options-list">
+                    <ul>
+                    {% if can_delete %}
+                        <li>
+                            <a class="delete" href="{% url 'studygroups.delete' study_group.pk %}">{% trans 'Delete' %}</a>
+                        </li>
+                    {% endif %}
+                        <li><a href="{% url 'studygroups.edit.meta' study_group.pk %}">{% trans "Edit Meta" %}</a></li>
+                        <li><a href="{% url 'category.update' study_group.opt_app_label study_group.opt_module_name study_group.pk %}">{% trans "Edit Categories" %}</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Donation Receipt</title>
+<link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/donations.css" type="text/css" />
+</head>
+<body>
+<div id="donation-receipt">
+<p>RECEIPT ACKNOWLEDGEMENT UNDER </p>
+<p><strong>I.R.C. &sect; 170 (f)(8) </strong></p>
+<p>&nbsp; </p>
+<p><strong>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</strong></p>
+<p>(&sect;501&copy; {# add Donations501C here #} exemption number: {# add TaxIDNumber here #}) </p>
+<p>&nbsp; </p>
+<p>Wishes to acknowledge the </p>
+<p>Gracious gift of </p>
+<p><strong>{{ donation.first_name }} {{ donation.last_name }}</strong></p>
+<p><strong>{{ donation.company }}</strong></p>
+<p>&nbsp; </p>
+<p>in the amount of </p>
+<p><strong>{{ donation.donation_amount }}</strong></p>
+<p>&nbsp; </p>
+	{% if donation.allocation %}
+		<p>to be allocated to </p>
+		<p><strong>{{ donation.allocation }}</strong></p>
+		<p>&nbsp; </p>
+	{% endif %}
+<p>Received on {{ donation.create_dt|date:"D d M Y P" }} </p>
+<p>&nbsp; </p>
+<p>{# DonationsReceiptStatement here #}</p>
+</div>
+</body>
+</html>

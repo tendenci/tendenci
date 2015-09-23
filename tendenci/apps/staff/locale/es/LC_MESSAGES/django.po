@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# ediaz <ednadiaz0@gmail.com>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-22 20:19+0000\n"
+"PO-Revision-Date: 2014-10-13 20:01+0000\n"
+"Last-Translator: ediaz <ednadiaz0@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/tendenci/language/es/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models.py:37
+msgid "Personal Sites"
+msgstr "Sitios Personal"
+
+#: models.py:42
+msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
+msgstr "Etiquetas separados por comas. Por ejemplo, tag1, tag2, tag3"
+
+#: templates/staff/meta.html:12
+msgid "Owned by you"
+msgstr "Adiocionales suya"
+
+#: templates/staff/meta.html:12
+msgid "status"
+msgstr "estado"
+
+#: templates/staff/meta.html:24
+msgid "Share"
+msgstr "Compartir"
+
+#: templates/staff/meta.html:39
+msgid "Eventlogs"
+msgstr "Sitio Actividades "
+
+#: templates/staff/meta.html:40
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/staff/meta.html:41
+msgid "Options"
+msgstr "Opciones"
+
+#: templates/staff/meta.html:45
+msgid "Delete"
+msgstr "Eliminar"
+
+#: templates/staff/search.html:25
+msgid "Add"
+msgstr "Añadir"
+
+#: templates/staff/search.html:31
+msgid "Found"
+msgstr "Encontrado"

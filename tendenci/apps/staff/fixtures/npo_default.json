@@ -1,0 +1,57 @@
+[
+    {
+        "pk": 1,
+        "model": "staff.staff",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "personal_sites": "",
+            "entity": 1,
+            "owner": null,
+            "cv": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis a  scelerisque orci. Maecenas in ipsum fringilla turpis suscipit suscipit.  Aliquam lacinia elit at turpis viverra non adipiscing quam euismod. Sed  aliquet est ut elit bibendum elementum. Phasellus massa arcu, venenatis  sed volutpat in, gravida sit amet urna. Pellentesque sit amet leo ante.  Vivamus dignissim ultrices tempus. Maecenas odio magna, vulputate at  dignissim sit amet, pharetra eu lacus. Ut consequat iaculis magna, in  pulvinar purus facilisis et. Nullam sodales cursus est, at dignissim  quam faucibus sed. Nullam facilisis accumsan neque vel porttitor.</p>",
+            "biography": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis a  scelerisque orci. Maecenas in ipsum fringilla turpis suscipit suscipit.  Aliquam lacinia elit at turpis viverra non adipiscing quam euismod. Sed  aliquet est ut elit bibendum elementum. Phasellus massa arcu, venenatis  sed volutpat in, gravida sit amet urna. Pellentesque sit amet leo ante.  Vivamus dignissim ultrices tempus. Maecenas odio magna, vulputate at  dignissim sit amet, pharetra eu lacus. Ut consequat iaculis magna, in  pulvinar purus facilisis et. Nullam sodales cursus est, at dignissim  quam faucibus sed. Nullam facilisis accumsan neque vel porttitor.</p>",
+            "create_dt": "2012-12-31T15:55:42.170",
+            "update_dt": "2012-12-31T17:02:18.028",
+            "department": 1,
+            "email": "",
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "tags": "tendencidemo",
+            "status_detail": "active",
+            "phone": "",
+            "creator_username": "",
+            "slug": "jane-doe",
+            "name": "Jane Doe",
+            "allow_user_edit": false,
+            "allow_member_view": false,
+            "allow_member_edit": false,
+            "positions": [
+                1
+            ]
+        }
+    },
+    {
+        "pk": 1,
+        "model": "staff.department",
+        "fields": {
+            "name": "Human Resources"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "staff.position",
+        "fields": {
+            "name": "Office Manager"
+        }
+    },
+    {
+        "pk": 38,
+        "model": "staff.stafffile",
+        "fields": {
+            "photo_type": "featured",
+            "position": 0,
+            "staff": 1
+        }
+    }
+]

@@ -1,0 +1,83 @@
+[
+    {
+        "pk": 1,
+        "model": "committees.committee",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "mission": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse lorem velit, dignissim id dictum ac, interdum eget ante. Nullam diam mi, egestas in posuere sit amet, scelerisque sagittis tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam erat volutpat. Nullam neque orci, tincidunt non suscipit ut, adipiscing et dui. Mauris eget dui id dolor adipiscing suscipit eu sit amet neque. Nunc ultrices consectetur sem ac sollicitudin.</p>\r\n<p>Aenean sit amet ullamcorper diam. Aliquam vulputate tellus auctor purus condimentum cursus a at neque. Suspendisse sed justo dui. Fusce sollicitudin enim eget dui consequat lacinia. Nunc id massa nec mi hendrerit egestas. Vivamus id odio non nunc molestie ultricies. Donec volutpat consequat molestie. Quisque tortor orci, accumsan venenatis varius sagittis, congue ut augue. Donec elit purus, aliquam consequat sollicitudin eget, tincidunt eget sem. Ut ut vehicula purus. Curabitur vel ligula mauris. Nulla eget lorem eget urna tincidunt condimentum pretium ac tortor. In faucibus blandit ornare. Nam tincidunt erat non justo adipiscing quis mattis odio pellentesque. Nulla at mi odio. Praesent vel orci ut massa bibendum interdum vitae vel turpis.</p>\r\n<p>Donec mollis rutrum pharetra. Aliquam volutpat dapibus sapien eu hendrerit. Etiam eu varius magna. Etiam sollicitudin, est ut cursus sodales, neque elit accumsan odio, sed condimentum leo nisi at magna. Etiam ullamcorper, neque sed vestibulum congue, sem risus tincidunt nulla, eu lacinia velit velit vel magna. Vivamus at tempor massa. In hac habitasse platea dictumst. Cras eu mi libero. Proin dictum suscipit risus ac bibendum. In justo ligula, facilisis ac sollicitudin ut, fringilla sed nisl. Suspendisse potenti. Vivamus ultrices pellentesque lectus et faucibus. Vivamus quis elit risus, et consequat metus. Phasellus eget quam vel metus congue mattis a ac lectus. Pellentesque vulputate, eros vitae pretium laoreet, justo justo bibendum elit, et lacinia odio elit nec mauris.</p>",
+            "view_contact_form": false,
+            "entity": 1,
+            "meta": null,
+            "owner": null,
+            "contact_name": "Sir Lorem Ipsum",
+            "guid": "0e9192ce-5386-11e2-9cfb-22000a1e8c2c",
+            "create_dt": "2012-12-31T14:10:00.968",
+            "group": 1,
+            "update_dt": "2012-12-31T14:10:01.357",
+            "content": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse lorem velit, dignissim id dictum ac, interdum eget ante. Nullam diam mi, egestas in posuere sit amet, scelerisque sagittis tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam erat volutpat. Nullam neque orci, tincidunt non suscipit ut, adipiscing et dui. Mauris eget dui id dolor adipiscing suscipit eu sit amet neque. Nunc ultrices consectetur sem ac sollicitudin.</p>\r\n<p>Aenean sit amet ullamcorper diam. Aliquam vulputate tellus auctor purus condimentum cursus a at neque. Suspendisse sed justo dui. Fusce sollicitudin enim eget dui consequat lacinia. Nunc id massa nec mi hendrerit egestas. Vivamus id odio non nunc molestie ultricies. Donec volutpat consequat molestie. Quisque tortor orci, accumsan venenatis varius sagittis, congue ut augue. Donec elit purus, aliquam consequat sollicitudin eget, tincidunt eget sem. Ut ut vehicula purus. Curabitur vel ligula mauris. Nulla eget lorem eget urna tincidunt condimentum pretium ac tortor. In faucibus blandit ornare. Nam tincidunt erat non justo adipiscing quis mattis odio pellentesque. Nulla at mi odio. Praesent vel orci ut massa bibendum interdum vitae vel turpis.</p>\r\n<p>Donec mollis rutrum pharetra. Aliquam volutpat dapibus sapien eu hendrerit. Etiam eu varius magna. Etiam sollicitudin, est ut cursus sodales, neque elit accumsan odio, sed condimentum leo nisi at magna. Etiam ullamcorper, neque sed vestibulum congue, sem risus tincidunt nulla, eu lacinia velit velit vel magna. Vivamus at tempor massa. In hac habitasse platea dictumst. Cras eu mi libero. Proin dictum suscipit risus ac bibendum. In justo ligula, facilisis ac sollicitudin ut, fringilla sed nisl. Suspendisse potenti. Vivamus ultrices pellentesque lectus et faucibus. Vivamus quis elit risus, et consequat metus. Phasellus eget quam vel metus congue mattis a ac lectus. Pellentesque vulputate, eros vitae pretium laoreet, justo justo bibendum elit, et lacinia odio elit nec mauris.</p>",
+            "template": "",
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "join_link": "",
+            "design_notes": "",
+            "tags": "welcome, greeters, tendencidemo",
+            "status_detail": "active",
+            "contact_email": "example@example.com",
+            "syndicate": false,
+            "creator_username": "",
+            "slug": "welcome-committee",
+            "allow_user_edit": false,
+            "notes": "<p>Private Notes</p>",
+            "title": "Welcome Committee",
+            "allow_member_view": false,
+            "allow_member_edit": false,
+            "header_image": null
+        }
+    },
+    {
+        "pk": 2,
+        "model": "committees.committee",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "mission": "<p>Morbi leo elit, hendrerit sed lacinia nec, commodo quis est. Phasellus  porta justo non felis dapibus lobortis suscipit nunc aliquam. Fusce orci  ante, ornare elementum tristique ut, hendrerit a lacus. Etiam convallis  vulputate felis eu dapibus. Ut venenatis augue eget tellus iaculis ac  interdum odio rhoncus. Aliquam erat volutpat. Suspendisse lacus est,  imperdiet ac interdum ac, fermentum eget lectus. Morbi lobortis nibh ut  sapien malesuada faucibus. Morbi mollis mi quis sapien vulputate vitae  sagittis neque pharetra. Proin ornare erat in ipsum lacinia posuere in  sit amet leo. Vivamus convallis orci vel quam varius iaculis. Sed nisi  purus, convallis euismod mollis et, vehicula sit amet diam. Aenean  sollicitudin sodales velit, at tincidunt leo tristique tincidunt.  Aliquam erat volutpat. Suspendisse eu erat id ligula dictum pretium non  eget mauris. Etiam tempus, arcu quis cursus luctus, ante lorem malesuada  arcu, a cursus turpis neque tincidunt neque.</p>",
+            "view_contact_form": false,
+            "entity": 1,
+            "meta": 7,
+            "owner": null,
+            "contact_name": "",
+            "guid": "b715e142-5396-11e2-b379-22000a1e8c2c",
+            "create_dt": "2012-12-31T16:09:15.640",
+            "group": 1,
+            "update_dt": "2012-12-31T16:09:16.126",
+            "content": "<p>Morbi leo elit, hendrerit sed lacinia nec, commodo quis est. Phasellus  porta justo non felis dapibus lobortis suscipit nunc aliquam. Fusce orci  ante, ornare elementum tristique ut, hendrerit a lacus. Etiam convallis  vulputate felis eu dapibus. Ut venenatis augue eget tellus iaculis ac  interdum odio rhoncus. Aliquam erat volutpat. Suspendisse lacus est,  imperdiet ac interdum ac, fermentum eget lectus. Morbi lobortis nibh ut  sapien malesuada faucibus. Morbi mollis mi quis sapien vulputate vitae  sagittis neque pharetra. Proin ornare erat in ipsum lacinia posuere in  sit amet leo. Vivamus convallis orci vel quam varius iaculis. Sed nisi  purus, convallis euismod mollis et, vehicula sit amet diam. Aenean  sollicitudin sodales velit, at tincidunt leo tristique tincidunt.  Aliquam erat volutpat. Suspendisse eu erat id ligula dictum pretium non  eget mauris. Etiam tempus, arcu quis cursus luctus, ante lorem malesuada  arcu, a cursus turpis neque tincidunt neque.</p>",
+            "template": "",
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "join_link": "",
+            "design_notes": "",
+            "tags": "tendencidemo",
+            "status_detail": "active",
+            "contact_email": "",
+            "syndicate": false,
+            "creator_username": "",
+            "slug": "board-of-directors",
+            "allow_user_edit": false,
+            "notes": "<p>Morbi leo elit, hendrerit sed lacinia nec, commodo quis est. Phasellus  porta justo non felis dapibus lobortis suscipit nunc aliquam. Fusce orci  ante, ornare elementum tristique ut, hendrerit a lacus. Etiam convallis  vulputate felis eu dapibus. Ut venenatis augue eget tellus iaculis ac  interdum odio rhoncus. Aliquam erat volutpat. Suspendisse lacus est,  imperdiet ac interdum ac, fermentum eget lectus. Morbi lobortis nibh ut  sapien malesuada faucibus. Morbi mollis mi quis sapien vulputate vitae  sagittis neque pharetra. Proin ornare erat in ipsum lacinia posuere in  sit amet leo. Vivamus convallis orci vel quam varius iaculis. Sed nisi  purus, convallis euismod mollis et, vehicula sit amet diam. Aenean  sollicitudin sodales velit, at tincidunt leo tristique tincidunt.  Aliquam erat volutpat. Suspendisse eu erat id ligula dictum pretium non  eget mauris. Etiam tempus, arcu quis cursus luctus, ante lorem malesuada  arcu, a cursus turpis neque tincidunt neque.</p>",
+            "title": "Board of Directors",
+            "allow_member_view": false,
+            "allow_member_edit": false,
+            "header_image": null
+        }
+    },
+    {
+        "pk": 1,
+        "model": "committees.position",
+        "fields": {
+            "title": "Chairman"
+        }
+    }
+]

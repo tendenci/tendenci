@@ -1,0 +1,47 @@
+{% extends "testimonials/base.html" %}
+{% load pagination_tags %}
+{% load testimonial_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}Testimonials{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/testimonial.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Testimonials" href="{% url 'testimonial.feed' %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate testimonials 5 %}
+{% has_perm user testimonials.add_testimonial as can_add_testimonial %}
+
+<div class="t">
+    <h1>{% firstof MODULE_STORIES_LABEL_PLURAL "Testimonials"%}</h1>
+
+    {% testimonial_search %}
+    {% if can_add_testimonial %}
+    <div><a href="{% url 'admin:testimonials_testimonial_add' %}">Add Testimonial</a></div>
+    {% endif %}
+    <div class="tsm-search-wrap">
+        {% for testimonial in testimonials %}
+            {% search_result testimonial %}
+        {% empty %}
+            <p>0 Testimonials Found</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}

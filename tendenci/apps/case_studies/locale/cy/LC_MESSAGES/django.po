@@ -1,0 +1,86 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-24 23:01+0000\n"
+"PO-Revision-Date: 2014-10-20 14:46+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Welsh (http://www.transifex.com/projects/p/tendenci/language/cy/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cy\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
+
+#: models.py:22
+msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
+msgstr ""
+
+#: models.py:106
+msgid "File type"
+msgstr ""
+
+#: templates/case_studies/meta.html:25
+msgid "Share"
+msgstr ""
+
+#: templates/case_studies/meta.html:40
+msgid "Eventlogs"
+msgstr ""
+
+#: templates/case_studies/meta.html:41
+msgid "Edit"
+msgstr ""
+
+#: templates/case_studies/meta.html:42
+msgid "Options"
+msgstr ""
+
+#: templates/case_studies/meta.html:46
+msgid "Delete"
+msgstr ""
+
+#: templates/case_studies/print-view.html:36
+msgid "Case Study Print View"
+msgstr ""
+
+#: templates/case_studies/print-view.html:39
+msgid "Back to regular case study view"
+msgstr ""
+
+#: templates/case_studies/print-view.html:40
+msgid "Your printed page will look <em>something</em> like this."
+msgstr ""
+
+#: templates/case_studies/print-view.html:46
+msgid "Case Study"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:18
+msgid "Home"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:21
+msgid "Add"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:28
+msgid "History"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:29
+msgid "View on site"
+msgstr ""
+
+#: templates/case_studies/admin/change_form.html:39
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""

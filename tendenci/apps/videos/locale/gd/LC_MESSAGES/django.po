@@ -1,0 +1,48 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Tendenci\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-22 20:29+0000\n"
+"PO-Revision-Date: 2014-10-20 15:01+0000\n"
+"Last-Translator: bleven <bleven@tendenci.com>\n"
+"Language-Team: Gaelic, Scottish (http://www.transifex.com/projects/p/tendenci/language/gd/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: gd\n"
+"Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : (n > 2 && n < 20) ? 2 : 3;\n"
+
+#: templates/videos/meta.html:16
+msgid "Category:"
+msgstr ""
+
+#: templates/videos/meta.html:21
+#, python-format
+msgid ""
+"Created on %(create_date)s\n"
+"            by:"
+msgstr ""
+
+#: templates/videos/meta.html:28
+#, python-format
+msgid ""
+"Last updated %(update_date)s\n"
+"            by:"
+msgstr ""
+
+#: templates/videos/meta.html:39
+msgid "Share"
+msgstr ""
+
+#: templates/videos/meta.html:54
+msgid "Eventlogs"
+msgstr ""
+
+#: templates/videos/meta.html:56
+msgid "Options"
+msgstr ""
