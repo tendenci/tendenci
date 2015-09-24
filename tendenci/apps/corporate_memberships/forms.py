@@ -312,11 +312,12 @@ class CorpProfileForm(forms.ModelForm):
                 auth_domains = ', '.join([domain.name for domain
                              in self.instance.authorized_domains.all()])
                 self.fields['authorized_domain'].initial = auth_domains
-        if not self.corpmembership_app.authentication_method == 'secret_code':
-            del self.fields['secret_code']
-        else:
-            self.fields['secret_code'].help_text = 'This is the code ' + \
-                'your members will need when joining under your corporation'
+        if 'secret_code' in self.fields:
+            if not self.corpmembership_app.authentication_method == 'secret_code':
+                del self.fields['secret_code']
+            else:
+                self.fields['secret_code'].help_text = 'This is the code ' + \
+                    'your members will need when joining under your corporation'
 
         if 'status' in self.fields:
             del self.fields['status']
