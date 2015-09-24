@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load social_services_tags %}
+
+
+{% block current_app %}
+<li class="dropdown">
+    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/heart.png' %}"/>{% trans 'Social Services' %}
+    </a>
+    {% social_service_current_app request.user %}
+</li>
+{% endblock %}

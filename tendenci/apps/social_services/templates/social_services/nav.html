@@ -1,0 +1,29 @@
+{% load base_tags %}
+{% load i18n %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url 'profile.index' %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Social Services" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url 'social-services.form' %}">{% trans "Relief Assessment Form" %}</a>
+            <li><a href="{% url 'social-services.map' %}">{% trans "View Map" %}</a></li>
+            <li><a href="{% url 'social-services.responders' %}">{% trans "View Responder List" %}</a></li>
+            <li><a href="{% url 'social-services.relief_areas' %}">{% trans "View Relief Areas" %}</a></li>
+        </ul>
+    </li>
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'profile.search' %}">{% firstof MODULE_USERS_LABEL 'People' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}
