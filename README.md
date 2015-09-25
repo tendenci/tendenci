@@ -15,6 +15,7 @@ After October 1, 2015 automatic updates should not be run if you are self hostin
 
 You can read more about why we are making this change and further details on our blog: http://blog.tendenci.com/refactoring-tendenci-7-1/
 
+If you are reading this after we have removed the deprecated repos you can still get a copy of the old code for the various add-ons that are now integrated into apps by going to [https://www.tendenci.com/download/release-archive/](https://www.tendenci.com/download/release-archive/) but please instead go to [https://tendenci.readthedocs.org](https://tendenci.readthedocs.org) and upgrade to the latest release.
 
 ## Demo?  
 
