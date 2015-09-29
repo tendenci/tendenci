@@ -1,6 +1,6 @@
 # Tendenci
 
-Tendenci built for non-profits, associations and cause-based sites like in the medical community. Tendenci is an open source content management system with functionality including association management, event registration, membership management, donations, payments, newsletters, CRM, and much more.
+Tendenci is an open source content management system built for non-profits, associations and cause-based sites with functionality including association management, event registration, membership management, donations, payments, newsletters, CRM, and much more.
 
 Tendenci 7+ is the latest version that is compatible with Django 1.8. Currently, it's only available on github - hasn't been pushed to pypi yet. 
 
@@ -42,7 +42,7 @@ Our mission: "To make Tendenci the number 1 platform for NPOs/NGOs/Arts organiza
 
 ## License
 
-The License information (Open Source GPL) can be found at [https://github.com/tendenci/tendenci/blob/master/LICENSE.md](https://github.com/tendenci/tendenci/blob/master/LICENSE.md)
+The License information (GNU GPL) can be found at [https://github.com/tendenci/tendenci/blob/master/LICENSE.md](https://github.com/tendenci/tendenci/blob/master/LICENSE.md)
 
 
 ## Credits

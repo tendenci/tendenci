@@ -7,6 +7,7 @@ from django.core.validators import validate_email
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.contrib.sites.models import Site
+from tendenci.apps.site_settings.utils import get_setting
 
 import defaults, util, compat
 
@@ -27,10 +28,12 @@ def notify_topic_subscribers(post):
         # Define constants for templates rendering
         delete_url = reverse('pybb:delete_subscription', args=[post.topic.id])
         current_site = Site.objects.get_current()
+        site_url = get_setting('site', 'global', 'siteurl')
         from_email = settings.DEFAULT_FROM_EMAIL
 
         subject = render_to_string('pybb/mail_templates/subscription_email_subject.html',
                                    {'site': current_site,
+                                    'site_url': site_url,
                                     'post': post})
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
@@ -51,6 +54,7 @@ def notify_topic_subscribers(post):
 
             message = render_to_string('pybb/mail_templates/subscription_email_body.html',
                                        {'site': current_site,
+                                        'site_url': site_url,
                                         'post': post,
                                         'delete_url': delete_url,
                                         'user': user})
