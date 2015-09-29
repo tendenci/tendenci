@@ -29,10 +29,24 @@ Step 3: Update some files
 
 These 2 files need to be manually updated:
 
-    conf/local_settings.py
-    conf/local_urls.py
+    - conf/local_settings.py
+    - conf/local_urls.py
 
-In "conf/local_settings.py" add the following
+In "conf/local_settings.py",
+
+replace:
+::
+
+    'committees',
+    'case_studies',
+    'donations',
+    'speakers',
+    'staff',
+    'studygroups',
+    'videos',
+
+with:
+::
 
      'tendenci.apps.committees',
      'tendenci.apps.case_studies',
@@ -42,8 +56,27 @@ In "conf/local_settings.py" add the following
      'tendenci.apps.studygroups',
      'tendenci.apps.videos',
      'tendenci.apps.testimonials',
+     'tendenci.apps.social_services',
 
-in conf/local_urls.py
+
+
+In conf/local_urls.py,
+
+replace:
+::
+
+     ('^', include('committees.urls')),
+     ('^', include('case_studies.urls')),
+     ('^', include('donations.urls')),
+     ('^', include('speakers.urls')),
+     ('^', include('staff.urls')),
+     ('^', include('studygroups.urls')),
+     ('^', include('videos.urls')),
+     ('^', include('testimonials.urls')),
+     
+
+with:
+::
 
     ('^', include('tendenci.apps.committees.urls')),
     ('^', include('tendenci.apps.case_studies.urls')),
@@ -53,12 +86,37 @@ in conf/local_urls.py
     ('^', include('tendenci.apps.studygroups.urls')),
     ('^', include('tendenci.apps.videos.urls')),
     ('^', include('tendenci.apps.testimonials.urls')),
+    (r'^', include('tendenci.apps.social_services.urls')),
 
 One new file needs to be added
 
     requirements/tendenci.txt
+    
+Add the following content to the file requirements/tendenci.txt
+::
+    
+    # Before T7 gets pushed to pypi, use the one on github
+    https://github.com/tendenci/tendenci/archive/master.zip
+    # After T7 on pypi
+    #tendenci>=7,<8
 
-IMPORTANT: All future upgrades will completely overwrite the contents of this file with the latest version from the tendenci repo version of "tendenci.txt". Think of it as a "tendenci specific version of common.txt" - but we don't want to overwrite common.txt so we don't break other developers modifications. This is a compromise. The master file lives in the tendenci core project 
+    https://github.com/epantry/django-sql-explorer/archive/master.zip
+    # requires django-avatar >=2.1 (the one on pypi 2.0 is not compatible)
+    https://github.com/jezdez/django-avatar/archive/master.zip
+
+    django-helpdesk>=0.1.16
+    bootstrap_admin==0.3.0
+    django-taggit==0.12.2
+    django-debug-toolbar>=1.2.2
+    ipython
+    
+
+
+**IMPORTANT**: All future upgrades will completely overwrite the contents of this file with
+the latest version from the tendenci repo version of "tendenci.txt". Think of it as a
+"tendenci specific version of common.txt" - but we don't want to overwrite common.txt
+so we don't break other developers modifications. This is a compromise. The master file
+lives in the tendenci core project 
 
     /tendenci/templates/requirements/tendenci.txt
 
@@ -78,7 +136,7 @@ Add one line to point to the new file in the "requirements" directory
 
     -r requirements/tendenci.txt
 
-REQUIRED: Edit the your common file to remove redundancies with the new tendenci.txt file if you are doing an upgrade
+**REQUIRED**: Edit the your common file to remove redundancies with the new tendenci.txt file if you are doing an upgrade
 
     requirements/common.txt
 
