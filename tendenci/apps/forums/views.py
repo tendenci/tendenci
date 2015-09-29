@@ -300,9 +300,6 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
                 forum_mark.save()
 
     def get_topic(self, **kwargs):
-        print kwargs['slug']
-        print kwargs['forum_slug']
-        print kwargs['category_slug']
         if 'pk' in kwargs:
             topic = get_object_or_404(Topic, pk=kwargs['pk'], post_count__gt=0)
         elif ('slug'and 'forum_slug'and 'category_slug') in kwargs:
