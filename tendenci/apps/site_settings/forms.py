@@ -1,5 +1,6 @@
 from ordereddict import OrderedDict
 from ast import literal_eval
+from urlparse import urlparse
 
 from django import forms
 from django.core.files import File
@@ -84,8 +85,9 @@ def save_settings_form(self):
             if setting.name == "siteurl" and setting.scope == "site":
                 if field_value:
                     django_site = Site.objects.get(pk=1)
-                    django_site.domain = field_value.replace("http://", "")
-                    django_site.name = field_value.replace("http://", "")
+                    netloc = urlparse(field_value).netloc
+                    django_site.domain = netloc
+                    django_site.name = netloc
                     django_site.save()
 
             # update checklist for theme logo
