@@ -27,6 +27,14 @@ Upgrade
 
    upgrade/*
 
+Testing
+----------------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   testing/*
 
 Topic Guides
 ------------
