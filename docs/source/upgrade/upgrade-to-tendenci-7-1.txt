@@ -95,20 +95,10 @@ One new file needs to be added
 Add the following content to the file requirements/tendenci.txt
 ::
     
-    # Before T7 gets pushed to pypi, use the one on github
     https://github.com/tendenci/tendenci/archive/master.zip
-    # After T7 on pypi
-    #tendenci>=7,<8
+    # tendenci>=7,<8  # replace the above link with this later 
 
     https://github.com/epantry/django-sql-explorer/archive/master.zip
-    # requires django-avatar >=2.1 (the one on pypi 2.0 is not compatible)
-    https://github.com/jezdez/django-avatar/archive/master.zip
-
-    django-helpdesk>=0.1.16
-    bootstrap_admin==0.3.0
-    django-taggit==0.12.2
-    django-debug-toolbar>=1.2.2
-    ipython
     
 
 
@@ -122,21 +112,11 @@ lives in the tendenci core project
 
 Yes, the project specific requirements/tendenci.txt file is not consistent with django standard naming conventions. Given the choice, we are choosing to respect the developers out there and not risk overwriting someone else's common.txt file.
 
-Required: update requirements.txt in the root of your project to include the new tendenci.txt file.
+Required: update dev.txt and prod.txt in the requirements directory of your project root to include the new tendenci.txt file.
 
-Edit the file located (probably) at
+    -r tendenci.txt
 
-    /var/www/tendenci/requirements.txt
-
-or possibly at
-
-    /opt/webapps/orgs/tendenci_site/requirements.txt
-
-Add one line to point to the new file in the "requirements" directory
-
-    -r requirements/tendenci.txt
-
-**REQUIRED**: Edit the your common file to remove redundancies with the new tendenci.txt file if you are doing an upgrade
+**REQUIRED**: Edit the your common file to remove redundancies with the new tendenci.txt file if you are doing an upgrade (most likely it should be blank now).
 
     requirements/common.txt
 
