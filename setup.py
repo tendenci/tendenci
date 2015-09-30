@@ -155,7 +155,7 @@ setup(
         "Pillow==2.8.2",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
-        #"django-avatar>=2.1",  # the one on pypi 2.0 - is not compatible
+        "django-avatar>=2.1",
         "django-countries==3.3",
         "django-form-utils>=0.1.8",
         "django-localflavor==1.1",
@@ -209,5 +209,6 @@ setup(
         'unidecode',
         'Markdown',
         'unicodecsv',
+        'Embedly>=0.5.0', # videos
     ],
 )
