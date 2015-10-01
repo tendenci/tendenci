@@ -11,7 +11,7 @@ For developers you will note that many of these tests can be done using unit tes
 Basic Functionality Testing
 -----------------------------
 
-1. Newsletter Sending Has been Tested
+1. Newsletter Sending has been tested
   - Set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
 2. Email sending from site is tested and sender address is client's email
   - Do a password reset and confirm you received the email
@@ -37,7 +37,7 @@ Site Content Review
   - Do a view source to see what is pulling in for <title></title>. 
   - Check for duplicate wording. 
   - *Danger* You can override dynamic title tags in the theme editor: /theme-editor/?file=/templates/homepage.html but this is a terrible idea. Instead check your base.html file in theme, that homepage.html is extending from base. Then check that your homepage.html is doing a block.super either at the front or back of the title tag block in your homepage.
-4. [ ] Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
+4. Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
 
 Contact and Custom Forms
 ------------------------
@@ -45,7 +45,7 @@ Contact and Custom Forms
 1. Verify the official "contact" form is using the "contacts" module and not the custom forms module. There are many technical reasons for this beyond the scope of a checklist. 
 2. Custom forms - a necessary evil. Verify all forms if used on the site are in "published" status
   - Logout. Make Sure you still see them. Submit form to test.
-  - Default Contact form has client email address to receive copies and text approriate for client
+  - Default Contact form has client email address to receive copies and text appropriate for client
   - Test if admin receives notification as well.
   - Make sure "Send Copies To" field is filled out on custom forms
   - Verify completion URL and/or submission text is updated to make sense for the site (no "lorem ipsum" etc)
@@ -130,7 +130,7 @@ Cross Browser Site Checking
   - you CAN use other frameworks in conjunction with it
   - use DIV IDs to avoid css conflicts if using other frameworks
 3. IE - We make little to no effort to support IE more than the current and previous version. 
-  - Example: If the current version of IE is 10, then Tendenci tries to support 10 and 9. Nothing further. (You can of course modify it to support older versions by doing a fork or submitting a pull request.
+  - Example: If the current version of IE is 10, then Tendenci tries to support 10 and 9. Nothing further. (You can of course modify it to support older versions by doing a fork or submitting a pull request.)
   - Safari is getting to be more like IE so same policy - current and previous versions are the only ones we check.
 
 Accessibility
@@ -142,8 +142,8 @@ Accessibility
 2. Submit issues if you see something in core that is broken
   - https://github.com/tendenci/tendenci/issues
 3. Not broken, but a pain? Submit on the forum.
-  - 
-3. Talk to your developer if something in your theme is broken
+  - https://www.tendenci.com/forums
+4. Talk to your developer if something in your theme is broken
 
 Security Recommendations
 ------------------------
