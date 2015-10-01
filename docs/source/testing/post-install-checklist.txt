@@ -1,23 +1,32 @@
 Post Installation Checklist
 ===========================
 
+Philosophy
+----------
+
+This idea of the checklist is to confirm that the site has been set up correctly. This is NOT a to-do list to build a Tendenci site. If you are hitting more than one or two errors, stop, and push it back to your developers and project manager. This is for quality control only.
+
+For developers you will note that many of these tests can be done using unit tests or selenium which is a far better method than having a human verify these things. We can look at this as a list of tests that need to be written for Tendenci while acknowledging there will always be a human element to quality control.
+
 General Functionality Testing
 -----------------------------
 
-- [ ] Newsletter Sending Has been Tested
---- Set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
+[*] Newsletter Sending Has been Tested
+  - Set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
 
-- [ ] Email sending from site is tested and sender address is client's email
---- Do a Password Reset
+[*] Email sending from site is tested and sender address is client's email
+  - Do a password reset and confirm you received the email
 
-- [ ] Redirects have been tested
---- If they using redirects - Click links in there. Try in a new browser window
+[*] Redirects have been tested
+  - If they are using /redirects - click links in the lilst. Try in a new browser window when you are specifically NOT logged in.
 
-- [ ] 404 page has search bar (Debug=True is off)
---- Test the reflex. Make up a page that doesn't exist example:(/blah/blah) and see what the result is. Note that example link has two slashes to see if the images break.
+[*] 404 page has search bar (Debug=True is off)
+  - Test the reflex. Make up a page that doesn't exist example:(/blah/blah) and see what the result is. Note that example link has two slashes to see if the images break.
 
-- [ ] The security, 403 page is working properly
---- Not logged in try to access a page that requires you to be logged in. Make sure you are prompted to login.
+[*] The security, 403 page is working properly
+  - Not logged in try to access a page that requires you to be logged in. Make sure you are prompted to login.
 
-- [ ] Merchant account has been tested
---- Donation form is a good way to test
+[*] Merchant account has been tested
+  - Donation form is a good way to test /donations or use /py
+
+
