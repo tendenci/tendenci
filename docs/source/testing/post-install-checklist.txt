@@ -29,18 +29,61 @@ Basic Functionality Testing
 6. [x] Merchant account has been tested
   - Donation form is a good way to test /donations or use /py
 
-Site Content Basic Review
--------------------------
+Site Content Review
+-------------------
 
-1. [x] Verify homepage is not pulling in demo/blank content. If an auto feed (one of our modules or something like a twitter feed) is set up and not pulling any content in.
+1. [ ] Verify homepage is not pulling in demo/blank content. An example might be an auto feed from the photos module but no photos have been added.
+  - twitter feed - verify it is using latest twitter embed code
+  - facebook feed - *make sure* it is using latest FB embed iframe method or the site will run very slow waiting on FB
 
-2. [x] Favicon and apple-touch-icon.png are logo
+2. [ ] Favicon and apple-touch-icon.png are logo
 
-3. [x] Check Title Tag Spelling and Unique Meta and keywords on homepage. 
+3. [ ] Check Title Tag Spelling and Unique Meta and keywords on homepage. 
+  - Check "Site Display Name", "Site Primary Keywords", and "Site Secondary Keywords" first. These are located at /settings/site/global/
   - Do a view source to see what is pulling in for <title></title>. 
-  - Make sure there is no duplicate wording there. (changes to title tag can be made here: /theme-editor/?file=/templates/homepage.html)
+  - Check for duplicate wording. 
+  - *Danger* You can override dynamic title tags in the theme editor: /theme-editor/?file=/templates/homepage.html but this is a terrible idea. Instead check your base.html file in theme, that homepage.html is extending from base. Then check that your homepage.html is doing a block.super either at the front or back of the title tag block in your homepage.
 
-4. [x] Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
+4. [ ] Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
+
+Contact and Custom Forms
+------------------------
+
+1. Verify the official "contact" form is using the "contacts" module and not the custom forms module. There are many technical reasons for this beyond the scope of a checklist. 
+
+2. Custom forms - a necessary evil. Verify all forms if used on the site are in "published" status
+  - Logout. Make Sure you still see them. Submit form to test.
+  - Default Contact form has client email address to receive copies and text approriate for client
+  - Test if admin receives notification as well.
+  - Make sure "Send Copies To" field is filled out on custom forms
+  - Verify completion URL and/or submission text is updated to make sense for the site (no "lorem ipsum" etc)
+
+Edit Default Data to Make Sense
+-------------------------------
+
+*To Repeat - this should already have been done because this is a QA checklist*
+1. Unused Applications disabled in /admin/
+  - Check if default users have email address ending in @<YOUR DOMAIN NAME>. Maybe delete them but be careful for deleting relational data.
+  - Company listed as <WHATEVER YOUR ORGANIZATION NAME IS>
+  - Edit, don't delete, default user groups. *warning* Edit/Don't Delete.
+  - Test pages edited to be relevant or possibly removed or set to draft where appropriate. (Recommended - Please check with project manager before deleting)
+
+2. Test invoices have been voided
+
+3. Images are using alt tags throughout the site
+
+4. Site has been checked in an html validator (https://www.onlinewebcheck.com/check.php) and on http://www.site-analyzer.com
+
+5. Optional: Test site speed (http://tools.pingdom.com/fpt/)
+
+6. H2, H3 etc. subtitle tags are in place across the site
+
+7. HTML Sitemap is linked in the footer and is functioning properly
+
+8. check /robots.txt - if it is set to disallow all update your sitesettings to make it public. Make sure robots.txt links to your sitemap.xml file which is generated dynamically as well
+
+9. check /sitemap.xml to be sure it is updating and can be crawled by google.
+
 
 
 
