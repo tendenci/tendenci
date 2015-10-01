@@ -11,36 +11,36 @@ For developers you will note that many of these tests can be done using unit tes
 Basic Functionality Testing
 -----------------------------
 
-[*] Newsletter Sending Has been Tested
+1. [x] Newsletter Sending Has been Tested
   - Set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
 
-[*] Email sending from site is tested and sender address is client's email
+2. [x] Email sending from site is tested and sender address is client's email
   - Do a password reset and confirm you received the email
 
-[*] Redirects have been tested
+3. [x] Redirects have been tested
   - If they are using /redirects - click links in the lilst. Try in a new browser window when you are specifically NOT logged in.
 
-[*] 404 page has search bar (Debug=True is off)
+4. [x] 404 page has search bar (Debug=True is off)
   - Test the reflex. Make up a page that doesn't exist example:(/blah/blah) and see what the result is. Note that example link has two slashes to see if the images break.
 
-[*] The security, 403 page is working properly
+5. [x] The security, 403 page is working properly
   - Not logged in try to access a page that requires you to be logged in. Make sure you are prompted to login.
 
-[*] Merchant account has been tested
+6. [x] Merchant account has been tested
   - Donation form is a good way to test /donations or use /py
 
 Site Content Basic Review
 -------------------------
 
-- Verify homepage is not pulling in demo/blank content. If an auto feed (one of our modules or something like a twitter feed) is set up and not pulling any content in.
+1. [x] Verify homepage is not pulling in demo/blank content. If an auto feed (one of our modules or something like a twitter feed) is set up and not pulling any content in.
 
-- Favicon and apple-touch-icon.png are logo
+2. [x] Favicon and apple-touch-icon.png are logo
 
-- Check Title Tag Spelling and Unique Meta and keywords on homepage. 
+3. [x] Check Title Tag Spelling and Unique Meta and keywords on homepage. 
   - Do a view source to see what is pulling in for <title></title>. 
   - Make sure there is no duplicate wording there. (changes to title tag can be made here: /theme-editor/?file=/templates/homepage.html)
 
-- Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
+4. [x] Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
 
 
 
