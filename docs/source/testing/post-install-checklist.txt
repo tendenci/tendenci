@@ -43,11 +43,11 @@ Contact and Custom Forms
 ------------------------
 
 1. Verify the official "contact" form is using the "contacts" module and not the custom forms module. There are many technical reasons for this beyond the scope of a checklist. 
+  - Default Contact form has an email address in th "Send Copies To" field. 
 2. Custom forms - a necessary evil. Verify all forms if used on the site are in "published" status
   - Logout. Make Sure you still see them. Submit form to test.
-  - Default Contact form has client email address to receive copies and text appropriate for client
   - Test if admin receives notification as well.
-  - Make sure "Send Copies To" field is filled out on custom forms
+  - Make sure "Send Copies To" field is filled out with an email address
   - Verify completion URL and/or submission text is updated to make sense for the site (no "lorem ipsum" etc)
 
 Edit Default Data to Make Sense
@@ -69,9 +69,8 @@ Edit Default Data to Make Sense
 Site Settings
 -------------
 
-1. Site URL starts with "www".
-  - The canonical name must *NOT* be the apex/naked url. 
-  - This is BAD --> "example.org" and so very 1990s. Do NOT do this.
+1. Site URL field contains an url that starts with "www"
+  - The canonical name must *NOT* be the apex/naked url. (This is BAD --> "example.org" and so very 1990s. Do NOT do this.)
   - Do an nslookup and be sure apex "example.org" forwards to "www.example.org" 
   - Do an nslookup to confirm www.example.org is using a CNAME to a host and not the IP address. Verify your site is future proof.
 2. Site name is correct, spelled out and not abbreviated if possible.
@@ -98,7 +97,7 @@ Search Engine Visibility Site Settings
   - Make sure robots.txt links to your sitemap.xml file which is generated dynamically as well
 4. check /sitemap.xml to be sure it is updating and can be crawled by google.
 5. Site Primary Keywords are set up
-  - *MUST NOT* be client name 
+  - *MUST NOT* be the orgnaization's name 
     - Consequence is spammy titles like "NAME - NAME"
   - two to three words max with no commas
     - Example: "Leadership Training"
