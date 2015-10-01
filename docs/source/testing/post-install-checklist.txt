@@ -1,3 +1,23 @@
 Post Installation Checklist
 ===========================
 
+General Functionality Testing
+-----------------------------
+
+- [ ] Newsletter Sending Has been Tested
+--- Set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
+
+- [ ] Email sending from site is tested and sender address is client's email
+--- Do a Password Reset
+
+- [ ] Redirects have been tested
+--- If they using redirects - Click links in there. Try in a new browser window
+
+- [ ] 404 page has search bar (Debug=True is off)
+--- Test the reflex. Make up a page that doesn't exist example:(/blah/blah) and see what the result is. Note that example link has two slashes to see if the images break.
+
+- [ ] The security, 403 page is working properly
+--- Not logged in try to access a page that requires you to be logged in. Make sure you are prompted to login.
+
+- [ ] Merchant account has been tested
+--- Donation form is a good way to test
