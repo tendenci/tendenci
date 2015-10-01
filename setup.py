@@ -117,15 +117,15 @@ setup(
     packages=find_packages(),
     package_data=package_data,
     include_package_data=True,
-    author='Schipul',
-    author_email='programmers@schipul.com',
+    author='Tendenci',
+    author_email='programmers@tendenci.com',
     url='http://github.com/tendenci/tendenci/',
     license='GPL3',
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     platforms=['any'],
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 7 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
@@ -141,11 +141,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
-    entry_points="""
-            [console_scripts]
-            create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
-            update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
-        """,
     install_requires=[
         "Django>=1.8,<1.9",
         "django-formtools>=1.0",
