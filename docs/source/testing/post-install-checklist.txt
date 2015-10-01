@@ -93,9 +93,9 @@ Search Engine Visibility Site Settings
 1. HTML Sitemap is linked in the footer and is functioning properly
 2. RSS feed is referenced in HTML header (view source)
 3. check /robots.txt 
-  - if it is set to disallow all update your sitesettings to make it public. 
+  - if it is set to disallow all, update your site settings to make it public. 
   - Make sure robots.txt links to your sitemap.xml file which is generated dynamically as well
-4. check /sitemap.xml to be sure it is updating and can be crawled by google.
+4. check /sitemap.xml to be sure it is updating and can be crawled by Google.
 5. Site Primary Keywords are set up
   - *MUST NOT* be the orgnaization's name 
     - Consequence is spammy titles like "NAME - NAME"
@@ -107,7 +107,7 @@ Search Engine Visibility Site Settings
   - Example: "dog walking, california dog walking, walking your dog in LA"
   - Don't spam - should reflect what your site is about
   - Most modules have seo meta options at the bottom which override these on a per module or per page basis.
-9. Google Analytics is set up in site settings. 
+7. Google Analytics is set up in site settings. 
   - There is a field for the UA- code
   - If using google "tags" put javascript below the <body> tag in "base.html"
   - Direct further questions on this to forums www.tendenci.com/forums/ or an SEO professional
@@ -169,14 +169,14 @@ Security Awareness - YOU ARE RESPONSIBLE
   - Read the license here https://github.com/tendenci/tendenci/blob/master/LICENSE.md 
   - Themes use a variety of licenses such as the Apache Open Source license, etc. Read them.
   - Components may use other similar open source licenses which are distributed in the code.
-2. YOU ARE RESPONSIBLE to confirm rights for anything uploaded to your site
+3. YOU ARE RESPONSIBLE to confirm rights for anything uploaded to your site
   - Example: a user picks the password "12345678" that is guessed by a competitor and something inappropriate gets uploaded.
-3. Backups are your responsibility and strongly recommended.
+4. Backups are your responsibility and strongly recommended.
   - Tendenci is not your typical software. This community pushes limits and moves fast. So sometimes things break. Use common sense.
   - You can download your database at /explorer/ on your site. If not enabled talk to your developer
   - You can create a static backup of your site by following the instructions on this blog post http://blog.tendenci.com/tag/make-a-static-copy-of-your-website/
   - You can arrange with your developer to have a scheduled backup of your site pushed to your own S3 bucket on Amazon via SSH.
-4. You, or your developer, are responsible to keep the code up to date to be sure you have the latest security patches.
+5. You, or your developer, are responsible to keep the code up to date to be sure you have the latest security patches.
 
 
 
