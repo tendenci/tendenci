@@ -8,7 +8,7 @@ This idea of the checklist is to confirm that the site has been set up correctly
 
 For developers you will note that many of these tests can be done using unit tests or selenium which is a far better method than having a human verify these things. We can look at this as a list of tests that need to be written for Tendenci while acknowledging there will always be a human element to quality control.
 
-General Functionality Testing
+Basic Functionality Testing
 -----------------------------
 
 [*] Newsletter Sending Has been Tested
@@ -28,5 +28,21 @@ General Functionality Testing
 
 [*] Merchant account has been tested
   - Donation form is a good way to test /donations or use /py
+
+Site Content Basic Review
+-------------------------
+
+- Verify homepage is not pulling in demo/blank content. If an auto feed (one of our modules or something like a twitter feed) is set up and not pulling any content in.
+
+- Favicon and apple-touch-icon.png are logo
+
+- Check Title Tag Spelling and Unique Meta and keywords on homepage. 
+  - Do a view source to see what is pulling in for <title></title>. 
+  - Make sure there is no duplicate wording there. (changes to title tag can be made here: /theme-editor/?file=/templates/homepage.html)
+
+- Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
+
+
+
 
 
