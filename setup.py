@@ -206,7 +206,4 @@ setup(
         'unicodecsv',
         'Embedly>=0.5.0', # videos
     ],
-    dependency_links=[
-        'https://github.com/epantry/django-sql-explorer/tarball/master#egg=explorer-0.7'
-    ]
 )
