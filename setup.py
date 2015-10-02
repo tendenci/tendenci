@@ -206,4 +206,7 @@ setup(
         'unicodecsv',
         'Embedly>=0.5.0', # videos
     ],
+    dependency_links=[
+        'git+ssh://git@github.com/epantry/django-sql-explorer.git@master#egg=explorer-0.7'
+    ]
 )
