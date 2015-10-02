@@ -1,6 +1,8 @@
 Upgrading from 6.0.x
 ====================
 
+UPDATED: It is now for migrating from T6 to T7.1 (instead of T7.0).
+
 Step 1: Back up your site and database
 --------------------------------------
 
@@ -15,14 +17,11 @@ Step 2: Update some files
 
 These 4 files need to be updated:
 
-  - requirements/common.txt
   - conf/settings.py
   - conf/local_settings.py
+  - conf/local_urls.py
   - deploy.py
 
-**requirements/common.txt**:
-
-Replace with the content of https://github.com/tendenci/tendenci-project-template/blob/master/requirements/common.txt
 
 **conf/settings.py**:
 
@@ -78,17 +77,85 @@ Remove:
 
     SOUTH_MIGRATION_MODULES = { 'explorer': 'explorer.south_migrations', }
 
+
+Replace:
+::
+
+    'committees',
+    'case_studies',
+    'donations',
+    'speakers',
+    'staff',
+    'studygroups',
+    'videos',
+    'testimonials',
+
+With:
+::
+
+     'tendenci.apps.committees',
+     'tendenci.apps.case_studies',
+     'tendenci.apps.donations',
+     'tendenci.apps.speakers',
+     'tendenci.apps.staff',
+     'tendenci.apps.studygroups',
+     'tendenci.apps.videos',
+     'tendenci.apps.testimonials',
+     'tendenci.apps.social_services',
+
+
+**conf/local_urls.py**
+
+Replace:
+::
+
+     ('^', include('committees.urls')),
+     ('^', include('case_studies.urls')),
+     ('^', include('donations.urls')),
+     ('^', include('speakers.urls')),
+     ('^', include('staff.urls')),
+     ('^', include('studygroups.urls')),
+     ('^', include('videos.urls')),
+     ('^', include('testimonials.urls')),
+     
+
+With:
+::
+
+    ('^', include('tendenci.apps.committees.urls')),
+    ('^', include('tendenci.apps.case_studies.urls')),
+    ('^', include('tendenci.apps.donations.urls')),
+    ('^', include('tendenci.apps.speakers.urls')),
+    ('^', include('tendenci.apps.staff.urls')),
+    ('^', include('tendenci.apps.studygroups.urls')),
+    ('^', include('tendenci.apps.videos.urls')),
+    ('^', include('tendenci.apps.testimonials.urls')),
+    (r'^', include('tendenci.apps.social_services.urls')),
+
+
 **deploy.py**
 
-Replace with the content of https://github.com/tendenci/tendenci-project-template/blob/master/deploy.py
+Replace with the content of https://github.com/tendenci/tendenci-project-template/blob/tendenci7.1/deploy.py
 
 
 
-Step 3: Remove south from environment
--------------------------------------
+Step 3: Update files in requirements directory
+----------------------------------------------
+Add a file `tendenci.txt` and replace all files with the content in the directory https://github.com/tendenci/tendenci-project-template/tree/tendenci7.1/requirements
+
+
+Step 4: Remove south and common addons modules from environment
+---------------------------------------------------------------
 ::
 
     pip uninstall South
+    pip uninstall tendenci-case-studies
+    pip uninstall tendenci-committees
+    pip uninstall tendenci-donations
+    pip uninstall tendenci-speakers
+    pip uninstall tendenci-staff
+    pip uninstall tendenci-studygroups
+    pip uninstall tendenci-videos
 
 
 .. Note:: 
@@ -102,7 +169,9 @@ Step 3: Remove south from environment
         curl https://bootstrap.pypa.io/get-pip.py | sudo python
 
 
-Step 4: Install requirements
+
+
+Step 5: Install requirements
 ----------------------------
 ::
 
@@ -120,6 +189,9 @@ Step 6: Run deploy
 ------------------
 ::
 
+    # If you encountered an error saying `salutation` already exists,
+    # you'll need to fake events 0003 `python manage.py migrate events 0003 --fake`
+    # then rerun the command `python manage.py migrate`.
     python manage.py migrate
     python deploy.py
 
