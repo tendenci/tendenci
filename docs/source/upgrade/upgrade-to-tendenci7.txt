@@ -1,5 +1,5 @@
-Upgrading from 6.0.x
-====================
+Upgrade 6.x to 7.1x
+===================
 
 UPDATED: It is now for migrating from T6 to T7.1 (instead of T7.0).
 

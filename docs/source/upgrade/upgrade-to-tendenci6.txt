@@ -1,7 +1,7 @@
-Upgrading from 5.1.x
-====================
+Upgrade 5.1.x to 6.x
+===========================
 
-If you want to migrate your site from T5 to the latest version of tendenci T7, you'd need to take two steps:
+If you want to migrate your site from T5 to the latest version of tendenci T7, you'd need to take two steps because of the change in the way django switched database migration methods moving to django 1.8. For Tendenci this means you must:
 
 1) Migrate from T5 to T6
 2) Migrate from T6 to T7
