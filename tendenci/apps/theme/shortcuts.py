@@ -72,7 +72,12 @@ def themed_response(*args, **kwargs):
     """Returns a HttpResponse whose content is filled with the result of calling
     django.template.loader.render_to_string() with the passed arguments.
     """
-    content_type = kwargs.get('content_type', None) or kwargs.get('mimetype', None)
+    if 'content_type' in kwargs:
+        content_type = kwargs.pop('content_type')
+    elif 'mimetype' in kwargs:
+        content_type = kwargs.pop('mimetype')
+    else:
+        content_type = None
     return HttpResponse(render_to_theme(*args, **kwargs), content_type=content_type)
 
 
