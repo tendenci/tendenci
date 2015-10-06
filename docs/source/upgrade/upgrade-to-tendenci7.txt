@@ -184,6 +184,10 @@ Step 5: Fake initials
 
     python manage.py fake_initials
 
+.. Note:: 
+
+    If you encountered the error "no module 'testimonials' is installed" or similar, please check if 'testimonials' is removed from `INSTALLED_APPS` in conf/local_settings.py.
+
 
 Step 6: Run deploy
 ------------------
