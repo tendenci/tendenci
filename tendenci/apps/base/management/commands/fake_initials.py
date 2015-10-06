@@ -17,7 +17,8 @@ class Command(BaseCommand):
         try:
             call_command('migrate', 'contenttypes')
         except:
-            pass
+            # might need to fake 0002
+            call_command('migrate', 'contenttypes', '0002', '--fake')
         try:
             call_command('migrate', 'auth', '0001', '--fake')
             call_command('migrate', 'auth')
