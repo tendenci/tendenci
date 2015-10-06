@@ -14,9 +14,15 @@ class Command(BaseCommand):
             call_command('migrate', 'contenttypes', '0001', '--fake')
         except:
             pass
-        call_command('migrate', 'contenttypes')
-        call_command('migrate', 'auth', '0001', '--fake')
-        call_command('migrate', 'auth')
+        try:
+            call_command('migrate', 'contenttypes')
+        except:
+            pass
+        try:
+            call_command('migrate', 'auth', '0001', '--fake')
+            call_command('migrate', 'auth')
+        except:
+            pass
 
         apps = ('admin',
                 'user_groups',
