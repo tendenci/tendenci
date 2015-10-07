@@ -1,0 +1,109 @@
+Upgrade 7.0 to 7.1
+===================
+
+We've refactored tendenci by pulling the common addons into the core. As a result, 
+T7.1 is not backwards compatible with T7.0. This guide helps you migrate from T7.0 to T7.1.
+
+Step 1: Update 2 files in conf/
+-------------------------------
+
+  - conf/local_settings.py
+  - conf/local_urls.py
+    
+
+**conf/local_settings.py**:
+
+Replace:
+::
+
+    'committees',
+    'case_studies',
+    'donations',
+    'speakers',
+    'staff',
+    'studygroups',
+    'videos',
+    'testimonials',
+
+With:
+::
+
+     'tendenci.apps.committees',
+     'tendenci.apps.case_studies',
+     'tendenci.apps.donations',
+     'tendenci.apps.speakers',
+     'tendenci.apps.staff',
+     'tendenci.apps.studygroups',
+     'tendenci.apps.videos',
+     'tendenci.apps.testimonials',
+     'tendenci.apps.social_services',
+
+
+**conf/local_urls.py**
+
+Replace:
+::
+
+     ('^', include('committees.urls')),
+     ('^', include('case_studies.urls')),
+     ('^', include('donations.urls')),
+     ('^', include('speakers.urls')),
+     ('^', include('staff.urls')),
+     ('^', include('studygroups.urls')),
+     ('^', include('videos.urls')),
+     ('^', include('testimonials.urls')),
+     
+
+With:
+::
+
+    ('^', include('tendenci.apps.committees.urls')),
+    ('^', include('tendenci.apps.case_studies.urls')),
+    ('^', include('tendenci.apps.donations.urls')),
+    ('^', include('tendenci.apps.speakers.urls')),
+    ('^', include('tendenci.apps.staff.urls')),
+    ('^', include('tendenci.apps.studygroups.urls')),
+    ('^', include('tendenci.apps.videos.urls')),
+    ('^', include('tendenci.apps.testimonials.urls')),
+    (r'^', include('tendenci.apps.social_services.urls')),
+
+
+
+Step 2: Update files in requirements/ directory
+-----------------------------------------------
+Add a file `tendenci.txt` and replace all files with the content in the directory https://github.com/tendenci/tendenci-project-template/tree/tendenci7.1/requirements
+
+
+Step 3: Remove common addons modules from environment
+---------------------------------------------------------------
+::
+
+    pip uninstall tendenci-case-studies
+    pip uninstall tendenci-committees
+    pip uninstall tendenci-donations
+    pip uninstall tendenci-speakers
+    pip uninstall tendenci-staff
+    pip uninstall tendenci-studygroups
+    pip uninstall tendenci-videos
+
+
+Step 4: Install requirements
+----------------------------
+::
+
+    pip install -r requirements.txt --upgrade
+
+
+.. Note:: 
+
+    If you encountered the error "no module 'testimonials' is installed" or similar, please check if 'testimonials' is removed from `INSTALLED_APPS` in conf/local_settings.py.
+
+
+Step 5: Run deploy
+------------------
+::
+
+    python deploy.py
+
+
+If everything goes well, restart your site.
