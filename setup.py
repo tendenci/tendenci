@@ -160,6 +160,7 @@ setup(
         "django-tagging==0.3.6",
         "django-tinymce==1.5.2",
         "django-haystack==2.4.0",
+        "django-debug-toolbar>=1.2.2",
         "feedparser>=4.1",
         "httplib2>=0.4.0",
         "pytz==2015.4",
