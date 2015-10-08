@@ -135,13 +135,13 @@ With:
 
 **deploy.py**
 
-Replace with the content of https://github.com/tendenci/tendenci-project-template/blob/tendenci7.1/deploy.py
+Replace with the content of https://github.com/tendenci/tendenci-project-template/blob/master/deploy.py
 
 
 
 Step 3: Update files in requirements directory
 ----------------------------------------------
-Add a file `tendenci.txt` and replace all files with the content in the directory https://github.com/tendenci/tendenci-project-template/tree/tendenci7.1/requirements
+Add a file `tendenci.txt` and replace all files with the content in the directory https://github.com/tendenci/tendenci-project-template/tree/master/requirements
 
 
 Step 4: Remove south and common addons modules from environment

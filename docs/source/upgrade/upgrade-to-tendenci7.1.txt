@@ -71,7 +71,7 @@ With:
 
 Step 2: Update files in requirements/ directory
 -----------------------------------------------
-Add a file `tendenci.txt` and replace all files with the content in the directory https://github.com/tendenci/tendenci-project-template/tree/tendenci7.1/requirements
+Add a file `tendenci.txt` and replace all files with the content in the directory https://github.com/tendenci/tendenci-project-template/tree/master/requirements
 
 
 Step 3: Remove common addons modules from environment
