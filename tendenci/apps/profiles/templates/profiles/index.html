@@ -73,6 +73,10 @@
         {% if city_state %}
             <p>{{ city_state }}</p>
         {% endif %}
+        
+        {% if user_this.skillset and user_this.skillset.is_first_responder %}
+            <p class="capitalize">{% trans "first responder" %} - <a href="{% url 'user.skills' user_this.username %}">{% trans "see skills" %}</a></p>
+        {% endif %}
 
         {% if request.user == user_this or admin %}
         {% if content_counts.invoice > 0 %}

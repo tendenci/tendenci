@@ -22,7 +22,3 @@ urlpatterns = patterns('tendenci.apps.social_services.views',
     url(r'^social-services/relief-area/(?P<area_id>\d+)/$', 'relief_area_detail', name='social-services.relief_area'),
 )
 
-
-replacement = url(r'^%s/(?P<username>[+-.\w\d@\s]+)/$' % urlpath, 'tendenci.apps.profiles.views.index',
-            {'template_name': 'social_services/profile.html'}, name='profile')
-replace_urlpattern(tendenci_urls, replacement)
