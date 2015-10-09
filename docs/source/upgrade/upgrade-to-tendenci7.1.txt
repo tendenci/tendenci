@@ -107,3 +107,24 @@ Step 5: Run deploy
 
 
 If everything goes well, restart your site.
+
+Troubleshooting Migrations
+--------------------------
+::
+
+If you hit any errors on the migrations while running deploy.py, swbug it from the root of your python app with:
+
+    python manage.py migrate --list
+
+Make a note of any of the migrations that are missing an "x" in the brackets. In this example for some reason the django migrations skipped the third migration in events.
+
+     events
+      [X] 0001_initial
+      [X] 0002_auto_20150804_1545
+      [ ] 0003_registrant_salutation
+
+whccih was resolved by faking the third migration in events like this:
+
+      python manage.py migrate events 0003 --fake
+    
+Of course realize that if your database structure is off and you fake that migratoin it won't update your database table and will probably cause NGINX to just deliver of 502 error without logging anything helpful.
