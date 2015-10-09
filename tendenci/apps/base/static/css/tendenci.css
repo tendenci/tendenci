@@ -1,7 +1,3 @@
-html {
-    margin-top: 30px;
-}
-
 
 /* Bootstrap overrides */
 .navbar-nav > li.dropup > .dropdown-menu {
@@ -23,6 +19,7 @@ html {
 .t-megamenu {
     min-height: 30px;
     z-index: 9999999 !important;
+    position: static !important;
 }
 
 .t-megamenu a {
