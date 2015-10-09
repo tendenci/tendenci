@@ -118,10 +118,10 @@ If you hit any errors on the migrations while running deploy.py, swbug it from t
 
 Make a note of any of the migrations that are missing an "x" in the brackets. In this example for some reason the django migrations skipped the third migration in events.
 
-     events
-      [X] 0001_initial
-      [X] 0002_auto_20150804_1545
-      [ ] 0003_registrant_salutation
+     events  
+      [X] 0001_initial  
+      [X] 0002_auto_20150804_1545  
+      [ ] 0003_registrant_salutation  
 
 whccih was resolved by faking the third migration in events like this:
 
