@@ -1,6 +1,6 @@
 import copy
 from django.conf import settings
-from django.utils.importlib import import_module
+from importlib import import_module
 from django.utils.module_loading import module_has_submodule
 
 from tendenci.apps.registry.sites import site

@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django import forms
-from django.utils.importlib import import_module
+from importlib import import_module
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str

@@ -3,7 +3,7 @@ from os.path import join
 from uuid import uuid4
 
 from django import forms
-from django.utils.importlib import import_module
+from importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe

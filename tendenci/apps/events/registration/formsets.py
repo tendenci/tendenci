@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django import forms
 from django.forms.formsets import BaseFormSet
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.site_settings.utils import get_setting

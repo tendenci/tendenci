@@ -5,7 +5,7 @@ import os
 import warnings
 import uuid
 
-from django.utils.importlib import import_module
+from importlib import import_module
 from django.utils.six import string_types
 from django.utils.translation import ugettext as _
 import compat

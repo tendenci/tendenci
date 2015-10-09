@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from functools import partial
 
 from django import forms
-from django.utils.importlib import import_module
+from importlib import import_module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _

@@ -28,7 +28,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth import authenticate
 from django.contrib.auth.backends import ModelBackend
 import simplejson
-from django.utils.importlib import import_module
+from importlib import import_module
 
 from tendenci.apps.social_auth.models import UserSocialAuth
 from tendenci.apps.social_auth.store import DjangoOpenIDStore

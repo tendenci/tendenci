@@ -9,7 +9,7 @@ from operator import itemgetter
 
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.importlib import import_module
+from importlib import import_module
 
 from tendenci.apps.theme.utils import get_theme_root, get_theme
 from tendenci.apps.theme_editor.models import ThemeFileVersion

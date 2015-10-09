@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.contrib.contenttypes.models import ContentType
+from django.forms.utils import ErrorList
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
