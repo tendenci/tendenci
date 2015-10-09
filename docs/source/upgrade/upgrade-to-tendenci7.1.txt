@@ -113,10 +113,12 @@ Troubleshooting Migrations
 ::
 
 If you hit any errors on the migrations while running deploy.py, swbug it from the root of your python app with:
+::
 
     python manage.py migrate --list
 
 Make a note of any of the migrations that are missing an "x" in the brackets. In this example for some reason the django migrations skipped the third migration in events.
+::
 
      events  
       [X] 0001_initial  
