@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
-import simplejson as json
+import json
 
 from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.invoices.models import Invoice
