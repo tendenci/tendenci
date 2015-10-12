@@ -182,8 +182,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
         categoryform = category_form_class(
                         content_type,
-                        request.POST,
-                        prefix='category')
+                        request.POST,)
 
         if form.is_valid() and categoryform.is_valid():
             job = form.save(commit=False)
@@ -296,8 +295,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
         }
         categoryform = category_form_class(
                         content_type,
-                        initial=initial_category_form_data,
-                        prefix='category')
+                        initial=initial_category_form_data,)
 
     return render_to_response(template_name,
             {'form': form,
@@ -351,8 +349,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
     categoryform = category_form_class(
                         content_type,
                         request.POST or None,
-                        initial= initial_category_form_data,
-                        prefix='category')
+                        initial= initial_category_form_data,)
 
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
     if not request.user.profile.is_superuser:

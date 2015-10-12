@@ -53,61 +53,7 @@
 {% endblock %}
 
 {% block extra_body %}
-    {# Category Modal #}
-    <div id="t-categories-add-category-modal" class="modal fade" role="dialog" aria-labelledby="t-categories-add-category-modal-label" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
-                    <h4 id="t-categories-add-category-modal-label" class="modal-title">{% trans "Add Category" %}</h4>
-                </div>
-
-                <div class="modal-body">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="id_category-name" class="col-sm-3 control-label">{% trans "Category Name" %}</label>
-                            <div class="col-sm-9">
-                                <input id="id_category-name" name="category-name" type="text" class="form-control">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="button" class="btn btn-primary">{% trans "Save Category" %}</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    {# Subcategory Modal #}
-    <div id="t-categories-add-subcategory-modal" class="modal fade" role="dialog" aria-labelledby="t-categories-add-subcategory-modal-label" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
-                    <h4 id="t-categories-add-subcategory-modal-label" class="modal-title">{% trans "Add Subcategory" %}</h4>
-                </div>
-
-                <div class="modal-body">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="id_subcategory-name" class="col-sm-4 control-label">{% trans "Subcategory Name" %}</label>
-                            <div class="col-sm-8">
-                                <input id="id_subcategory-name" name="category-name" type="text" class="form-control">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button type="button" class="btn btn-primary">{% trans "Save Subcategory" %}</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+   
 
     {{ block.super }}
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
@@ -138,25 +84,7 @@
         });
     </script>
     <script type="text/javascript">
-        $(document).ready(function(){
-            // delete confirmation
-            $('dummy').click(function(){
-                select_box = $(this).parent().prev().find('select');
-                var category = prompt('Category Name?','').toLowerCase();
-                category = category.replace('"','')
-                var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
-                if (category) select_box.append(option_html)
-                return false;
-            });
-            $('dummy').click(function(){
-                select_box = $(this).parent().prev().find('select');
-                var sub_category = prompt('Category Name?','').toLowerCase();
-                sub_category = sub_category.replace('"','')
-                var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
-                if (sub_category) select_box.append(option_html)
-                return false;
-            });
-        });
+        {% include 'categories/include/add_categories.js' %}
     </script>
     <script type="text/javascript">
         $('#category-form').hide();

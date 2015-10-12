@@ -196,8 +196,7 @@ def edit(request, id, form_class=ArticleForm,
         if request.method == "POST":
             form = form_class(request.POST, instance=article, user=request.user)
             categoryform = category_form_class(content_type,
-                                           request.POST,
-                                           prefix='category')
+                                           request.POST,)
 
             if form.is_valid() and categoryform.is_valid():
                 article = form.save()
@@ -225,8 +224,7 @@ def edit(request, id, form_class=ArticleForm,
                 'sub_category': getattr(sub_category, 'name', '0')
             }
             categoryform = category_form_class(content_type,
-                                           initial=initial_category_form_data,
-                                           prefix='category')
+                                           initial=initial_category_form_data,)
 
 
         return render_to_response(template_name, {'article': article,
@@ -281,8 +279,7 @@ def add(request, form_class=ArticleForm,
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
             categoryform = category_form_class(content_type,
-                                           request.POST,
-                                           prefix='category')
+                                           request.POST,)
             if form.is_valid() and categoryform.is_valid():
                 article = form.save()
                 article.update_category_subcategory(
@@ -312,8 +309,7 @@ def add(request, form_class=ArticleForm,
                 'pk': 0,
             }
             categoryform = category_form_class(content_type,
-                                               initial=initial_category_form_data,
-                                               prefix='category')
+                                               initial=initial_category_form_data,)
 
 
         return render_to_response(template_name, {'form': form,
