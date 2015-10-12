@@ -51,10 +51,10 @@
         {% if page_cat.category %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'page.search' %}?q=category:{{ page_cat.category }}">{% blocktrans with category=page_cat.category %}{{ category }}{% endblocktrans %}</a></li>
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'page.search' %}?q=category:{{ page_cat.category }}">{{ page_cat.category }}</a></li>
                     {% if page_cat.sub_category %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'page.search' %}?q=sub_category:{{ page_cat.sub_category }}">{% blocktrans with sub_category=page_cat.subcategory %}{{ sub_category }}{% endblocktrans %}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'page.search' %}?q=sub_category:{{ page_cat.sub_category }}">{{ page_cat.sub_category }}</a></li>
                     {% endif %}
                 </ul>
             </li>
