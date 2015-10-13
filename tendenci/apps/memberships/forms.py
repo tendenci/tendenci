@@ -1301,7 +1301,7 @@ class MembershipDefaultForm(TendenciBaseForm):
     city = forms.CharField(initial=u'', required=False)
     state = forms.CharField(initial=u'', required=False)
     zipcode = forms.CharField(initial=u'', required=False)
-    country = forms.CharField(initial=u'', required=False)
+    country = CountrySelectField(label=_('Country'), required=False)
     phone = forms.CharField(initial=u'', required=False)
     phone2 = forms.CharField(initial=u'', required=False)
     work_phone = forms.CharField(initial=u'', required=False)
@@ -1323,7 +1323,7 @@ class MembershipDefaultForm(TendenciBaseForm):
     city_2 = forms.CharField(initial=u'', required=False, max_length=35)
     state_2 = forms.CharField(initial=u'', required=False, max_length=35)
     zipcode_2 = forms.CharField(initial=u'', required=False, max_length=16)
-    country_2 = forms.CharField(initial=u'', required=False)
+    country_2 = CountrySelectField(label=_('Country'), required=False)
 
     dob = forms.DateTimeField(required=False)
     education_grad_dt = forms.DateTimeField(required=False)
