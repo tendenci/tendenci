@@ -59,7 +59,7 @@ class Forum(models.Model):
     name = models.CharField(_('Name'), max_length=80)
     position = models.IntegerField(_('Position'), blank=True, default=0)
     description = models.TextField(_('Description'), blank=True)
-    moderators = models.ManyToManyField(get_user_model_path(), blank=True, null=True, verbose_name=_('Moderators'))
+    moderators = models.ManyToManyField(get_user_model_path(), blank=True, verbose_name=_('Moderators'))
     updated = models.DateTimeField(_('Updated'), blank=True, null=True)
     post_count = models.IntegerField(_('Post count'), blank=True, default=0)
     topic_count = models.IntegerField(_('Topic count'), blank=True, default=0)
@@ -248,7 +248,7 @@ class Post(RenderableItem):
     user = models.ForeignKey(get_user_model_path(), related_name='posts', verbose_name=_('User'))
     created = models.DateTimeField(_('Created'), blank=True, db_index=True)
     updated = models.DateTimeField(_('Updated'), blank=True, null=True)
-    user_ip = models.IPAddressField(_('User IP'), blank=True, default='0.0.0.0')
+    user_ip = models.GenericIPAddressField(_('User IP'), default='0.0.0.0')
     on_moderation = models.BooleanField(_('On moderation'), default=False)
 
     class Meta(object):
