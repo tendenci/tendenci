@@ -146,14 +146,15 @@ class CountrySelectField(fields.ChoiceField):
     def __init__(self, *args, **kwargs):
         super(CountrySelectField, self).__init__(*args, **kwargs)
 
-        exclude_list = ['GB', 'US', 'CA']
+        exclude_list = ['US', 'CH', 'FR', 'GB']
         countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
         initial_choices = (('United States', _('United States')),
-                           ('Canada', _('Canada')),
+                           ('Switzerland', _('Switzerland')),
+                           ('France', _('France')),
                            ('United Kingdom', _('United Kingdom')),
                            ('','-----------'))
         self.choices = initial_choices + tuple(countries)
-        self.initial = 'United States'
+        self.initial = ''
 
 
 class PriceField(fields.DecimalField):
