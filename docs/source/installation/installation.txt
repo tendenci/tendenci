@@ -164,13 +164,13 @@ Create the database and a new postgres user with the following commands (replace
     DB_USER=<DB_USER>
     DB_PASS=<DB_PASS>
     DB_NAME=<DB_NAME>
-    sudo -u postgres psql postgres -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
-    sudo -u postgres psql postgres -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
-    sudo -u postgres psql postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
-    sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION postgis;"
-    sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
-    sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
-    sudo -u postgres psql postgres -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
+    sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+    sudo -u postgres psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
 
 
 Creating a Virtualenv
