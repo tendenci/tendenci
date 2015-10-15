@@ -268,7 +268,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
                 payment = Payment()
                 payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                 payment.mark_as_paid()
-                payment.method = corp_memb.get_payment_method()
+                payment.method = corp_memb.payment_method.machine_name
                 payment.save(user)
 
                 # this will make accounting entry
