@@ -58,7 +58,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     cached_image = cache.get(cache_key)
     
     if cached_image:
-        return redirect(cached_image)
+        return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 
     file = get_object_or_404(File, pk=id)
 
