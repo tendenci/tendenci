@@ -259,7 +259,7 @@ def corpmembership_add(request, slug='',
             try:
                 corp_memb_type = CorporateMembershipType.objects.get(
                                             pk=corp_memb_type_id)
-                if corp_memb_type.price <= 0:
+                if corp_memb_type.price <= 0 and 'payment_method' in corpmembership_form.fields:
                     corpmembership_form.fields['payment_method'].required = False
             except CorporateMembershipType.DoesNotExist:
                 pass
