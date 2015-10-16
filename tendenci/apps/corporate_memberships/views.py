@@ -558,10 +558,6 @@ def corpmembership_view(request, id,
     else:
         all_records = []
 
-    print '***'
-    print app_fields
-    print type(app_fields[0])
-
     context = {"corporate_membership": corp_membership,
                'all_records': all_records,
                'app_fields': app_fields,
