@@ -6,7 +6,7 @@
         {% if "cp_id" in search_form.fields %}
             <fieldset>
                 <div class="form-group">
-                    <label for="{{ search_form.cp_id.id_for_label }}">{{ search_form.cp_id.label }}</label>
+                    <label for="{{ search_form.cp_id.id_for_label }}">{{ search_form.cp_id.label }}:</label>
                     {{ search_form.cp_id }}
                 </div>
             </fieldset>
@@ -15,7 +15,7 @@
         {% if "industry" in search_form.fields %}
             <fieldset>
                 <div class="form-group">
-                    <label for="{{ search_form.industry.id_for_label }}">{{ search_form.industry }}</label>
+                    <label for="{{ search_form.industry.id_for_label }}">{{ search_form.industry.label }}:</label>
                     {{ search_form.industry }}
                 </div>
             </fieldset>

@@ -567,14 +567,16 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
 
             if industry_field:
                 industries = Industry.objects.all().order_by('industry_name')
-                industries_choices = [(0, _('Select One'))]
-                for industry in industries:
-                    industries_choices.append((industry.id, industry.industry_name))
-                self.fields['industry'] = forms.ChoiceField(
-                            label=industry_field.label,
-                            choices=industries_choices,
-                            required=False
-                                )
+                if industries:
+                    industries_choices = [(0, _('Select One'))]
+                    for industry in industries:
+                        industries_choices.append((industry.id, industry.industry_name))
+                    self.fields['industry'] = forms.ChoiceField(
+                                label=industry_field.label,
+                                choices=industries_choices,
+                                required=False
+                                    )
+                    self.fields['industry'].widget.attrs.update({'class': 'form-control'})
         # search criteria choices
         search_choices = []
         fields = CorpMembershipAppField.objects.filter(
