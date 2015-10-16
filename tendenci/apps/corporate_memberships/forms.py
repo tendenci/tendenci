@@ -238,7 +238,8 @@ def assign_fields(form, app_field_objs, instance=None):
                 del form.fields['corporate_membership_type']
                 continue
             if obj.field_name == 'payment_method':
-                del form.fields['payment_method']
+                if 'payment_method' in form.fields:
+                    del form.fields['payment_method']
                 obj.display_content = instance.payment_method
                 if instance.invoice:
                     obj.display_content = """%s - <a href="%s">View Invoice</a>
@@ -722,7 +723,7 @@ class CorpApproveForm(forms.Form):
 class CorpMembershipRepForm(forms.ModelForm):
     user_display = forms.CharField(max_length=100,
                         required=False,
-                        help_text=_('type name, or username or email'))
+                        help_text=_('Rep must be a valid user on the website. Enter name or username or email, then press the down arrow key to select a suggestion'))
 
     class Meta:
         model = CorpMembershipRep

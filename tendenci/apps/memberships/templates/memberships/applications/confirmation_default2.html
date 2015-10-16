@@ -54,7 +54,7 @@
             {% with membership.corpmembership as corpmembership %}
             {% if corpmembership %}
             <li>
-                <a href="{% url "membership_default.add_under_corp" membership.corporate_membership_id %}">{% blocktrans %}Add <strong>More</strong> Members Under "{{ corpmembership.corp_profile.name }}"{% endblocktrans %}  </a>
+                <a href="{% url "membership_default.add_under_corp" membership.corporate_membership_id %}">{% blocktrans with corp_name=corpmembership.corp_profile.name %}Add <strong>More</strong> Members Under "{{ corp_name }}"{% endblocktrans %}  </a>
             </li>
             <li><a href="{% url "corpmembership.view" membership.corporate_membership_id %}">{% trans 'Back to Corporate Membership' %} - {{ corpmembership.corp_profile.name }}</a></li>
             {% endif %}

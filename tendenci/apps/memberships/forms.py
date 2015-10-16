@@ -1213,13 +1213,9 @@ class AppCorpPreForm(forms.Form):
                         max_length=50)
     email = EmailVerificationField(
                     label=_('Verify Your Email Address'),
-                    help_text=_("""Your email address will help us to identify
-                                 your corporate. You will receive an email to
-                                 the address you entered for us to verify
-                                 your email address. Please follow the
-                                 instruction in the email to continue signing
-                                 up for the membership.
-                                  """))
+                    help_text=_("""Your email address will be used to locate your corporate account.
+                    Please click the link in the verification email received to continue your application.
+                    Thanks!"""))
 
     def __init__(self, *args, **kwargs):
         super(AppCorpPreForm, self).__init__(*args, **kwargs)
