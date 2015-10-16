@@ -501,14 +501,16 @@ def corpmembership_view(request, id,
     app_fields = list(app_fields.order_by('position'))
 
     if can_edit:
-        app_field = CorpMembershipAppField(label='Join Date',
-                                            field_name='join_dt',
-                                            required=True)
-        app_fields.append(app_field)
-        app_field = CorpMembershipAppField(label='Expiration Date',
-                                            field_name='expiration_dt',
-                                            required=True)
-        app_fields.append(app_field)
+        if not app.fields.filter(field_name='join_dt').exists():
+            app_field = CorpMembershipAppField(label='Join Date',
+                                                field_name='join_dt',
+                                                required=True)
+            app_fields.append(app_field)
+        if not app.fields.filter(field_name='expiration_dt').exists():
+            app_field = CorpMembershipAppField(label='Expiration Date',
+                                                field_name='expiration_dt',
+                                                required=True)
+            app_fields.append(app_field)
         app_field = CorpMembershipAppField(label='Representatives',
                                     field_type='section_break',
                                     admin_only=False)
