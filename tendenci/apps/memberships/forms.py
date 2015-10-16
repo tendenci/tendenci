@@ -1238,14 +1238,18 @@ class AppCorpPreForm(forms.Form):
         email = self.cleaned_data['email']
         if email:
             email_domain = (email.split('@')[1]).strip()
-            [auth_domain] = CorpMembershipAuthDomain.objects.filter(
-                                    name=email_domain)[:1] or [None]
-            if auth_domain:
-                corp_membership = auth_domain.corp_profile.active_corp_membership
-            else:
-                corp_membership = None
+            auth_domains = CorpMembershipAuthDomain.objects.filter(
+                                    name=email_domain).filter(
+                                    corp_profile__status_detail='active')
+            corp_membership = None
+            # check which corp. membership carries this auth domain
+            if auth_domains:
+                for auth_domain in auth_domains:
+                    corp_membership = auth_domain.corp_profile.active_corp_membership
+                    if corp_membership:
+                        break
 
-            if not all([auth_domain, corp_membership]):
+            if not corp_membership:
                 raise forms.ValidationError(
                     _("Sorry but we're not able to find your corporation."))
             self.corporate_membership_id = corp_membership.id
