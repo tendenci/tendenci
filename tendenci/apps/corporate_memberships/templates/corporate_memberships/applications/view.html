@@ -127,15 +127,16 @@
                                     {% endif %}
                                 {% endif %}
                             {% else %}
-                                {% if field_obj.field_name != "" %}
-                                    <h3 class="t-field-fieldlabel t-corpmemberships-application-field-fieldlabel
+                                {% if field_obj.field_name != "" and field_obj.value != "" %}
+                                	<dl>
+                                    <dt class="t-field-fieldlabel t-corpmemberships-application-field-fieldlabel
                                                   {% if field_obj.short_label %} t-short-label{% endif %}
                                                   {% if field_obj.required %} t-required{% endif %}
                                                   {% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
                                         {% blocktrans with label=field_obj.label %}{{ label }}:{% endblocktrans %}
-                                    </h3>
+                                    </dt>
 
-                                    <p class="t-field-fieldvalue t-corpmemberships-application-field-fieldvalue{% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
+                                    <dd class="t-field-fieldvalue t-corpmemberships-application-field-fieldvalue{% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
                                         {% if field_obj.is_date %}
                                             {{ field_obj.value|date:"long" }}
                                         {% else %}
@@ -145,7 +146,7 @@
                                                 {% if field_obj.field_type == "FileField" %}
                                                     <a href="{% url 'corpmembership.download_file' corporate_membership.id  field_obj.id %}">{{ field_obj.value|basename }}</a>
                                                 {% else %}
-                                                    {{ field_obj.value|default:"None" }}
+                                                    {{ field_obj.value }}
                                                 {% endif %}
                                             {% endif %}
 
@@ -155,7 +156,8 @@
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
-                                    </p>
+                                    </dd>
+                                    </dl>
                                 {% endif %}
                             {% endif %}
                         </div>
