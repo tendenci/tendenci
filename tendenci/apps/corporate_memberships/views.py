@@ -635,8 +635,6 @@ def corpmembership_search(request, my_corps_only=False,
                                                 my_corps_only=my_corps_only)
         corp_members = corp_members.exclude(status_detail='archive').order_by('corp_profile__name')
 
-    # Temp
-    corp_members = CorpMembership.objects.all()
 
     if not corp_members.exists():
         del search_form.fields['cp_id']
