@@ -2,7 +2,6 @@ import operator
 import time
 import uuid
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from functools import partial
 
 from django import forms
@@ -11,7 +10,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.template import Context, Template
-from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
@@ -42,9 +40,8 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.base.fields import DictField, CountrySelectField
 
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.base.utils import send_email_notification, day_validate, fieldify, get_salesforce_access
+from tendenci.apps.base.utils import send_email_notification, fieldify, get_salesforce_access
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.corporate_memberships.utils import (
                                             corp_membership_update_perms,
                                             dues_rep_emails_list,

@@ -15,7 +15,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 import simplejson
@@ -29,7 +28,6 @@ from django.db.models.fields import AutoField
 from django.utils.translation import ugettext_lazy as _
 #from johnny.cache import invalidate
 
-from tendenci.apps.imports.utils import render_excel
 from tendenci.apps.exports.utils import render_csv
 
 from tendenci.apps.base.http import Http403
@@ -44,7 +42,6 @@ from tendenci.apps.corporate_memberships.models import (
                                             CorpMembershipRep,
                                             CorpMembership,
                                             CorpProfile,
-                                            FreePassesStat,
                                             IndivMembershipRenewEntry,
                                             CorpMembershipAppField,
                                             CorpMembershipImport,
@@ -63,8 +60,6 @@ from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipRepForm,
                                          CreatorForm,
                                          CorpApproveForm,
-                                         RosterSearchForm,
-                                         CSVForm,
                                          )
 from tendenci.apps.corporate_memberships.utils import (
                                         get_corporate_membership_type_choices,
@@ -76,15 +71,13 @@ from tendenci.apps.corporate_memberships.utils import (
                                          corp_memb_inv_add,
                                          dues_rep_emails_list,
                                          get_over_time_stats,
-                                         get_summary,
-                                         create_salesforce_lead)
+                                         get_summary)
 from tendenci.apps.corporate_memberships.import_processor import CorpMembershipImportProcessor
 #from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.memberships.models import MembershipDefault
 
 from tendenci.apps.perms.utils import get_notice_recipients
-from tendenci.apps.base.utils import send_email_notification, get_salesforce_access
-from tendenci.apps.files.models import File
+from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 #from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.site_settings.utils import get_setting

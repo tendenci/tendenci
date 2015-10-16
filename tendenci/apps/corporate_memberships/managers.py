@@ -1,7 +1,4 @@
-from haystack.query import SearchQuerySet
-
 from django.db.models import Manager
-from django.db.models import Q
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 

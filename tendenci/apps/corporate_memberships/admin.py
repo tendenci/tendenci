@@ -21,8 +21,6 @@ from tendenci.apps.corporate_memberships.forms import (
     NoticeForm,
     CorpMembershipAppFieldAdminForm)
 
-from tendenci.apps.corporate_memberships.utils import get_corpapp_default_fields_list
-
 from tendenci.apps.base.utils import tcurrency
 
 from tendenci.apps.event_logs.models import EventLog

@@ -37,9 +37,8 @@ from tendenci.apps.corporate_memberships.utils import (
     get_notice_token_help_text,
     csv_to_dict)
 from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
-from tendenci.apps.base.fields import SplitDateTimeField, PriceField
+from tendenci.apps.base.fields import PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from tendenci.apps.payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
