@@ -13,7 +13,6 @@
 {% endblock %}
 
 {% block content %}
-{{ block.super }}
 <div class="t">
     <form class="search-form" action="" method="get">
     <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
