@@ -36,6 +36,9 @@ from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html
 
+from django.utils.functional import Promise
+from django.core.serializers.json import DjangoJSONEncoder
+
 from simple_salesforce import Salesforce
 
 from tendenci.apps.base.models import ChecklistItem
@@ -60,6 +63,16 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 template_directory = "templates"
 THEME_ROOT = get_theme_root()
+
+
+class LazyEncoder(DjangoJSONEncoder):
+    """
+    Encodes django's lazy i18n strings.
+    """
+    def default(self, obj):
+        if isinstance(obj, Promise):
+            return force_unicode(obj)
+        return super(LazyEncoder, self).default(obj)
 
 def get_languages_with_local_name():
     """

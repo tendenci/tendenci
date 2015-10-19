@@ -1,5 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
-import simplejson as json
+import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -18,6 +18,7 @@ from tendenci.apps.events.models import Registration
 from tendenci.apps.memberships.models import MembershipSet
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.forms import DiscountForm, DiscountCodeForm, DiscountHandlingForm
+from tendenci.apps.base.utils import LazyEncoder
 
 
 @is_enabled('discounts')
@@ -153,12 +154,12 @@ def discounted_price(request, form_class=DiscountCodeForm):
                     "price": unicode(form.new_price()[0]),
                     "discount": unicode(form.new_price()[1]),
                     "message": _("Your discount of $ %(p)s has been added." % {'p': unicode(form.new_price()[1])}),
-                }), content_type="text/plain")
+                }, cls=LazyEncoder), content_type="text/plain")
         return HttpResponse(json.dumps(
             {
                 "error": True,
                 "message": _("This is not a valid discount code."),
-            }), content_type="text/plain")
+            }, cls=LazyEncoder), content_type="text/plain")
     else:
         form = form_class()
     return HttpResponse(
@@ -177,7 +178,7 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                 {
                     "error": False,
                     "message": _("A discount of $%(d)s has been added." % { 'd': form.discount.value}),
-                }), content_type="text/plain")
+                }, cls=LazyEncoder), content_type="text/plain")
 
             price_list, discount_total, discount_list, msg = form.get_discounted_prices()
             total = sum(price_list)
@@ -196,12 +197,12 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                         'm' : unicode(msg),
                         'dt' : unicode(discount_total),
                         'dd' : discount_detail }),
-                }), content_type="text/plain")
+                }, cls=LazyEncoder), content_type="text/plain")
         return HttpResponse(json.dumps(
             {
                 "error": True,
                 "message": _("This is not a valid discount code."),
-            }), content_type="text/plain")
+            }, cls=LazyEncoder), content_type="text/plain")
     else:
         form = form_class()
     return HttpResponse(
