@@ -65,7 +65,7 @@
 
                     <br />
                     <div id="photo-rights">
-                    <span property="dct:title">{{ photo.title }}{% blocktrans with t=photo.title %}{{ t }}{% endblocktrans %}</span>
+                    <span property="dct:title">{% blocktrans with t=photo.title %}{{ t }}{% endblocktrans %}</span>
                     {% if photo.photographer %}
                         {% blocktrans with p=photo.photographer %}taken by {{ p }}{% endblocktrans %}
                     {% else %}
