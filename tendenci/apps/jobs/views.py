@@ -11,6 +11,7 @@ import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
@@ -59,17 +60,11 @@ def detail(request, slug=None, template_name="jobs/view.html"):
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
     my_pending_jobs = request.GET.get('my_pending_jobs', False)
-    category = None
-    subcategory = None
-    use_search_index = get_setting('site', 'global', 'searchindex') and query
 
-    if use_search_index:
-        jobs = Job.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'jobs.view_job')
-        jobs = Job.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            jobs = jobs.select_related()
+    filters = get_query_filters(request.user, 'jobs.view_job')
+    jobs = Job.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        jobs = jobs.select_related()
 
     form = JobSearchForm(request.GET)
     if form.is_valid():
@@ -77,10 +72,16 @@ def search(request, template_name="jobs/search.html"):
         category = form.cleaned_data.get('categories')
         subcategory = form.cleaned_data.get('subcategories')
 
-    if category:
-        jobs = jobs.filter(categories__category=category)
-    if subcategory:
-        jobs = jobs.filter(categories__parent=subcategory)
+        if category:
+            jobs = jobs.filter(categories__category=category)
+        if subcategory:
+            jobs = jobs.filter(categories__parent=subcategory)
+        if query:
+            if 'tag:' in query:
+                tag = query.strip('tag:')
+                jobs = jobs.filter(tags__icontains=tag)
+            else:
+                jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query)) 
 
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
@@ -90,11 +91,7 @@ def search(request, template_name="jobs/search.html"):
             status_detail__contains='pending'
         )
     
-    if use_search_index:
-        # reversing is an all-or-nothing action in Whoosh, unfortunately
-        jobs = jobs.order_by('-status_detail', '-list_type', '-post_dt')
-    else:
-        jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
 
     EventLog.objects.log()
 
