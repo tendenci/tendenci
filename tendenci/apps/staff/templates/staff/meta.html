@@ -3,7 +3,7 @@
 {% load i18n %}
 
 
-<div class="meta">
+<div class="list-unstyled t-meta-data">
     <div class="meta-left">
         {% if user.is_authenticated %}
             {% if not user.profile.is_superuser %}
@@ -33,8 +33,8 @@
             <li>{{ staff.obj_perms }}</li>
             <li>{{ staff.obj_status }}</li>
         </ul>
-    </div>
-    <div class="edit-links">
+    
+
     <ul class="nav navbar-nav navbar-right t-meta-options-links">
         <li><a class="t-meta-eventlog-link" href="{% url "event_log.search" %}?object_id={{ staff.pk }}&source={{ staff.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
         <li><a class="t-meta-edit-link" href="{% url "admin:staff_staff_change" staff.pk %}?next={{ request.path }}">{% trans "Edit" %}</a></li>
@@ -51,6 +51,6 @@
                  </li>
     </ul>
     </div>
-</div> 
+ </div>
 </nav>
 {% endif %}
