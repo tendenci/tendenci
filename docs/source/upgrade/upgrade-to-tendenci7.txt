@@ -177,6 +177,10 @@ Step 5: Install requirements
 
     pip install -r requirements.txt --upgrade
 
+.. Note:: 
+
+    If you encountered the error "bash: /usr/bin/pip: No such file or directory" or similar, please exit and re-enter the container then try again.
+
 
 Step 5: Fake initials
 ---------------------
