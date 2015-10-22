@@ -97,6 +97,7 @@ Step 4: Install requirements
 .. Note:: 
 
     If you encountered the error "no module 'testimonials' is installed" or similar, please check if 'testimonials' is removed from `INSTALLED_APPS` in conf/local_settings.py.
+    If you encountered the error "bash: /usr/bin/pip: No such file or directory" or similar, please exit and re-enter the container.
 
 
 Step 5: Run deploy
