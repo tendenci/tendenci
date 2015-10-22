@@ -99,6 +99,20 @@ def find_package_data(where=".", package="", exclude=standard_exclude,
                 out.setdefault(package, []).append(prefix + name)
     return out
 
+def _is_requirement(line):
+    """Returns whether the line is a valid package requirement."""
+    line = line.strip()
+    return line and not line.startswith("#")
+
+def _read_requirements():
+    """Parses the file requirements.txt for pip installation requirements.
+    Returns the list of package requirements.
+    """
+    with open("requirements.txt") as requirements_file:
+        contents = requirements_file.read()
+        requirements = [line.strip() for line in contents.splitlines()
+                        if _is_requirement(line)]
+    return [req for req in requirements]
 
 excluded_directories = standard_exclude_directories + ["example", "tests"]
 package_data = find_package_data(exclude_directories=excluded_directories, only_in_packages=False)
@@ -141,71 +155,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
-    install_requires=[
-        "Django>=1.8,<1.9",
-        "django-formtools>=1.0",
-        "pisa",
-        "Reportlab==2.5",
-        "html5lib",
-        "Pillow==2.8.2",
-        "anyjson>=0.2.4",
-        "django-authority>=0.4",
-        "django-avatar>=2.1",
-        "django-countries==3.3",
-        "django-form-utils>=0.1.8",
-        "django-localflavor==1.1",
-        "django-pagination>=1.0.7",
-        "django-picklefield>=0.1.6",
-        "django-simple-captcha==0.4.6",
-        "django-tagging==0.3.6",
-        "django-tinymce==1.5.2",
-        "django-haystack==2.4.0",
-        "django-debug-toolbar>=1.2.2",
-        "django-sql-explorer==0.8",
-        "feedparser>=4.1",
-        "httplib2>=0.4.0",
-        "pytz==2015.4",
-        "simplejson>=2.0.9",
-        "webcolors>=1.3.1",
-        "xlrd==0.9.3",
-        "xlwt>=0.7.2",
-        "BeautifulSoup==3.2.1",
-        "beautifulsoup4==4.3.2",
-        "oauth2>=1.5.167",
-        "python_openid>=2.2",
-        "ordereddict==1.1",
-        "createsend==3.3.0",
-        "celery==3.1.18",
-        "django-celery==3.1.16",
-        "django-kombu>=0.9.4",
-        "mimeparse>=0.1.3",
-        "python-dateutil==2.4.2",
-        "pdfminer==20110515",
-        "stripe==1.22.3",
-        "pycrypto==2.6.1",
-        "boto==2.38.0",
-        "django-timezones==0.2",
-        "django-ses==0.7.0",
-        "Geraldo==0.4.16",
-        "django-tastypie==0.12.2",
-        "johnny-cache==1.6.1a",
-        "docutils==0.12",
-        'chardet==2.3.0',
-        "psycopg2==2.6.1",
-        "gunicorn==19.3.0",
-        "django-storages==1.1.8",
-        "python-memcached==1.54",
-        "Whoosh==2.7.0",
-        "simple-salesforce==0.67.2",
-        "selenium==2.46.0",
-        "raven==5.1.1",
-        "django-admin-bootstrapped==2.5.2",
-        "django-bootstrap3==5.4.0",
-        "django-app-namespace-template-loader==0.3",
-        'django-annoying',
-        'unidecode',
-        'Markdown',
-        'unicodecsv',
-        'Embedly>=0.5.0', # videos
-    ],
+    install_requires=_read_requirements(),
 )
