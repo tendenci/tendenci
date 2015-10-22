@@ -243,7 +243,12 @@ def get_membership_rows(
 
         if profile:
             for field_name in profile_field_list:
-                row_dict[field_name] = get_obj_field_value(
+                orig_field_name = field_name
+                if field_name == 'profile_status_detail':
+                    field_name = 'status_detail'
+                elif field_name == 'profile_status':
+                    field_name = 'status'
+                row_dict[orig_field_name] = get_obj_field_value(
                     field_name, profile, field_name in foreign_keys)
 
         if education_list:
@@ -354,6 +359,8 @@ def process_export(
             if not name in base_field_list]
         profile_field_list.remove('guid')
         profile_field_list.remove('user')
+        profile_field_list.remove('status')
+        profile_field_list.remove('status_detail')
 
         # demographic -----
         demographic_field_list = [
@@ -388,6 +395,8 @@ def process_export(
         'degree4',
         'graduation_dt4',
     ]
+    
+    profile_field_list.extend(['profile_status', 'profile_status_detail'])
 
     title_list = (
         user_field_list +
