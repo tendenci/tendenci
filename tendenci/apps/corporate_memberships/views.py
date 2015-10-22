@@ -26,7 +26,6 @@ from django.http import Http404
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
 from django.utils.translation import ugettext_lazy as _
-#from johnny.cache import invalidate
 
 from tendenci.apps.exports.utils import render_csv
 

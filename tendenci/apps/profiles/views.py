@@ -24,8 +24,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 import simplejson
 
-#from johnny.cache import invalidate
-
 from tendenci.apps.base.decorators import ssl_required, password_required
 from tendenci.apps.base.utils import get_pagination_page_range
 

@@ -14,7 +14,6 @@ from django.utils.http import int_to_base36
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-#from johnny.cache import invalidate
 from captcha.fields import CaptchaField, CaptchaTextInput
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile

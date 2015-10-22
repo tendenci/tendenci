@@ -6,8 +6,6 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 
-#from johnny.cache import invalidate
-
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.reports.models import Report, Run
 from tendenci.apps.reports.forms import ReportForm, RunForm

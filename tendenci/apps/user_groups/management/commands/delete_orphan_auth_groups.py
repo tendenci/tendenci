@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group as AuthGroup
-#from johnny.cache import invalidate
 
 
 class Command(BaseCommand):

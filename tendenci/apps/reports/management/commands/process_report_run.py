@@ -5,8 +5,6 @@ from django.db.models import Sum, Q
 from django.template import TemplateDoesNotExist, Context
 from django.template.loader import get_template
 
-#from johnny.cache import invalidate
-
 from tendenci.apps.reports.utils import get_ct_nice_name
 
 

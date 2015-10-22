@@ -29,7 +29,6 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 
-#from johnny.cache import invalidate
 from geraldo.generators import PDFGenerator
 
 from tendenci.apps.site_settings.utils import get_setting

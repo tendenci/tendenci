@@ -74,8 +74,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'tendenci.libs.swfupload.middleware.SSLRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-#     'johnny.middleware.LocalStoreClearMiddleware',
-#     'johnny.middleware.QueryCacheMiddleware',
     'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -402,7 +400,6 @@ TINYMCE_DEFAULT_CONFIG = {
 CACHE_DIR = TENDENCI_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
 CACHE_PRE_KEY = "TENDENCI"
-JOHNNY_MIDDLEWARE_KEY_PREFIX = CACHE_PRE_KEY
 
 # --------------------------------------#
 # CELERY
