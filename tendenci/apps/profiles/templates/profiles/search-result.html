@@ -23,7 +23,9 @@
                     </h2>
                     <div class="col-md-3 col-xs-12" style="line-height:46px;">
                         {% if membership %}
+                        {% if request.user.profile.is_superuser %}
                             <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
+                        {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -54,8 +56,10 @@
                             {% endif %}
                         {% endif %}
 
-                        {% if profile.member_number %}
-                            <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
+						{% if request.user.profile.is_superuser or request.user == profile.user %}
+	                        {% if profile.member_number %}
+	                            <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
+	                        {% endif %}
                         {% endif %}
 
                         {% if membership.status_detail %}
@@ -76,16 +80,18 @@
                             {% endif %}
                         {% endif %}
 
-                        {% if membership.create_dt %}
-                            <b>{% trans "Create Date:" %}</b> {{ membership.create_dt }}<br />
-                        {% endif %}
-
-                        {% if membership.join_dt %}
-                            <b>{% trans "Join Date:" %}</b> {{ membership.join_dt }}<br />
-                        {% endif %}
-
-                        {% if membership.expire_dt %}
-                            <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
+						{% if request.user.profile.is_superuser or request.user == profile.user %}
+	                        {% if membership.create_dt %}
+	                            <b>{% trans "Create Date:" %}</b> {{ membership.create_dt }}<br />
+	                        {% endif %}
+	
+	                        {% if membership.join_dt %}
+	                            <b>{% trans "Join Date:" %}</b> {{ membership.join_dt }}<br />
+	                        {% endif %}
+	
+	                        {% if membership.expire_dt %}
+	                            <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
+	                        {% endif %}
                         {% endif %}
                     </div>
                 </div>
