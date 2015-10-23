@@ -242,13 +242,38 @@ def search(request, template_name="profiles/search.html"):
         member_only = False
 
     profiles = Profile.objects.filter(Q(status=True))
-    if not request.user.profile.is_superuser: 
-        if request.user.is_authenticated() and allow_user_search:
-            profiles = profiles.filter(Q(status_detail="active"))
-        else:
+    if not request.user.profile.is_superuser:
+        profiles = profiles.filter(Q(status_detail="active"))
+        if request.user.is_authenticated() and request.user.profile.is_member:            
             filters = get_query_filters(request.user, 'profiles.view_profile')
-            profiles = profiles.filter(Q(status_detail="active"),
-                                       Q(filters))
+        
+            if membership_view_perms == 'private':
+                # show non-members only
+                profiles = profiles.filter(member_number='')  # exclude all members
+            elif membership_view_perms == 'member-type':
+                filters = Q(member_number='')
+                if mt_ids_list:
+                    filters = filters | Q(
+                    user__membershipdefault__membership_type_id__in=mt_ids_list)
+                profiles = profiles.filter(filters)
+
+            elif membership_view_perms == 'all-members':
+                from tendenci.apps.memberships.models import MembershipDefault
+                filters = filters | Q(
+                    user__id__in=MembershipDefault.objects.filter(status=True,
+                                                                  status_detail='active'
+                                                ).values_list('user_id'))
+                profiles = profiles.filter(filters)
+    
+            if not allow_user_search:
+                # exclude non-members
+                profiles = profiles.exclude(member_number='')
+    
+        else: # non-member
+            if membership_view_perms != 'public':
+                # show non-members only
+                profiles = profiles.filter(member_number='')           
+
     profiles = profiles.distinct()
 
     if first_name:
@@ -277,30 +302,6 @@ def search(request, template_name="profiles/search.html"):
         profiles = profiles.filter(**search_filter)
 
     if not request.user.profile.is_superuser:
-        if request.user.profile.is_member:
-
-            if membership_view_perms == 'private':
-                # show non-members only
-                profiles = profiles.filter(member_number='')  # exclude all members
-            elif membership_view_perms == 'member-type':
-                filter_or = Q(member_number='')
-                if mt_ids_list:
-                    filter_or = filter_or | Q(
-                    user__membershipdefault__membership_type_id__in=mt_ids_list)
-                profiles = profiles.filter(filter_or)
-
-            elif membership_view_perms == 'all-members':
-                pass  # exclude nothing
-
-            if not allow_user_search:
-                # exclude non-members
-                profiles = profiles.exclude(member_number='')
-
-        else:
-            if membership_view_perms != 'public':
-                # show non-members only
-                profiles = profiles.filter(member_number='')
-
         if not has_perm(request.user, 'profiles.view_profile'):
             profiles = profiles.exclude(hide_in_search=True)
 
