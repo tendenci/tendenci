@@ -92,7 +92,7 @@ class EmailVerificationWidget(MultiWidget):
 
         Returns a Unicode string representing the HTML for the whole lot.
         """
-        label = "<label generated='true' style='display:none; color:red; margin-left: 5px;' class='email-verfication-error'>Please enter similar email addresses.</label>"
+        label = "<label style='display:none; color:red; margin-left: 5px;' class='email-verfication-error'>Please enter email address twice to verify.</label>"
         return "%s%s<br>%s" % (rendered_widgets[0], label, rendered_widgets[1])
 
 
