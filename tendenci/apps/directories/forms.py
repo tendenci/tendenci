@@ -43,39 +43,44 @@ request_duration_defaults = {
 SEARCH_CATEGORIES_ADMIN = (
     ('', _('-- SELECT ONE --' )),
     ('id', _('Directory ID')),
-    ('body__icontains', _('Body')),
-    ('headline__icontains', _('Headline')),
-    ('city__icontains', _('City')),
-    ('state__iexact', _('State')),
-    ('tags__icontains', _('Tags')),
-    ('tags__contains', _('Tags (case sensitive)')),
+    ('body', _('Body')),
+    ('headline', _('Headline')),
+    ('city', _('City')),
+    ('state', _('State')),
+    ('tags', _('Tags')),
 
     ('creator__id', _('Creator Userid(#)')),
     ('creator__username', _('Creator Username')),
     ('owner__id', _('Owner Userid(#)')),
     ('owner__username', _('Owner Username')),
 
-    ('status_detail__icontains', _('Status Detail')),
+    ('status_detail', _('Status Detail')),
 )
 
 SEARCH_CATEGORIES = (
     ('', _('-- SELECT ONE --') ),
     ('id', _('Directory ID')),
-    ('body__icontains', _('Body')),
-    ('headline__icontains', _('Headline')),
-    ('city__icontains', _('City')),
-    ('state__iexact', _('State')),
-    ('tags__icontains', _('Tags')),
-    ('tags__contains', _('Tags (case sensitive)')),
+    ('body', _('Body')),
+    ('headline', _('Headline')),
+    ('city', _('City')),
+    ('state', _('State')),
+    ('tags', _('Tags')),
 )
 
 
 class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
+    SEARCH_METHOD_CHOICES = (
+                             ('starts_with', _('Starts With')),
+                             ('contains', _('Contains')),
+                             ('exact', _('Exact')),
+                             )
     search_category = forms.ChoiceField(label=_('Search By'),
                                         choices=SEARCH_CATEGORIES_ADMIN, required=False)
     category = CategoryField(label=_('All Categories'), choices=[], required=False)
     sub_category = CategoryField(label=_('All Subcategories'), choices=[], required=False)
     q = forms.CharField(required=False)
+    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
+                                        required=False, initial='exact')
 
     def __init__(self, *args, **kwargs):
         is_superuser = kwargs.pop('is_superuser', None)

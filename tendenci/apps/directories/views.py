@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from PIL import Image
 import subprocess, time
+import string
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -77,9 +78,17 @@ def search(request, template_name="directories/search.html"):
         cat = form.cleaned_data['search_category']
         category = form.cleaned_data['category']
         sub_category = form.cleaned_data['sub_category']
+        search_method = form.cleaned_data['search_method']
 
         if query and cat:
-            directories = directories.filter( **{cat : query} )
+            search_type = '__iexact'
+            if search_method == 'starts_with':
+                search_type = '__istartswith'
+            elif search_method == 'contains':
+                search_type = '__icontains'
+
+            search_filter = {'%s%s' % (cat, search_type): query}
+            directories = directories.filter( **search_filter)
 
     if category:
         directories = directories.filter(categories__category__id=category)
@@ -96,8 +105,12 @@ def search(request, template_name="directories/search.html"):
         category = 0
     categories, sub_categories = Directory.objects.get_categories(category=category)
 
-    return render_to_response(template_name, {'directories': directories,
-        'categories': categories, 'form' : form, 'sub_categories': sub_categories},
+    return render_to_response(template_name,
+        {'directories': directories,
+        'categories': categories,
+        'form' : form,
+        'sub_categories': sub_categories,
+        'a_to_z': string.lowercase[:26]},
         context_instance=RequestContext(request))
 
 
