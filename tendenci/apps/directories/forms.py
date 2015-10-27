@@ -71,7 +71,8 @@ SEARCH_CATEGORIES = (
 
 
 class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
-    search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    search_category = forms.ChoiceField(label=_('Search By'),
+                                        choices=SEARCH_CATEGORIES_ADMIN, required=False)
     category = CategoryField(label=_('All Categories'), choices=[], required=False)
     sub_category = CategoryField(label=_('All Subcategories'), choices=[], required=False)
     q = forms.CharField(required=False)
