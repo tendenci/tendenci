@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
-from PIL import Image
 import subprocess, time
 import string
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.files.storage import default_storage
@@ -13,7 +11,6 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
-from django.conf import settings
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
@@ -23,7 +20,6 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.views import file_display
-from tendenci.apps.categories.models import Category
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
@@ -38,7 +34,6 @@ from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm
 from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.base.utils import send_email_notification
-from tendenci.apps.directories.utils import resize_s3_image
 from tendenci.apps.directories.forms import DirectorySearchForm
 
 

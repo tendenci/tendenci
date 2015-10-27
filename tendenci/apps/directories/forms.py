@@ -1,11 +1,10 @@
 import imghdr
 from datetime import datetime
-from os.path import splitext, basename
+from os.path import splitext
 
 from django import forms
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
 from django.forms.utils import ErrorList
 from django.template.defaultfilters import filesizeformat
 from django.utils.safestring import mark_safe
@@ -17,7 +16,6 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.categories.forms import CategoryField
-from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.utils import (get_payment_method_choices,
     get_duration_choices)
@@ -25,7 +23,6 @@ from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_
     STATUS_CHOICES)
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
 from tendenci.apps.files.utils import get_max_file_upload_size
-from tendenci.apps.site_settings.utils import get_setting
 
 
 ALLOWED_LOGO_EXT = (
