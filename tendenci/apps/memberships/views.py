@@ -1164,6 +1164,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
             memberships_join_notified = []
             memberships_renewal_notified = []
+            notice_sent = False
             for membership in memberships:
                 membership.membership_set = membership_set
 
@@ -1176,7 +1177,7 @@ def membership_default_add(request, slug='', membership_id=None,
                     membership.save()  # save pending status
 
                     if membership.is_renewal():
-                        Notice.send_notice(
+                        notice_sent = Notice.send_notice(
                             request=request,
                             emails=membership.user.email,
                             notice_type='renewal',
@@ -1186,7 +1187,7 @@ def membership_default_add(request, slug='', membership_id=None,
                         memberships_renewal_notified.append(membership)
 
                     else:
-                        Notice.send_notice(
+                        notice_sent =  Notice.send_notice(
                             request=request,
                             emails=membership.user.email,
                             notice_type='join',
@@ -1241,19 +1242,20 @@ def membership_default_add(request, slug='', membership_id=None,
                     ))
 
             # send email notification to admin
-            recipients = get_notice_recipients(
-                'module', 'memberships',
-                'membershiprecipients')
-
-            extra_context = {
-                'membership': membership,
-                'app': app,
-                'request': request
-            }
-            send_email_notification(
-                'membership_joined_to_admin',
-                recipients,
-                extra_context)
+            if not notice_sent:
+                recipients = get_notice_recipients(
+                    'module', 'memberships',
+                    'membershiprecipients')
+     
+                extra_context = {
+                    'membership': membership,
+                    'app': app,
+                    'request': request
+                }
+                send_email_notification(
+                    'membership_joined_to_admin',
+                    recipients,
+                    extra_context)
 
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(
