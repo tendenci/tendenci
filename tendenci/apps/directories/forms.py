@@ -40,23 +40,6 @@ request_duration_defaults = {
     'help_text': mark_safe(_('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/directories/pricing/add/')),
 }
 
-SEARCH_CATEGORIES_ADMIN = (
-    ('', _('-- SELECT ONE --' )),
-    ('id', _('Directory ID')),
-    ('body', _('Body')),
-    ('headline', _('Headline')),
-    ('city', _('City')),
-    ('state', _('State')),
-    ('tags', _('Tags')),
-
-    ('creator__id', _('Creator Userid(#)')),
-    ('creator__username', _('Creator Username')),
-    ('owner__id', _('Owner Userid(#)')),
-    ('owner__username', _('Owner Username')),
-
-    ('status_detail', _('Status Detail')),
-)
-
 SEARCH_CATEGORIES = (
     ('', _('-- SELECT ONE --') ),
     ('id', _('Directory ID')),
@@ -65,6 +48,15 @@ SEARCH_CATEGORIES = (
     ('city', _('City')),
     ('state', _('State')),
     ('tags', _('Tags')),
+)
+
+SEARCH_CATEGORIES_ADMIN = SEARCH_CATEGORIES + (
+    ('creator__id', _('Creator Userid(#)')),
+    ('creator__username', _('Creator Username')),
+    ('owner__id', _('Owner Userid(#)')),
+    ('owner__username', _('Owner Username')),
+
+    ('status_detail', _('Status Detail')),
 )
 
 
