@@ -96,7 +96,7 @@
           <td>{% trans "Invoice For" %}</td>
           <td class="td-right">
       {% if object.event.pk %}
-          <a href="{% url event.registration_confirmation object.event.pk object.pk %}">{{ object }}</a><br>
+          <a href="{% url 'event.registration_confirmation' object.event.pk object.pk %}">{{ object }}</a><br>
           <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
           {% else %}
           {{ SITE_GLOBAL_SITEDISPLAYNAME }}
