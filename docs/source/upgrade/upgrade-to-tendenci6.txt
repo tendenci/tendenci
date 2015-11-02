@@ -123,5 +123,14 @@ Seek help if you're not able to resolve yourself.
 
 Finally, restart your new T6 site.
 
+.. Note::
+
+    If you want to copy over the theme from your T5 site to T6/T7:
+    
+    1) Make sure the theme is bootstrap 3 compatible.
+    2) Update templates to replace `{% block body %}` to `{% block content %}`.
+    3) Update templates to add quotes to the first argument of url tags. For example, if you have url tag `{% url admin:boxes_box_change box.pk %}`, it needs to be updated to `{% url 'admin:boxes_box_change' box.pk %}`.
+
+
 
 
