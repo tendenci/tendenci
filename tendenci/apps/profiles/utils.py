@@ -224,6 +224,9 @@ def get_member_reminders(user):
 
     reminders = ()
     for membership in memberships:
+        # renew_link depends on membership.app
+        if not membership.app:
+            membership.get_app()
 
         renew_link = u''
         if hasattr(membership, 'app') and membership.app:

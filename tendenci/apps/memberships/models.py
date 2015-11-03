@@ -623,6 +623,21 @@ class MembershipDefault(TendenciBaseModel):
 
         return field_list
 
+    def get_app(self):
+        if not self.app:
+            apps = MembershipApp.objects.filter(
+                           status=True,
+                           status_detail__in=['active', 'published'],
+                           membership_types__in=[self.membership_type]
+                           ).order_by('id')
+            if self.corporate_membership_id:
+                apps = apps.filter(use_for_corp=True)
+            else:
+                apps = apps.filter(use_for_corp=False)
+            if apps:
+                self.app = apps[0]
+                self.save()
+
     def get_archived_memberships(self):
         """
         Returns back a list of archived memberships
