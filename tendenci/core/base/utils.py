@@ -771,34 +771,39 @@ def get_salesforce_access():
 def create_salesforce_contact(profile):
 
     if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:
+        sf = get_salesforce_access()
+        
         if profile.sf_contact_id:
-            return profile.sf_contact_id
-        else:
-            sf = get_salesforce_access()
-            # Make sure that user last name is not blank
-            # since that is a required field for Salesforce Contact.
-            user = profile.user
-            if sf and user.last_name:
-                contact = sf.Contact.create({
-                    'FirstName':user.first_name,
-                    'LastName':user.last_name,
-                    'Email':user.email,
-                    'Title':profile.position_title,
-                    'Phone':profile.phone,
-                    'MailingStreet':profile.address,
-                    'MailingCity':profile.city,
-                    'MailingState':profile.state,
-                    'MailingCountry':profile.country,
-                    'MailingPostalCode':profile.zipcode,
-                    })
+            # sf_contact_id might be deleted at saleforce end, check for existence
+            result = sf.query("SELECT FirstName, LastName, Email FROM Contact WHERE Id='%s'" % profile.sf_contact_id)
+            if result:
+                return profile.sf_contact_id
+        
+        
+        # Make sure that user last name is not blank
+        # since that is a required field for Salesforce Contact.
+        user = profile.user
+        if sf and user.last_name:
+            contact = sf.Contact.create({
+                'FirstName':user.first_name,
+                'LastName':user.last_name,
+                'Email':user.email,
+                'Title':profile.position_title,
+                'Phone':profile.phone,
+                'MailingStreet':profile.address,
+                'MailingCity':profile.city,
+                'MailingState':profile.state,
+                'MailingCountry':profile.country,
+                'MailingPostalCode':profile.zipcode,
+                })
 
-                # update field Company_Name__c
-                if profile.company and contact.has_key('Company_Name__c'):
-                    sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
-                        
-                profile.sf_contact_id = contact['id']
-                profile.save()
-                return contact['id']
+            # update field Company_Name__c
+            if profile.company and contact.has_key('Company_Name__c'):
+                sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
+                    
+            profile.sf_contact_id = contact['id']
+            profile.save()
+            return contact['id']
     return None
 
 
