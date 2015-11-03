@@ -776,7 +776,7 @@ def create_salesforce_contact(profile):
         if profile.sf_contact_id:
             # sf_contact_id might be deleted at saleforce end, check for existence
             result = sf.query("SELECT FirstName, LastName, Email FROM Contact WHERE Id='%s'" % profile.sf_contact_id)
-            if result:
+            if 'records' in result and result['records']:
                 return profile.sf_contact_id
         
         
