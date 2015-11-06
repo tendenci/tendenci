@@ -23,7 +23,7 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/openlayers.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/social_service_map.js"></script>
 <script type="text/javascript">
 $(window).load(function(){
