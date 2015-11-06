@@ -102,6 +102,7 @@ class Command(BaseCommand):
                 'videos',
                 'wp_exporter',
                 'wp_importer',
+                'django-celery'
                 )
         for a in apps:
             try:
