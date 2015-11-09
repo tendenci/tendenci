@@ -463,21 +463,16 @@ def addon_upload_check(request, sid):
 @superuser_required
 @password_required
 def update_tendenci(request, template_name="base/update.html"):
+    from tendenci.apps.base.utils import get_latest_version
+
     if request.method == "POST":
-        process = SubProcessManager.set_process(["python", "manage.py", "update_tendenci",
-                                                 "--user=%s" % request.user.id])
+        SubProcessManager.set_process(["python", "manage.py", "auto_update",
+                                        "--user_id=%s" % request.user.id])
         return redirect('update_tendenci.confirmation')
 
-    pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
-    latest_version = pypi.package_releases('tendenci')[0]
-
-    update_available = False
-    if latest_version != version:
-        update_available = True
-
     return render_to_response(template_name, {
-        'latest_version': latest_version,
-        'update_available': update_available,
+        'latest_version': get_latest_version(),
+        'version': version,
     }, context_instance=RequestContext(request))
 
 

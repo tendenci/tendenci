@@ -8,17 +8,18 @@
 
 {% block content %}
 <div class="t">
-    <h1>Tendenci Update</h1>
-{% if update_available %}
-    <p>{% trans "An update is available for Tendenci." %}</p>
-    <p>Current Version: {{ TENDENCI_VERSION }}</p>
+    <h1>Tendenci Update</h1>  
+{% if version == latest_version %}
+    <p>Your version: {{ version }}</p>
+    <p>Latest version: {{ latest_version }}</p>
+    <p>{% trans "You are up to date!" %}</p>
+{% else %}
+<p>{% trans "An update is available for Tendenci." %}</p>
+    <p>Current Version: {{ version }}</p>
     <p>Latest Version: {{ latest_version }}</p>
     <form method='post' action="{% url 'update_tendenci' %}" >{% csrf_token %}
     <input type='submit' value='Update'>
     </form>
-{% else %}
-    <p>{% trans "You currently have the latest version of Tendenci." %}</p>
-    <p>Version: {{ TENDENCI_VERSION }}</p>
 {% endif %}
 </div>
 {% endblock %}
