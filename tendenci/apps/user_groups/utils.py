@@ -18,7 +18,7 @@ def member_choices(group, member_label):
     member label. This is used for generating choices for a form.
     choices for member label are: email, full name and username.
     """
-    members = User.objects.filter(is_active=1)
+    members = User.objects.all().order_by('username')
     if member_label == 'email':
         label = lambda x: x.email
     elif member_label == 'full_name':
