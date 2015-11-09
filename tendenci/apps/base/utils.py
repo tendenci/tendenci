@@ -923,3 +923,14 @@ def validate_email(s, quiet=True):
         if not quiet:
             raise e
     return False
+
+
+def get_latest_version():
+    from github import Github
+    #proxy = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+    #return proxy.package_releases('tendenci')[0]
+    # we haven't pushed to pypi yet, so check on github
+    g = Github()
+    repo = g.get_repo('tendenci/tendenci')
+    tag = repo.get_tags()[0]
+    return tag.name.strip('v')
