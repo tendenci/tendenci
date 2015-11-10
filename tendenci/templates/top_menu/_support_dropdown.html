@@ -27,14 +27,6 @@
                                     <span class="nav-label">{% blocktrans with version=TENDENCI_VERSION %}Current Version: {{ version }}{% endblocktrans %}</span>
                                 </a>
                             </li>
-                            
-                           {% if USER_IS_SUPERUSER %}
-                           <li class="content-item">
-                                <a href="{% url 'update_tendenci' %}">
-                                    <span class="nav-label">{% trans 'Update Tendenci' %}</span>
-                                </a>
-                            </li>
-                            {% endif %}
                           
                           <li class="content-item">
                                 <a href="{% url 'clear_cache' %}"
