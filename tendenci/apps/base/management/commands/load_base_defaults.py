@@ -136,6 +136,8 @@ class Command(BaseCommand):
         call_command('loaddata', 'npo_default_files.json')
         print 'paymentmethod.json'
         call_command('loaddata', 'paymentmethod.json')
+        print 'load default_forums.json'
+        call_command('loaddata', 'default_forums.json')
         
         # default sqls for explorer
         call_command('load_sqlexplorer_defaults')
