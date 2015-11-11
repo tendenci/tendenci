@@ -466,9 +466,12 @@ def update_tendenci(request, template_name="base/update.html"):
     from tendenci.apps.base.utils import get_latest_version
 
     if request.method == "POST":
-        SubProcessManager.set_process(["python", "manage.py", "auto_update",
-                                        "--user_id=%s" % request.user.id])
-        return redirect('update_tendenci.confirmation')
+        tos = request.POST.get('tos')
+        
+        if tos:
+            SubProcessManager.set_process(["python", "manage.py", "auto_update",
+                                            "--user_id=%s" % request.user.id])
+            return redirect('update_tendenci.confirmation')
 
     return render_to_response(template_name, {
         'latest_version': get_latest_version(),
