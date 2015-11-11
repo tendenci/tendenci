@@ -73,9 +73,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'tendenci.libs.swfupload.middleware.SSLRedirectMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'tendenci.apps.profiles.middleware.ForceLogoutProfileMiddleware',
@@ -87,6 +85,8 @@ MIDDLEWARE_CLASSES = (
     'tendenci.apps.base.middleware.MissingAppMiddleware',
     'tendenci.apps.memberships.middleware.ExceededMaxTypesMiddleware',
     'tendenci.apps.forums.middleware.PybbMiddleware',
+    'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 )
 
 ROOT_URLCONF = 'tendenci.urls'
