@@ -9,7 +9,7 @@ if [ $? -eq 0 ] && [ $TRAVIS_BRANCH == master ]; then
     echo "Submitting translation files to Transifex"
     cd tendenci
     django-admin.py makemessages -a
-    pip install "transifex-client==0.10"
+    pip install "transifex-client"
     # create .transifexrc file
     echo "[https://www.transifex.com]" > ~/.transifexrc
     echo "hostname = https://www.transifex.com" >> ~/.transifexrc
