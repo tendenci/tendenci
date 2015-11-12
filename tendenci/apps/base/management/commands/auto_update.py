@@ -112,11 +112,7 @@ class Command(BaseCommand):
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
                 try:
-                    subprocess.check_output("sudo sv stop tendenci_site",
-                                            stderr=subprocess.STDOUT, shell=True)
-                    subprocess.check_output("sudo sv kill tendenci_site",
-                                            stderr=subprocess.STDOUT, shell=True)
-                    subprocess.check_output("sudo sv start tendenci_site",
+                    subprocess.check_output("sudo sv kill tendenci_site && sv start tendenci_site",
                                             stderr=subprocess.STDOUT, shell=True)
                 except subprocess.CalledProcessError as e:
                     err_list.append(e.output)
