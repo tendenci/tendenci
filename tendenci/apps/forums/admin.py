@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from tendenci.apps.perms.utils import update_perms_and_save
 
 from .models import Category, Forum, Topic, Post, Profile, Attachment, PollAnswer
+from .forms import CategoryAdminForm
 
 import compat, util
 username_field = compat.get_username_field()
@@ -23,8 +25,25 @@ class CategoryAdmin(admin.ModelAdmin):
     ordering = ['position']
     search_fields = ['name']
     list_editable = ['position']
+    fieldsets = (
+        (None, {'fields': ('name', 'position', 'slug', 'status_detail')}),
+        (_('Permissions'), {'fields': (('hidden',), ('allow_anonymous_view',))}),
+        (_('Advanced Permissions'), {'classes': ('collapse',),'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+    )
+    
+    form = CategoryAdminForm
 
     inlines = [ForumInlineAdmin]
+    
+    def save_model(self, request, object, form, change):
+        instance = form.save(commit=False)
+        instance = update_perms_and_save(request, form, instance)
+        instance.save()
+        return instance
 
 
 class ForumAdmin(admin.ModelAdmin):

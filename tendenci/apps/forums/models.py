@@ -9,6 +9,9 @@ from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now as tznow
+from django.contrib.contenttypes.fields import GenericRelation
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
 
 from compat import get_user_model_path, get_username_field, get_atomic_func, slugify
 import defaults
@@ -19,14 +22,19 @@ from annoying.fields import AutoOneToOneField
 
 
 @python_2_unicode_compatible
-class Category(models.Model):
+class Category(TendenciBaseModel):
     name = models.CharField(_('Name'), max_length=80)
     position = models.IntegerField(_('Position'), blank=True, default=0)
     hidden = models.BooleanField(_('Hidden'), blank=False, null=False, default=False,
-                                 help_text=_('If checked, this category will be visible only for staff'))
+                                 help_text=_('If checked, this category will be visible only for staff and the rest of the permissions below will be ignored'))
     slug = models.SlugField(_("Slug"), max_length=255, unique=True)
+    
+    perms = GenericRelation(ObjectPermission,
+                            object_id_field="object_id",
+                            content_type_field="content_type")
 
     class Meta(object):
+        permissions = (("view_category", _("Can view forum category")),)
         ordering = ['position']
         verbose_name = _('Category')
         verbose_name_plural = _('Categories')
