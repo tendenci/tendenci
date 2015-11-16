@@ -51,6 +51,9 @@
                 <li>
                     <a href="{% url "profile.edit_perms" profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
                 </li>
+                <li>
+                    <a href="{% url "user.skills_edit" profile.username %}" class="skills" title="Edit Skills">{% trans "Edit Skills" %}</a>
+                </li>
                 {% if request.user.is_superuser and MODULE_IMPERSONATION_ENABLED %}
 
                 <li>
