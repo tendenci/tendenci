@@ -260,6 +260,11 @@ class Newsletter(models.Model):
         if '[resumes]' in content:
             content = content.replace('[resumes]', data.get('resumes_content'))
 
+        content = content.replace('[site_url]', get_setting('site', 'global', 'siteurl'))
+        content = content.replace('[site_mailing_address]', get_setting('site', 'global', 'sitemailingaddress'))
+        content = content.replace('[site_contact_email]', get_setting('site', 'global', 'sitecontactemail'))
+        content = content.replace('[site_phone_number]', get_setting('site', 'global', 'sitephonenumber'))
+
         return content
 
     def generate_newsletter_contents(self, request):
