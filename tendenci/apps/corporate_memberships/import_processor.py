@@ -393,8 +393,11 @@ class CorpMembershipImportProcessor(object):
 
         if field_type == 'ForeignKey':
             if not field.name in ['creator', 'owner']:
-                [value] = field.related.parent_model.objects.all(
-                                            )[:1] or [None]
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.all()[:1] or [None]
                 return value
             return None
 
@@ -480,8 +483,11 @@ class CorpMembershipImportProcessor(object):
                 value = None
 
             if value:
-                [value] = field.related.parent_model.objects.filter(
-                                            pk=value)[:1] or [None]
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.filter(pk=value)[:1] or [None]
 
             # membership_type - look up by name in case
             # they entered name instead of id
@@ -492,7 +498,10 @@ class CorpMembershipImportProcessor(object):
             if not value and not field.null:
                 if not field.name in ['creator', 'owner']:
                     # if the field doesn't allow null, grab the first one.
-                    [value] = field.related.parent_model.objects.all(
-                                            ).order_by('id')[:1] or [None]
+                    try:
+                        model = field.related.parent_model()
+                    except AttributeError:
+                        model = field.related.model
+                    [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value
