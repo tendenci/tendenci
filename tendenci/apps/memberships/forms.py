@@ -1572,9 +1572,12 @@ class MembershipDefaultForm(TendenciBaseForm):
 
 
             # initialize profile fields
-            for profile_attr in profile_attrs:
-                self.fields[profile_attr].initial = \
-                    getattr(self.instance.user.profile, profile_attr)
+            if hasattr(self.instance.user, 'profile'):
+                for profile_attr in profile_attrs:
+                    self.fields[profile_attr].initial = \
+                        getattr(self.instance.user.profile, profile_attr)
+            else:
+                Profile.objects.create_profile(user=self.instance.user)
         # -----------------------------------------------------
 
             # initialize education fields
