@@ -89,7 +89,7 @@ class TopicAdmin(admin.ModelAdmin):
          ),
         (_('Additional options'), {
                 'classes': ('collapse',),
-                'fields': (('views', 'post_count'), ('sticky', 'closed'), 'subscribers', 'slug')
+                'fields': (('views', 'post_count'), ('sticky', 'closed'), 'on_moderation', 'subscribers', 'slug')
                 }
          ),
         )
