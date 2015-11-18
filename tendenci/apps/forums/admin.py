@@ -1,5 +1,6 @@
 # -*- coding: utf-8
 from __future__ import unicode_literals
+from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 from django.core.urlresolvers import reverse
@@ -97,6 +98,8 @@ class TopicAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super(TopicAdmin, self).get_form(request, obj=obj, **kwargs)
         form.base_fields['user'].initial = request.user
+        form.base_fields['created'].initial = datetime.now()
+        form.base_fields['updated'].initial = datetime.now()
         return form
 
 
