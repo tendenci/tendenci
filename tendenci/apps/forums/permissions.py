@@ -225,7 +225,7 @@ class CustomPermissionHandler(DefaultPermissionHandler):
 
     def may_create_topic(self, user, forum):
         """ return True if `user` is allowed to create a new topic in `forum` """
-        return user.has_perm('forums.add_post') or user.has_perm('forums.add_category')
+        return user.has_perm('forums.add_post') or user.has_perm('forums.change_category', forum.category)
     
     #
     # permission checks on topics
@@ -248,7 +248,7 @@ class CustomPermissionHandler(DefaultPermissionHandler):
         if not user.is_staff and (topic.forum.hidden or topic.forum.category.hidden):
             return False  # only staff may see hidden forum / category
         if topic.on_moderation:
-            return user.is_authenticated() and (user == topic.user or user in topic.forum.moderators)
+            return user.is_authenticated() and (user == topic.user or user in topic.forum.moderators.all())
 
         return user.has_perm('forums.view_category', obj=topic.forum.category) or \
             user.has_perm('forums.view_forum')
@@ -267,7 +267,7 @@ class CustomPermissionHandler(DefaultPermissionHandler):
         # only user which have 'pybb.add_post' permission may post
         return defaults.PYBB_ENABLE_ANONYMOUS_POST or \
             user.has_perm('forums.add_post') or \
-            user.has_perm('forums.add_category', obj=topic.forum.category)
+            user.has_perm('forums.change_category', obj=topic.forum.category)
     
     #
     # permission checks on posts
