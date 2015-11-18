@@ -93,6 +93,12 @@ class TopicAdmin(admin.ModelAdmin):
          ),
         )
     inlines = [PollAnswerAdmin, ]
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(TopicAdmin, self).get_form(request, obj=obj, **kwargs)
+        form.base_fields['user'].initial = request.user
+        return form
+
 
 class TopicReadTrackerAdmin(admin.ModelAdmin):
     list_display = ['topic', 'user', 'time_stamp']
