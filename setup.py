@@ -139,7 +139,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     platforms=['any'],
     classifiers=[
-        'Development Status :: 7 - Production/Stable',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
