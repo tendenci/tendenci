@@ -56,7 +56,7 @@
                             {% endif %}
                         {% endif %}
 
-                        <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
+                        <div class="{% if field.field.required %}required{% endif %} {{ field_obj.label_type }}">
                             {% blocktrans with label=field_obj.label %}{{ label }}{% endblocktrans %}
                         </div>
 
