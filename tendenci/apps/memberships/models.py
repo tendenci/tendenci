@@ -1511,44 +1511,10 @@ class MembershipDefault(TendenciBaseModel):
         Admin price is only included on joins.
         Corporate price, trumps all membership prices.
         """
-        if self.corporate_membership_id:
-            use_threshold, threshold_price = \
-                        self.get_corp_memb_threshold_price(
-                                self.corporate_membership_id)
-            if use_threshold:
-                return threshold_price
-
         if self.renewal:
             return self.membership_type.renewal_price or 0
         else:
             return self.membership_type.price + (self.membership_type.admin_fee or 0)
-
-    def get_corp_memb_threshold_price(self, corporate_membership_id):
-        """
-        get the threshold price for individual memberships.
-        return tuple (use_threshold, threshold_price)
-        """
-        from tendenci.apps.corporate_memberships.models import CorpMembership
-
-        [corporate] = CorpMembership.objects.filter(
-            id=corporate_membership_id)[:1] or [None]
-
-        if corporate:
-            corporate_type = corporate.corporate_membership_type
-            threshold = corporate_type.apply_threshold
-            threshold_limit = corporate_type.individual_threshold
-            threshold_price = corporate_type.individual_threshold_price
-
-            if threshold and threshold_limit > 0:
-                membership_count = MembershipDefault.objects.filter(
-                    corporate_membership_id=corporate.pk,
-                    status=True,
-                    status_detail__in=['active',
-                                       'pending']
-                ).count()
-                if membership_count <= threshold_limit:
-                    return True, threshold_price
-        return False, None
 
     def qs_memberships(self, **kwargs):
         """

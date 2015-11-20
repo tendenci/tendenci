@@ -112,23 +112,14 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
         help_text=_("Bind individual memberships to this membership type."))
     admin_only = models.BooleanField(_('Admin Only'), default=False)
 
-    apply_threshold = models.BooleanField(_('Allow Threshold'), default=False)
-    individual_threshold = models.IntegerField(_('Threshold Limit'),
+    apply_cap = models.BooleanField(_('Apply cap'),
+                                    help_text=_('If checked, specify the membership cap below.'),
+                                    default=False)
+    membership_cap = models.IntegerField(_('Membership cap'),
                                                default=0,
                                                blank=True,
-                                               null=True)
-    individual_threshold_price = models.DecimalField(
-                                 _('Threshold Price'),
-                                 max_digits=15,
-                                 decimal_places=2,
-                                 blank=True,
-                                 null=True,
-                                 default=0,
-                                 help_text=_(
-"""All individual members applying under or equal to the threshold limit
-receive the threshold prices. Additional employees can join but will be
-charged the full individual corporate membership rate.
-"""))
+                                               null=True,
+                                               help_text=_('The maximum number of employees allowed.'))
                                 
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
