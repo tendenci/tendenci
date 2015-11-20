@@ -27,8 +27,6 @@ from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 from django.contrib.admin.util import NestedObjects
 from django.utils.functional import allow_lazy
-from django.utils.html import escape
-from django.utils.safestring import mark_safe
 from django.utils.text import capfirst, Truncator
 from django.utils.encoding import force_unicode
 from django.db import router
