@@ -174,9 +174,10 @@
     {% if user.is_superuser %}
         <div id="t-dashboard-admin-quick-links" class="panel panel-default t-dashboard-sidebar-panel t-dashboard-sidebar-panel-gray">
             <div class="panel-body">
-                <h3>{% trans "Admin Quick Links" %}</h3>
+                <h3>{% trans "Quick Links" %}</h3>
 
                 <ul>
+                    <li><a href="/" title="Home">{% trans "Home Page" %}</a></li>
                     {% if MODULE_PAGES_ENABLED %}
                         <li><a href="{% url 'page.add' %}">{% trans "Add a page" %}</a></li>
                     {% endif %}
@@ -184,7 +185,7 @@
                     <li><a href="{% url 'haystack_search' %}">{% trans "Search All Modules" %}</a></li>
                     <li><a href="{% url 'profiles.user_import' %}">{% trans "Import Users" %}</a></li>
                     <li><a href="{% url 'settings' %}">{% trans "Enable/Disable modules" %}</a></li>
-                    <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache" %}</a></li>
+                    <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache BIG TIME" %}</a></li>
                     <li><a href="{% url 'theme_editor.editor' %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
                     <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
 
@@ -266,3 +267,4 @@
         });
     </script>
 {% endblock %}
+​
