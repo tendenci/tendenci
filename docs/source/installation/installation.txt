@@ -267,6 +267,7 @@ Finally, we can use the runserver command so that we can view the site in our br
 
 Open http://127.0.0.1:8000/ in your browser to see your tendenci site!
 
+
 Theming Options
 ----------------
 
