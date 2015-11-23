@@ -291,7 +291,7 @@ Extra packages
 You can install all of the necessary Ubuntu packages with the following commands:
 ::
 
-    sudo apt-get install openssh-server memcached libmemcached-dev nginx
+    sudo apt-get install openssh-server memcached libmemcached-dev nginx gunicorn
 
 This will install openssh-server to allow remote connections to the server
 along with memcache (a caching system) and nginx the web server.
@@ -317,7 +317,7 @@ The contents of that file should match the example below:
     respawn limit 10 5
     script
         cd /var/www/<project_name>
-        exec gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
+        exec /srv/tendenci/venv/bin/gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
     end script
 
 You will need to replace the ``/var/www/<project_name>`` with the location of the site.
