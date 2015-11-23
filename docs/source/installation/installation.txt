@@ -328,7 +328,7 @@ The contents of that file should match the example below:
     setgid www-data
     script
         cd /var/www/<project_name>
-        exec gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
+        exec /srv/tendenci/venv/bin/gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
     end script
 
 You will need to replace the ``/var/www/<project_name>`` with the location of the site.
