@@ -359,8 +359,10 @@ def process_export(
             if not name in base_field_list]
         profile_field_list.remove('guid')
         profile_field_list.remove('user')
-        profile_field_list.remove('status')
-        profile_field_list.remove('status_detail')
+        if 'status' in profile_field_list:
+            profile_field_list.remove('status')
+        if 'status_detail' in profile_field_list:
+            profile_field_list.remove('status_detail')
 
         # demographic -----
         demographic_field_list = [
