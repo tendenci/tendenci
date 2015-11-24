@@ -76,23 +76,21 @@ It can include but may not limit to the following:
 -------------------
 ::
 
-    # set alias dj for less typing.
-    alias dj="python manage.py"
-    dj clear_cache
-    dj syncdb
-    dj migrate
+    python manage.py clear_cache
+    python manage.py syncdb
+    python manage.py migrate
 
     # We had to run the following commands. But your mileage may vary.
-    dj migrate social_auth 0001 --fake
-    dj migrate wp_exporter 0001 --fake
-    dj migrate djcelery 0001 --fake
-    dj migrate --delete-ghost-migrations
-    dj migrate user_groups 0012 --fake
-    dj migrate social_auth 0001 --fake
-    dj migrate wp_exporter 0001 --fake
-    dj migrate djcelery 0001 --fake
-    dj migrate wp_importer 0001 --fake
-    dj migrate wp_importer 0001 --fake
+    python manage.py migrate social_auth 0001 --fake
+    python manage.py migrate wp_exporter 0001 --fake
+    python manage.py migrate djcelery 0001 --fake
+    python manage.py migrate --delete-ghost-migrations
+    python manage.py migrate user_groups 0012 --fake
+    python manage.py migrate social_auth 0001 --fake
+    python manage.py migrate wp_exporter 0001 --fake
+    python manage.py migrate djcelery 0001 --fake
+    python manage.py migrate wp_importer 0001 --fake
+    python manage.py migrate wp_importer 0001 --fake
 
 
 6. Run deploy.py
@@ -107,15 +105,15 @@ It can include but may not limit to the following:
 Use the theme name you wrote down in step 1. 
 ::
 
-    dj set_theme <your current theme>
+    python manage.py set_theme <your current theme>
 
 
 8. Clear caches
 ----------------
 ::
 
-    dj clear_cache
-    dj clear_theme_cache
+    python manage.py clear_cache
+    python manage.py clear_theme_cache
 
 
 Sometimes things can be bumpy depending on your database's state. Stay cool and try to debug.
