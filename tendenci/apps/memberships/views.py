@@ -909,6 +909,33 @@ def membership_default_add(request, slug='', membership_id=None,
                 return redirect(reverse('membership_default.corp_pre_add',
                                         args=[cm_id]))
 
+        # check if this corp. has exceeded the maximum number of members allowed if applicable
+        apply_cap, membership_cap = corp_membership.get_cap_info()
+        if apply_cap:
+            if corp_membership.members_count >= membership_cap:
+                # email admin and corporate reps about this corp. has reached cap
+                email_sent = corp_membership.email_reps_cap_reached()
+                reps = corp_membership.corp_profile.reps.all()
+                # give them the option to join as an individual membership
+                join_as_indiv_url = ''
+                if not is_renewal:
+                    [app_for_individuals] = MembershipApp.objects.filter(
+                                                use_for_corp=False, status=True,
+                                                 status_detail__in=['active', 'published']
+                                                 )[:1] or [None]
+                    if app_for_individuals:
+                        join_as_indiv_url = reverse('membership_default.add', args=[app_for_individuals.slug])
+                
+                return render(request, 'memberships/applications/corp_cap_reached.html',
+                              {'app': app,
+                               'join_as_indiv_url': join_as_indiv_url,
+                               'email_sent': email_sent,
+                               'reps': reps,
+                               'corp_membership': corp_membership,
+                               'can_view': corp_membership.allow_view_by(request.user),
+                               'view_url': corp_membership.get_absolute_url(),
+                               'is_admin': request.user.profile.is_superuser})
+
     else:  # regular membership
 
         app = get_object_or_404(MembershipApp, slug=slug)
