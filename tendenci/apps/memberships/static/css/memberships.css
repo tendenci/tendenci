@@ -833,3 +833,7 @@ form.connect-with li {
 div.label {
     text-align: left !important;
 }
+
+.t p{
+	margin: 1em 0;
+}
