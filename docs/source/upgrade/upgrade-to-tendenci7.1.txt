@@ -65,7 +65,7 @@ With:
     ('^', include('tendenci.apps.studygroups.urls')),
     ('^', include('tendenci.apps.videos.urls')),
     ('^', include('tendenci.apps.testimonials.urls')),
-    (r'^', include('tendenci.apps.social_services.urls')),
+    ('^', include('tendenci.apps.social_services.urls')),
 
 
 
