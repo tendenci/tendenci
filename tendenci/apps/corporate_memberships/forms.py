@@ -375,6 +375,24 @@ class CorpProfileForm(forms.ModelForm):
         return self.instance
 
 
+class CorpMembershipUpgradeForm(forms.ModelForm):
+
+    class Meta:
+        model = CorpMembership
+        fields = ["corporate_membership_type"]
+        
+    def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user')
+        self.corpmembership_app = kwargs.pop('corpmembership_app')
+        super(CorpMembershipUpgradeForm, self).__init__(*args, **kwargs)
+        self.fields['corporate_membership_type'].widget = forms.widgets.RadioSelect(
+            choices=get_corpmembership_type_choices(
+                self.request_user,
+                self.corpmembership_app,
+                exclude_list=[self.instance.corporate_membership_type.id]),
+            attrs=self.fields['corporate_membership_type'].widget.attrs)
+
+
 class CorpMembershipForm(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', _('Active')),

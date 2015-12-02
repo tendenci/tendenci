@@ -934,6 +934,7 @@ def membership_default_add(request, slug='', membership_id=None,
                                'corp_membership': corp_membership,
                                'can_view': corp_membership.allow_view_by(request.user),
                                'view_url': corp_membership.get_absolute_url(),
+                               'upgrade_link': reverse('corpmembership.upgrade', args=[corp_membership.id]),
                                'is_admin': request.user.profile.is_superuser})
 
     else:  # regular membership

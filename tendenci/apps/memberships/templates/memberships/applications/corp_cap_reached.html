@@ -11,7 +11,7 @@
     <h2>{{ app.name }}</h2>
     <h4 class="alert alert-danger" role="alert">
     	{% blocktrans with corp_profile_name=corp_membership.corp_profile.name %}
-    	The corporate <a href="{{ view_url }}">{{ corp_profile_name }}</a>" 
+    	The corporate "<a href="{{ view_url }}">{{ corp_profile_name }}</a>" 
     	has reached the maximum allowable members
     	{% endblocktrans %}
     </h4>
@@ -48,7 +48,7 @@
     {% if is_admin %}
     <p>
     <strong>ADMIN</strong>: <br />
-    <a class="btn btn-primary" role="button"  href="{{ view_url }}">{% trans "Upgrade the Corporate Membership" %}</a>
+    <a class="btn btn-primary" role="button"  href="{{ upgrade_link }}">{% trans "Upgrade the Corporate Membership" %}</a>
     </p>
     {% endif %}
 </div>

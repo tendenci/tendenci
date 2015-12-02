@@ -43,9 +43,11 @@ def get_user_corp_membership(member_number='', email=''):
     return None
 
 
-def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
+def get_corpmembership_type_choices(user, corpmembership_app, renew=False, exclude_list=None):
     cmt_list = []
     corporate_membership_types = corpmembership_app.corp_memb_type.all()
+    if exclude_list:
+        corporate_membership_types = corporate_membership_types.exclude(id__in=exclude_list)
 
     if not user.profile.is_superuser:
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)

@@ -1157,7 +1157,7 @@ class CorpMembership(TendenciBaseModel):
                          'site_url': get_setting('site', 'global', 'siteurl'),
                          'site_display_name': get_setting('site', 'global', 'sitedisplayname'),
                          'view_link': self.get_absolute_url(),
-                         'upgrade_url': ''}
+                         'upgrade_link': reverse('corpmembership.upgrade', args=[self.id])}
         membership_recipients = get_setting('module', 'memberships', 'membershiprecipients')
         
         if reps:
