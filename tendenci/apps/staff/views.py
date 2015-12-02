@@ -49,15 +49,17 @@ def search(request, template_name="staff/search.html"):
 
     if get_setting('site', 'global', 'searchindex') and query:
         staff = Staff.objects.search(query, user=request.user)
-        if department and department.isdigit():
-            staff = staff.filter(department=department)
+        
     else:
         filters = get_query_filters(request.user, 'staff.view_staff')
         staff = Staff.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             staff = staff.select_related()
 
-        staff = staff.order_by('-position', 'name', '-status', 'status_detail')
+    if department and department.isdigit():
+        staff = staff.filter(department__id=int(department))
+
+    staff = staff.order_by('-position', 'name', '-status', 'status_detail')
 
     EventLog.objects.log()
 
