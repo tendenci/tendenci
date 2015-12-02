@@ -1312,11 +1312,12 @@ class MembershipDefault(TendenciBaseModel):
             return True
 
         m_exists = self.user.membershipdefault_set.filter(
-                    Q(status_detail='active') | Q(status_detail='expired')).exists()
+                    Q(status_detail='active') | Q(status_detail='expired'))
         
         if MembershipApp.objects.filter(allow_multiple_membership=True).exists(): 
             m_exists = m_exists.filter(
                 membership_type=self.membership_type)
+        m_exists = m_exists.exists()
         
         return m_exists
 
