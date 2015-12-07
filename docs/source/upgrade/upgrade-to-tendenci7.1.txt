@@ -65,7 +65,7 @@ With:
     ('^', include('tendenci.apps.studygroups.urls')),
     ('^', include('tendenci.apps.videos.urls')),
     ('^', include('tendenci.apps.testimonials.urls')),
-    (r'^', include('tendenci.apps.social_services.urls')),
+    ('^', include('tendenci.apps.social_services.urls')),
 
 
 
@@ -127,6 +127,7 @@ Make a note of any of the migrations that are missing an "x" in the brackets. In
       [ ] 0003_registrant_salutation  
 
 whccih was resolved by faking the third migration in events like this:
+::
 
       python manage.py migrate events 0003 --fake
     
