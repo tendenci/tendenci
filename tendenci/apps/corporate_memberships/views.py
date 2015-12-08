@@ -49,6 +49,7 @@ from tendenci.apps.corporate_memberships.models import (
                                           Creator)
 from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipForm,
+                                         CorpMembershipUpgradeForm,
                                          CorpProfileForm,
                                          FreePassesForm,
                                          CorpMembershipRenewForm,
@@ -76,6 +77,7 @@ from tendenci.apps.corporate_memberships.import_processor import CorpMembershipI
 from tendenci.apps.memberships.models import MembershipDefault
 
 from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 #from tendenci.apps.corporate_memberships.settings import use_search_index
@@ -362,6 +364,70 @@ def corpmembership_add_conf(request, id,
 
     context = {"corporate_membership": corp_membership,
                'app': app}
+    return render_to_response(template, context, RequestContext(request))
+
+
+@is_enabled('corporate_memberships')
+@login_required
+@superuser_required
+def corpmembership_upgrade(request, id,
+                       template='corporate_memberships/applications/upgrade.html'):
+    """
+    Corporate membership upgrade.
+    """
+    app = CorpMembershipApp.objects.current_app()
+    if not app:
+        raise Http404
+    corp_membership = get_object_or_404(CorpMembership, id=id)
+    corp_profile = corp_membership.corp_profile
+    original_corp_memb_type = corp_membership.corporate_membership_type
+    types_count = CorporateMembershipType.objects.filter(
+                                            status=True,
+                                            status_detail='active').count()
+
+    corpmembership_form = CorpMembershipUpgradeForm(
+                                    request.POST or None,
+                                    instance=corp_membership,
+                                    request_user=request.user,
+                                    corpmembership_app=app)
+
+    if request.method == 'POST':
+        if corpmembership_form.is_valid():
+            corp_membership = corpmembership_form.save()
+
+            # update for individual memberships under this corporate
+            membership_type = corp_membership.corporate_membership_type.membership_type
+            memberships = MembershipDefault.objects.filter(
+                        status=True).exclude(
+                        status_detail='archive'
+                        ).filter(
+                    Q(corp_profile_id=corp_profile.id) 
+                    | Q(corporate_membership_id=corp_membership.id))
+            memberships.update(membership_type=membership_type)
+            
+            # log an event
+            description = 'Corporate membership type changed from %s (id: %s) to %s (id: %s)' % (
+                                        original_corp_memb_type,
+                                        original_corp_memb_type.id,
+                                        corp_membership.corporate_membership_type,
+                                        corp_membership.corporate_membership_type.id)
+            EventLog.objects.log(instance=corp_membership, description=description)
+            
+            msg_string = 'Successfully upgraded membership type from "%s" to "%s" for "%s"' % (
+                                    original_corp_memb_type,
+                                    corp_membership.corporate_membership_type,
+                                    corp_profile.name)
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
+                
+            # redirect to view
+            return HttpResponseRedirect(reverse('corpmembership.view',
+                                                args=[corp_membership.id]))
+
+    context = {'app': app,
+               'corp_membership': corp_membership,
+               'corp_profile': corp_profile,
+               'corpmembership_form': corpmembership_form,
+               'types_count': types_count}
     return render_to_response(template, context, RequestContext(request))
 
 
@@ -708,6 +774,18 @@ def corpmembership_search(request, my_corps_only=False,
         'pending_only': pending_only,
         'corp_members': corp_members,
         'search_form': search_form},
+        context_instance=RequestContext(request))
+
+
+@is_enabled('corporate_memberships')
+@login_required
+@superuser_required
+def corpmembership_cap_status(request, template_name="corporate_memberships/applications/cap_status.html"):
+    corp_memberships = CorpMembership.objects.exclude(status_detail='archive'
+                                    ).order_by('corp_profile__name')
+
+    return render_to_response(template_name, {
+        'corp_memberships': corp_memberships},
         context_instance=RequestContext(request))
 
 

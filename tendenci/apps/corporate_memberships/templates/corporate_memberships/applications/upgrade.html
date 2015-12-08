@@ -1,0 +1,92 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load base_filters %}
+{% load i18n %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<style>
+	div.form-field ul{
+        list-style-type: none;
+    }
+    .t p{
+		margin: 1em 0;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="application-form-wrap">
+        <h1><a href="{{ corp_membership.get_absolute_url }}">{{ corp_profile.name }}</a> - {% trans "Upgrade" %}</h1>
+
+	<p>
+		{% trans "Current membership type:" %} <strong>{{ corp_membership.corporate_membership_type }} - {{ corp_membership.corporate_membership_type.price|format_currency }}</strong>
+	</p>
+
+   {% if types_count > 1 %}
+
+	   <form action="" method="post">{% csrf_token %}
+	
+	    {% if corpmembership_form.errors.values %}
+	        <div class="alert alert-danger" role="alert">
+	            {% trans 'There were some problems in the form. Please review. Thanks!' %}
+	            {% if corpmembership_form.errors.values %}
+	            {% for error in corpmembership_form.non_field_errors %}
+	                <p><a href="#">{{ error }}</a></p>
+	            {% endfor %}
+	            {% endif %}
+	
+	            {% for field in corpmembership_form %}
+	                {% if field.errors %}
+	                      {% for error in field.errors %}
+	                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
+	                        {{ field.label }} - {{ error }}
+	                        </a></p>
+	                      {% endfor %}
+	                {% endif %}
+	            {% endfor %}
+	
+	        </div>
+	  {% endif %}
+	
+	    <p>
+	    	{% trans "Select a membership type to upgrade:" %}
+	    <div class="form-field ">
+	    {{ corpmembership_form.corporate_membership_type }}
+	    </div>
+		</p> 
+		
+	        <div class="submit-wrap">
+	        <input class="btn" type="submit" name="submit" value="{% trans 'Submit' %}" />
+	        </div>
+	    </form>
+    
+    {% else %}
+    <p>No upgrade available.</p>
+    {% endif %}
+
+</div>
+</div>
+{% endblock %}
+
+
+{% block extra_body %}
+    {{ block.super }}
+      <script type="text/javascript"
+      src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+      <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
+      <script type="text/javascript">
+            $(document).ready(function() {
+                $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+                $('.timepicker').timepicker({'step':15});
+            });
+      </script>
+{% endblock extra_body %}

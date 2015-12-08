@@ -28,19 +28,16 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'renewal_price', 'membership_type',
-                     'admin_only', 'status_detail', 'position']
+    list_display = ['name', 'price', 'renewal_price', 'membership_type', 'apply_cap',
+                     'membership_cap', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
     option_fields = ['position', 'status_detail']
     if get_setting('module', 'corporate_memberships', 'usefreepass'):
         option_fields.insert(0, 'number_passes')
     fieldsets = (
-        (None, {'fields': ('name', 'price', 'renewal_price',
-                           'membership_type', 'description')}),
-        (_('Individual Pricing Options'), {'fields':
-                                    ('apply_threshold', 'individual_threshold',
-                                    'individual_threshold_price',)}),
+        (None, {'fields': ('name', 'price', 'renewal_price', 'description')}),
+        (_('Membership Options'), {'fields': ('membership_type', 'apply_cap', 'membership_cap',)}),
         (_('Other Options'), {'fields': option_fields}),
     )
 

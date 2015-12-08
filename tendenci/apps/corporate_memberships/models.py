@@ -112,23 +112,14 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
         help_text=_("Bind individual memberships to this membership type."))
     admin_only = models.BooleanField(_('Admin Only'), default=False)
 
-    apply_threshold = models.BooleanField(_('Allow Threshold'), default=False)
-    individual_threshold = models.IntegerField(_('Threshold Limit'),
+    apply_cap = models.BooleanField(_('Apply cap'),
+                                    help_text=_('If checked, specify the membership cap below.'),
+                                    default=False)
+    membership_cap = models.IntegerField(_('Membership cap'),
                                                default=0,
                                                blank=True,
-                                               null=True)
-    individual_threshold_price = models.DecimalField(
-                                 _('Threshold Price'),
-                                 max_digits=15,
-                                 decimal_places=2,
-                                 blank=True,
-                                 null=True,
-                                 default=0,
-                                 help_text=_(
-"""All individual members applying under or equal to the threshold limit
-receive the threshold prices. Additional employees can join but will be
-charged the full individual corporate membership rate.
-"""))
+                                               null=True,
+                                               help_text=_('The maximum number of employees allowed.'))
                                 
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
@@ -1145,6 +1136,63 @@ class CorpMembership(TendenciBaseModel):
                         status=True
                             ).exclude(
                         status_detail='archive').count()
+
+    def get_cap_info(self):
+        """
+        Return a tuple of (apply_cap, membership_cap)
+        """
+        return (self.corporate_membership_type.apply_cap, self.corporate_membership_type.membership_cap)
+
+    def is_cap_reached(self):
+        apply_cap, cap = self.get_cap_info()
+
+        return apply_cap and self.members_count >= cap
+
+    def email_reps_cap_reached(self):
+        """
+        Email corporate reps and admin about the cap has been reached.
+        """
+        from tendenci.apps.emails.models import Email
+        # email to reps
+        email_sent_to_reps = False
+        reps = self.corp_profile.reps.all()
+        email_context = {'corp_membership': self,
+                         'corp_profile': self.corp_profile,
+                         'corp_membership_type': self.corporate_membership_type,
+                         'site_url': get_setting('site', 'global', 'siteurl'),
+                         'site_display_name': get_setting('site', 'global', 'sitedisplayname'),
+                         'view_link': self.get_absolute_url(),
+                         'upgrade_link': reverse('corpmembership.upgrade', args=[self.id])}
+        membership_recipients = get_setting('module', 'memberships', 'membershiprecipients')
+        
+        if reps:
+            email_context['to_reps'] =  True
+            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = subject.strip('\n').strip('\r')
+            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            email = Email()
+            email.subject = subject
+            email.body = body
+            email.recipient = [rep.user.email for rep in reps]
+            email.reply_to = membership_recipients
+            email.content_type = 'html'
+            email.send()
+            email_sent_to_reps = True
+        
+        # email to site admins
+        if membership_recipients:
+            email_context['to_reps'] =  False
+            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = "Admin: " + subject.strip('\n').strip('\r')
+            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            email = Email()
+            email.subject = subject
+            email.body = body
+            email.recipient = membership_recipients
+            email.content_type = 'html'
+            email.send()
+        
+        return email_sent_to_reps
 
 
 class FreePassesStat(TendenciBaseModel):

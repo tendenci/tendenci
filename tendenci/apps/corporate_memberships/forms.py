@@ -65,10 +65,9 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   'price',
                   'renewal_price',
                   'membership_type',
+                  'apply_cap',
+                  'membership_cap',
                   'description',
-                  'apply_threshold',
-                  'individual_threshold',
-                  'individual_threshold_price',
                   'admin_only',
                   'number_passes',
                   'position',
@@ -374,6 +373,24 @@ class CorpProfileForm(forms.ModelForm):
             update_authorized_domains(self.instance,
                             self.cleaned_data['authorized_domain'])
         return self.instance
+
+
+class CorpMembershipUpgradeForm(forms.ModelForm):
+
+    class Meta:
+        model = CorpMembership
+        fields = ["corporate_membership_type"]
+        
+    def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user')
+        self.corpmembership_app = kwargs.pop('corpmembership_app')
+        super(CorpMembershipUpgradeForm, self).__init__(*args, **kwargs)
+        self.fields['corporate_membership_type'].widget = forms.widgets.RadioSelect(
+            choices=get_corpmembership_type_choices(
+                self.request_user,
+                self.corpmembership_app,
+                exclude_list=[self.instance.corporate_membership_type.id]),
+            attrs=self.fields['corporate_membership_type'].widget.attrs)
 
 
 class CorpMembershipForm(forms.ModelForm):
