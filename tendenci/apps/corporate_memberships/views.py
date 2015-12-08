@@ -380,7 +380,6 @@ def corpmembership_upgrade(request, id,
         raise Http404
     corp_membership = get_object_or_404(CorpMembership, id=id)
     corp_profile = corp_membership.corp_profile
-    is_superuser = request.user.profile.is_superuser
     original_corp_memb_type = corp_membership.corporate_membership_type
     types_count = CorporateMembershipType.objects.filter(
                                             status=True,
@@ -775,6 +774,18 @@ def corpmembership_search(request, my_corps_only=False,
         'pending_only': pending_only,
         'corp_members': corp_members,
         'search_form': search_form},
+        context_instance=RequestContext(request))
+
+
+@is_enabled('corporate_memberships')
+@login_required
+@superuser_required
+def corpmembership_cap_status(request, template_name="corporate_memberships/applications/cap_status.html"):
+    corp_memberships = CorpMembership.objects.exclude(status_detail='archive'
+                                    ).order_by('corp_profile__name')
+
+    return render_to_response(template_name, {
+        'corp_memberships': corp_memberships},
         context_instance=RequestContext(request))
 
 

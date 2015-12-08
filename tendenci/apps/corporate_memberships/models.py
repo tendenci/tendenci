@@ -1143,6 +1143,11 @@ class CorpMembership(TendenciBaseModel):
         """
         return (self.corporate_membership_type.apply_cap, self.corporate_membership_type.membership_cap)
 
+    def is_cap_reached(self):
+        apply_cap, cap = self.get_cap_info()
+
+        return apply_cap and self.members_count >= cap
+
     def email_reps_cap_reached(self):
         """
         Email corporate reps and admin about the cap has been reached.
