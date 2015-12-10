@@ -321,7 +321,7 @@
 
         {% for contribution in contributions|slice:":5" %}
             <div class="item">
-                {% if contribution.object.get_absolute_url %}
+                {% if contribution.object.status and contribution.object.get_absolute_url %}
                     <a href="{{ contribution.object.get_absolute_url }}">{{ contribution.content_type.name|capfirst }}: {{ contribution.title|truncatewords_html:8|slice:":-4" }}</a> <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
                 {% else %}
                     {{ contribution.title }} <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
