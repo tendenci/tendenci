@@ -1705,7 +1705,7 @@ class MembershipDefault(TendenciBaseModel):
                                                       flat=True)
         if field_names:
             user = self.user
-            profile = user.profile
+            profile = hasattr(user, 'profile') and user.profile
             if hasattr(user, 'demographics'):
                 demographics = getattr(user, 'demographics')
             else:
