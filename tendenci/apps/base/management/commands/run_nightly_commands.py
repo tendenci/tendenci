@@ -24,7 +24,7 @@ class Command(BaseCommand):
                     'refresh_membership_groups',
                     'send_corp_membership_notices',
                     'clean_old_exports',
-                    'delete_soft_deleted_items',
+                    #'delete_soft_deleted_items',
                     'update_dashboard_stats',
                     'collect_metrics',
                     'captcha_clean',
