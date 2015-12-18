@@ -1,0 +1,37 @@
+{% extends "base-wide.html" %}
+{% load i18n %}
+{% load load_helpdesk_settings %}
+{% load static from staticfiles %}
+
+{% block title %}Help Desk{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+<link rel='stylesheet' href='{% static "helpdesk/helpdesk-extend.css" %}' type='text/css' />
+        
+ {% block helpdesk_head %}{% endblock %}
+{% endblock %}
+
+{% block body_ids %}helpdesk-body{% endblock %}
+
+{% block content %}
+{% with request|load_helpdesk_settings as helpdesk_settings %}
+<div id='header' class="row">
+    <!-- Put your logo here if necessary: -->
+    <!-- <img class="brand pull-right" src="/media/logo.png"> -->
+    <h1>{% trans "Helpdesk" %}</h1>
+    {% include "helpdesk/navigation.html" %}
+</div>
+<div id='body' class="row">
+	{% block helpdesk_body %}{% endblock %}
+</div>
+<div id='footer' class="row">
+    <p>{% include "helpdesk/attribution.html" %}</p>
+</div>
+    
+{% include "helpdesk/debug.html" %}
+
+{% endwith %}
+{% endblock %}
