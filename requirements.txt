@@ -62,3 +62,7 @@ unidecode
 Markdown
 unicodecsv
 Embedly>=0.5.0
+# dependencies for helpdesk
+django-bootstrap-form>=3.1,<4
+email-reply-parser
+django-markdown-deux
