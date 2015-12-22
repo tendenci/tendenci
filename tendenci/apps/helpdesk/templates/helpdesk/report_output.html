@@ -4,12 +4,7 @@
 {% block helpdesk_title %}{% trans "Reports &amp; Statistics" %}{% endblock %}
 
 {% block helpdesk_head %}
-    <!--[if IE]><script language="javascript" type="text/javascript" src="{% static "helpdesk/jquery.jqplot/excanvas.min.js" %}"></script><![endif]-->
-    <script src='{% static "helpdesk/jquery.jqplot/jquery.jqplot.min.js" %}' type='text/javascript' language='javascript'></script>
     <link rel='stylesheet' typ='text/css' href='{% static "helpdesk/jquery.jqplot/jquery.jqplot.min.css" %}' />
-    <script type="text/javascript" src="{% static "helpdesk/jquery.jqplot/plugins/jqplot.categoryAxisRenderer.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "helpdesk/jquery.jqplot/plugins/jqplot.barRenderer.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "helpdesk/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js" %}"></script>
 
 {% endblock %}
 
@@ -42,7 +37,19 @@
 </table>
 
 <div class='jqPlot' id='placeholder' style='width: 600px; height: 400px;'></div>
-{% ifequal charttype "date" %}
+
+{% endblock %}
+
+
+{% block extra_body %}
+ {{ block.super }}
+    <script src='{% static "helpdesk/jquery.jqplot/jquery.jqplot.min.js" %}' type='text/javascript' language='javascript'></script>
+    <script type="text/javascript" src="{% static "helpdesk/jquery.jqplot/plugins/jqplot.categoryAxisRenderer.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "helpdesk/jquery.jqplot/plugins/jqplot.barRenderer.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "helpdesk/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js" %}"></script>
+ 
+ 
+ {% ifequal charttype "date" %}
 <script type='text/javascript'>
     $.jqplot.config.enablePlugins = true;
     var dataset = [];
@@ -105,5 +112,5 @@
 {% endifequal %}
 
 
-
 {% endblock %}
+ 

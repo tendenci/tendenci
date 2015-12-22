@@ -8,7 +8,6 @@
 
 {% block extra_head %}
 {{ block.super }}
-        <script src='{% static "helpdesk/jquery-ui-1.8.9.custom.min.js" %}' type='text/javascript' language='javascript'></script>
         <link rel='stylesheet' href='{% static "helpdesk/helpdesk-extend.css" %}' type='text/css'  media="screen" >
 
         <link rel='alternate' href='{% url 'helpdesk_rss_user' user.get_username %}' type='application/rss+xml' title='{% trans "My Open Tickets" %}' />
@@ -27,8 +26,6 @@
         }
         </style>
 
-        
-        
         {% block helpdesk_head %}{% endblock %}
 {% endblock %}
 
@@ -70,4 +67,11 @@
 {% include "helpdesk/debug.html" %}
     
 {% endblock %}
+
+{% block extra_body %}
+ {{ block.super }}
+        <script src='{% static "helpdesk/jquery-ui-1.8.9.custom.min.js" %}' type='text/javascript' language='javascript'></script>
+ 
+{% endblock %}
+ 
 
