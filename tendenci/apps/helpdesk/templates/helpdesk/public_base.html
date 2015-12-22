@@ -7,14 +7,26 @@
 
 {% block extra_head %}
 {{ block.super }}
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
 <link rel='stylesheet' href='{% static "helpdesk/helpdesk-extend.css" %}' type='text/css' />
         
  {% block helpdesk_head %}{% endblock %}
 {% endblock %}
 
-{% block body_ids %}helpdesk-body{% endblock %}
+{% block body_classes %}{{ block.super }} helpdesk-body{% endblock body_classes %}
+
+{% block top_bar %}
+{% with request|load_helpdesk_settings as helpdesk_settings %}
+    {% if request.user.is_authenticated %}
+    	{% include "helpdesk/top_nav.html" %}
+        {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endwith %}
+{% endblock %}
+
 
 {% block content %}
 {% with request|load_helpdesk_settings as helpdesk_settings %}
