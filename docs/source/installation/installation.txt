@@ -75,7 +75,7 @@ installed differently. If your system is python 2.7.9 or later pip can be
 installed with:
 ::
 
-    apt-get install python-pip
+    sudo apt-get install python-pip
 
 
 If your system is pre Python 2.7.9 you will need to install pip from the Internet.
