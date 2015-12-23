@@ -206,7 +206,7 @@ This download and install step will take some time and download around 70MB of p
 In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
 ::
 
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip <project_name>
+   sudo django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip <project_name>
 
 
 Installing the requirements
