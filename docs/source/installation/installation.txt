@@ -193,7 +193,7 @@ Creating a new tendenci project
 Make sure Django 1.8 is installed in your environment.
 ::
 
-    pip install "Django>=1.8,<1.9"
+    sudo pip install "Django>=1.8,<1.9"
 
 
 In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name).
