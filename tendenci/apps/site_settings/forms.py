@@ -85,6 +85,9 @@ def save_settings_form(self):
             if setting.name == "siteurl" and setting.scope == "site":
                 if field_value:
                     django_site = Site.objects.get(pk=1)
+                    if urlparse(field_value).scheme == "":
+                        # prefix http:// if no scheme
+                        field_value = 'http://%s' % field_value
                     netloc = urlparse(field_value).netloc
                     django_site.domain = netloc
                     django_site.name = netloc
