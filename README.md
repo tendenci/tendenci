@@ -19,8 +19,9 @@ If you are reading this after we have removed the deprecated repos you can still
 
 ## Demo?  
 
-You can self install of course. Or you can do a free 30 day trial without risk at 
-[https://create.tendenci.com/](https://create.tendenci.com)
+You can self install of course, or to demo the Tendenci software visit https://demo.tendenci.com/
+
+Ready to start building out your Tendenci Site? You can do a free 30 day trial without risk at [https://create.tendenci.com/](https://create.tendenci.com) (Credit card sign up is required for the 30 day trial).
 
 
 ## Installation
