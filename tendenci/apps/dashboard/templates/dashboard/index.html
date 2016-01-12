@@ -167,7 +167,7 @@
             <h3>{% trans "Tendenci Blog" %}</h3>
             <ul>
             <li>
-                <a href="http://blog.tendenci.com/">{% trans 'View latest posts' %}</a>
+                <a href="https://blog.tendenci.com/">{% trans 'View latest posts' %}</a>
             </li>
         </ul>
         </div>
@@ -175,7 +175,7 @@
         <div class="rss-feed">
             <h3>{% trans "Tendenci Help" %}</h3>
             {% cache 14400 tendenci_help_rss %}
-                {% get_rss "http://tendenci.com/help-files/feed/" as tendencihelprss %}
+                {% get_rss "https://www.tendenci.com/help-files/feed/" as tendencihelprss %}
                 <ul>
                 {% for entry in tendencihelprss.entries|slice:":3" %}
                     <li>
