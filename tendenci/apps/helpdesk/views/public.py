@@ -21,7 +21,7 @@ from tendenci.apps.helpdesk.models import Ticket, Queue, UserSettings, KBCategor
 
 def homepage(request):
     if not request.user.is_authenticated() and helpdesk_settings.HELPDESK_REDIRECT_TO_LOGIN_BY_DEFAULT:
-        return HttpResponseRedirect(reverse('login'))
+        return HttpResponseRedirect(reverse('auth_login') + "?next=" + request.path)
 
     if (request.user.is_staff or (request.user.is_authenticated() and helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE)):
         try:
