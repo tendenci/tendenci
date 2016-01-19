@@ -7,6 +7,7 @@ views/public.py - All public facing views, eg non-staff (no authentication
                   required) views.
 """
 
+import requests
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
@@ -44,7 +45,7 @@ def homepage(request):
                 return HttpResponseRedirect('%s?ticket=%s&email=%s'% (
                     reverse('helpdesk_public_view'),
                     ticket.ticket_for_url,
-                    ticket.submitter_email)
+                    requests.utils.quote(ticket.submitter_email))
                     )
     else:
         try:
@@ -81,7 +82,6 @@ def view_ticket(request):
         parts = ticket_req.split('-')
         queue = '-'.join(parts[0:-1])
         ticket_id = parts[-1]
-
         try:
             ticket = Ticket.objects.get(id=ticket_id, queue__slug__iexact=queue, submitter_email__iexact=email)
         except:
