@@ -4,12 +4,20 @@
 {% block helpdesk_body %}
 
 <div class="alert alert-warning">
-<p>{% trans "Welcome to your Helpdesk Dashboard! From here you can quickly see tickets submitted by you, tickets you are working on, and those tickets that have no owner." %}</p>
+<p>
+	{% if request.user.is_staff %}
+	{% trans "Welcome to your Helpdesk Dashboard! From here you can quickly see tickets submitted by you, tickets you are working on, and those tickets that have no owner." %}
+	{% else %}
+	{% trans "Welcome to your Helpdesk Dashboard! From here you can quickly see tickets submitted by you, and tickets you are working on." %}
+	{% endif %}
+</p>
 </div>
 
+{% if request.user.is_staff %}
 {% include 'helpdesk/include/summary.html' %}
 
 {% include 'helpdesk/include/stats.html' %}
+{% endif %}
 
 {% if all_tickets_reported_by_current_user %}
 {% trans "All Tickets submitted by you" as ticket_list_caption %}
@@ -20,7 +28,9 @@
 {% trans "You have no tickets assigned to you." as no_assigned_tickets %}
 {% include 'helpdesk/include/tickets.html' with ticket_list=user_tickets ticket_list_empty_message=no_assigned_tickets %}
 
+{% if request.user.is_staff %}
 {% include 'helpdesk/include/unassigned.html' %}
+{% endif %}
 
 {% if user_tickets_closed_resolved %}
 {% trans "Closed & resolved Tickets you used to work on" as ticket_list_caption %}
