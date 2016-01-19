@@ -1,4 +1,4 @@
-        {% if debug %}
+        {% if request.user.is_superuser and debug %}
         <div id="debug" style='clear: both;padding-top: 200px'>
             <h2>Queries</h2>
             <p>
