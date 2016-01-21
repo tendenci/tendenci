@@ -42,6 +42,8 @@ from tendenci.apps.helpdesk.forms import TicketForm, UserSettingsForm, EmailIgno
 from tendenci.apps.helpdesk.lib import send_templated_mail, query_to_dict, apply_query, safe_template_context
 from tendenci.apps.helpdesk.models import Ticket, Queue, FollowUp, TicketChange, PreSetReply, Attachment, SavedSearch, IgnoreEmail, TicketCC, TicketDependency, QueueMembership
 from tendenci.apps.helpdesk import settings as helpdesk_settings
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
 
 if helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE:
     # treat 'normal' users like 'staff'
@@ -150,6 +152,9 @@ dashboard = staff_member_required(dashboard)
 
 def delete_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    if not request.user.is_staff:
+        if not has_perm(request.user, 'helpdesk.delete_ticket', ticket):
+            raise Http403
 
     if request.method == 'GET':
         return render_to_response('helpdesk/delete_ticket.html',
@@ -223,6 +228,10 @@ followup_delete = staff_member_required(followup_delete)
 
 def view_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    
+    if not request.user.is_staff:
+        if not has_perm(request.user, 'helpdesk.change_ticket', ticket):
+            raise Http403
 
     if 'take' in request.GET:
         # Allow the user to assign the ticket to themselves whilst viewing it.
@@ -334,6 +343,10 @@ def update_ticket(request, ticket_id, public=False):
         return HttpResponseRedirect('%s?next=%s' % (reverse('login'), request.path))
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    
+    if not request.user.is_staff:
+        if not has_perm(request.user, 'helpdesk.change_ticket', ticket):
+            raise Http403
 
     comment = request.POST.get('comment', '')
     new_status = int(request.POST.get('new_status', ticket.status))
@@ -574,6 +587,9 @@ def update_ticket(request, ticket_id, public=False):
             files=files,
             )
 
+    if request.user.is_authenticated:
+        ticket.owner = request.user
+        ticket.owner_username = request.user.username
     ticket.save()
 
     # auto subscribe user if enabled
@@ -889,10 +905,18 @@ ticket_list = staff_member_required(ticket_list)
 
 def edit_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    
+    if not request.user.is_staff:
+        if not has_perm(request.user, 'helpdesk.change_ticket', ticket):
+            raise Http403
+
     if request.method == 'POST':
         form = EditTicketForm(request.POST, instance=ticket)
         if form.is_valid():
             ticket = form.save()
+            ticket.owner = request.user
+            ticket.owner_username = request.user.username
+            ticket.save()
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         form = EditTicketForm(instance=ticket)
@@ -915,6 +939,14 @@ def create_ticket(request):
         form.fields['assigned_to'].choices = [('', '--------')] + [[u.id, u.get_username()] for u in assignable_users]
         if form.is_valid():
             ticket = form.save(user=request.user)
+            
+            # assign creator and owner
+            ticket.creator = request.user
+            ticket.creator_username = request.user.username
+            ticket.owner = request.user
+            ticket.owner_username = request.user.username
+            ticket.save()
+            
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         initial_data = {}
