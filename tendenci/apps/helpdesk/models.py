@@ -14,6 +14,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext
 from django import VERSION
 from django.utils.encoding import python_2_unicode_compatible
+from django.contrib.auth.models import User
 
 try:
     from django.utils import timezone
@@ -377,6 +378,13 @@ class Ticket(models.Model):
         help_text=_('The date this ticket was last escalated - updated '
             'automatically by management/commands/escalate_tickets.py.'),
         )
+    
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_creator", editable=False)
+    creator_username = models.CharField(max_length=50, default='')
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_owner")
+    owner_username = models.CharField(max_length=50, default='')
 
     def _get_assigned_to(self):
         """ Custom property to allow us to easily print 'Unassigned' if a
