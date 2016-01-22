@@ -90,11 +90,16 @@ def dashboard(request):
 
     # all tickets, reported by current user
     all_tickets_reported_by_current_user = ''
-    email_current_user = request.user.email
-    if email_current_user:
+    if settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE:
         all_tickets_reported_by_current_user = Ticket.objects.select_related('queue').filter(
-            submitter_email=email_current_user,
+            Q(creator=request.user) | Q(owner=request.user)
         ).order_by('status')
+    else:
+        email_current_user = request.user.email
+        if email_current_user:
+            all_tickets_reported_by_current_user = Ticket.objects.select_related('queue').filter(
+                submitter_email=email_current_user,
+            ).order_by('status')
 
     Tickets = Ticket.objects
     if limit_queues_by_user:
@@ -845,6 +850,9 @@ def ticket_list(request):
             queue__in=user_queues,
         )
         queue_choices = user_queues
+
+    if not request.user.is_staff:
+        tickets = tickets.filter(Q(creator=request.user) | Q(owner=request.user))
 
     try:
         ticket_qs = apply_query(tickets, query_params)
