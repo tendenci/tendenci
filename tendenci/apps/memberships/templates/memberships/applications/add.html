@@ -68,7 +68,8 @@
 
 {% block content %}
     <div class="page-header">
-        <h1>{{ app.name }}{% if app.description %} <small>{% blocktrans with d=app.description|safe %}{{ d }}{% endblocktrans %}</small>{% endif %}</h1>
+       <h1>{{ app.name }}</h1>
+      {% if app.description %}<p>{% blocktrans with d=app.description|safe %}{{ d }}{% endblocktrans %}</p>{% endif %}
     </div>
 
     {% if is_edit %}
