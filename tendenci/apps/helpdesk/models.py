@@ -381,9 +381,10 @@ class Ticket(models.Model):
     
     creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
         related_name="%(app_label)s_%(class)s_creator", editable=False)
-    creator_username = models.CharField(max_length=50, default='')
+    creator_username = models.CharField(max_length=50, default='', editable=False)
     owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
-        related_name="%(app_label)s_%(class)s_owner")
+        related_name="%(app_label)s_%(class)s_owner",
+        help_text=_('You should assign a client to the owner so he/she can update the ticket.'))
     owner_username = models.CharField(max_length=50, default='')
 
     def _get_assigned_to(self):
