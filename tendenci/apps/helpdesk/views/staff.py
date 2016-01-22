@@ -1034,6 +1034,8 @@ rss_list = staff_member_required(rss_list)
 
 
 def report_index(request):
+    if not request.user.is_staff:
+        raise Http403
     number_tickets = Ticket.objects.all().count()
     saved_query = request.GET.get('saved_query', None)
     return render_to_response('helpdesk/report_index.html',
@@ -1045,6 +1047,8 @@ report_index = staff_member_required(report_index)
 
 
 def run_report(request, report):
+    if not request.user.is_staff:
+        raise Http403
     if Ticket.objects.all().count() == 0 or report not in ('queuemonth', 'usermonth', 'queuestatus', 'queuepriority', 'userstatus', 'userpriority', 'userqueue', 'daysuntilticketclosedbymonth'):
         return HttpResponseRedirect(reverse("helpdesk_report_index"))
 
