@@ -29,7 +29,10 @@ def homepage(request):
             if getattr(request.user.usersettings.settings, 'login_view_ticketlist', False):
                 return HttpResponseRedirect(reverse('helpdesk_list'))
             else:
-                return HttpResponseRedirect(reverse('helpdesk_dashboard'))
+                if request.user.is_staff:
+                    return HttpResponseRedirect(reverse('helpdesk_dashboard'))
+                else:
+                    return HttpResponseRedirect(reverse('helpdesk_submit'))
         except UserSettings.DoesNotExist:
             return HttpResponseRedirect(reverse('helpdesk_dashboard'))
 
