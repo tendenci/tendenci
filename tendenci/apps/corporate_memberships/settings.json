@@ -8,7 +8,7 @@
         "client_editable": true,
         "name": "corporatemembershiprecipients",
         "value": "",
-        "label": "Corporate Membersip admin notice recipients",
+        "label": "Corporate Membership admin notice recipients",
         "input_value": "",
         "parent_id": 0,
         "scope": "module",
