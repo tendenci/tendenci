@@ -10,7 +10,7 @@
             <div class="row">
                 <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                 	<li><a href='{% url 'helpdesk_dashboard' %}'><span class="glyphicon glyphicon-dashboard"></span> <span class="nav-text">{% trans "Dashboard" %}</span></a></li>
-	                <li><a href='{% url 'helpdesk_list' %}'><span class="glyphicon glyphicon-tags"></span> <span class="nav-text">{% trans "Tickets" %}</span></a></li>
+	                <li><a href='{% url 'helpdesk_list' %}'><span class="glyphicon glyphicon-tags"></span> <span class="nav-text">{% trans "Search Tickets" %}</span></a></li>
 	                <li><a href='{% url 'helpdesk_submit' %}'><span class="glyphicon glyphicon-plus"></span> <span class="nav-text">{% trans "New Ticket" %}</span></a></li>
 	                {% if request.user.is_staff %}
 	                <li><a href='{% url 'helpdesk_report_index' %}'><span class="glyphicon glyphicon-stats"></span> <span class="nav-text"> {% trans "Stats" %}</span></a></li>
