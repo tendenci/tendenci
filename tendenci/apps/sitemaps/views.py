@@ -46,7 +46,8 @@ def create_sitemap(request):
 
 def sitemap(request, sitemaps, section=None,
             template_name='sitemap.xml', mimetype='application/xml'):
-    req_protocol = 'https' if request.is_secure() else 'http'
+    #req_protocol = 'https' if request.is_secure() else 'http'
+    req_protocol = get_setting('site', 'global', 'siteurl').split(':')[0]
     req_site = get_current_site(request)
 
     if section is not None:
