@@ -25,7 +25,7 @@
         "client_editable": true,
         "name": "membershiprecipients",
         "value": "",
-        "label": "Membersip admin notice recipients",
+        "label": "Membership admin notice recipients",
         "input_value": "",
         "parent_id": 0,
         "scope": "module",
