@@ -26,12 +26,12 @@
     <div id='tabfilter' class="panel panel-default">
     <div class="panel-heading">
     <h3 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
         {% trans "Change Query" %}
         </a>
     </h3>
     </div>
-    <div id="collapseOne" class="panel-collapse collapse in">
+    <div id="collapse1" class="panel-collapse collapse in">
       <div class="panel-body">
     <form>
         <select name='select' id='filterBuilderSelect'>
@@ -129,11 +129,11 @@
     <div class='panel panel-default' id='tabsave'>
     <div class="panel-heading">
     <h3 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
         {% trans "Save Query" %}</a>
     </h3>
     </div>
-    <div id="collapseTwo" class="panel-collapse collapse">
+    <div id="collapse2" class="panel-collapse collapse">
       <div class="panel-body">
     <form method='post' action='{% url 'helpdesk_savequery' %}'>
     <input type='hidden' name='query_encoded' value='{{ urlsafe_query }}' />
@@ -162,12 +162,12 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
           {% trans "Use Saved Query" %}
           </a>
       </h3>
     </div>
-    <div id="collapseThree" class="panel-collapse collapse">
+    <div id="collapse3" class="panel-collapse collapse">
       <div class="panel-body">
     <form method='get' action='{% url 'helpdesk_list' %}'>
     <p><label for='id_query_selector'>{% trans "Query" %}</label> <select name='saved_query' id='id_query_selector'>
