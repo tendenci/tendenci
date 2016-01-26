@@ -82,7 +82,7 @@ class JobForm(TendenciBaseForm):
 
     list_type = forms.ChoiceField(initial='regular', choices=(('regular', _('Regular')),
                                                               ('premium', _('Premium')),))
-    payment_method = forms.CharField(error_messages={'required': _('Please select a payment method.')})
+    payment_method = forms.ChoiceField(error_messages={'required': _('Please select a payment method.')})
 
     contact_email = EmailVerificationField(label=_("Contact email"), required=False)
     contact_country = CountrySelectField(label=_("Contact country"), required=False)
@@ -228,7 +228,12 @@ class JobForm(TendenciBaseForm):
         self.fields['pricing'].choices = pricing_choices(self.user)
 
         if 'payment_method' in self.fields:
-            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
+            choices=get_payment_method_choices(self.user)
+            self.fields['payment_method'].widget = forms.RadioSelect(choices=choices)
+            self.fields['payment_method'].choices = choices
+            #self.fields['payment_method'].widget = forms.RadioSelect(choices=choices)
+            if choices and len(choices) == 1:
+                self.fields['payment_method'].initial = choices[0][0]            
 
         # adjust fields depending on user status
         fields_to_pop = []
