@@ -1,0 +1,70 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user projects.add_project as can_add_project %}
+
+{% if nav_object %}
+    {% has_perm user projects.view_project nav_object as can_view_project %}
+    {% has_perm user projects.change_project nav_object as can_edit_project %}
+    {% has_perm user projects.delete_project nav_object as can_delete_project %}
+{% else %}
+    {% has_perm user projects.view_project as can_view_project %}
+    {% has_perm user projects.change_project as can_edit_project %}
+{% endif %}
+
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url 'dashboard' %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url 'profile.index' %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_PROJECTS_LABEL_PLURAL 'Projects' %}</a>
+        {% if nav_object %}
+        <div class="dropdown-menu">
+        <ul class="first">
+            <li class="heading">{% trans "All" %} {% firstof MODULE_PROJECTS_LABEL_PLURAL 'Projects' %}</li>
+            <li class="divider"></li>
+        {% else %}
+            <div>
+            <ul class="dropdown-menu">
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url 'settings.index' "module" "projects" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url 'projects' %}">{% trans "Latest" %} {% firstof MODULE_PROJECTS_LABEL_PLURAL 'Projects' %}</a></li>
+            {% if can_add_project %}
+                <li><a href="{% url 'admin:projects_project_add' %}">{% trans "Add" %} {% firstof MODULE_PROJECTS_LABEL 'Project' %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_project or can_edit_project %}
+            <ul>
+                <li class="heading">{% trans "This" %} {% firstof MODULE_PROJECTS_LABEL 'Project' %}</li>
+                <li class="divider"></li>
+                {% if can_view_project %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_PROJECTS_LABEL 'Project' %}</a></li>
+                {% endif %}
+                {% if can_edit_project %}
+                    <li><a href="{% url 'admin:projects_project_change' nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_PROJECTS_LABEL 'Project' %}</a></li>
+                {% endif %}
+                {% if can_delete_project %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url 'admin:projects_project_delete' nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_PROJECTS_LABEL 'Project' %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if MODULE_NEWS_ENABLED %}
+    <li><a href="{% url 'news' %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    {% endif %}
+</ul>

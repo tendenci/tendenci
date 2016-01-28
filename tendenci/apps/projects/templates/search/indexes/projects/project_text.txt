@@ -1,0 +1,20 @@
+{% load tagging_tags %}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+    tag:{{ tag }} 
+{% endfor %}
+
+{{ object.pk }}
+{{ object.slug }}
+{{ object.project_name }}
+{{ object.project_number }}
+{{ object.project_status }}
+{{ object.start_dt }}
+{{ object.end_dt }}
+{{ object.website_title }}
+{{ object.website_url }}
+{{ object.project_description }}
+{{ object.video_embed_code }}
+{{ object.video_title }}
+{{ object.video_description }}

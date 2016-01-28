@@ -1,0 +1,21 @@
+{% extends "top_menu/admin_top-new.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load project_tags %}
+
+
+{% block current_app %}
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+            <img class="nav-icon" src="{% static 'famfamfam/icons/application_view_gallery.png' %}">
+            <span class="nav-label">{% firstof MODULE_PROJECTS_LABEL_PLURAL trans "Projects" %}</span>
+            <span class="caret"></span>
+        {% endspaceless %}</a>
+
+        {% if project %}
+            {% project_current_app request.user project %}
+        {% else %}
+            {% project_current_app request.user %}
+        {% endif %}
+    </li>
+{% endblock %}

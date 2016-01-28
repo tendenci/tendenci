@@ -1,0 +1,92 @@
+{% load i18n %}
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user projects.add_project as can_add_project %}
+
+{% if app_object %}
+    {% has_perm user projects.view_project app_object as can_view_project %}
+    {% has_perm user projects.change_project app_object as can_edit_project %}
+    {% has_perm user projects.delete_project app_object as can_delete_project %}
+{% else %}
+    {% has_perm user projects.view_project as can_view_project %}
+    {% has_perm user projects.change_project as can_edit_project %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-projects-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_PROJECTS_LABEL_PLURAL trans "Projects" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_add_project and request.user.is_staff %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:projects_project_add' %}">{% trans "Add" %} {% firstof MODULE_PROJECTS_LABEL trans "Project" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'projects' %}">{% firstof MODULE_PROJECTS_LABEL trans "Project" %} {% trans "List" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'projects' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_project or can_edit_project %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_PROJECTS_LABEL trans "Project" %}</span>
+                            </li>
+
+                            {% if can_view_project %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_PROJECTS_LABEL trans "Project" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_project and request.user.is_staff %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:projects_project_change' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_PROJECTS_LABEL trans "Project" %}</a>
+                                    </span>
+                                </li>
+                               
+                            {% endif %}
+
+                            {% if can_delete_project and request.user.is_staff %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'admin:projects_project_delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_PROJECTS_LABEL trans "Project" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

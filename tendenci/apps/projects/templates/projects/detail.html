@@ -1,0 +1,86 @@
+{% extends "projects/base.html" %}
+{% load project_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block content %}
+<div class="t">  
+  <div class="project-wrap">
+    <h1>{{ project.project_name }}</h1>  
+    
+
+    <div id="project-photo-container" style="position: relative; height: 250px; width: 90%;">
+      <div id="project-photo-rotator" style="position: absolute; top: 0; left: 0;">
+        <div id="project-photos">
+        {% for photo in project_photos %}
+        <div class="project-photo">
+          <img src="{% image_url photo size=575x250 crop=True %}" />
+        <div class="title-container">
+        <div class="photo-title-container">
+          <div class="photo-title">{{ photo.title }}</div>
+          <div class="left-arrow"></div>
+          <div class="right-arrow"></div>
+        </div>
+        </div>
+        </div>
+        {% endfor %}
+      </div>
+      </div>
+    </div>
+
+    
+    <p><h3>Year Completed:</h3> <p>{{ project.end_dt }}</p></p>
+    <p><h3>Client:</h3> <p>{{ project.client|safe}}</p></p>
+        <p><h3>Project Description:</h3> {{ project.project_description|safe }}</p>
+      {% if project_photos %}
+        <div class="project-inline">
+          <h2>{% trans "Pictures" %}</h2>
+          {% for picture in project_photos %}
+          <div class="project-picture">
+            <a href="{% image_url picture %}" rel="lightbox"><img src="{% image_url picture size=150x150 crop=True %}" /></a>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+    
+        {% if project.video_title %}
+        <h2>{{ project.video_title }}</h2>
+        {% endif %}
+        {% if project.video_description %}
+        <p>
+            <strong></strong><br />
+            <span>{{ project.video_description|safe }}</span>
+        </p>
+        {% endif %}
+        {% if project.video_embed_code %}
+        <p>
+            <strong></strong><br />
+          <span>{{ project.video_embed_code|safe }}</span>
+        </p>
+        {% endif %}
+  <div class="clear"></div>
+        <div class="view-all"><p><a href="/projects">View All Projects</a></p></div>
+       
+    <div class="view-all"><p><a href="javascript:history.back()">Go Back</a></p></div>  {% include "projects/meta.html" %}
+      </div>
+      </div>
+        
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
+<script src="{{ THEME_URL }}media/js/lightbox.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("#project-photos").cycle({
+            timeout: 2000,
+            speed: 2000,
+            next: '.right-arrow',
+            prev: '.left-arrow'
+        });
+});
+</script>
+{% endblock %}
