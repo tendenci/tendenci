@@ -94,12 +94,6 @@ Once pip is installed you can continue to install
 
     sudo pip install virtualenv
 
-If you are using OS X, you may need to sudo that command with:
-::
-
-    sudo pip install virtualenv
-
-
 OS X specific
 -------------
 
