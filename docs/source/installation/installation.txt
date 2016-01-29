@@ -184,7 +184,7 @@ Make a virtual environment called 'venv' and activate it.
 Creating a new tendenci project
 --------------------
 
-Make sure Django 1.8 is installed in your environment.
+Make sure Django 1.8 is installed in your environment (sudo is not required if run in a virtualenv).
 ::
 
     sudo pip install "Django>=1.8,<1.9"
@@ -201,7 +201,7 @@ This download and install step will take some time and download around 70MB of p
 Installing the requirements
 --------------------
 
-Install the requirements with the following commands.
+Install the requirements with the following commands (sudo is not required if run in a virtualenv).
 ::
     cd <project_name>
     sudo pip install -r requirements/dev.txt
