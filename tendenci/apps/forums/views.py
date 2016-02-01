@@ -74,7 +74,7 @@ class IndexView(generic.ListView):
         return ctx
 
     def get_queryset(self):
-        return perms.filter_categories(self.request.user, Category.objects.all())
+        return perms.filter_categories(self.request.user, Category.objects.filter(status=True).order_by('position'))
 
 
 class CategoryView(RedirectToLoginMixin, generic.DetailView):

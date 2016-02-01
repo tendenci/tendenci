@@ -40,6 +40,12 @@ class CategoryAdmin(admin.ModelAdmin):
 
     inlines = [ForumInlineAdmin]
     
+    def get_queryset(self, request):
+        qs = super(CategoryAdmin, self).get_queryset(request)
+        # filter out soft-deleted items
+        return qs.filter(status=True)
+        
+    
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         instance = update_perms_and_save(request, form, instance)
