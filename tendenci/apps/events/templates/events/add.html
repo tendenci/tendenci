@@ -54,27 +54,13 @@
             limit : 150
         });
 
-        function find_field(name) {
-            //finds a field given a label
-            //don't use if multiple fields share the same label
-            labels = $(".label").find("label");
-            label = labels[0];
-            i = 0;
-            while((label.innerHTML!=name) && (i < labels.length)) {
-                i++;
-                label = labels[i];
-            };
-            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
-            return field;
-        };
-
         //script for hiding and showing the 'On weekend' field
         //when nesessary.
         $(document).ready(function() {
-            weekend = $('.id_on_weekend');
-            start_dt = $(find_field("Start Date/Time").find('input')[0]);
+            weekend = $('#id_on_weekend').closest('.form-group');
+            start_dt = $('input#id_start_dt_0');
             start_dt_val = start_dt.val();
-            end_dt = $(find_field("End Date/Time").find('input')[0]);
+            end_dt =  $('input#id_end_dt_0');
             end_dt_val = end_dt.val();
 
             if(start_dt_val != end_dt_val){
@@ -102,10 +88,10 @@
             });
 
             allDay = $('#id_all_day');
-            start_dt_field = $('.id_start_dt').parent();
-            end_dt_field = $('.id_end_dt').parent();
-            start_event_dt_field = $('.id_start_event_date').parent();
-            end_event_dt_field = $('.id_end_event_date').parent();
+            start_dt_field = $('input#id_start_dt_0').closest('.form-group');
+            end_dt_field = $('input#id_end_dt_0').closest('.form-group');
+            start_event_dt_field = $('input#id_start_event_date').closest('.form-group');
+            end_event_dt_field = $('input#id_end_event_date').closest('.form-group');
             if (allDay.prop('checked')) {
                 start_dt_field.hide();
                 end_dt_field.hide();
