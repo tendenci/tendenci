@@ -41,7 +41,9 @@
 		 </li>
 		 {% endif %}
 		 
+		 {% if project.project_status %}
             <li><strong>{% trans "Project Status:" %}</strong> <span>{{ project.project_status }}</span></li>
+         {% endif %}
     {% endif %}
 </ul>
 

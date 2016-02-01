@@ -9,3 +9,8 @@
 .t .project-wrap .project-inline h2 {
     font-size: 20px;
 }
+
+.project-picture{
+	float: left;
+	margin: 3px 10px 13px 0;
+}
