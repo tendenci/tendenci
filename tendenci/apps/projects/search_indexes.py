@@ -1,5 +1,4 @@
 from haystack import indexes
-from haystack import site
 
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.projects.models import Project
