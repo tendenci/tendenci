@@ -92,13 +92,7 @@ Once pip is installed you can continue to install
 `virtualenv <http://www.virtualenv.org/>`_:
 ::
 
-    pip install virtualenv
-
-If you are using OS X, you may need to sudo that command with:
-::
-
     sudo pip install virtualenv
-
 
 OS X specific
 -------------
@@ -178,44 +172,39 @@ Creating a Virtualenv
 
 It's best practice to make a virtual environment for your site. Make a folder to hold your virtual environment and cd into it. This can go anywhere but avoid /var/www or anywhere inside your tendenci site directory.
 
-    mkdir /srv/tendenci/
+    sudo mkdir /srv/tendenci/
     cd /srv/tendenci/
 
 Make a virtual environment called 'venv' and activate it.
 
-    virtualenv venv
+    sudo virtualenv venv
     source venv/bin/activate
 
 
 Creating a new tendenci project
 --------------------
 
-Make sure Django 1.8 is installed in your environment.
+Make sure Django 1.8 is installed in your environment (sudo is not required if run in a virtualenv).
 ::
 
     sudo pip install "Django>=1.8,<1.9"
 
 
-In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name).
+In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
 This download and install step will take some time and download around 70MB of packages.
 ::
 
-    mkdir -p /var/www
     cd /var/www
-
-In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
-::
-
    sudo django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip <project_name>
 
 
 Installing the requirements
 --------------------
 
-Install the requirements with the following commands.
+Install the requirements with the following commands (sudo is not required if run in a virtualenv).
 ::
     cd <project_name>
-    pip install -r requirements/dev.txt
+    sudo pip install -r requirements/dev.txt
 
 Next update the ``conf/local_settings.py`` file in the site folder (``/var/www/<project_name>``). Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` for the setting ``DATABASE`` with the newly created database name, user and password.
 
