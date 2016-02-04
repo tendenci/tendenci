@@ -406,10 +406,8 @@ def corpmembership_upgrade(request, id,
             memberships.update(membership_type=membership_type)
             
             # log an event
-            description = 'Corporate membership type changed from %s (id: %s) to %s (id: %s)' % (
-                                        original_corp_memb_type,
+            description = 'Updated corp. membership type from (id: %s) to (id: %s)' % (
                                         original_corp_memb_type.id,
-                                        corp_membership.corporate_membership_type,
                                         corp_membership.corporate_membership_type.id)
             EventLog.objects.log(instance=corp_membership, description=description)
             
