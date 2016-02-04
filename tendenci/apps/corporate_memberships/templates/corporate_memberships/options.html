@@ -57,7 +57,7 @@
                         <ul class="dropdown-menu" role="menu">
 
                                 
-	                        {% if request.user.is_superuser %}
+	                        {% if request.user.is_superuser and opt_object.is_active %}
 	                        	<li>
 	                                <a href="{% url 'corpmembership.upgrade' opt_object.pk %}">{% trans "Upgrade" %}</a>
 	                            </li>
