@@ -96,7 +96,7 @@ div.forms{
 }
 #renewal_form ul{
 	list-style: none;
-	margin: 3px 5px;
+	margin: 5px 1.5em;
 }
 </style>
 {% endblock %}
@@ -407,6 +407,10 @@ div.forms{
         }else{
             $("#id_members").show();
     	}
+    	$("input[name=members]").each(function()
+            {
+            	IndUpdateSummary(this);
+        });
     	
         $("#id_select_all_members").click(function()
         {
