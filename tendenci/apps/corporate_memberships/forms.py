@@ -668,6 +668,8 @@ class CreatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreatorForm, self).__init__(*args, **kwargs)
         self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+        for k in self.fields.keys():
+            self.fields[k].widget.attrs['class'] = 'form-control'
 
 
 class CorpApproveForm(forms.Form):
