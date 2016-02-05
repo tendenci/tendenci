@@ -675,7 +675,8 @@ class CorpMembership(TendenciBaseModel):
             payment.payments_pop_by_invoice_user(user,
                         self.invoice, self.invoice.guid)
             payment.mark_as_paid()
-            payment.method = self.get_payment_method()
+            payment_method = self.get_payment_method()
+            payment.method = payment_method and payment_method.machine_name or ''
             payment.save(user)
 
             # this will make accounting entry
