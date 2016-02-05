@@ -89,7 +89,7 @@
 </nav>
 
 
-{% comment %}
+
 {% if opt_object.is_renewal_pending %}
     <div><span class="pending-info-box">
     {% blocktrans with opt_object.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
@@ -123,4 +123,4 @@
         </span>
     </div>
 {% endif %}
-{% endcomment %}
+
