@@ -5,7 +5,7 @@
     <div class="search-item">
         <h2><a href="{{ newsletter.get_absolute_url }}">{{ newsletter }}</a></h2>
         <div class="item-content">
-            {{ newsletter.email.body|striptags|truncatewords:50 }}
+            {{ newsletter.email.body|safe|striptags|truncatewords:50 }}
         </div>
     </div>
     {% include "newsletters/meta.html" %}
