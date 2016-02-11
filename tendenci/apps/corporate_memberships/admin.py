@@ -29,7 +29,7 @@ from tendenci.apps.site_settings.utils import get_setting
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type', 'apply_cap',
-                     'membership_cap', 'admin_only', 'status_detail', 'position']
+                     'membership_cap', 'allow_above_cap', 'above_cap_price', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
     option_fields = ['position', 'status_detail']
@@ -37,7 +37,8 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
         option_fields.insert(0, 'number_passes')
     fieldsets = (
         (None, {'fields': ('name', 'price', 'renewal_price', 'description')}),
-        (_('Membership Options'), {'fields': ('membership_type', 'apply_cap', 'membership_cap',)}),
+        (_('Membership Options'), {'fields': ('membership_type', 'apply_cap', 'membership_cap',
+                                              'allow_above_cap', 'above_cap_price')}),
         (_('Other Options'), {'fields': option_fields}),
     )
 

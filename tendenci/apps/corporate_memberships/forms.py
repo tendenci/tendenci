@@ -53,6 +53,7 @@ class CorporateMembershipTypeForm(forms.ModelForm):
     renewal_price = PriceField(decimal_places=2,
                                        required=False,
                                help_text=_("Set 0 for free membership."))
+    above_cap_price = PriceField(decimal_places=2, help_text=_("Price for members who join above cap."))
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')),
                  ('inactive', _('Inactive')),
@@ -67,6 +68,8 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   'membership_type',
                   'apply_cap',
                   'membership_cap',
+                  'allow_above_cap',
+                  'above_cap_price',
                   'description',
                   'admin_only',
                   'number_passes',

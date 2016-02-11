@@ -292,30 +292,47 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
                 return expiration_dt
 
-    def get_price_display(self, customer):
+    def get_price_display(self, customer, corp_membership=None):
         renew_mode = False
         if isinstance(customer, User):
             m_list = MembershipDefault.objects.filter(user=customer, membership_type=self)
             renew_mode = any([m.can_renew() for m in m_list])
 
         self.renewal_price = self.renewal_price or 0
+        renewal_price = self.renewal_price
+        price = self.price
+        above_cap_format = ''
+        
+        if corp_membership:
+            apply_above_cap, above_cap_price = \
+                    corp_membership.get_above_cap_price()
+            if apply_above_cap:
+                if renew_mode:
+                    renewal_price = above_cap_price
+                else:
+                    price = above_cap_price
+                above_cap_format = " (above cap price)"
+
         if renew_mode:
             price_display = (self.PRICE_FORMAT + self.RENEW_FORMAT) % (
                 self.name,
-                tcurrency(self.renewal_price)
+                tcurrency(renewal_price)
             )
         else:
             if self.admin_fee:
                 price_display = (self.PRICE_FORMAT + self.ADMIN_FEE_FORMAT) % (
                     self.name,
-                    tcurrency(self.price),
+                    tcurrency(price),
                     tcurrency(self.admin_fee)
                 )
             else:
                 price_display = (self.PRICE_FORMAT) % (
                     self.name,
-                    tcurrency(self.price)
+                    tcurrency(price)
                 )
+
+        if above_cap_format:
+            price_display = price_display + above_cap_format
 
         return mark_safe(price_display)
 
@@ -1512,6 +1529,20 @@ class MembershipDefault(TendenciBaseModel):
         Admin price is only included on joins.
         Corporate price, trumps all membership prices.
         """
+        if self.corporate_membership_id:
+            from tendenci.apps.corporate_memberships.models import CorpMembership
+            [corp_membership] = CorpMembership.objects.filter(
+                                id=self.corporate_membership_id)[:1] or [None]
+            if corp_membership:
+                # num_exclude - exclude this membership
+                apply_above_cap, above_cap_price = \
+                    corp_membership.get_above_cap_price(num_exclude=1)
+                if apply_above_cap:
+                    if self.renewal:
+                        return above_cap_price
+                    else:
+                        return above_cap_price + (self.membership_type.admin_fee or 0)
+   
         if self.renewal:
             return self.membership_type.renewal_price or 0
         else:

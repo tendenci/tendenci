@@ -985,6 +985,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         # NOTE: customer attr is needed by MembershipTypeModelChoiceField!
         self.fields['membership_type'].customer = customer
+        if self.corp_membership:
+            self.fields['membership_type'].corp_membership = self.corp_membership
 
         mt_choices = get_membership_type_choices(
             request_user,

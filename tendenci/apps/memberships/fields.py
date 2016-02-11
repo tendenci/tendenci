@@ -79,6 +79,7 @@ class AppFieldSelectionField(forms.MultipleChoiceField):
 
 class MembershipTypeModelChoiceField(forms.ModelChoiceField):
     customer = None
+    corp_membership = None
 
     def label_from_instance(self, obj):
-        return obj.get_price_display(self.customer)
+        return obj.get_price_display(self.customer, self.corp_membership)

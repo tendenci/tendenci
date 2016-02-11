@@ -120,6 +120,15 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                                blank=True,
                                                null=True,
                                                help_text=_('The maximum number of employees allowed.'))
+    allow_above_cap = models.BooleanField(_('Allow above cap'),
+                                    help_text=_('If Apply cap is checked, check this box to allow additional members to join above cap.'),
+                                    default=False)
+    above_cap_price = models.DecimalField(_('Price if join above cap'), max_digits=15,
+                                          decimal_places=2,
+                                          default=0,
+                                          blank=True,
+                                          null=True,
+                                          help_text=_('Price for members who join above cap.'))
                                 
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
@@ -1142,12 +1151,25 @@ class CorpMembership(TendenciBaseModel):
         """
         Return a tuple of (apply_cap, membership_cap)
         """
-        return (self.corporate_membership_type.apply_cap, self.corporate_membership_type.membership_cap)
+        corp_type = self.corporate_membership_type
+        return (corp_type.apply_cap, corp_type.membership_cap, corp_type.allow_above_cap, corp_type.above_cap_price)
 
-    def is_cap_reached(self):
-        apply_cap, cap = self.get_cap_info()
+    def is_cap_reached(self, num_exclude=0):
+        apply_cap, cap,  = self.get_cap_info()[:2]
 
-        return apply_cap and self.members_count >= cap
+        return apply_cap and self.members_count - num_exclude >= cap
+    
+    def get_above_cap_price(self, num_exclude=0):
+        """
+        get the above cap price for individual memberships.
+        return tuple (apply_above_cap, above_cap_price)
+        """
+        corporate_type = self.corporate_membership_type
+        if corporate_type.apply_cap and self.is_cap_reached(num_exclude=num_exclude):
+            if corporate_type.allow_above_cap:
+                return True, corporate_type.above_cap_price
+
+        return False, None
 
     def email_reps_cap_reached(self):
         """
@@ -1160,6 +1182,7 @@ class CorpMembership(TendenciBaseModel):
         email_context = {'corp_membership': self,
                          'corp_profile': self.corp_profile,
                          'corp_membership_type': self.corporate_membership_type,
+                         'currency_symbol': get_setting('site', 'global', 'currencysymbol'),
                          'site_url': get_setting('site', 'global', 'siteurl'),
                          'site_display_name': get_setting('site', 'global', 'sitedisplayname'),
                          'view_link': self.get_absolute_url(),

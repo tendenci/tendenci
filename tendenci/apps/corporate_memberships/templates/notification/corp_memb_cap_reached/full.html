@@ -2,6 +2,10 @@
 <p><a href="{{ site_url }}{{ view_link }}">{{ corp_profile.name }}</a> has reached 
 maximum allowable members under the membership type "{{ corp_membership_type.name }}".
 </p>
+{% if corp_membership_type.allow_above_cap %}
+<p>However, members can still join with the above cap price {{ currency_symbol }}{{ corp_membership_type.above_cap_price }}.
+</p>
+{% endif %}
 {% if to_reps %}
 <p>To upgrade your corporate membership, please contact {{ site_display_name }}.</p>
 {% else %}
