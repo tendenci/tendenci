@@ -1013,7 +1013,11 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         if self.corp_membership:
             memb_type = self.corp_membership.corporate_membership_type.membership_type
             self.fields['membership_type'].initial = memb_type
-            require_payment = (memb_type.price > 0 or memb_type.admin_fee > 0)
+            apply_above_cap, above_cap_price = self.corp_membership.get_above_cap_price()
+            if apply_above_cap:
+                require_payment =  above_cap_price > 0
+            else:
+                require_payment = (memb_type.price > 0 or memb_type.admin_fee > 0)
         else:
             # if all membership types are free, no need to display payment method
             require_payment = self.membership_app.membership_types.filter(
