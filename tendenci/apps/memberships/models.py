@@ -129,7 +129,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
     renewal = models.BooleanField(_('Renewal Only'), default=False)
     renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=True)
 
-    admin_only = models.BooleanField(_('Admin Only'), default=True)  # from allowuseroption
+    admin_only = models.BooleanField(_('Admin Only'), default=False)  # from allowuseroption
 
     never_expires = models.BooleanField(_("Never Expires"), default=False,
                                         help_text=_('If selected, skip the Renewal Options.'))
