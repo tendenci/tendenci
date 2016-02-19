@@ -17,7 +17,11 @@
                 {{ forum.headline|safe }}
             </div>
         {% endif %}
-
+   	
+   	{% if not user.is_authenticated %}
+                {% include 'pybb/_need_to_login_message.html' %}
+        {% endif %}
+        
         {% include "pybb/pagination.html" %}
 
         {% include 'pybb/forum_list.html' with forum_list=forum.forums_accessed category='' parent_forum=forum %}
