@@ -334,8 +334,8 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
         return ((None, {'fields': fields
                         }),)
 
-    def get_object(self, request, object_id):
-        obj = super(CorpMembershipAppField2Admin, self).get_object(request, object_id)
+    def get_object(self, request, object_id, from_field=None):
+        obj = super(CorpMembershipAppField2Admin, self).get_object(request, object_id, from_field=from_field)
 
         # assign default field_type
         if obj:
