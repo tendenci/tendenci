@@ -364,11 +364,11 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
         if "_save" in request.POST:
             opts = obj._meta
             verbose_name = opts.verbose_name
-            module_name = opts.module_name
+            model_name = opts.model_name
             if obj._deferred:
                 opts_ = opts.proxy_for_model._meta
                 verbose_name = opts_.verbose_name
-                module_name = opts_.module_name
+                model_name = opts_.model_name
 
             msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
                         'name': force_unicode(verbose_name),
@@ -376,7 +376,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
             self.message_user(request, msg)
             post_url = '%s?corp_app_id=%d' % (
                             reverse('admin:%s_%s_changelist' %
-                                   (opts.app_label, module_name),
+                                   (opts.app_label, model_name),
                                    current_app=self.admin_site.name),
                             obj.corp_app_id)
             return HttpResponseRedirect(post_url)
