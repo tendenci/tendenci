@@ -6,7 +6,8 @@ html5lib
 Pillow==2.8.2
 anyjson>=0.2.4
 django-authority>=0.4
-django-avatar>=2.1
+# temp fix - the latest version of django-avatar-3.0.0 breaks profile
+django-avatar==2.2.1
 django-countries==3.3
 django-form-utils>=0.1.8
 django-localflavor==1.1
