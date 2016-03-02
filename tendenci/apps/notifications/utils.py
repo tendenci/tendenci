@@ -1,3 +1,5 @@
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.notifications.models import send_emails
 
@@ -29,7 +31,7 @@ def send_welcome_email(user):
     send_emails([user.email], 'user_welcome', {
         'site_url': site_url,
         'site_name': site_name,
-        'uid': int_to_base36(user.id),
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'user': user,
         'username': user.username,
         'token': token_generator.make_token(user),
