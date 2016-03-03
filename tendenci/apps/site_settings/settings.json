@@ -833,6 +833,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "",
+        "description": "Select the initial choices for the country field dropdown (on your membership or other forms).",
+        "data_type": "string",
+        "update_dt": "2016-03-03 15:02:00",
+        "input_type": "selectmultiple",
+        "client_editable": true,
+        "name": "countrylistinitialchoices",
+        "value": "",
+        "label": "Initial Choices in Country Field Dropdown",
+        "input_value": "<country_list>",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "false",
         "description": "If TRUE, overrides to CSS bootstrap will be applied",
         "data_type": "boolean",

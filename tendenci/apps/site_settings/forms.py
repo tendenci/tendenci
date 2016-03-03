@@ -137,8 +137,8 @@ def build_settings_form(user, settings):
             else:
                 if user.is_superuser:
                     fields.update({"%s" % setting.name: forms.CharField(**options)})
-
-        elif setting.input_type == 'select':
+            
+        elif setting.input_type in ['select', 'selectmultiple']:
             if setting.input_value == '<form_list>':
                 choices = get_form_list(user)
                 required = False
@@ -181,10 +181,10 @@ def build_settings_form(user, settings):
                 'choices': choices,
                 'required': required,
             }
-            if setting.client_editable:
-                fields.update({"%s" % setting.name: forms.ChoiceField(**options)})
-            else:
-                if user.is_superuser:
+            if setting.client_editable or user.is_superuser:
+                if setting.input_type == 'selectmultiple':
+                    fields.update({"%s" % setting.name: forms.MultipleChoiceField(**options)})
+                else:
                     fields.update({"%s" % setting.name: forms.ChoiceField(**options)})
 
         elif setting.input_type == 'file':
