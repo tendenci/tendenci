@@ -145,14 +145,17 @@ class EmailVerificationField(fields.MultiValueField):
 class CountrySelectField(fields.ChoiceField):
     def __init__(self, *args, **kwargs):
         super(CountrySelectField, self).__init__(*args, **kwargs)
+        
+        initial_choices = ()
+        exclude_list = []
+        
+        initial_choices_keys = get_setting('site', 'global', 'countrylistinitialchoices')
+        if initial_choices_keys:
+            initial_choices =  ((name, name) for key, name in COUNTRIES if key in initial_choices_keys)
+            initial_choices = tuple(initial_choices) + (('','-----------'),)
+            exclude_list = initial_choices_keys
 
-        exclude_list = ['US', 'CH', 'FR', 'GB']
         countries = ((name,name) for key,name in COUNTRIES if key not in exclude_list)
-        initial_choices = (('United States', _('United States')),
-                           ('Switzerland', _('Switzerland')),
-                           ('France', _('France')),
-                           ('United Kingdom', _('United Kingdom')),
-                           ('','-----------'))
         self.choices = initial_choices + tuple(countries)
         self.initial = ''
 
