@@ -8,12 +8,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
 from timezones import zones
+from django_countries import countries as COUNTRIES
 
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.site_settings.utils import (get_form_list,
                                                get_box_list,
-                                               get_group_list,
-                                               COUNTRIES)
+                                               get_group_list)
 from tendenci.apps.base.utils import get_languages_with_local_name
 from django.utils.translation import ugettext_lazy as _
 
