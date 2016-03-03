@@ -10,7 +10,7 @@
         {% blocktrans with title=addon.title %}{{ title }}{% endblocktrans %} ({% blocktrans with keys=SITE_GLOBAL_CURRENCYSYMBOL %}{{ keys }}{% endblocktrans %}{{ addon.price }})
     </td>
     <td>
-        <strong>{% trans "Quantity" %}:</strong> <input id="add-addon-{{ addon.pk }}-count" type="text" value="1" {% if anon_pricing and not addon.allow_anonymous %}{% trans "DISABLED" %}{% endif %} />
+        <strong>{% trans "Quantity" %}:</strong> <input id="add-addon-{{ addon.pk }}-count" type="text" value="0" {% if anon_pricing and not addon.allow_anonymous %}{% trans "DISABLED" %}{% endif %} />
     </td>
     </tr>
     <tr {% if anon_pricing and not addon.allow_anonymous %}gray-text{% endif %}>
