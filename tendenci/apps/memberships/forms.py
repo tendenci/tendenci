@@ -620,6 +620,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         un = data.get('username', u'').strip()
         pw = data.get('password', u'').strip()
         pw_confirm = data.get('confirm_password', u'').strip()
+        u = None
 
         if un and pw:
             # assert passwords match
@@ -647,6 +648,14 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             if u:
                 raise forms.ValidationError(
                     _('This username exists. If it\'s yours, please provide your password.')
+                )
+                
+        if not u:
+            # we didn't find user, check if email address is already in use
+            email = data.get('email', u'').strip()
+            if User.objects.filter(email=email).exists():
+                raise forms.ValidationError(
+                    _('Email already exists.')
                 )
 
         return data
