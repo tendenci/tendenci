@@ -157,7 +157,7 @@ def build_settings_form(user, settings):
                 choices = get_languages_with_local_name()
                 required = True
             elif setting.input_value == '<country_list>':
-                choices = COUNTRIES
+                choices = (('', '-----------'),) + tuple(COUNTRIES)
             else:
                 # Allow literal_eval in settings in order to pass a list from the setting
                 # This is useful if you want different values and labels for the select options
