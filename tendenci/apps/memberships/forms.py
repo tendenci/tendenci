@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import mark_safe
 
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
@@ -621,6 +622,8 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         pw = data.get('password', u'').strip()
         pw_confirm = data.get('confirm_password', u'').strip()
         u = None
+        username_validate_err_msg = mark_safe(_("""Username exists. If it is yours, click <a href="/accounts/login/?next=%s">HERE</a>
+ to log in before completing your application. Else, select a new username.""" % self.request.get_full_path()))
 
         if un and pw:
             # assert passwords match
@@ -634,9 +637,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             if u:
                 # assert password;
                 if not u.check_password(pw):
-                    raise forms.ValidationError(
-                        _('Username and password did not match.')
-                    )
+                    raise forms.ValidationError(username_validate_err_msg)
             else:
                 pass
                 # username does not exist;
