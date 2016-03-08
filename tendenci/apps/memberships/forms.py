@@ -622,42 +622,45 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         pw = data.get('password', u'').strip()
         pw_confirm = data.get('confirm_password', u'').strip()
         u = None
-        username_validate_err_msg = mark_safe(_("""Username exists. If it is yours, click <a href="/accounts/login/?next=%s">HERE</a>
- to log in before completing your application. Else, select a new username.""" % self.request.get_full_path()))
+        login_link = _('click <a href="/accounts/login/?next=%s">HERE</a> to log in before completing your application.') % self.request.get_full_path()
+        username_validate_err_msg = mark_safe(_('Username exists. If it is yours, %s Else, select a new username.') % login_link)
+        email_validate_err_msg = mark_safe(_('Email exists. If it is yours, %s Else, select a different email address.') % login_link)
 
-        if un and pw:
-            # assert passwords match
-            if pw != pw_confirm:
-                raise forms.ValidationError(
-                    _('Passwords do not match.')
-                )
-
-            [u] = User.objects.filter(username=un)[:1] or [None]
-
-            if u:
-                # assert password;
-                if not u.check_password(pw):
-                    raise forms.ValidationError(username_validate_err_msg)
-            else:
-                pass
-                # username does not exist;
-                # create account with username and password
-
-        elif un:
-            [u] = User.objects.filter(username=un)[:1] or [None]
-            # assert username
-            if u:
-                raise forms.ValidationError(
-                    _('This username exists. If it\'s yours, please provide your password.')
-                )
-                
-        if not u and not self.is_renewal:
-            # we didn't find user, check if email address is already in use
-            email = data.get('email', u'').strip()
-            if User.objects.filter(email=email).exists():
-                raise forms.ValidationError(
-                    _('Email already exists.')
-                )
+        if self.request.user.is_authenticated() and self.request.user.username == un:
+            # they are logged in and join or renewal for themselves 
+            pass
+        else:
+            if un and pw:
+                # assert passwords match
+                if pw != pw_confirm:
+                    raise forms.ValidationError(
+                        _('Passwords do not match.')
+                    )
+    
+                [u] = User.objects.filter(username=un)[:1] or [None]
+    
+                if u:
+                    # assert password;
+                    if not u.check_password(pw):
+                        raise forms.ValidationError(username_validate_err_msg)
+                else:
+                    pass
+                    # username does not exist;
+                    # create account with username and password
+    
+            elif un:
+                [u] = User.objects.filter(username=un)[:1] or [None]
+                # assert username
+                if u:
+                    raise forms.ValidationError(
+                        _('This username exists. If it\'s yours, please provide your password.')
+                    )
+                    
+            if not u and not self.is_renewal:
+                # we didn't find user, check if email address is already in use
+                email = data.get('email', u'').strip()
+                if User.objects.filter(email=email).exists():
+                    raise forms.ValidationError(email_validate_err_msg)
 
         return data
 
