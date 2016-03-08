@@ -558,8 +558,8 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         assign_fields(self, app_field_objs)
         self_fields_keys = self.fields.keys()
 
-        is_renewal = 'username' in self.request.GET
-        if (self.request.user.is_superuser and is_renewal) or (self.instance and self.instance.pk):
+        self.is_renewal = 'username' in self.request.GET
+        if (self.request.user.is_superuser and self.is_renewal) or (self.instance and self.instance.pk):
             if 'username' in self_fields_keys:
                 self_fields_keys.remove('username')
             if 'password' in self_fields_keys:
@@ -651,7 +651,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                     _('This username exists. If it\'s yours, please provide your password.')
                 )
                 
-        if not u:
+        if not u and not self.is_renewal:
             # we didn't find user, check if email address is already in use
             email = data.get('email', u'').strip()
             if User.objects.filter(email=email).exists():
