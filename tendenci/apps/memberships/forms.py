@@ -659,8 +659,11 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
                 email = data.get('email', u'').strip()
-                if User.objects.filter(email=email).exists():
-                    raise forms.ValidationError(email_validate_err_msg)
+                if un and email:
+                    if User.objects.filter(email=email).exists():
+                        if self.request.user.is_authenticated():
+                            raise forms.ValidationError(_('This email "%s" is taken. Please enter a different email address.') % email)
+                        raise forms.ValidationError(email_validate_err_msg)
 
         return data
 
