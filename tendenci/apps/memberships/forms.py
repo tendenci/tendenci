@@ -623,8 +623,8 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         pw_confirm = data.get('confirm_password', u'').strip()
         u = None
         login_link = _('click <a href="/accounts/login/?next=%s">HERE</a> to log in before completing your application.') % self.request.get_full_path()
-        username_validate_err_msg = mark_safe(_('Username exists. If it is yours, %s Else, select a new username.') % login_link)
-        email_validate_err_msg = mark_safe(_('Email exists. If it is yours, %s Else, select a different email address.') % login_link)
+        username_validate_err_msg = mark_safe(_('This Username already exists in the system. If this is your Username, %s Else, select a new Username to continue.') % login_link)
+        email_validate_err_msg = mark_safe(_('This Email address already exists in the system. If this is your Email address, %s Else, select a different Email address to continue.') % login_link)
 
         if self.request.user.is_authenticated() and self.request.user.username == un:
             # they are logged in and join or renewal for themselves 
