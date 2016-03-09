@@ -87,38 +87,38 @@
 
                 {% if user_form.errors.values %}
                     {% for error in user_form.non_field_errors %}
-                        <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                        <p>{{ error}}</p>
                     {% endfor %}
                 {% endif %}
 
                 {% if profile_form.errors.values %}
                     {% for error in profile_form.non_field_errors %}
-                        <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                        <p><a href="#">{{ error }}</a></p>
                     {% endfor %}
                 {% endif %}
 
                 {% if education_form.errors.values %}
                     {% for error in education_form.non_field_errors %}
-                        <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                        <p><a href="#">{{ error }}</a></p>
                     {% endfor %}
                 {% endif %}
 
                 {% if demographics_form.errors.values %}
                     {% for error in demographics_form.non_field_errors %}
-                        <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                        <p><a href="#">{{ error }}</a></p>
                     {% endfor %}
                 {% endif %}
 
                 {% if membership_form.errors.values %}
                     {% for error in membership_form.non_field_errors %}
-                        <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                        <p><a href="#">{{ error }}</a></p>
                     {% endfor %}
                 {% endif %}
 
                 {% for field in user_form %}
                     {% if field.errors %}
                           {% for error in field.errors %}
-                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
                           {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -126,7 +126,7 @@
                 {% for field in profile_form %}
                     {% if field.errors %}
                           {% for error in field.errors %}
-                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
                           {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -134,7 +134,7 @@
                 {% for field in education_form %}
                     {% if field.errors %}
                           {% for error in field.errors %}
-                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
                           {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -142,7 +142,7 @@
                 {% for field in demographics_form %}
                     {% if field.errors %}
                           {% for error in field.errors %}
-                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
                           {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -150,7 +150,7 @@
                 {% for field in membership_form %}
                     {% if field.errors %}
                           {% for error in field.errors %}
-                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
                           {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -159,7 +159,7 @@
                     {% for field in captcha_form %}
                         {% if field.errors %}
                             {% for error in field.errors %}
-                                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+                                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
