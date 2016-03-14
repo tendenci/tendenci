@@ -76,7 +76,7 @@ class CustomFieldMixin(object):
 class EditTicketForm(CustomFieldMixin, forms.ModelForm):
     class Meta:
         model = Ticket
-        exclude = ('created', 'modified', 'status', 'on_hold', 'resolution', 'last_escalation', 'assigned_to')
+        exclude = ('created', 'modified', 'status', 'on_hold', 'resolution', 'last_escalation', 'assigned_to', 'owner_username')
     
     def __init__(self, *args, **kwargs):
         """

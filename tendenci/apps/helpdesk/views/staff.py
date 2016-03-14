@@ -922,8 +922,11 @@ def edit_ticket(request, ticket_id):
         form = EditTicketForm(request.POST, instance=ticket)
         if form.is_valid():
             ticket = form.save()
-            ticket.owner = request.user
-            ticket.owner_username = request.user.username
+            if ticket.owner:
+                ticket.owner_username = ticket.owner.username
+            else:
+                ticket.owner = request.user
+                ticket.owner_username = request.user.username
             ticket.save()
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
