@@ -83,6 +83,7 @@ def search_redirect(request):
 @login_required
 def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
+    membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
     if not has_view_perm(request.user,'user_groups.view_group',group):
         raise Http403
@@ -96,10 +97,13 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 
     EventLog.objects.log(instance=group)
 
-    groupmemberships = GroupMembership.objects.filter(
-        group=group,
-        status=True,
-        status_detail='active').order_by('member__last_name')
+    if request.user.profile.is_superuser or membership_view_perms <> 'private': 
+        groupmemberships = GroupMembership.objects.filter(
+            group=group,
+            status=True,
+            status_detail='active').order_by('member__last_name')
+    else:
+        groupmemberships = GroupMembership.objects.none()
 
     count_members = len(groupmemberships)
     return render_to_response(

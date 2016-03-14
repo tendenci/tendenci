@@ -30,9 +30,9 @@
         <div id="group-options">
 
             <ul>
+            	{% if request.user.profile.is_superuser and count_members > 0 %}
                 <li><a href="{% url "group.members_export" group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
-
-                {% if request.user.profile.is_superuser %}
+                
                 <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
                 {% endif %}
 
@@ -70,7 +70,9 @@
         {% endif %}
 
         {% if not groupmemberships %}
+        	{% if membership_view_perms != 'private' %}
             <p>{% trans "This group has no members" %}</p>
+            {% endif %}
         {% else %}
             {% autopaginate groupmemberships 100 %}
             {% paginate %}
