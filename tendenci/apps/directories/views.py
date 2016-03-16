@@ -260,11 +260,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
-        else:
-            form = form_class(instance=directory, user=request.user)
-
-        return render_to_response(template_name, {'directory': directory, 'form':form},
-            context_instance=RequestContext(request))
 
 
     return render_to_response(template_name, {'directory': directory, 'form':form},
