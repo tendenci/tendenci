@@ -895,7 +895,8 @@ class MembershipDefault(TendenciBaseModel):
         dupe.status_detail = 'active'
         
         dupe.renewal = True
-        dupe.renew_from_id = self.id
+        if not dupe is self:
+            dupe.renew_from_id = self.id
 
         # application approved ---------------
         dupe.application_approved = True
@@ -1178,8 +1179,9 @@ class MembershipDefault(TendenciBaseModel):
                 membership.status_detail = 'archive'
                 membership.save()
 
-        # sometimes they renewed from a different membership type
-        if self.renew_from_id:
+        # if they renewed from a different membership type
+        # renew_from_id should not be id, but just in case
+        if self.renew_from_id and self.renew_from_id != self.id:
             [membership_from] = MembershipDefault.objects.filter(
                                 id=self.renew_from_id).exclude(
                                 status_detail='archive'
