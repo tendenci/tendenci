@@ -15,6 +15,7 @@ from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
+from tendenci.apps.perms.decorators import is_enabled
 from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
 from tendenci.apps.committees.models import Committee, Officer, Position
@@ -28,6 +29,8 @@ try:
 except:
     notification = None
 
+
+@is_enabled('committees')
 def detail(request, slug, template_name="committees/detail.html"):
     committee = get_object_or_404(Committee, slug=slug)
 
@@ -63,6 +66,7 @@ def detail(request, slug, template_name="committees/detail.html"):
         raise Http403
 
 
+@is_enabled('committees')
 def search(request, template_name="committees/search.html"):
     query = request.GET.get('q', None)
     if query:
@@ -78,6 +82,8 @@ def search(request, template_name="committees/search.html"):
     return render_to_response(template_name, {'committees': committees},
         context_instance=RequestContext(request))
 
+
+@is_enabled('committees')
 @login_required
 def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="committees/add.html"):
 
@@ -161,6 +167,7 @@ def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_fo
             },
             context_instance=RequestContext(request))
 
+@is_enabled('committees')
 @login_required
 def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="committees/edit.html"):
         
@@ -259,6 +266,7 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
         context_instance=RequestContext(request))
 
 
+@is_enabled('committees')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="committees/edit-meta.html"):
     """
@@ -296,6 +304,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="committees/edit-m
         context_instance=RequestContext(request))
 
 
+@is_enabled('committees')
 @login_required
 def delete(request, id, template_name="committees/delete.html"):
     committee = get_object_or_404(Committee, pk=id)
