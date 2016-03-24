@@ -15,10 +15,7 @@
                 <a href="{{ auth_login_url }}">Log in</a> now
             {% endblocktrans %}</p>
         {% else %}
-            {% url 'dashboard' as dashboard_url %}
-            <p>{% blocktrans with dashboard_url=dashboard_url %}
-                <a href="{{ dashboard_url }}">Go to the dashboard</a>
-            {% endblocktrans %}</p>
+         <p><a href="{% url 'profile' user.username %}">{% trans "View My Profile" %}</a></p>
         {% endif %}
     {% else %}
         <p>{% trans "Activation failed." %}</p>

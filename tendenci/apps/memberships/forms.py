@@ -1,4 +1,5 @@
 from datetime import datetime
+import requests
 
 from django import forms
 from django.contrib.auth.models import User
@@ -6,6 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import mark_safe
+from django.core.urlresolvers import reverse
 
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
@@ -621,10 +623,19 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         un = data.get('username', u'').strip()
         pw = data.get('password', u'').strip()
         pw_confirm = data.get('confirm_password', u'').strip()
+        email = data.get('email', u'').strip()
         u = None
         login_link = _('click <a href="/accounts/login/?next=%s">HERE</a> to log in before completing your application.') % self.request.get_full_path()
         username_validate_err_msg = mark_safe(_('This Username already exists in the system. If this is your Username, %s Else, select a new Username to continue.') % login_link)
         email_validate_err_msg = mark_safe(_('This Email address already exists in the system. If this is your Email address, %s Else, select a different Email address to continue.') % login_link)
+        activation_link = _('<a href="%s?username=%s&email=%s&next=%s">HERE</a>') % (
+                                                    reverse('profile.activate_email'), 
+                                                    requests.utils.quote(un), requests.utils.quote(email), 
+                                                    self.request.get_full_path())
+        inactive_user_err_msg =  mark_safe(_('''This email "%s" is associated with an inactive account.
+                    If it's yours, please activate it before completing your application, or use a different email address.
+                    Click %s we'll send your an activation email. You can then follow
+                    the instructions in the email to activate your account.''') % (email, activation_link))
 
         if self.request.user.is_authenticated() and self.request.user.username == un:
             # they are logged in and join or renewal for themselves 
@@ -639,14 +650,16 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
     
                 [u] = User.objects.filter(username=un)[:1] or [None]
     
-                if u:
+                if u and u.is_active:
                     # assert password;
                     if not u.check_password(pw):
                         raise forms.ValidationError(username_validate_err_msg)
                 else:
-                    pass
-                    # username does not exist;
-                    # create account with username and password
+                    if u:
+                        # user is not active. if email matches, let them activate the account.
+                        if email and u.email == email:
+                            raise forms.ValidationError(inactive_user_err_msg)
+                        raise forms.ValidationError('This username is taken. Please choose a new username.')
     
             elif un:
                 [u] = User.objects.filter(username=un)[:1] or [None]
@@ -658,12 +671,21 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                     
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
-                email = data.get('email', u'').strip()
                 if un and email:
                     if User.objects.filter(email=email).exists():
                         if self.request.user.is_authenticated():
-                            raise forms.ValidationError(_('This email "%s" is taken. Please enter a different email address.') % email)
-                        raise forms.ValidationError(email_validate_err_msg)
+                            # user is logged in
+                            raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
+                        
+                        # user is not logged in. prompt them to log in if the user record with this email address is active
+                        u = User.objects.filter(email=email).order_by('-is_active')[0]
+                        [profile] = Profile.objects.filter(user=u)[:1] or [None]
+                        if (profile and profile.is_active) or u.is_active:
+                            raise forms.ValidationError(email_validate_err_msg)
+                        
+                        # at this point, user is not logged in and user record with this email is inactive
+                        # let them activate the account before applying for membership
+                        raise forms.ValidationError(inactive_user_err_msg)
 
         return data
 

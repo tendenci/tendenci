@@ -48,7 +48,8 @@ from tendenci.apps.user_groups.forms import GroupMembershipEditForm
 from tendenci.apps.profiles.models import Profile, UserImport, UserImportData
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
-UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm)
+UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm,
+ActivateForm)
 from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
@@ -1607,3 +1608,39 @@ def download_user_template(request):
     return render_csv(filename, title_list,
                         data_row_list)
 
+
+def activate_email(request):
+    """
+    Send an activation email to user to activate an inactive user account for a given an email address. 
+    Optional parameter: username
+    """
+    from tendenci.apps.registration.models import RegistrationProfile
+    from tendenci.apps.accounts.utils import send_registration_activation_email
+    form = ActivateForm(request.GET)
+
+    if form.is_valid():
+        email = form.cleaned_data['email']
+        username = form.cleaned_data['username']
+        u = None
+        if email and username:
+            [u] = User.objects.filter(is_active=False, email=email, username=username)[:1] or [None]
+            
+        if email and not u:
+            [u] = User.objects.filter(is_active=False, email=email).order_by('-is_active')[:1] or [None]
+
+        if u:
+            [rprofile] = RegistrationProfile.objects.filter(user=u)[:1] or [None]
+            if rprofile and rprofile.activation_key_expired():
+                rprofile.delete()
+                rprofile = None
+            if not rprofile:
+                rprofile = RegistrationProfile.objects.create_profile(u)
+            # send email
+            send_registration_activation_email(u, rprofile, next=request.GET.get('next', ''))
+            context = RequestContext(request)
+            template_name = "profiles/activate_email.html"
+            return render_to_response(template_name,
+                              { 'email': email},
+                              context_instance=context)
+
+    raise Http404       

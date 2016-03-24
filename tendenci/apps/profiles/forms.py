@@ -815,3 +815,10 @@ class UserUploadForm(forms.ModelForm):
                         """ % {'fields' : ', '.join(missing_columns)}))
 
         return upload_file
+
+
+class ActivateForm(forms.Form):
+    email = forms.CharField(max_length=75)
+    username = forms.RegexField(regex=r'^[\w.@+-]+$',
+                                max_length=30, required=False)
+
