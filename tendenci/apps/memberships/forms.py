@@ -634,7 +634,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                                     self.request.get_full_path())
         inactive_user_err_msg =  mark_safe(_('''This email "%s" is associated with an inactive account.
                     If it's yours, please activate it before completing your application, or use a different email address.
-                    Click %s we'll send your an activation email. You can then follow
+                    Click %s and we'll send your an activation email. You can then follow
                     the instructions in the email to activate your account.''') % (email, activation_link))
 
         if self.request.user.is_authenticated() and self.request.user.username == un:

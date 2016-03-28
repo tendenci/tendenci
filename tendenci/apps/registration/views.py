@@ -97,7 +97,7 @@ def activate(request, activation_key,
         context[key] = callable(value) and value() or value
         
     next_url = request.GET.get('next', '')
-    if next_url:
+    if account and next_url:
         return HttpResponseRedirect(next_url)
 
     return render_to_response(template_name,
