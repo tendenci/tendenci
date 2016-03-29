@@ -1001,8 +1001,11 @@ def membership_default_add(request, slug='', membership_id=None,
         request.POST or None,
         request=request,
         initial=user_initial)
-
-    profile_form = ProfileForm(app_fields, request.POST or None)
+    
+    if not (request.user.profile.is_superuser or is_corp_rep) and user and 'username' in user_form.fields:
+        # set username as readonly field for regular logged-in users
+        # we don't want them to change their username, but they can change it through profile
+        user_form.fields['username'].widget.attrs['readonly'] = 'readonly'
 
     profile_initial = {}
     if user:
