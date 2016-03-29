@@ -632,10 +632,9 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                                     reverse('profile.activate_email'), 
                                                     requests.utils.quote(un), requests.utils.quote(email), 
                                                     self.request.get_full_path())
-        inactive_user_err_msg =  mark_safe(_('''This email "%s" is associated with an inactive account.
-                    If it's yours, please activate it before completing your application, or use a different email address.
-                    Click %s and we'll send your an activation email. You can then follow
-                    the instructions in the email to activate your account.''') % (email, activation_link))
+        inactive_user_err_msg =  mark_safe(_('''This email "%s" is associated with previous site activity.
+                    Please click %s and we'll send you an email to activate your account and then you 
+                    will be returned to this application.''') % (email, activation_link))
 
         if self.request.user.is_authenticated() and self.request.user.username == un:
             # they are logged in and join or renewal for themselves 
