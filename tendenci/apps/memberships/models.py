@@ -34,7 +34,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
 from tendenci.apps.base.utils import fieldify
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.event_logs.models import EventLog

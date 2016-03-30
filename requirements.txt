@@ -15,7 +15,6 @@ django-pagination>=1.0.7
 django-picklefield>=0.1.6
 django-simple-captcha==0.4.6
 django-tagging==0.3.6
-django-tinymce==1.5.2
 django-haystack==2.4.0
 django-debug-toolbar>=1.2.2
 django-sql-explorer==0.8

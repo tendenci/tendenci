@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import tendenci.apps.base.fields
 import django.db.models.deletion
-import tinymce.models
+import tendenci.libs.tinymce.models
 from django.conf import settings
 import tagging.fields
 
@@ -38,14 +38,14 @@ class Migration(migrations.Migration):
                 ('guid', models.CharField(max_length=40)),
                 ('title', models.CharField(max_length=500, blank=True)),
                 ('slug', tendenci.apps.base.fields.SlugField(max_length=100, verbose_name='URL Path', db_index=True)),
-                ('content', tinymce.models.HTMLField()),
+                ('content', tendenci.libs.tinymce.models.HTMLField()),
                 ('view_contact_form', models.BooleanField(default=False)),
                 ('design_notes', models.TextField(verbose_name='Design Notes', blank=True)),
                 ('syndicate', models.BooleanField(default=False, verbose_name='Include in RSS feed')),
                 ('template', models.CharField(max_length=50, verbose_name='Template', blank=True)),
                 ('tags', tagging.fields.TagField(max_length=255, blank=True)),
-                ('mission', tinymce.models.HTMLField(null=True, blank=True)),
-                ('notes', tinymce.models.HTMLField(null=True, blank=True)),
+                ('mission', tendenci.libs.tinymce.models.HTMLField(null=True, blank=True)),
+                ('notes', tendenci.libs.tinymce.models.HTMLField(null=True, blank=True)),
                 ('contact_name', models.CharField(max_length=200, null=True, blank=True)),
                 ('contact_email', models.CharField(max_length=200, null=True, blank=True)),
                 ('join_link', models.CharField(max_length=200, null=True, blank=True)),

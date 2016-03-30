@@ -10,7 +10,7 @@ from django.utils.html import mark_safe
 from django.core.urlresolvers import reverse
 
 from haystack.query import SearchQuerySet
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.base.fields import EmailVerificationField, PriceField, CountrySelectField
 from tendenci.apps.base.forms import FormControlWidgetMixin

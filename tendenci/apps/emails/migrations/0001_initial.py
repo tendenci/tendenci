@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import django.db.models.deletion
 from django.conf import settings
-import tinymce.models
+import tendenci.libs.tinymce.models
 
 
 class Migration(migrations.Migration):
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('guid', models.CharField(max_length=50)),
                 ('priority', models.IntegerField(default=0)),
                 ('subject', models.CharField(max_length=255)),
-                ('body', tinymce.models.HTMLField()),
+                ('body', tendenci.libs.tinymce.models.HTMLField()),
                 ('sender', models.CharField(max_length=255)),
                 ('sender_display', models.CharField(max_length=255)),
                 ('reply_to', models.CharField(max_length=255)),

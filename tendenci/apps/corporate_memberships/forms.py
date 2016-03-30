@@ -13,7 +13,7 @@ from django.core.files.storage import default_storage
 
 from captcha.fields import CaptchaField
 #from tendenci.apps.base.forms import SimpleMathField
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.industries.models import Industry

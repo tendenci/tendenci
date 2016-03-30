@@ -1,0 +1,224 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <!-- Force latest IE rendering engine or ChromeFrame if installed -->
+    <!--[if IE]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <![endif]-->
+    <meta charset="utf-8">
+    <title>File upload</title>
+    <meta name="description" content="File Upload">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap styles -->
+    <link href="{{ STATIC_URL }}bootstrap3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+    <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}jqueryupload/css/jquery.fileupload-ui.css">
+    <!-- CSS adjustments for browsers with JavaScript disabled -->
+    <noscript><link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.fileupload-ui-noscript.css"></noscript>
+    
+    <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
+    <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<style>
+		#fileupload{
+			border: 1px solid #c0c0c0;
+			padding: 15px;
+			border-radius: 10px;
+		}
+	</style>
+</head>
+<body>
+
+<div class="container">
+    <h3><a href="{% url 'file.tinymce_fb' %}?{{ request.META.QUERY_STRING }}">{{ upload_type|capfirst }} Gallery</a> > {{ upload_type|capfirst }} Upload</h3>
+    
+   
+    <!-- The file upload form used as target for the file upload widget -->
+    <form id="fileupload" method="post" action="{% url 'file.tinymce_upload' %}?{{ request.META.QUERY_STRING }}" enctype="multipart/form-data">{% csrf_token %}
+        <!-- Redirect browsers with JavaScript disabled to the origin page -->
+        <!--<noscript><input type="hidden" name="redirect" value="http://blueimp.github.io/jQuery-File-Upload/"></noscript>-->
+        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+        <div class="row fileupload-buttonbar">
+            <div class="col-lg-7">
+                <!-- The fileinput-button span is used to style the file input field as button -->
+                <span class="btn btn-success fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Select {% if upload_type == 'image'%}images{%else%}{% if upload_type == 'video'%}video{% else %}files{% endif %}{% endif %}...</span>
+                    <input type="file" name="file" multiple>
+                </span>
+                <input type="hidden" name="app_label" value="{{ app_label }}">
+                <input type="hidden" name="model" value="{{ model }}">
+                <input type="hidden" name="object_id" value="{{ object_id }}">
+                <input type="hidden" name="upload_type" value="{{ upload_type }}">
+                
+                <!-- The loading indicator is shown during file processing -->
+                <span class="fileupload-loading"></span>
+            </div>
+            <!-- The global progress information -->
+            <div class="col-lg-5 fileupload-progress fade">
+                <!-- The global progress bar -->
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                </div>
+                <!-- The extended global progress information -->
+                <div class="progress-extended">&nbsp;</div>
+            </div>
+        </div>
+        <!-- The table listing the files available for upload/download -->
+        <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+   		<hr />
+   		<div class="row fileupload-buttonbar">
+   			<div class="col-lg-7">
+	   			<button type="reset" class="btn btn-warning cancel">
+	                <i class="glyphicon glyphicon-ban-circle"></i>
+	                <span>Clear Queue</span>
+	            </button>
+	            
+	            <button type="submit" class="btn btn-primary start pull-right">
+	                <i class="glyphicon glyphicon-upload"></i>
+	                <span>Upload</span>
+	            </button>
+            </div>
+   		</div>
+   
+    </form>
+    <br>
+   
+</div>
+
+
+<!-- The template to display files available for upload -->
+{% verbatim %}
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
+        <td>
+            <p class="name">{%=file.name%}</p>
+            {% if (file.error) { %}
+                <div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <p class="size">{%=o.formatFileSize(file.size)%}</p>
+            {% if (!o.files.error) { %}
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+            {% } %}
+        </td>
+        <td>
+        	{% if (!o.files.error && !i && !o.options.autoUpload) { %}
+                <button class="btn btn-primary start hidden">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>{%=locale.fileupload.start%}</span>
+                </button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>{%=locale.fileupload.cancel%}</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+		{% if (file.errors) { %}
+		<td colspan="5">
+			<div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.errors%}</div>
+			 {% if (file.error) { %}
+                <div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.error%}</div>
+            {% } %}
+		</td>
+		{% }else { %}
+    	<td>
+			<button type="button" class="insert-file btn btn-info" data-src="{%=file.url%}">
+	    		<i class="glyphicon glyphicon-arrow-down"></i>
+	    		<span>Insert</span>
+	    	</button>
+	    </td>
+        <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" data-gallery target="_blank"><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
+            <p class="name">
+				{% if (!file.error) { %}
+                <a href="{%=file.url%}" title="{%=file.name%}"  {%=file.thumbnailUrl?'data-gallery':''%} target="_blank">{%=file.name%}</a>
+				{% }else { %}
+				{%=file.name%}
+				{% } %}
+            </p>
+            {% if (file.error) { %}
+                <div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                <i class="glyphicon glyphicon-trash"></i>
+                <span>{%=locale.fileupload.destroy%}</span>
+            </button>
+            <input type="checkbox" name="delete" value="1" class="hidden">
+        </td>
+	{% } %}
+    </tr>
+{% } %}
+</script>
+{% endverbatim %}
+
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/vendor/jquery.ui.widget.js"></script>
+
+<script type="text/javascript">
+    {% include 'files/include/tinymce/load-image.min.js' %}
+</script>
+<script type="text/javascript">
+    {% include 'files/include/tinymce/tmpl.min.js' %}
+</script>
+<script type="text/javascript">
+    {% include 'files/include/tinymce/canvas-to-blob.min.js' %}
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap3/js/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.iframe-transport.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-process.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-image.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-audio.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-video.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-validate.js"></script>
+<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-ui.js"></script>
+<!-- The main application script -->
+<script type="text/javascript">
+    {% include 'files/include/tinymce/main.js' %}
+</script>
+<script type="text/javascript">
+    {% include 'files/include/tinymce/locale.js' %}
+</script>
+<script type="text/javascript">
+    {% include 'files/include/tinymce/csrf.js' %}
+</script>
+
+
+<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
+<!--[if gte IE 8]>
+<script src="{{ STATIC_URL }}js/cors/jquery.xdr-transport.js"></script>
+<![endif]-->
+
+<script type="text/javascript" language="javascript">
+	{% include 'files/include/tinymce/insert_file.js' %}
+</script>
+</body> 
+</html>
+

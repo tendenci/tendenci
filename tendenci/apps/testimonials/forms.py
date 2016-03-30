@@ -1,7 +1,7 @@
 import imghdr
 from os.path import splitext, basename
 from django import forms
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.testimonials.models import Testimonial

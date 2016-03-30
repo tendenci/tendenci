@@ -3,7 +3,7 @@ import requests
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 
 ETHNICITY_CHOICES = (

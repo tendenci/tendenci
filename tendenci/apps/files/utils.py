@@ -518,3 +518,14 @@ def get_max_file_upload_size(file_module=False):
     if file_module:
         return int(get_setting('module', 'files', 'maxfilesize') or global_max_upload_size)
     return int(global_max_upload_size)
+
+
+def get_allowed_upload_file_exts(file_type='other'):
+    types = {'image': ('.gif', '.jpeg', '.jpg', '.png', '.tif', '.tiff', '.bmp'),
+             'video': ('.wmv', '.mov', '.mpg', '.mp4', '.m4v'),
+             'other': ('.txt','.doc', '.docx', '.csv', '.xls', '.xlsx', '.ppt', '.pptx', '.pdf', '.zip'),
+             }
+    if file_type in ['image', 'video']:
+        return types[file_type]
+
+    return types['image'] + types['video'] + types['other']

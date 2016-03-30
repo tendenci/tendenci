@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
     <link rel="stylesheet" href="{% static 'css/popover.css' %}">
-    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -56,6 +55,7 @@
    
 
     {{ block.super }}
+    {{ form.media }}
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>

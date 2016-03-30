@@ -18,7 +18,7 @@
 /* Common megamenu styles */
 .t-megamenu {
     min-height: 30px;
-    z-index: 9999999 !important;
+    z-index: 1020 !important;
 }
 
 .t-megamenu a {

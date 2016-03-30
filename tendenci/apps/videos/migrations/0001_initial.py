@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import tinymce.models
+import tendenci.libs.tinymce.models
 import django.db.models.deletion
 from django.conf import settings
 import tagging.fields
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(unique=True, max_length=200)),
                 ('image', models.ImageField(upload_to=b'uploads/videos/%y/%m', blank=True)),
                 ('video_url', models.CharField(help_text=b'Youtube, Vimeo, etc..', max_length=500)),
-                ('description', tinymce.models.HTMLField()),
+                ('description', tendenci.libs.tinymce.models.HTMLField()),
                 ('tags', tagging.fields.TagField(help_text=b'Tag 1, Tag 2, ...', max_length=255, blank=True)),
                 ('ordering', models.IntegerField(null=True, blank=True)),
                 ('category', models.ForeignKey(to='videos.Category')),

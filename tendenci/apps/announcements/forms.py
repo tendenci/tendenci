@@ -1,5 +1,5 @@
 from django import forms
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.announcements.models import EmergencyAnnouncement
 from tendenci.apps.perms.forms import TendenciBaseForm

@@ -9,8 +9,6 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
 <style type="text/css">
     .well{
         width: 90%;
@@ -96,4 +94,11 @@
 </div>
 
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    
+ {% endblock %}
 

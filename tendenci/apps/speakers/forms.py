@@ -5,7 +5,7 @@ from django import forms
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.speakers.models import Speaker, SpeakerFile
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 ALLOWED_LOGO_EXT = (
     '.jpg',

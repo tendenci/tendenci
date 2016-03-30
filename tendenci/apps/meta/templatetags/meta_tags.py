@@ -3,7 +3,7 @@ from django.core.cache import cache
 from django.template import Library
 
 from BeautifulSoup import BeautifulSoup
-from tinymce.models import HTMLField
+from tendenci.libs.tinymce.models import HTMLField
 
 from tendenci.apps.files.models import File
 from tendenci.apps.site_settings.utils import get_setting

@@ -198,12 +198,12 @@ INSTALLED_APPS = (
     'pagination',
     'tagging',
     'avatar',
-    'tinymce',
     'haystack',
     'captcha',
     #'tastypie',
     'tendenci',
     'tendenci.libs.model_report',
+    'tendenci.libs.tinymce',
 
     'tendenci.apps.entities',
     'tendenci.apps.base',
@@ -348,39 +348,31 @@ USE_S3_THEME = False
 # -------------------------------------- #
 #    TINYMCE
 # -------------------------------------- #
-TINYMCE_JS_ROOT = os.path.join(TENDENCI_ROOT, 'static', 'tinymce')
-TINYMCE_JS_URL = LOCAL_STATIC_URL + 'tinymce/tiny_mce.js'
+#TINYMCE_JS_ROOT = os.path.join(TENDENCI_ROOT, 'static', 'tinymce')
+TINYMCE_JS_URL = LOCAL_STATIC_URL + 'tiny_mce/tinymce.min.js'
 TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
+TINYMCE_FILEBROWSER = True
 
+# plugins: stormeimage codemirror
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,\
-                tabfocus,fullscreen,media,spellchecker,codemirror",
-    'gecko_spellcheck': False,
-    'theme': "advanced",
+    'theme': "modern",
+    'plugins': "image  advlist autolink lists link charmap print preview anchor \
+        searchreplace visualblocks code fullscreen \
+        insertdatetime media table contextmenu paste textcolor colorpicker",
+    'menubar': 'file edit insert view format table',
+    'toolbar': "code insertfile undo redo | styleselect | forecolor backcolor | bold italic | \
+                alignleft aligncenter alignright alignjustify | bullist numlist outdent \
+                indent | link image | fullscreen",
+    'image_advtab': 'true',
+    'media_alt_source': 'false',
+    'media_poster': 'false',
+    'cache_suffix': '?v=4.3.8',
+    # Specify your css to apply to the editable area
+    #'content_css': '/themes/<theme name>/media/css/styles.css',
 
-    # theme options
-    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,\
-                                bullist,numlist,table, |,justifyleft,\
-                                justifycenter,justifyright,|,link,unlink,|,\
-                                image,|,pagebreak,fullscreen,codemirror",
-    'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
-                                forecolor,|,pastetext,pasteword,\
-                                removeformat,charmap,|,\
-                                outdent,indent,|,undo,redo",
-    'theme_advanced_buttons3': "",
-    'theme_advanced_toolbar_location': "top",
-    'theme_advanced_toolbar_align': "left",
-    'theme_advanced_statusbar_location': "bottom",
-    'theme_advanced_resizing': True,
-
-
-    'theme_advanced_resize_horizontal': True,
-    'dialog_type': "modal",
-    'tab_focus': ":prev, :next",
-    'apply_source_formatting': True,
-    'remove_line_breaks': False,
-    'convert_urls': False,
+    'tabfocus_elements': ":prev,:next",
+    'convert_urls': 'false',
     'handle_event_callback': "event_handler",
 
     # Additions - JMO

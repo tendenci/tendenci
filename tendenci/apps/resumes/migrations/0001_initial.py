@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import django.db.models.deletion
-import tinymce.models
+import tendenci.libs.tinymce.models
 import tendenci.apps.resumes.models
 from django.conf import settings
 import tagging.fields
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('guid', models.CharField(max_length=40)),
                 ('title', models.CharField(max_length=250)),
                 ('slug', tendenci.apps.base.fields.SlugField(unique=True, max_length=100, verbose_name='URL Path', db_index=True)),
-                ('description', tinymce.models.HTMLField()),
+                ('description', tendenci.libs.tinymce.models.HTMLField()),
                 ('location', models.CharField(max_length=500, blank=True)),
                 ('skills', models.TextField(blank=True)),
                 ('experience', models.TextField(blank=True)),

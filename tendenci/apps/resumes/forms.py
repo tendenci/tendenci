@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from captcha.fields import CaptchaField
 from tendenci.apps.resumes.models import Resume
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
 

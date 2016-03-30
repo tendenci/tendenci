@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 from tendenci.apps.announcements.managers import EmergencyAnnouncementManager
 from tendenci.apps.perms.models import TendenciBaseModel

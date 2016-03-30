@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 from django.conf import settings
 import django.db.models.deletion
-import tinymce.models
+import tendenci.libs.tinymce.models
 import tendenci.apps.base.fields
 
 
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=155, verbose_name='Name')),
                 ('slug', models.SlugField(unique=True, max_length=155, verbose_name='URL Path')),
                 ('authentication_method', models.CharField(default=b'admin', help_text='Define a method for individuals to be bound to their corporate memberships when signing up.', max_length=50, verbose_name='Authentication Method', choices=[(b'admin', 'Admin Approval'), (b'email', 'E-mail Domain'), (b'secret_code', 'Secret Code')])),
-                ('description', tinymce.models.HTMLField(help_text='Will display at the top of the application form.', null=True, verbose_name='Description', blank=True)),
+                ('description', tendenci.libs.tinymce.models.HTMLField(help_text='Will display at the top of the application form.', null=True, verbose_name='Description', blank=True)),
                 ('notes', models.TextField(help_text='Notes for editor. Will not display on the application form.', null=True, verbose_name='Notes', blank=True)),
                 ('confirmation_text', models.TextField(null=True, verbose_name='Confirmation Text', blank=True)),
                 ('include_tax', models.BooleanField(default=False)),
@@ -310,7 +310,7 @@ class Migration(migrations.Migration):
                 ('content_type', models.CharField(default=b'html', max_length=10, verbose_name='Content Type', choices=[(b'html', b'HTML')])),
                 ('sender', models.EmailField(max_length=255, null=True, blank=True)),
                 ('sender_display', models.CharField(max_length=255, null=True, blank=True)),
-                ('email_content', tinymce.models.HTMLField(verbose_name='Email Content')),
+                ('email_content', tendenci.libs.tinymce.models.HTMLField(verbose_name='Email Content')),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
                 ('creator_username', models.CharField(max_length=50, null=True)),

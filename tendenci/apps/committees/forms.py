@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from tendenci.apps.committees.models import Committee, Officer
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.utils import get_template_list
 

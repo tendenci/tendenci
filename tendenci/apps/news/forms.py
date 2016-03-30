@@ -10,7 +10,7 @@ from django.conf import settings
 
 from tendenci.apps.news.models import News
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.fields import EmailVerificationField
 from tendenci.apps.files.utils import get_max_file_upload_size

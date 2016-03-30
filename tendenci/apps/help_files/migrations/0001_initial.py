@@ -5,7 +5,7 @@ from django.db import models, migrations
 import tendenci.apps.user_groups.utils
 import tendenci.apps.base.fields
 import django.db.models.deletion
-import tinymce.models
+import tendenci.libs.tinymce.models
 from django.conf import settings
 
 
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('status_detail', models.CharField(default=b'active', max_length=50)),
                 ('slug', tendenci.apps.base.fields.SlugField(unique=True, max_length=100, verbose_name='URL Path', db_index=True)),
                 ('question', models.CharField(max_length=500)),
-                ('answer', tinymce.models.HTMLField()),
+                ('answer', tendenci.libs.tinymce.models.HTMLField()),
                 ('level', models.CharField(default=b'basic', max_length=100, choices=[(b'basic', b'basic'), (b'intermediate', b'intermediate'), (b'advanced', b'advanced'), (b'expert', b'expert')])),
                 ('is_faq', models.BooleanField(default=False)),
                 ('is_featured', models.BooleanField(default=False)),

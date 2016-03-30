@@ -31,7 +31,7 @@ from tendenci.apps.newsletters.utils import (
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.utils import get_default_group
 
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 
 """

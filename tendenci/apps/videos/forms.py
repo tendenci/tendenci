@@ -1,7 +1,7 @@
 from django import forms
 
 from tendenci.apps.videos.models import Video
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
 from embedly import Embedly
 

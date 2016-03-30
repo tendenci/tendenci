@@ -76,7 +76,7 @@ urlpatterns += patterns('',
     url(r'^forums/', include('tendenci.apps.forums.urls', namespace="pybb")),
 
     # third party (inside environment)
-    (r'^tinymce/', include('tinymce.urls')),
+    (r'^tinymce/', include('tendenci.libs.tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
 
     url(r'^sitemap/$', TemplateView.as_view(template_name='site_map.html'), name="site_map"),
