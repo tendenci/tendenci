@@ -12,7 +12,7 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
     # authority fields
-    allow_anonymous_view = models.NullBooleanField(_("Public can view"), default=True)
+    allow_anonymous_view = models.NullBooleanField(_("Public can view"), default=False)
     allow_user_view = models.NullBooleanField(_("Signed in user can view"))
     allow_member_view = models.NullBooleanField()
     allow_user_edit = models.NullBooleanField(_("Signed in user can change"))
