@@ -21,5 +21,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_allow_anonymous_view),
+        # Commenting it out or maybe we should just delete this file.
+        # It seems we don't need it - the allow_anonymous_view
+        # does get updated when the hide_in_search field changes.
+        #migrations.RunPython(update_allow_anonymous_view),
     ]
