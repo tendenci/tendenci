@@ -14,6 +14,7 @@ from tendenci.apps.entities.models import Entity
 from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.libs.abstracts.models import Person
+from tendenci.apps.site_settings.utils import get_setting
 #from tendenci.apps.user_groups.models import Group
 
 
@@ -178,39 +179,74 @@ class Profile(Person):
         except ImportError:
             pass
 
-    # if this profile allows view by user2_compare
+
+    def allow_search_users(self):
+        """
+        Check if this user can search users.
+        """
+        if self.is_superuser:
+            return True
+
+        # allow anonymous search users
+        if get_setting('module', 'users', 'allowanonymoususersearchuser'):
+            return True
+        
+        # allow user search users
+        if get_setting('module', 'users', 'allowusersearch') \
+            and self.user.is_authenticated():
+            return True
+        
+        # allow members search users/members
+        if get_setting('module', 'memberships', 'memberprotection') != 'private':
+            if self.user.is_authenticated() and self.user.profile.is_member:
+                return True
+        
+        return False    
+
     def allow_view_by(self, user2_compare):
-        boo = False
-
-        if user2_compare.is_superuser:
-            boo = True
-        else:
-            if user2_compare == self.user:
-                boo = True
-            else:
-                if self.creator == user2_compare or self.owner == user2_compare:
-                    if self.status == 1:
-                        boo = True
-                else:
-                    if user2_compare.has_perm('profiles.view_profile', self):
-                        boo = True
-
-        return boo
-
-    # if this profile allows edit by user2_compare
-    def allow_edit_by(self, user2_compare):
+        """
+        Check if `user2_compare` is allowed to view this user.
+        """
+        # user2_compare is superuser
         if user2_compare.is_superuser:
             return True
-        else:
-            if user2_compare == self.user:
+        
+        # this user is user2_compare self
+        if user2_compare == self.user:
+            return True
+        
+        # user2_compare is creator or owner of this user
+        if (self.creator and self.creator == user2_compare) or \
+            (self.owner and self.owner == user2_compare):
+            if self.status:
                 return True
-            else:
-                if self.creator == user2_compare or self.owner == user2_compare:
-                    if self.status == 1:
-                        return True
-                else:
-                    if user2_compare.has_perm('profiles.change_profile', self):
-                        return True
+        
+        # user2_compare can search users and has view perm    
+        if user2_compare.profile.allow_search_users():
+            if user2_compare.has_perm('profiles.view_profile', self):
+                return True
+        
+        # False for everythin else
+        return False
+
+    def allow_edit_by(self, user2_compare):
+        """
+        Check if `user2_compare` is allowed to edit this user.
+        """
+        if user2_compare.is_superuser:
+            return True
+
+        if user2_compare == self.user:
+            return True
+
+        if (self.creator and self.creator == user2_compare) or \
+            (self.owner and self.owner == user2_compare):
+            if self.status:
+                return True
+
+        if user2_compare.has_perm('profiles.change_profile', self):
+            return True
+        
         return False
 
     def can_renew(self):
