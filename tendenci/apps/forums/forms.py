@@ -45,19 +45,6 @@ class CategoryAdminForm(TendenciBaseForm):
                             'members to view or post (change) in this category')
 
 
-class AttachmentForm(forms.ModelForm):
-    class Meta(object):
-        model = Attachment
-        fields = ('file', )
-
-    def clean_file(self):
-        if self.cleaned_data['file'].size > defaults.PYBB_ATTACHMENT_SIZE_LIMIT:
-            raise forms.ValidationError(ugettext('Attachment is too big'))
-        return self.cleaned_data['file']
-
-AttachmentFormSet = inlineformset_factory(Post, Attachment, extra=1, form=AttachmentForm)
-
-
 class PollAnswerForm(forms.ModelForm):
     class Meta:
         model = PollAnswer

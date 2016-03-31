@@ -25,9 +25,8 @@
 
     {% if request.user|pybb_may_create_poll and form.poll_type %}
       {% include "pybb/poll_edit_form.html" %}
-    
     {% endif %}
-    {% include "pybb/attachments_formset.html" %}
+    <div>&nbsp;</div>
     <p class="submit">{% include "pybb/_button_submit.html" %}</p>
 </form>
 </div>
