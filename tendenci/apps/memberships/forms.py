@@ -715,20 +715,20 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         if all(user_attrs.values()):
             user, created = User.objects.get_or_create(username=user_attrs['username'])
             user.set_password(user_attrs['password'])
-            user.email = user_attrs['email'] or user.email
-            user.first_name = user_attrs['first_name'] or user.first_name
-            user.last_name = user_attrs['last_name'] or user.last_name
+            user.email = user.email or user_attrs['email']
+            user.first_name = user.first_name or user_attrs['first_name']
+            user.last_name = user.last_name or user_attrs['last_name']
         elif self.request.user.is_authenticated() and not self.request.user.is_superuser:
             created = False
             user = self.request.user
-            user.email = user_attrs['email'] or user.email
-            user.first_name = user_attrs['first_name'] or user.first_name
-            user.last_name = user_attrs['last_name'] or user.last_name
+            user.email = user.email or user_attrs['email']
+            user.first_name = user.first_name or user_attrs['first_name']
+            user.last_name = user.last_name or user_attrs['last_name']
         elif User.objects.filter(email=user_attrs['email']).exists():
             created = False
             user = User.objects.filter(email=user_attrs['email']).order_by('-last_login')[0]
-            user.first_name = user_attrs['first_name'] or user.first_name
-            user.last_name = user_attrs['last_name'] or user.last_name
+            user.first_name = user.first_name or user_attrs['first_name']
+            user.last_name = user.last_name or user_attrs['last_name']
         else:
             created = True
             user_attrs['username'] = user_attrs['username'] or \
