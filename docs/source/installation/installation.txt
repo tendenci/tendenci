@@ -244,6 +244,11 @@ Load some defaults to ensure proper functioning
         python manage.py load_npo_defaults
 
 
+Make sure the execute permission is removed from the media/ directory
+::
+
+	chmod -R -x+X media
+
 To create an adminstrator login, run the following command and fill in the prompts:
 ::
 
