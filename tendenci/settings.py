@@ -370,6 +370,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'cache_suffix': '?v=4.3.8',
     # Specify your css to apply to the editable area
     #'content_css': '/themes/<theme name>/media/css/styles.css',
+    'resize': 'both',
 
     'tabfocus_elements': ":prev,:next",
     'convert_urls': 'false',
