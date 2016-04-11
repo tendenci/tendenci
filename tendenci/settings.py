@@ -384,7 +384,7 @@ TINYMCE_DEFAULT_CONFIG = {
                                 frameborder|height|id|longdesc|\
                                 marginheight|marginwidth|\
                                 name|scrolling<auto?no?yes|src|\
-                                style|title|width]"
+                                style|title|width],script[type|src]"
 }
 
 # -------------------------------------- #
