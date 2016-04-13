@@ -470,13 +470,11 @@ ul.errorlist {;
 
 /* details page */
 .t .event-wrap {
-    background-color: #F7F7F7;
     padding: 0;
 }
 .event-wrap .info {
     padding: 10px;
     background-color: white;
-    width: 64%;
     float: left;
 }
 
@@ -486,9 +484,10 @@ ul.errorlist {;
 
 .event-wrap .vitals {
     float: right;
-    margin: 60px 15px 0 0;
-    width: 30.5%;
+    margin: 0 0 15px 0;
     text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 .event-wrap .vitals h4.vital-header {
