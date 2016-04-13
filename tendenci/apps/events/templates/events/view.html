@@ -33,7 +33,7 @@
 
 <div class="t">
     <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
-        <div class="info">
+        <div class="info col-md-8 col-sm-8">
             <h1>
             {% if event.priority %}
                 <div class="event-priority"></div>
@@ -173,7 +173,7 @@
             {% include 'events/meta.html' %}
         </div> <!-- end info -->
 
-        <div class="vitals">
+        <div class="vitals col-md-4 col-sm-4">
         {% if event.external_url %}
         <div class="external-link">
         <h4><a href="{{ event.external_url }}" target="_blank">{% trans "View this event's webpage" %} &raquo;</a></h4>
