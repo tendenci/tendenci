@@ -1000,6 +1000,7 @@ def membership_default_add(request, slug='', membership_id=None,
         app_fields,
         request.POST or None,
         request=request,
+        is_corp_rep=is_corp_rep,
         initial=user_initial)
     
     if not (request.user.profile.is_superuser or is_corp_rep) and user and 'username' in user_form.fields:
