@@ -86,7 +86,7 @@
     },
     {
         "default_value": "false",
-        "description": "Anonymous User Searching User is a true/false value defining whether an anonymous (not logged in) user can search regitered site users.",
+        "description": "Anonymous User Searching User is a true/false value defining whether an anonymous (not logged in) user can search registered site users.",
         "data_type": "boolean",
         "update_dt": "2010-08-12 17:19:12",
         "input_type": "select",
@@ -103,7 +103,7 @@
     },
     {
         "default_value": "false",
-        "description": "User Searching User is a true/false value defining whether an authenticated user can search regitered site users.",
+        "description": "User Searching User is a true/false value defining whether an authenticated user can search registered site users.",
         "data_type": "boolean",
         "update_dt": "2010-08-12 17:19:12",
         "input_type": "select",
