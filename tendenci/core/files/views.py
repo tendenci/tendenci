@@ -166,9 +166,10 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # return response
     if file.get_name().endswith(file.ext()):
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+        # filename must always be ascii
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name().encode('ascii', 'replace'))
     else:
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext().encode('ascii', 'replace'))
     return response
 
 
