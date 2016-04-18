@@ -229,7 +229,7 @@ class EventLogManager(Manager):
         # setup request meta information
         if request:
             if hasattr(request, 'COOKIES'):
-                event_log.session_id = request.COOKIES.get('sessionid', '')
+                event_log.session_id = request.COOKIES.get('sessionid', '')[:40]
 
             if hasattr(request, 'META'):
                 # Check for HTTP_X_REAL_IP first in case we are
