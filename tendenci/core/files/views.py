@@ -560,12 +560,16 @@ def delete(request, id, template_name="files/delete.html"):
     if not has_perm(request.user, 'files.delete_file'):
         raise Http403
 
-    if request.method == "POST":
+    if request.method in ["POST", 'DELETE']:
         # reassign owner to current user
         file.owner = request.user
         file.owner_username = request.user.username
         file.save()
         file.delete()
+
+        if request.method == 'DELETE':
+            # used by tinymce upload
+            return HttpResponse('true')
 
         if 'ajax' in request.POST:
             return HttpResponse('Ok')
