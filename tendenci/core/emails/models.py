@@ -4,7 +4,7 @@ from django.db import models
 from django.core.mail.message import EmailMessage
 from django.conf import settings
 from tendenci.core.perms.models import TendenciBaseModel
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.core.site_settings.utils import get_setting
 
 class Email(TendenciBaseModel):

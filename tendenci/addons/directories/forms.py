@@ -5,7 +5,7 @@ from os.path import splitext, basename
 from django import forms
 from django.forms.util import ErrorList
 from django.conf import settings
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
 from django.template.defaultfilters import filesizeformat

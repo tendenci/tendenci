@@ -7,7 +7,7 @@ from tagging.models import Tag
 from BeautifulSoup import BeautifulStoneSoup
 
 from django.utils.safestring import mark_safe
-from django.template import Library, Node, Variable, TemplateSyntaxError
+from django.template import Library, Node, Variable, TemplateSyntaxError, TOKEN_VAR, TOKEN_BLOCK 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.cache import cache

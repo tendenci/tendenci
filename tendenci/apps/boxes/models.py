@@ -10,7 +10,7 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.boxes.managers import BoxManager
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 class Box(OrderingBaseModel, TendenciBaseModel):
     title = models.CharField(max_length=500, blank=True)

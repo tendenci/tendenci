@@ -1,7 +1,7 @@
 from django.contrib.contenttypes import generic
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 from tendenci.addons.announcements.managers import EmergencyAnnouncementManager
 from tendenci.core.perms.models import TendenciBaseModel

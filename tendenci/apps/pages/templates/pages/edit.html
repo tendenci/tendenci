@@ -10,7 +10,6 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
-<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
 <link href="{{ STATIC_URL }}css/jquery.tagit.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
@@ -66,6 +65,7 @@
 
 {% block extra_body %}
     {{ block.super }}
+    {{ form.media }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="{{ STATIC_URL }}js/tag-it.js" type="text/javascript" charset="utf-8"></script>

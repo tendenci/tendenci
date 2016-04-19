@@ -33,7 +33,7 @@ from tendenci.core.emails.models import Email
 from tendenci.addons.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
 from tendenci.core.base.utils import fieldify
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.core.event_logs.models import EventLog

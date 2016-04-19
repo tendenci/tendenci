@@ -2,6 +2,7 @@ from django.conf.urls.defaults import patterns, url
 
 from tendenci.core.files.signals import init_signals
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.files.views import FileTinymceCreateView
 
 
 init_signals()
@@ -32,9 +33,11 @@ urlpatterns = patterns('tendenci.core.files.views',
     url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="file.edit"),
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="file.delete"),
 
-    url(r'^%s/tinymce/$' % urlpath, 'tinymce', name="file.tinymce"),
-    url(r'^%s/tinymce/get-files/$' % urlpath, 'tinymce_get_files', name="file.tinymce_get_files"),
-    url(r'^%s/tinymce/template/(?P<id>\d+)/$' % urlpath, 'tinymce_upload_template'),
+    url(r'^%s/tinymce-fb/$' % urlpath, 'tinymce_fb', name="file.tinymce_fb"),
+    url(r'^%s/tinymce/upload/$' % urlpath, FileTinymceCreateView.as_view(), name="file.tinymce_upload"),
+    #url(r'^%s/tinymce/$' % urlpath, 'tinymce', name="file.tinymce"),
+    #url(r'^%s/tinymce/get-files/$' % urlpath, 'tinymce_get_files', name="file.tinymce_get_files"),
+    #url(r'^%s/tinymce/template/(?P<id>\d+)/$' % urlpath, 'tinymce_upload_template'),
     url(r'^%s/swfupload/$' % urlpath, 'swfupload', name="file.swfupload"),
 
     url(r'^%s/reports/most-viewed/$' % urlpath, 'report_most_viewed', name="file.report_most_viewed"),

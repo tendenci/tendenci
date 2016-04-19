@@ -7,7 +7,7 @@ from django.contrib.contenttypes import generic
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.base.fields import SlugField
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from managers import HelpFileManager
 
 class Topic(models.Model):

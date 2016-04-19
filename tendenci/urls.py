@@ -81,7 +81,7 @@ urlpatterns += patterns('',
     url(r'^api_tasty/', include('tendenci.core.api_tasty.urls')),
 
     # third party (inside environment)
-    (r'^tinymce/', include('tinymce.urls')),
+    (r'^tinymce/', include('tendenci.libs.tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),

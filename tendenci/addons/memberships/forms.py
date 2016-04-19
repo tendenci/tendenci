@@ -1,7 +1,7 @@
 #from captcha.fields import CaptchaField
 from datetime import datetime
 from haystack.query import SearchQuerySet
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from django.contrib.auth.models import User
 from django import forms

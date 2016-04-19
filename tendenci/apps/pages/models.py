@@ -6,7 +6,7 @@ from django.contrib.contenttypes import generic
 from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.categories.models import CategoryItem
 

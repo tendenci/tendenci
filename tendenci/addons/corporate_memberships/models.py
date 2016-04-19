@@ -20,7 +20,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete
 
 #from django.contrib.contenttypes.models import ContentType
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 #from completion import AutocompleteProvider, site
 from tendenci.core.site_settings.utils import get_setting

@@ -10,7 +10,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel

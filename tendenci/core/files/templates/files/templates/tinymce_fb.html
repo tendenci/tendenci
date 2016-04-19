@@ -1,0 +1,107 @@
+{% load base_tags %}
+{% load i18n %}
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Tendenci Tinymce File Browser</title>
+   	<meta charset="UTF-8">
+    
+     <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap3/css/bootstrap.min.css" type="text/css">
+     <style>
+     	.fb-body{
+     		padding: 1em;
+     	}
+     </style>
+</head>
+<body>
+<div id="content">
+    <div class="fb-body">
+    	
+    	<div class="clearfix" style="margin: 0px 0px 5px 15px;">
+    		{% if can_upload_file %}
+    		<a href="{% url file.tinymce_upload %}?{{ request.META.QUERY_STRING }}" class="btn btn-primary pull-left">Upload</a>
+    		{% endif %}
+    		<form class="form-inline pull-right">
+    			<div class="form-group">
+    			<input type="text" name='q' class="form-control" value="" placeholder="Search" />
+    			<button type="submit" class="btn btn-default">
+			      <span class="glyphicon glyphicon-search"></span>
+			    </button>
+    			</div>
+    		</form>
+    	</div>
+    	
+	    <table class="table table-striped">
+	    	<tr>
+	    		<th>&nbsp;</th>
+	    		<th>&nbsp;</th>
+	    		<th>Filename</th>
+	    		<th>Size</th>
+	    		<th>Date</th>
+	    		<th>Public?</th>
+	    	</tr>
+	    	
+	    	{% for file in files %}
+	    	{% with file.get_size as size %}
+	    	{% with file.get_absolute_url as absolute_url %}
+	    	{% if size %}
+	    	<tr>
+	    		<td><button type="button" class="insert-file btn btn-info btn-sm" data-src="{{ absolute_url }}">
+	    			<i class="glyphicon glyphicon-arrow-down"></i>
+	    			<span>Insert</span>
+	    			</button>
+	    		</td>
+	    		<td>
+	    			<a href="{{ absolute_url }}" target="_blank">
+		    			{% if file.f_type == 'image' %}
+		    			 	<img src="{% image_url file size=50x50 crop=True quality=88 %}" alt="{{ absolute_url }}" title="{{ absolute_url }}"/>
+		    			{% else %}
+					        <img src="{{ file.icon }}" alt="{{ absolute_url }}" title="{{ absolute_url }}" />
+					    {% endif %}
+				    </a>
+	    		</td>
+	    		<td>{{ file.get_name|truncatechars:20 }}</td>
+	    		<td>{{ size|filesizeformat }}</td>
+	    		<td>{{ file.create_dt|date:'M j, Y' }}</td>
+	    		{% if file.allow_anonymous_view and file.status_detail == 'active' %}
+	    		<td>{% trans 'Yes' %}</td>
+	    		{% else %}
+	    		<td>{% trans 'No' %}</td>
+	    		{% endif %}
+	    	</tr>
+	    	{% endif %}
+	    	{% endwith %}
+	    	{% endwith %}
+	    	{% endfor %}
+	    </table>
+	    
+	    {% if page_range|length  > 1 %}
+		    <nav>
+			  <ul class="pagination">
+			    <li {% if page_num == 1 %}class="disabled"{% endif %}>
+			      <a href="?page={{ page_num|add:'-1' }}&&pop=2" aria-label="Previous">
+			        <span aria-hidden="true">&laquo;</span>
+			      </a>
+			    </li>
+			    {% for n in page_range %}
+			    <li {% if n == page_num %}class="active"{% endif %}><a href="?page={{ n }}&&pop=2">{{ n }}</a></li>
+			    {% endfor %}
+			    <li {% if page_num == page_range|last %}class="disabled"{% endif %}>
+			      <a href="?page={{ page_num|add:'1' }}&&pop=2" aria-label="Next">
+			        <span aria-hidden="true">&raquo;</span>
+			      </a>
+			    </li>
+			  </ul>
+			</nav>
+	    {% endif %}
+  
+    </div>
+</div>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" language="javascript">
+	{% include 'files/include/tinymce/insert_file.js' %}
+</script>
+
+</body>
+</html>

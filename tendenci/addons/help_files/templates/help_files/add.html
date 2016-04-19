@@ -9,7 +9,6 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
-<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -33,6 +32,7 @@
 
 {% block extra_body %}
     {{ block.super }}
+    {{ form.media }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript">

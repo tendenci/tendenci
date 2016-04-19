@@ -55,6 +55,8 @@ class File(TendenciBaseModel):
     name = models.CharField(max_length=250, blank=True)
     description = models.TextField(blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    # file type - image, video, or text...
+    f_type = models.CharField(max_length=20, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
     group = models.ForeignKey(
@@ -131,6 +133,7 @@ class File(TendenciBaseModel):
         if not self.id:
             self.guid = unicode(uuid.uuid1())
             created = True
+        self.f_type = self.type()
 
         super(File, self).save(*args, **kwargs)
 
@@ -295,6 +298,12 @@ class File(TendenciBaseModel):
             return im.size
         except Exception:
             return (0, 0)
+
+    def get_size(self):
+        try:
+            return self.file.size
+        except:
+            return 0
 
     def read(self):
         """Returns a file's text data

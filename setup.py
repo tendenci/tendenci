@@ -163,7 +163,6 @@ setup(
         "django-picklefield>=0.1.6",
         "django-simple-captcha==0.4.2",
         "django-tagging==0.3.4",
-        "django-tinymce==1.5.1.dev100",
         "django-haystack==1.2.7",
         "feedparser>=4.1",
         "httplib2>=0.4.0",

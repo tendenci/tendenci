@@ -16,7 +16,7 @@ from tendenci.core.base.utils import now_localized
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.jobs.managers import JobManager
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.jobs.module_meta import JobMeta
 from tendenci.apps.invoices.models import Invoice

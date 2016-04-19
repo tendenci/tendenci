@@ -1,3 +1,4 @@
+import os
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -11,7 +12,7 @@ from tendenci.core.categories.forms import (CategoryForm, CategoryField, categor
 from tendenci.core.categories.models import CategoryItem, Category
 from tendenci.core.files.fields import MultiFileField
 from tendenci.core.files.models import File, FilesCategory
-from tendenci.core.files.utils import get_max_file_upload_size
+from tendenci.core.files.utils import get_max_file_upload_size, get_allowed_upload_file_exts
 from tendenci.core.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.perms.object_perms import ObjectPermission
@@ -130,6 +131,50 @@ class FileForm(TendenciBaseForm):
             raise forms.ValidationError(_('Invalid group selected.'))
 
 
+class TinymceUploadForm(forms.ModelForm):
+    app_label = forms.CharField(required=True, max_length=100, error_messages={'required': "App label is required."})
+    model = forms.CharField(required=True, max_length=50, error_messages={'required': "Model name is required."})
+    object_id = forms.IntegerField(required=False)
+    upload_type = forms.CharField(required=False, max_length=10)
+
+    class Meta:
+        model = File
+        fields = (
+            'file',)
+    
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user', None)
+        else:
+            self.user = None
+
+        super(TinymceUploadForm, self).__init__(*args, **kwargs)
+    
+    def clean_file(self):
+        data = self.cleaned_data.get('file')
+        # file size check
+        max_upload_size = get_max_file_upload_size(file_module=True)
+        if data.size > max_upload_size:
+            raise forms.ValidationError(_('%(file_name)s - Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
+                                            'file_name': data.name,
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'data_size': filesizeformat(data.size)})
+        return data
+    
+
+    def clean(self):
+        # file type check
+        data = self.cleaned_data
+        upload_type = data.get('upload_type', u'').strip()
+        file = data.get('file', None)
+        allowed_exts = get_allowed_upload_file_exts(upload_type)
+        ext = os.path.splitext(file.name)[-1]
+        if not ext in allowed_exts:
+            raise forms.ValidationError(_('%s - File extension "%s" not supported.') % (file.name, ext))
+
+        return data
+
+
 class SwfFileForm(TendenciBaseForm):
 
     class Meta:
@@ -221,6 +266,10 @@ class FileSearchForm(forms.Form):
             sub_categories = FilesCategory.objects.filter(parent=category)
             self.fields['file_sub_cat'].empty_label = "-----------"
             self.fields['file_sub_cat'].queryset = sub_categories
+
+
+class FileSearchMinForm(forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
 
 
 class FilewithCategoryForm(TendenciBaseForm):

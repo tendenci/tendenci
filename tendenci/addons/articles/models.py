@@ -15,7 +15,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
 from tendenci.addons.articles.managers import ArticleManager
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.articles.module_meta import ArticleMeta
 

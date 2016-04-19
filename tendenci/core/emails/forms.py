@@ -1,7 +1,7 @@
 from django import forms
 from tendenci.core.emails.models import Email
 from django.utils.translation import ugettext_lazy as _
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 class EmailForm(forms.ModelForm):
     STATUS_CHOICES = (('active',_('Active')),('inactive',_('Inactive')),)

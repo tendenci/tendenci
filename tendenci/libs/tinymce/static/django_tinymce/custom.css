@@ -1,0 +1,11 @@
+div.mce-fullscreen {
+    /*top: 30px !important;*/
+    z-index: 1050 !important;
+}
+
+body.change-form .mce-tinymce{
+	margin-left: 8em;
+}
+body.change-form .mce-fullscreen{
+	margin-left: 1px;
+}

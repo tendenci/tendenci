@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import (
-    HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError)
+    HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError, HttpResponseForbidden)
 from django.utils import simplejson
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
@@ -20,7 +20,9 @@ from django.core.files.base import ContentFile
 from django.core.paginator import Paginator
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import CreateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
@@ -37,8 +39,8 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.core.files.models import File, FilesCategory
-from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
-from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm
+from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key, get_max_file_upload_size, get_allowed_upload_file_exts
+from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm, FileSearchMinForm, TinymceUploadForm
 
 
 @is_enabled('files')
@@ -435,6 +437,117 @@ def add(request, form_class=FileForm,template_name="files/add.html"):
     return render_to_response(
         template_name, {
             'form': form,
+        }, context_instance=RequestContext(request))
+
+
+class FileTinymceCreateView(CreateView):
+    model = File
+    #fields = ("file",)
+    template_name_suffix = '_tinymce_upload_form'
+    form_class = TinymceUploadForm
+    
+    @method_decorator(is_enabled('files'))
+    @method_decorator(login_required)
+    @method_decorator(csrf_protect)
+    def dispatch(self, request, *args, **kwargs):
+        if not has_perm(request.user, 'files.add_file'):
+            return HttpResponseForbidden()
+        return super(FileTinymceCreateView, self).dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super(FileTinymceCreateView, self).get_context_data(**kwargs)
+        context['app_label'] = self.request.GET.get('app_label', '')
+        context['model'] = self.request.GET.get('model', '')
+        context['object_id'] = self.request.GET.get('object_id', 0)
+        context['max_file_size'] = get_max_file_upload_size(file_module=True)
+        context['upload_type'] = self.request.GET.get('type', '')
+        context['accept_file_types'] = '|'.join(x[1:] for x in get_allowed_upload_file_exts(context['upload_type']))
+
+        return context
+    
+    def form_valid(self, form):
+        app_label = self.request.POST['app_label']
+        model = unicode(self.request.POST['model']).lower()
+        try:
+            object_id = int(self.request.POST['object_id'])
+        except:
+            object_id = 0
+        self.object = form.save()
+        self.object.object_id = object_id
+        try:
+            self.object.content_type = ContentType.objects.get(app_label=app_label, model=model)
+        except ContentType.DoesNotExist:
+            self.object.content_type = None
+        self.object.creator = self.request.user
+        self.object.creator_username = self.request.user.username
+        self.object.owner = self.request.user
+        self.object.owner_username = self.request.user.username
+        self.object.save()
+        f = self.object.file
+        name = self.object.basename()
+        if self.object.f_type == 'image':
+            thumbnail_url = reverse('file', args=[self.object.id, '50x50', 'crop', '88'])
+        else:
+            thumbnail_url = self.object.icon()
+        # truncate name to 20 chars length
+        if len(name) > 20:
+            name = name[:17] + '...'
+        data = {'files': [{
+            'url': self.object.get_absolute_url(),
+            'name': name,
+            'type': mimetypes.guess_type(f.path)[0] or 'image/png',
+            'thumbnailUrl': thumbnail_url,
+            'size': self.object.get_size(),
+            'deleteUrl': reverse('file.delete', args=[self.object.pk]),
+            'deleteType': 'DELETE',}]
+        }
+        return JSONResponse(data)
+
+
+    def form_invalid(self, form):
+        data = json.loads(form.errors.as_json()).values()
+        errors = '. '.join([x[0]['message'] for x in data])
+        data = {'files': [{
+                'errors': errors,}]
+                }
+        return JSONResponse(data)
+    
+    
+@is_enabled('files')
+@login_required
+def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
+    """
+    Get a list of files (images) for tinymce file browser.
+    """
+    query = u''
+    try:
+        page_num = int(request.GET.get('page', 1))
+    except:
+        page_num = 1
+
+    form = FileSearchMinForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data.get('q', '')
+    filters = get_query_filters(request.user, 'files.view_file')
+    files = File.objects.filter(filters).distinct().order_by('-create_dt')
+    type = request.GET.get('type', '')
+    if type == 'image':
+        files = files.filter(f_type='image')
+    elif type == 'media':
+        files = files.filter(f_type='video')
+    if query:
+        files = files.filter(Q(file__icontains=query)|
+                             Q(name__icontains=query))
+    paginator = Paginator(files, 10)
+    files = paginator.page(page_num)
+
+    return render_to_response(
+        template_name, {
+            "files": files,
+            'page_num': page_num,
+            'page_range': paginator.page_range,
+            'csrf_token': csrf_get_token(request),
+            'can_upload_file': has_perm(request.user, 'files.add_file')
         }, context_instance=RequestContext(request))
 
 
