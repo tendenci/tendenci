@@ -148,6 +148,7 @@
                             {% endif %}
 
                             {% if can_delete_profile %}
+                            	{% if request.user != user_this %}
                                 <li class="divider"></li>
 
                                 <li class="content-item">
@@ -155,6 +156,7 @@
                                         <a class="delete" href="{% url 'profile.delete' user_this.pk %}">{% trans "Delete User" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}	
                             {% endif %}
                             {# End "This User" Section #}
                         </ul>
