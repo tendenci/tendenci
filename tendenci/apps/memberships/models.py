@@ -592,6 +592,20 @@ class MembershipDefault(TendenciBaseModel):
         if hasattr(self, 'user') and self.user:
             if hasattr(self.user, 'demographics'):
                 return self.user.demographics
+    
+    @property
+    def obj_status(self):
+        t = '<span class="t-profile-status t-status-%s">%s</span>'
+
+        if self.status:
+            if self.status_detail == 'paid - pending approval':
+                value = t % ('pending', self.status_detail.capitalize())
+            else:
+                value = t % (self.status_detail, self.status_detail.capitalize())
+        else:
+            value = t % ('inactive','Inactive')
+
+        return mark_safe(value)
 
     def demographic_sort_key(self, field_name):
         """

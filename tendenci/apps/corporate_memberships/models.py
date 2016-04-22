@@ -51,6 +51,7 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
 from tendenci.apps.events.models import Event, Registrant
+from tendenci.apps.base.utils import truncate_words
 
 
 FIELD_CHOICES = (
@@ -525,7 +526,7 @@ class CorpMembership(TendenciBaseModel):
                                 ).order_by('corp_profile__name')
         choices = [(0, _('Select One'))]
         choices.extend([
-                        (value[0], value[1]) for value in corp_members
+                        (value[0], truncate_words(value[1], 10)) for value in corp_members
                                               ])
         return choices
 

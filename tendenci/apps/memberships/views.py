@@ -1586,6 +1586,72 @@ def verify_email(request,
                                   indiv_veri.pk,
                                   indiv_veri.guid]))
 
+@login_required
+def delete(request, id, template_name="memberships/applications/delete.html"):
+    membership = get_object_or_404(MembershipDefault, pk=id)
+
+    # check permission - only admin and corp rep can delete
+    if not request.user.is_superuser:
+        corp_profile = membership.get_corporate_profile()
+        is_corp_rep = corp_profile.is_rep(request.user)
+        if not is_corp_rep:
+            raise Http403
+
+    msg_deleted = ''
+    
+    if request.method == "POST":
+        # reassign owner to current user
+        membership.owner = request.user
+        membership.owner_username = request.user.username
+        membership.save()
+        msg_deleted = '%s has been deleted.' % membership.__unicode__()
+        membership.delete(log=True)
+        messages.add_message(request, messages.SUCCESS, _(msg_deleted))
+        
+        next_page = request.GET.get('next', '')
+        if next_page:
+            return HttpResponseRedirect(next_page)
+
+    return render_to_response(
+        template_name, {
+            'membership': membership,
+            'msg_deleted': msg_deleted
+        }, context_instance=RequestContext(request))
+    
+    
+@login_required
+def expire(request, id, template_name="memberships/applications/expire.html"):
+    membership = get_object_or_404(MembershipDefault, pk=id)
+    if membership.is_expired():
+        raise Http404
+
+    # check permission - only admin and corp rep can delete
+    if not request.user.is_superuser:
+        corp_profile = membership.get_corporate_profile()
+        is_corp_rep = corp_profile.is_rep(request.user)
+        if not is_corp_rep:
+            raise Http403
+
+    msg_expired = ''
+    
+    if request.method == "POST":
+        membership.expire(request_user=request.user)
+        msg_expired = '%s has been expired.' % membership.__unicode__()
+        messages.add_message(request, messages.SUCCESS, _(msg_expired))
+        
+        # log an event
+        EventLog.objects.log(instance=membership, description=msg_expired)
+        
+        next_page = request.GET.get('next', '')
+        if next_page:
+            return HttpResponseRedirect(next_page)
+
+    return render_to_response(
+        template_name, {
+            'membership': membership,
+            'msg_expired': msg_expired
+        }, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def membership_join_report(request):

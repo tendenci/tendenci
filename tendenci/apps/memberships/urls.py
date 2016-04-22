@@ -12,6 +12,8 @@ urlpatterns = patterns(
     url(r"^%s/$" % urlpath, "membership_index", name="membership.index"),
     url(r"^%s/search/$" % urlpath, "membership_search", name="membership.search"),
     url(r"^%s/(?P<id>\d+)/$" % urlpath, "membership_details", name="membership.details"),
+    url(r"^%s/delete/(?P<id>\d+)/$" % urlpath, "delete", name="membership.delete"),
+    url(r"^%s/expire/(?P<id>\d+)/$" % urlpath, "expire", name="membership.expire"),
 
     # import to membership default
     url(r"^%s/import_default/$" % urlpath, "membership_default_import_upload",

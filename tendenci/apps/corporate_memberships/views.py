@@ -1203,12 +1203,17 @@ def roster_search(request,
     else:
         EventLog.objects.log()
     corp_profile = corp_membership and corp_membership.corp_profile
+    
+    is_rep = False
+    if corp_profile:
+        is_rep = corp_profile.is_rep(request.user)
 
     return render_to_response(template_name, {
                                   'corp_membership': corp_membership,
                                   'corp_profile': corp_profile,
                                   'memberships': memberships,
                                   'active_only': active_only,
+                                  'is_rep': is_rep,
                                   'form': form},
             context_instance=RequestContext(request))
 
