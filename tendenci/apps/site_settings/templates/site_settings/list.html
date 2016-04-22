@@ -13,10 +13,10 @@
 
 {% block content %}
     <h1>{{ scope_category|title }} {% trans 'Settings' %}</h1>
-
     <form class="settings-form" method="post" enctype="multipart/form-data">{% csrf_token %}
-        {% if form.errors and form.non_field_errors  %}
-            <div class="alert-message fade in">
+        {% if form.errors.values or form.non_field_errors  %}
+            <div class="alert alert-danger" role="alert">
+            <p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
                 {{ form.non_field_errors }}
 
                 {% for field in form %}
