@@ -468,6 +468,25 @@ Load the site
 The site should now be viewable, either at the ip address of the server, or at the domain name that has been setup.
 
 
+Set up Cron Jobs for Production Sites
+-------------------------------------
+
+For production sites, you'll need to set up cron jobs for the two management commands. The `run_nightly_commands` is 
+to handle the tasks like membership notices, event reminders and other clean up jobs. The `process_unindexed` command 
+is to process unindexed items in the queue.
+::
+
+	30 2 * * * /usr/bin/python /path/to/tendenci/site/manage.py run_nightly_commands
+	*/60 * * * * /usr/bin/python /path/to/tendenci/site/manage.py process_unindexed
+
+If you are using virtualenv, use the python executable from your site's virtualenv.
+::
+
+	30 2 * * * /path/to/virtualenv/bin/python /path/to/tendenci/site/manage.py run_nightly_commands
+	*/60 * * * * /path/to/virtualenv/bin/python /path/to/tendenci/site/manage.py process_unindexed
+
+
+
 Running Multiple sites on one server
 ------------------------------------
 
