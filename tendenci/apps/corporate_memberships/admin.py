@@ -141,10 +141,11 @@ class StatusDetailFilter(SimpleListFilter):
 
 
 class CorpMembershipAdmin(admin.ModelAdmin):
-    list_display = ['corp_profile',
+    list_display = ['id', 'corp_profile',
                     'expiration_dt',
                     'approved', 'status_detail',
                     'invoice_url']
+    list_display_links = ('corp_profile',)
     list_filter = [StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name']
 
