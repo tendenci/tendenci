@@ -126,11 +126,16 @@ $(document).ready(function() {
     });
 
     var recurringCheck = $('#id_is_recurring_event');
-    var repeatFreq = $('.form-field .id_frequency');
-    var repeatType = $('.form-field .id_repeat_type');
-    var recurOn = $('.form-field .id_recurs_on');
-    var endRecurring = $('.form-field .id_end_recurring');
-    var repeatValue = repeatType.find('select#id_repeat_type');
+    //var repeatFreq = $('.form-field .id_frequency');
+    var repeatFreq = $('#id_frequency').closest('.form-group');
+    //var repeatType = $('.form-field .id_repeat_type');
+    var repeatType = $('#id_repeat_type').closest('.form-group');
+    //var recurOn = $('.form-field .id_recurs_on');
+    var recurOn = $('input[name=recurs_on]').closest('.form-group');
+    //var endRecurring = $('.form-field .id_end_recurring');
+    var endRecurring = $('#id_end_recurring').closest('.form-group');
+    //var repeatValue = repeatType.find('select#id_repeat_type');
+    var repeatValue = $('select#id_repeat_type');
 
     if (recurringCheck.is(':checked')) {
         repeatFreq.show();
@@ -141,6 +146,7 @@ $(document).ready(function() {
         repeatType.hide();
         endRecurring.hide();
     }
+
     // Hide Recurs On field when 'Daily' or 'Weekly' types are selected
     if ((repeatValue.val() == 3) || (repeatValue.val() == 4)) {
         recurOn.show();
@@ -156,13 +162,17 @@ $(document).ready(function() {
             if ((repeatValue.val() == 3) || (repeatValue.val() == 4)) {
                 recurOn.slideDown('fast');
             }
+            {% if MODULE_EVENTS_CUSTOMREGFORMENABLED  %}
             toggle_custom_reg_form();
+            {% endif %}
         }else{
             repeatFreq.slideUp('fast');
             repeatType.slideUp('fast');
             recurOn.slideUp('fast');
             endRecurring.slideUp('fast');
+            {% if MODULE_EVENTS_CUSTOMREGFORMENABLED  %}
             toggle_custom_reg_form();
+            {% endif %}
         }
     });
     repeatValue.change(function(){
