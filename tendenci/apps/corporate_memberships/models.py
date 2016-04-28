@@ -1146,7 +1146,7 @@ class CorpMembership(TendenciBaseModel):
                         corp_profile_id=self.corp_profile.id,
                         status=True
                             ).exclude(
-                        status_detail='archive').count()
+                        status_detail__in=['archive', 'expired']).count()
 
     def get_cap_info(self):
         """
