@@ -51,7 +51,7 @@ class RegistrationCustomForm(RegistrationForm):
     state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10', 'class': 'form-control'}), required=False)
     country = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     zipcode = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    captcha = CaptchaField(label=_('Type the code below'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
+    captcha = CaptchaField(label=_('Type the letters you see in the box'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
 
     allow_same_email = None
     similar_email_found = False

@@ -36,12 +36,12 @@ class RegistrationForm(forms.Form):
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'username'))
-    email = EmailVerificationField(label=_(u'email address'), attrs=attrs_dict)
+                                label=_(u'Username'))
+    email = EmailVerificationField(label=_(u'Email Address'), attrs=attrs_dict)
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'password'))
+                                label=_(u'Password'))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'password (again)'))
+                                label=_(u'Password (confirm)'))
 
     def clean_username(self):
         """
