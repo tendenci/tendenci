@@ -1617,7 +1617,7 @@ def register(request, event_id=0,
         # strict requires logged in
         if not request.user.is_authenticated():
             messages.add_message(request, messages.INFO,
-                                _('Please log in or sign up to the site before registering the event.'))
+                                _('Please log in or sign up for a user account to register for an event.'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
                                                         reverse('event.register', args=[event.id])))
 
