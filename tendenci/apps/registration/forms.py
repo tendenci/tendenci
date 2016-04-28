@@ -39,7 +39,8 @@ class RegistrationForm(forms.Form):
                                 label=_(u'Username'))
     email = EmailVerificationField(label=_(u'Email Address'), attrs=attrs_dict)
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'Password'))
+                                label=_(u'Password'),
+                                help_text=_("Use at least 8 characters and 1 number or special character"))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_(u'Password (confirm)'))
 
