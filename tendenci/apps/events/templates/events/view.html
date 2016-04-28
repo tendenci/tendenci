@@ -227,14 +227,14 @@
                 <div class="line" itemprop="addressCountry">{{ event.place.country }}</div>
                 {% if event.place.description|striptags|wordcount > 50 %}
                     <div class="line event-place-desc-short">
-                        {% blocktrans with desc=event.place.description|striptags|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+                        {{ event.place.description|striptags|truncatewords:"50" }}
                     </div>
                     <div class="line event-place-desc-long">
-                        {% blocktrans with desc=event.place.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+                        {{ event.place.description|safe|linebreaks }}
                     </div>
                 {% else %}
                         <div class="line event-place-desc-short">
-                            {% blocktrans with desc=event.place.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+                            {{ event.place.description|safe|linebreaks }}
                         </div>
                 {% endif %}
                 {% if event.place.description|striptags|wordcount > 50 %}
