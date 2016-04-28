@@ -38,6 +38,7 @@ class CorpMembershipImportProcessor(object):
                             field.name not in ['guid']])
         self.corp_membership_fields = dict([(field.name, field) \
                             for field in CorpMembership._meta.fields \
+                            # comment it out if you want to make id import possible
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid',
                                                'corp_profile']])
@@ -104,6 +105,8 @@ class CorpMembershipImportProcessor(object):
         of a corp_membership
         """
         self.cmemb_data = cmemb_data
+        if not 'id' in self.cmemb_data:
+            del self.corp_membership_fields['id']
         self.cmemb_data['name'] = self.cmemb_data['company_name']
         del self.cmemb_data['company_name']
         self.field_names = cmemb_data.keys()  # csv field names
@@ -297,6 +300,7 @@ class CorpMembershipImportProcessor(object):
         if not corp_memb.owner:
             corp_memb.owner = self.request_user
             corp_memb.owner_username = self.request_user.username
+
         corp_memb.save()
 
         # bind members to their corporations by company names
@@ -385,7 +389,7 @@ class CorpMembershipImportProcessor(object):
         if field_type == 'DecimalField':
             return Decimal(0)
 
-        if field_type == 'IntegerField':
+        if field_type in ['IntegerField', 'PositiveIntegerField']:
             return 0
 
         if field_type == 'FloatField':
@@ -464,14 +468,21 @@ class CorpMembershipImportProcessor(object):
                 value = field.to_python(value)
             except exceptions.ValidationError:
                 value = Decimal(0)
-        elif field_type == 'IntegerField':
+        elif field_type in ['IntegerField', 'PositiveIntegerField']:
             try:
                 value = int(value)
+                if field_type == 'PositiveIntegerField' and value < 0:
+                    value = 0
             except:
                 value = 0
         elif field_type == 'FloatField':
             try:
                 value = float(value)
+            except:
+                value = 0
+        elif field_type == 'AutoField':
+            try:
+                value = int(value)
             except:
                 value = 0
         elif field_type == 'ForeignKey':

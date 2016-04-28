@@ -54,6 +54,9 @@
         #fk-list-wrap{
             margin-top: 1em;
         }
+        #import-wrap .form-control{
+        	width: 60%;
+        }
     </style>
 
 {% endblock %}
@@ -72,7 +75,7 @@
     </div>
     {% endif %}
 
-
+	<div class="clearfix">
     <div id="import-instruction">
         <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
 
@@ -123,6 +126,8 @@
 
         </div>
     </div>
+    
+    </div>
 
     <div class="clear"></div>
 
@@ -132,7 +137,7 @@
         <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>
 
         {% if form.errors.values %}
-        <div class="errors">
+        <div class="alert alert-danger">
         {% trans 'There were some problems in the form. Please review. Thanks!' %}
         {% for error in form.non_field_errors %}
             <p><a href="#">{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</a></p>
@@ -142,9 +147,7 @@
             {% if field.errors %}
                   {% for error in field.errors %}
                     <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
-                    {% blocktrans with label=field.label err=error %}
-                    {{ label }} - {{ err }}
-                    {% endblocktrans %}
+                    {{ field.label }} - {{ error }}
                     </a></p>
                   {% endfor %}
             {% endif %}
@@ -154,56 +157,59 @@
         {% endif %}
 
         <div class="fields-block">
-            {% if form.override.errors %}
+        
+        	{% if form.upload_file.errors %}
             <div class="error">
-                {% for error in form.override.errors %}
-                <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
+                {% for error in form.upload_file.errors %}
+                <p>{{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
-            <div class="import-field">
-                <div class="field-label">{% trans 'Update' %}</div>
-                <div>{{ form.override }}</div>
+             <div class="form-group">{{ form.upload_file }}</div>
+        
+            {% if form.override.errors %}
+            <div class="error">
+                {% for error in form.override.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
             </div>
+            {% endif %}
+            
+            <div class="form-group">
+			    <label for="id_override">{% trans 'Update' %}:</label>
+			      {{ form.override }}
+			 </div>
 
             {% if form.key.errors %}
             <div class="error">
                 {% for error in form.key.errors %}
-                <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
+                <p>{{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
-            <div class="import-field">
-                 <div class="field-label">{% trans 'Identify duplicates by' %}</div>
-                <div>{{ form.key }}</div>
-            </div>
+			<div class="form-group">
+			    <label for="id_key">{% trans 'Identify duplicates by' %}:</label>
+			      {{ form.key }}
+			 </div>
 
 
             {% if form.bind_members.errors %}
             <div class="error">
                 {% for error in form.bind_members.errors %}
-                <p>{% blocktrans  with err=error %}{{ err }}{% endblocktrans %}</p>
+                <p>{{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
+            
+            <div class="checkbox">
+            	<label>
+			    {{ form.bind_members }} {{ form.bind_members.label }}
+			 	</label>
+			 </div>
 
-            <div class="import-field">
-               {{ form.bind_members }} {{ form.bind_members.label }}
-            </div>
-
-            {% if form.upload_file.errors %}
-            <div class="error">
-                {% for error in form.upload_file.errors %}
-                <p>{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</p>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-             <div class="import-field">{{ form.upload_file }}</div>
-
-            <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn"></div>
+            <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn btn-primary"></div>
         </div>
 
      </div>

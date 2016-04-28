@@ -634,6 +634,9 @@ class CorpMembershipUploadForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CorpMembershipUploadForm, self).__init__(*args, **kwargs)
         self.fields['key'].initial = 'name'
+        for k in self.fields.keys():
+            if k in ['key', 'override']:
+                self.fields[k].widget.attrs['class'] = 'form-control'
 
     def clean_upload_file(self):
         key = self.cleaned_data['key']
