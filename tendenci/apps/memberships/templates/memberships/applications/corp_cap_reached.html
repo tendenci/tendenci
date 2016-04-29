@@ -41,14 +41,14 @@
     
     {% if join_as_indiv_url %}
     <p>{% blocktrans %}As an alternative, you can opt in to join as an individual membership if you'd like,<br />
-    	<a class="btn btn-primary" role="button" href="{{ join_as_indiv_url }}">Join as Individual Membership</a>{% endblocktrans %}	
+    	<a role="button" href="{{ join_as_indiv_url }}"><button class="btn btn-primary">Join as Individual Membership</button></a>{% endblocktrans %}	
     </p>
     {% endif %}	
     
     {% if is_admin %}
     <p>
     <strong>ADMIN</strong>: <br />
-    <a class="btn btn-primary" role="button"  href="{{ upgrade_link }}">{% trans "Upgrade the Corporate Membership" %}</a>
+    <a role="button"  href="{{ upgrade_link }}"><button class="btn btn-primary">{% trans "Upgrade the Corporate Membership" %}</button></a>
     </p>
     {% endif %}
 </div>
