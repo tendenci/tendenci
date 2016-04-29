@@ -1135,6 +1135,11 @@ def roster_search(request,
                                             )[:1] or [None]
     else:
         corp_membership = None
+    is_rep = corp_membership and corp_membership.is_rep(request.user)
+
+    # only admins and corp reps can view roster
+    if not any([request.user.profile.is_superuser, is_rep]):
+        raise Http403
 
     memberships = MembershipDefault.objects.filter(
                         status=True
