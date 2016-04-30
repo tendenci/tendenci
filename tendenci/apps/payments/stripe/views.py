@@ -50,11 +50,9 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                 charge_response = stripe.Charge.create(**params)
                 # an example of response: https://api.stripe.com/v1/charges/ch_YjKFjLIItzRDv7
                 #charge_response = simplejson.loads(charge)
-            except:
-                charge_response = traceback.format_exc()
-                print 'error=', charge_response
-
-
+            except Exception, e:
+                charge_response = e.message
+            
             # update payment status and object
             if  payment.invoice.balance > 0:
                 payment_update_stripe(request, charge_response, payment)

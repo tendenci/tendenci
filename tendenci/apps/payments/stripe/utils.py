@@ -1,7 +1,6 @@
 
 def payment_update_stripe(request, charge_response, payment):
-
-    if not isinstance(charge_response, str) and charge_response.paid:
+    if hasattr(charge_response,'paid') and charge_response.paid:
         payment.status_detail = 'approved'
         payment.response_code = '1'
         payment.response_subcode = '1'
