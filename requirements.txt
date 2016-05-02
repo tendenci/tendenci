@@ -17,7 +17,7 @@ django-simple-captcha==0.4.6
 django-tagging==0.3.6
 django-haystack==2.4.0
 django-debug-toolbar>=1.2.2
-django-sql-explorer==0.8
+django-sql-explorer==0.9.2
 feedparser>=4.1
 httplib2>=0.4.0
 pytz==2015.4
