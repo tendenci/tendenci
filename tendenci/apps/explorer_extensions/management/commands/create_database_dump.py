@@ -1,7 +1,4 @@
-from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
-from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
 
@@ -16,6 +13,12 @@ class Command(BaseCommand):
         python manage.py create_database_dump 1 json
 
     """
+    def add_arguments(self, parser):
+        parser.add_argument('user_id', type=int)
+        parser.add_argument('export_format', type=str)
+        parser.add_argument('obj_id', type=int, nargs='?')
+        
+
     def handle(self, *args, **options):
         import datetime
         import uuid
@@ -25,11 +28,10 @@ class Command(BaseCommand):
         from django.contrib.auth.models import User
         from tendenci.apps.emails.models import Email
         from tendenci.apps.explorer_extensions.models import DatabaseDumpFile, VALID_FORMAT_CHOICES
-        from tendenci.apps.site_settings.utils import get_setting
 
         dump_obj = None
-        if len(args) > 2:
-            d_id = int(args[2])
+        d_id = options.get('obj_id', None)
+        if d_id:
             dump_obj = DatabaseDumpFile.objects.filter(pk=d_id)
             if dump_obj.exists():
                 dump_obj = dump_obj[0]
@@ -39,7 +41,7 @@ class Command(BaseCommand):
         if not dump_obj:
             dump_obj = DatabaseDumpFile()
 
-        user_id = int(args[0])
+        user_id = int(options['user_id'])
 
         if user_id == 0:
             msg = 'User ID is required. Usage: ./manage.py create_database_dump <user_id>'
@@ -56,12 +58,8 @@ class Command(BaseCommand):
 
         dump_obj.author = author
 
-        fmt = None
-        if len(args) > 1:
-            fmt = args[1]
+        fmt = options['export_format']
 
-        if not fmt:
-            raise CommandError('Format is required. Usage: ./manage.py create_database_dump <user_id>')
         if fmt not in VALID_FORMAT_CHOICES:
             raise CommandError('Format %s is not supported. Please use one of the following: %s' % (fmt, VALID_FORMAT_CHOICES))
 
