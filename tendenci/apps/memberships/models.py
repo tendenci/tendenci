@@ -2453,7 +2453,7 @@ class MembershipAppField(OrderingBaseModel):
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
                 if self.field_name not in ['membership_type', 'payment_method']:
-                    choices = self.choices.split(",")
+                    choices = [s.strip() for s in self.choices.split(",")]
                     field_args["choices"] = zip(choices, choices)
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
