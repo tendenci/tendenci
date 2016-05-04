@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if form_filter %}
     {% with form_filter as form %}
-        <fieldset class="report-form" id="filter">
+        <fieldset>
             {% if not form.filter_report_is_all %}
             <legend>{% trans "Filter results" %}</legend>
             {% endif %}

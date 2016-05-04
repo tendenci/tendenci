@@ -53,7 +53,9 @@ class InvoiceReport(ReportAdmin):
     exports = ('excel', 'pdf',)
 
     # type = report for report only, type = chart for report and charts. default is report.
-    type = 'report'
+    type = 'chart'
+    chart_types = ('pie', 'line', 'column')
+    list_serie_fields = ('balance', 'total')
 
     # override field formats by referencing a function
     override_field_formats = {

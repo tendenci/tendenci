@@ -15,6 +15,9 @@ _ = lambda s: force_unicode(ugettext_lazy(s))
 
 
 class CollectionObject(object):
+    """
+    Class to represent collection of dict values
+    """
     _dicts = null
 
     def __init__(self):
@@ -28,6 +31,9 @@ class CollectionObject(object):
 
 
 class DictObject:
+    """
+    Class to represent dict values
+    """
 
     def __init__(self, **default):
         x = dict([(k, v if isinstance(v, (DictObject, CollectionObject)) else null) for k, v in default.items()])
@@ -39,7 +45,7 @@ class DictObject:
     def __repr__(self):
         data = {}
         for k, v in self.__dict__.items():
-            if v and v != 'null':
+            if v != 'null':
                 if isinstance(v, (type(ugettext_lazy(' ')))):
                     v = _(v)
                 if isinstance(v, (bool)):
