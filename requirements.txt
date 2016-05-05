@@ -66,3 +66,4 @@ Embedly>=0.5.0
 django-bootstrap-form>=3.1,<4
 email-reply-parser
 django-markdown-deux
+xhtml2pdf
