@@ -69,11 +69,12 @@ class InvoiceReport(ReportAdmin):
 
     # override the label for a field by referencing a function
     override_field_labels = {
-        'create_dt': date_label
+        'create_dt': date_label,
     }
 
     override_group_value = {
         'create_dt': date_from_datetime,
+        'object_type': obj_type_format,
         'entity': entity_format
     }
 

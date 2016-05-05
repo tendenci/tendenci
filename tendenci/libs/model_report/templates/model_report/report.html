@@ -1,4 +1,4 @@
-{% extends "base-print.html" %}
+{% extends "base-wide.html" %}
 {% load i18n %}
 
 {% block title %}{% trans "Report" %}: {{ report.get_title }}{% endblock %}
@@ -7,6 +7,42 @@
 {% block extra_head %}
     {{ block.super }}
     <link href="{{ STATIC_URL }}model_report/css/datepicker.css" type="text/css" media="screen" rel="stylesheet" />
+    
+  <style type="text/css">
+      .row-hidden {
+        display: none;
+      }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+{% include "model_report/includes/report_title.html" %}
+{% include "model_report/includes/form_report.html" %}
+
+{% if report_rows %}
+<div id="data_container" style="clear:both; width: 100%; padding-top: 1.5em;">
+
+    {% include "model_report/includes/report_chart.html" %}
+
+	{% if report_anchors %}
+        <select id="anchors">
+            <option>{% trans "Go to..." %}</option>
+            {% for anchor in report_anchors %}
+                <option value="{{ anchor|slugify }}">{{ anchor }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+    {% include "model_report/includes/report_table.html" %}
+
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block extra_body %}
+{{ block.super }}
     <script src="{{ STATIC_URL }}model_report/js/jquery-1.6.2.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}model_report/js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
 
@@ -48,7 +84,11 @@
         var result = Math.round(val*Math.pow(10,dec))/Math.pow(10,dec);
         return result;
     }
-    $(document).ready(function() {
+    
+    // restore the jquery variables to the first version loaded
+    jq162 = jQuery.noConflict( true );
+    
+    jq162(document).ready(function($) {
         $('.vDatepicker').datepicker({
             {% include "model_report/includes/datepicker_options.html" %}
         });
@@ -75,35 +115,9 @@
             }
         })
     });
+    
+    
   </script>
-  <style type="text/css">
-      .row-hidden {
-        display: none;
-      }
-    </style>
+
 {% endblock %}
 
-
-{% block content %}
-{% include "model_report/includes/report_title.html" %}
-{% include "model_report/includes/form_report.html" %}
-
-{% if report_rows %}
-<div id="data_container" style="clear:both; width: 100%;">
-
-    {% include "model_report/includes/report_chart.html" %}
-
-    {% if report_anchors %}
-        <select id="anchors">
-            <option>{% trans "Go to..." %}</option>
-            {% for anchor in report_anchors %}
-                <option value="{{ anchor|slugify }}">{{ anchor }}</option>
-            {% endfor %}
-        </select>
-    {% endif %}
-
-    {% include "model_report/includes/report_table.html" %}
-
-</div>
-{% endif %}
-{% endblock %}

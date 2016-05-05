@@ -11,7 +11,8 @@ OBJECT_TYPE_DICT = dict((ct.id, '%s: %s' % (ct.app_label, ct.model))
                         for ct in ContentType.objects.all().order_by('app_label', 'model'))
 DEFAULT_OBJ_TYPES = ('registration', 'membershipdefault',
                      'membershipset', 'makepayment',
-                     'corpmembership', 'job')
+                     'corpmembership', 'job',
+                     'donation')
 ENTITY_DICT = dict((e.id, e.entity_name) for e in Entity.objects.all())
 
 def base_label(report, field):
@@ -92,7 +93,7 @@ def date_label(report, field):
     return _("Date")
 
 
-def obj_type_format(value, instance):
+def obj_type_format(value, instance=None):
     return OBJECT_TYPE_DICT.get(value)
 
 
