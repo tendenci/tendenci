@@ -6,9 +6,10 @@
 
 {% block current_app %}
     <li class="dropdown">
-        <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+         <button type="button" class="btn btn-info"  class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
             <img class="nav-icon" src="{% static 'famfamfam/icons/money_add.png' %}"/>{% firstof MODULE_PAYMENTS_LABEL trans 'Payments' %}
-        </a>
+        <span class="caret"></span>
+        </button>
 
         {% if payment %}
             {% payment_current_app payment %}
