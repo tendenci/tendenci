@@ -148,6 +148,13 @@ class HighchartRender(object):
         self.model.title.text = self.config['title']
         self.model.xAxis.categories = xAxis_categories
         self.model.xAxis.min = yAxis_min
+        # For some reason, the Decimal function gets passed to js code
+        # which results in js errors. for example:  'xAxis': .... 'min': Decimal('0.00')},
+        # make sure the value is float
+        try:
+            self.model.xAxis.min = float(self.model.xAxis.min)
+        except:
+            self.model.xAxis.min = 0.0
         self.model.yAxis.title.text = ' '
         self.model.tooltip.formatter = "function() { return ''+ this.x +': '+ this.y; }"
         self.model.plotOptions.column.pointPadding = 0.2
