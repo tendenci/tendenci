@@ -448,6 +448,7 @@ class ReportAdmin(object):
                     self.__dict__.update(groupby_data)
                 else:
                     self.__dict__['onlytotals'] = False
+
                 report_rows = self.get_rows(groupby_data, filter_kwargs, filter_related_fields)
 
                 for g, r in report_rows:
@@ -458,11 +459,8 @@ class ReportAdmin(object):
 
                 if self.type == 'chart' and groupby_data and groupby_data['groupby']:
                     config = form_config.get_config_data()
-                    print 'config=', config
-                    #print 'report_rows=', report_rows
                     if config:
                         chart = self.get_chart(config, report_rows)
-                        print 'chart=', chart
 
                 if self.onlytotals:
                     for g, rows in report_rows:
