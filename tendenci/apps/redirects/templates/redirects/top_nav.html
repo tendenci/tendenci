@@ -6,9 +6,10 @@
 
 {% block current_app %}
 <li class="dropdown">
-    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+<button type="button" class="btn btn-primary" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <img class="nav-icon" src="{% static 'famfamfam/icons/page_green.png' %}"/>{% firstof MODULE_REDIRECTS_LABEL trans 'Redirects' %}
-    </a>
+         <span class="caret"></span>
+    </button>
     {% if redirect %}
     {% redirect_current_app request.user redirect %}
     {% else %}
