@@ -11,6 +11,7 @@ from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
@@ -69,6 +70,9 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
+
+        if not has_perm(request.user, 'jobs.change_job'):
+            jobs = jobs.filter(Q(expiration_dt__isnull=True) | Q(expiration_dt__gte=datetime.now()))
 
     form = JobSearchForm(request.GET)
     if form.is_valid():
