@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.files.images import ImageFile
 from django.core.exceptions import FieldError
+from django.db.models import Q
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
@@ -47,14 +48,13 @@ def search(request, template_name="staff/search.html"):
     query = request.GET.get('q')
     department = request.GET.get('department')
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        staff = Staff.objects.search(query, user=request.user)
-        
-    else:
-        filters = get_query_filters(request.user, 'staff.view_staff')
-        staff = Staff.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            staff = staff.select_related()
+    filters = get_query_filters(request.user, 'staff.view_staff')
+    staff = Staff.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        staff = staff.select_related()
+
+    if query:
+        staff = staff.filter(Q(name__icontains=query) | Q(department__name__icontains=query))
 
     if department and department.isdigit():
         staff = staff.filter(department__id=int(department))
