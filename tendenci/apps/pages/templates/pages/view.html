@@ -20,12 +20,11 @@
 
 {% block content %}
     <article id="t-pages-page-{{ page.pk }}" class="t-pages-page">
-        {% if page.header_image %}
-            <img src="{{ page.get_header_image_url }}" alt="page header" title="page header">
-        {% endif %}
-
         {% if page.title %}
             <div class="page-header">
+                {% if page.header_image %}
+                    <img src="{{ page.get_header_image_url }}" alt="page header" title="page header" class="img-responsive" />
+                {% endif %}
                 <h1>
                     {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
                     {% if request.user.is_authenticated %}
