@@ -116,6 +116,7 @@ from tendenci.apps.events.utils import (
     render_event_email,
     get_default_reminder_template,
     add_registration,
+    get_registrants_prices,
     registration_has_started,
     registration_has_ended,
     registration_earliest_time,
@@ -1612,6 +1613,7 @@ def register(request, event_id=0,
     is_strict = anony_setting == 'strict'
 
     flat_registrants = []
+    discount_applied = False
 
     if is_strict:
         # strict requires logged in
@@ -1834,9 +1836,9 @@ def register(request, event_id=0,
                     registrant.is_valid(),
                     addon_formset.is_valid()]):
 
-                if 'confirmed' in request.POST:
-                    args = [request, event, reg_form, registrant, addon_formset, \
+                args = [request, event, reg_form, registrant, addon_formset, \
                         pricing, pricing and pricing.price or 0]
+                if 'confirmed' in request.POST:
 
                     kwargs = {'admin_notes': '',
                               'custom_reg_form': custom_reg_form}
@@ -1922,7 +1924,11 @@ def register(request, event_id=0,
                                                     ))
                 else:
                     do_confirmation = True
+                    amount_list, discount_amount, discount_list = get_registrants_prices(*args)
+                    discount_applied = (discount_amount > 0)
                     for i, form in enumerate(registrant.forms):
+                        form.discount = discount_list[i]
+                        form.final_price = amount_list[i]
                         flat_registrants.append(form)
 
         elif 'addmore' in request.POST:
@@ -1984,6 +1990,7 @@ def register(request, event_id=0,
         'has_registrant_form_errors': has_registrant_form_errors,
         'within_available_spots': within_available_spots,
         'flat_registrants': flat_registrants,
+        'discount_applied': discount_applied,
         'do_confirmation': do_confirmation,
         'add_more_registrants' : add_more_registrants,
         'flat_ignore_fields' : flat_ignore_fields,

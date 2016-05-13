@@ -716,24 +716,11 @@ def apply_discount(amount, discount_amount):
     return amount - discount_amount, 0
 
 
-def add_registration(*args, **kwargs):
-    """
-    Add the registration
-    Args are split up below into the appropriate attributes
-    """
-    # arguments were getting kinda long
-    # moved them to an unpacked version
+def get_registrants_prices(*args):
+    # Get the list of final prices for registrants
     (request, event, reg_form, registrant_formset, addon_formset,
     price, event_price) = args
-
-    total_amount = 0
-    count = 0
-    event_price = Decimal(str(event_price))
-
-    #kwargs
-    admin_notes = kwargs.get('admin_notes', None)
-    custom_reg_form = kwargs.get('custom_reg_form', None)
-
+    
     override_table = False
     override_price_table = Decimal(0)
     if event.is_table and request.user.is_superuser:
@@ -741,9 +728,7 @@ def add_registration(*args, **kwargs):
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
         if override_price_table == None:
             override_price_table = 0
-
-
-    # get the list of amount for registrants.
+        
     amount_list = []
     if event.is_table:
         if override_table:
@@ -780,6 +765,38 @@ def add_registration(*args, **kwargs):
                         apps__model=RegistrationConfiguration._meta.model_name)[:1] or [None]
         if discount and discount.available_for(1):
             amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
+    return amount_list, discount_amount, discount_list
+
+
+def add_registration(*args, **kwargs):
+    """
+    Add the registration
+    Args are split up below into the appropriate attributes
+    """
+    # arguments were getting kinda long
+    # moved them to an unpacked version
+    (request, event, reg_form, registrant_formset, addon_formset,
+    price, event_price) = args
+
+    total_amount = 0
+    count = 0
+    event_price = Decimal(str(event_price))
+
+    #kwargs
+    admin_notes = kwargs.get('admin_notes', None)
+    custom_reg_form = kwargs.get('custom_reg_form', None)
+
+    override_table = False
+    override_price_table = Decimal(0)
+    if event.is_table and request.user.is_superuser:
+        override_table = reg_form.cleaned_data.get('override_table', False)
+        override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
+        if override_price_table == None:
+            override_price_table = 0
+
+    # get the list of amount for registrants.
+    amount_list, discount_amount, discount_list = get_registrants_prices(*args)
+
     invoice_discount_amount = discount_amount
 
     reg8n_attrs = {
@@ -799,6 +816,10 @@ def add_registration(*args, **kwargs):
 
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
+    discount_code = reg_form.cleaned_data.get('discount_code', None)
+    if discount_code:
+        [discount] = Discount.objects.filter(discount_code=discount_code,
+                        apps__model=RegistrationConfiguration._meta.model_name)[:1] or [None]
 
     if event.is_table:
         table_individual_first_price, table_individual_price = amount_list[0], Decimal('0')
