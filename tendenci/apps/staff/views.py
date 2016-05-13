@@ -1,19 +1,12 @@
-from os.path import basename, join, abspath, dirname
-
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.core.files.images import ImageFile
-from django.core.exceptions import FieldError
 from django.db.models import Q
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.files.utils import get_image
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.perms.utils import get_query_filters, has_view_perm
 from tendenci.apps.staff.models import Staff
 
