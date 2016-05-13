@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -155,7 +155,7 @@ def discounted_price(request, form_class=DiscountCodeForm):
                     "error": False,
                     "price": unicode(form.new_price()[0]),
                     "discount": unicode(form.new_price()[1]),
-                    "message": _("Your discount of $ %(p)s has been added." % {'p': unicode(form.new_price()[1])}),
+                    "message": ugettext("Your discount of $ %(p)s has been added." % {'p': unicode(form.new_price()[1])}),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {
@@ -189,13 +189,14 @@ def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
                 discount_detail = '(%s)' % (', '.join(([str(price) for price in discount_list if price >0])))
             else:
                 discount_detail = ''
+
             return HttpResponse(json.dumps(
                 {
                     "error": False,
                     "prices": unicode(new_prices),
                     "discount_total": unicode(discount_total),
                     "total": unicode(total),
-                    "message": _("%(m)sYour discount of $%(dt)s %(dd)s has been added." % {
+                    "message": ugettext("%(m)sYour discount of $%(dt)s %(dd)s has been added." % {
                         'm' : unicode(msg),
                         'dt' : unicode(discount_total),
                         'dd' : discount_detail }),
