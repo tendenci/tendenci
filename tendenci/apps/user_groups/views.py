@@ -629,7 +629,7 @@ def group_member_export(request, group_slug):
         raise Http403
 
     import xlwt
-    from ordereddict import OrderedDict
+    from collections import OrderedDict
     from django.db import connection
 
     # create the excel book and sheet

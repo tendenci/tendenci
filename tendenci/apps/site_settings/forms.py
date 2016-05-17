@@ -1,4 +1,4 @@
-from ordereddict import OrderedDict
+from collections import OrderedDict
 from ast import literal_eval
 from urlparse import urlparse
 

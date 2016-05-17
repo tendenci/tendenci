@@ -3528,7 +3528,7 @@ def registrant_export(request, event_id, roster_view=''):
         raise Http403
 
     import xlwt
-    from ordereddict import OrderedDict
+    from collections import OrderedDict
     from decimal import Decimal
 
     # create the excel book and sheet

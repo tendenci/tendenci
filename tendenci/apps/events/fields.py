@@ -1,4 +1,4 @@
-from ordereddict import OrderedDict
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 from django.forms import ChoiceField, MultiValueField
