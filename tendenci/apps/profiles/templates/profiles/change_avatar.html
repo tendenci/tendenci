@@ -28,7 +28,7 @@
         </form>
     {% endif %}
     <form enctype="multipart/form-data" method="POST" action="">{% csrf_token %}
-        <input type="file" name="avatar" value="{% trans 'Avatar Image' %}" />
+        {{ upload_avatar_form.as_p }}
         <input type="submit" value="{% trans 'Upload New Image' %}" />
     </form>
 </div>
