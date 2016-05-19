@@ -478,6 +478,10 @@ class ReportAdmin(object):
 
             is_inline = self.parent_report is None
             render_report = not (len(report_rows) == 0 and is_inline)
+            self.base_template_name = 'base-wide.html'
+            print_view = request.GET.get('print', False)
+            if print_view:
+                self.base_template_name = 'base-print.html'
             context = {
                 'render_report': render_report,
                 'is_inline': is_inline,

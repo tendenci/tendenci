@@ -84,7 +84,7 @@ class HighchartRender(object):
         })
         self.model.series.add(data)
 
-        self.model.chart.renderTo = 'container'
+        self.model.chart.renderTo = 'chart-container'
         self.model.chart.plotBackgroundColor = null,
         self.model.chart.plotBorderWidth = null,
         self.model.chart.plotShadow = false
@@ -143,7 +143,7 @@ class HighchartRender(object):
         })
         self.model.series.add(data)
 
-        self.model.chart.renderTo = 'container'
+        self.model.chart.renderTo = 'chart-container'
         self.model.chart.type = 'column'
         self.model.title.text = self.config['title']
         self.model.xAxis.categories = xAxis_categories
@@ -191,7 +191,7 @@ class HighchartRender(object):
                 max_length = len(serie_values)
 
         xAxis_categories = range(1, max_length + 1)
-        self.model.chart.renderTo = 'container'
+        self.model.chart.renderTo = 'chart-container'
         self.model.chart.type = 'line'
 
         self.model.title.text = self.config['title']
