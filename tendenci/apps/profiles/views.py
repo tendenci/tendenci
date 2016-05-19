@@ -38,8 +38,10 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.exports.utils import render_csv
 
 # for avatar
-from avatar.models import Avatar, avatar_file_path
-from avatar.forms import PrimaryAvatarForm
+from avatar.models import Avatar
+from avatar.forms import PrimaryAvatarForm, UploadAvatarForm
+from avatar.utils import invalidate_cache
+from avatar.signals import avatar_updated
 
 # for group memberships
 from tendenci.apps.user_groups.models import GroupMembership, Group
@@ -616,40 +618,37 @@ def change_avatar(request, id, extra_context={}, next_override=None):
     else:
         avatar = None
         kwargs = {}
-    primary_avatar_form = PrimaryAvatarForm(request.POST or None, user=user_edit, **kwargs)
+    upload_avatar_form = UploadAvatarForm(request.POST or None,
+                                          request.FILES or None,
+                                          user=request.user, **kwargs)
+    primary_avatar_form = PrimaryAvatarForm(request.POST or None,
+                                       user=request.user,
+                                       avatars=avatars, **kwargs)
     if request.method == "POST":
         updated = False
-        if 'avatar' in request.FILES:
-            path = avatar_file_path(user=user_edit,
-                filename=request.FILES['avatar'].name)
-            avatar = Avatar(
-                user = user_edit,
-                primary = True,
-                avatar = path,
-            )
-            new_file = avatar.avatar.storage.save(path, request.FILES['avatar'])
-            avatar.save()
-            updated = True
-
-            messages.add_message(
-                request, messages.SUCCESS, _("Successfully uploaded a new avatar."))
-
         if 'choice' in request.POST and primary_avatar_form.is_valid():
-            avatar = Avatar.objects.get(id=
-                primary_avatar_form.cleaned_data['choice'])
+            avatar = Avatar.objects.get(
+                id=primary_avatar_form.cleaned_data['choice'])
             avatar.primary = True
             avatar.save()
             updated = True
-
-            messages.add_message(
-                request, messages.SUCCESS, _("Successfully updated your avatar."))
-
-        if updated and notification:
-            notification.send([request.user], "avatar_updated", {"user": user_edit, "avatar": avatar})
-            #if friends:
-            #    notification.send((x['friend'] for x in Friendship.objects.friends_for_user(user_edit)), "avatar_friend_updated", {"user": user_edit, "avatar": avatar})
-        return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
-        #return HttpResponseRedirect(next_override or _get_next(request))
+            invalidate_cache(request.user)
+            messages.success(request, _("Successfully updated your avatar."))
+        else:
+            if upload_avatar_form.is_valid():
+                avatar = Avatar(user=request.user, primary=True)
+                image_file = request.FILES['avatar']
+                avatar.avatar.save(image_file.name, image_file)
+                avatar.save()
+                messages.success(request, _("Successfully uploaded a new avatar."))
+                avatar_updated.send(sender=Avatar, user=request.user, avatar=avatar)
+                updated = True
+        if updated:
+            avatar_updated.send(sender=Avatar, user=request.user, avatar=avatar)
+            if notification:
+                notification.send([request.user], "avatar_updated", {"user": user_edit, "avatar": avatar})
+            return redirect(reverse('profile', args=[user_edit.username]))
+   
     return render_to_response(
         'profiles/change_avatar.html',
         extra_context,
@@ -658,6 +657,7 @@ def change_avatar(request, id, extra_context={}, next_override=None):
             {'user_this': user_edit,
               'avatar': avatar,
               'avatars': avatars,
+              'upload_avatar_form': upload_avatar_form,
               'primary_avatar_form': primary_avatar_form,
               'next': next_override or _get_next(request), }
         )

@@ -3,7 +3,7 @@ from django.template import Library
 from django.utils.translation import ugettext_lazy as _
 
 from avatar.templatetags.avatar_tags import avatar_url
-from avatar.util import get_default_avatar_url
+from avatar.utils import get_default_avatar_url
 
 
 register = Library()
