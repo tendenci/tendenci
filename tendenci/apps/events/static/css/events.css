@@ -476,6 +476,7 @@ ul.errorlist {;
     padding: 10px;
     background-color: white;
     float: left;
+    width: 67%;
 }
 
 .event-wrap .info .meta {
@@ -488,6 +489,8 @@ ul.errorlist {;
     text-align: center;
     padding-top: 4px;
     padding-bottom: 4px;
+    width: 30.5%;
+    background-color: #F7F7F7;
 }
 
 .event-wrap .vitals h4.vital-header {
