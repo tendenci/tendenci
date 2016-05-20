@@ -1008,29 +1008,29 @@ class MembershipDefault(TendenciBaseModel):
         Will only expire approved memberships.
         """
 
-        if not self.is_approved():
-            return False
-
-        NOW = datetime.now()
-
-        self.status = True
-        self.status_detail = 'expired'
-
-        # action_taken ------------------------------
-        self.action_taken = True
-        self.action_taken_dt = self.action_taken_dt or NOW
-        if request_user:  # else: don't set
-            self.action_taken_user = request_user
-
-        self.save()
-
-        # remove from group
-        self.group_refresh()
-
-        # show member number on profile
-        self.user.profile.refresh_member_number()
-
-        return True
+        if self.is_approved() or (self.is_expired() and self.status_detail == 'active'):
+            NOW = datetime.now()
+    
+            self.status = True
+            self.status_detail = 'expired'
+    
+            # action_taken ------------------------------
+            self.action_taken = True
+            self.action_taken_dt = self.action_taken_dt or NOW
+            if request_user:  # else: don't set
+                self.action_taken_user = request_user
+    
+            self.save()
+    
+            # remove from group
+            self.group_refresh()
+    
+            # show member number on profile
+            self.user.profile.refresh_member_number()
+    
+            return True
+        
+        return False
 
     def pend(self):
         """

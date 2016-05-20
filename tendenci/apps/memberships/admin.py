@@ -128,9 +128,10 @@ def expire_selected(modeladmin, request, queryset):
     )
 
     for membership in memberships:
-        # check expire_dt + grace_period_dt
-        if not membership.is_expired():
-            membership.expire(request_user=request.user)
+        # Since we're selecting memberships with 'active' status_detail, 
+        # this `membership` is either active membership or expired
+        # but not being marked as expired yet (maybe due to a failed cron job).
+        membership.expire(request_user=request.user)
 
 expire_selected.short_description = u'Expire selected'
 
