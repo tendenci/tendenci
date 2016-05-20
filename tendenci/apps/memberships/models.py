@@ -2308,7 +2308,7 @@ class MembershipApp(TendenciBaseModel):
                                              verbose_name=_("Payment Methods"))
     discount_eligible = models.BooleanField(default=False)
     use_for_corp = models.BooleanField(_("Use for Corporate Individuals"),
-                                       default=True)
+                                       default=False)
     objects = MembershipAppManager()
 
     class Meta:
