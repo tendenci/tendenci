@@ -98,7 +98,7 @@
 {% block extra_body %}
     {{ block.super }}
     {{ form.media }}
-    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
     
  {% endblock %}
 
