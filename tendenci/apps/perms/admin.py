@@ -44,6 +44,9 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         if 'edit_link' not in self.list_display:
             self.list_display.insert(0, 'edit_link')
 
+        if 'id' not in self.list_display:
+            self.list_display.insert(0, 'id')
+
         self.list_display_links = ('edit_link', )
 
     def edit_link(self, obj):

@@ -60,7 +60,7 @@ class FieldAdmin(admin.TabularInline):
 class FormAdmin(TendenciBaseModelAdmin):
 
     inlines = (PricingAdmin, FieldAdmin,)
-    list_display = ("title", "id", "intro", "email_from", "email_copies",
+    list_display = ("title", "intro", "email_from", "email_copies",
         "admin_link_export", 'export_all_link', "admin_link_view")
     list_display_links = ("title",)
 #    list_filter = ("status",)

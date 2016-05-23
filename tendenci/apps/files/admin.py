@@ -135,7 +135,8 @@ class CategoryAdminInline(admin.TabularInline):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id', 'name',)
+    list_display_links = ('name',)
     fieldsets = ((None, {'fields': ('name',)}),)
     inlines = (CategoryAdminInline,)
 

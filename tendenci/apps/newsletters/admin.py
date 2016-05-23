@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 
 class NewsletterTemplateAdmin(admin.ModelAdmin):
@@ -32,6 +33,9 @@ class NewsletterTemplateAdmin(admin.ModelAdmin):
     content_view.short_description = _('view template content')
 
 
+class NewsletterAdmin(TendenciBaseModelAdmin):
+    pass
+
 admin.site.register(NewsletterTemplate, NewsletterTemplateAdmin)
 
-admin.site.register(Newsletter)
+admin.site.register(Newsletter, TendenciBaseModelAdmin)

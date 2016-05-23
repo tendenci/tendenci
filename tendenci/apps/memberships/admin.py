@@ -250,6 +250,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     ]
 
     list_display = [
+        'id',
         'name',
         'email',
         'member_number',
@@ -259,6 +260,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'get_status',
         'get_invoice',
     ]
+    list_display_links = ('name',)
 
     list_filter = [
         MembershipStatusDetailFilter,
@@ -542,7 +544,8 @@ clone_apps.short_description = 'Clone selected forms'
 class MembershipAppAdmin(admin.ModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'application_form_link', 'status', 'status_detail')
+    list_display = ('id', 'name', 'application_form_link', 'status', 'status_detail')
+    list_display_links = ('name',)
     search_fields = ('name', 'status', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'description',
@@ -687,8 +690,9 @@ class NoticeAdmin(admin.ModelAdmin):
                          reverse('membership.notice.log.search'), self.id)
     notice_log.allow_tags = True
 
-    list_display = ['notice_name', notice_log, 'content_type',
+    list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'membership_type', 'status', 'status_detail']
+    list_display_links = ('notice_name',)
     list_filter = ['notice_type', 'status_detail']
 
     fieldsets = (
@@ -787,9 +791,10 @@ class AppListFilter(SimpleListFilter):
 
 class MembershipAppField2Admin(admin.ModelAdmin):
     model = MembershipAppField
-    list_display = ['label', 'field_name', 'display',
+    list_display = ['id', 'label', 'field_name', 'display',
               'required', 'admin_only', 'position',
               ]
+    list_display_links = ('label',)
 
     readonly_fields = ('membership_app', 'field_name')
 

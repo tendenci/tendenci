@@ -28,7 +28,7 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'renewal_price', 'membership_type', 'apply_cap',
+    list_display = ['name', 'id', 'price', 'renewal_price', 'membership_type', 'apply_cap',
                      'membership_cap', 'allow_above_cap', 'above_cap_price', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
@@ -84,7 +84,7 @@ class CorpMembershipAppFieldAdmin(admin.TabularInline):
 class CorpMembershipAppAdmin(admin.ModelAdmin):
     inlines = (CorpMembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'application_form_link', 'status_detail')
+    list_display = ('name', 'id', 'application_form_link', 'status_detail')
     search_fields = ('name', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'authentication_method',
@@ -201,8 +201,9 @@ class NoticeAdmin(admin.ModelAdmin):
                          reverse('corporate_membership.notice.log.search'), self.id)
     notice_log.allow_tags = True
 
-    list_display = ['notice_name', notice_log, 'content_type',
+    list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'corporate_membership_type', 'status_detail']
+    list_display_links  = ['notice_name']
     list_filter = ['notice_type', 'status_detail']
 
     fieldsets = (

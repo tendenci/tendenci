@@ -9,10 +9,12 @@ from tendenci.apps.helpdesk.models import QueueMembership
 from tendenci.apps.helpdesk import settings as helpdesk_settings
 
 class QueueAdmin(admin.ModelAdmin):
-    list_display = ('title', 'slug', 'email_address', 'locale')
+    list_display = ('id', 'title', 'slug', 'email_address', 'locale')
+    list_display_links = ('title',)
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('title', 'status', 'assigned_to', 'submitter_email',)
+    list_display = ('id', 'title', 'status', 'assigned_to', 'submitter_email',)
+    list_display_links = ('title',)
     date_hierarchy = 'created'
     list_filter = ('assigned_to', 'status', )
     exclude = ['owner_username']
@@ -33,14 +35,16 @@ class FollowUpAdmin(admin.ModelAdmin):
     inlines = [TicketChangeInline, AttachmentInline]
 
 class KBItemAdmin(admin.ModelAdmin):
-    list_display = ('category', 'title', 'last_updated',)
+    list_display = ('id', 'category', 'title', 'last_updated',)
     list_display_links = ('title',)
 
 class CustomFieldAdmin(admin.ModelAdmin):
-    list_display = ('name', 'label', 'data_type')
+    list_display = ('id', 'name', 'label', 'data_type')
+    list_display_links = ('name',)
 
 class EmailTemplateAdmin(admin.ModelAdmin):
-    list_display = ('template_name', 'heading', 'locale')
+    list_display = ('id', 'template_name', 'heading', 'locale')
+    list_display_links = ('template_name',)
     list_filter = ('locale', )
 
 class QueueMembershipInline(admin.StackedInline):

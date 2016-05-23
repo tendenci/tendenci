@@ -23,7 +23,8 @@ from tendenci.apps.projects.forms import ProjectForm, PhotoForm, DocumentsForm, 
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'image_preview', 'position',)
+    list_display = ('id', 'name', 'image_preview', 'position',)
+    list_display_links = ('name',)
     list_editable = ('position',)
     fieldsets = (
         (None, {

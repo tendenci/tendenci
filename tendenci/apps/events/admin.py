@@ -38,11 +38,13 @@ class EventAdmin(admin.ModelAdmin):
 class EventTypeAdmin(admin.ModelAdmin):
     form = TypeForm
     list_display = (
+        'id',
         'name',
         'bg_color',
         'event_count',
         'reassign',
     )
+    list_display_links = ('name',)
 
     def reassign(self, obj):
 
@@ -86,7 +88,8 @@ clone_forms.short_description = 'Clone selected forms'
 
 class CustomRegFormAdmin(admin.ModelAdmin):
     inlines = (CustomRegFieldAdmin,)
-    list_display = ("name", "preview_link", "for_event", "notes", "status",)
+    list_display = ('id', "name", "preview_link", "for_event", "notes", "status",)
+    list_display_links = ("name",)
     search_fields = ("name", "notes", "status",)
     fieldsets = (
         (None, {"fields": ("name", "notes", 'status')}),

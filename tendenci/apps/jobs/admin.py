@@ -77,6 +77,7 @@ admin.site.register(Job, JobAdmin)
 
 class JobPricingAdmin(admin.ModelAdmin):
     list_display = [
+        'id',
         'duration',
         'title',
         'regular_price',

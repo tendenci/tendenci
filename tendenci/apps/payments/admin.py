@@ -8,7 +8,8 @@ class PaymentAdmin(admin.ModelAdmin):
 
 class PaymentMethodAdmin(admin.ModelAdmin):
     actions = None
-    list_display = ['human_name', 'machine_name', 'is_online', 'admin_only']
+    list_display = ['id', 'human_name', 'machine_name', 'is_online', 'admin_only']
+    list_display_links = ('human_name',)
 
 
 admin.site.register(Payment, PaymentAdmin)

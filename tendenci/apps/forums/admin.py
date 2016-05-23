@@ -21,7 +21,8 @@ class ForumInlineAdmin(admin.TabularInline):
 
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    list_display = ['name', 'position', 'hidden', 'forum_count']
+    list_display = ['id', 'name', 'position', 'hidden', 'forum_count']
+    list_display_links = ('name',)
     list_per_page = 20
     ordering = ['position']
     search_fields = ['name']
@@ -55,7 +56,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class ForumAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    list_display = ['name', 'category', 'hidden', 'position', 'topic_count', ]
+    list_display = ['id', 'name', 'category', 'hidden', 'position', 'topic_count', ]
+    list_display_links = ['name',]
     list_per_page = 20
     raw_id_fields = ['moderators']
     ordering = ['-category']
@@ -82,7 +84,8 @@ class PollAnswerAdmin(admin.TabularInline):
 
 class TopicAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    list_display = ['name', 'forum', 'created', 'head', 'post_count', 'poll_type',]
+    list_display = ['id', 'name', 'forum', 'created', 'head', 'post_count', 'poll_type',]
+    list_display_links = ('name',)
     list_per_page = 20
     raw_id_fields = ['user', 'subscribers']
     ordering = ['-created']
@@ -118,7 +121,8 @@ class ForumReadTrackerAdmin(admin.ModelAdmin):
     search_fields = ['user__%s' % username_field]
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['topic', 'user', 'created', 'updated', 'summary']
+    list_display = ['id', 'topic', 'user', 'created', 'updated', 'summary']
+    list_display_links = ('topic',)
     list_per_page = 20
     raw_id_fields = ['user', 'topic']
     ordering = ['-created']
@@ -142,7 +146,8 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'time_zone', 'language', 'post_count']
+    list_display = ['id', 'user', 'time_zone', 'language', 'post_count']
+    list_display_links = ('user',)
     list_per_page = 20
     ordering = ['-user']
     search_fields = ['user__%s' % username_field]
