@@ -31,7 +31,7 @@ class Command(BaseCommand):
         all_themes = options.get('all', False)
 
         if not theme_url:
-            theme_url = "https://github.com/tendenci/tendenci-themes/archive/master.zip"
+            theme_url = "https://github.com/tendenci/tendenci-project-template/archive/master.zip"
 
         if not (theme_name or all_themes):
             raise CommandError('Specify a theme name, or add --all for all themes')
@@ -72,7 +72,7 @@ class Command(BaseCommand):
         os.remove(theme_zip_path)
 
         # Move the themes out of the unzipped folder
-        unzip_dir_path = os.path.join(themes_dir_path, unzip_dirname)
+        unzip_dir_path = os.path.join(themes_dir_path, os.path.join(unzip_dirname, 'themes'))
         if all_themes:
             for name in os.listdir(unzip_dir_path):
                 # Check for themes
