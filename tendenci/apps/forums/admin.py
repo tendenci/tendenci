@@ -127,7 +127,7 @@ class PostAdmin(admin.ModelAdmin):
     raw_id_fields = ['user', 'topic']
     ordering = ['-created']
     date_hierarchy = 'created'
-    search_fields = ['body']
+    search_fields = ['body', 'user__username']
     fieldsets = (
         (None, {
                 'fields': ('topic', 'user')
