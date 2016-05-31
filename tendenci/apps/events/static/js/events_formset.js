@@ -89,7 +89,8 @@ function clone_form(selector, type) {
     var form_functions = current_element.next();
     var form_functions_clone = form_functions.clone(true);
     var total = parseInt($('#' + type + '-TOTAL_FORMS').val());
-    var form_number = current_element.find('input[name="form-number"]').val();
+    var form_number = current_element.find('input[name="form-number"]').val();   
+ 
     // check if we have mceEditor
     var textarea_id;
     var myEditor = $(new_element).find('.mceEditor');
@@ -158,6 +159,9 @@ function clone_form(selector, type) {
             marginLeft: '0px'
         });
     }
+ 
+    var organizer_id_name = 'id_organizer-' +  (parseInt(form_number) + 1) + '-name';
+    auto_complete_organizer(organizer_id_name);
 }
 
 function delete_form(current_form, selector, type) {
@@ -301,6 +305,21 @@ function hook_all_tax_fields_js() {
     });
 }
 
+function auto_complete_organizer(id_name){
+	$('input[id=' + id_name + ']').autocomplete({
+        source: "/events/organizer_auto_complete/",
+        selectFirst:true,
+        minLength:2,
+        select: function(event, ui) {
+        	var myid = ($(this).attr('id'));
+        	myid = myid.replace('name', 'description');
+        	$.ajax({url: "/events/get_organizer_description/?name=" + ui.item.value, success: function(result){
+        		tinymce.get(myid).setContent(result);
+            }});
+        }
+     });
+}
+
 $(document).ready(function(){
     initialize_pickers();
     hook_all_tax_fields_js();
@@ -368,4 +387,6 @@ $(document).ready(function(){
         e.preventDefault();
         //return false;
     });
+    
+    auto_complete_organizer('organizer-0-name');
 });

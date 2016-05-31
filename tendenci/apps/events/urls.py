@@ -27,6 +27,8 @@ urlpatterns = patterns(
     url(r'^%s/create_ics/$' % urlpath, 'views.create_ics', name="event.create_ics"),
     url(r'^%s/myevents/$' % urlpath, 'views.myevents', name="event.myevents"),
     url(r'^%s/get_place$' % urlpath, 'views.get_place', name="event.get_place"),
+    url(r'^%s/organizer_auto_complete/$' % urlpath, 'views.organizer_auto_complete', name="event.organizer_auto_complete"),
+    url(r'^%s/get_organizer_description/$' % urlpath, 'views.get_organizer_description', name="event.get_organizer_description"),
 
     # events reports
     url(r'^%s/reports/financial/$' % urlpath, 'views.reports_financial', name='event.reports.financial'),

@@ -98,6 +98,7 @@
                 <a href="{% url "event.speakers" event.pk %}">{% trans "View all speakers" %}</a>
                 {% endif %}
 
+				{% for organizer in organizers %}
                 {% if organizer.name %}
                 <div class="organizer-wrap">
                     <div class="organizer">
@@ -105,10 +106,10 @@
                     </div>
                     {% if organizer.description|striptags|wordcount > 50 %}
                     <div class="organizer-desc-short">
-                        {% blocktrans with desc=organizer.description|striptags|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+                        {{ organizer.description|striptags|truncatewords:"50" }}
                     </div>
                     <div class="organizer-desc-long">
-                        {% blocktrans with desc=organizer.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+                        {{ organizer.description|safe|urlize|linebreaks }}
                     </div>
                     {% else %}
                         <div class="organizer-desc-short">
@@ -120,6 +121,7 @@
                     {% endif %}
                 </div>
                 {% endif %}
+                {% endfor %}
 
                 {% if addons %}
                     <hr/>

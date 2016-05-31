@@ -22,6 +22,16 @@
             </div>
      </div>
 </div>
+<div id="event_organizers_container" class="form-field clearfix">
+    <div class="id_event_organizers">
+            <div class="label">
+                <label for="event_organizer">{% trans 'Event Organizers' %}</label>
+            </div>
+            <div class="field">
+                {{ form.event_organizer }}
+            </div>
+     </div>
+</div>
 {% if form.registration %}
 <div class="form-field clearfix">
     <div class="id_registration">
