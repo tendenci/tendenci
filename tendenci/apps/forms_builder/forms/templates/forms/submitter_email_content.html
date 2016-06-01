@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<p>{% blocktrans with t=form.email_text|linebreaks|safe %}{{ t }}{% endblocktrans %}</p>
+{{ form.email_text|safe }}
 
 
 {% comment %}
