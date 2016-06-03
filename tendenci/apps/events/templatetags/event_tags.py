@@ -390,7 +390,7 @@ class ListEventsNode(ListNode):
             items = items.filter(tag_query)
 
         if hasattr(self.model, 'group') and group:
-            items = items.filter(group=group)
+            items = items.filter(groups=group)
 
         objects = []
 

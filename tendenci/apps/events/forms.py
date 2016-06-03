@@ -99,7 +99,7 @@ class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date/Time'), required=False,
                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     event_type = forms.ChoiceField(required=False, choices=[])
-    event_organizer = forms.ChoiceField(required=False, choices=[])
+    event_group = forms.ChoiceField(required=False, choices=[])
     registration = forms.BooleanField(required=False)
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
     q = forms.CharField(required=False)
@@ -116,9 +116,9 @@ class EventSearchForm(forms.Form):
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
         
-        organizer_choices = Organizer.objects.exclude(name="").distinct('name'
-                                    ).order_by('name').values_list('name', 'name')
-        self.fields['event_organizer'].choices = [('','All')] + list(organizer_choices)
+        group_choices = Group.objects.filter(status_detail='active'
+                                    ).order_by('name').values_list('id', 'name')
+        self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
 
@@ -597,7 +597,7 @@ class EventForm(TendenciBaseForm):
 
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    group = forms.ChoiceField(required=True, choices=[])
+    groups = forms.MultipleChoiceField(required=True, choices=[], help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
 
     FREQUENCY_CHOICES = (
         (1, '1'),
@@ -641,7 +641,7 @@ class EventForm(TendenciBaseForm):
             'timezone',
             'priority',
             'type',
-            'group',
+            'groups',
             'external_url',
             'photo_upload',
             'tags',
@@ -677,7 +677,7 @@ class EventForm(TendenciBaseForm):
                                   'timezone',
                                   'priority',
                                   'type',
-                                  'group',
+                                  'groups',
                                   'external_url',
                                   'photo_upload',
                                   'tags',
@@ -718,7 +718,7 @@ class EventForm(TendenciBaseForm):
                 self.fields['enable_private_slug'].widget = forms.HiddenInput()
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
-            self.fields['group'].initial = Group.objects.get_initial_group_id()
+            self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -761,7 +761,7 @@ class EventForm(TendenciBaseForm):
         else:
             groups_list = default_groups.values_list('pk', 'name')
 
-        self.fields['group'].choices = groups_list
+        self.fields['groups'].choices = groups_list
         self.fields['timezone'].initial = settings.TIME_ZONE
 
     def clean_photo_upload(self):
@@ -786,14 +786,16 @@ class EventForm(TendenciBaseForm):
 
         return photo_upload
 
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group
-        except Group.DoesNotExist:
-            raise forms.ValidationError(_('Invalid group selected.'))
+    def clean_groups(self):
+        group_ids = self.cleaned_data['groups']
+        groups = []
+        for group_id in group_ids:
+            try:
+                group = Group.objects.get(pk=group_id)
+                groups.append(group)
+            except Group.DoesNotExist:
+                raise forms.ValidationError(_('Invalid group selected.'))
+        return groups
 
     def clean_end_recurring(self):
         end_recurring = self.cleaned_data.get('end_recurring', None)
@@ -824,6 +826,7 @@ class EventForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         event = super(EventForm, self).save(*args, **kwargs)
+
         # Reset time if All Day is selected
         if event.all_day:
             event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time())
@@ -2098,7 +2101,7 @@ class PendingEventForm(EventForm):
         fields = (
             'title',
             'description',
-            'group',
+            'groups',
             'start_dt',
             'end_dt',
             'on_weekend',
@@ -2112,7 +2115,7 @@ class PendingEventForm(EventForm):
         fieldsets = [(_('Event Information'), {
                       'fields': ['title',
                                  'description',
-                                 'group',
+                                 'groups',
                                  'start_dt',
                                  'end_dt',
                                  'on_weekend',

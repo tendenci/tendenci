@@ -359,7 +359,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     if form.is_valid():
         with_registration = form.cleaned_data.get('registration', None)
         event_type = form.cleaned_data.get('event_type', None)
-        event_organizer = form.cleaned_data.get('event_organizer', None)
+        event_group = form.cleaned_data.get('event_group', None)
         start_dt = form.cleaned_data.get('start_dt', None)
         cat = form.cleaned_data.get('search_category', None)
         try:
@@ -374,8 +374,8 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
         if event_type:
             events = events.filter(type__slug=event_type)
-        if event_organizer:
-            events = events.filter(organizer__name=event_organizer)
+        if event_group:
+            events = events.filter(groups__id=event_group)
 
     if past:
         filter_op = 'lt'
@@ -551,6 +551,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             # update all permissions and save the model
             event = update_perms_and_save(request, form_event, event)
+            form_event.save_m2m()
+            
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
@@ -1248,6 +1250,9 @@ def add(request, year=None, month=None, day=None, \
 
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
+                groups = form_event.cleaned_data['groups']
+                event.groups = groups
+                event.save(log=False)
 
                 assign_files_perms(place)
 
@@ -4010,6 +4015,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
 
             # update all permissions and save the model
             event = update_perms_and_save(request, form, event)
+            form.save_m2m()
             
             # handle image
             photo = form.cleaned_data['photo_upload']
