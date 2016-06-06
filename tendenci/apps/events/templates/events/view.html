@@ -64,6 +64,15 @@
                     </div>
                     {% endif %}
                     <div class="event-desc">{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</div>
+                
+                {% if event.groups.count > 0 %}
+                <div><strong>{% trans "Group(s):" %}</strong>
+                {% for group in event.groups.all %}
+                <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </div>
+                {% endif %}
+                
                 </div>
 
                 {% for speaker in speakers %}
