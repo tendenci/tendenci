@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
 from django.template import Library
 from django.utils.translation import ugettext_lazy as _
-
-from avatar.templatetags.avatar_tags import avatar_url
-from avatar.utils import get_default_avatar_url
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils import six
 
 
 register = Library()
@@ -84,44 +84,16 @@ def merge_detail(context, profile):
 
 
 @register.simple_tag
-def has_avatar(user, size=88):
-    """
-    Used to pull the avatar from a user profile. If an image has not been set
-    no image will be returned.
-
-    Usage::
-
-        {% has_avatar model.user [size] %}
-
-    Be sure to attach .user to an object that  contains a user relationship.
-    Example::
-
-    {% for officer in officers %}
-        {% has_avatar officer.user 64 %}
-    {% endfor %}
-
-    This will return an avatar image that is 64x64 pixels.
-
-    Note: This uses the 'django-avatar' package: https://github.com/jezdez/django-avatar
-    """
-    if not isinstance(user, User):
-        try:
-            user = User.objects.get(username=user)
-            alt = unicode(user)
-            url = avatar_url(user, size)
-        except User.DoesNotExist:
-            url = get_default_avatar_url()
-            alt = _("Default Avatar")
-    else:
-        alt = unicode(user)
-        url = avatar_url(user, size)
-    if url == get_default_avatar_url():
-        return ""
-
-    title = "%s profile" % alt
-    if len(alt) > 123:
-        alt = alt[:123]
-    if len(title) > 123:
-        title = title[:123]
-    return """<img src="%s" alt="%s" title="%s" width="%s" height="%s" />""" % (url, alt, title,
-          size, size)
+def gravatar(user, size=settings.GAVATAR_DEFAULT_SIZE, **kwargs):
+    try:
+        url = user.profile.get_gravatar_url(size=size)
+    except:
+        return ''
+    
+    context = dict(kwargs, **{
+        'user': user,
+        'url': url,
+        'alt': six.text_type(user),
+        'size': size,
+    })
+    return render_to_string('profiles/gravatar_tag.html', context)

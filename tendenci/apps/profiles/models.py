@@ -1,5 +1,7 @@
 import os
 import uuid
+import hashlib
+import urllib
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -429,6 +431,20 @@ class Profile(Person):
         for role in roles:
             if role in self.roles():
                 return role
+
+    def getMD5(self):
+        m = hashlib.md5()
+        m.update(self.user.email)        
+        return m.hexdigest()
+    
+    def get_gravatar_url(self, size):
+        default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
+                               getattr(settings, 'STATIC_URL', ''),
+                               settings.GAVATAR_DEFAULT_URL)
+
+        gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
+        gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+        return gravatar_url
 
 
 def get_import_file_path(instance, filename):

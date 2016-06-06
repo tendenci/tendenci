@@ -37,12 +37,6 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.exports.utils import render_csv
 
-# for avatar
-from avatar.models import Avatar
-from avatar.forms import PrimaryAvatarForm, UploadAvatarForm
-from avatar.utils import invalidate_cache
-from avatar.signals import avatar_updated
-
 # for group memberships
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.apps.user_groups.forms import GroupMembershipEditForm
@@ -600,68 +594,6 @@ def _get_next(request):
         next = request.path
     return next
 
-@login_required
-def change_avatar(request, id, extra_context={}, next_override=None):
-    user_edit = get_object_or_404(User, pk=id)
-    try:
-        profile = Profile.objects.get(user=user_edit)
-    except Profile.DoesNotExist:
-        profile = Profile.objects.create_profile(user=user_edit)
-
-    #if not has_perm(request.user,'profiles.change_profile',profile): raise Http403
-    if not profile.allow_edit_by(request.user): raise Http403
-
-    avatars = Avatar.objects.filter(user=user_edit).order_by('-primary')
-    if avatars.count() > 0:
-        avatar = avatars[0]
-        kwargs = {'initial': {'choice': avatar.id}}
-    else:
-        avatar = None
-        kwargs = {}
-    upload_avatar_form = UploadAvatarForm(request.POST or None,
-                                          request.FILES or None,
-                                          user=request.user, **kwargs)
-    primary_avatar_form = PrimaryAvatarForm(request.POST or None,
-                                       user=request.user,
-                                       avatars=avatars, **kwargs)
-    if request.method == "POST":
-        updated = False
-        if 'choice' in request.POST and primary_avatar_form.is_valid():
-            avatar = Avatar.objects.get(
-                id=primary_avatar_form.cleaned_data['choice'])
-            avatar.primary = True
-            avatar.save()
-            updated = True
-            invalidate_cache(request.user)
-            messages.success(request, _("Successfully updated your avatar."))
-        else:
-            if upload_avatar_form.is_valid():
-                avatar = Avatar(user=request.user, primary=True)
-                image_file = request.FILES['avatar']
-                avatar.avatar.save(image_file.name, image_file)
-                avatar.save()
-                messages.success(request, _("Successfully uploaded a new avatar."))
-                avatar_updated.send(sender=Avatar, user=request.user, avatar=avatar)
-                updated = True
-        if updated:
-            avatar_updated.send(sender=Avatar, user=request.user, avatar=avatar)
-            if notification:
-                notification.send([request.user], "avatar_updated", {"user": user_edit, "avatar": avatar})
-            return redirect(reverse('profile', args=[user_edit.username]))
-   
-    return render_to_response(
-        'profiles/change_avatar.html',
-        extra_context,
-        context_instance = RequestContext(
-            request,
-            {'user_this': user_edit,
-              'avatar': avatar,
-              'avatars': avatars,
-              'upload_avatar_form': upload_avatar_form,
-              'primary_avatar_form': primary_avatar_form,
-              'next': next_override or _get_next(request), }
-        )
-    )
 
 @ssl_required
 @csrf_protect

@@ -31,7 +31,6 @@ class Command(BaseCommand):
                 'accountings',
                 'announcements',
                 'articles',
-                'avatar',
                 'base',
                 'boxes',
                 'campaign_monitor',

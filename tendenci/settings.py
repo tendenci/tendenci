@@ -197,7 +197,6 @@ INSTALLED_APPS = (
     'bootstrap3',
     'pagination',
     'tagging',
-    'avatar',
     'haystack',
     'captcha',
     #'tastypie',
@@ -563,3 +562,9 @@ NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend
 PYBB_MARKUP = 'markdown'
 PYBB_NICE_URL = True
 PYBB_ATTACHMENT_ENABLE = True
+
+# -------------------------------------- #
+# gravatar
+# -------------------------------------- #
+GAVATAR_DEFAULT_SIZE = 80
+GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'

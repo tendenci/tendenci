@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from avatar.models import Avatar, avatar_file_path
+
 
 class Command(BaseCommand):
     """
@@ -14,6 +14,7 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
+        from avatar.models import Avatar, avatar_file_path
         from tendenci.apps.files.models import File as tFile
 
         ct_user = ContentType.objects.get_for_model(User)
