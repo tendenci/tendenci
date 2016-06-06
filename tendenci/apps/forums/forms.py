@@ -223,6 +223,9 @@ try:
         def __init__(self, *args, **kwargs):
             super(EditProfileForm, self).__init__(*args, **kwargs)
             self.fields['signature'].widget = forms.Textarea(attrs={'rows': 2, 'cols:': 60})
+            # remove avatar upload
+            if 'avatar' in self.fields:
+                del self.fields['avatar']
 
         def clean_avatar(self):
             if self.cleaned_data['avatar'] and (self.cleaned_data['avatar'].size > defaults.PYBB_MAX_AVATAR_SIZE):

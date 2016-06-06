@@ -15,6 +15,9 @@
     <div class="userinfo">
         {% include 'pybb/avatar.html' with user=target_user %}
         <div class="info">
+        	<div>
+        	<a href="https://en.gravatar.com/site/login" target="_blank">Add / edit your gravatar</a>
+        	</div>
             <div class="label">{% trans "Statistics" %}</div>
             <div>
                 <a href="{% url 'pybb:user_topics' target_user.get_username %}">
