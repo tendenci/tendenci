@@ -21,7 +21,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.http import QueryDict
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -86,7 +86,6 @@ from tendenci.apps.events.forms import (
     SpeakerBaseFormSet,
     SpeakerForm,
     OrganizerForm,
-    OrganizerBaseFormSet,
     TypeForm,
     MessageAddForm,
     RegistrationForm,
@@ -262,7 +261,6 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'speakers': speakers,
         'speakers_length': speakers_length,
         'organizer': organizer,
-        'organizers': organizers,
         'now': datetime.now(),
         'addons': event.addon_set.filter(status=True),
         'event_files': event_files,
@@ -359,7 +357,6 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     if form.is_valid():
         with_registration = form.cleaned_data.get('registration', None)
         event_type = form.cleaned_data.get('event_type', None)
-        event_organizer = form.cleaned_data.get('event_organizer', None)
         start_dt = form.cleaned_data.get('start_dt', None)
         cat = form.cleaned_data.get('search_category', None)
         try:
@@ -374,8 +371,6 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
         if event_type:
             events = events.filter(type__slug=event_type)
-        if event_organizer:
-            events = events.filter(organizer__name=event_organizer)
 
     if past:
         filter_op = 'lt'
@@ -682,19 +677,17 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
 
-    OrganizerFormSet = modelformset_factory(
-        Organizer,
-        formset=OrganizerBaseFormSet,
-        form=form_class,
-        extra=1,
-        can_delete=True
-    )
+    # tried get_or_create(); but get a keyword argument :(
+    try: # look for an organizer
+        organizer = event.organizer_set.all()[0]
+    except: # else: create an organizer
+        organizer = Organizer()
+        organizer.save()
+        organizer.event = [event]
+        organizer.save()
 
     if request.method == "POST":
-        form_organizer = OrganizerFormSet(
-            request.POST, request.FILES,
-            queryset=event.organizer_set.all(), prefix='organizer'
-        )
+        form_organizer = form_class(request.POST, instance=organizer, prefix='organizer')
         post_data = request.POST
         if 'apply_changes_to' not in post_data:
             post_data = {'apply_changes_to':'self'}
@@ -704,25 +697,18 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
         if all([form.is_valid() for form in forms]):
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
 
-            organizers = form_organizer.save(commit=False)
+            organizer = form_organizer.save(commit=False)
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
-                for organizer in organizers:
-                    if (organizer.pk and (organizer.event.count() > 1) and
-                        (organizer._original_name != organizer.name)):
-                        # Remove the event from previous organizer
-                        organizer.event.remove(event)
-                        # Create new speaker
-                        organizer.pk = None
-                    organizer.save()
-                    organizer.event.add(event)
-                
-                # Only delete when speaker has no more events associated to it
-                for del_organizer in form_organizer.deleted_objects:
-                    del_organizer.event.remove(event)
-                    if not del_organizer.event.count():
-                        del_organizer.delete()
+                if organizer.event.count() > 1 and (organizer._original_name != organizer.name):
+                    # Remove event from organizer
+                    organizer.event.remove(event)
+                    # Create a new organizer
+                    organizer.pk = None
+                organizer.save()
+                # Readd event to organizer
+                organizer.event.add(event)
                 msg_string = 'Successfully updated %s' % unicode(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
@@ -732,48 +718,29 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
-                    for organizer in organizers:
-                        if organizer.pk and (organizer._original_name != organizer.name):
-                            # Check if speaker is associated to a previous event
-                            if organizer.event.filter(
-                                                    start_dt__lt=event.start_dt,
-                                                    recurring_event=event.recurring_event
-                                                      ).exists():
-                                organizer.pk = None
-                    organizer.save()
-                    organizer.event = recurring_events
+                    # Check if organizer is associated to a previous event
+                    organizer_in_past_events = organizer.event.filter(
+                                                 start_dt__lt=event.start_dt,
+                                                  recurring_event=event.recurring_event
+                                                  ).exists()
 
-                organizer_ids = [organizer.pk for organizer in organizers]
-                
-                for recur_event in recurring_events:
-                    # remove other speakers that previously associated to some of the occurrences
-                    # but are not being added/edited
-                    organizers_to_remove = recur_event.organizer_set.exclude(id__in=organizer_ids)
-                    if organizers_to_remove:
-                        for organizer in organizers_to_remove:
-                            organizer.event.remove(recur_event)
+                    if (organizer._original_name != organizer.name) and organizer_in_past_events:
+                        organizer.pk = None
 
-                # Only delete when speaker has no more events associated to it
-                if form_organizer.deleted_objects:
-                    for recur_event in recurring_events:
-                        for del_organizer in form_organizer.deleted_objects:
-                            try:
-                                del_organizer.event.remove(recur_event)
-                            except ValueError:
-                                pass
-                            if not del_organizer.event.count():
-                                del_organizer.delete()
+                organizer.save()
+                for cur_event in recurring_events:
+                    # Remove previous organizer from event
+                    for org in cur_event.organizer_set.all():
+                        org.event.remove(cur_event)
+                    # Add new organizer
+                    organizer.event.add(cur_event)
                 msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
                 return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
     else:
-        form_organizer = OrganizerFormSet(
-            queryset=event.organizer_set.all(),
-            prefix='organizer', auto_id='organizer_formset'
-        )
-        form_organizer.label = "Organizer(s)"
+        form_organizer = form_class(instance=organizer, prefix='organizer')
         form_apply_recurring = ApplyRecurringChangesForm()
 
     multi_event_forms = [form_organizer]
@@ -1152,13 +1119,6 @@ def add(request, year=None, month=None, day=None, \
     regconfpricing_params = {'user': request.user,
                              'reg_form_queryset': reg_form_queryset}
 
-    OrganizerFormSet = modelformset_factory(
-        Organizer,
-        formset=OrganizerBaseFormSet,
-        form=OrganizerForm,
-        extra=1
-    )
-    
     SpeakerFormSet = modelformset_factory(
         Speaker,
         formset=SpeakerBaseFormSet,
@@ -1184,12 +1144,6 @@ def add(request, year=None, month=None, day=None, \
             form_attendees = DisplayAttendeesForm(request.POST)
 
             # form sets
-            form_organizer = OrganizerFormSet(
-                request.POST,
-                request.FILES,
-                queryset=Organizer.objects.none(),
-                prefix='organizer'
-            )
             form_speaker = SpeakerFormSet(
                 request.POST,
                 request.FILES,
@@ -1219,7 +1173,6 @@ def add(request, year=None, month=None, day=None, \
             )
 
             # label the form sets
-            form_organizer.label = _("Organizer(s)")
             form_speaker.label = _("Speaker(s)")
             form_regconfpricing.label = _("Pricing(s)")
 
@@ -1239,7 +1192,7 @@ def add(request, year=None, month=None, day=None, \
                 place = form_place.save()
                 regconf = form_regconf.save()
                 speakers = form_speaker.save()
-                organizers = form_organizer.save()
+                organizer = form_organizer.save()
                 regconf_pricing = form_regconfpricing.save()
 
                 event = form_event.save(commit=False)
@@ -1250,6 +1203,7 @@ def add(request, year=None, month=None, day=None, \
                 event = update_perms_and_save(request, form_event, event)
 
                 assign_files_perms(place)
+                assign_files_perms(organizer)
 
                 # handle image
                 f = form_event.cleaned_data['photo_upload']
@@ -1265,11 +1219,6 @@ def add(request, year=None, month=None, day=None, \
                     f.file.seek(0)
                     image.file.save(filename, f)
                     event.image = image
-
-                for organizer in organizers:
-                    organizer.event = [event]
-                    organizer.save()
-                    assign_files_perms(organizer)
 
                 # make dict (i.e. speaker_bind); bind speaker with speaker image
                 pattern = re.compile('speaker-\d+-name')
@@ -1311,6 +1260,9 @@ def add(request, year=None, month=None, day=None, \
                         regconf_price.reg_form = None
 
                     regconf_price.save()
+
+                organizer.event = [event]
+                organizer.save() # save again
 
                 # update event
                 event.place = place
@@ -1414,16 +1366,12 @@ def add(request, year=None, month=None, day=None, \
             # single forms
             form_event = form_class(user=request.user, initial=event_init)
             form_place = PlaceForm(prefix='place')
+            form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf',
                                          reg_form_queryset=reg_form_queryset,)
             form_attendees = DisplayAttendeesForm()
 
             # form sets
-            form_organizer = OrganizerFormSet(
-                queryset=Organizer.objects.none(),
-                prefix='organizer',
-                auto_id='organizer_formset'
-            )
             form_speaker = SpeakerFormSet(
                 queryset=Speaker.objects.none(),
                 prefix='speaker',
@@ -1438,7 +1386,6 @@ def add(request, year=None, month=None, day=None, \
             )
 
             # label the form sets
-            form_organizer.label = _("Organizer(s)")
             form_speaker.label = _("Speaker(s)")
             form_regconfpricing.label = _("Pricing(s)")
 
@@ -1458,30 +1405,6 @@ def add(request, year=None, month=None, day=None, \
     else:
         raise Http403
 
-
-@is_enabled('events')
-@login_required
-def organizer_auto_complete(request):
-    if not has_perm(request.user,'events.add_event'):
-        raise Http403
-    
-    q = request.REQUEST.get('term')
-    organizers = list(Organizer.objects.exclude(name='').filter(name__istartswith=q
-                                ).distinct('name').values_list('name', flat=True))
-    return JsonResponse(organizers, safe=False)
-
-
-@is_enabled('events')
-@login_required
-def get_organizer_description(request):
-    if not has_perm(request.user,'events.add_event'):
-        raise Http403
-    
-    name = request.REQUEST.get('name')
-    [description] = Organizer.objects.filter(name=name).order_by('-id'
-                        ).values_list('description', flat=True)[:1] or ['']
-    return HttpResponse(description)
-                        
 
 @is_enabled('events')
 @login_required

@@ -66,16 +66,6 @@
         <div class="description" itemprop="description">
             {% blocktrans with desc=event.description|striptags|safe|truncatewords:40 %}{{ desc }}{% endblocktrans %}
         </div>
-        
-        {% with event.organizers as organizers %}
-        {% if organizers %}
-        <div><strong>{% trans "Organizer:" %}</strong>
-        {% for organizer in organizers %}
-        {{ organizer.name }}{% if not forloop.last %},{% endif %}
-        {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
 
         {% if event.registration_configuration.enabled %}
 

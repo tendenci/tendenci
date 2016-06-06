@@ -99,7 +99,6 @@ class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date/Time'), required=False,
                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     event_type = forms.ChoiceField(required=False, choices=[])
-    event_organizer = forms.ChoiceField(required=False, choices=[])
     registration = forms.BooleanField(required=False)
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
     q = forms.CharField(required=False)
@@ -115,10 +114,6 @@ class EventSearchForm(forms.Form):
 
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
-        
-        organizer_choices = Organizer.objects.exclude(name="").distinct('name'
-                                    ).order_by('name').values_list('name', 'name')
-        self.fields['event_organizer'].choices = [('','All')] + list(organizer_choices)
 
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
 
@@ -1088,12 +1083,12 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
         return self.cleaned_data
 
 
-class OrganizerForm(FormControlWidgetMixin, BetterModelForm):
+class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Organizer._meta.app_label,
         'storme_model':Organizer._meta.model_name.lower()}))
-    label = _('Organizer')
+    label = 'Organizer'
 
     class Meta:
         model = Organizer
@@ -1102,14 +1097,6 @@ class OrganizerForm(FormControlWidgetMixin, BetterModelForm):
             'name',
             'description',
         )
-        fieldsets = [(_('Organizer'), {
-          'fields': ['name',
-                    'description'
-                    ],
-          'legend': '',
-          'classes': ['boxy-grey'],
-          })
-        ]
 
     def __init__(self, *args, **kwargs):
         super(OrganizerForm, self).__init__(*args, **kwargs)
@@ -1117,45 +1104,6 @@ class OrganizerForm(FormControlWidgetMixin, BetterModelForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
-
-
-class OrganizerBaseFormSet(BaseModelFormSet):
-    def clean(self):
-        """Checks that no two organizers have the same name."""
-        if any(self.errors):
-            # Don't bother validating the formset unless each form is valid on its own
-            return
-        names = []
-        for i in range(0, self.total_form_count()):
-            form = self.forms[i]
-            if 'name' in form.cleaned_data:
-                name = form.cleaned_data['name']
-                if name and name in names:
-                    raise forms.ValidationError(_("Organizers in an event must have distinct names. '%s' is already used." % name))
-                names.append(name)
-
-    def save(self, *args, **kwargs):
-        commit = kwargs.pop('commit', True)
-        self.deleted_objects = []
-        if not commit:
-            self.saved_forms = []
-        saved_instances = []
-
-        for form in self.initial_forms:
-            pk_name = self._pk_field.name
-            raw_pk_value = form._raw_value(pk_name)
-            pk_value = form.fields[pk_name].clean(raw_pk_value)
-            pk_value = getattr(pk_value, 'pk', pk_value)
-
-            organizer = self._existing_object(pk_value)
-            if self.can_delete and self._should_delete_form(form):
-                self.deleted_objects.append(organizer)
-                continue
-            saved_instances.append(self.save_existing(form, organizer, commit=commit))
-
-        new_instances = self.save_new_objects(commit)
-
-        return saved_instances + new_instances
 
 
 class PaymentForm(forms.ModelForm):

@@ -1255,15 +1255,6 @@ class Event(TendenciBaseModel):
         speakers = self.speaker_set.exclude(name="").order_by('pk')
 
         return speakers
-    
-    def organizers(self, **kwargs):
-        """
-        This method can returns the list of organizers associated with an event.
-        Organizers with no name are excluded in the list.
-        """
-
-        return self.organizer_set.exclude(name="").order_by('pk')
-
 
     def number_of_days(self):
         delta = self.end_dt - self.start_dt
