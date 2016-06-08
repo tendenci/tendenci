@@ -118,13 +118,13 @@
                     forms = [];
 
                 // display attendees
-                forms.push($('.form-display-attendees'));
+                forms.push($('#t-formsbuilder-form-display-attendees'));
 
                 // pricing
-                forms.push($('.form-pricings'));
+                forms.push($('#t-formsbuilder-form-pricings'));
 
                 // other registration fields
-                $('.form-registration .form-field').each(function(k, v) {
+                $('#t-formsbuilder-form-registration .form-group').each(function(k, v) {
                     if(!$(v).find($elem).length) forms.push($(v));
                 });
 
