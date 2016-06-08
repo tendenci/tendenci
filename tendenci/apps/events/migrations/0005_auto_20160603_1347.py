@@ -12,7 +12,8 @@ def event_group_to_groups(apps, schema_editor):
     Event = apps.get_model('events', 'Event')
 
     for event in Event.objects.all():
-        event.groups.add(event.group)
+        if event.group:
+            event.groups.add(event.group)
         
 
 class Migration(migrations.Migration):
