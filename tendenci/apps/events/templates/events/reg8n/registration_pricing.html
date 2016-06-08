@@ -14,7 +14,10 @@
                 {% trans "Event is full" %}
             </div>
         {% else %}
-            {% if reg_ended %}
+            {% if reg_ended and not event.is_over %}
+            	{% if request.user.is_superuser %}
+            	<div class="alert alert-info" role="alert"><a href="{% url 'event.pricing_edit' event.pk %}">Admin: To Open Registration, Update Price End Date</a></div>
+            	{% endif %}
                 <div class="registration-red">
                     {% trans "Registration has ended" %}
                 </div>
