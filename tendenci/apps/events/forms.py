@@ -1123,8 +1123,8 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.MultipleChoiceField(required=False, choices=[])
