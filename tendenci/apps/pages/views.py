@@ -31,6 +31,7 @@ from tendenci.apps.notifications import models as notification
 
 from tendenci.apps.pages.models import Page, HeaderImage
 from tendenci.apps.pages.forms import PageForm
+from tendenci.apps.categories.models import CategoryItem
 
 
 @is_enabled('pages')
@@ -98,11 +99,26 @@ def search(request, template_name="pages/search.html"):
     filters = get_query_filters(request.user, 'pages.view_page')
     pages = Page.objects.filter(filters).distinct()
     if query:
-        pages = pages.filter(
-            Q(title__icontains=query) \
-            | Q(content__icontains=query) \
-            | Q(slug__icontains=query))
-        pages = pages.exclude(status_detail='archive')
+        if "category:" in query or "sub_category:" in query:
+            # handle category and sub_category
+            key, name = query.split(':')
+            categories = Category.objects.filter(name__iexact=name)
+            if categories.exists():
+                category = categories[0]
+                if key == 'category':
+                    page_ids = CategoryItem.objects.filter(content_type_id=ContentType.objects.get_for_model(Page), category_id=category.id, parent_id__isnull=True).values_list('object_id', flat=True)
+                else:
+                    page_ids = CategoryItem.objects.filter(content_type_id=ContentType.objects.get_for_model(Page), parent_id=category.id, category_id__isnull=True).values_list('object_id', flat=True)
+                pages = pages.filter(id__in=page_ids)
+            else:
+                pages = Page.objects.none()
+                
+        else:
+            pages = pages.filter(
+                Q(title__icontains=query) \
+                | Q(content__icontains=query) \
+                | Q(slug__icontains=query))
+            pages = pages.exclude(status_detail='archive')
 
     pages = pages.order_by('-create_dt')
 
