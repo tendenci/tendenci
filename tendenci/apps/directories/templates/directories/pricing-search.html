@@ -15,7 +15,6 @@
 
 {% block content %}
 <div class="t">
-{% directory_pricing_nav request.user %}
     <h1>{% trans "Directory Pricing List" %}</h1>
 
     {% autopaginate directory_pricings 10 %}
