@@ -116,8 +116,9 @@ class EventSearchForm(forms.Form):
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
         
-        group_choices = Group.objects.filter(status_detail='active'
-                                    ).order_by('name').values_list('id', 'name')
+        group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
+        group_choices = Group.objects.filter(group_filters).distinct(
+                                        ).order_by('name').values_list('id', 'name')
         self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
@@ -747,9 +748,7 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('photo_upload')
 
         default_groups = Group.objects.filter(status=True, status_detail="active")
-
-        if self.user and not self.user.profile.is_superuser:
-
+        if not self.user.is_superuser:
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             groups = default_groups.filter(filters).distinct()
             groups_list = list(groups.values_list('pk', 'name'))
