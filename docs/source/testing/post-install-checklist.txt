@@ -12,7 +12,18 @@ Basic Functionality Testing
 -----------------------------
 
 1. Newsletter Sending has been tested
-  - Set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
+ - Instead of the settings for the regular emails, the newsletter has a separate set of the settings. In your site's 
+   conf/local_settings.py, make sure you have the following settings set up.
+
+     ::
+
+       NEWSLETTER_EMAIL_HOST = '<email-host>'
+       NEWSLETTER_EMAIL_PORT = <email-port>
+       NEWSLETTER_EMAIL_HOST_USER = '<email-host-user>'
+       NEWSLETTER_EMAIL_HOST_PASSWORD = '<email-host-password>'
+
+ - Then, set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
+
 2. Email sending from site is tested and sender address is client's email
   - Do a password reset and confirm you received the email
 3. Redirects have been tested
