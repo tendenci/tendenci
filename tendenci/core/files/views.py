@@ -505,10 +505,10 @@ class FileTinymceCreateView(CreateView):
 
 
     def form_invalid(self, form):
-        data = json.loads(form.errors.as_json()).values()
-        errors = '. '.join([x[0]['message'] for x in data])
+        data = form.errors.itervalues()
+        errors = '. '.join([x[0] for x in data])
         data = {'files': [{
-                'errors': errors,}]
+                'errors': errors}]
                 }
         return JSONResponse(data)
     
