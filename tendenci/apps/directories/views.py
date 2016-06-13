@@ -423,7 +423,11 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
 
 
 @is_enabled('directories')
+@login_required
 def pricing_search(request, template_name="directories/pricing-search.html"):
+    if not has_perm(request.user,'directories.view_directorypricing'):
+        raise Http403
+
     directory_pricing = DirectoryPricing.objects.filter(status=True).order_by('duration')
     EventLog.objects.log()
 

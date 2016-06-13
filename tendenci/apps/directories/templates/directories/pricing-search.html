@@ -24,38 +24,22 @@
         {% has_perm user directories.view_directorypricing dp as can_view %}
         {% if can_view %}
         <div class="directory-wrap-search">
+            <h2><a href="{% url "directory_pricing.view" dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
 
-            <div class="options options-search">
+            <div>{% trans "Regular Price:" %} {{ dp.regular_price|format_currency }}</div>
+            <div>{% trans "Premium Price:" %} {{ dp.premium_price|format_currency }}</div>
+            <div>{% trans "Member Regular Price:" %} {{ dp.regular_price_member|format_currency }}</div>
+            <div>{% trans "Member Premium Price:" %} {{ dp.premium_price_member|format_currency }}</div>
+            <div>{% trans "Show Member Pricing:" %} {{ dp.show_member_pricing }}</div>
+            <div>{% trans "Status:" %} <b>{% if dp.status %}Active{%else%}Inactive{%endif%}</b></div>
+            <div class="meta">
+                <div class="submitted">{% blocktrans with dp.create_dt|date:"long" as create_date and dp.creator as creat %}Created on {{ create_date }} by {{ creat }}{% endblocktrans %}</div>
+            </div>
+            
+            <div class="options options-search text-right">
                 <div class="quick-options">
                     {% directory_pricing_options request.user dp %}
                 </div>
-            </div>
-
-            <h2><a href="{% url "directory_pricing.view" dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
-
-            <div class="pricing-wrap" >
-            <table width="70%">
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>{% trans 'Regular' %}</th>
-                    <th>{% trans 'Premium' %}</th>
-                </tr>
-                <tr>
-                    <td>{% trans 'Non-member' %}</td>
-                    <td>{{ dp.regular_price|format_currency }}</td>
-                    <td>{{ dp.premium_price|format_currency }}</td>
-                </tr>
-                <tr>
-                    <td>{% trans 'Member' %}</td>
-                    <td>{{ dp.regular_price_member|format_currency }}</td>
-                    <td>{{ dp.premium_price_member|format_currency }}</td>
-                </tr>
-            </table>
-            </div>
-
-            <div class="content">{% trans "Show Member Pricing:" %} <strong>{{ dp.show_member_pricing }}</strong></div>
-            <div class="meta">
-                <div class="submitted">{% blocktrans with dp.create_dt|date:"long" as dp_create and dp.creator as dp_creator %} Created on {{ dp_create }} by {{ dp_creator }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-directory form -->
@@ -81,7 +65,7 @@
 
             // delete confirmation
             $('.delete').click(function(){
-                var delete_directory_pricing = confirm({% trans 'Permenantly delete this directory price?' %});    // confirm
+                var delete_directory_pricing = confirm("{% trans 'Permenantly delete this directory price?' %}");    // confirm
                 if(delete_directory_pricing) $(this).parents('.directory-wrap-search').find('form[name="directory-pricing-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });
