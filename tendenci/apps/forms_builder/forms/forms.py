@@ -437,6 +437,7 @@ class FormForField(forms.ModelForm):
         choices = cleaned_data.get("choices")
         field_type = cleaned_data.get("field_type")
         required = cleaned_data.get("required")
+        visible = cleaned_data.get("visible")
 
         if field_function == "GroupSubscription":
             if field_type != "BooleanField":

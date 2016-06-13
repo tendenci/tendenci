@@ -49,7 +49,7 @@ FIELD_CHOICES = (
 
 FIELD_FUNCTIONS = (
     ("GroupSubscription", _("Subscribe to Group")),
-    ("GroupSubscriptionAuto", _("Subscribe to Group")),
+    ("GroupSubscriptionAuto", _("Subscribe to Group (Auto)")),
     ("EmailFirstName", _("First Name")),
     ("EmailLastName", _("Last Name")),
     ("EmailFullName", _("Full Name")),
