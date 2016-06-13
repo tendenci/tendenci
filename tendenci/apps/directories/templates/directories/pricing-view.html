@@ -6,15 +6,9 @@
 
 {% block title %}{% trans "View Price Details:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% endblock %}
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
-{% endblock %}
-
 {% block content %}
 <div class="t">
 
-    {% directory_pricing_nav request.user directory_pricing %}
 
     <h1>{% trans "View Price Details:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} </h1>
 
@@ -26,59 +20,49 @@
 
         <div class="clear"></div>
 
-        <div class="pricing-item">
-            <div class="label">{% trans "Duration:" %}</div>
-            <div class="field"><b>{{ directory_pricing.get_duration_display }}</b></div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 align-right text-right">{% trans "Duration:" %}</div>
+            <div><b>{{ directory_pricing.duration }}</b></div>
         </div>
 
-        <div class="pricing-item">
-            <div class="label">{% trans "Regular Price:" %}</div>
-            <div class="field"><b>{{ directory_pricing.regular_price|format_currency }}</b></div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Regular Price:" %}</div>
+            <div><b>{{ directory_pricing.regular_price|format_currency }}</b></div>
         </div>
 
-        <div class="pricing-item">
-            <div class="label">{% trans "Premium Price:" %}</div>
-            <div class="field"><b>{{ directory_pricing.premium_price|format_currency }}</b></div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Premium Price:" %}</div>
+            <div><b>{{ directory_pricing.premium_price|format_currency }}</b></div>
         </div>
 
-        <div class="pricing-item">
-            <div class="label">{% trans "Member Regular Price:" %}</div>
-            <div class="field"><b>{{ directory_pricing.regular_price_member|format_currency }}</b></div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Member Regular Price:" %}</div>
+            <div><b>{{ directory_pricing.regular_price_member|format_currency }}</b></div>
         </div>
 
-        <div class="pricing-item">
-            <div class="label">{% trans "Member Premium Price:" %}</div>
-            <div class="field"><b>{{ directory_pricing.premium_price_member|format_currency }}</b></div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Member Premium Price:" %}</div>
+            <div><b>{{ directory_pricing.premium_price_member|format_currency }}</b></div>
         </div>
 
-        <div class="pricing-item">
-            <div class="label">{% trans "Show Member Pricing:" %}</div>
-            <div class="field"><b>{{ directory_pricing.show_member_pricing }}</b></div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Show Member Pricing:" %}</div>
+            <div><b>{{ directory_pricing.show_member_pricing }}</b></div>
         </div>
-
 
         <div class="sep-line"></div>
 
-        <div class="pricing-item">
-            <div class="label"><b>{% trans "Status:" %}</b></div>
-            <div class="field">{% if directory_pricing.status %}{% trans "Active" %}{%else%}{% trans "Inactive" %}{%endif%}</div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Status:" %}</b></div>
+            <div>{% if directory_pricing.status %}Active{%else%}Inactive{%endif%}</div>
         </div>
-        <div class="pricing-item">
-            <div class="label"><b>{% trans "Created by:" %}</b></div>
-            <div class="field"><a href="{% url "profile" directory_pricing.creator_username %}">{{ directory_pricing.creator_username }}</a></div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Created by:" %}</b></div>
+            <div><a href="{% if directory_pricing.creator_username %}{% url "profile" directory_pricing.creator_username %}{% else %}#{% endif %}">{{ directory_pricing.creator_username }}</a></div>
         </div>
-        <div class="pricing-item">
-            <div class="label"><b>{% trans "Created on:" %}</b></div>
-            <div class="field">{{ directory_pricing.create_dt|date:"long" }}</div>
-            <div class="clear-left"></div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Created on:" %}</b></div>
+            <div>{{ directory_pricing.create_dt|date:"long" }}</div>
         </div>
 
 
@@ -92,15 +76,14 @@
 
 </div>
 {% endblock %}
-
+{{ block.super }}
 {% block extra_body %}
-    {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function(){
 
             // delete confirmation
             $('.delete').click(function(){
-                var delete_directory_pricing = confirm({% trans "Permenantly delete this directory price?" %});    // confirm
+                var delete_directory_pricing = confirm("Permenantly delete this directory price?");    // confirm
                 if(delete_directory_pricing) $(this).parents('.directory-pricing-details').find('form[name="directory-pricing-delete"]').submit() // delete: if OK
                 return false;    // cancel
             });
