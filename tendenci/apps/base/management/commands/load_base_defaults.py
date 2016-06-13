@@ -138,6 +138,8 @@ class Command(BaseCommand):
         call_command('loaddata', 'paymentmethod.json')
         print 'load default_forums.json'
         call_command('loaddata', 'default_forums.json')
+        print 'load npo_default_directories_pricings.json'
+        call_command('loaddata', 'npo_default_directories_pricings.json')
         
         # default sqls for explorer
         call_command('load_sqlexplorer_defaults')

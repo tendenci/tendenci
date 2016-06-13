@@ -1,0 +1,22 @@
+[
+{
+    "fields": {
+    	"duration": 365,
+        "guid": "f8726f6e-5393-11e2-9cfb-22000a1e8c2c",
+        "premium_price_member": "0.00",
+        "regular_price": "0.00",
+        "premium_price": "0.00",
+        "regular_price_member": "0.00",
+        "show_member_pricing": true,
+        "create_dt": "2016-06-13T13:41:05.595",
+        "update_dt": "2016-06-13T13:41:05.595",
+        "creator": null,
+        "creator_username": "system",
+        "owner": null,
+        "owner_username": "system",
+        "status": true
+    },
+    "model": "directories.directorypricing",
+    "pk": 1
+}
+]
