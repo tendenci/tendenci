@@ -38,4 +38,4 @@ class NewsletterAdmin(TendenciBaseModelAdmin):
 
 admin.site.register(NewsletterTemplate, NewsletterTemplateAdmin)
 
-admin.site.register(Newsletter, TendenciBaseModelAdmin)
+admin.site.register(Newsletter, NewsletterAdmin)

@@ -410,6 +410,8 @@ class Newsletter(models.Model):
     def save(self, *args, **kwargs):
         if self.security_key == '' or self.security_key == None:
             self.security_key = uuid.uuid1()
+        if "log" in kwargs:
+            kwargs.pop('log')
         super(Newsletter, self).save(*args, **kwargs)
 
     def get_browser_view_url(self):
