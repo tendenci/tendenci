@@ -463,6 +463,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
             subject = subject.encode(errors='ignore')
             email_recipients = entry.get_function_email_recipients()
+            # reply_to of admin emails goes to submitter
+            email.reply_to = email_to
 
             if email_copies or email_recipients:
                 # prepare attachments
