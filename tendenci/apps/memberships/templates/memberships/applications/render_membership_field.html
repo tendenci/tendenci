@@ -36,7 +36,7 @@
                 {% if field_obj.field_name == 'password' %}
                         <label for="{{ field.id_for_label }}" class="col-sm-3 control-label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_obj.label }}</label>
 
-                        <div class="col-sm-9 {{ field_obj.field_div_class }}">
+                        <div class="col-sm-6 {{ field_obj.field_div_class }}">
                             {% if field.errors %}
                                 <div class="error">
                                     {% for error in field.errors %}
@@ -56,7 +56,7 @@
                     <div class="form-group{% if field_obj.admin_only %} t-membershipapp-admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
                         <label for="{{ field.id_for_label }}" class="col-sm-3 control-label{% if field_obj.required %} required{% endif %} {{ field_obj.label_type }}">{{ field_pwd.label_tag }}</label>
 
-                        <div class="col-sm-7 {{ field_obj.field_div_class }}">
+                        <div class="col-sm-6 {{ field_obj.field_div_class }}">
                             {{ field_pwd }}
                         </div>
                 {% else %}
@@ -74,7 +74,7 @@
                         {% endif %}
                     {% endif %}
 
-                    <div class="col-sm-9 {% if field|is_fileinput %}fileinputbox{% else %}{{ field_obj.field_div_class }}{% endif %}">
+                    <div class="col-sm-{{ field|col_sm_width }} {% if field|is_fileinput %}fileinputbox{% else %}{{ field_obj.field_div_class }}{% endif %}">
                         {% if field.errors %}
                             <div class="error">
                                 {% for error in field.errors %}

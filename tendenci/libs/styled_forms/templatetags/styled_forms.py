@@ -37,6 +37,34 @@ def is_fileinput(field):
     return "fileinput" in field.field.widget.__class__.__name__.lower()
 
 @register.filter
+def col_sm_width(field):
+    """
+    Get the width for the field column specified in the class "col-sm-x".
+    The width is calculated based on the size of the field.
+    """
+    f = field.field
+    if hasattr(f, 'widget') and 'size' in f.widget.attrs:
+        try:
+            size = int(f.widget.attrs['size'])
+            if size >= 40:
+                return 9
+            if size >= 30:
+                return 8
+            if size >= 25:
+                return 7
+            if size >= 20:
+                return 6
+            if size >= 10:
+                return 5
+            if size >= 6:
+                return 4
+            if size <= 5:
+                return 3
+        except:
+            pass
+    return 9
+
+@register.filter
 def styled_form(form):
     template = get_template('styled_forms/form.html')
     c = Context({'form':form})
