@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 import operator
 from haystack.query import SearchQuerySet
 

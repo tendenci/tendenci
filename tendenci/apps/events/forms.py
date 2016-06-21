@@ -3,7 +3,7 @@ import imghdr
 import calendar
 from ast import literal_eval
 from os.path import splitext, basename
-from datetime import date, datetime, timedelta, time
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from django import forms
@@ -40,13 +40,13 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.site_settings.models import Setting
-from tendenci.apps.site_settings.utils import get_setting, get_global_setting
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 
-from fields import Reg8nDtField, UseCustomRegField
+from fields import UseCustomRegField
 from widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (

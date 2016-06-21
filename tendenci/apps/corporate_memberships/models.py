@@ -1405,7 +1405,6 @@ class CorpMembershipAppField(OrderingBaseModel):
             if field_class == 'CountrySelectField':
                 field_class = CountrySelectField
             else:
-                print 'self.field_name=', self.field_name
                 if self.field_name in ['tax_exempt'] and not self.choices:
                     field_class = forms.BooleanField
                 else:

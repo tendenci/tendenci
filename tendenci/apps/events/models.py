@@ -23,7 +23,7 @@ from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.models import GroupMembership
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File

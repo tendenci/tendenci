@@ -2,7 +2,6 @@ from haystack import indexes
 
 
 from django.utils.html import strip_tags, strip_entities
-from django.db.models import signals
 
 from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.events.utils import count_event_spots_taken

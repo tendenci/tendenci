@@ -1,8 +1,6 @@
 # NOTE: When updating the registration scheme be sure to check with the
 # anonymous registration impementation of events in the registration module.
 import ast
-import calendar
-import csv
 import re
 import os.path
 import time as ttime
@@ -16,9 +14,7 @@ from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
-from django.db.models import Q, Max, Count
-from django.db.models.fields import FieldDoesNotExist
-from django.forms.models import modelformset_factory
+from django.db.models import Max, Count
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
@@ -30,19 +26,15 @@ from pytz import UnknownTimeZoneError
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
-    TypeColorSet, RecurringEvent, EventPhoto)
-from tendenci.apps.events.forms import (FormForCustomRegForm, Reg8nEditForm,
-    EMAIL_AVAILABLE_TOKENS, EventForm, PlaceForm, SpeakerForm, OrganizerForm,
-    Reg8nConfPricingForm, RegConfPricingBaseModelFormSet, ApplyRecurringChangesForm,
-    DisplayAttendeesForm)
+    TypeColorSet, RecurringEvent)
+from tendenci.apps.events.forms import (FormForCustomRegForm,
+    EMAIL_AVAILABLE_TOKENS)
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
 from tendenci.apps.base.utils import format_datetime_range, UnicodeWriter
-from tendenci.apps.files.models import File
-from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
 
