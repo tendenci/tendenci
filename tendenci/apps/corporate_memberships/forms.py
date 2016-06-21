@@ -182,6 +182,16 @@ class CorpMembershipAppFieldAdminForm(forms.ModelForm):
             else:
                 self.fields['field_type'].choices = CorpMembershipAppField.FIELD_TYPE_CHOICES1
 
+            if self.instance.field_name in ['tax_exempt']:
+                # handle boolean fields
+                self.fields['field_type'].choices = (("BooleanField", _("Checkbox")),
+                                ("ChoiceField", _("Select One from a list (Drop Down)")),
+                                ("ChoiceField/django.forms.RadioSelect",
+                                    _("Select One from a list (Radio Buttons)")),)
+                self.fields['choices'].widget = forms.widgets.Select(
+                                            choices=(('yesno', _('Yes/No')),))
+            
+
     def save(self, *args, **kwargs):
         self.instance = super(CorpMembershipAppFieldAdminForm, self).save(*args, **kwargs)
         if self.instance:

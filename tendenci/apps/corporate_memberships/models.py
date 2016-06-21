@@ -1405,7 +1405,11 @@ class CorpMembershipAppField(OrderingBaseModel):
             if field_class == 'CountrySelectField':
                 field_class = CountrySelectField
             else:
-                field_class = getattr(forms, field_class)
+                print 'self.field_name=', self.field_name
+                if self.field_name in ['tax_exempt'] and not self.choices:
+                    field_class = forms.BooleanField
+                else:
+                    field_class = getattr(forms, field_class)
             field_args = {"label": self.label,
                           "required": self.required,
                           'help_text': self.help_text}
@@ -1421,8 +1425,11 @@ class CorpMembershipAppField(OrderingBaseModel):
                 if self.field_name not in [
                             'corporate_membership_type',
                             'payment_method']:
-                    choices = self.choices.split(",")
-                    field_args["choices"] = zip(choices, choices)
+                    if self.choices == 'yesno':
+                        field_args["choices"] = ((1, _('Yes')), (0, _('No')),)
+                    else:
+                        choices = self.choices.split(",")
+                        field_args["choices"] = zip(choices, choices)
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
