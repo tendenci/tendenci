@@ -1,12 +1,8 @@
 import os
-from django.db.models import Avg, Max, Min, Count
-from django.db.models.fields.related import ManyToManyField, ForeignKey
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericRelation
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.db.models import Max, Count
+from django.http import HttpResponse
 from celery.task import Task
 from celery.registry import tasks
-from tendenci.apps.events.ics.models import ICS
 from tendenci.apps.events.ics.utils import create_ics
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.events.models import Event
