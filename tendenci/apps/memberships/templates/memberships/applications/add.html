@@ -63,9 +63,14 @@
         div.fileinputbox {
             margin-left: 125px;
         }
-        .label, label {
-        	text-align: right !important;
-        }
+        #t-memberships-application-form.form-horizontal .control-label {
+		  text-align: right !important;
+		}
+		.form-horizontal .form-group{
+			margin-left: 0px !important;
+			margin-right: 0px !important;
+			margin-bottom: 8px !important;
+		}
     </style>
 {% endblock %}
 
@@ -83,7 +88,7 @@
         {% endblocktrans %}
     {% endif %}
 
-    <form id="t-memberships-application-form" class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <form id="t-memberships-application-form" class="form-horizontal clearfix" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
         {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or education_form.errors.values or captcha_form.errors.values and not is_edit %}
             <div class="form-errors">
                 {% trans 'There were some problems in the form. Please review. Thanks!' %}

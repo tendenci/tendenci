@@ -46,8 +46,6 @@ def col_sm_width(field):
     if hasattr(f, 'widget') and 'size' in f.widget.attrs:
         try:
             size = int(f.widget.attrs['size'])
-            if size >= 40:
-                return 9
             if size >= 30:
                 return 8
             if size >= 25:
@@ -62,7 +60,7 @@ def col_sm_width(field):
                 return 3
         except:
             pass
-    return 9
+    return 8
 
 @register.filter
 def styled_form(form):
