@@ -213,3 +213,11 @@
 .t-auth-admin-loggedin .t-search-result-footer {
     padding-bottom: 0;
 }
+
+/* form */
+.t .form-horizontal .control-label {
+	  text-align: right !important;
+}
+.t .form-horizontal .form-group{
+		margin-bottom: 8px !important;
+}
