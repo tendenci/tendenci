@@ -63,8 +63,8 @@
 {% block content %}
 <div class="t">
 <div class="application-form-wrap">
-        <h1>{% blocktrans with name=app.name %}{{ name }}{% endblocktrans %}</h1>
-        {% blocktrans with description=app.description|safe %}{{ description }}{% endblocktrans %}
+        <h1>{{ app.name }}</h1>
+        {{ app.description|safe }}
 
    <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
 
@@ -73,12 +73,12 @@
             {% trans 'There were some problems in the form. Please review. Thanks!' %}
             {% if corpprofile_form.errors.values %}
             {% for error in corpmembership_form.non_field_errors %}
-                <p><a href="#">{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</a></p>
+                <p><a href="#">{{ error }}</a></p>
             {% endfor %}
             {% endif %}
             {% if corpmembership_form.errors.values %}
             {% for error in corpmembership_form.non_field_errors %}
-                <p><a href="#">{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</a></p>
+                <p><a href="#">{{ error }}</a></p>
             {% endfor %}
             {% endif %}
 
@@ -86,9 +86,7 @@
                 {% if field.errors %}
                       {% for error in field.errors %}
                         <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
-                        {% blocktrans with label=field.label err=error %}
-                        {{ label }} - {{ err }}
-                        {% endblocktrans %}
+                        {{ field.label }} - {{ error }}
                         }</a></p>
                       {% endfor %}
                 {% endif %}
@@ -97,9 +95,7 @@
                 {% if field.errors %}
                       {% for error in field.errors %}
                         <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
-                        {% blocktrans with label=field.label err=error %}
-                        {{ label }} - {{ err }}
-                        {% endblocktrans %}
+                        {{ field.label }} - {{ error }}
                         </a></p>
                       {% endfor %}
                 {% endif %}
