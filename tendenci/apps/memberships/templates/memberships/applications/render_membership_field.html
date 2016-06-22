@@ -6,7 +6,7 @@
 {% if field_obj.field_name == '' %}
     <div class="page-header{% if field_obj.admin_only %} t-membershipapp-admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
         <h3>{{ field_obj.label }}</h3>
-        {% if field_obj.description %}{{ field_obj.description }}</small>{% endif %}
+        {% if field_obj.description %}{{ field_obj.description }}{% endif %}
     </div>
 {% else %}
     {% if field %}

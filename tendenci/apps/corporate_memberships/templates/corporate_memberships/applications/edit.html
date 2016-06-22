@@ -57,6 +57,12 @@
     div.submit-wrap{
         margin-top: 2em;
     }
+    #t-corp-form.form-horizontal .control-label {
+	  text-align: right !important;
+	}
+	.form-horizontal .form-group{
+		margin-bottom: 8px !important;
+	}
 </style>
 {% endblock %}
 
@@ -66,7 +72,7 @@
         <h1>{% trans "Edit Corporate Membership" %}</h1>
         {{ app.description|safe }}
 
-   <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+   <form id="t-corp-form" class="form-horizontal clearfix" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
 
     {% if corpmembership_form.errors.values %}
         <div class="form-errors">
@@ -95,8 +101,10 @@
             {% render_corpmembership_field request field_obj corpprofile_form corpmembership_form %}
         {% endfor %}
 
-        <div class="submit-wrap">
-        <input class="btn" type="submit" name="submit" value="{% trans 'Submit' %}" />
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+            </div>
         </div>
     </form>
 

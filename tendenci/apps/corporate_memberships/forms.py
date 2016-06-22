@@ -301,7 +301,7 @@ def assign_fields(form, app_field_objs, instance=None):
             obj.label_type = ' '.join(label_type)
 
 
-class CorpProfileForm(forms.ModelForm):
+class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = CorpProfile
         fields = "__all__"
@@ -312,6 +312,7 @@ class CorpProfileForm(forms.ModelForm):
         super(CorpProfileForm, self).__init__(*args, **kwargs)
 
         assign_fields(self, app_field_objs)
+        self.add_form_control_class()
 
         if self.corpmembership_app.authentication_method == 'email':
             self.fields['authorized_domain'] = forms.CharField(help_text="""
@@ -406,7 +407,7 @@ class CorpMembershipUpgradeForm(forms.ModelForm):
             attrs=self.fields['corporate_membership_type'].widget.attrs)
 
 
-class CorpMembershipForm(forms.ModelForm):
+class CorpMembershipForm(FormControlWidgetMixin, forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', _('Active')),
             ('pending', _('Pending')),
@@ -431,6 +432,12 @@ class CorpMembershipForm(forms.ModelForm):
                 self.request_user,
                 self.corpmembership_app),
             attrs=self.fields['corporate_membership_type'].widget.attrs)
+        self.fields['corporate_membership_type'].empty_label = None
+        if 'class' in self.fields['corporate_membership_type'].widget.attrs:
+            type_class = self.fields['corporate_membership_type'].widget.attrs['class']
+            # remove form-control class
+            type_class = type_class.replace('form-control', '')
+            self.fields['corporate_membership_type'].widget.attrs['class'] = type_class
         # if all membership types are free, no need to display payment method
         require_payment = self.corpmembership_app.corp_memb_type.filter(
                                 price__gt=0).exists()
@@ -451,6 +458,7 @@ class CorpMembershipForm(forms.ModelForm):
                         choices=self.STATUS_CHOICES)
 
         assign_fields(self, app_field_objs, instance=self.instance)
+        self.add_form_control_class()
         self.field_names = [name for name in self.fields.keys()]
 
     def save(self, **kwargs):
