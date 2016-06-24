@@ -57,7 +57,7 @@
     <div class="event-registrants-cancelled">
         <h4>{% trans "Already Cancelled" %}</h4>
         {% for registrant in cancelled_registrants %}
-            <div class='avatar'>{% avatar registrant.user 56 %}</div>
+            <div class='avatar'>{% gravatar registrant.user 56 %}</div>
             <div class="info">
 
                 <div class="name">
