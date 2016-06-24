@@ -822,7 +822,7 @@ def corpmembership_delete(request, id,
 
             return HttpResponseRedirect(reverse('corpmembership.search'))
 
-        return render_to_response(template_name, {'corp_membership': corp_memb},
+        return render_to_response(template_name, {'corp_memb': corp_memb},
             context_instance=RequestContext(request))
     else:
         raise Http403
