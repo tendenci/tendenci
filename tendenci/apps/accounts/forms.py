@@ -177,7 +177,7 @@ class LoginForm(forms.Form):
 
             messages.add_message(
                 request, messages.SUCCESS,
-                _(u"Woohoo %(first_name)s %(last_name)s, you've successfully logged in." % {
+                _(u"Hello %(first_name)s %(last_name)s, you've successfully logged in." % {
                     'first_name' : self.user.first_name or self.user.username,
                     'last_name' : self.user.last_name }))
 
