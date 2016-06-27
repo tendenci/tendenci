@@ -169,7 +169,14 @@ class Profile(Person):
         if self.hide_in_search:
             self.allow_anonymous_view = False
         else:
-            self.allow_anonymous_view = True
+            self.allow_anonymous_view = get_setting('module', 'users', 'allowanonymoususersearchuser')
+            
+        self.allow_user_view =  get_setting('module', 'users', 'allowusersearch')
+        if get_setting('module', 'memberships', 'memberprotection') == 'private':
+            self.allow_member_view = False
+        else:
+            self.allow_member_view = True
+        
 
         super(Profile, self).save(*args, **kwargs)
 
@@ -180,6 +187,7 @@ class Profile(Person):
                 del self.old_email
         except ImportError:
             pass
+
 
 
     def allow_search_users(self):
