@@ -30,8 +30,7 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
-from django.forms.models import modelformset_factory, \
-    inlineformset_factory
+from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 
