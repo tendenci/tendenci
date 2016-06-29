@@ -3644,8 +3644,9 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
     """
     event = get_object_or_404(Event, pk=event_id)
 
-    # if they can edit it, they can export it
-    if not has_perm(request.user, 'events.change_event', event):
+    # if they can view registrants or edit the event, they can export it
+    if not (has_perm(request.user, 'events.view_registrant') or \
+             has_perm(request.user, 'events.change_event', event)):
         raise Http403
 
     import xlwt
