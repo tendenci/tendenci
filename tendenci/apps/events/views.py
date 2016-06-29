@@ -7,6 +7,8 @@ import calendar
 import itertools
 import subprocess
 import time
+import xlwt
+from collections import OrderedDict
 
 from datetime import datetime
 from datetime import date, timedelta
@@ -3648,9 +3650,6 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
     if not (has_perm(request.user, 'events.view_registrant') or \
              has_perm(request.user, 'events.change_event', event)):
         raise Http403
-
-    import xlwt
-    from ordereddict import OrderedDict
 
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
