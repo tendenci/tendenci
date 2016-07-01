@@ -50,7 +50,7 @@ class News(TendenciBaseModel):
     release_dt_local = models.DateTimeField(null=True, blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+    groups = models.ManyToManyField(Group, default=get_default_group, related_name='group_news')
     tags = TagField(blank=True)
 
     #for podcast feeds

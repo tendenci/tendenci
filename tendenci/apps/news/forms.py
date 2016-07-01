@@ -17,6 +17,7 @@ from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -50,7 +51,7 @@ class NewsForm(TendenciBaseForm):
     photo_upload = forms.FileField(label=_('Thumbnail Image'), required=False, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. It will not display on the news page.'))
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
-    group = forms.ChoiceField(required=True, choices=[])
+    groups = forms.MultipleChoiceField(required=True, choices=[], help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
 
     class Meta:
         model = News
@@ -60,7 +61,7 @@ class NewsForm(TendenciBaseForm):
         'slug',
         'summary',
         'body',
-        'group',
+        'groups',
         'photo_upload',
         'source',
         'website',
@@ -87,7 +88,7 @@ class NewsForm(TendenciBaseForm):
                                  'slug',
                                  'summary',
                                  'body',
-                                 'group',
+                                 'groups',
                                  'tags',
                                  'photo_upload',
                                  'source',
@@ -147,14 +148,16 @@ class NewsForm(TendenciBaseForm):
 
         return photo_upload
 
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group
-        except Group.DoesNotExist:
-            raise forms.ValidationError(_('Invalid group selected.'))
+    def clean_groups(self):
+        group_ids = self.cleaned_data['groups']
+        groups = []
+        for group_id in group_ids:
+            try:
+                group = Group.objects.get(pk=group_id)
+                groups.append(group)
+            except Group.DoesNotExist:
+                raise forms.ValidationError(_('Invalid group selected.'))
+        return groups
 
     def clean_syndicate(self):
         """
@@ -182,12 +185,12 @@ class NewsForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
-            self.fields['group'].initial = Group.objects.get_initial_group_id()
+            self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
 
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         #if not self.user.profile.is_superuser:
-        if self.user and not self.user.profile.is_superuser:
+        if not self.user.is_superuser:
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
@@ -202,7 +205,7 @@ class NewsForm(TendenciBaseForm):
         else:
             groups_list = default_groups.values_list('pk', 'name')
 
-        self.fields['group'].choices = groups_list
+        self.fields['groups'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
         self.fields['timezone'].initial = settings.TIME_ZONE
 
@@ -211,3 +214,17 @@ class NewsForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
         else:
             self.fields.pop('remove_photo')
+
+
+class NewsSearchForm(FormControlWidgetMixin, forms.Form):
+    news_group = forms.ChoiceField(label=_('Group'), required=False, choices=[])
+    q = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(NewsSearchForm, self).__init__(*args, **kwargs)
+        
+        group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
+        group_choices = Group.objects.filter(group_filters).distinct(
+                                        ).order_by('name').values_list('id', 'name')
+        self.fields['news_group'].choices = [('','All')] + list(group_choices)
