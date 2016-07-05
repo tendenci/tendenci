@@ -1437,6 +1437,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         'app_fields': app_fields,
         'user_form': user_form,
         'profile_form': profile_form,
+        'education_form': education_form,
         'demographics_form': demographics_form,
         'membership_form': membership_form2,
         'is_edit': True,

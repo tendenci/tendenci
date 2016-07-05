@@ -553,7 +553,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request')
-        self.is_corp_rep = kwargs.pop('is_corp_rep')
+        self.is_corp_rep = kwargs.pop('is_corp_rep', None)
         super(UserForm, self).__init__(*args, **kwargs)
 
         del self.fields['groups']
