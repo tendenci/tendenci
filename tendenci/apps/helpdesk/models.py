@@ -33,6 +33,21 @@ class Queue(models.Model):
 
     """
 
+    EMAIL_BOX_POP = 'pop3'
+    EMAIL_BOX_IMAP = 'imap'
+
+    EMAIL_BOX_CHOICES = (
+        (EMAIL_BOX_POP, _('POP 3')),
+        (EMAIL_BOX_IMAP,_('IMAP'))
+    )
+
+    PROXY_SOCKS4 = 'socks4'
+    PROXY_SOCKS5 = 'socks5'
+    PROXY_SOCKS_CHOICES = (
+        (PROXY_SOCKS4, _('SOCKS4')),
+        (PROXY_SOCKS4, _('SOCKS5'))
+    )
+
     title = models.CharField(
         _('Title'),
         max_length=100,
@@ -109,7 +124,7 @@ class Queue(models.Model):
     email_box_type = models.CharField(
         _('E-Mail Box Type'),
         max_length=5,
-        choices=(('pop3', _('POP 3')), ('imap', _('IMAP'))),
+        choices=EMAIL_BOX_CHOICES,
         blank=True,
         null=True,
         help_text=_('E-Mail server type for creating tickets automatically '
@@ -187,7 +202,7 @@ class Queue(models.Model):
     socks_proxy_type = models.CharField(
         _('Socks Proxy Type'),
         max_length=8,
-        choices=(('socks4', _('SOCKS4')), ('socks5', _('SOCKS5'))),
+        choices=PROXY_SOCKS_CHOICES,
         blank=True,
         null=True,
         help_text=_('SOCKS4 or SOCKS5 allows you to proxy your connections through a SOCKS server.'),

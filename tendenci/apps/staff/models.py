@@ -105,13 +105,20 @@ class Position(models.Model):
 
 
 class StaffFile(OrderingBaseModel, File):
+
+    PHOTO_TYPE_FEATURED = 'featured'
+    PHOTO_TYPE_OTHER = 'featured'
+
+    PHOTO_TYPE_CHOICES = (
+        (PHOTO_TYPE_FEATURED,'Featured'),
+        (PHOTO_TYPE_OTHER, 'Other'),
+    )
+
     staff = models.ForeignKey(Staff)
     photo_type = models.CharField(
         max_length=50,
-        choices=(
-            ('featured','Featured'),
-            ('other','Other'),
-        ))
+        choices=PHOTO_TYPE_CHOICES
+        )
 
     objects = FileManager()
 

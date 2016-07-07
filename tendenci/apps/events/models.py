@@ -146,9 +146,20 @@ class RegistrationConfiguration(models.Model):
     Event registration
     Extends the event model
     """
+
     # TODO: use shorter name
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
+
+    BIND_TRUE = True
+    BIND_FALSE = False
+
+    BIND_CHOICES = (
+        (True, _('Use one form for all pricings')),
+        (False, _('Use separate form for each pricing'),
+    ))
+
+
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(
         help_text=_('A payment required before registration is accepted.'), default=True)
@@ -173,9 +184,8 @@ class RegistrationConfiguration(models.Model):
                                  help_text=_("You'll have the chance to edit the selected form"))
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
     bind_reg_form_to_conf_only = models.BooleanField(_(' '),
-                                 choices=((True, _('Use one form for all pricings')),
-                                          (False, _('Use separate form for each pricing'))),
-                                 default=True)
+                                 choices=BIND_CHOICES, 
+                                 default=BIND_TRUE)
 
     # base email for reminder email
     email = models.ForeignKey(Email, null=True)

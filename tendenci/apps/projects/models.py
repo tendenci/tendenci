@@ -69,6 +69,21 @@ class ProjectNumber(models.Model):
 
 
 class Project(TendenciBaseModel):
+
+    STATUS_OPEN = 'open'
+    STATUS_ASSIGNED = 'assigned'
+    STATUS_IN_PROGRESS = 'in progress'
+    STATUS_PENDING = 'pending'
+    STATUS_CLOSED = 'closed'
+
+    STATUS_CHOICES = (
+            (STATUS_OPEN, 'Open'),
+            (STATUS_ASSIGNED, 'Assigned'),
+            (STATUS_IN_PROGRESS, 'In Progress'),
+            (STATUS_PENDING, 'Pending'),
+            (STATUS_CLOSED, 'Closed')
+        )
+
     tags = TagField(help_text='Tag 1, Tag 2, ...', blank=True)
     slug = models.SlugField(_(u'URL Path'), unique=True, max_length=200)
     project_name = models.CharField(
@@ -78,13 +93,8 @@ class Project(TendenciBaseModel):
     project_status = models.CharField(_(u'Project Status'),
         blank=True,
         max_length=50,
-        choices=(
-            ('open', 'Open'),
-            ('assigned', 'Assigned'),
-            ('in progress', 'In Progress'),
-            ('pending', 'Pending'),
-            ('closed', 'Closed')
-        ))
+        choices=STATUS_CHOICES)
+
     cost = models.DecimalField (
         _(u'Project Cost'),
         max_digits = 10,

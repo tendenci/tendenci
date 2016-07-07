@@ -1630,13 +1630,34 @@ class Creator(models.Model):
 
 
 class Notice(models.Model):
+
+    NOTICE_BEFORE = 'before'
+    NOTICE_AFTER = 'after'
+    NOTICE_ATTIMEOF = 'attimeof'
+
+    NOTICE_CHOICES = (
+        (NOTICE_BEFORE, _('Before')),
+        (NOTICE_AFTER,  _('After')),
+        (NOTICE_ATTIMEOF, _('At Time Of'))
+    )
+
+    CONTENT_TYPE_HTML = 'html'
+
+    CONTENT_TYPE_CHOICES = (
+        (CONTENT_TYPE_HTML, _('HTML')),
+    )
+
+    STATUS_DETAIL_ACTIVE = 'active'
+    STATUS_DETAIL_HOLD = 'admin_hold'
+
+    STATUS_DETAIL_CHOICES = (
+        (STATUS_DETAIL_ACTIVE, 'Active'),
+        (STATUS_DETAIL_HOLD, 'Admin Hold')
+    )
     guid = models.CharField(max_length=50, editable=False)
     notice_name = models.CharField(_("Name"), max_length=250)
     num_days = models.IntegerField(default=0)
-    notice_time = models.CharField(_("Notice Time"), max_length=20,
-                                   choices=(('before', _('Before')),
-                                            ('after', _('After')),
-                                            ('attimeof', _('At Time Of'))))
+    notice_time = models.CharField(_("Notice Time"), max_length=20, choices=NOTICE_CHOICES)
     notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
     system_generated = models.BooleanField(_("System Generated"), default=False)
     corporate_membership_type = models.ForeignKey(
@@ -1650,9 +1671,9 @@ class Notice(models.Model):
 
     subject = models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"),
-                                    choices=(('html', 'HTML'),),
+                                    choices=CONTENT_TYPE_CHOICES,
                                     max_length=10,
-                                    default='html')
+                                    default=CONTENT_TYPE_HTML)
     sender = models.EmailField(max_length=255, blank=True, null=True)
     sender_display = models.CharField(max_length=255, blank=True, null=True)
     email_content = tinymce_models.HTMLField(_("Email Content"))
@@ -1667,9 +1688,8 @@ class Notice(models.Model):
         User, related_name="corporate_membership_notice_owner",
         null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
-    status_detail = models.CharField(
-        choices=(('active', _('Active')), ('admin_hold', _('Admin Hold'))),
-        default='active', max_length=50)
+    status_detail = models.CharField(choices=STATUS_DETAIL_CHOICES,
+                                     default=STATUS_DETAIL_ACTIVE, max_length=50)
     status = models.BooleanField(default=True)
 
     class Meta:

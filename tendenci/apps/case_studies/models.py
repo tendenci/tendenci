@@ -102,19 +102,28 @@ class Technology(models.Model):
     def get_absolute_url(self):
         return ("case_study.technology", [self.pk])
 
+
 class Image(File):
+
+    FILE_TYPE_FEATURED = 'featured'
+    FILE_TYPE_SCREENSHOT = 'screenshot'
+    FILE_TYPE_HOMEPAGE = 'homepage'
+    FILE_TYPE_OTHER = 'other'
+
+    FILE_TYPE_CHOICES = (
+        (FILE_TYPE_FEATURED, 'Featured Screenshot'),
+        (FILE_TYPE_SCREENSHOT, 'Screenshot'),
+        (FILE_TYPE_HOMEPAGE, 'Homepage Image'),
+        (FILE_TYPE_OTHER,'Other'),
+    )
+
     case_study = models.ForeignKey(CaseStudy)
     file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
     file_type = models.CharField(
         _('File type'),
         max_length=50,
-        choices=(
-            ('featured','Featured Screenshot'),
-            ('screenshot','Screenshot'),
-            ('homepage', 'Homepage Image'),
-            ('other','Other'),
-        ),
-        default='other',
+        choices=FILE_TYPE_CHOICES,
+        default=FILE_TYPE_OTHER,
     )
     position = models.IntegerField(blank=True)
 
