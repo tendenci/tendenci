@@ -25,6 +25,22 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 class Profile(Person):
+
+    SALUTATION_CHOICES = (
+        ('Mr.', _('Mr.')),
+        ('Mrs.', _('Mrs.')),
+        ('Ms.', _('Ms.')),
+        ('Miss', _('Miss')),
+        ('Dr.', _('Dr.')),
+        ('Prof.', _('Prof.')),
+        ('Hon.', _('Hon.')),
+    )
+
+    SEX_CHOICES = (
+        ('male', _(u'Male')),
+        ('female', _(u'Female'))
+    )
+
     # relations
     guid = models.CharField(max_length=40)
     entity = models.ForeignKey(Entity, blank=True, null=True)
@@ -32,16 +48,14 @@ class Profile(Person):
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
 
     # profile meta data
-    salutation = models.CharField(_('salutation'), max_length=15,
-        blank=True, choices=(('Mr.', _('Mr.')),('Mrs.', _('Mrs.')),
-            ('Ms.', _('Ms.')),('Miss', _('Miss')),('Dr.', _('Dr.')),('Prof.', _('Prof.')),('Hon.', _('Hon.')),))
+    salutation = models.CharField(_('salutation'), max_length=15, blank=True, choices=SALUTATION_CHOICES)
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
     company = models.CharField(_('company'), max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=250, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
-    sex = models.CharField(_('gender'), max_length=50, blank=True, choices=(('male', _(u'Male')),('female', _(u'Female'))))
+    sex = models.CharField(_('gender'), max_length=50, blank=True, choices=SEX_CHOICES)
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     phone2 = models.CharField(_('phone2'), max_length=50, blank=True)
     fax = models.CharField(_('fax'), max_length=50, blank=True)

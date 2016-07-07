@@ -15,17 +15,25 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 class Group(TendenciBaseModel):
+
+    TYPE_DISTRIBUTION = 'distribution'
+    TYPE_SECURITY = 'security'
+    TYPE_SYSTEM_GENERATED = 'system_generated'
+
+    TYPE_CHOICES = (
+        (TYPE_DISTRIBUTION, _('Distribution')),
+        (TYPE_SECURITY, _('Security')),
+        (TYPE_SYSTEM_GENERATED, _('System Generated')),
+    )
+
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
     slug = SlugField(_('URL Path'), unique=True)
     guid = models.CharField(max_length=40)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
     dashboard_url = models.CharField(_('Dashboard URL'), max_length=255, default='', blank=True,
                                      help_text=_('Enable Group Dashboard Redirect in site settings to use this feature.'))
-    type = models.CharField(max_length=75, blank=True, choices=(
-                                         ('distribution', _('Distribution')),
-                                         ('security', _('Security')),
-                                         ('system_generated', _('System Generated'))
-                                            ), default='distribution')
+    type = models.CharField(max_length=75, blank=True, choices=TYPE_CHOICES, 
+                                           default=TYPE_DISTRIBUTION)
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
     show_as_option = models.BooleanField(_('Display Option'), default=True, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=True)
@@ -137,6 +145,14 @@ class Group(TendenciBaseModel):
 
 
 class GroupMembership(models.Model):
+
+    STATUS_ACTIVE = 'active'
+    STATUS_INACTIVE = 'inactive'
+    STATUS_CHOICES = (
+        (STATUS_ACTIVE,  'Active'),          #TODO: Internationalisation
+        (STATUS_INACTIV, 'Inactive'),
+    )
+
     group = models.ForeignKey(Group)
     member = models.ForeignKey(User, related_name='group_member')
 
@@ -151,8 +167,9 @@ class GroupMembership(models.Model):
     owner_id = models.IntegerField(default=0, editable=False)
     owner_username = models.CharField(max_length=50, editable=False)
     status = models.BooleanField(default=True)
-    status_detail = models.CharField(max_length=50, choices=(
-        ('active','Active'), ('inactive','Inactive'),), default='active')
+    status_detail = models.CharField(max_length=50, 
+                                     choices=STATUS_CHOICES,
+                                     default=STATUS_ACTIVE)
 
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)

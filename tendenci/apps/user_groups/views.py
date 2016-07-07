@@ -139,7 +139,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         email.sender_display = request.user.get_full_name()
         email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         email.reply_to = email.sender
-        email.content_type = 'text/html'
+        email.content_type = email.CONTENT_TYPE_HTML
         email.subject = form.cleaned_data['subject']
         email.body = form.cleaned_data['body']
         email.save(request.user)

@@ -9,6 +9,15 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 class Email(TendenciBaseModel):
+
+    CONTENT_TYPE_HTML = 'text/html'
+    CONTENT_TYPE_TEXT = 'text'
+
+    CONTENT_TYPE_CHOICES = (
+        (CONTENT_TYPE_HTML, 'text/html'),
+        (CONTENT_TYPE_TEXT, 'text'),
+    )   
+
     guid = models.CharField(max_length=50)
     priority = models.IntegerField(default=0)
     subject =models.CharField(max_length=255)
@@ -23,7 +32,7 @@ class Email(TendenciBaseModel):
     recipient_cc_display = models.CharField(max_length=255, blank=True, default='')
     recipient_bcc = models.CharField(max_length=255, blank=True, default='')
     attachments = models.CharField(max_length=500, blank=True, default='')
-    content_type = models.CharField(max_length=255, default='text/html', choices=(('text/html','text/html'),('text','text'),))
+    content_type = models.CharField(max_length=255, default=CONTENT_TYPE_HTML, choices=CONTENT_TYPE_CHOICES)
 
     #create_dt = models.DateTimeField(auto_now_add=True)
     #status = models.NullBooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
@@ -85,7 +94,7 @@ class Email(TendenciBaseModel):
                                recipient_bcc_list,
                                headers=headers,
                                connection=kwargs.get('connection', None))
-            if self.content_type == 'html' or self.content_type == 'text/html':
+            if self.content_type == 'html' or self.content_type == CONTENT_TYPE_HTML:
                 msg.content_subtype = 'html'
             if attachments:
                 msg.attachments = attachments

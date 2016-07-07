@@ -79,13 +79,17 @@ class Speaker(TendenciBaseModel):
 
 
 class SpeakerFile(File):
+
+    PHOTO_TYPE_PROFESSIONAL = 'professional'
+    PHOTO_TYPE_FUN = 'fun'
+
+    PHOTO_TYPE_CHOICES = (
+            (PHOTO_TYPE_PROFESSIONAL, 'Professional'),
+            (PHOTO_TYPE_FUN, 'Fun'),
+    )
+
     speaker = models.ForeignKey(Speaker)
-    photo_type = models.CharField(
-        max_length=50,
-        choices=(
-            ('professional','Professional'),
-            ('fun','Fun'),
-        ))
+    photo_type = models.CharField(max_length=50, choices=PHOTO_TYPE_CHOICES)
     position = models.IntegerField(blank=True)
 
     objects = FileManager()
