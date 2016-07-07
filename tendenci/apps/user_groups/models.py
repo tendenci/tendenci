@@ -150,7 +150,7 @@ class GroupMembership(models.Model):
     STATUS_INACTIVE = 'inactive'
     STATUS_CHOICES = (
         (STATUS_ACTIVE,  'Active'),          #TODO: Internationalisation
-        (STATUS_INACTIV, 'Inactive'),
+        (STATUS_INACTIVE, 'Inactive'),
     )
 
     group = models.ForeignKey(Group)
