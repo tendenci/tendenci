@@ -70,7 +70,9 @@ class Email(TendenciBaseModel):
         if not self.sender:
             self.sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
         if self.sender_display:
-            headers['From'] = '%s<%s>' % (self.sender_display, self.sender)
+            # Add quotes around display name to prevent errors on sending
+            # When display name contains comma or other control characters,
+            headers['From'] = '"%s"<%s>' % (self.sender_display, self.sender)
         if self.priority and self.priority == 1:
             headers['X-Priority'] = '1'
             headers['X-MSMail-Priority'] = 'High'

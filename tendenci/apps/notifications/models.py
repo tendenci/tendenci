@@ -406,7 +406,9 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             sender = settings.DEFAULT_FROM_EMAIL
 
     sender_display = extra_context.get('sender_display', '')
-    from_display = '%s<%s>' % (sender_display, sender)
+    # Add quotes around display name to prevent errors on sending
+    # when display name contains comma or other control characters, - jennyq
+    from_display = '"%s"<%s>' % (sender_display, sender)
 
     if sender_display:
         headers['From'] = from_display
