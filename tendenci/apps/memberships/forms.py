@@ -909,7 +909,8 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         if self.app:
             demographic_fields = get_selected_demographic_fields(self.app, forms)
             for field_name, field in demographic_fields:
-                self.fields[field_name] = field
+                # Commenting out the line below because it loses the field widget as the field has already been assigned
+                #self.fields[field_name] = field
                 # set initial value
                 if self.demographics:
                     ud_field = MembershipAppField.objects.get(field_name=field_name,
