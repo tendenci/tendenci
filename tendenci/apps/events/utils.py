@@ -1293,7 +1293,6 @@ def copy_event(event, user, reuse_rel=False):
         description = event.description,
         timezone = event.timezone,
         type = event.type,
-        group = event.group,
         image = event.image,
         start_dt = event.start_dt,
         end_dt = event.end_dt,
@@ -1319,6 +1318,7 @@ def copy_event(event, user, reuse_rel=False):
         status = event.status,
         status_detail = event.status_detail,
     )
+    new_event.groups.add(*list(event.groups.all()))
 
     #copy place
     place = event.place
