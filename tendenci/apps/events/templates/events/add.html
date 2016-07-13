@@ -10,7 +10,6 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
     <link rel="stylesheet" href="{% static 'css/events.css' %}">
@@ -40,6 +39,7 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
     <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
     <script type="text/javascript" src="{% static 'django_tinymce/init_tinymce.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
