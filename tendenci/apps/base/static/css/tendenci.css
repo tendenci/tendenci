@@ -102,6 +102,12 @@
     overflow-y: scroll;
 }
 
+/* Make dropdown scrollable if too long */
+.t-megamenu .dropdown-menu {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
 
 /* User megamenu */
 
