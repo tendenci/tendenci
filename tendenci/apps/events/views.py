@@ -13,6 +13,7 @@ from collections import OrderedDict
 from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
+from copy import deepcopy
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -1014,19 +1015,52 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                 status=True,
             ), prefix='regconfpricing', **regconfpricing_params
         )
-        if form_regconfpricing.is_valid():
+        post_data = request.POST
+        if 'apply_changes_to' not in post_data:
+            post_data = {'apply_changes_to':'self'}
+        form_apply_recurring = ApplyRecurringChangesForm(post_data)
+        
+        if form_regconfpricing.is_valid() and form_apply_recurring.is_valid():
+            apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
+            
             regconf_pricing = form_regconfpricing.save()
-
-            for regconf_price in regconf_pricing:
-                regconf_price.reg_conf = reg_conf
-                if not pricing_reg_form_required:
-                    regconf_price.reg_form = None
-                regconf_price.save()
-
             EventLog.objects.log(instance=event)
-            msg_string = 'Successfully updated %s' % unicode(event)
+
+            if apply_changes_to == 'self':
+                for regconf_price in regconf_pricing:
+                    regconf_price.reg_conf = reg_conf
+                    if not pricing_reg_form_required:
+                        regconf_price.reg_form = None
+                    regconf_price.save()
+            
+                msg_string = 'Successfully updated %s' % unicode(event)
+                redirect_url = reverse('event', args=[event.pk])
+            else:
+                recurring_events = event.recurring_event.event_set.all()
+                if apply_changes_to == 'rest':
+                    recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
+                
+                for e in recurring_events:
+                    e_reg_conf = e.registration_configuration
+                    if e.id != event.id:
+                        # delete old pricings associated to this event e
+                        RegConfPricing.objects.filter(reg_conf=e_reg_conf).delete()
+                    for regconf_price in regconf_pricing:
+                        e_regconf_price = deepcopy(regconf_price)
+                        e_regconf_price.reg_conf = e_reg_conf
+                        if e.id != event.id:
+                            e_regconf_price.pk = None 
+                            # calculate the start_dt and end_dt for this pricing
+                            time_diff = e.start_dt.date() - event.start_dt.date()
+                            e_regconf_price.start_dt += time_diff
+                            e_regconf_price.end_dt += time_diff
+                            
+                        e_regconf_price.save()
+                msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
+                redirect_url = reverse('event.recurring', args=[event.pk])
             messages.add_message(request, messages.SUCCESS, _(msg_string))
-            return HttpResponseRedirect(reverse('event', args=[event.pk]))
+            return HttpResponseRedirect(redirect_url)
+
     else:
         form_regconfpricing = RegConfPricingSet(
             queryset=RegConfPricing.objects.filter(
@@ -1036,8 +1070,11 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
             **regconfpricing_params
         )
         form_regconfpricing.label = _("Pricing(s)")
+        form_apply_recurring = ApplyRecurringChangesForm()
 
     multi_event_forms = [form_regconfpricing]
+    if event.is_recurring_event:
+        multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
     return render_to_response(template_name,
