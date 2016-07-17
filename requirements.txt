@@ -2,7 +2,7 @@ Django>=1.8,<1.9
 django-formtools>=1.0
 pisa
 Reportlab==3.3.0
-html5lib
+html5lib==0.9999999
 Pillow==3.2.0
 anyjson>=0.2.4
 django-authority>=0.4
