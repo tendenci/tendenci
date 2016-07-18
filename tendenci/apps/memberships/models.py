@@ -381,7 +381,7 @@ class MembershipSet(models.Model):
             tax = app.tax_rate * price
             invoice.tax = tax
 
-        invoice.subtotal = price + tax
+        invoice.subtotal = price
         invoice.total = price + tax
         invoice.balance = price + tax
 
