@@ -48,21 +48,20 @@ the latest packages. For Ubuntu this is done by
 
 Required Dependencies
 ---------------------
-To go with the pip modules you're about to install you will need to ensure some
-other packages are installed:
+You'll need those packages installed on Ubuntu.
 ::
 
-    sudo apt-get install libpq-dev python-dev 
+    sudo apt-get install build-essential python-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
+   
 
 You'll also need to have Git set up (see `this Github help article <https://help.github.com/articles/set-up-git>`_ for instructions).
 ::
 
     sudo apt-get install git
 
-For development install required packages
+To configure your system to automatically install security updates, run the following commands.
 ::
 
-    sudo apt-get install gcc make build-essential
     sudo apt-get install unattended-upgrades update-notifier-common
     sudo dpkg-reconfigure -plow unattended-upgrades
 
@@ -141,11 +140,6 @@ You can also create a database in your GUI of choice (recommended: `PGAdmin <htt
 
 Ubuntu
 ~~~~~~
-
-You'll need those packages installed on Ubuntu.
-::
-
-    sudo apt-get install build-essential python-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
 
 To install postgres and required packages.
 ::
