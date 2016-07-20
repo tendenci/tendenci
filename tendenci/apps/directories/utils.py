@@ -3,7 +3,6 @@ from datetime import datetime, date, time
 from cStringIO import StringIO
 from PIL import Image
 import time as ttime
-import csv
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -12,7 +11,6 @@ from django.core.urlresolvers import reverse
 from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import gettext
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
