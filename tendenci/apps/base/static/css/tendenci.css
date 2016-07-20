@@ -221,7 +221,7 @@
 }
 
 /* form */
-.t .form-horizontal .control-label {
+.form-horizontal .control-label {
 	  text-align: right !important;
 }
 .t .form-horizontal .form-group{
