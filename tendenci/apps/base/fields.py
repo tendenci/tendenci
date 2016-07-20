@@ -150,7 +150,7 @@ class CountrySelectField(fields.ChoiceField):
         exclude_list = []
         
         initial_choices_keys = get_setting('site', 'global', 'countrylistinitialchoices')
-        if initial_choices_keys:
+        if initial_choices_keys and initial_choices_keys != u'[]':
             initial_choices =  ((name, name) for key, name in COUNTRIES if key in initial_choices_keys)
             exclude_list = initial_choices_keys
 
