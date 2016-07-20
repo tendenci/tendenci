@@ -89,8 +89,8 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             return '<a href="%s">Add payment info</a>' % (link)
     edit_payment_info_link.allow_tags = True
 
-    def view_on_site(self):
-        link = reverse('recurring_payment.view_account', args=[self.id])
+    def view_on_site(self, obj):
+        link = reverse('recurring_payment.view_account', args=[obj.id])
         return '<a href="%s">View on site</a>' % (link)
     view_on_site.allow_tags = True
 
