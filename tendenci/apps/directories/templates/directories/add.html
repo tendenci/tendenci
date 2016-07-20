@@ -14,10 +14,8 @@
 
 {% block content %}
 
-<div class="t">
     <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Add" %}</h1>
 
-    <div class="directory-wrap">
         <form action="{% url "directory.add" %}" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {% if MODULE_DIRECTORIES_DIRECTORIESREQUIRESPAYMENT %}
@@ -28,11 +26,9 @@
             </div>
             {% endif %}
             {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Add' %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}" />
         </div>
         </form>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_body %}
