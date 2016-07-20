@@ -14,33 +14,27 @@
 
 {% block content %}
 
-<div class="t">
     <h1>{% firstof MODULE_COMMITTEES_LABEL trans 'Committee' %} {% trans "Add" %}</h1>
+	<div class="clearfix">
+   	<form class="form-horizontal" action="{% url "committees.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+   	     {% committee_form form formset %}
 
-    <div class="committee-wrap">
-    	<form action="{% url "committees.add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    	<div class="forms">
-    	    {% committee_form form %}
+		<fieldset class="boxy-grey" >
+               <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
+               <div id="category-form">
+                   {{ categoryform|styled_form }}
+               </div>
+           </fieldset>
+		<fieldset class="boxy-grey">
+               <legend id="meta-title" style="cursor: pointer"><span>+</span> {% trans "SEO Meta" %}</legend>
+               <div id="meta-form">
+                   {{ metaform|styled_form }}
+               </div>
+           </fieldset>
 
-			<fieldset class="boxy-grey" >
-                <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
-                <div id="category-form">
-                    {{ categoryform|styled_form }}
-                </div>
-            </fieldset>
-			<fieldset class="boxy-grey">
-                <legend id="meta-title" style="cursor: pointer"><span>+</span> {% trans "SEO Meta" %}</legend>
-                <div id="meta-form">
-                    {{ metaform|styled_form }}
-                </div>
-            </fieldset>
-
-        	<input type="submit" value="Add {% firstof MODULE_COMMITTEE_LABEL 'Committee' %}" />
-		</div>
-        </form>
-    </div>
-
-</div>
+       	<input type="submit" value="Add {% firstof MODULE_COMMITTEE_LABEL 'Committee' %}" />
+       </form>
+	</div>
 {% endblock %}
 
 {% block extra_body %}
