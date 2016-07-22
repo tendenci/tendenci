@@ -150,7 +150,7 @@ setup(
         "Django==1.4.22",
         "pisa",
         "Reportlab==2.5",
-        "html5lib",
+        "html5lib==0.9999999",
         "Pillow==2.3.0",
         "South==0.7.5",
         "anyjson>=0.2.4",
