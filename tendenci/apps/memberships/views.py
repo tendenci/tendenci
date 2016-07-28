@@ -28,6 +28,8 @@ from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
+from django.forms import modelformset_factory
+from django.contrib.contenttypes.models import ContentType
 
 from geraldo.generators import PDFGenerator
 
@@ -56,12 +58,14 @@ from tendenci.apps.memberships.forms import (
     ReportForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
     EducationForm,
     DemographicsForm,
-    MembershipDefault2Form)
+    MembershipDefault2Form,
+    AutoRenewSetupForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault,
     get_membership_app)
 from tendenci.apps.base.forms import CaptchaForm
+from tendenci.apps.recurring_payments.models import RecurringPayment
 
 
 def membership_index(request):
@@ -1442,6 +1446,97 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         'membership_form': membership_form2,
         'is_edit': True,
         'membership' : membership
+    }
+    return render_to_response(template, context, RequestContext(request))
+
+
+
+@login_required
+def memberships_auto_renew_setup(request, user_id, template='memberships/auto_renew_setup.html', **kwargs):
+    from tendenci.apps.recurring_payments.models import RecurringPayment
+    u = get_object_or_404(User, pk=user_id)
+    is_owner = request.user == u
+
+    if not has_perm(request.user, 'memberships.change_membership') and not is_owner:
+        raise Http403
+    
+    memberships = MembershipDefault.objects.filter(user=u).filter(status=True
+                    ).filter(status_detail__in=['active', 'expired']
+                             ).order_by('-expire_dt')
+    if not memberships:
+        raise Http404
+    
+    
+    AutoRenewSetupFormSet = modelformset_factory(MembershipDefault, form=AutoRenewSetupForm, extra=0)
+    formset = AutoRenewSetupFormSet(request.POST or None, queryset=memberships)
+    
+    if request.method == "POST":
+        if formset.is_valid():
+            if formset.has_changed():
+                memberships = formset.save()
+                messages.success(request, _('Your changes have been saved.'))
+                
+                ct = ContentType.objects.get_for_model(MembershipDefault)
+                [rp] = RecurringPayment.objects.filter(user=request.user,
+                                                     object_content_type=ct,
+                                                     status=True,
+                                                     status_detail__in=['active', 'disabled'])[:1] or [None]
+                log_event = False
+                redirect_url = ''
+
+                if any([m.auto_renew for m in memberships]):
+                    # they want to turn on auto-renew if not already
+                    if not rp:
+                        # Create a recurring payment entry for membership auto-renew.
+                        # This is per user not per membership. The payment_amount will
+                        # be calculated on renew so we don't know it yet at the moment.
+                        # And for the fields that are not relevent to the membership
+                        # auto-renew, we'll leave them as default.
+                        rp = RecurringPayment(user=request.user,
+                                             object_content_type=ct,
+                                             description='Membership Auto Renew',
+                                             billing_start_dt=datetime.now(),
+                                             payment_amount=0,
+                                             creator=request.user,
+                                             creator_username=request.user.username,
+                                             owner=u,
+                                             owner_username=u.username,
+                                             status=True,
+                                             status_detail='active')
+                        rp.save()
+                        rp.add_customer_profile()
+                        log_event = True
+                        description = 'New recurring payment entry id={0} for membership auto-renew for {1}.'.format(rp.id, u)
+                        
+                    elif rp and rp.status_detail == 'disabled':
+                        rp.status_detail = 'active'
+                        rp.save()
+                        # log an event for rp activated
+                        log_event = True
+                        description = 'Recurring payment entry id={0} activated for membership auto-renew for {1}.'.format(rp.id, u)
+                        
+                    # redirect user to add recurring payment profile
+                    redirect_url = reverse('recurring_payment.view_account', args=[rp.id, rp.guid])
+                        
+                else:
+                    # they want to turn off auto-renew
+                    if rp and rp.status_detail != 'disabled':
+                        rp.status_detail = 'disabled'
+                        rp.save()
+                        # log an event for rp disabled
+                        log_event = True
+                        description = 'Recurring payment entry id={0} disabled for membership auto-renew for {1}.'.format(rp.id, u)
+                 
+                if log_event:       
+                    EventLog.objects.log(instance=rp, description=description)
+                if redirect_url:
+                    return redirect(redirect_url)
+
+            else:
+                messages.info(request, _('No changes to save.'))
+    context = {
+        'formset' : formset,
+        'u': u
     }
     return render_to_response(template, context, RequestContext(request))
 

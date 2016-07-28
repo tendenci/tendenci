@@ -406,6 +406,17 @@ class MembershipAppForm(TendenciBaseForm):
                                     'app_instance_id'] = 0
 
 
+class AutoRenewSetupForm(forms.ModelForm):
+    class Meta:
+        model = MembershipDefault
+        fields = (
+                  'auto_renew',
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(AutoRenewSetupForm, self).__init__(*args, **kwargs)
+        
+
 class MembershipAppFieldAdminForm(forms.ModelForm):
     class Meta:
         model = MembershipAppField

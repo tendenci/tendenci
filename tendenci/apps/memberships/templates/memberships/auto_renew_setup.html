@@ -1,0 +1,40 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Membership Auto-Renew Setup" %}{% endblock %}
+
+
+{% block content %}
+<div>
+	<h1>{% trans "Memberships Auto-Renew - Turn On / Off" %}</h1>
+	<div>{% trans "User:" %} <a href="{% url 'profile' u.username %}">{% firstof u.get_full_name u.username %}</a></div>
+	<p>&nbsp;</p>
+	
+	<form id="auto-renew-form" action="" method="post">{% csrf_token %}
+	{{ formset.management_form }}
+		<table class="table">
+			<tr>
+				<th>{% trans "Membership type" %}</th>
+				<th>{% trans "Expire date" %}</th>
+				<th>{% trans "Status detail" %}</th>
+				<th>{% trans "Auto renew" %}</th>
+			</tr>
+			{% for form in formset.forms %}
+			<tr>
+				<td>{{ form.instance.membership_type.name }}</td>
+				<td>{{ form.instance.expire_dt }}</td>
+				<td>{{ form.instance.status_detail }}</td>
+				<td>{{ form.auto_renew }} {{ form.id }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		 <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+	
+	</form>
+
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}

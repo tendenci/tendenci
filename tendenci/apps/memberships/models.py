@@ -456,6 +456,7 @@ class MembershipDefault(TendenciBaseModel):
     membership_type = models.ForeignKey(MembershipType)
     user = models.ForeignKey(User, editable=False)
     renewal = models.BooleanField(blank=True, default=False)
+    auto_renew = models.BooleanField(blank=True, default=False)
     renew_from_id = models.IntegerField(blank=True, null=True)
     certifications = models.CharField(max_length=500, blank=True)
     work_experience = models.TextField(blank=True)
