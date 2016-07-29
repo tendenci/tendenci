@@ -71,18 +71,16 @@
         <div><a href="{% url "recurring_payment.my_accounts" rp.user.username %}">{% trans 'View all' %} {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
           {% endif %}
 
-      <div id="rpview-tabs">
-          <ul>
-             <li><a href="#rpview-overview" id="overview"><span>{% trans "Overview" %}</span></a></li>
-
-             <li><a href="#rpview-invoices" id="invoices"><span>{% trans "Invoices" %}</span></a></li>
-
-             <li><a href="#rpview-transactions" id="transactions"><span>{% trans "Transaction History" %}</span></a></li>
-
-           </ul>
-       </div>
-
-    <div id="rpview-overview">
+      <div> <!-- Nav tabs -->
+      	  
+		  <ul class="nav nav-tabs" role="tablist">
+		    <li role="presentation" class="active"><a href="#rpview-overview" aria-controls="rpview-overview" role="tab" data-toggle="tab">{% trans "Overview" %}</a></li>
+		    <li role="presentation"><a href="#rpview-invoices" aria-controls="rpview-invoices" role="tab" data-toggle="tab">{% trans "Invoices" %}</a></li>
+		    <li role="presentation"><a href="#rpview-transactions" aria-controls="rpview-transactions" role="tab" data-toggle="tab">{% trans "Transaction History" %}</a></li>
+		  </ul>
+       
+	<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="rpview-overview">
           <div class="basic-info">
           {% trans 'Current account balance' %}: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
           <br />
@@ -145,7 +143,7 @@
 
 
 
-    <div id="rpview-invoices">
+    <div role="tabpanel" class="tab-pane" id="rpview-invoices">
     {% if rp_invoices %}
         <table width="90%" class="tablesorter" id="rpinvoicetable">
             <thead>
@@ -176,7 +174,7 @@
     {% endif %}
     </div>
 
-    <div id="rpview-transactions">
+    <div role="tabpanel" class="tab-pane" id="rpview-transactions">
 
     {% if payment_transactions %}
         <table width="90%" class="tablesorter" id="rptranstable">
@@ -210,6 +208,10 @@
     {% endif %}
 
     </div>
+    
+   </div>  <!-- End of tab-content -->
+   
+   </div> <!-- End of nav tabs -->
 
 </div>
 </div>
@@ -274,7 +276,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
     if(document.location.hash != ""){window.scrollTo(0,0);}
-    var $tabs = $("#rpview-tabs").tabs();
+    //var $tabs = $("#rpview-tabs").tabs();
 
     // extend the default setting to always include the zebra widget.
         $.tablesorter.defaults.widgets = ['zebra'];
