@@ -96,8 +96,7 @@ def view_account(request, recurring_payment_id, guid=None,
     else:
         payment_profile = None
 
-    is_owner = False
-    if request.user.id == rp.user.id: is_owner = True
+    is_owner = request.user.id == rp.user.id
 
     num_accounts = RecurringPayment.objects.filter(user=rp.user).count()
 
@@ -112,7 +111,8 @@ def view_account(request, recurring_payment_id, guid=None,
                                               'test_mode': test_mode,
                                               'is_active': is_active,
                                               'is_owner': is_owner,
-                                              'num_accounts': num_accounts
+                                              'num_accounts': num_accounts,
+                                              'memberships': rp.memberships
                                               },
         context_instance=RequestContext(request))
 

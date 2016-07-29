@@ -1477,7 +1477,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
                 messages.success(request, _('Your changes have been saved.'))
                 
                 ct = ContentType.objects.get_for_model(MembershipDefault)
-                [rp] = RecurringPayment.objects.filter(user=request.user,
+                [rp] = RecurringPayment.objects.filter(user=u,
                                                      object_content_type=ct,
                                                      status=True,
                                                      status_detail__in=['active', 'disabled'])[:1] or [None]
@@ -1492,7 +1492,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
                         # be calculated on renew so we don't know it yet at the moment.
                         # And for the fields that are not relevent to the membership
                         # auto-renew, we'll leave them as default.
-                        rp = RecurringPayment(user=request.user,
+                        rp = RecurringPayment(user=u,
                                              object_content_type=ct,
                                              description='Membership Auto Renew',
                                              billing_start_dt=datetime.now(),
@@ -1510,6 +1510,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
                         
                     elif rp and rp.status_detail == 'disabled':
                         rp.status_detail = 'active'
+                        rp.description='Membership Auto Renew'
                         rp.save()
                         # log an event for rp activated
                         log_event = True

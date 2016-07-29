@@ -1,4 +1,4 @@
-{% extends "recurring_payments/base.html" %}
+{% extends "recurring_payments/base-wide.html" %}
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
@@ -32,6 +32,7 @@
      .rp-warning-wrap{
          margin: 1em 0;
      }
+
  </style>
 
 {% endblock %}
@@ -65,10 +66,10 @@
         {% endif %}
         <div class="rp-dname">{% trans 'Description' %}: <span style="color:#669900;">{{ rp.description }}</span></div>
 
-        <div style="clear: right;"></div>
+        <div style="clear: right;"></div>    
 
         {% if num_accounts > 1 %}
-        <div><a href="{% url "recurring_payment.my_accounts" rp.user.username %}">{% trans 'View all' %} {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
+        <div class="text-right"><a href="{% url "recurring_payment.my_accounts" rp.user.username %}">{% if is_owner %}{% trans 'View All My RP Accounts' %}{% else %}{% blocktrans with name=rp.user.first_name %}View All {{ name }}'s RP Accounts{% endblocktrans %}{% endif %}</a></div>
           {% endif %}
 
       <div> <!-- Nav tabs -->
@@ -81,7 +82,7 @@
        
 	<div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="rpview-overview">
-          <div class="basic-info">
+          <div class="basic-info" style="margin-top: 1em;">
           {% trans 'Current account balance' %}: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
           <br />
           <br />
@@ -101,7 +102,30 @@
                   <br />
                   <br />
           {% endif %}
+		 </div>
 
+	{% if memberships %}
+		<div>
+		<table class="table">
+			<tr>
+				<th>{% trans "Membership type" %}</th>
+				<th>{% trans "Member Number" %}</th>
+				<th>{% trans "Expire date" %}</th>
+				<th>{% trans "Status detail" %}</th>
+			</tr>
+			{% for m in memberships %}
+			<tr>
+				<td>{{ m.membership_type.name }}</td>
+				<td><a href="{% url 'membership.details' m.id %}">{{ m.member_number }}</a></td>
+				<td>{{ m.expire_dt }}</td>
+				<td>{{ m.status_detail }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		</div>
+
+	{% else %}
+		<div>
           {% trans 'The number of billing cycle completed' %}: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span>
           <br />
           <br />
@@ -137,7 +161,7 @@
               </div>
 
           {% endif %}
-
+	{% endif %}
     </div>
 
 
@@ -216,6 +240,7 @@
 </div>
 </div>
 </div>
+<p>&nbsp;</p>
 
  {% if is_active %}
 <form method="post" action="" id="formAuthorizeNetPopup" name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">

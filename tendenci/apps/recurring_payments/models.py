@@ -128,6 +128,18 @@ class RecurringPayment(models.Model):
             profile = Profile.objects.create_profile(user=self.user)
         return profile
 
+
+    def memberships(self):
+        if self.object_content_type and self.object_content_type.name == 'Membership':
+            from tendenci.apps.memberships.models import MembershipDefault
+            return MembershipDefault.objects.filter(user=self.user,
+                                                    auto_renew=True,
+                                                    status=True,
+                                                    status_detail__in=['active', 'expired']
+                                             ).order_by('-expire_dt')
+        return None
+
+
     def add_customer_profile(self):
         """Add the customer profile on payment gateway
         """
