@@ -65,6 +65,10 @@
                                     <span class="app-name">
                                         <a href="{% url 'recurring_payment.disable_account' app_object.id %}" class="disable">{% trans "Disable Account" %}</a>
                                     </span>
+                                      <!-- disable recurring payment account form -->
+									    <form name="rp-disable" method="POST" action="{% url 'recurring_payment.disable_account' app_object.id  %}">{% csrf_token %}
+									        <input type="hidden" name="action" value="Disable Account">
+									    </form>
                                 </li>
 
                                 <li class="content-item">
