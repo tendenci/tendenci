@@ -1,6 +1,6 @@
 import uuid
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import User
@@ -17,6 +17,7 @@ from tendenci.apps.recurring_payments.authnet.cim import (CIMCustomerProfile,
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.apps.payments.models import Payment
+
 
 BILLING_PERIOD_CHOICES = (
                         ('month', _('Month(s)')),
@@ -128,11 +129,10 @@ class RecurringPayment(models.Model):
             profile = Profile.objects.create_profile(user=self.user)
         return profile
 
-
+    @property
     def memberships(self):
         if self.object_content_type and self.object_content_type.name == 'Membership':
-            from tendenci.apps.memberships.models import MembershipDefault
-            return MembershipDefault.objects.filter(user=self.user,
+            return self.object_content_type.model_class().objects.filter(user=self.user,
                                                     auto_renew=True,
                                                     status=True,
                                                     status_detail__in=['active', 'expired']
@@ -365,24 +365,41 @@ class RecurringPayment(models.Model):
         Check and generate invoices if needed.
         """
         now = datetime.now()
-        if not last_billing_cycle:
-            last_billing_cycle = self.billing_cycle_t2d(self.get_last_billing_cycle())
-
-        next_billing_cycle = self.billing_cycle_t2d(self.get_next_billing_cycle(last_billing_cycle))
-        billing_dt = self.get_payment_due_date(next_billing_cycle)
-
-        # determine when to create the invoice -
-        # on the billing cycle start or end date
-        if self.due_sore == 'start':
-            invoice_create_dt = next_billing_cycle['start']
+        
+        if self.object_content_type and self.object_content_type.name == 'Membership':
+            # check and renew for memberships with auto-renew enabled 
+            # that are expired or to be expired within 24 hours.
+            memberships = self.memberships
+            if memberships:
+                for m in self.memberships:
+                    if m.expire_dt < now + timedelta(days=1):
+                        renewed_m = m.renew(m.user)
+                        invoice = renewed_m.get_invoice()
+                        rp_invoice = RecurringPaymentInvoice(
+                                 recurring_payment=self,
+                                 invoice=invoice,
+                                 billing_dt=now)
+                        rp_invoice.save()
+            
         else:
-            invoice_create_dt = next_billing_cycle['end']
-
-        if invoice_create_dt <= now:
-            self.create_invoice(next_billing_cycle, billing_dt)
-            # might need to notify admin and/or user that an invoice has been created.
-
-            self.check_and_generate_invoices(next_billing_cycle)
+            if not last_billing_cycle:
+                last_billing_cycle = self.billing_cycle_t2d(self.get_last_billing_cycle())
+    
+            next_billing_cycle = self.billing_cycle_t2d(self.get_next_billing_cycle(last_billing_cycle))
+            billing_dt = self.get_payment_due_date(next_billing_cycle)
+    
+            # determine when to create the invoice -
+            # on the billing cycle start or end date
+            if self.due_sore == 'start':
+                invoice_create_dt = next_billing_cycle['start']
+            else:
+                invoice_create_dt = next_billing_cycle['end']
+    
+            if invoice_create_dt <= now:
+                self.create_invoice(next_billing_cycle, billing_dt)
+                # might need to notify admin and/or user that an invoice has been created.
+    
+                self.check_and_generate_invoices(next_billing_cycle)
 
 
 
@@ -572,13 +589,15 @@ class RecurringPaymentInvoice(models.Model):
                                              self.invoice,
                                              self.invoice.guid)
         # make a transaction using CIM
+        description = self.recurring_payment.description
+        if self.billing_cycle_start_dt and self.billing_cycle_end_dt:
+            description += '(billing cycle from %s to %s)' % (
+                            self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
+                            self.billing_cycle_end_dt.strftime('%m/%d/%Y')),
         d = {'amount': amount,
              'order': {
                        'invoice_number': str(payment.invoice_num),
-                       'description': '%s (billing cycle from %s to %s)' % (
-                                            self.recurring_payment.description,
-                                            self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
-                                            self.billing_cycle_end_dt.strftime('%m/%d/%Y')),
+                       'description': description,
                        'recurring_billing': 'true'
                        }
              }
@@ -599,14 +618,18 @@ class RecurringPaymentInvoice(models.Model):
 
 
         # update the payment entry with the direct response returned from payment gateway
-        #print success, response_d
         payment = payment_update_from_response(payment, response_d['direct_response'])
 
         if success:
             payment.mark_as_paid()
             payment.save()
-            self.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
-            self.invoice.save()
+            payment.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
+            
+            # approve membership
+            if self.invoice.object_type and self.invoice.object_id:
+                m = self.invoice.object_type.get_object_for_this_type(id=self.invoice.object_id)
+                m.approve()
+                # send notification to user
 
             self.payment_received_dt = datetime.now()
         else:

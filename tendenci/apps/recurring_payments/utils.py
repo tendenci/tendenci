@@ -219,7 +219,7 @@ def run_a_recurring_payment(rp, verbosity=0):
     num_processed = 0
     if rp.status_detail == 'active':
         rp_email_notice = RecurringPaymentEmailNotices()
-        now = datetime.now()
+        
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
         # check and store payment profiles in local db
@@ -238,8 +238,8 @@ def run_a_recurring_payment(rp, verbosity=0):
         rp_invoices = RecurringPaymentInvoice.objects.filter(
                                              recurring_payment=rp,
                                              invoice__balance__gt=0,
-                                             billing_dt__lte=now
-                                             ).order_by('billing_cycle_start_dt')
+                                             billing_dt__lte=datetime.now()
+                                             ).order_by('id')
 
         if rp_invoices:
             payment_profiles = PaymentProfile.objects.filter(
@@ -267,11 +267,18 @@ def run_a_recurring_payment(rp, verbosity=0):
 
                     # make payment transaction and then update recurring_payment fields
                     if verbosity > 1:
-                        print '...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
-                                % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
-                                   rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
-                                   currency_symbol,
-                                   rp_invoice.invoice.balance)
+                        if rp_invoice.billing_cycle_start_dt and rp_invoice.billing_cycle_end_dt:
+                            print '...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
+                                    % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
+                                       rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
+                                       currency_symbol,
+                                       rp_invoice.invoice.balance)
+                        else:
+                            print '...Making payment transaction for invoice (id=%d) - amount: %s%.2f ...' \
+                                    % (rp_invoice.invoice.id,
+                                       currency_symbol,
+                                       rp_invoice.invoice.balance)
+                            
 
                     success = False
 
@@ -283,8 +290,8 @@ def run_a_recurring_payment(rp, verbosity=0):
 
 
                     if success:
-                        rp.last_payment_received_dt = now
-                        rp_invoice.payment_received_dt = now
+                        rp.last_payment_received_dt = datetime.now()
+                        rp_invoice.payment_received_dt = datetime.now()
                         rp_invoice.save()
                         rp.num_billing_cycle_completed += 1
                         print '...Success.'
