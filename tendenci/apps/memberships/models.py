@@ -901,7 +901,7 @@ class MembershipDefault(TendenciBaseModel):
         if self.is_pending():
             dupe = self
         elif any((self.is_active(), self.is_expired())):
-            dupe = deepcopy(self)
+            dupe = self.copy()
             dupe.pk = None  # disconnect from db record
         else:
             return False
@@ -1160,6 +1160,9 @@ class MembershipDefault(TendenciBaseModel):
             'id',
             'renewal',
             'renew_dt',
+            'renew_from_id',
+            'membership_set',
+            'payment_method',
             'status',
             'status_detail',
             'application_approved',
@@ -1501,6 +1504,7 @@ class MembershipDefault(TendenciBaseModel):
 
         if not invoice:
             invoice = Invoice()
+            invoice.title = "Membership Invoice"
 
         if status_detail == 'estimate':
             invoice.estimate = True
@@ -1515,9 +1519,15 @@ class MembershipDefault(TendenciBaseModel):
         # Only set for new invoices
         if not invoice.pk:
             price = self.get_price()
+            tax = 0
+            if self.app and self.app.include_tax:
+                invoice.tax_rate = self.app.tax_rate
+                tax = self.app.tax_rate * price
+                invoice.tax = tax
+            
             invoice.subtotal = price
-            invoice.total = price
-            invoice.balance = price
+            invoice.total = price + tax
+            invoice.balance = price + tax
 
             invoice.object_type = content_type
             invoice.object_id = self.pk
