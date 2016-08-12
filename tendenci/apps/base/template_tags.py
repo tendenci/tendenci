@@ -190,7 +190,7 @@ class ListNode(Node):
             if hasattr(self.model, 'group') and group:
                 items = items.filter(group=group)
             if hasattr(self.model, 'groups') and group:
-                items = items.filter(groups_in=[group])
+                items = items.filter(groups__in=[group])
 
             if hasattr(self.model(), 'status_detail'):
                 items = items.filter(status_detail__iexact=status_detail)
