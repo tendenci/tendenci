@@ -10,6 +10,11 @@
 <div>
 	<h1>{% trans "Memberships Auto-Renew - Turn On / Off" %}</h1>
 	<div>{% trans "User:" %} <a href="{% url 'profile' u.username %}">{% firstof u.get_full_name u.username %}</a></div>
+	{% if rp and rp.status_detail == 'active' %}
+	<div class="text-right">
+	<a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% trans "Update Payment Profile" %}</a>
+	</div>
+	{% endif %}
 	<p>&nbsp;</p>
 	
 	<form id="auto-renew-form" action="" method="post">{% csrf_token %}

@@ -116,6 +116,13 @@ def index(request, username='', template_name="profiles/index.html"):
             status=True) & user_this.membershipdefault_set.filter(
                 active_qs | expired_qs)
 
+    auto_renew_is_set = False
+    if get_setting('module', 'recurring_payments', 'enabled'):
+        if user_this.recurring_payments.filter(status=True, 
+                                                 status_detail='active',
+                                                 object_content_type__model='membershipdefault').exists():
+            auto_renew_is_set = True
+        
     registrations = Registrant.objects.filter(user=user_this)
 
     EventLog.objects.log(instance=profile)
@@ -161,6 +168,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_apps': membership_apps,
         'multiple_apps': multiple_apps,
         'membership_reminders': membership_reminders,
+        'auto_renew_is_set': auto_renew_is_set,
         }, context_instance=RequestContext(request))
 
 
