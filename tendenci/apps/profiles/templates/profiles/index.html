@@ -186,6 +186,13 @@
         {% endif %}
 
         {% if memberships %}
+        {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
+        	<p class="text-left">
+        	<form action="{% url "memberships.auto_renew_setup" profile.user.id %}"  method="get">
+        	<input class="btn btn-primary" type="submit" value="{% if not auto_renew_is_set %}{% trans 'Set Up' %}{% else %}{% trans 'Update' %}{% endif %} {% trans 'Auto Renew' %}">
+        	</form>
+        	</p>
+        {% endif %}
         <table>
         {% for membership in memberships %}
                 <tr>
