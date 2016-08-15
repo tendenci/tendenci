@@ -42,7 +42,7 @@ class RecurringPayment(models.Model):
     guid = models.CharField(max_length=50)
     # gateway assigned ID associated with the customer profile
     customer_profile_id = models.CharField(max_length=100, default='')
-    user = models.ForeignKey(User, related_name="recurring_payment_user",
+    user = models.ForeignKey(User, related_name="recurring_payments",
                              verbose_name=_('Customer'),  null=True, on_delete=models.SET_NULL)
     url = models.CharField(_('Website URL'), max_length=100, default='', blank=True, null=True)
     description = models.CharField(_('Description'), max_length=100, help_text=_("Use a short term, example: web hosting"))
