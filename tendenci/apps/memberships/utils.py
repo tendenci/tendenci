@@ -1567,10 +1567,9 @@ class ImportMembDefault(object):
         memb.is_active = self.is_active(memb)
 
         # member_number
-        # TODO: create a function to assign a member number
         if not memb.member_number:
             if memb.is_active:
-                memb.member_number = 5100 + memb.pk
+                memb.member_number = memb.set_member_number()
                 memb.save()
         if memb.member_number:
             if not profile.member_number:

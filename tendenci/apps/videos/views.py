@@ -65,7 +65,7 @@ def search(request, cat_slug=None, template_name="videos/list.html"):
             video_type = vtypes[0]
         if video_type:
             videos = videos.filter(video_type=video_type)
-    videos = videos.order_by('ordering', '-create_dt')
+    videos = videos.order_by('-ordering', '-create_dt')
 
     EventLog.objects.log()
 

@@ -29,6 +29,7 @@ class Command(BaseCommand):
                     'collect_metrics',
                     'captcha_clean',
                     'cleanup_expired_dbdumps',
+                    'clearsessions',
                     )
         for c in commands:
             try:

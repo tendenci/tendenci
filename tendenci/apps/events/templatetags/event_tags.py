@@ -391,6 +391,8 @@ class ListEventsNode(ListNode):
 
         if hasattr(self.model, 'group') and group:
             items = items.filter(groups=group)
+        if hasattr(self.model, 'groups') and group:
+            items = items.filter(groups__in=[group])
 
         objects = []
 
