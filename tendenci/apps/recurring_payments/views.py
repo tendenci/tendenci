@@ -303,7 +303,11 @@ def disable_account(request, rp_id,
                 rp.customer_profile_id = ''
                 rp.save()
 
-
+            # if it's for membership auto renew, uncheck the auto_renew bit
+            if rp.memberships:
+                for m in rp.memberships:
+                    m.auto_renew = False
+                    m.save()
 
             # send an email to admin
             rp_email_notice = RecurringPaymentEmailNotices()
