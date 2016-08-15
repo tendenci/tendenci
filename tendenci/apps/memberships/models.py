@@ -1891,6 +1891,19 @@ class MembershipDefault(TendenciBaseModel):
     def get_acct_number(self, discount=False):
         # reference: /accountings/account_numbers/
         return 464700 if discount else 404700
+    
+    def has_rp(self):
+        """
+        Check if this membership has a recurring payment account for membership renew
+        """
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            if self.user.recurring_payments.filter(status=True, 
+                                                     status_detail='active',
+                                                     object_content_type__model='membershipdefault').exists():
+                return True
+        
+        return False
+            
 
     # def custom_fields(self):
     #     return self.membershipfield_set.order_by('field__position')
