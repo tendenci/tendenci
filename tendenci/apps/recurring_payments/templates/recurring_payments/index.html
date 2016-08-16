@@ -50,9 +50,11 @@
 
         {% if is_active %}
         <div id="btn-pm-wrap">
-        <button id="btn-pm" class="btn primary">{% if payment_profile %}{% trans 'Update Payment Info' %}{% else %}{% trans 'Add Payment Method' %}{% endif %}</button>
+        <form method="GET" action="{% url 'recurring_payment.authnet.update_payment_info' rp.id %}">
+        <input class="btn btn-primary" type="submit" value="{% if payment_profile %}{% trans 'Update Payment Info' %}{% else %}{% trans 'Add Payment Method' %}{% endif %}">
+        </form>
         {% if payment_profile %}
-        <div class="last-updated">{% trans 'Last updated by' %}{{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
+        <div class="last-updated">{% trans 'Last updated by' %} {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
         {% endif %}
         </div>
         {% endif %}
@@ -353,7 +355,7 @@ $(document).ready(function(){
             }
         });
 
-     $("#btn-pm").click(function(){
+     /* $("#btn-pm").click(function(){
          $.ajax({
            type: "POST",
            url: "{% url "recurring_payment.authnet.retrieve_token" %}",
@@ -370,7 +372,7 @@ $(document).ready(function(){
               alert("An error occured. Please try again.");
            }
          });
-     });
+     }); */
 
     {% if is_active %}
         AuthorizeNetPopup.options.onPopupClosed = function(action_result) {

@@ -33,7 +33,7 @@
 
  <div>
       <div class="rp-dname">{% trans 'Name' %}: <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
-      <div class="rp-dname">{% trans 'Description' %}: <span style="color:#669900;">{{ rp.description }}</span></div>
+      <div class="rp-dname">{% trans 'Description' %}: <span style="color:#669900;">{{ rp.description }}</span> <a href="{% url 'recurring_payment.view_account' rp.id %}">{% trans 'View' %}</a></div>
        <p id="dnotes" style="display:none;"></p>
   </div>
 
