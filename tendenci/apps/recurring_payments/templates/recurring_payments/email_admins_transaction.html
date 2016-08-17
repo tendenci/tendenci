@@ -46,6 +46,11 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
     <tr>
         <td>{% trans 'Customer' %}:</td><td>{{ pt.recurring_payment.user.get_full_name }}({{ pt.recurring_payment.user.email }})</td>
     </tr>
+    {% if membership %}
+    <tr>
+        <td>{% trans 'Membership renewed:' %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
+    </tr>
+    {% else %}
     <tr>
         <td>{% trans 'Guid' %}:</td><td>{{ pt.recurring_payment.guid }}</td>
     </tr>
@@ -55,6 +60,7 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
     <tr>
         <td>{% trans 'Current cycle end' %}:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_end_dt|date }}</td>
     </tr>
+    {% endif %}
 
 
 </table>

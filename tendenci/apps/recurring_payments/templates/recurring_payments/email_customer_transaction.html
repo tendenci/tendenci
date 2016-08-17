@@ -22,9 +22,16 @@ We attempted a payment for the {{ d }} but was failed. The failed reason is list
     <tr>
         <td>{% trans 'Payment amount' %}:</td><td>{{ pt.amount|format_currency }}</td>
     </tr>
+    {% if membership %}
+    <tr>
+        <td>{% trans 'Membership renewed:' %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
+    </tr>
+    {% endif %}
+    {% if not pt.recurring_payment.memberships %}
     <tr>
         <td>{% trans 'Billing cycle' %}: </td><td>From {{ pt.recurring_payment_invoice.billing_cycle_start_dt|date:'N j Y' }} To {{ pt.recurring_payment_invoice.billing_cycle_end_dt|date:'N j Y' }}</td>
     </tr>
+    {% endif %}
     <tr>
         <td>{% trans 'Date processed' %}:</td><td>{{ pt.create_dt|date }}</td>
     </tr>

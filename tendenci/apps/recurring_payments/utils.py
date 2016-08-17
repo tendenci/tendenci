@@ -83,12 +83,13 @@ class RecurringPaymentEmailNotices(object):
             except TemplateDoesNotExist:
                 pass
 
-    def email_admins_transaction_result(self, payment_transaction, success=True):
+    def email_admins_transaction_result(self, payment_transaction, success=True, **kwargs):
         """Send admins the result after the transaction is processed.
         """
         self.email.recipient = self.admin_emails
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_transaction.html"
+            membership = kwargs.get('membership', None)
             user_in_texas = False
             if payment_transaction.payment.state:
                 if payment_transaction.payment.state.lower() in ['texas', 'tx']:
@@ -98,7 +99,8 @@ class RecurringPaymentEmailNotices(object):
                                                {'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url,
-                                                'user_in_texas': user_in_texas
+                                                'user_in_texas': user_in_texas,
+                                                'membership': membership,
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
@@ -114,17 +116,20 @@ class RecurringPaymentEmailNotices(object):
             except TemplateDoesNotExist:
                 pass
 
-    def email_customer_transaction_result(self, payment_transaction):
+    def email_customer_transaction_result(self, payment_transaction, **kwargs):
         """Send customer an email after the transaction is processed.
         """
         self.email.recipient = payment_transaction.recurring_payment.user.email
         if self.email.recipient:
             template_name = "recurring_payments/email_customer_transaction.html"
+            membership = kwargs.get('membership', None)
+            
             try:
                 email_content = render_to_string(template_name,
                                                {'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
-                                                'site_url': self.site_url
+                                                'site_url': self.site_url,
+                                                'membership': membership,
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
@@ -251,6 +256,12 @@ def run_a_recurring_payment(rp, verbosity=0):
             if payment_profiles:
 
                 for i, rp_invoice in enumerate(rp_invoices):
+                    inv = rp_invoice.invoice
+                    if inv.object_type and inv.object_type.name.lower() == 'membership':
+                        membership = inv.object_type.get_object_for_this_type(id=inv.object_id)
+                    else:
+                        membership = None
+                        
                     # wait for 3 minutes (duplicate transaction window is 2 minutes) if this is not the first invoice,
                     # otherwise, the payment gateway would through the "duplicate transaction" error.
                     if i > 0: time.sleep(3*60)
@@ -303,10 +314,10 @@ def run_a_recurring_payment(rp, verbosity=0):
 
                     # send out email notifications - for both successful and failed transactions
                     # to admin
-                    rp_email_notice.email_admins_transaction_result(payment_transaction, success=success)
+                    rp_email_notice.email_admins_transaction_result(payment_transaction, success=success, membership=membership)
                     # to customer
                     if payment_transaction.message_code not in UNSUCCESSFUL_TRANS_CODE:
-                        rp_email_notice.email_customer_transaction_result(payment_transaction)
+                        rp_email_notice.email_customer_transaction_result(payment_transaction, membership=membership)
                     else:
                         # the payment gateway is probably not configured correctly
                         # email to tendenci script support
