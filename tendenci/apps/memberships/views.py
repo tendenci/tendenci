@@ -1484,54 +1484,55 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
             
             log_event = False
             redirect_url = ''
-            if any([m.auto_renew for m in memberships]):
-                # they want to turn on auto-renew if not already
-                if not rp:
-                    # Create a recurring payment entry for membership auto-renew.
-                    # This is per user not per membership. The payment_amount will
-                    # be calculated on renew so we don't know it yet at the moment.
-                    # And for the fields that are not relevent to the membership
-                    # auto-renew, we'll leave them as default.
-                    rp = RecurringPayment(user=u,
-                                         object_content_type=ct,
-                                         description='Membership Auto Renew',
-                                         billing_start_dt=datetime.now(),
-                                         payment_amount=0,
-                                         creator=request.user,
-                                         creator_username=request.user.username,
-                                         owner=u,
-                                         owner_username=u.username,
-                                         status=True,
-                                         status_detail='active')
-                    rp.save()
-                    rp.add_customer_profile()
-                    log_event = True
-                    description = 'New recurring payment entry id={0} for membership auto-renew for {1}.'.format(rp.id, u)
-                    
-                elif rp and rp.status_detail == 'disabled':
-                    rp.status_detail = 'active'
-                    rp.description='Membership Auto Renew'
-                    rp.save()
-                    # log an event for rp activated
-                    log_event = True
-                    description = 'Recurring payment entry id={0} activated for membership auto-renew for {1}.'.format(rp.id, u)
-                    
-                # redirect user to add recurring payment profile
-                redirect_url = reverse('recurring_payment.view_account', args=[rp.id, rp.guid])
-                    
-            else:
-                # they want to turn off auto-renew
-                if rp and rp.status_detail != 'disabled':
-                    rp.status_detail = 'disabled'
-                    rp.save()
-                    # log an event for rp disabled
-                    log_event = True
-                    description = 'Recurring payment entry id={0} disabled for membership auto-renew for {1}.'.format(rp.id, u)
-             
-            if log_event:       
-                EventLog.objects.log(instance=rp, description=description)
-            if redirect_url:
-                return redirect(redirect_url)
+            if memberships:
+                if any([m.auto_renew for m in memberships]):
+                    # they want to turn on auto-renew if not already
+                    if not rp:
+                        # Create a recurring payment entry for membership auto-renew.
+                        # This is per user not per membership. The payment_amount will
+                        # be calculated on renew so we don't know it yet at the moment.
+                        # And for the fields that are not relevent to the membership
+                        # auto-renew, we'll leave them as default.
+                        rp = RecurringPayment(user=u,
+                                             object_content_type=ct,
+                                             description='Membership Auto Renew',
+                                             billing_start_dt=datetime.now(),
+                                             payment_amount=0,
+                                             creator=request.user,
+                                             creator_username=request.user.username,
+                                             owner=u,
+                                             owner_username=u.username,
+                                             status=True,
+                                             status_detail='active')
+                        rp.save()
+                        rp.add_customer_profile()
+                        log_event = True
+                        description = 'New recurring payment entry id={0} for membership auto-renew for {1}.'.format(rp.id, u)
+                        
+                    elif rp and rp.status_detail == 'disabled':
+                        rp.status_detail = 'active'
+                        rp.description='Membership Auto Renew'
+                        rp.save()
+                        # log an event for rp activated
+                        log_event = True
+                        description = 'Recurring payment entry id={0} activated for membership auto-renew for {1}.'.format(rp.id, u)
+                        
+                    # redirect user to add recurring payment profile
+                    redirect_url = reverse('recurring_payment.view_account', args=[rp.id, rp.guid])
+                        
+                else:
+                    # they want to turn off auto-renew
+                    if rp and rp.status_detail != 'disabled':
+                        rp.status_detail = 'disabled'
+                        rp.save()
+                        # log an event for rp disabled
+                        log_event = True
+                        description = 'Recurring payment entry id={0} disabled for membership auto-renew for {1}.'.format(rp.id, u)
+                 
+                if log_event:       
+                    EventLog.objects.log(instance=rp, description=description)
+                if redirect_url:
+                    return redirect(redirect_url)
 
     context = {
         'formset' : formset,
