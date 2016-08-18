@@ -374,6 +374,8 @@ class RecurringPayment(models.Model):
                 for m in self.memberships:
                     if m.expire_dt < now + timedelta(days=1):
                         renewed_m = m.renew(m.user)
+                        renewed_m.status_detail = 'pending'
+                        renewed_m.save()
                         invoice = renewed_m.get_invoice()
                         rp_invoice = RecurringPaymentInvoice(
                                  recurring_payment=self,
@@ -619,7 +621,7 @@ class RecurringPaymentInvoice(models.Model):
 
         # update the payment entry with the direct response returned from payment gateway
         payment = payment_update_from_response(payment, response_d['direct_response'])
-
+        
         if success:
             payment.mark_as_paid()
             payment.save()
