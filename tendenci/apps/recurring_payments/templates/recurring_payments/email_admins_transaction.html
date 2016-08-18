@@ -48,7 +48,7 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
     </tr>
     {% if membership %}
     <tr>
-        <td>{% trans 'Membership renewed:' %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
+        <td>{% if membership.status_detail == 'active' %}{% trans 'Membership renewed:' %}{% else %}{% trans 'Membership renewal pending:' %}{% endif %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
     </tr>
     {% else %}
     <tr>

@@ -24,7 +24,7 @@ We attempted a payment for the {{ d }} but was failed. The failed reason is list
     </tr>
     {% if membership %}
     <tr>
-        <td>{% trans 'Membership renewed:' %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
+        <td>{% if membership.status_detail == 'active' %}{% trans 'Membership renewed:' %}{% else %}{% trans 'Membership renewal pending:' %}{% endif %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
     </tr>
     {% endif %}
     {% if not pt.recurring_payment.memberships %}
