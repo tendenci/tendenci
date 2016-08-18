@@ -21,17 +21,17 @@
 	{{ formset.management_form }}
 		<table class="table">
 			<tr>
+				<th>{% trans "Auto renew" %}</th>
 				<th>{% trans "Membership type" %}</th>
 				<th>{% trans "Expire date" %}</th>
 				<th>{% trans "Status detail" %}</th>
-				<th>{% trans "Auto renew" %}</th>
 			</tr>
 			{% for form in formset.forms %}
 			<tr>
+				<td>{{ form.auto_renew }} {{ form.id }}</td>
 				<td>{{ form.instance.membership_type.name }}</td>
 				<td>{{ form.instance.expire_dt }}</td>
 				<td>{{ form.instance.status_detail }}</td>
-				<td>{{ form.auto_renew }} {{ form.id }}</td>
 			</tr>
 			{% endfor %}
 		</table>
