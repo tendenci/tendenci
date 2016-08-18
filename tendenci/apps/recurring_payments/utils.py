@@ -267,14 +267,14 @@ def run_a_recurring_payment(rp, verbosity=0):
                     if i > 0: time.sleep(3*60)
 
                     payment_profile = payment_profiles[0]
-                    if rp_invoice.last_payment_failed_dt and \
-                        rp_invoice.last_payment_failed_dt > payment_profile.update_dt:
-                        # this invoice was processed but failed, and they haven't update the payment profile yet,
-                        # so just skip it for now.
-                        # only skip if the error code is: E00027 - the transaction was unsuccessful
-                        last_error_code = rp_invoice.get_last_transaction_error_code()
-                        if last_error_code and last_error_code in UNSUCCESSFUL_TRANS_CODE:
-                            continue
+#                     if rp_invoice.last_payment_failed_dt and \
+#                         rp_invoice.last_payment_failed_dt > payment_profile.update_dt:
+#                         # this invoice was processed but failed, and they haven't update the payment profile yet,
+#                         # so just skip it for now.
+#                         # only skip if the error code is: E00027 - the transaction was unsuccessful
+#                         last_error_code = rp_invoice.get_last_transaction_error_code()
+#                         if last_error_code and last_error_code in UNSUCCESSFUL_TRANS_CODE:
+#                             continue
 
                     # make payment transaction and then update recurring_payment fields
                     if verbosity > 1:
