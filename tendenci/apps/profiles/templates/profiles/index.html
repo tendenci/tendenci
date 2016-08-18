@@ -203,6 +203,11 @@
                         {% else %}
                         {{ membership.member_number }} {{ membership.membership_type }}
                         {% endif %}
+                        
+                        {% if MODULE_RECURRING_PAYMENTS_ENABLED and membership.auto_renew %}
+								<span class="text-info">{% trans '(Auto Renew: On)' %}</span>
+						{% endif %}
+						
                     </td>
                     <td>
                         {{ membership.join_dt|date:"M j, Y" }}
