@@ -109,6 +109,7 @@ class GroupForm(TendenciBaseForm):
         model = Group
         fields = ('name',
                   'label',
+                  'slug',
                   'entity',
                   'dashboard_url',
                   'type',
@@ -130,6 +131,7 @@ class GroupForm(TendenciBaseForm):
         fieldsets = [(_('Group Information'), {
                       'fields': ['name',
                                  'label',
+                                 'slug',
                                  'entity',
                                  'dashboard_url',
                                  'email_recipient',
