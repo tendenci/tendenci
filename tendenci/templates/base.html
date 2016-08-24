@@ -20,7 +20,7 @@
         {% block meta_canonical_url %}{% endblock %}
 
         <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
-        <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
+        <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME|safe }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
 
         {% block includebootstrap3css %}
             {# Let's try using Bootstrap 3 in all sites #}
