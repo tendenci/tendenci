@@ -117,7 +117,7 @@ def _read_requirements():
 excluded_directories = standard_exclude_directories + ["example", "tests"]
 package_data = find_package_data(exclude_directories=excluded_directories, only_in_packages=False)
 
-DESCRIPTION = "Tendenci - A CMS for Nonprofits"
+DESCRIPTION = "Tendenci - The Open Source Membership Management Software"
 
 LONG_DESCRIPTION = None
 try:
