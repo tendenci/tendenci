@@ -9,6 +9,7 @@ from django.contrib.sites.models import Site
 from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
 from timezones import zones
 from django_countries import countries as COUNTRIES
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.site_settings.utils import (get_form_list,
@@ -112,6 +113,8 @@ def build_settings_form(user, settings):
     """
     fields = OrderedDict()
     for setting in settings:
+        setting_label = mark_safe('{0} <a href="#id_{1}" title="Permalink to this setting"><i class="fa fa-link" aria-hidden="true"></i></a>'.format(
+                                    setting.label, setting.name))
 
         # Do not display standard regform settings
         if setting.scope_category == 'events' and setting.name.startswith('regform_'):
@@ -124,10 +127,11 @@ def build_settings_form(user, settings):
 
         if setting.input_type in ['text', 'textarea']:
             options = {
-                'label': setting.label,
+                'label': setting_label,
                 'help_text': setting.description,
                 'initial': setting_value,
-                'required': False
+                'required': False,
+                'label_suffix': "",
             }
             if setting.input_type == 'textarea':
                 options['widget'] = forms.Textarea(attrs={'rows': 5, 'cols': 30});
@@ -176,11 +180,12 @@ def build_settings_form(user, settings):
                     required = True
 
             options = {
-                'label': setting.label,
+                'label': setting_label,
                 'help_text': setting.description,
                 'initial': setting_value,
                 'choices': choices,
                 'required': required,
+                'label_suffix': "",
             }
             if setting.client_editable or user.is_superuser:
                 if setting.input_type == 'selectmultiple':
@@ -211,10 +216,11 @@ def build_settings_form(user, settings):
             except TendenciFile.DoesNotExist:
                 file_display = "No file"
             options = {
-                'label': setting.label,
+                'label': setting_label,
                 'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
                 #'initial': tfile and tfile.file, # Removed this so the file doesn't save over and over
-                'required': False
+                'required': False,
+                'label_suffix': "",
             }
             if setting.client_editable:
                 fields.update({"%s" % setting.name: forms.FileField(**options)})
