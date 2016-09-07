@@ -7,7 +7,7 @@
     {% list_jobs as jobs_list limit=TEMPLATE_JOBS_LIST_TITLE_LOCATION_LIMIT %}
         {% for job in jobs_list %}
         <h4><a href="{{ job.get_absolute_url }}">{% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}</a></h4>
-        <p>{{ job.location }} {% blocktrans with d=job.description|safe|truncatewords:"10" %}{{ d }}{% endblocktrans %}</p>
+        <p>{{ job.location }} {{ job.description|safe|truncatewords_html:"10" }}</p>
     {% empty %}
         <h4>{% if user.profile.is_superuser %}<a href="{% url "job.add" %}">{% trans "Add your first job" %}</a>{% else %}<a href="#">{% trans "Great New Job" %}</a>{% endif %}</h4>
         <p>{% trans "Houston: A new job opening is available..." %}</p>
