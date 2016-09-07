@@ -41,7 +41,6 @@ Then, in your new template file, ``default-custom-name.html``, we will add the f
    {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
    {% block extra_head %}
    {{ block.super }}
-   <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
    {% endblock %}
    
    {% block custom_body %}
