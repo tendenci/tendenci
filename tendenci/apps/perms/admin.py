@@ -3,7 +3,7 @@ from operator import or_
 
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter, helpers
-from django.contrib.admin.util import get_deleted_objects, model_ngettext
+from django.contrib.admin.utils import get_deleted_objects, model_ngettext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import iri_to_uri, force_unicode
 from django.core.urlresolvers import reverse
