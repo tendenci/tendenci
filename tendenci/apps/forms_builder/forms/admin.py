@@ -235,10 +235,4 @@ class FormAdmin(TendenciBaseModelAdmin):
         return response
 
 
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.object_id = instance.form.pk
-            instance.save()
-
 admin.site.register(Form, FormAdmin)
