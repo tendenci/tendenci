@@ -1107,6 +1107,13 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.fields['membership_type'].widget.attrs['disabled'] = 'disabled'
             del self.fields['discount_code']
 
+        if 'renew_dt' in self.fields:
+            if not (self.instance and self.instance.renew_dt):
+                del self.fields['renew_dt']
+            else:
+                self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
+                #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
+
         self.add_form_control_class()
 
     def save(self, *args, **kwargs):
@@ -1629,6 +1636,9 @@ class MembershipDefaultForm(TendenciBaseForm):
                         getattr(self.instance.user.profile, profile_attr)
             else:
                 Profile.objects.create_profile(user=self.instance.user)
+                
+            if 'renew_dt' in self.fields:
+                self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
         # -----------------------------------------------------
 
             # initialize education fields
