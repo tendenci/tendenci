@@ -4,13 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
 import simplejson as json
-from django.core.urlresolvers import reverse
 from django.template import RequestContext
-from django.template.defaultfilters import date as date_filter
 from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404, HttpResponse
 from django.forms.formsets import formset_factory
-from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
@@ -20,9 +17,9 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.memberships.models import Membership
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 
-from tendenci.apps.events.models import Event, RegConfPricing, Registrant, Addon
+from tendenci.apps.events.models import Event, RegConfPricing, Registrant
 from tendenci.apps.events.utils import email_admins
-from tendenci.apps.events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+from tendenci.apps.events.registration.constants import REG_CLOSED, REG_FULL
 from tendenci.apps.events.registration.utils import get_available_pricings, reg_status
 from tendenci.apps.events.registration.utils import can_use_pricing, get_active_pricings
 from tendenci.apps.events.registration.utils import process_registration, send_registrant_email

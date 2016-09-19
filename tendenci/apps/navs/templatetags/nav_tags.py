@@ -99,8 +99,6 @@ def nav_item(context, item, **kwargs):
     """
     is_bootstrap = kwargs.get('is_bootstrap', False)
     is_site_map = kwargs.get('is_site_map', False)
-    print 'A' * 30
-    print 'is_site_map=', is_site_map
     context.update({
         "item": item,
         "is_bootstrap": is_bootstrap,
