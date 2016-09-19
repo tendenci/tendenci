@@ -1,5 +1,5 @@
 from django.conf.urls import url, patterns
-from tendenci.apps.photos.feeds import LatestAlbums, LatestAlbumPhotos
+from tendenci.apps.photos.feeds import LatestAlbums
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.photos.signals import init_signals
 

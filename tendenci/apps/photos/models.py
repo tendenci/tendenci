@@ -37,7 +37,6 @@ from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
-from tendenci.libs.abstracts.models import OrderingBaseModel
 
 from tendenci.apps.photos.utils import EXIF
 from tendenci.apps.photos.utils.reflection import add_reflection

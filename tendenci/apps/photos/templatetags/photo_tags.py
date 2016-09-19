@@ -1,6 +1,5 @@
 import re
 
-from django.core.urlresolvers import reverse
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 

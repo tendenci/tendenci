@@ -1,13 +1,11 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_unicode
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.photos.models import Image, PhotoSet, License
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.user_groups.models import Group
 
 class LicenseField(forms.ModelChoiceField):
     def label_from_instance(self, obj):

@@ -4,7 +4,6 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.base.fields import SplitDateTimeField
 
-from tendenci.apps.memberships.models import Notice
 from tendenci.apps.memberships.notices.utils import get_membership_notice_choices
 
 class NoticeLogSearchForm(forms.Form):
