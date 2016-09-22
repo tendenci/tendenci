@@ -381,11 +381,12 @@ class Newsletter(models.Model):
         """
         Method that will generate the recipients of the newsletter
         """
-
+        from tendenci.apps.memberships.models import MembershipType
         if self.member_only:
             members = GroupMembership.objects.filter(
                 status=True,
                 status_detail='active',
+                group_id__in=MembershipType.objects.filter(status_detail='active').values_list('group_id', flat=True),
                 is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
