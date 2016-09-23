@@ -60,6 +60,11 @@
         <span class="error">{{ form.card_number.errors }}</span>
     </p>
     <p class="form-row">
+        <label for="id_card_name" class="required">{% trans 'Name on Card' %}:</label>
+        {{ form.card_name }}
+        <span class="error">{{ form.card_name.errors }}</span>
+    </p>
+    <p class="form-row">
         <label for="id_card_cvc" class="required">{% trans 'Card Code' %}:</label>
          {{ form.card_cvc }} {{ form.card_cvc.help_text|safe }}
           <span class="error">{{ form.card_cvc.errors }}</span>

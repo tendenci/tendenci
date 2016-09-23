@@ -34,6 +34,7 @@ $(document).ready(function() {
 
     Stripe.createToken({
         number: $('.card-number').val(),
+        name: $('.card-name').val(),
         cvc: $('.card-cvc').val(),
         exp_month: $('.card-expiry-month').val(),
         exp_year: $('.card-expiry-year').val()
