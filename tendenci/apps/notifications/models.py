@@ -28,6 +28,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import escape
 
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.emails.models import Email
 
 QUEUE_ALL = getattr(settings, "NOTIFICATION_QUEUE_ALL", False)
 
@@ -496,6 +497,9 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
         )  # TODO make formats configurable
 
         for user in users:
+            if not user.email or Email.is_blocked(user.email):
+                continue
+
             recipients = []
             headers = {}
             # get user language for user from language store defined in

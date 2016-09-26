@@ -1,11 +1,14 @@
 import uuid
+import copy
 from django.db import models
+from django.db.models import Q
 
 from django.core.mail.message import EmailMessage
 from django.conf import settings
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.email_blocks.models import EmailBlock
 
 
 class Email(TendenciBaseModel):
@@ -20,9 +23,9 @@ class Email(TendenciBaseModel):
 
     guid = models.CharField(max_length=50)
     priority = models.IntegerField(default=0)
-    subject =models.CharField(max_length=255)
+    subject = models.CharField(max_length=255)
     body = tinymce_models.HTMLField()
-    #body = models.TextField()
+    # body = models.TextField()
     sender = models.CharField(max_length=255)
     sender_display = models.CharField(max_length=255)
     reply_to = models.CharField(max_length=255)
@@ -34,8 +37,8 @@ class Email(TendenciBaseModel):
     attachments = models.CharField(max_length=500, blank=True, default='')
     content_type = models.CharField(max_length=255, default=CONTENT_TYPE_HTML, choices=CONTENT_TYPE_CHOICES)
 
-    #create_dt = models.DateTimeField(auto_now_add=True)
-    #status = models.NullBooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
+    # create_dt = models.DateTimeField(auto_now_add=True)
+    # status = models.NullBooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
 
     class Meta:
         app_label = 'emails'
@@ -47,6 +50,17 @@ class Email(TendenciBaseModel):
 
     def __unicode__(self):
         return self.subject
+    
+    @staticmethod
+    def is_blocked(email_to_test):
+        if not '@' in email_to_test:
+            return False
+        
+        email_to_test = email_to_test.lower()
+        email_domain = email_to_test.split('@')[1]
+        return EmailBlock.objects.filter(Q(email=email_to_test) | Q(email_domain=email_domain)
+                                         ).exists()
+        
 
     def send(self, fail_silently=False, **kwargs):
         recipient_list = []
@@ -86,6 +100,16 @@ class Email(TendenciBaseModel):
             headers['X-Priority'] = '1'
             headers['X-MSMail-Priority'] = 'High'
 
+        # remove blocked from recipient_list and recipient_bcc_list
+        temp_recipient_list = copy.copy(recipient_list)
+        for e in temp_recipient_list:
+            if self.is_blocked(e):
+                recipient_list.remove(e)
+        temp_recipient_bcc_list = copy.copy(recipient_bcc_list)
+        for e in temp_recipient_bcc_list:
+            if self.is_blocked(e):
+                recipient_bcc_list.remove(e)
+
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
                                self.body,
@@ -104,11 +128,11 @@ class Email(TendenciBaseModel):
         if not self.id:
             self.guid = uuid.uuid1()
             if user and not user.is_anonymous():
-                self.creator=user
-                self.creator_username=user.username
+                self.creator = user
+                self.creator_username = user.username
         if user and not user.is_anonymous():
-            self.owner=user
-            self.owner_username=user.username
+            self.owner = user
+            self.owner_username = user.username
 
         super(Email, self).save(*args, **kwargs)
 
@@ -124,7 +148,7 @@ class Email(TendenciBaseModel):
                     boo = True
             else:
                 if user2_compare.has_perm('emails.view_email', self):
-                    if self.status == 1 and self.status_detail=='active':
+                    if self.status == 1 and self.status_detail == 'active':
                         boo = True
         return boo
 
