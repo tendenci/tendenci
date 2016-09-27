@@ -572,7 +572,7 @@ class RecurringPaymentInvoice(models.Model):
     class Meta:
         app_label = 'recurring_payments'
 
-    def make_payment_transaction(self, payment_profile_id):
+    def make_payment_transaction(self, payment_profile_id, membership=None):
         """
         Make a payment transaction. This includes:
         1) Make an API call createCustomerProfileTransactionRequest
@@ -628,9 +628,11 @@ class RecurringPaymentInvoice(models.Model):
             payment.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
             
             # approve membership
-            if self.invoice.object_type and self.invoice.object_id:
-                m = self.invoice.object_type.get_object_for_this_type(id=self.invoice.object_id)
-                m.approve()
+            if membership:
+                membership.approve()
+#             if self.invoice.object_type and self.invoice.object_id:
+#                 m = self.invoice.object_type.get_object_for_this_type(id=self.invoice.object_id)
+#                 m.approve()
                 # send notification to user
 
             self.payment_received_dt = datetime.now()

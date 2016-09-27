@@ -294,7 +294,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                     success = False
 
                     payment_profile_id = payment_profile.payment_profile_id
-                    payment_transaction = rp_invoice.make_payment_transaction(payment_profile_id)
+                    payment_transaction = rp_invoice.make_payment_transaction(payment_profile_id, membership=membership)
                     if payment_transaction.status:
                         success = True
                         num_processed += 1
