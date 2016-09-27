@@ -4,11 +4,11 @@
 {% load perm_tags %}
 
 
-<article class="panel panel-info t-search-result t-jobs-search-result t-jobs-job-{{ job.list_type }}">
+<article class="panel {% if job.list_type == 'premium'  %}panel-primary{% else %}panel-info{% endif %} t-search-result t-jobs-search-result t-jobs-job-{{ job.list_type }}">
     <div class="panel-heading t-search-result-heading">
         <h1 class="panel-title">
+        	{% if job.list_type == 'premium'  %}<i class="fa fa-star"></i>{% endif %}
             <a href="{{ job.get_absolute_url }}">{% firstof job.title trans "Untitled" %}</a>
-            <span class="label label-default">{{ job.list_type|capfirst }}</span>
         </h1>
     </div>
 

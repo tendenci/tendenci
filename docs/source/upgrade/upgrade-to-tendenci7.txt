@@ -200,6 +200,7 @@ Step 6: Run deploy
     # If you encountered an error saying `salutation` already exists,
     # you'll need to fake events 0003 `python manage.py migrate events 0003 --fake`
     # then rerun the command `python manage.py migrate`.
+    # You'll also need to fake files 0002 `python manage.py migrate files 0002 --fake`
     python manage.py migrate
     python deploy.py
 

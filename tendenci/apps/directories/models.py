@@ -212,7 +212,7 @@ class Directory(TendenciBaseModel):
     def renew_window(self):
         days = get_setting('module', 'directories', 'renewaldays')
         days = int(days)
-        if datetime.now() + timedelta(days) > self.expiration_dt:
+        if self.expiration_dt and datetime.now() + timedelta(days) > self.expiration_dt:
             return True
         else:
             return False

@@ -227,3 +227,6 @@
 .t .form-horizontal .form-group{
 		margin-bottom: 8px !important;
 }
+.t-jobs-search-result .fa-star{
+	color: #FFD700;
+}

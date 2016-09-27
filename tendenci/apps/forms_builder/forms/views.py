@@ -444,6 +444,16 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             submitter_body = generate_submitter_email_body(entry, form_for_form)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
             email_to = form_for_form.email_to()
+            is_spam = Email.is_blocked(email_to)
+            if is_spam:
+                # log the spam
+                description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
+                EventLog.objects.log(instance=form, description=description)
+                
+                if form.completion_url:
+                    return HttpResponseRedirect(form.completion_url)
+                return redirect("form_sent", form.slug)
+                
             email = Email()
             email.subject = subject
             email.reply_to = form.email_from

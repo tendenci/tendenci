@@ -19,5 +19,4 @@ urlpatterns = patterns('tendenci.apps.emails.views',
         name="email.amazon_ses_list_verified_emails"),
     url(r'^amazon_ses/send_quota/$', 'amazon_ses_send_quota',
         name="email.amazon_ses_send_quota"),
-    (r'^blocks/', include('tendenci.apps.email_blocks.urls')),
 )

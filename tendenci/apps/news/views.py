@@ -57,7 +57,7 @@ def detail(request, slug=None, template_name="news/view.html"):
 @is_enabled('news')
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
-    form = NewsSearchForm(request.GET)
+    form = NewsSearchForm(request.GET, user=request.user)
 
     if form.is_valid():
         try:

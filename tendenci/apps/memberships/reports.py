@@ -1,5 +1,5 @@
-from geraldo import Report, ReportBand, ObjectValue, SystemField,\
-    BAND_WIDTH, Label, landscape
+from geraldo import Report, ReportBand, ObjectValue,\
+     Label, landscape
 from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A5
 

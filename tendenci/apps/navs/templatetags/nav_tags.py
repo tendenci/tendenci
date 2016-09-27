@@ -68,12 +68,15 @@ def navigation(context, nav_id):
 
 
 @register.inclusion_tag("navs/load_nav.html", takes_context=True)
-def load_nav(context, nav_id, show_title=False, is_bootstrap=False):
+def load_nav(context, nav_id, show_title=False, **kwargs):
     """
     Renders the nav and its nav items.
     This will call nav_item that will call itself recursively nesting
     the subnavs
     """
+    is_site_map = kwargs.get('is_site_map', False)
+    is_bootstrap = kwargs.get('is_bootstrap', False)
+
     # No perms check because load_nav is only called by the other tags
     try:
         nav = Nav.objects.get(id=nav_id)
@@ -83,31 +86,37 @@ def load_nav(context, nav_id, show_title=False, is_bootstrap=False):
         "nav": nav,
         "items": nav.top_items,
         "show_title": show_title,
-        "is_bootstrap": is_bootstrap
+        "is_bootstrap": is_bootstrap,
+        'is_site_map': is_site_map,
     })
     return context
 
 
 @register.inclusion_tag("navs/navigation_item.html", takes_context=True)
-def nav_item(context, item, is_bootstrap=False):
+def nav_item(context, item, **kwargs):
     """
         Renders a nav item and its children.
     """
+    is_bootstrap = kwargs.get('is_bootstrap', False)
+    is_site_map = kwargs.get('is_site_map', False)
     context.update({
         "item": item,
-        "is_bootstrap": is_bootstrap
+        "is_bootstrap": is_bootstrap,
+        "is_site_map": is_site_map
     })
     return context
 
 
 @register.inclusion_tag("navs/cached_nav.html", takes_context=True)
-def nav(context, nav_id, show_title=False):
+def nav(context, nav_id, show_title=False, is_site_map=False):
 
     """
     Renders the nav from cache
     if not will use the navigation tag for rendering the nav
     """
     user = AnonymousUser()
+    if is_site_map == 'False':
+        is_site_map = False
 
     if 'user' in context:
         if isinstance(context['user'], User):
@@ -127,9 +136,9 @@ def nav(context, nav_id, show_title=False):
                 navs = navs.distinct()
 
         nav_object = navs[0]
-        nav = get_nav(nav_object.pk)
+        nav = get_nav(nav_object.pk, is_site_map=is_site_map)
         if not nav:
-            nav = cache_nav(nav_object, show_title)
+            nav = cache_nav(nav_object, show_title, is_site_map=is_site_map)
     except:
         return None
 

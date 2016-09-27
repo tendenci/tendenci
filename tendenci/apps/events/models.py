@@ -1299,7 +1299,7 @@ class Event(TendenciBaseModel):
             if date.weekday() == 0:  # monday
                 start_dt = date
             elif date.weekday() == 4:  # friday
-                end_dt = date
+                end_dt = date.replace(hour=self.end_dt.hour, minute=self.end_dt.minute, second=self.end_dt.second)
 
             if start_dt and end_dt:
                 same_date = start_dt.date() == end_dt.date()

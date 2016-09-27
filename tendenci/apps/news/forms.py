@@ -15,7 +15,6 @@ from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.fields import EmailVerificationField
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.forms import FormControlWidgetMixin
 

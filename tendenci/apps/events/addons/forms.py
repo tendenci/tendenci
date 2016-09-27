@@ -1,16 +1,7 @@
-import re
-
-from decimal import Decimal
-
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User, AnonymousUser
 
-from captcha.fields import CaptchaField
-from tendenci.apps.discounts.models import Discount
-from tendenci.apps.site_settings.utils import get_setting
-
-from tendenci.apps.events.models import Addon, AddonOption, RegAddon, RegAddonOption
+from tendenci.apps.events.models import RegAddon, RegAddonOption
 
 class RegAddonForm(forms.Form):
     """RegAddon form during registration.

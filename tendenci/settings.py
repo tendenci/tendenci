@@ -195,10 +195,11 @@ INSTALLED_APPS = (
     # applications
     'formtools',
     'bootstrap3',
-    'pagination',
+    'pagination', 
     'tagging',
-    'haystack',
     'captcha',
+    'haystack',
+    
     #'tastypie',
     'tendenci',
     'tendenci.libs.model_report',

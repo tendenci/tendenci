@@ -1972,9 +1972,11 @@ def register(request, event_id=0,
                     do_confirmation = True
                     amount_list, discount_amount, discount_list = get_registrants_prices(*args)
                     discount_applied = (discount_amount > 0)
+                    
                     for i, form in enumerate(registrant.forms):
-                        form.discount = discount_list[i]
-                        form.final_price = amount_list[i]
+                        if not is_table:
+                            form.discount = discount_list[i]
+                            form.final_price = amount_list[i]
                         flat_registrants.append(form)
 
         elif 'addmore' in request.POST:

@@ -40,6 +40,7 @@ class ProfileSearchForm(forms.Form):
                         ('username', _('Username')),
                         ('member_number', _('Member Number')),
                         ('company', _('Company')),
+                        ('department', _('Department')),
                         ('position_title', _('Position Title')),
                         ('phone', _('Phone')),
                         ('city', _('City')),

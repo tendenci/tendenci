@@ -25,7 +25,7 @@ from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
-from django.contrib.admin.util import NestedObjects
+from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import allow_lazy
 from django.utils.text import capfirst, Truncator
 from django.utils.encoding import force_unicode

@@ -7,6 +7,8 @@ from tendenci.apps.payments.models import Payment
 class StripeCardForm(forms.Form):
     card_number = forms.CharField(required=False, max_length=20,
                                   widget=NoNameTextInput())
+    card_name = forms.CharField(required=False, max_length=100,
+                                  widget=NoNameTextInput())
     card_cvc = forms.CharField(required=False, max_length=4,
                                widget=NoNameTextInput())
     card_expiry_month = forms.CharField(required=False, max_length=2,

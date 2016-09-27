@@ -73,14 +73,14 @@
                                 </a>
                             </td>
                         {% endif %}
-                        <td>{{ event_log.description }}</td>
-                        <td colspan="2">
+                        <td>
                             {% if event_log.user %}
                                 {% trans "User ID: " %}<a href="{% url "event_log.search" %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
                             {% else %}
                                 {% trans "User ID: " %}<a href="{% url "event_log.search" %}?user_name={{ event_log.username|urlencode }}{{ date_range_query }}#advanced">0</a>
                             {% endif %}
                         </td>
+                        <td colspan="2">{{ event_log.description }}</td>
                     </tr>
                   </table>
             </div>

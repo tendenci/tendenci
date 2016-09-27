@@ -7,7 +7,7 @@ from mimetypes import guess_type
 from django.conf import settings
 from django.conf.urls import patterns, url
 from django.contrib import admin
-from django.contrib.admin.util import unquote
+from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
@@ -234,11 +234,5 @@ class FormAdmin(TendenciBaseModelAdmin):
         response['Content-Disposition'] = 'filename=%s' % base_name
         return response
 
-
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.object_id = instance.form.pk
-            instance.save()
 
 admin.site.register(Form, FormAdmin)
