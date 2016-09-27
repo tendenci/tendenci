@@ -147,7 +147,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(CorporateMembershipType, self).save(*args, **kwargs)
 
-    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
         Examples:
@@ -160,7 +160,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                         join_dt=membership.join_dt,
                                         renew_dt=membership.renew_dt)
         """
-        return self.membership_type.get_expiration_dt(renewal=renewal, join_dt=join_dt, renew_dt=renew_dt)
+        return self.membership_type.get_expiration_dt(renewal=renewal, join_dt=join_dt, renew_dt=renew_dt, previous_expire_dt=previous_expire_dt)
 
 
 class CorpProfile(TendenciBaseModel):
@@ -302,6 +302,7 @@ class CorpMembership(TendenciBaseModel):
     corporate_membership_type = models.ForeignKey("CorporateMembershipType",
                                     verbose_name=_("MembershipType"))
     renewal = models.BooleanField(default=False)
+    renew_from_id = models.IntegerField(blank=True, null=True)
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     join_dt = models.DateTimeField(_("Join Date Time"))
@@ -800,11 +801,18 @@ class CorpMembership(TendenciBaseModel):
             self.status = True
             self.status_detail = 'active'
             # calculate the expiration date
+            if self.renew_from_id:
+                [previous_expire_dt] = CorpMembership.objects.filter(
+                                            id=self.renew_from_id).values_list(
+                                            'expiration_dt', flat=True)[:1] or [None]
+            else:
+                previous_expire_dt = None
             corp_memb_type = self.corporate_membership_type
             self.expiration_dt = corp_memb_type.get_expiration_dt(
                                             renewal=True,
                                             join_dt=self.join_dt,
-                                            renew_dt=self.renew_dt)
+                                            renew_dt=self.renew_dt,
+                                            previous_expire_dt=previous_expire_dt)
             if not request_user.is_anonymous():
                 self.owner = request_user
                 self.owner_username = request_user.username

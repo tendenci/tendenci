@@ -955,6 +955,7 @@ def corp_renew(request, id,
                 # create a new corp_membership entry
                 new_corp_membership = form.save()
                 new_corp_membership.renewal = True
+                new_corp_membership.renew_from_id = corp_membership.id
                 new_corp_membership.renew_dt = datetime.now()
                 new_corp_membership.status = True
                 new_corp_membership.status_detail = 'pending'

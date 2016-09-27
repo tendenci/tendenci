@@ -179,7 +179,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         self.guid = self.guid or uuid.uuid1().get_hex()
         super(MembershipType, self).save(*args, **kwargs)
 
-    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
 
@@ -191,7 +191,8 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
             For renew:
             expiration_dt = membership_type.get_expiration_dt(renewal=True,
                                                               join_dt=membership.join_dt,
-                                                              renew_dt=membership.renew_dt)
+                                                              renew_dt=membership.renew_dt,
+                                                              previous_expire_dt=None)
         """
         now = datetime.now()
 
@@ -229,6 +230,13 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
                 else:  # renewal = True
                     if self.rolling_renew_option == '0':
                         # expires on the end of full period
+                        
+                        # if they are renewing before expiration, the new expiration date 
+                        # should start from the previous expiration date instead of the renew date
+                        if isinstance(previous_expire_dt, datetime):
+                            if previous_expire_dt > now:
+                                return previous_expire_dt + relativedelta(years=self.period)
+                            
                         return renew_dt + relativedelta(years=self.period)
                     elif self.rolling_renew_option == '1':
                         # expires on the ? days at signup (join) month
@@ -1697,8 +1705,14 @@ class MembershipDefault(TendenciBaseModel):
         else:
 
             if self.renew_dt:
+                if self.renew_from_id:
+                    [previous_expire_dt] = MembershipDefault.objects.filter(
+                                                id=self.renew_from_id).values_list(
+                                                'expire_dt', flat=True)[:1] or [None]
+                else:
+                    previous_expire_dt = None
                 self.expire_dt = self.membership_type.get_expiration_dt(
-                    renewal=self.is_renewal(), renew_dt=self.renew_dt
+                    renewal=self.is_renewal(), renew_dt=self.renew_dt, previous_expire_dt=previous_expire_dt
                 )
             elif self.join_dt:
                 self.expire_dt = self.membership_type.get_expiration_dt(
