@@ -1477,6 +1477,10 @@ class ImportMembDefault(object):
             profile.status_detail = 'active'
         else:
             profile.status_detail = profile.status_detail.lower()
+        
+        # this is membership import - the 'expired' status_detail shouldn't be assigned to profile   
+        if profile.status_detail == 'expired':
+            profile.status_detail = 'active'
 
         if profile.status_detail == 'active' and not profile.status:
             profile.status = True
