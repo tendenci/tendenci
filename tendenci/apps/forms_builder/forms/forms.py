@@ -25,6 +25,7 @@ from tendenci.apps.recurring_payments.fields import BillingCycleField
 from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH
+from tendenci.apps.files.validators import FileValidator
 
 
 template_choices = [
@@ -111,6 +112,8 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     field_args["max_length"] = FIELD_NAME_LENGTH
                 elif field.field_function == 'EmailPhoneNumber':
                     field_args["max_length"] = FIELD_PHONE_LENGTH
+                elif field.field_type == 'FileField':
+                    field_args["validators"] = [FileValidator()]
 
                 form.fields[field_key] = field_class(**field_args)
 

@@ -4,7 +4,7 @@ from tendenci.apps.site_settings.utils import get_setting
 
 urlpath = get_setting('module', 'projects', 'url')
 if not urlpath:
-    urlpath = "case-studies"
+    urlpath = "projects"
 
 urlpatterns = patterns('tendenci.apps.projects.views',
     url(r'^%s/$' % urlpath, 'index', name="projects"),

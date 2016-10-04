@@ -7,6 +7,7 @@ import urllib
 import urllib2
 import socket
 from urlparse import urlparse
+import mimetypes
 from django.db import connection
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -529,3 +530,18 @@ def get_allowed_upload_file_exts(file_type='other'):
         return types[file_type]
 
     return types['image'] + types['video'] + types['other']
+
+
+def get_allowed_mimetypes(file_exts):
+    if not file_exts or not hasattr(file_exts, '__iter__'):
+        return None
+    
+    types_map = mimetypes.types_map
+    exts = types_map.keys()
+    allowed_mimetypes = []
+    for ext in file_exts:
+        if ext in exts:
+            mime_type = types_map[ext]
+            if not mime_type in allowed_mimetypes:
+                allowed_mimetypes.append(types_map[ext])
+    return allowed_mimetypes
