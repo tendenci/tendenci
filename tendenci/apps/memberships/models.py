@@ -550,6 +550,12 @@ class MembershipDefault(TendenciBaseModel):
         permissions = (("approve_membershipdefault", _("Can approve memberships")),)
         app_label = 'memberships'
 
+
+    def __init__(self, *args, **kwargs):
+        super(MembershipDefault, self).__init__(*args, **kwargs)
+        if not self.auto_renew:
+            self.auto_renew = False
+
     def __unicode__(self):
         """
         Returns summary of membership object
