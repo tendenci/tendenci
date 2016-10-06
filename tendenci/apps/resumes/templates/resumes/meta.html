@@ -13,6 +13,8 @@
 
 
 <ul class="list-unstyled t-meta-data">
+    <li class="pull-right"><a href="{% url 'resume.print_view' resume.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
+
     {% if show_fb_connect|default:False %}
         <li>{% fb_like_button_iframe resume.get_absolute_url height=20 %}</li>
     {% endif %}
@@ -53,7 +55,6 @@
         {% endif %}
     {% endif %}
 
-    <li><a href="{% url 'resume.print_view' resume.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
 </ul>
 
 {% if can_edit %}

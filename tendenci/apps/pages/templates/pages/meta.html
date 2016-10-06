@@ -13,6 +13,8 @@
 
 
 <ul class="list-unstyled t-meta-data">
+    {% if page.slug %}<li class="pull-right"><a href="{% url 'page.print_view' page.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
     {% comment %}
     {% if show_fb_connect|default:False %}
         <li>{% fb_like_button_iframe news.get_absolute_url height=20 %}</li>
@@ -82,7 +84,6 @@
         {% endif %}
     {% endif %}
 
-    {% if page.slug %}<li><a href="{% url 'page.print_view' page.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
 </ul>
 
 

@@ -4,6 +4,8 @@
 
 
 <ul class="list-unstyled t-meta-data">
+    {% if news.slug %}<li class="pull-right"><a href="{% url 'news.print_view' news.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
 {% if news.groups.count > 0 %}
  	<li><strong>{% trans "Group(s):" %}</strong>
  	{% if request.user.is_superuser %}
@@ -90,7 +92,6 @@
     {% endif %}
     {% endcomment %}
 
-    {% if news.slug %}<li><a href="{% url 'news.print_view' news.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
 </ul>
 
 {% if user.profile.is_superuser %}
