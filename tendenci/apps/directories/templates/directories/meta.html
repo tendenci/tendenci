@@ -4,6 +4,8 @@
 
 
 <ul class="list-unstyled t-meta-data">
+    {% if directory.slug %}<li class="pull-right"><a href="{% url 'directory.print_view' directory.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
     {% if show_fb_connect|default:False %}
         <li>{% fb_like_button_iframe directory.get_absolute_url height=20 %}</li>
     {% endif %}
@@ -100,7 +102,6 @@
         {% endif %}
     {% endif %}
 
-    {% if directory.slug %}<li><a href="{% url 'directory.print_view' directory.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
 </ul>
 
 {% if user.profile.is_superuser %}
