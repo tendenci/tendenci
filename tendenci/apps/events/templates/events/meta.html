@@ -12,7 +12,10 @@
 {% tags_for_object event as tags %}
 
 <ul class="list-unstyled t-meta-data">
-
+        {% if user.is_authenticated %}
+        <li class="pull-right">
+            <a class="t-meta-print-link" href="{% url "event.print_view" event.pk %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a>
+        </li>
         {% if tags %}
         <li><strong>{% trans "Tags:" %} </strong>
             {% for tag in tags %}
@@ -39,14 +42,6 @@
         </li>
         {% endif %}
 
-    {% if user.is_authenticated %}
-        <li>
-            <a class="t-meta-print-link" href="{% url "event.print_view" event.pk %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a>
-        </li>
-    {% else %}
-        <li>
-            <a class="t-meta-print-link" href="{% url "event.print_view" event.pk %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a>
-        </li>
     {% endif %}
 
     <div style="clear:both;"></div>
