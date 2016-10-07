@@ -65,7 +65,7 @@
             {% endif %}
 
             {% if membership.user.profile.is_active %}
-            <li><a href="{% url "profile" membership.user.username %}">View Profile</a></li>
+            <li><a href="{% url "profile" membership.user.username %}">{% if not user.is_authenticated %}{% trans 'Click Here to Log in and View Your Profile' %}{% else %}{% trans 'View Profile' %}{% endif %}</a></li>
             {% endif %}
 
         </ul>
