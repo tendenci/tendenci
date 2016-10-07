@@ -1477,6 +1477,14 @@ class MembershipDefault(TendenciBaseModel):
         elif status == 'expired':
             actions.update({
                 approve_link: u'Approve Membership'})
+        
+        if status != 'archive':
+            if get_setting('module', 'recurring_payments', 'enabled'):
+                if not self.has_rp():
+                    label = _('Set Up Auto Renew')
+                else:
+                    label = _('Update Auto Renew')
+                actions.update({reverse('memberships.auto_renew_setup', args=[self.user.pk]): label})
 
         return actions
 

@@ -64,6 +64,17 @@
                             <p title="{{ membership.subscribe_dt|timesince }} ago">
                                 {% trans 'Renewed' %} <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
                             {% endif %}
+                            
+                            {% if membership.status_detail != 'archive' %}
+                            {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
+                            {% if  user.is_superuser or user == membership.user %}
+                            <p>{% trans 'Auto Renew:' %} <strong>{% if membership.auto_renew %}{% trans 'On' %}{% else %}{% trans 'Off' %}{% endif %}</strong>
+                         
+                            <a href="{% url "memberships.auto_renew_setup" membership.user.id %}">{% if membership.has_rp %}{% trans 'Update' %}{% else %}{% trans 'Set Up' %}{% endif %}</a>
+                            </p>
+                            {% endif %}
+                            {% endif %}
+                            {% endif %}
 
                             {% if membership.is_approved %}
                                 {% if membership.is_forever %}
