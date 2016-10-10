@@ -404,7 +404,8 @@ def update_ticket(request, ticket_id, public=False):
     if VERSION < (1, 8):
         context = Context(context)
 
-    comment = template_func(comment).render(context)
+    # commenting it out as we don't want the comment to be treated as django template
+    #comment = template_func(comment).render(context)
 
     if owner is -1 and ticket.assigned_to:
         owner = ticket.assigned_to.id
