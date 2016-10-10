@@ -2,7 +2,7 @@
 
 Tendenci is an open source content management system built for non-profits, associations and cause-based sites with functionality including association management, event registration, membership management, donations, payments, newsletters, CRM, and much more.
 
-Tendenci 7+ is the latest version that is compatible with Django 1.8. Currently, it's only available on github - hasn't been pushed to pypi yet. 
+Tendenci 7+ is the latest version that is compatible with Django 1.8.
 
 ## Important Update for Self Hosted Tendenci Sites (Posted 9.21.15)
 We will be refactoring the Tendenci code starting October 1, 2015
