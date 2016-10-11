@@ -2180,6 +2180,7 @@ class Notice(models.Model):
             'referer_url': '%s%s?next=%s' % (global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
             'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'renew_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
+            'link_to_setup_auto_renew': '%s%s' % (global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
             'corporate_membership_notice': corporate_msg,
         })
 

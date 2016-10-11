@@ -814,8 +814,10 @@ def get_notice_token_help_text(notice=None):
                     'membership_link',
                     'referer_url',
                     'renew_link',
-                    'expire_dt',
-                    'site_contact_name',
+                    'expire_dt',]
+    if get_setting('module', 'recurring_payments', 'enabled'):
+        other_labels += ['link_to_setup_auto_renew']
+    other_labels += ['site_contact_name',
                     'site_contact_email',
                     'site_display_name',
                     'time_submitted',
