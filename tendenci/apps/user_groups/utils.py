@@ -33,10 +33,10 @@ def member_choices(group, member_label):
 
 def get_default_group():
     """
-    get lowest id group to use as default in other apps that FK to Group
+    Get the default group specified in the global setting
     """
     return (Group.objects.filter(
-        status=True, status_detail="active").order_by('id')[:1] or [None])[0]
+            id=Group.objects.get_initial_group_id()) or [None])[0]
 
 
 def process_export(
