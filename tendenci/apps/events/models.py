@@ -909,6 +909,35 @@ class Registrant(models.Model):
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
 
+    def populate_custom_form_entry(self):
+        """
+        When, for some reason, registrants don't have the associated custom reg form entry 
+        registered for an event with a custom form, they cannot be edited.
+        We're going to check and populate the entry if not existing so that they can edit.
+        """
+        if not self.custom_reg_form_entry:
+            reg_conf = self.registration.event.registration_configuration
+            if reg_conf.use_custom_reg_form:
+                custom_reg_form = reg_conf.reg_form
+                # add an entry for this registrant
+                entry = CustomRegFormEntry.objects.create(entry_time=datetime.now(),
+                                                  form=custom_reg_form)
+                self.custom_reg_form_entry = entry
+                self.save()
+                # populate fields
+                fields = [item[0] for item in USER_FIELD_CHOICES]
+                for field_name in fields:
+                    if hasattr(self, field_name):
+                        value = getattr(self, field_name)
+                        [field] = CustomRegField.objects.filter(
+                                        form=custom_reg_form,
+                                        map_to_field=field_name)[:1] or [None]
+                        if field:
+                            CustomRegFieldEntry.objects.create(
+                                             value=value,
+                                             entry=entry,
+                                             field=field)
+
 class Payment(models.Model):
     """
     Event registration payment

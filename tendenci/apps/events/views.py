@@ -2424,6 +2424,12 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             max_num=reg8n.registrant_set.filter(registration=reg8n).count(),
             extra=0
         )
+
+        # check and populate for any missing entry
+        for registrant in reg8n.registrant_set.filter(cancel_dt__isnull=True):
+            if not registrant.custom_reg_form_entry:
+                registrant.populate_custom_form_entry()
+        
         entry_ids = reg8n.registrant_set.filter(cancel_dt__isnull=True
                                                 ).values_list('custom_reg_form_entry',
                                                               flat=True).order_by('id')
