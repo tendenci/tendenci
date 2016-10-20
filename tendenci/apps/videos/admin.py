@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.videos.models import Video, Category, VideoType
@@ -20,13 +21,20 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class VideoAdmin(TendenciBaseModelAdmin):
+    def get_release_dt(self, instance):
+        dt = instance.release_dt
 
-    list_display = ['title', 'tags', 'category', 'video_type', 'ordering']
+        if dt:
+            return dt.strftime('%x')
+        return u''
+    get_release_dt.short_description = _('Release Date')
+
+    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'ordering']
     list_editable = ['ordering']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['question', 'answer']
     fieldsets = (
-        (None, {'fields': ('title', 'slug', 'category', 'video_type', 'image', 'clear_image', 'video_url', 'tags', 'description')}),
+        (None, {'fields': ('title', 'slug', 'category', 'video_type', 'image', 'clear_image', 'video_url', 'tags', 'description', 'release_dt')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',

@@ -2,6 +2,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from embedly import Embedly
 from django.contrib.contenttypes.fields import GenericRelation
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tagging.fields import TagField
@@ -50,6 +51,7 @@ class Video(TendenciBaseModel):
     image = models.ImageField(upload_to='uploads/videos/%y/%m', blank=True)
     video_url = models.CharField(max_length=500, help_text='Youtube, Vimeo, etc..')
     description = tinymce_models.HTMLField()
+    release_dt = models.DateTimeField(_("Release Date"), null=True)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     ordering = models.IntegerField(blank=True, null=True)
 
