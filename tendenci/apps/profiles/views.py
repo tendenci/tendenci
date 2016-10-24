@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.db.models import Count, Q, get_app
+from django.db.models import Count, Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ImproperlyConfigured
@@ -52,7 +52,7 @@ from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.invoices.models import Invoice
 
 try:
-    notification = get_app('notifications')
+    from tendenci.apps.notifications import models as notification
 except ImproperlyConfigured:
     notification = None
 

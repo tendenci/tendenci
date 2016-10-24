@@ -11,14 +11,13 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import get_app
 
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.perms.utils import get_notice_recipients
 
 try:
-    notification = get_app('notifications')
+    from tendenci.apps.notifications import models as notification
 except ImproperlyConfigured:
     notification = None
 

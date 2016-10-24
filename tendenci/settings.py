@@ -199,8 +199,8 @@ INSTALLED_APPS = (
     'tagging',
     'captcha',
     'haystack',
+    'tastypie',
     
-    #'tastypie',
     'tendenci',
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
