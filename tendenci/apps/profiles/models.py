@@ -73,7 +73,7 @@ class Profile(Person):
     student = models.IntegerField(_('student'), null=True, blank=True)
     remember_login = models.BooleanField(_('remember login'), default=False)
     exported = models.BooleanField(_('exported'), default=False)
-    direct_mail = models.BooleanField(_('direct mail'), default=False)
+    direct_mail = models.BooleanField(_('direct mail'), default=True)
     notes = models.TextField(_('notes'), blank=True)
     admin_notes = models.TextField(_('admin notes'), blank=True)
     referral_source = models.CharField(_('referral source'), max_length=50, blank=True)
