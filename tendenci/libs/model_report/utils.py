@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 from string import capwords
+from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.contrib.contenttypes.models import ContentType
@@ -86,7 +87,9 @@ def round_format(value, instance):
     return Decimal('%.2f' % Decimal(value))
 
 def us_date_format(value, instance):
-    return value.strftime("%m/%d/%Y")
+    if isinstance(value, datetime):
+        return value.strftime("%m/%d/%Y")
+    return value
 
 
 def date_label(report, field):
