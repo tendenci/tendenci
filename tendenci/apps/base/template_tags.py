@@ -52,7 +52,7 @@ class ListNode(Node):
             raise AttributeError(_('Model attribute must be set'))
         if not issubclass(self.model, models.Model):
             raise AttributeError(_('Model attribute must derive from Model'))
-        if not hasattr(self.model.objects, 'search'):
+        if 'query' in self.kwargs and not hasattr(self.model.objects, 'search'):
             raise AttributeError(_('Model.objects does not have a search method'))
 
     def custom_model_filter(self, items, user):
