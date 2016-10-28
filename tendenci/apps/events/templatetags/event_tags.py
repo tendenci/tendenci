@@ -398,6 +398,9 @@ class ListEventsNode(ListNode):
 
         if start_dt:
             items = items.filter(start_dt__gte=start_dt)
+            
+        # exclude private events
+        items = items.filter(enable_private_slug=False)
 
         # if order is not specified it sorts by relevance
         if order:
