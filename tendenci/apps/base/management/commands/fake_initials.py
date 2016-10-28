@@ -101,7 +101,8 @@ class Command(BaseCommand):
                 'videos',
                 'wp_exporter',
                 'wp_importer',
-                'djcelery'
+                'djcelery',
+                'tastypie'
                 )
         for a in apps:
             try:
