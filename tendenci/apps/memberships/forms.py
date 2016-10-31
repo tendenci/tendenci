@@ -514,6 +514,8 @@ def assign_fields(form, app_field_objs):
                 # create form field with customized behavior
                 field = obj.get_field_class(
                         initial=form.fields[obj.field_name].initial)
+                if obj.default_value != None and obj.default_value != '':
+                    field.initial = obj.default_value
                 form.fields[obj.field_name] = field
             else:
                 field = form.fields[obj.field_name]
