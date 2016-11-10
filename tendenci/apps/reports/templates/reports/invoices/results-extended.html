@@ -130,7 +130,7 @@
                 <th>{% trans 'Balance' %}</th>
             </tr>
             <tr class="summary-labels">
-                <th colspan="11">{% blocktrans wirh c=item.count t=item.object_type %}Summary of {{ c }} invoices for {{ t }}{% endblocktrans %}</th>
+                <th colspan="11">{% blocktrans with c=item.count t=item.object_type %}Summary of {{ c }} invoices for {{ t }}{% endblocktrans %}</th>
                 <th>{{ item.total__sum|format_currency }}</th>
                 <th>{{ item.payments_credits__sum|format_currency }}</th>
                 <th>{{ item.balance__sum|format_currency }}</th>
