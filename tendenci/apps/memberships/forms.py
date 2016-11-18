@@ -1,3 +1,4 @@
+import decimal
 from datetime import datetime
 import requests
 
@@ -19,7 +20,7 @@ from tendenci.apps.corporate_memberships.models import (CorpMembership, CorpMemb
 from tendenci.apps.educations.models import Education
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.memberships.fields import (
-    TypeExpMethodField, NoticeTimeTypeField, MembershipTypeModelChoiceField,
+    TypeExpMethodField, NoticeTimeTypeField, MembershipTypeModelChoiceField, DonationOptionAmountField
 )
 from tendenci.apps.memberships.models import (
     MembershipDefault, MembershipDemographic, MembershipAppField, MembershipType,
@@ -31,7 +32,7 @@ from tendenci.apps.memberships.utils import (
     get_ud_file_instance, normalize_field_names, get_notice_token_help_text,
 )
 from tendenci.apps.memberships.widgets import (
-    CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget,
+    CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget, DonationOptionAmountWidget,
 )
 from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.apps.user_groups.models import Group
@@ -363,6 +364,12 @@ class MembershipAppForm(TendenciBaseForm):
         ),
         initial='published'
     )
+    
+    donation_label = forms.CharField(label=_("Label"), required=False, 
+                                     initial=_("Select or specify your contribution"),)
+    donation_default_amount = PriceField(label=_("Default Amount"), decimal_places=2,
+                                         help_text=_("Set a default amount for donation."),
+                                         initial=35)
 #    app_field_selection = AppFieldSelectionField(label='Select Fields')
 
     class Meta:
@@ -376,6 +383,9 @@ class MembershipAppForm(TendenciBaseForm):
             'membership_types',
             'include_tax',
             'tax_rate',
+            'donation_enabled',
+            'donation_label',
+            'donation_default_amount',
             'payment_methods',
             'use_for_corp',
             'use_captcha',
@@ -991,6 +1001,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
     )
 
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
+    donation_opt = forms.MultiValueField(required=False)
     payment_method = PaymentMethodModelChoiceField(
         label=_('Payment Method'),
         widget=forms.RadioSelect(),
@@ -1070,11 +1081,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             require_payment = self.membership_app.membership_types.filter(
                                     Q(price__gt=0) | Q(admin_fee__gt=0)).exists()
 
-        if not require_payment:
-            del self.fields['payment_method']
-        else:
-            self.fields['payment_method'].queryset = self.membership_app.payment_methods.all()
-
         self_fields_keys = self.fields.keys()
 
         if 'status_detail' in self_fields_keys:
@@ -1115,8 +1121,38 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             else:
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
-
+                
         self.add_form_control_class()
+
+        if self.membership_app.donation_enabled:
+            self.fields['donatin_option_value'] = DonationOptionAmountField(required=False)
+            self.fields['donatin_option_value'].label = self.membership_app.donation_label
+            self.fields['donatin_option_value'].widget = DonationOptionAmountWidget(attrs={},
+                                                default_amount=self.membership_app.donation_default_amount)
+            require_payment = True
+
+        if not require_payment:
+            del self.fields['payment_method']
+        else:
+            self.fields['payment_method'].queryset = self.membership_app.payment_methods.all()
+   
+
+    def clean_donatin_option_value(self):
+        value_list = self.cleaned_data['donatin_option_value']
+        print 'value_list=', value_list
+        if value_list:
+            donation_option, donation_amount = value_list
+            if donation_option == 'custom':
+                # validate donation_amount
+                try:
+                    donation_amount = donation_amount.replace('$', '').replace(',', '')
+                    donation_amount = decimal.Decimal(donation_amount)
+                    return (donation_option, donation_amount)
+                except decimal.InvalidOperation:
+                    raise forms.ValidationError(_("Please enter a valid donation amount."))
+
+        return value_list
+        
 
     def save(self, *args, **kwargs):
         """

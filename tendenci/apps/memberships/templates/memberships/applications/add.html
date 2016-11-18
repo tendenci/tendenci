@@ -69,6 +69,9 @@
 		.form-horizontal .form-group{
 			margin-bottom: 8px !important;
 		}
+		.form-group ul{
+			list-style: none;
+		}
     </style>
 {% endblock %}
 
@@ -195,6 +198,17 @@
                     <button type="button" id="discount_check" class="btn btn-default">{% trans "Check Discount" %}</button>
                 </div>
             </div>
+        {% endif %}
+        
+        {% if membership_form.donatin_option_value %}
+            <div class="form-group">
+                <label for="{{ membership_form.donatin_option_value.id_for_label }}" class="col-sm-3 control-label">{{ membership_form.donatin_option_value.label }}</label>
+
+                <div class="col-sm-9">
+                    {{ membership_form.donatin_option_value }}
+                </div>
+            </div>
+            
         {% endif %}
 
         {% if not is_edit %}

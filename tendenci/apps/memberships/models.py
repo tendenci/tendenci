@@ -346,6 +346,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)
+    donation_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
 
     class Meta:
         verbose_name = _("Membership")
@@ -2337,6 +2338,9 @@ class MembershipApp(TendenciBaseModel):
                             default=False)
     membership_types = models.ManyToManyField(MembershipType,
                                               verbose_name="Membership Types")
+    donation_enabled = models.BooleanField(_("Enable Donation"), default=False)
+    donation_label = models.CharField(_("Label"), max_length=255, blank=True, null=True)
+    donation_default_amount = models.DecimalField(_("Default Amount"), max_digits=15, decimal_places=2, blank=True, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
