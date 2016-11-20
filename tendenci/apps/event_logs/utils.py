@@ -35,6 +35,7 @@ app_exclude_list = [
         u'model_report',
         u'libs.model_report',
         u'libs.styled_forms',
+        u'libs.uploader',
     ]
 
 remove_list = [
