@@ -9,6 +9,8 @@
 {% has_perm user profiles.add_profile as can_add_user %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
     <ul id="module-tabs" class="tabs">
         {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
             <li class="dropdown" data-dropdown="dropdown">
@@ -45,4 +47,5 @@
 
         <li><a href="{% url 'groups' %}">{% trans "Groups" %}</a></li>
     </ul>
+{% endif %}
 {% endif %}

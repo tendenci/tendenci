@@ -15,8 +15,9 @@
     {% has_perm user studygroups.change_studygroup as can_edit_studygroup %}
 {% endif %}
 
-
 {% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -75,4 +76,5 @@
     <li><a href="{% url "files" %}?group={{ nav_object.group_id }}">{% trans 'Files' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}
 {% endif %}

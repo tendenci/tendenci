@@ -15,6 +15,8 @@
 {% endif %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -81,4 +83,5 @@
     {% endif %}
     {% endif %}
 </ul>
+{% endif %}
 {% endif %}

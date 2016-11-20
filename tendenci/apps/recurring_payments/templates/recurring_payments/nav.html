@@ -5,8 +5,10 @@
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}
-<ul id="module-tabs" class="tabs">
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 
+<ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
@@ -61,11 +63,13 @@
     <li><a href="{% url "invoices" %}">{% firstof MODULE_INVOICES_LABEL trans 'Invoices' %}</a></li>
     {% endif %}
 </ul>
-{% endif %}
 
 {% if nav_object %}
  <!-- disable recurring payment account form -->
     <form name="rp-disable" method="POST" action="{% url "recurring_payment.disable_account" nav_object.id  %}">{% csrf_token %}
         <input type="hidden" name="action" value="Disable Account">
     </form>
+{% endif %}
+
+{% endif %}
 {% endif %}

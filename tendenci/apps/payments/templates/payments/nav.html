@@ -8,6 +8,9 @@
     {% has_perm request.user invoices.view_invoice nav_object.invoice as can_view_invoice %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -60,3 +63,5 @@
     </li>
     {% endif %}
 </ul>
+{% endif %}
+{% endif %}
