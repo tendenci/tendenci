@@ -14,6 +14,7 @@
 
 {% block content %}
 <div class="t">
+{% invoice_nav  invoice %}
 {% has_perm request.user invoices.change_invoice as can_edit_invoice %}
 <h1>{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %}</h1>
 

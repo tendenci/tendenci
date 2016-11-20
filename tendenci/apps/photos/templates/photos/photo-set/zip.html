@@ -17,6 +17,10 @@
 {% block content %}
 <div class="t">
 
+    <div class="photos-nav">
+        {% photo_set_nav request.user photo_set %}
+    </div>
+
     <h1>{{ photo_set.name }}</h1>
 
     {% if task_id %}

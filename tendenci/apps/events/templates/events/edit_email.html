@@ -31,6 +31,7 @@
 {% block content %}
 
 <div class="t">
+     {% event_nav request.user event %}
     <h1>{% trans "Edit Email to Event Registrants" %}</h1>
 
     <div class="well">

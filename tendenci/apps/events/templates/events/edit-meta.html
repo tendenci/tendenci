@@ -12,6 +12,8 @@
 
 {% block content %}
 <div class="t">
+
+    {% event_nav user %}
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% blocktrans with event.title as event_title %}Meta Information for<br />
     {{ event_title }}{% endblocktrans %}</h1>
 

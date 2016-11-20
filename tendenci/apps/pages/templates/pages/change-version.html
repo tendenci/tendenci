@@ -13,6 +13,9 @@
 {% block content %}
 
 <div class="t">
+
+    {% page_nav request.user page %}
+
     <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Change version" %}</h1>
 
     <div class="page-wrap">

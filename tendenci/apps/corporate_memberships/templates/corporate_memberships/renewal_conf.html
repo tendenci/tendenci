@@ -7,6 +7,7 @@
 
 {% block content %}
 <div class="t">
+{# corpmemb_nav request.user corporate_membership #}
      <h1>{% trans "Corporate Membership Renewal Confirmation" %}</h1>
     <p>
     {% blocktrans with corp_profile.name as member %}Thanks for renewing corporate membership "{{ member }}"!{% endblocktrans %}<br /><br />

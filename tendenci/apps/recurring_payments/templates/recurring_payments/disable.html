@@ -12,6 +12,9 @@
 
 {% block content %}
 <div class="t">
+ {% if request.user.is_superuser %}
+ {% rp_nav request.user rp %}
+ {% endif %}
 
   <div id="rp-delete">
     <h1>{% trans 'Disabling Recurring Payment' %}</h1>

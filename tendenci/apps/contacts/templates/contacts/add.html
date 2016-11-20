@@ -8,6 +8,8 @@
 
 {% block content %}
 <div class="t">
+    {% contact_nav request.user %}
+
     <h1>{% trans "Add:" %} {% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}</h1>
 
     <div class="contact-wrap">

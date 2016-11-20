@@ -17,6 +17,9 @@
 
 {% block content %}
 <div class="t">
+
+    {% file_nav request.user %}
+
     <h1>{% trans "Add Files" %}</h1>
 
     <div class="file-wrap">

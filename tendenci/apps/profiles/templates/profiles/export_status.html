@@ -12,6 +12,7 @@
 
 {% block content %}
 <div class="t">
+    {% users_nav request.user None %}
     <h1>{% trans "Profiles Export - Status" %}</h1>
 
     <div id="profile-export">

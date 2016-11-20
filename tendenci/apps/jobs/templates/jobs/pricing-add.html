@@ -6,6 +6,9 @@
 
 {% block content %}
 <div class="t">
+
+    {% job_pricing_nav request.user %}
+
     <h1>{% blocktrans %}Add a New Price: {% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} </h1>
     <p>{% trans "To add a new job price, complete the fields below and press Submit." %}</p>
 

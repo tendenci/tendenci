@@ -14,6 +14,7 @@
 
 {% block content %}
 <div class="t amazon-ses-index">
+{% emails_nav %}
 <h1>{% trans "Amazon SES" %}</h1>
 <ul>
 <li><a href="{% url "email.amazon_ses_verify_email" %}">{% trans "Verify Email Addresses" %}</a></li>

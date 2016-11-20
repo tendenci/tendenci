@@ -9,6 +9,8 @@
 {% block content %}
 
 <div class="t">
+    {% article_nav request.user %}
+
     <div class="article-wrap">
 
         <h1>{% trans "Articles Export" %}</h1>

@@ -13,6 +13,7 @@
 
 {% block content %}
 <div class="t">
+ {% forms_nav request.user form %}
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans 'Entries' %}</h1>
     <h2>{{ form.title }}</h2>
     <p><a href="{% url "admin:forms_form_export" form.pk %}">{% trans "Export All Entries" %}</a></p>

@@ -14,6 +14,7 @@
 
 {% block content %}
 <div class="t">
+    {% invoice_nav  invoice %}
     <h1>{% blocktrans with invoice.id as invoice_id %}Accounting Entries View for Invoice {{ invoice_id }}{% endblocktrans %}</h1>
 
     <div class="invoice-detail">

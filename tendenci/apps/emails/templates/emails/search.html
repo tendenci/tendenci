@@ -16,6 +16,8 @@
 {% block content_classes %}{{ block.super }} t-search-view{% endblock %}
 
 {% block content %}
+    {% emails_nav %}
+
     <h1>
         {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
         {% if MODULE_EMAILS_LABEL_PLURAL %}

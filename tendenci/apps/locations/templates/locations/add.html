@@ -12,6 +12,9 @@
 
 {% block content %}
 <div class="t">
+
+    {% location_nav request.user %}
+
     <h1>{% firstof MODULE_LOCATIONS_LABEL trans 'Location' %} {% trans "Add" %}</h1>
 
     <div class="location-wrap">

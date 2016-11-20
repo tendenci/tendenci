@@ -16,6 +16,8 @@
 
 {% block content %}
 <div class="t">
+    {% article_nav request.user article %}
+
     <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Edit" %}</h1>
 
     <div class="article-wrap">

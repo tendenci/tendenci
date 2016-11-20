@@ -16,6 +16,8 @@
 {% endblock %}
 
 {% block content %}
+    {% article_nav request.user %}
+
     <h1>{% firstof MODULE_ARTICLES_LABEL trans "Article" %} {% trans "Add" %}</h1>
 
     <form id="t-articles-article-form" class="form-horizontal" action="{% url 'article.add' %}" method="post">{% csrf_token %}

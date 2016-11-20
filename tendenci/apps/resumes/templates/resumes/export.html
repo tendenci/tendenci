@@ -8,6 +8,8 @@
 
 {% block content %}
 <div class="t">
+    {% resume_nav request.user %}
+
     <div class="resumes-wrap">
 
         <h1>{% trans "Resumes Export" %}</h1>

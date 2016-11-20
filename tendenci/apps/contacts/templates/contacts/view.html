@@ -7,6 +7,8 @@
 {% block title %}{{ contact }}{% endblock %}
 
 {% block content %}
+    {% contact_nav request.user contact %}
+
     {% contact_options request.user contact %}
 
     <article id="t-contacts-contact-{{ contact.pk }}" class="t-contacts-contact">

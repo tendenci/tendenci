@@ -12,6 +12,7 @@
 
 {% block content %}
 <div class="t">
+ {% redirect_nav request.user %}
     <h1>{% trans "Redirects Add" %}</h1>
 
     <div class="redirect-wrap">

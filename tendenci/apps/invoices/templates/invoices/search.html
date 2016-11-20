@@ -35,6 +35,7 @@
     <div class="t">
         <div class="t-invoice">
             <div class="t-search">
+                {% invoice_nav  %}
                 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
                 {% invoice_search %}
                 {% autopaginate invoices 25 %}

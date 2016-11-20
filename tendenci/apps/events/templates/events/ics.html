@@ -12,6 +12,8 @@
 {% block content %}
 
 <div class="t">
+    {% event_nav request.user %}
+
     <div class="events-wrap">
 
         <h1>{% trans "Events ICS" %}</h1>

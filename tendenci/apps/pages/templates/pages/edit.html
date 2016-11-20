@@ -24,6 +24,9 @@
 {% block content %}
 
 <div class="t">
+
+    {% page_nav request.user page %}
+
     <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Edit" %}</h1>
 
     <div class="page-wrap">

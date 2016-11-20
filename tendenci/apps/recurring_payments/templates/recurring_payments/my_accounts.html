@@ -17,6 +17,7 @@
 
 <div class="t">
 <div id="t-rp">
+{% rp_nav request.user %}
 <div id="t-view-accounts">
 
     <h1>{% if is_owner %}{% trans 'My' %} {% else %}{{ account_user.get_full_name }}({{ account_user.username }})'s {% endif %}{% trans 'Recurring Payment Accounts' %} </h1>

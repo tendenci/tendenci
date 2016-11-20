@@ -31,6 +31,7 @@
 {% has_perm user eventlogs.view_setting as view_settings %}
 {% has_perm user forms.view_form as view_forms %}
 {% has_perm user resumes.view_reume as view_resumes %}
+{% dashboard_nav user %}
 
 {% block content_messages %}
     {{ block.super }}

@@ -16,6 +16,7 @@
 
 {% block content %}
     <div class="t">
+        {% payment_nav  %}
         <h1>{% trans "Search Payments" %}</h1>
 
         <form class="search-form" action="{% url 'payment.search' %}" method="get">

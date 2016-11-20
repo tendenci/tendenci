@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="t">
+    {% news_nav user news %}
     <h1>{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Delete Page" %}</h1>
     <div class="delete-prompt">
         {% trans "Are you sure you want to permanently delete this news?" %}

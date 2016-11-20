@@ -69,6 +69,8 @@
 {% block content %}
 <div class="t">
 <div class="application-form-wrap">
+    {% corpmemb_nav request.user %}
+
         <h1>{{ app.name }}</h1>
         {{ app.description|safe }}
 

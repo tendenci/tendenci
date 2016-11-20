@@ -12,6 +12,8 @@
 {% block content_classes %}col-xs-12 col-sm-8 col-md-8{% endblock %}
 
 {% block content %}
+    {% dashboard_nav user %}
+
     <h1>{% trans "Customize Dashboard Statistics" %}</h1>
 
     <p>{% blocktrans %}

@@ -17,6 +17,8 @@
 
 {% block content %}
     <div class="t">
+        {% user_group_nav request.user %}
+
         <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
 		<div>
 	        <form id="t-user_group-form" class="form-horizontal"  action="." method="post">{% csrf_token %}

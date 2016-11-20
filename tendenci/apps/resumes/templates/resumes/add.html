@@ -14,6 +14,9 @@
 
 {% block content %}
 <div class="t">
+
+    {% resume_nav request.user %}
+
     <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resumes' %} {% trans "Add" %}</h1>
 
     <div class="resume-wrap">

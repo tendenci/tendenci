@@ -17,6 +17,8 @@
 {% block content_classes %}{{ block.super }} t-search-view{% endblock %}
 
 {% block content %}
+    {% user_group_nav request.user %}
+
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %}</h1>
 
     {% autopaginate groups 10 %}
