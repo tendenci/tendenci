@@ -13,9 +13,10 @@ def payment_current_app(context, payment=None):
 
 
 @register.inclusion_tag("payments/nav.html", takes_context=True)
-def payment_nav(context, payment=None):
+def payment_nav(context, user, payment=None):
     context.update({
         "nav_object" : payment,
+        "user" : user,
     })
     return context
 

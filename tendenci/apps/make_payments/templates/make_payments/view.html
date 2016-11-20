@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-    {% make_payment_nav mp %}
+    {% make_payment_nav request.user mp %}
 
     <div class="t">
         <h1>{% trans "View a Payment" %}</h1>

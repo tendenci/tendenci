@@ -16,6 +16,7 @@
 {% block content %}
 <div class="t">
     {% redirect_nav request.user %}
+
     <h1>{% firstof MODULE_REDIRECTS_LABEL_PLURAL trans "Redirects" %}</h1>
 
     {% autopaginate redirects 10 %}

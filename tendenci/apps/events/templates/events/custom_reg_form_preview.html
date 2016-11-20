@@ -13,7 +13,8 @@
 {% block content %}
 
 <div class="t">
-    {% event_nav user %}
+    {% event_nav request.user %}
+
     <div class="form-wrap">
 
         <h1>{{ form.name }}</h1>

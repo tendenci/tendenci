@@ -19,7 +19,8 @@
 {% block content %}
 
 <div class="t search-view">
-{% event_nav request.user %}
+    {% event_nav request.user %}
+
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL_PLURAL trans 'Events' %}</h1>
 
     <div class="event-tabs">

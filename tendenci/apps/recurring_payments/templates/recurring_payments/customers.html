@@ -17,9 +17,9 @@
 {% block content %}
 <div class="t">
 <div id="t-search">
- {% if request.user.is_superuser %}
- {% rp_nav request.user %}
- {% endif %}
+    {% if request.user.is_superuser %}
+    {% rp_nav request.user %}
+    {% endif %}
 
     <h1>{% trans 'Recurring Payment Customers' %}</h1>
 

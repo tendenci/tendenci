@@ -25,6 +25,7 @@
 {% block content %}
 <div class="t">
 {% users_nav request.user user_this %}
+
 {% users_options request.user user_this %}
     <h1>{% trans "Join/Leave User Groups" %}</h1>
     <h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url}}">

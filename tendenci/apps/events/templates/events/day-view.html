@@ -19,8 +19,7 @@
 {% block content %}
 
 <div class="day-view">
-
-    {% event_nav user %}
+    {% event_nav request.user %}
 
     <h2>{{ date|date:"l, F j Y" }}</h2>
 

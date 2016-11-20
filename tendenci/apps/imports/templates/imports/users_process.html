@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="t">
-{% dashboard_nav user %}
+{% dashboard_nav request.user %}
 <div class="imports">
     <b>{% blocktrans with request.user.username as requser %}You ({{ requser }}) are importing the following file at (time) {% endblocktrans %}({% now "D d M Y P" %})</b>: <br>
     <font color="red">

@@ -13,6 +13,7 @@
 {% block content %}
 <div class="t">
     {% forms_nav request.user %}
+
     <div class="form-builder-wrap">
         <h2>{% blocktrans with t=entry.form.title %}Entry - {{ t }}{% endblocktrans %}</h2>
          <div class="quick-options">

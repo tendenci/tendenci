@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-    {% emails_nav email %}
+    {% emails_nav request.user email %}
 
     {% emails_options email %}
 

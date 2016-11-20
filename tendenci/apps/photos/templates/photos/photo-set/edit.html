@@ -11,7 +11,8 @@
 {% endblock %}
 
 {% block content %}
-    {% photo_set_nav user photo_set %}
+    {% photo_set_nav request.user photo_set %}
+
     <h1>{{ MODULE_PHOTOS_LABEL }} {% trans "Set Edit" %}</h1>
     <div class="forms">
     <form method="POST" action="">{% csrf_token %}

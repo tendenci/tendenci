@@ -14,7 +14,8 @@
 
 {% block content %}
 <div class="t">
-{% emails_nav %}
+{% emails_nav request.user %}
+
 <h1>{% trans "Amazon SES - Verify Email Address" %}</h1>
 <p>&nbsp;</p>
 <form method="post" action=".">

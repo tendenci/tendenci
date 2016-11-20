@@ -9,7 +9,7 @@
 {% block title %}{{ block.super }}{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    {% stories_nav user story %}
+    {% stories_nav request.user story %}
 
     <article id="t-stories-story-{{ story.pk }}" class="t-stories-story">
         {% if story.image %}

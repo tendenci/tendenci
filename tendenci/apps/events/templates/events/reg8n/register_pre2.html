@@ -15,7 +15,8 @@
 
 {% block content %}
 <div class="t">
-    {% event_nav user event %}
+    {% event_nav request.user event %}
+
     <div>
         <div class="event-title"><a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></div>
         <div class="event-time">
