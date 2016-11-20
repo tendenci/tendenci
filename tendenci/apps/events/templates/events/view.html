@@ -32,6 +32,7 @@
 {% has_perm user events.change_event as can_edit %}
 
 <div class="t">
+    {% event_nav user event %}
     <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
         <div class="info col-md-8 col-sm-8">
             <h1>

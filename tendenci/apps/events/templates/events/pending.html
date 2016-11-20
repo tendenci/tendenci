@@ -19,6 +19,7 @@
 {% block content %}
 
 <div class="t search-view">
+{% event_nav request.user %}
     <h1>{% trans "Pending Events" %}</h1>
 
     {% autopaginate events 10 %}

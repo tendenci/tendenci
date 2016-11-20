@@ -11,6 +11,7 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ directory.get_canonical_url }}">{% endblock %}
 
 {% block content %}
+    {% directory_nav request.user directory %}
     <article id="t-directories-directory-{{ directory.pk }}" class="t-directories-directory">
         <div class="page-header">
             <h1>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h1>

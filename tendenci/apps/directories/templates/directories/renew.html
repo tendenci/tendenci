@@ -14,6 +14,8 @@
 
 {% block content %}
 <div class="t">
+    {% directory_nav request.user directory %}
+
     <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Renew" %}</h1>
 
     <div class="directory-wrap">

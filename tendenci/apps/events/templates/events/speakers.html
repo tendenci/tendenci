@@ -20,6 +20,7 @@
 {% block content %}
 
 <div class="t">
+    {% event_nav user event %}
     <div class="speakers-wrap">
         <div class="info">
             <h1><a href="{% url "event" event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h1>

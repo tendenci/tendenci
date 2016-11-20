@@ -26,6 +26,7 @@
 {% block content_classes %}{{ block.super }} t-search-view{% endblock %}
 
 {% block content %}
+{% resume_nav request.user %}
     <h1>
         {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
         {% if MODULE_RESUMES_LABEL_PLURAL %}
