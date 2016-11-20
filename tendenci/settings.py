@@ -69,10 +69,8 @@ SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'tendenci.libs.swfupload.middleware.SWFUploadMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'tendenci.libs.swfupload.middleware.SSLRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'pagination.middleware.PaginationMiddleware',
@@ -496,11 +494,6 @@ FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 # MOBILE SETTINGS
 # --------------------------------------#
 MOBILE_COOKIE_NAME = "tendenci_mobile"
-
-# --------------------------------------#
-# SWFUPLOAD cookie
-# --------------------------------------#
-SWFUPLOAD_COOKIE_NAME = 'tendenci_swf'
 
 # ------------------------------------ #
 # SOCIAL AUTH SETTINGS
