@@ -24,10 +24,9 @@ from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 from tendenci.apps.base.http import Http403
-from tendenci.apps.base.decorators import flash_login_required
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save, assign_files_perms, get_query_filters, has_view_perm
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key
@@ -37,7 +36,7 @@ from djcelery.models import TaskMeta
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
 #from tendenci.apps.photos.search_indexes import PhotoSetIndex
 from tendenci.apps.photos.models import Image, Pool, PhotoSet, AlbumCover, License
-from tendenci.apps.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
+from tendenci.apps.photos.forms import PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
 from tendenci.apps.photos.utils import get_privacy_settings
 from tendenci.apps.photos.tasks import ZipPhotoSetTask
 
@@ -510,108 +509,100 @@ def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
     }, context_instance=RequestContext(request))
 
 
+def handle_uploaded_photo(request, photoset_id, file_path):
+    import uuid
+    from django.core.files import File
+    from django.db.models import Max
+    from tendenci.apps.perms.object_perms import ObjectPermission
+
+    photo = Image()
+
+    # use file name to create title; remove extension
+    filename, extension = os.path.splitext(os.path.basename(file_path))
+    photo.title = filename
+
+    # clean filename; alphanumeric with dashes
+    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+
+    # truncate; make unique; append extension
+    filename = filename[:70] + '-' + unicode(uuid.uuid1())[:5] + extension
+
+    photo.image.save(filename, File(open(file_path, 'rb')))
+
+    position_max = Image.objects.filter(
+        photoset=photoset_id).aggregate(Max('position'))['position__max'] or 0
+    photo.position = position_max + 1
+
+    photo.status = True
+    photo.status_detail = 'active'
+    photo.member = request.user
+    photo.safetylevel = 3
+    photo.is_public = True
+    photo.allow_anonymous_view = True
+
+    # Can't use update_perms_and_save() here since we don't have a form
+    #photo = update_perms_and_save(request, photo_form, photo)
+    photo.creator = request.user
+    photo.creator_username = request.user.username
+    photo.owner = request.user
+    photo.owner_username = request.user.username
+    photo.allow_user_view = False
+    photo.allow_user_edit = False
+    photo.allow_member_view = False
+    photo.allow_member_edit = False
+    photo.save()
+    assign_files_perms(photo)
+
+    EventLog.objects.log(**{
+        'event_id': 990100,
+        'event_data': '%s (%d) added by %s' % (photo._meta.object_name, photo.pk, request.user),
+        'description': '%s added' % photo._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': photo,
+    })
+
+    # add to photo set if photo set is specified
+    if photoset_id:
+        photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+        photo_set.image_set.add(photo)
+
+    privacy = get_privacy_settings(photo_set)
+
+    # photo privacy = album privacy
+    for k, v in privacy.items():
+        setattr(photo, k, v)
+
+    photo.save()
+
+    # photo group perms = album group perms
+    group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
+    group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
+    ObjectPermission.objects.assign_group(group_perms, photo)
+
+    # serialize queryset
+    data = serializers.serialize("json", Image.objects.filter(id=photo.id))
+
+    cache_image = Popen(["python", "manage.py", "precache_photo", str(photo.pk)])
+
+
 @is_enabled('photos')
-@flash_login_required
+@login_required
 def photos_batch_add(request, photoset_id=0):
     """
     params: request, photoset_id
     returns: HttpResponse
-
-    on flash request:
-        photoset_id is passed via request.POST
-        and received as type unicode; i convert to type integer
-    on http request:
-        photoset_id is passed via url
     """
-    import uuid
-    from django.db.models import Max
-    from tendenci.apps.perms.object_perms import ObjectPermission
+    from tendenci.libs.uploader import uploader
 
     # photoset permission required to add photos
     if not has_perm(request.user, 'photos.add_photoset'):
         raise Http403
 
     if request.method == 'POST':
-        for field_name in request.FILES:
-            uploaded_file = request.FILES[field_name]
-
-            # use file to create title; remove extension
-            filename, extension = os.path.splitext(uploaded_file.name)
-            request.POST.update({'title': filename, })
-
-            # clean filename; alphanumeric with dashes
-            filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-
-            # truncate; make unique; append extension
-            request.FILES[field_name].name = \
-                filename[:70] + '-' + unicode(uuid.uuid1())[:5] + extension
-
-            # photoset_id set in swfupload
-            photoset_id = int(request.POST["photoset_id"])
-
-            request.POST.update({
-                'owner': request.user.id,
-                'owner_username': unicode(request.user),
-                'creator_username': unicode(request.user),
-                'status': True,
-                'status_detail': 'active',
-            })
-
-            photo_form = PhotoUploadForm(request.POST, request.FILES, user=request.user)
-
-            if photo_form.is_valid():
-                # save photo
-                photo = photo_form.save(commit=False)
-                photo.creator = request.user
-                photo.member = request.user
-                photo.safetylevel = 3
-                photo.allow_anonymous_view = True
-
-                position_max = Image.objects.filter(
-                    photoset=photoset_id).aggregate(Max('position'))['position__max'] or 0
-
-                photo.position = position_max + 1
-
-                # update all permissions and save the model
-                photo = update_perms_and_save(request, photo_form, photo)
-
-                EventLog.objects.log(**{
-                    'event_id': 990100,
-                    'event_data': '%s (%d) added by %s' % (photo._meta.object_name, photo.pk, request.user),
-                    'description': '%s added' % photo._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': photo,
-                })
-
-                # add to photo set if photo set is specified
-                if photoset_id:
-                    photo_set = get_object_or_404(PhotoSet, id=photoset_id)
-                    photo_set.image_set.add(photo)
-
-                privacy = get_privacy_settings(photo_set)
-
-                # photo privacy = album privacy
-                for k, v in privacy.items():
-                    setattr(photo, k, v)
-
-                photo.save()
-
-                # photo group perms = album group perms
-                group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
-                group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
-                ObjectPermission.objects.assign_group(group_perms, photo)
-
-                # serialize queryset
-                data = serializers.serialize("json", Image.objects.filter(id=photo.id))
-
-                cache_image = Popen(["python", "manage.py", "precache_photo", str(photo.pk)])
-
-                # returning a response of "ok" (flash likes this)
-                # response is for flash, not humans
-                return HttpResponse(data, content_type="text/plain")
-            else:
-                return HttpResponse("photo is not valid", content_type="text/plain")
+        def callback(file_path, uuid, request=request, photoset_id=photoset_id):
+            handle_uploaded_photo(request, photoset_id, file_path)
+        return uploader.post(request, callback)
 
     else:
         if not photoset_id:

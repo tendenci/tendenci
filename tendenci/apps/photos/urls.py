@@ -42,7 +42,7 @@ urlpatterns = patterns('tendenci.apps',
     url(r'^%s/sizes/large/(?P<id>\d+)/$' % urlpath, 'photos.views.sizes', kwargs={'size_name':'large'}, name='photo_large'),
     #url(r'^sizes/original/(?P<id>\d+)/$', 'photos.views.sizes', kwargs={'size_name':'original'}, name='photo_original'),
 
-    ## swfupload ##
+    ## photo uploads ##
 
     # /photos/
     url(r'^%s/$' % urlpath, 'photos.views.photoset_view_latest', name='photoset_latest'),
