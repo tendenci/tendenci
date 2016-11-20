@@ -305,14 +305,12 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
         archive.save()
 
 
-def handle_uploaded_file(f, file_dir):
-    filecopy = os.path.join(THEME_ROOT, file_dir, f.name)
-    file_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
+def handle_uploaded_file(file_path, file_dir):
+    file_name = os.path.basename(file_path)
+    filecopy = os.path.join(THEME_ROOT, file_dir, file_name)
+    dest_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
 
-    destination = open(file_path, 'wb+')
-    for chunk in f.chunks():
-        destination.write(chunk)
-    destination.close()
+    shutil.move(file_path, dest_path)
 
     # copy to s3
     if settings.USE_S3_THEME:
