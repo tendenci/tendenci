@@ -28,7 +28,6 @@ from django.views.decorators.csrf import csrf_protect
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.http import Http403
-from tendenci.apps.base.decorators import flash_login_required
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.decorators import admin_required, is_enabled
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -41,7 +40,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.apps.files.models import File, FilesCategory
 from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key, get_max_file_upload_size, get_allowed_upload_file_exts
-from tendenci.apps.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm, FileSearchMinForm, TinymceUploadForm
+from tendenci.apps.files.forms import FileForm, MostViewedForm, FileSearchForm, FileSearchMinForm, TinymceUploadForm
 
 
 @is_enabled('files')
@@ -604,53 +603,6 @@ def tinymce_get_files(request):
 
         return JSONResponse({'content': return_string})
     raise Http404
-
-
-@flash_login_required
-def swfupload(request):
-    """
-    Handles swfupload.
-    Saves file in session.
-    File is coupled with object on post_save signal.
-    """
-    import re
-    from django.contrib.contenttypes.models import ContentType
-
-    if request.method == "POST":
-
-        form = SwfFileForm(request.POST, request.FILES, user=request.user)
-
-        if not form.is_valid():
-            return HttpResponseServerError(
-                str(form._errors), content_type="text/plain")
-
-        app_label = request.POST['storme_app_label']
-        model = unicode(request.POST['storme_model']).lower()
-        object_id = int(request.POST['storme_instance_id'])
-
-        if object_id == 'undefined':
-            object_id = 0
-
-        file = form.save(commit=False)
-        file.name = re.sub(r'[^a-zA-Z0-9._-]+', '_', file.file.name)
-        file.object_id = object_id
-        file.content_type = ContentType.objects.get(app_label=app_label, model=model)
-        file.is_public = True
-        file.status = True
-        file.allow_anonymous_view = True
-        file.owner = request.user
-        file.owner_username = request.user.username
-        file.creator = request.user
-        file.creator_username = request.user.username
-        file.save()
-
-        d = {
-            "id": file.id,
-            "name": file.name,
-            "url": file.file.url,
-        }
-
-        return HttpResponse(json.dumps([d]), content_type="text/plain")
 
 
 @login_required
