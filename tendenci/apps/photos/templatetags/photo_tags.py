@@ -3,7 +3,7 @@ import re
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.photos.models import Image, Pool
+from tendenci.apps.photos.models import Image, Pool, PhotoSet
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 
 
@@ -217,3 +217,63 @@ def list_photos(parser, token):
         kwargs['order'] = '-create_dt'
 
     return ListPhotosNode(context_var, *args, **kwargs)
+
+
+class ListPhotoSetsNode(ListNode):
+    model = PhotoSet
+    perms = 'photos.view_photoset'
+
+
+@register.tag
+def list_photo_sets(parser, token):
+    """
+    Used to pull a list of :model:`photos.PhotoSet` items.
+
+    Usage::
+
+        {% list_photo_sets as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``photo_sets_sidebar`` or
+    ``photo_sets_list``. Options can be used as [option]=[value]. Wrap text
+    values in quotes like ``tags="cool"``. Options include:
+
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Newest Added**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``group``
+           The group id associated with items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_photo_sets as photo_sets_list limit=5 tags="cool" %}
+        {% for photo_set in photo_sets_list %}
+            {{ photo_set.name }}
+        {% endfor %}
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    context_var = bits[2]
+
+    if len(bits) < 3:
+        message = "'%s' tag requires more than 3" % bits[0]
+        raise TemplateSyntaxError(_(message))
+
+    if bits[1] != "as":
+        message = "'%s' second argument must be 'as" % bits[0]
+        raise TemplateSyntaxError(_(message))
+
+    kwargs = parse_tag_kwargs(bits)
+
+    if 'order' not in kwargs:
+        kwargs['order'] = '-create_dt'
+
+    return ListPhotoSetsNode(context_var, *args, **kwargs)
