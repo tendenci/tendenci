@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
                 ('creator', models.ForeignKey(related_name='photos_photoset_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='photos_photoset_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
+                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to='user_groups.Group', null=True)),
                 ('owner', models.ForeignKey(related_name='photos_photoset_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
@@ -197,7 +197,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='group',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, blank=True, to='user_groups.Group', null=True),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='user_groups.Group', null=True),
         ),
         migrations.AddField(
             model_name='image',

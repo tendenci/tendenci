@@ -226,7 +226,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
         raise Http404
 
     response = HttpResponse(content_type='image/jpeg')
-    response['Content-Disposition'] = '%s filename=%s' % (attachment, photo.image.file.name)
+    response['Content-Disposition'] = '%s filename=%s' % (attachment, photo.image_filename())
     image.save(response, "JPEG", quality=quality)
 
     if photo.is_public_photo() and photo.is_public_photoset():

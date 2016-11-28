@@ -1841,9 +1841,9 @@ class MembershipDefault(TendenciBaseModel):
                 send_welcome_email(self.user)
 
             if self.is_renewal():
-                # renewal returns new MembershipDefault instance
-                # old MembershipDefault instance is marked status_detail = "archive"
-                self = self.renew(request.user)
+                # already new MembershipDefault instance
+                # just approve it
+                self = self.approve(request.user)
                 Notice.send_notice(
                     request=request,
                     emails=self.user.email,

@@ -163,7 +163,7 @@ def build_settings_form(user, settings):
             elif setting.input_value == '<country_list>':
                 choices = (('', '-----------'),) + tuple(COUNTRIES)
                 required = False
-                if setting.name == 'countrylistinitialchoices':
+                if setting.get_value() and  setting.name == 'countrylistinitialchoices':
                     setting_value = literal_eval(setting.get_value())
             else:
                 # Allow literal_eval in settings in order to pass a list from the setting
