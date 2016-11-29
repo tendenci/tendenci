@@ -525,8 +525,8 @@ class CorpMembershipRenewForm(forms.ModelForm):
                                         "want to renew")
 
         #if not self.instance.corporate_membership_type.membership_type.renewal_price:
-        self.fields['select_all_members'].initial = True
-        self.fields['members'].initial = [c[0] for c in members_choices]
+        self.fields['select_all_members'].initial = False
+        #self.fields['members'].initial = [c[0] for c in members_choices]
 
         self.fields['payment_method'].widget = forms.RadioSelect(
                                     choices=get_payment_method_choices(
@@ -535,6 +535,19 @@ class CorpMembershipRenewForm(forms.ModelForm):
         self.fields['payment_method'].empty_label = None
         self.fields['payment_method'].initial = \
                 self.instance.payment_method
+                
+    def clean(self):
+        cleaned_data = super(CorpMembershipRenewForm, self).clean()
+        cmt = cleaned_data['corporate_membership_type']
+        members = cleaned_data['members']
+        count_members = len(members)
+        if cmt.apply_cap:
+            if not cmt.allow_above_cap:
+                if count_members > cmt.membership_cap:
+                    raise forms.ValidationError(
+                        _("You've selected %d individual members, but the maximum allowed is %d." % (count_members,  cmt.membership_cap)) )
+        
+        return cleaned_data
 
 
 class RosterSearchAdvancedForm(forms.Form):
