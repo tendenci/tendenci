@@ -60,20 +60,28 @@ def get_corpmembership_type_choices(user, corpmembership_app, renew=False, exclu
         else:
             indiv_renewal_price = cmt.membership_type.renewal_price
             if not indiv_renewal_price:
-                indiv_renewal_price = 'Free<span class="type-ind-price"></span>'
+                indiv_renewal_price = '%s<span class="type-ind-price"></span>' % _('Free')
             else:
                 indiv_renewal_price = """
                     %s<span class="type-ind-price">%0.2f</span>
                     """ % (currency_symbol, indiv_renewal_price)
             if not cmt.renewal_price:
                 cmt.renewal_price = 0
+            if cmt.apply_cap:
+                indiv_renewal_price = '%s %s %s' % (indiv_renewal_price, _('Limit'), cmt.membership_cap)
+                if cmt.allow_above_cap:
+                    indiv_renewal_price = '%s - then %s / member' % (indiv_renewal_price,
+                                                          tcurrency(cmt.above_cap_price))
 
+            data_cap = '\'{"apply_cap": "%s", "membership_cap":"%s", "allow_above_cap": "%s", "above_cap_price": "%s"}\'' % (
+                         cmt.apply_cap, cmt.membership_cap, cmt.allow_above_cap, cmt.above_cap_price)
             price_display = """%s - <b>%s<span class="type-corp-price">%0.2f</span>
                             </b>(individual members:
-                            <b>%s</b>)""" % (cmt.name,
+                            <b>%s</b>)<span class="type-cap" data-cap=%s></span>""" % (cmt.name,
                                             currency_symbol,
                                             cmt.renewal_price,
-                                            indiv_renewal_price)
+                                            indiv_renewal_price,
+                                            data_cap)
         price_display = mark_safe(price_display)
         cmt_list.append((cmt.id, price_display))
 

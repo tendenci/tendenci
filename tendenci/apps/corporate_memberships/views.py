@@ -976,9 +976,18 @@ def corp_renew(request, id,
                 indiv_renewal_price = corp_memb_type.membership_type.renewal_price
                 if not indiv_renewal_price:
                     indiv_renewal_price = 0
-
-                renewal_total = corp_renewal_price + \
-                        indiv_renewal_price * len(members)
+                    
+                count_members = len(members)
+                if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
+                    count_ind_within_cap = corp_memb_type.membership_cap
+                    count_ind_above_cap = count_members - count_ind_within_cap
+                    renewal_total = corp_renewal_price + \
+                                    indiv_renewal_price * count_ind_within_cap + \
+                                    corp_memb_type.above_cap_price * count_ind_above_cap
+                else:
+                    renewal_total = corp_renewal_price + \
+                            indiv_renewal_price * count_members
+                        
                 opt_d = {'renewal': True,
                          'renewal_total': renewal_total}
                 # create an invoice
@@ -1044,9 +1053,16 @@ def corp_renew(request, id,
                     'individual_price': 0,
                     'individual_count': 0,
                     'individual_total': 0,
-                    'total_amount':0}
+                    'total_amount':0,
+                    'apply_cap': False,
+                    'membership_cap': 0,
+                    'allow_above_cap': False,
+                    'above_cap_price': 0,
+                    'above_cap_individual_count': 0,
+                    'above_cap_individual_total': 0,
+                    'total_individual_count': 0}
     if corp_membership.corporate_membership_type.renewal_price == 0:
-        summary_data['individual_count'] = len(get_indiv_memberships_choices(
+        summary_data['total_individual_count'] = len(get_indiv_memberships_choices(
                                                     corp_membership))
 
     if request.method == "POST":
@@ -1055,7 +1071,7 @@ def corp_renew(request, id,
             cmt = CorporateMembershipType.objects.get(id=cmt_id)
         except CorporateMembershipType.DoesNotExist:
             pass
-        summary_data['individual_count'] = len(request.POST.getlist('members'))
+        summary_data['total_individual_count'] = len(request.POST.getlist('members'))
     else:
         cmt = corp_membership.corporate_membership_type
 
@@ -1066,16 +1082,31 @@ def corp_renew(request, id,
         summary_data['individual_price'] = cmt.membership_type.renewal_price
         if not summary_data['individual_price']:
             summary_data['individual_price'] = 0
+        summary_data['apply_cap'] = cmt.apply_cap
+        summary_data['membership_cap'] = cmt.membership_cap
+        summary_data['allow_above_cap'] = cmt.allow_above_cap
+        summary_data['above_cap_price'] = cmt.above_cap_price
+        summary_data['individual_count'] = summary_data['total_individual_count'] 
+
+        if summary_data['apply_cap'] and summary_data['allow_above_cap']:
+            if summary_data['total_individual_count'] > summary_data['membership_cap']:
+                summary_data['individual_count'] = summary_data['membership_cap']
+                summary_data['above_cap_individual_count'] = summary_data['total_individual_count'] - summary_data['membership_cap']                
+            
+        
     summary_data['individual_total'] = summary_data['individual_count'
                                         ] * summary_data['individual_price']
+    summary_data['above_cap_individual_total'] = summary_data['above_cap_individual_count'
+                                        ] * summary_data['above_cap_price']
     summary_data['total_amount'] = summary_data['individual_total'
-                                    ] + summary_data['corp_price']
-
+                                    ] + summary_data['above_cap_individual_total'] + summary_data['corp_price']
+    cap_enabled = corpmembership_app.corp_memb_type.filter(apply_cap=True).count() > 0
     context = {"corp_membership": corp_membership,
                'corp_profile': corp_membership.corp_profile,
                'corp_app': corpmembership_app,
                'form': form,
                'summary_data': summary_data,
+               'cap_enabled': cap_enabled
                }
     return render_to_response(template, context, RequestContext(request))
 

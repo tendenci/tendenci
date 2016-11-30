@@ -4,7 +4,7 @@
     <div class="case-study-item search-item">
         {% for img in case_study.featured_screenshots %}
             {% if forloop.first %}
-                <a class="cs-img-link" href="{{ case_study.get_absolute_url }}"><img alt="{{ case_study.client }}" src="{% url "file" img.pk %}180x130" /></a>
+                <a class="cs-img-link" href="{{ case_study.get_absolute_url }}"><img alt="{{ case_study.client }}" src="{% url "file" img.pk %}180x130/" /></a>
             {% endif %}
         {% endfor %}
         <h3><a href="{{ case_study.get_absolute_url }}" title="{{ case_study.client }}">{{ case_study.client }}</a></h3>
