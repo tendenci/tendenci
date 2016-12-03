@@ -11,7 +11,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.decorators import flash_login_required
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.managers import SubProcessManager
 from tendenci.apps.base.models import UpdateTracker
@@ -352,7 +351,7 @@ def delete_file(request):
     return redirect('theme_editor.editor')
 
 
-@flash_login_required
+@login_required
 def upload_file(request):
 
     if not has_perm(request.user, 'theme_editor.add_themefileversion'):
@@ -362,30 +361,22 @@ def upload_file(request):
         form = UploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            upload = request.FILES['upload']
             file_dir = form.cleaned_data['file_dir']
             overwrite = form.cleaned_data['overwrite']
-            full_filename = os.path.join(file_dir, upload.name)
-
-            if os.path.isfile(full_filename) and not overwrite:
-                msg_string = 'File %s already exists in that folder.' % (upload.name)
-                messages.add_message(request, messages.ERROR, _(msg_string))
-                return HttpResponse('invalid', content_type="text/plain")
-            else:
-                handle_uploaded_file(upload, file_dir)
-                msg_string = 'Successfully uploaded %s.' % (upload.name)
-                messages.add_message(request, messages.SUCCESS, _(msg_string))
-
-                EventLog.objects.log()
-                # returning a response of "ok" (flash likes this)
-                # response is for flash, not humans
-                return HttpResponse('valid', content_type="text/plain")
+            def callback(file_path, uuid, file_dir=file_dir, overwrite=overwrite):
+                file_name = os.path.basename(file_path)
+                full_filename = os.path.join(file_dir, file_name)
+                if os.path.isfile(full_filename) and not overwrite:
+                    msg_string = 'File %s already exists in that folder.' % (file_name)
+                    raise uploader.CallbackError(msg_string)
+                else:
+                    handle_uploaded_file(file_path, file_dir)
+                    EventLog.objects.log()
+            return uploader.post(request, callback)
 
         else:  # not valid
             messages.add_message(request, messages.ERROR, form.errors)
             return HttpResponse('invalid', content_type="text/plain")
-    else:
-        form = UploadForm()
 
     return HttpResponseRedirect('/theme-editor/editor/')
 

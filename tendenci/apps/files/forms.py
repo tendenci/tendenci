@@ -175,30 +175,6 @@ class TinymceUploadForm(forms.ModelForm):
         return data
 
 
-class SwfFileForm(TendenciBaseForm):
-
-    class Meta:
-        model = File
-
-        fields = (
-            'file',
-            'name',
-            'allow_anonymous_view',
-            'user_perms',
-            'member_perms',
-            'group_perms',
-            'status',
-        )
-
-    def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user', None)
-        else:
-            self.user = None
-
-        super(SwfFileForm, self).__init__(*args, **kwargs)
-
-
 class MostViewedForm(forms.Form):
     """
     Takes in the date range and files type you're
