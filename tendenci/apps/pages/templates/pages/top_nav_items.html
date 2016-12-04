@@ -59,7 +59,7 @@
                     {% endif %}
                 </ul>
 
-                {% if app_object %}
+                {% if app_object and app_object.pk %}
                     {% if can_view_page or can_edit_page %}
                         {# "This Page" Section #}
                         <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
