@@ -335,6 +335,9 @@ class Profile(Person):
 
         self.member_number = u''
         if membership:
+            if not membership.member_number:
+                membership.set_member_number()
+                membership.save()
             self.member_number = membership.member_number
 
         self.save()
