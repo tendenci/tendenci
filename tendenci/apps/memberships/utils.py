@@ -1470,9 +1470,8 @@ class ImportMembDefault(object):
         self.assign_import_values_from_dict(profile, action_info['user_action'])
         profile.user = user
 
-        if profile.status == None or profile.status == '' or \
-            self.memb_data.get('status', '') == '':
-            profile.status = True
+        profile.status = True
+
         if not profile.status_detail:
             profile.status_detail = 'active'
         else:
@@ -1518,10 +1517,11 @@ class ImportMembDefault(object):
             memb.entity_id = 1
         if not memb.lang:
             memb.lang = 'eng'
+        
+        # Set status to True
+        # The False status means DELETED - It would defeat the purpose of import
+        memb.status = True
 
-        if memb.status == None or memb.status == '' or \
-            self.memb_data.get('status', '') == '':
-            memb.status = True
         if not memb.status_detail:
             memb.status_detail = 'active'
         else:
