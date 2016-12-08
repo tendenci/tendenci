@@ -1,6 +1,10 @@
 {% load i18n %}
 {% load base_filters %}
 {% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user directories.change_directory directory as can_edit_directory %}
+{% has_perm user directories.delete_directory directory as can_delete_directory %}
 
 
 <ul class="list-unstyled t-meta-data">
@@ -104,7 +108,7 @@
 
 </ul>
 
-{% if user.profile.is_superuser %}
+{% if user.is_authenticated and can_edit_directory %}
     <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
             <div class="collapse navbar-collapse">
@@ -122,9 +126,11 @@
                         {% endspaceless %}</a>
 
                         <ul class="dropdown-menu" role="menu">
+                           {% if can_delete_directory %}
                             <li>
                                 <a class="t-meta-delete-link" href="{% url 'directory.delete' directory.pk %}">{% trans "Delete" %}</a>
                             </li>
+                            {% endif %}
 
                             <li>
                                 <a href="{% url 'directory.edit.meta' directory.pk %}">{% trans "Edit Meta" %}</a>
