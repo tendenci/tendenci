@@ -192,7 +192,10 @@ class FormAdmin(TendenciBaseModelAdmin):
                 if entry.pricing:
                     row[-4] = entry_time
                     row[-3] = entry.pricing.label
-                    row[-2] = entry.pricing.price
+                    if not entry.pricing.price:
+                        row[-2] = entry.custom_price
+                    else:
+                        row[-2] = entry.pricing.price
                 row[-1] = entry.payment_method
             else:
                 row[-1] = entry_time
