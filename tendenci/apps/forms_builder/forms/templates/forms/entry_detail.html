@@ -30,6 +30,26 @@
             </p>
             {% endif %}
         {% endfor %}
+        
+        {% if form.custom_payment %}
+        	{% if entry.pricing %}
+        		<p>
+	                <strong>{{ entry.pricing.label }}</strong><br />
+	                {% if entry.pricing.price %}
+	                <em>{{ entry.pricing.price }}</em>
+	                {% else %}
+	                <em>{{ entry.custom_price }}</em>
+	                {% endif %}
+	            </p>
+        	
+        	{% endif %}
+        {% endif %}
+        
+        <p>
+           <strong>{% trans 'Entry Time' %}</strong><br />
+           <em>{{ entry.entry_time }}</em>
+       </p>
+            
         {% if entry.entry_path %}
             <p>
                 <strong>{% trans 'Entry Path' %}</strong><br />
