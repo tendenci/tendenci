@@ -4507,7 +4507,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   cursor: not-allowed;
   background-color: #fff;
 }
-.label {
+.label :not(label) {
   display: inline;
   padding: .2em .6em .3em;
   font-size: 75%;
