@@ -1840,34 +1840,18 @@ class MembershipDefault(TendenciBaseModel):
             if created:
                 send_welcome_email(self.user)
 
-            if self.is_renewal():
-                # already new MembershipDefault instance
-                # just approve it
-                self = self.approve(request.user)
-                Notice.send_notice(
-                    request=request,
-                    emails=self.user.email,
-                    notice_type='renewal',
-                    membership=self,
-                    membership_type=self.membership_type,
-                )
-                EventLog.objects.log(
-                    instance=self,
-                    action='membership_renewed'
-                )
-            else:
-                self.approve()
-                Notice.send_notice(
-                    request=request,
-                    emails=self.user.email,
-                    notice_type='approve',
-                    membership=self,
-                    membership_type=self.membership_type,
-                )
-                EventLog.objects.log(
-                    instance=self,
-                    action='membership_approved'
-                )
+            self.approve(request.user)
+            Notice.send_notice(
+                request=request,
+                emails=self.user.email,
+                notice_type='approve',
+                membership=self,
+                membership_type=self.membership_type,
+            )
+            EventLog.objects.log(
+                instance=self,
+                action='membership_approved'
+            )
 
             if self.corporate_membership_id:
                 # notify corp reps
