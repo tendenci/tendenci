@@ -250,10 +250,10 @@ class EventLogManager(Manager):
                     event_log.robot = robot
 
             try:
-                event_log.server_ip_address = settings.INTERNAL_IPS[0]
+                event_log.server_ip_address = gethostbyname(gethostname())
             except:
                 try:
-                    event_log.server_ip_address = gethostbyname(gethostname())
+                    event_log.server_ip_address = settings.INTERNAL_IPS[0]
                 except:
                     event_log.server_ip_address = '0.0.0.0'
             if hasattr(request, 'path'):
