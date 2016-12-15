@@ -178,12 +178,6 @@ input.btn {
   position: relative;
 }
 
-.upload-link .swfupload {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
 .btn {
   display: inline-block;
   *display: inline;

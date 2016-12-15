@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.db.models import Count, Q, get_app
+from django.db.models import Count, Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ImproperlyConfigured
@@ -52,7 +52,7 @@ from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.invoices.models import Invoice
 
 try:
-    notification = get_app('notifications')
+    from tendenci.apps.notifications import models as notification
 except ImproperlyConfigured:
     notification = None
 
@@ -151,8 +151,8 @@ def index(request, username='', template_name="profiles/index.html"):
         membership_apps = None
 
     membership_reminders = ()
-    if request.user == user_this:
-        membership_reminders = get_member_reminders(user_this)
+    if request.user == user_this or request.user.profile.is_superuser:
+        membership_reminders = get_member_reminders(user_this, view_self=request.user == user_this)
 
     return render_to_response(template_name, {
         'can_edit': can_edit,

@@ -38,13 +38,14 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
             EventLog.objects.log(instance=request.user, application="accounts")
 
             return HttpResponseRedirect(redirect_to)
-        elif form.user_exists:
-            messages.add_message(
-                request, messages.INFO,
-                _(u"The password entered for account %(uname)s is invalid." % {
-                    'uname' : form.user_exists.username }))
-
-            return HttpResponseRedirect(reverse('auth_password_reset'))
+        # commenting it out -don't tell attacker the username exists
+#         elif form.user_exists:
+#             messages.add_message(
+#                 request, messages.INFO,
+#                 _(u"The password entered for account %(uname)s is invalid." % {
+#                     'uname' : form.user_exists.username }))
+# 
+#             return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
         form = form_class()
 

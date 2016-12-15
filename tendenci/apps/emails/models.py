@@ -53,7 +53,7 @@ class Email(TendenciBaseModel):
     
     @staticmethod
     def is_blocked(email_to_test):
-        if not '@' in email_to_test:
+        if not email_to_test or not '@' in email_to_test:
             return False
         
         email_to_test = email_to_test.lower()

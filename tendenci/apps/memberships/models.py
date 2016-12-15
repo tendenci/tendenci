@@ -346,6 +346,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)
+    donation_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
 
     class Meta:
         verbose_name = _("Membership")
@@ -1864,34 +1865,18 @@ class MembershipDefault(TendenciBaseModel):
             if created:
                 send_welcome_email(self.user)
 
-            if self.is_renewal():
-                # renewal returns new MembershipDefault instance
-                # old MembershipDefault instance is marked status_detail = "archive"
-                self = self.renew(request.user)
-                Notice.send_notice(
-                    request=request,
-                    emails=self.user.email,
-                    notice_type='renewal',
-                    membership=self,
-                    membership_type=self.membership_type,
-                )
-                EventLog.objects.log(
-                    instance=self,
-                    action='membership_renewed'
-                )
-            else:
-                self.approve()
-                Notice.send_notice(
-                    request=request,
-                    emails=self.user.email,
-                    notice_type='approve',
-                    membership=self,
-                    membership_type=self.membership_type,
-                )
-                EventLog.objects.log(
-                    instance=self,
-                    action='membership_approved'
-                )
+            self.approve(request.user)
+            Notice.send_notice(
+                request=request,
+                emails=self.user.email,
+                notice_type='approve',
+                membership=self,
+                membership_type=self.membership_type,
+            )
+            EventLog.objects.log(
+                instance=self,
+                action='membership_approved'
+            )
 
             if self.corporate_membership_id:
                 # notify corp reps
@@ -2376,6 +2361,9 @@ class MembershipApp(TendenciBaseModel):
                             default=False)
     membership_types = models.ManyToManyField(MembershipType,
                                               verbose_name="Membership Types")
+    donation_enabled = models.BooleanField(_("Enable Donation"), default=False)
+    donation_label = models.CharField(_("Label"), max_length=255, blank=True, null=True)
+    donation_default_amount = models.DecimalField(_("Default Amount"), max_digits=15, decimal_places=2, blank=True, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))

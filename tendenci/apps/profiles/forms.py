@@ -155,7 +155,7 @@ class ProfileForm(TendenciBaseForm):
                                                                 ('superuser',_('Superuser')),))
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
                                                           (0,_('Not Interactive (no login)')),))
-    direct_mail =  forms.ChoiceField(initial=1, choices=((1, _('Yes')),(0, _('No')),))
+    direct_mail =  forms.ChoiceField(initial=True, choices=((True, _('Yes')),(False, _('No')),))
     notes = forms.CharField(label=_("Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, required=False,

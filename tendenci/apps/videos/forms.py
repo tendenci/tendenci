@@ -1,4 +1,7 @@
+from datetime import datetime
 from django import forms
+from django.contrib.admin import widgets
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.videos.models import Video
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -9,7 +12,8 @@ from embedly import Embedly
 client = Embedly("438be524153e11e18f884040d3dc5c07")
 
 class VideoForm(TendenciBaseForm):
-
+    release_dt = forms.DateTimeField(label=_('Release Date/Time'),
+                                     initial=datetime.now())
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Video._meta.app_label, 
@@ -30,6 +34,7 @@ class VideoForm(TendenciBaseForm):
             'video_url',
             'tags',
             'description',
+            'release_dt',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -43,6 +48,7 @@ class VideoForm(TendenciBaseForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+        self.fields['release_dt'].widget = widgets.AdminSplitDateTime()
             
     def clean_video_url(self):
         value = self.cleaned_data.get('video_url')

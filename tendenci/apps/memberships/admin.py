@@ -581,6 +581,9 @@ class MembershipAppAdmin(admin.ModelAdmin):
                            'membership_types', 'payment_methods',
                            'include_tax', 'tax_rate',
                            'use_for_corp', 'use_captcha', 'discount_eligible')},),
+        (_('Donation'), {'fields': ('donation_enabled', 'donation_label', 'donation_default_amount'),
+                         'description': _('If donation is enabled, a field will be added to the application\
+                         to allow users to select the default amount or specify an amount to donate')}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',

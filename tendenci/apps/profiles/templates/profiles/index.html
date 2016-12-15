@@ -30,13 +30,13 @@
 <div class="t"><div id="t-profile">
 
     {% for message,link,label in membership_reminders %}
-    <div class="alert-message block-message fade in" data-alert="alert">
-        <a class="close" href="#">×</a>
-        <p>{{ message }}</p>
-        <div class="alert-actions">
+    <div class="alert alert-warning alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <p>{{ message }}</p>
+        <div class="alert-link">
             <a class="btn" href="{{ link }}">{{ label }}</a>
         </div>
-    </div>
+	</div>
     {% endfor %}
 
     <div id="t-view">

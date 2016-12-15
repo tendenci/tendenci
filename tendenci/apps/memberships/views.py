@@ -1200,6 +1200,21 @@ def membership_default_add(request, slug='', membership_id=None,
                     if dmount > 0:
                         DiscountUse.objects.create(discount=discount, invoice=invoice)
 
+            if app.donation_enabled:
+                # check for donation
+                donation_option, donation_amount = membership_form2.cleaned_data.get('donatin_option_value', (None, None))
+                if donation_option:
+                    if donation_option == 'default':
+                        donation_amount = app.donation_default_amount
+                    if donation_amount > Decimal(0):
+                        membership_set.donation_amount = donation_amount
+                        membership_set.save()
+                        invoice.subtotal += donation_amount
+                        invoice.total += donation_amount
+                        invoice.balance += donation_amount
+                        invoice.save()
+
+                    
             memberships_join_notified = []
             memberships_renewal_notified = []
             notice_sent = False

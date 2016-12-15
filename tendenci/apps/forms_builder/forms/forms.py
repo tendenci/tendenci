@@ -47,7 +47,7 @@ THIS_YEAR = datetime.today().year
 class FormForForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", "creator")
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator")
 
     def __init__(self, form, user, *args, **kwargs):
         """
@@ -234,6 +234,9 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():
             entry.payment_method = self.cleaned_data['payment_option']
             entry.pricing = self.cleaned_data['pricing_option']
+            custom_price = self.data.get('custom_price_%s' % entry.pricing.id)
+            if custom_price:
+                entry.custom_price = custom_price
             entry.save()
 
         return entry

@@ -32,5 +32,15 @@
         </td>
     </tr>
         {% endfor %}
+       {% if obj.donation_amount %}
+       	<tr>
+	        <td>
+	            {% trans "Donation Amount " %}
+	        </td>
+	        <td class="td-right">
+	            {{ obj.donation_amount }}
+	        </td>
+	    </tr>
+       {% endif %}
     {% endif %}
 {% endwith %}

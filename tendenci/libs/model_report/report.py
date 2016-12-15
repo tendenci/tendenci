@@ -380,11 +380,13 @@ class ReportAdmin(object):
         Return the the queryset
         """
         # Filter out invoices based on hardcoded object types specified
-        if self.model._meta.verbose_name == 'invoice':
+        if self.model._meta.verbose_name.lower() == 'invoice':
             try:
                 qs = self.model.objects.filter(object_type__in=get_obj_type_choices())
             except Exception:
                 qs = self.model.objects.all()
+        if self.model._meta.verbose_name.lower() == 'membership':
+            qs = self.model.objects.all().exclude(status_detail='archive')
         else:
             qs = self.model.objects.all()
         for selected_field, field_value in filter_kwargs.items():
@@ -462,7 +464,7 @@ class ReportAdmin(object):
                     if config:
                         chart = self.get_chart(config, report_rows)
 
-                if self.onlytotals:
+                if hasattr(self, 'onlytotals') and self.onlytotals:
                     for g, rows in report_rows:
                         for r in list(rows):
                             if r.is_value():
@@ -536,6 +538,13 @@ class ReportAdmin(object):
         ConfigForm.serie_fields = self.get_serie_fields()
         ConfigForm.chart_types = self.chart_types
         form = ConfigForm(data=request.GET or None)
+        if hasattr(self, 'list_serie_ops'):
+            op_choices = []
+            for item in form.fields['serie_op'].choices:
+                if item[0] in self.list_serie_ops:
+                    op_choices.append(item)
+            if op_choices:
+                form.fields['serie_op'].choices = list(op_choices)
         form.is_valid()
         return form
 
@@ -552,7 +561,10 @@ class ReportAdmin(object):
             return None
 
         GroupByForm.groupby_fields = groupby_fields
+        
         form = GroupByForm(data=request.GET or None)
+        if hasattr(self, 'hide_show_only_totals') and self.hide_show_only_totals:
+            del form.fields['onlytotals']
         form.is_valid()
         return form
 
@@ -647,7 +659,7 @@ class ReportAdmin(object):
                         form_fields.pop(k)
                         field = RangeField(model_field.formfield)
                     # Change filter form fields specific to invoice reports
-                    elif opts.verbose_name == 'invoice':
+                    elif opts.verbose_name.lower() == 'invoice':
                         if k == 'status_detail':
                             form_fields.pop(k)
                             field = forms.ChoiceField()
@@ -664,6 +676,18 @@ class ReportAdmin(object):
                             field = forms.ModelChoiceField(queryset=get_obj_type_choices())
                             field.label = v.label
                             field.help_text = v.help_text
+                    elif opts.verbose_name.lower() == 'membership' and k == 'status_detail':
+                        form_fields.pop(k)
+                        field = forms.ChoiceField()
+                        field.label = v.label
+                        field.help_text = v.help_text
+                        field.choices = (
+                            ('', _('All')),
+                            ('active', _('Active')),
+                            ('pending', _('Pending')),
+                            ('expired', _('Expired')),
+                        )
+                        field.initial = 'active'
                     else:
                         field = v
 

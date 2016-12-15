@@ -37,7 +37,7 @@ class NewsForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style': 'width:100%;'},
         mce_attrs={'storme_app_label': News._meta.app_label,
         'storme_model': News._meta.model_name.lower()}))
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'), initial=datetime.now())
+    release_dt = SplitDateTimeField(label=_('Release Date/Time'))
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))
     email = EmailVerificationField(label=_("Email"), required=False)
@@ -213,6 +213,7 @@ class NewsForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
         else:
             self.fields.pop('remove_photo')
+        self.fields['release_dt'].initial = datetime.now()
 
 
 class NewsSearchForm(FormControlWidgetMixin, forms.Form):

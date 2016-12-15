@@ -13,6 +13,7 @@ from django.forms.widgets import CheckboxSelectMultiple, CheckboxInput
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.memberships.models import NOTICE_TYPES, MembershipDefault
+from tendenci.apps.site_settings.utils import get_setting
 
 
 PERIOD_UNIT_CHOICE = (
@@ -339,6 +340,72 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         if value:
             return value.split(",")
         return None
+
+
+class DonationOptionAmountWidget(forms.MultiWidget):
+    def __init__(self, attrs=None, default_amount=None):
+        self.attrs = attrs
+        self.default_amount = default_amount
+        self.pos_d = {'donation_option': (0, forms.RadioSelect()),
+                      'donation_amount': (1, forms.TextInput()),
+                       }
+        self.widgets = ()
+        if self.pos_d:
+            items = self.pos_d.values()
+            items.sort()
+            self.widgets = [item[1] for item in items]
+
+        super(DonationOptionAmountWidget, self).__init__(self.widgets, attrs)
+
+    def render(self, name, value, attrs=None):
+        if not isinstance(value, list):
+            value = self.decompress(value)
+
+        final_attrs = self.build_attrs(attrs)
+        id_ = final_attrs.get('id', None)
+        currency_symbol = get_setting('site', 'global', 'currencysymbol')
+
+
+        # donation_amount
+        donation_amount_widget = self.pos_d['donation_amount'][1]
+        donation_amount_widget.attrs = {'size':'8'}
+        rendered_donation_amount = self.render_widget(donation_amount_widget,
+                                    name, value, final_attrs, self.pos_d['donation_amount'][0], id_)
+        
+        # donation_option
+        OPTION_CHOICE = (
+                          ("default", "%s%s" % (currency_symbol, self.default_amount)),
+                          ("custom", mark_safe('%s %s</div>' % \
+                                          (currency_symbol, rendered_donation_amount))),)
+        donation_option_widget = self.pos_d['donation_option'][1]
+        donation_option_widget.choices=OPTION_CHOICE
+        output_html = self.render_widget(donation_option_widget,
+                                          name, value, final_attrs,
+                                          self.pos_d['donation_option'][0], id_)
+
+        return mark_safe(output_html)
+
+
+
+    def render_widget(self, widget, name, value, attrs, index=0, id=None):
+        i = index
+        id_ = id
+        if value:
+            try:
+                widget_value = value[i]
+            except IndexError:
+                self.fields['donatin_option_value'].initial = None
+        else:
+            widget_value = None
+        if id_:
+            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+
+        return widget.render(name+'_%s' %i, widget_value, final_attrs)
+
+
+    def decompress(self, value):
+        return value
+
 
 # removed the label when any of the radio select contains another input field
 class CustomRadioInput(RadioChoiceInput):
