@@ -144,8 +144,8 @@ def index(request, username='', template_name="profiles/index.html"):
         membership_apps = None
 
     membership_reminders = ()
-    if request.user == user_this:
-        membership_reminders = get_member_reminders(user_this)
+    if request.user == user_this or request.user.profile.is_superuser:
+        membership_reminders = get_member_reminders(user_this, view_self=request.user == user_this)
 
     return render_to_response(template_name, {
         'can_edit': can_edit,

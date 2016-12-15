@@ -214,13 +214,18 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     return 'user.%s' % int_string
 
 
-def get_member_reminders(user):
+def get_member_reminders(user, view_self=False):
     active_qs = Q(status_detail__iexact='active')
     expired_qs = Q(status_detail__iexact='expired')
 
     memberships = user.membershipdefault_set.filter(
         status=True) & user.membershipdefault_set.filter(
             active_qs | expired_qs).order_by('expire_dt')
+            
+    if view_self:
+        my_msg = 'Your membership'
+    else:
+        my_msg = 'The membership'
 
     reminders = ()
     for membership in memberships:
@@ -241,24 +246,27 @@ def get_member_reminders(user):
         if membership.in_grace_period() or membership.is_expired():
             if membership.can_renew():
                 # expired but can renew
-                message = 'Your membership for %s has expired. Renewal is available until %s.' % (
+                message = '%s for %s has expired. Renewal is available until %s.' % (
+                    my_msg,
                     membership.membership_type.name,
                     membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p'))
-                reminders += ((message, renew_link, 'Renew your membership now'),)
+                reminders += ((message, renew_link, 'Renew Now'),)
             else:
                 # expired and out of renewal period
-                message = 'Your membership for %s has expired.' % (
+                message = '%s for %s has expired.' % (
+                    my_msg,
                     membership.membership_type.name)
                 reminders += ((message, renew_link, 'Re-register as a member here'),)
         else:
             # not expired, but in renewal period
             if membership.can_renew():
-                message = 'Your membership for %s will expire on %s. Renewal is available until %s.' % (
+                message = '%s for %s will expire on %s. Renewal is available until %s.' % (
+                    my_msg,
                     membership.membership_type.name,
                     membership.expire_dt.strftime('%d-%b-%Y'),
                     membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p')
                 )
-                reminders += ((message, renew_link, 'Renew your membership here'),)
+                reminders += ((message, renew_link, 'Renew Here'),)
 
     return reminders
 
