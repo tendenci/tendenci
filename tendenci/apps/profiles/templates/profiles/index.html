@@ -32,7 +32,7 @@
     {% for message,link,label in membership_reminders %}
     <div class="alert alert-warning alert-dismissible" role="alert">
 	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	  <p>{{ message }}</p>
+	  <p>{{ message|safe }}</p>
         <div class="alert-link">
             <a class="btn" href="{{ link }}">{{ label }}</a>
         </div>
