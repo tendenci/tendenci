@@ -10,6 +10,7 @@ from dateutil.rrule import *
 from decimal import Decimal
 
 from django.contrib.auth.models import User
+from django.core.exceptions import AppRegistryNotReady
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.db import connection
@@ -27,8 +28,18 @@ from tendenci.apps.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
     TypeColorSet, RecurringEvent)
-from tendenci.apps.events.forms import (FormForCustomRegForm,
+try: from tendenci.apps.events.forms import (FormForCustomRegForm,
     EMAIL_AVAILABLE_TOKENS)
+# This module is imported by search_indexes.py during Django initialization
+# before translations are available.  However, tendenci.apps.events.forms
+# imports tendenci.apps.base.forms, which iterates through
+# django_countries.countries, which causes the django_countries module to
+# attempt to translate the country names.  search_indexes.py does not require
+# any of the functionality provided by tendenci.apps.events.forms, so simply
+# ignore the exception that is thrown when this happens.
+# tendenci.apps.events.forms will be imported again later when this module is
+# imported by other modules after Django initialization.
+except AppRegistryNotReady: pass
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
