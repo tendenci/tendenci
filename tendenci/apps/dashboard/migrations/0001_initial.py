@@ -7,6 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
+            ('event_logs', '0001_initial'),
     ]
 
     operations = [
