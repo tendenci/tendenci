@@ -2360,3 +2360,18 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
     EventLog.objects.log()
 
     return render_to_response(template_name, {'months': months, 'years': years, 'year': year, 'types_new': types_new, 'types_renew': types_renew, 'types_expired': types_expired, 'totals_new': totals_new, 'totals_renew': totals_renew, 'totals_expired': totals_expired}, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def report_members_donated(request, template_name='reports/members_donated.html'):
+    memberships = MembershipDefault.objects.filter(membership_set__donation_amount__gt=0
+                                   ).values('id',
+                                'user__first_name', 'user__last_name', 'user__username',
+                                'membership_set__donation_amount', 'membership_set__invoice',
+                                'create_dt', 'status_detail'
+                                ).order_by('-membership_set__donation_amount')
+
+    return render_to_response(template_name,
+                              {'memberships': memberships,},
+                              context_instance=RequestContext(request))
+
