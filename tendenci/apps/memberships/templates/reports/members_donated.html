@@ -32,7 +32,7 @@
     <tr>
         <td><a href="{% url 'profile' m.user__username %}">{{ m.user__first_name }} {{ m.user__last_name }} ({{ m.user__username }})</a></td>
         <td class="text-right">{{ m.membership_set__donation_amount }}</td>
-        <td class="text-right">{% if m.membership_set__invoice %}<a href="{% url 'invoice.detail' m.membership_set__invoice %}">{{ m.membership_set__invoice }}</a>{% endif %}</td>
+        <td class="text-right">{% if m.membership_set__invoice %}<a href="{% url 'invoice.view' m.membership_set__invoice %}">{{ m.membership_set__invoice }}</a>{% endif %}</td>
         <td>{{ m.create_dt }}</td>
         <td><a href="{% url 'membership.details' m.id %}">{{ m.status_detail }}</a></td>
     </tr>
