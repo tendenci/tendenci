@@ -2369,7 +2369,7 @@ def report_members_donated(request, template_name='reports/members_donated.html'
                                 'user__first_name', 'user__last_name', 'user__username',
                                 'membership_set__donation_amount', 'membership_set__invoice',
                                 'create_dt', 'status_detail'
-                                ).order_by('-membership_set__donation_amount')
+                                ).order_by('-membership_set__donation_amount', 'user__last_name')
 
     return render_to_response(template_name,
                               {'memberships': memberships,},
