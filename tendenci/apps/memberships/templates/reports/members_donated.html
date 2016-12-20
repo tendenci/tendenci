@@ -13,6 +13,8 @@
 {% endblock %}
 
 {% block content %}
+<div><a href="{% url 'reports-memberships' %}">Back to Membership Reports</a></div>
+
 <h1>{% trans "Members Donated On Signup/Renewal" %}</h1>
 <div>
 {% autopaginate memberships 30 %}
