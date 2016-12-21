@@ -268,13 +268,6 @@ div.gallery-photo-thumb img {
     width: 94%;
 }
 
-.batch-edit-form .label {
-    color: black;
-    font-size: 1.2em;
-    text-align: start;
-    font-weight: normal;
-    padding: 0;
-}
 .batch-edit-form label {
     font-weight: normal;
     margin-bottom: 0;

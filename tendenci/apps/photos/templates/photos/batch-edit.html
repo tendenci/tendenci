@@ -27,19 +27,27 @@
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
                     <div class="photo-bulk-editor">
-                        <div class="label">{% trans "Replace all titles" %}:</div>
-                        <div class="field"><input class="title" type="text" /></div>
-                        <div class="label">{% trans "Replace all captions" %}:</div>
-                        <div class="field"><textarea class="caption"></textarea></div>
-                        <div class="label">{% trans "Replace all photographers" %}:</div>
-                        <div class="field"><input class="photographer" type="text" /></div>
-                        <div class="label">{% trans "Replace all tags" %}:</div>
-                        <div class="field"><input class="tags" type="text" /></div>
-                        <div class="field help-text">{{ tag_help_text }}</div>
+                        <div class="title-wrap">
+                            <div class="label"><label>{% trans "Replace all titles" %}:</label></div>
+                            <div class="field"><input class="title" type="text" /></div>
+                        </div>
+                        <div class="caption-wrap">
+                            <div class="label"><label>{% trans "Replace all captions" %}:</label></div>
+                            <div class="field"><textarea class="caption"></textarea></div>
+                        </div>
+                        <div class="photographer-wrap">
+                            <div class="label"><label>{% trans "Replace all photographers" %}:</label></div>
+                            <div class="field"><input class="photographer" type="text" /></div>
+                        </div>
+                        <div class="tags-wrap">
+                            <div class="label"><label>{% trans "Replace all tags" %}:</label></div>
+                            <div class="field"><input class="tags" type="text" /></div>
+                            <div class="field help-text">{{ tag_help_text }}</div>
+                        </div>
                     </div>
 
                     <div class="bulk-license">
-                        <div class="label">{% trans "Replace all Licenses" %}:</div>
+                        <div class="label"><label>{% trans "Replace all Licenses" %}:</label></div>
                         <div class="field"><select>
                             <option value=""> {% trans "--- SELECT A LICENSE ---" %} </option>
                             {% for l in cc_licenses %}
@@ -48,7 +56,7 @@
                         </select></div>
                     </div>
                     <div class="bulk-group">
-                        <div class="label">{% trans "Update all Groups" %}:</div>
+                        <div class="label"><label>{% trans "Update all Groups" %}:</label></div>
                         <div class="field"><select>
                             <option value=""> {% trans "--- SELECT A GROUP ---" %} </option>
                             {% for g in groups %}
