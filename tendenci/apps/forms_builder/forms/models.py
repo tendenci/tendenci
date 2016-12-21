@@ -1,3 +1,4 @@
+from django.core.exceptions import AppRegistryNotReady
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -7,7 +8,13 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.shortcuts import get_object_or_404
 
 from django_countries import countries as COUNTRIES
-from localflavor.us.us_states import STATE_CHOICES
+try: from localflavor.us.us_states import STATE_CHOICES
+# Work-around for https://github.com/django/django-localflavor/issues/203
+# If using django-localflavor 1.2 or 1.3, ignore the exception thrown when
+# importing STATE_CHOICES during Django initialization (when this module is
+# imported via search_indexes.py).  STATE_CHOICES will be imported again later
+# when this module is imported by other modules after Django initialization.
+except AppRegistryNotReady: pass
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
