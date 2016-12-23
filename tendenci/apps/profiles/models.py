@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
 from django.conf import settings
+from django.db import connection, ProgrammingError
 
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
@@ -463,9 +464,26 @@ class Profile(Person):
         return m.hexdigest()
     
     def get_gravatar_url(self, size):
-        default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
-                               getattr(settings, 'STATIC_URL', ''),
-                               settings.GAVATAR_DEFAULT_URL)
+        # Use old avatar, if exists, as the default
+        default = ''
+        if get_setting('module', 'users', 'useoldavatarasdefault'):
+            c = connection.cursor()
+            try:
+                c.execute("select avatar from avatar_avatar where \"primary\"='t' and user_id=%d" % self.user.id)
+                row = c.fetchone()
+                if row and os.path.exists(os.path.join(settings.MEDIA_ROOT, row[0])):
+                    default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
+                                       settings.MEDIA_URL,
+                                       row[0])
+            except ProgrammingError:
+                pass
+    
+            c.close()
+
+        if not default:
+            default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
+                                   getattr(settings, 'STATIC_URL', ''),
+                                   settings.GAVATAR_DEFAULT_URL)
 
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urllib.urlencode({'d':default, 's':str(size)})

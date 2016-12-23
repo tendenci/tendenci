@@ -289,6 +289,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "false",
+        "description": "The profile image upload functionality (avatar) has been disabled, and the profile image display has been switched to using Gravatar http://en.gravatar.com/. Instead of using GAVATAR_DEFAULT_URL for the default image, you can turn on this setting to use the images in the old avatars, provided that the avatar images exist on your site.",
+        "data_type": "boolean",
+        "update_dt": "2016-12-23 14:52:10",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "useoldavatarasdefault",
+        "value": "false",
+        "label": "Use Old Avatar As Default",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "profiles",
         "description": "The root url for the profiles module. Use letters and dashes only.",
         "data_type": "string",
