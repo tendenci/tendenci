@@ -67,7 +67,7 @@ def download_dump(request, dump_id):
         raise Http404
     wrapper = FileWrapper(dbdump.dbfile)
     response = HttpResponse(wrapper, content_type='application/octet-stream')
-    response['Content-Disposition'] = 'attachment; filename=db_export.%s' % dbdump.export_format
+    response['Content-Disposition'] = 'attachment; filename="db_export.%s"' % dbdump.export_format
     return response
 
 

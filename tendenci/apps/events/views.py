@@ -455,7 +455,7 @@ def icalendar(request):
         file_name = '%s.ics' % (d['domain_name'])
     else:
         file_name = "event.ics"
-    response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
+    response['Content-Disposition'] = 'attachment; filename="%s"' % (file_name)
     return response
 
 
@@ -490,7 +490,7 @@ def icalendar_single(request, id):
         file_name = '%s.ics' % (d['domain_name'])
     else:
         file_name = "event.ics"
-    response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
+    response['Content-Disposition'] = 'attachment; filename="%s"' % (file_name)
     return response
 
 
@@ -3678,7 +3678,7 @@ def registrant_export(request, event_id, roster_view=''):
     EventLog.objects.log(instance=event)
 
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
     book.save(response)
     return response
 
@@ -3890,7 +3890,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
     EventLog.objects.log(instance=event)
 
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
     book.save(response)
     return response
 
@@ -4468,7 +4468,7 @@ def export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=events_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="events_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
 

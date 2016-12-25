@@ -501,7 +501,7 @@ def membership_default_import_download_recap(request, mimport_id):
     if default_storage.exists(recap_path):
         response = HttpResponse(default_storage.open(recap_path).read(),
                                 content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
     else:
         raise Http404
@@ -736,7 +736,7 @@ def membership_default_export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="membership_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
 

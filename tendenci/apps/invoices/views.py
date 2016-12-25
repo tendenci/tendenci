@@ -555,6 +555,6 @@ def export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=invoice_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="invoice_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response

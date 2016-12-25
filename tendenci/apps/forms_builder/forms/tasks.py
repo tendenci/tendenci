@@ -134,7 +134,7 @@ class FormEntriesExportTask(Task):
     def run(self, form_instance, entries, include_files, **kwargs):
 
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=export_entries_%d.csv' % time()
+        response['Content-Disposition'] = 'attachment; filename="export_entries_%d.csv"' % time()
         headers = []
         has_files = form_instance.has_files() and include_files
 
@@ -189,7 +189,7 @@ class FormEntriesExportTask(Task):
 
             # set the response for the zip files
             response = HttpResponse(file(temp_zip.name).read(), content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename=export_entries_%d.zip' % time()
+            response['Content-Disposition'] = 'attachment; filename="export_entries_%d.zip"' % time()
 
             # remove the temporary files
             unlink(temp_zip.name)
