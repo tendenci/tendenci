@@ -15,6 +15,7 @@ make_origin = engine.make_origin
 from django.utils._os import safe_join
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import SuspiciousFileOperation
 
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
 from tendenci.apps.theme.utils import get_theme_root
@@ -70,14 +71,12 @@ class Loader(BaseLoader):
                     yield os.path.join(template_path, template_name)
                 else:
                     yield safe_join(template_path, template_name)
-            except UnicodeDecodeError:
-                # The template dir name was a bytestring that wasn't valid UTF-8.
-                raise
-            except ValueError:
+            except SuspiciousFileOperation:
                 # The joined path was located outside of this particular
                 # template_dir (it might be inside another one, so this isn't
                 # fatal).
                 pass
+
 
     def load_template_source(self, template_name, template_dirs=None):
         tried = []
