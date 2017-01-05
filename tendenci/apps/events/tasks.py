@@ -200,5 +200,5 @@ class EventsICSTask(Task):
             ics_str = create_ics(ics.user)
             response = HttpResponse(ics_str)
             response['Content-Type'] = 'text/calendar'
-            response['Content-Disposition'] = 'attachment; filename=ics-%s.ics' % (ics.user.pk)
+            response['Content-Disposition'] = 'attachment; filename="ics-%s.ics"' % (ics.user.pk)
             return response

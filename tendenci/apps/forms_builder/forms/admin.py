@@ -157,9 +157,9 @@ class FormAdmin(TendenciBaseModelAdmin):
         Output a CSV file to the browser containing the entries for the form.
         """
         form = get_object_or_404(Form, id=form_id)
-        response = HttpResponse(content_type="text/csv")
-        csvname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
-        response["Content-Disposition"] = "attachment; filename=%s" % csvname
+        response = HttpResponse(content_type='text/csv')
+        csvname = '%s-%s.csv' % (form.slug, slugify(datetime.now().ctime()))
+        response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
         csv = writer(response)
         # Write out the column names and store the index of each field
         # against its ID for building each entry row. Also store the IDs of
@@ -234,7 +234,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         f = ContentFile(data)
 
         response = HttpResponse(f.read(), content_type=mime_type)
-        response['Content-Disposition'] = 'filename=%s' % base_name
+        response['Content-Disposition'] = 'filename="%s"' % base_name
         return response
 
 

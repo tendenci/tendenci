@@ -334,7 +334,7 @@ def file_display(request, file_path):
     data = default_storage.open(file_path).read()
 
     response = HttpResponse(data, content_type=mime_type)
-    response['Content-Disposition'] = 'filename=%s' % base_name
+    response['Content-Disposition'] = 'filename="%s"' % base_name
 
     return response
 

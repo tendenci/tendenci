@@ -47,7 +47,7 @@ def cache_photo_size(id, size, crop=False, quality=90, download=False, constrain
         return request_path
 
     response = HttpResponse(content_type='image/jpeg')
-    response['Content-Disposition'] = ' filename=%s' % photo.image_filename()
+    response['Content-Disposition'] = ' filename="%s"' % photo.image_filename()
     image.save(response, "JPEG", quality=quality)
 
     if photo.is_public_photo() and photo.is_public_photoset():

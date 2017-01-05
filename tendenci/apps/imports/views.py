@@ -251,7 +251,7 @@ def user_upload_recap(request, sid):
                     slugify((recap_dict['file_name'])[:-4])
         else:
             recap_name = "user_import_recap.xls"
-        response['Content-Disposition'] = 'attachment; filename=%s' % \
+        response['Content-Disposition'] = 'attachment; filename="%s"' % \
                                          (recap_name)
 
         recap_dict = None

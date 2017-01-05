@@ -65,6 +65,6 @@ def download(request, export_id):
 
     xml = export.xml
     response = HttpResponse(xml)
-    response['Content-Disposition'] = 'attachment; filename=export.xml'
+    response['Content-Disposition'] = 'attachment; filename="export.xml"'
 
     return response

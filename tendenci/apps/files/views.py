@@ -123,7 +123,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(content_type=file.mime_type())
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name())
 
         params = {'quality': quality}
         if image.format == 'GIF':
@@ -169,9 +169,9 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # return response
     if file.get_name().endswith(file.ext()):
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name())
     else:
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
+        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name_ext())
     return response
 
 
@@ -439,7 +439,7 @@ def bulk_add(request, template_name="files/bulk-add.html"):
 
         data = {'form_set': html}
         response = JSONResponse(data, {}, "application/json")
-        response['Content-Disposition'] = 'inline; filename=files.json'
+        response['Content-Disposition'] = 'inline; filename="files.json"'
         return response
     else:
         file_formset = FileFormSet({
