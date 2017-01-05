@@ -571,9 +571,6 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if not form.template or not template_exists(form.template):
         form.template = "forms/base.html"
 
-    # NOTE: Temporarily use forms/base.html for the meantime
-    form.template = "forms/base.html"
-
     context = {
         "form": form,
         "form_for_form": form_for_form,
