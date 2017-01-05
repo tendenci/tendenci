@@ -30,6 +30,7 @@ from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_fi
 from tendenci.apps.theme_editor.utils import qstr_is_file, qstr_is_dir, copy
 from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates, ThemeInfo
 from tendenci.libs.boto_s3.utils import save_file_to_s3
+from tendenci.libs.uploader import uploader
 
 DEFAULT_FILE = 'templates/homepage.html'
 

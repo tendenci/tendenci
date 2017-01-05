@@ -6,6 +6,7 @@
 {% load base_filters %}
 {% load theme_editor_tags %}
 {% load theme_editor_filters %}
+{% load static from staticfiles %}
 {% load uploader %}
 
 {% block title %}{{ block.super }}Theme Editor{% endblock %}
@@ -194,25 +195,85 @@
 {{ block.super }}
 <script src="{{ STATIC_URL }}codemirror/js/codemirror.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-{% uploader %}
-  debug: false,
+<div id="uploader"></div>
+<script language="javascript" type="text/javascript">
+window.onload = function() {
+	$('#uploader').dialog({
+        autoOpen: false,
+        height: 300,
+        width: 450,
+        modal: true,
+        buttons: [
+                  {
+                    text: "Close & Refresh",
+                    icons: {
+                      /*primary: "ui-icon-arrowrefresh-1-e"*/
+                    },
+                    click: function() {
+                      $( this ).dialog( "close" );
+                      // refresh the page
+                      location.reload();
+                    }
+                  },
+                  {
+                      text: "Close",
+                      icons: {
+                        primary: "ui-icon-close"
+                      },
+                      click: function() {
+                        $( this ).dialog( "close" );
+                      }
+                    }
+                ],
+        
+        
+        
+        close: function() {
+        }
+	});
+	
+	$(".upload-link .upload_btn").click(function() {
+		var file_dir = $(this).parent('.glyph').attr('path');
+		new qq.FineUploader({
 
-  validation: {
-      acceptFiles : "*.html,*.js,*.css,*.less,*.jpg,*.jpeg,*.gif,*.png,*.ico,*.txt,*.xml,*.kml,*.eot,*.ttf,*.woff,*.svg",
-      allowedExtensions: ['html', 'js', 'css', 'less', 'jpg', 'jpeg', 'gif', 'png', 'ico', 'txt', 'xml', 'kml', 'eot', 'ttf', 'woff', 'swg'],
-      sizeLimit: 20971520  // 20 MB
-  },
+        element: document.getElementById('uploader'),
+        template: 'qq-simple-thumbnails-template',
+        thumbnails: {
+            placeholders: {
+                waitingPath: '{% static "fine-uploader/waiting-generic.png" %}',
+                notAvailablePath: '{% static "fine-uploader/not_available-generic.png" %}'
+            }
+        },
 
-  request: {
-      endpoint: '{% url 'theme_editor.upload' %}',
-      params: {
-          "file_dir": "{{ file_dir }}",
-          "overwrite": "true",
-          "csrfmiddlewaretoken": "{{ csrf_token }}"
-      }
-  },
-  retry: { enableAuto: true }
-{% end_uploader %}
+        debug: true,
+
+        validation: {
+            acceptFiles : "*.html,*.js,*.css,*.less,*.jpg,*.jpeg,*.gif,*.png,*.ico,*.txt,*.xml,*.kml,*.eot,*.ttf,*.woff,*.svg",
+            allowedExtensions: ['html', 'js', 'css', 'less', 'jpg', 'jpeg', 'gif', 'png', 'ico', 'txt', 'xml', 'kml', 'eot', 'ttf', 'woff', 'swg'],
+            sizeLimit: 20971520  // 20 MB
+        },
+
+        request: {
+            endpoint: '{% url 'theme_editor.upload' %}',
+            params: {
+                "file_dir": file_dir,
+                "overwrite": "true",
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+            }
+        },
+        retry: { enableAuto: false }
+
+    	});
+		
+		$('#uploader').dialog('open');
+		$('#uploader').parent('div').find('.ui-dialog-buttonset .ui-state-default').first()
+        .css({'background': 'green'})
+        .css({'color': '#ffffff'});
+		$('#uploader').dialog('option', 'title', 'Upload files to ' + file_dir.substring(file_dir.lastIndexOf('/')+1) + '/');
+	});
+};
+</script>
+
 <script type="text/javascript">
 {% include 'theme_editor/include/new_template.js' %}
 {% include 'theme_editor/include/editor_submit.js' %}

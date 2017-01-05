@@ -5,7 +5,7 @@
     <li>
     <a href="javascript:;" class="folder">+ {{ key }}</a>
     <div class="upload-link">
-        <span class="glyph" path="{% for key,value in value.items|sortcontents %}{% if key == "contents" %}{% for item in value %}{{ item.folder_path }}{% endfor %}{% endif %}{% endfor %}">+</span>
+        <span class="glyph" path="{% for key,value in value.items|sortcontents %}{% if key == "contents" %}{% for item in value %}{{ item.folder_path }}{% endfor %}{% endif %}{% endfor %}"><span class="upload_btn">+</span></span>
         <span id="glyph_mask" style="margin-left:-10px;"></span>
     </div>
     <ul>
