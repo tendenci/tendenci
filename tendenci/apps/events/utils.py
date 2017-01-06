@@ -117,6 +117,8 @@ def render_event_email(event, email):
 
 
 def get_default_reminder_template(event):
+    from tendenci.apps.events.forms import EMAIL_AVAILABLE_TOKENS
+
     context = {}
     for token in EMAIL_AVAILABLE_TOKENS:
         context[token] = '{{ %s }}' % token
@@ -944,6 +946,8 @@ def create_registrant_from_form(*args, **kwargs):
     NOTE: When updating this be sure to check with the anonymous registration
     impementation of events in the registration module.
     """
+    from tendenci.apps.events.forms import FormForCustomRegForm
+                                            
     # arguments were getting kinda long
     # moved them to an unpacked version
     form, event, reg8n, \
