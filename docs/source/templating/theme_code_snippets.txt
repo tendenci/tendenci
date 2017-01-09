@@ -284,8 +284,6 @@ Add <link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,60
 
 .. code-block:: css
 
-/*SERVICES HOMEPAGE ** CONTAINS THE NEWS FEED */
-
 section#services {
   background-color: #2b2b2b;
   padding-bottom:150px;
