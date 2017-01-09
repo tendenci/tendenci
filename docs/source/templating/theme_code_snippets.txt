@@ -257,11 +257,11 @@ Here's an example of what this snippet can look like:
 
 .. image:: img/newsfeed.png
 
-.. note:: One way to make the newsfeed snippet look like the image above with preset Tendenci div ids and CSS
+.. note:: One way to make the newsfeed snippet look like the image above with preset Tendenci div ids and CSS:
 
 Add <link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet"> 
 
-.. code-block:: django
+.. code-block:: html
 
 <!-- begin: home-newsfeed-content-row -->
    <section id="services">
@@ -281,7 +281,8 @@ Add <link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,60
     </section>
 <!-- end: home-newsfeed-content-row -->
 
-.. code-block::
+
+.. code-block:: css
 
 /*SERVICES HOMEPAGE ** CONTAINS THE NEWS FEED */
 
@@ -331,4 +332,4 @@ section#services {
 #services img {
   padding:0 10px;
 }
-::
+
