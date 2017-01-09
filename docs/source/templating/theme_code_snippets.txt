@@ -261,6 +261,7 @@ Here's an example of what this snippet can look like:
 
 Add <link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet"> 
 
+.. code-block:: html
 ::
 <!-- begin: home-newsfeed-content-row -->
    <section id="services">
@@ -281,6 +282,7 @@ Add <link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,60
 <!-- end: home-newsfeed-content-row -->
 ::
 
+.. code-block:: css
 
 ::
 section#services {
