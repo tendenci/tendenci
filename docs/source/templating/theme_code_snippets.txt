@@ -199,3 +199,60 @@ Then add the following code snippet where you want to place your videos:
      {% endfor %}
    </ul>
 
+News Feed (with Thumbnail Image)
+----------
+Add `{% load news_tags %}` to the very top of your html page
+
+Then add the following code snippet where you want to place your news feed:
+
+.. code-block:: django
+
+   <!-- begin: news-innerblock -->
+	<div class="news-innerblock">
+	  {% list_news as news_list limit=3 %}
+	  <ul class="list-unstyled">
+	     {% for news_item in news_list %}
+	     <li>
+
+	       <div class="col-md-4 col-sm-6 text-left">
+	   <!-- news-image -->    
+	       {% if news_item.thumbnail %}
+	       <a href="{{ news_item.get_absolute_url }}">
+		 <div class="news-item-thumbnail">
+		 <img class="img" src="{% image_url news_item.thumbnail %}" 
+		   alt="{{ news_item.headline|striptags|safe }}"  
+		   style="width:344px;height:228px;"/>
+		 </div> 
+	       </a>
+	       {% else %}
+	       <a href="{{ news_item.get_absolute_url }}">
+		 <div class="news-item-thumbnail-auto">
+		 <img src="/img/quince.jpg"  
+		   style="width:344px;height:228px;"/>
+		 </div> 
+	       </a>
+	       {% endif %}                     
+	   <!-- end news-image -->   
+
+	       <a href="{{ news_item.get_absolute_url }}">
+		<h3>{% blocktrans with h=news_item.headline %}
+		  {{ h }}
+		  {% endblocktrans %}
+		</h3>
+	       </a>
+	       <br>
+		<p>
+		  {% blocktrans with c=news_item.summary|striptags|safe|truncatewords:"30" %}
+		  {{ c }}
+		  {% endblocktrans %}
+	       </p>
+	      </div>
+	     </li>
+	     {% endfor %}
+	  </ul>
+	</div>
+   <!--end: news-innerblock--> 
+
+Here's an example of what this snippet can look like:
+
+.. image:: /img/newsfeed.png
