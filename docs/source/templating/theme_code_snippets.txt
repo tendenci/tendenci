@@ -262,29 +262,24 @@ Here's an example of what this snippet can look like:
 Add <link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet"> 
 
 .. code-block:: html
-::
+
 <!-- begin: home-newsfeed-content-row -->
    <section id="services">
       <div class="container">
          <div class="row">
-            
             <!-- begin: news-block -->
             <div class="col-lg-12 col-md-12 text-left">
                <h4>News</h4>
-	       
 	       <!-- ADD NEWSFEED HERE -->
-	       
 	    </div>
 	    <!-- end: news-block -->
 	</div>
       </div>
     </section>
 <!-- end: home-newsfeed-content-row -->
-::
 
 .. code-block:: css
 
-::
 section#services {
   background-color: #2b2b2b;
   padding-bottom:150px;
@@ -331,4 +326,3 @@ section#services {
 #services img {
   padding:0 10px;
 }
-::
