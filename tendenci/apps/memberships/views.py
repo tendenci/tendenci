@@ -62,6 +62,7 @@ from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_membership_stats, ImportMembDefault,
     get_membership_app)
 from tendenci.apps.base.forms import CaptchaForm
+from tendenci.apps.perms.decorators import is_enabled
 
 
 def membership_index(request):
@@ -78,6 +79,7 @@ def membership_search(request, template_name="memberships/search.html"):
     return HttpResponseRedirect(reverse('profile.search') + "?member_only=on")
 
 
+@is_enabled('memberships')
 @login_required
 def membership_details(request, id=0, template_name="memberships/details.html"):
     """
@@ -822,6 +824,7 @@ def membership_default_add_legacy(request):
     return redirect(redirect_url)
 
 
+@is_enabled('memberships')
 def membership_default_add(request, slug='', membership_id=None,
                            template='memberships/applications/add.html', **kwargs):
     """
