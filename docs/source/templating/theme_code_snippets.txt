@@ -255,4 +255,4 @@ Then add the following code snippet where you want to place your news feed:
 
 Here's an example of what this snippet can look like:
 
-.. image:: ../img/newsfeed.png
+.. image:: img/newsfeed.png
