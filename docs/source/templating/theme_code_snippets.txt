@@ -110,15 +110,14 @@ Inside the boxes interface, adding code allows you to add images, add Font-Aweso
 			 <div class="col-md-8 call-to-action">
 			    {% box 4 %} 
 			 </div>
-
 			 <!--/col-md-4-->
 		      </div>
 		</aside>
+	
+	.. image:: img/insidebox.png 
 		
 	.. hidden-code-block:: html
 		:label: + Show Added HTML Inside Donation Box <> (Left)
-		
-		.. image:: img/insidebox.png 
 
 		<h3 class="fa fa-money"> &nbsp; Donate </h3>
 
