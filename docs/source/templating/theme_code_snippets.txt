@@ -261,11 +261,11 @@ Here's an example of what this snippet can look like:
 .. note:: 
 	HTML and CSS added to the above image:
 
-Add `<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet">`
-
 .. hidden-code-block:: html
     :label: + Show Added HTML
-
+    
+	<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet">
+	
 	<!-- begin: home-newsfeed-content-row -->
 	   <section id="services">
 	      <div class="container">
