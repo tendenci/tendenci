@@ -206,8 +206,7 @@ Add `{% load news_tags %}` to the very top of your html page
 Then add the following code snippet where you want to place your news feed:
 
 
-.. hidden-code-block:: django
-    :label: --- SHOW/HIDE ---
+.. code-block:: django
     
     <!-- begin: news-innerblock -->
 	<div class="news-innerblock">
@@ -259,11 +258,12 @@ Here's an example of what this snippet can look like:
 
 .. image:: img/newsfeed.png
 
-.. note:: One way to make the newsfeed snippet look like the image above with preset Tendenci div ids and CSS:
+.. note:: 
+	One way to make the newsfeed snippet look like the image above with preset Tendenci div ids and CSS:
+	Add `<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet">`
 
-Add `<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet">`
-
-.. code-block:: html
+.. hidden-code-block:: html
+    :label: + Show Added HTML
 
 	<!-- begin: home-newsfeed-content-row -->
 	   <section id="services">
@@ -280,7 +280,8 @@ Add `<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,6
 	    </section>
 	<!-- end: home-newsfeed-content-row -->
 
-.. code-block:: css
+.. hidden-code-block:: css
+    :label: + Show Added CSS
 
 	section#services {
 	  background-color: #2b2b2b;
