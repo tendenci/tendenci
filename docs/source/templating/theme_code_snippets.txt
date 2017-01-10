@@ -215,21 +215,21 @@ Then add the following code snippet where you want to place your news feed:
 	     {% for news_item in news_list %}
 	     <li>
 
-	       <div class="col-md-4 col-sm-6 text-left">
+	       <div class="col-md-4 col-sm-12 col-xs-12 text-left">
 	   <!-- news-image -->    
 	       {% if news_item.thumbnail %}
 	       <a href="{{ news_item.get_absolute_url }}">
 		 <div class="news-item-thumbnail">
 		 <img class="img" src="{% image_url news_item.thumbnail %}" 
 		   alt="{{ news_item.headline|striptags|safe }}"  
-		   style="width:344px;height:228px;"/>
+		   style="width:100%;height:auto;"/>
 		 </div> 
 	       </a>
 	       {% else %}
 	       <a href="{{ news_item.get_absolute_url }}">
 		 <div class="news-item-thumbnail-auto">
 		 <img src="{{ THEME_URL }}/files/quince.jpg"  
-		   style="width:344px;height:228px;"/>
+		   style="width:100%;height:auto;"/>
 		 </div> 
 	       </a>
 	       {% endif %}                     
