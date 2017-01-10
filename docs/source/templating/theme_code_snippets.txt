@@ -205,9 +205,11 @@ Add `{% load news_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your news feed:
 
-.. code-block:: django
 
-   <!-- begin: news-innerblock -->
+.. hidden-code-block:: django
+    :label: --- SHOW/HIDE ---
+    
+    <!-- begin: news-innerblock -->
 	<div class="news-innerblock">
 	  {% list_news as news_list limit=3 %}
 	  <ul class="list-unstyled">
@@ -251,7 +253,7 @@ Then add the following code snippet where you want to place your news feed:
 	     {% endfor %}
 	  </ul>
 	</div>
-   <!--end: news-innerblock--> 
+    <!--end: news-innerblock--> 
 
 Here's an example of what this snippet can look like:
 
