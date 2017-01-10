@@ -261,73 +261,73 @@ Here's an example of what this snippet can look like:
 .. note:: 
 	HTML and CSS added to the above image:
 
-.. hidden-code-block:: html
-    :label: + Show Added HTML
-    
-	<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet">
-	
-	<!-- begin: home-newsfeed-content-row -->
-	   <section id="services">
-	      <div class="container">
-		 <div class="row">
-		    <!-- begin: news-block -->
-		    <div class="col-lg-12 col-md-12 text-left">
-		       <h4>News</h4>
-		       <!-- ADD NEWSFEED HERE -->
-		    </div>
-		    <!-- end: news-block -->
-		</div>
-	      </div>
-	    </section>
-	<!-- end: home-newsfeed-content-row -->
+	.. hidden-code-block:: html
+	    :label: + Show Added HTML
 
-.. hidden-code-block:: css
-    :label: + Show Added CSS
+		<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet">
 
-	section#services {
-	  background-color: #2b2b2b;
-	  padding-bottom:150px;
-	  padding-top:30px;
-	}
-	#services .container {
-	  width: 90%;
-	}
-	#services h4 {
-	  font-size: 45px;
-	  text-transform:none;
-	  width:100%;
-	  font-family: FontAwesome, "Assistant", sans-serif;
-	  font-weight:600;
-	  font-size:35px;
-	  color:white;
-	}
-	#services h3, 
-	#services a {
-	  font-size: 25px;
-	  font-weight:400;
-	  width:300px;
-	  color: #54b848;
-	  text-transform: none;
-	  margin:-10px 0;
-	  padding:0 10px;
-	  font-family: 'Assistant', sans-serif;
-	}
-	#services a:hover,
-	#services h3:hover {
-	  text-decoration:none;
-	  font-color: #3333ff;
-	}
-	#services p{
-	  color:white;
-	  font-weight: 200;
-	  font-size:16px;
-	  padding:0 10px;
-	  font-family: 'Assistant', sans-serif;
-	}
-	#services img:hover {
-	  opacity: .7;
-	}
-	#services img {
-	  padding:0 10px;
-	}
+		<!-- begin: home-newsfeed-content-row -->
+		   <section id="services">
+		      <div class="container">
+			 <div class="row">
+			    <!-- begin: news-block -->
+			    <div class="col-lg-12 col-md-12 text-left">
+			       <h4>News</h4>
+			       <!-- ADD NEWSFEED HERE -->
+			    </div>
+			    <!-- end: news-block -->
+			</div>
+		      </div>
+		    </section>
+		<!-- end: home-newsfeed-content-row -->
+
+	.. hidden-code-block:: css
+	    :label: + Show Added CSS
+
+		section#services {
+		  background-color: #2b2b2b;
+		  padding-bottom:150px;
+		  padding-top:30px;
+		}
+		#services .container {
+		  width: 90%;
+		}
+		#services h4 {
+		  font-size: 45px;
+		  text-transform:none;
+		  width:100%;
+		  font-family: FontAwesome, "Assistant", sans-serif;
+		  font-weight:600;
+		  font-size:35px;
+		  color:white;
+		}
+		#services h3, 
+		#services a {
+		  font-size: 25px;
+		  font-weight:400;
+		  width:300px;
+		  color: #54b848;
+		  text-transform: none;
+		  margin:-10px 0;
+		  padding:0 10px;
+		  font-family: 'Assistant', sans-serif;
+		}
+		#services a:hover,
+		#services h3:hover {
+		  text-decoration:none;
+		  font-color: #3333ff;
+		}
+		#services p{
+		  color:white;
+		  font-weight: 200;
+		  font-size:16px;
+		  padding:0 10px;
+		  font-family: 'Assistant', sans-serif;
+		}
+		#services img:hover {
+		  opacity: .7;
+		}
+		#services img {
+		  padding:0 10px;
+		}
 
