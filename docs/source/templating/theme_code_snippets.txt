@@ -93,6 +93,108 @@ Then add the following code snippet where you want to place your box:
 .. code-block:: django
 
     {% box 13 %}
+    
+Inside the boxes interface, adding code allows you to add images, add Font-Awesome Icons, and responsive Bootstrap Layouts.
+
+.. image:: img/boxexample.png
+
+.. Tip:: 
+	.. hidden-code-block:: html
+		:label + Show Added HTML for Layout
+		
+		<aside class="bg-dark">
+		      <div class="container text-left">
+			 <div class="col-md-4 call-to-action">
+			    {% box 5 %} 
+			 </div>
+			 <div class="col-md-8 call-to-action">
+			    {% box 4 %} 
+			 </div>
+
+			 <!--/col-md-4-->
+		      </div>
+		</aside>
+		
+	.. hidden-code-block:: html
+		:label: + Show Added HTML Inside Donation Box <> (Left)
+		
+		.. image:: img/insidebox.png 
+
+		<h3 class="fa fa-money"> &nbsp; Donate </h3>
+
+		<p>Online Donations from supporters like you allow us to achieve our purpose throughout the year. We appreciate your generous donation; please donate today using our simple online donation!</p>
+
+		<p> <a href="/donations/" target="_self"> Donate Now </a> &nbsp;</p>
+		<p> &nbsp; </p>
+		
+	.. hidden-code-block:: css
+		:label: + Show Added CSS
+		
+		/* BG-DARK HOMEPAGE */
+		.bg-dark {
+		  padding: 20px 10px 50px 20px;
+		  background: #2b2b2b;
+		}
+		#box-5 , 
+		#box-4 {
+		  border: 1px solid #54b848;
+		  border-radius: 8px;
+		  margin:20px;
+		  background-color: #323232;
+		}
+		#box-5 h3 {
+		  font-size: 45px;
+		  text-transform:none;
+		  border-bottom: 1px solid #54b848;
+		  padding:0 0 10px 30px;
+		  width:100%;
+		  font-family: FontAwesome, "Assistant", sans-serif;
+		  font-weight:600;
+		  color: #54b848;
+		}
+		#box-4 h3 {
+		  font-size: 45px;
+		  text-transform:none;
+		  padding:0 0 0 30px;
+		  width:100%;
+		  font-family: FontAwesome, "Assistant", sans-serif;
+		  font-weight:600;
+		  font-size:35px;
+		  color: #54b848;  
+		}
+		#box-5 p>a {
+		  background-color: #54b848;
+		  color: white;
+		  text-align: center;
+		  padding: 10px 20px;
+		  border-radius: 8px;
+		  font-weight:600;
+		  text-transform: uppercase;
+		  float: right;
+		  position: relative;
+		  left: -20%;
+		  font-size: 20px;
+		}
+		#box-5 p>a:hover {
+		  text-decoration:none;
+		  background-color: #3333ff;
+		}
+		#box-4 p>a {
+		  color:#54b848;
+		  font-weight:600;
+		  font-size:18px;
+		}
+		#box-5 p {
+		  font-weight:200;
+		  padding: 10px 30px 0 30px;
+		}
+		#box-4 p {
+		  font-weight:200;
+		  padding: 0px 30px 0 30px;
+		}
+		
+		
+
 
 Directories Carousel
 ----------
@@ -258,7 +360,7 @@ Here's an example of what this snippet can look like:
 
 .. image:: img/newsfeed.png
 
-.. note:: 
+.. Tip:: 
 	HTML and CSS added to the above image:
 
 	.. hidden-code-block:: html
