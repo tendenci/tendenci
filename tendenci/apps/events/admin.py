@@ -27,6 +27,7 @@ class EventAdmin(TendenciBaseModelAdmin):
         'start_dt',
         'status_detail',
     )
+    search_fields = ("title",)
     list_filter = ('enable_private_slug',)
     ordering = ['-start_dt']
     
