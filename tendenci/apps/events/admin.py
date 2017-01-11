@@ -12,27 +12,31 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
-    CustomRegFormEntry, CustomRegFieldEntry)
+    CustomRegFormEntry, CustomRegFieldEntry, Event)
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(TendenciBaseModelAdmin):
 
     list_display = (
         'title',
-        'description',
-        'group',
+        'enable_private_slug',
         'start_dt',
-        'end_dt',
-        'timezone',
-        'allow_anonymous_view',
-        'allow_user_view',
-        'allow_user_edit',
-        'status',
         'status_detail',
     )
+    list_filter = ('enable_private_slug',)
+    ordering = ['-start_dt']
+    
+    def __init__(self, *args, **kwargs):
+        super(EventAdmin, self).__init__(*args, **kwargs)
+        if 'edit_link' in self.list_display:
+            self.list_display.remove('edit_link')
+
+    def has_add_permission(self, request):
+        return False
 
 
 class EventTypeAdmin(admin.ModelAdmin):
@@ -285,3 +289,4 @@ class StandardRegFormAdmin(admin.ModelAdmin):
 
 
 admin.site.register(StandardRegForm, StandardRegFormAdmin)
+admin.site.register(Event, EventAdmin)
