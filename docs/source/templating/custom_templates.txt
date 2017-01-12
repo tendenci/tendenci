@@ -81,7 +81,7 @@ Adding a button
     For this example, I added the class "top-nav-button" to the "Attend Orientation" Nav Link.
     
     .. hidden-code-block:: css
-        :label + Show Added CSS
+        :label: + Show Added CSS
         
             .top-nav-button {
               color: #fbce42;
