@@ -101,7 +101,7 @@ Inside the boxes interface, adding code allows you to add images, add Font-Aweso
 .. Tip:: 
 	
 	.. hidden-code-block:: django
-		:label + Show Added HTML for Layout
+		:label: + Show Added HTML for Layout
 		
 		<div class="bg-dark">
 		      <div class="container text-left">
