@@ -59,3 +59,43 @@ Then, in your new template file, ``default-custom-name.html``, we will add the f
    {% endblock custom_body %}
 
 Now the custom template will only affect the interior area of a page, so we can create pages that use other Tendenci template tags. This is great for creating pages with rss feeds or other dynamic content like upcoming events and news.
+
+
+Navigation Bar
+================
+
+The Navigation Bar is set up through the Navs App.
+
+.. image:: img/navbar.png
+
+In the Navs App, Links can be assigned to their own CSS Class.  This is helpful for targeting individual links to emphasize in your design.
+
+.. image:: img/navsappcss.png
+
+Adding a button
+
+.. image:: img/navbarbutton.png
+
+.. Tip:: 
+    
+    For this example, I added the class "top-nav-button" to the "Attend Orientation" Nav Link.
+    
+    .. hidden-code-block:: django
+        :label + Show CSS
+        
+            .top-nav-button {
+              color: #fbce42;
+              border: 2px solid #fbce42;
+              border-radius: 40px;
+              margin-left:25px;
+              font-weight:700;
+            }
+            .top-nav-button:hover,
+            .top-nav-button:active,
+            .top-nav-button:focus {
+              color: #f6ba17;
+              border-radius: 40px;
+              border: 2px solid #f6ba17;
+              background-color: rgba(255,255,255,.3);
+            }
+
