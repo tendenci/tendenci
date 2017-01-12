@@ -268,7 +268,7 @@ Then add the following code snippet where you want to place your jobas:
      
 Simple Job Feed Layout
 
-.. image:: img/jobsfeed.png 
+.. image:: img/jobboard.png 
 
 .. Tip:: 
 	
