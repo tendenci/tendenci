@@ -265,6 +265,165 @@ Then add the following code snippet where you want to place your jobas:
    <h4>{% if user.profile.is_superuser %}<a href="/jobs/add/">{Add your first job</a>{% else %}<a href="#">Great New Job</a>{% endif %}</h4>
      <p>Houston: A new job opening is available...</p>
      {% endfor %}
+     
+Simple Job Feed Layout
+
+.. image:: img/jobsfeed.png 
+
+.. Tip:: 
+	
+	.. hidden-code-block:: django
+		:label: + Show HTML
+		
+			 <!-- homepage-jobs board -->
+			  <section id="homepage-jobs-board">  
+			    <div class="container">
+			      <div class="row">
+				<div class="homepage-jobs-board-inner">
+
+				  <div class="col-md-4 col-sm-12 col-xs-12">
+				    <div class="homepage-jobs-ctas">
+
+				      <div class="homepage-jobs-cta">
+					<h3>Hire in our Network</h3>
+					<p>Learn more and post a job.</p>
+					<div class="homepage-job-post-button">
+					  <a href="/jobs/add/"><h4>Post a Job</h4></a>
+					</div>
+				      </div>
+
+				      <div class="homepage-jobs-cta">
+					<h3>Get Hired</h3>
+					<p>Search our jobs board and find a job.</p>
+					<div class="homepage-job-post-button">
+					  <a href="/jobs/"><h4>Visit Job Board</h4></a>
+					</div>
+				      </div>
+
+				    </div>
+				  </div>
+
+				  <div class="col-md-8 col-sm-12 col-xs-12">
+				    <div class="homepage-jobs-list" >
+				      <h3>Job Board</h3>
+
+				      {% list_jobs as jobs_list limit=3 %}  
+				      {% for job in jobs_list %}
+
+				      <h4><a href="{{ job.get_absolute_url }}">
+					{{ job.title }} 
+					</a></h4>
+
+				      <p>{{ job.description|striptags|truncatewords:"10"|safe  }} 
+					<br /><strong>Posted on: {% now "M d" %}</strong></p>
+
+				      {% endfor %}     
+
+				      <div class="view-more-jobs">
+					<div class="col-md-12">
+					  <h4><a href="/jobs/"> View more Jobs &raquo;</a></h4>
+					</div>
+				      </div>
+
+				    </div>
+				  </div>
+
+				</div> 
+			      </div>
+			    </div>
+			  </section>
+			 <!-- end: homepage-jobs board -->
+			 
+	.. hidden-code-block:: css
+		:label: + Show CSS
+		
+			#homepage-jobs-board {
+			  background-color: white;
+			}
+			.homepage-jobs-cta {
+			  background-color: #f1f1f2;
+			}
+			.homepage-jobs-cta p {
+			  text-align:center;
+			  color: #6d6e70;  
+			  font-weight:300;
+			}
+			.homepage-jobs-ctas {
+			  padding: 60px 10px;
+			}
+			.homepage-jobs-list {
+			  padding: 60px 40px;
+			}
+			.homepage-jobs-list h3 {
+			  text-align: center;
+			  color: #f6ba17;
+			  padding-bottom:20px;
+			}
+			.homepage-jobs-cta h3,
+			.homepage-jobs-list h4>a {
+			  padding-top:30px;
+			  text-align:center;
+			  text-transform:none;
+			  color: #6d6e70;
+			  font-size:20px;
+			}
+			.homepage-jobs-list h4>a {
+			  padding-bottom: 0;
+			  padding-left: 10px;
+			}
+			.homepage-jobs-list h4 {
+			  padding-top: 15px;
+			}
+			.homepage-jobs-list p {
+			  color: #6d6e70;
+			  border-bottom: 2px #d1d2d4 solid;
+			  padding-bottom: 20px;
+			  padding-left: 10px;
+			  font-weight:300;
+			}
+			.homepage-jobs-list a:hover, 
+			.homepage-jobs-list a:active,
+			.homepage-jobs-list a:focus {
+			  text-decoration:none;
+			  opacity:.7;
+			}
+			.homepage-jobs-list p>strong {
+			  font-weight:300;
+			  font-size:14px;
+			  color: #f6ba17;
+			  float: right;
+			}
+			.homepage-job-post-button {
+			  text-align:center;
+			  width:50%;
+			  margin-left: 25%;
+			  padding-bottom:30px;
+			}
+			.homepage-job-post-button h4 {
+			  background-color: #fbce42;
+			  border-bottom: 4px solid #f6ba17;
+			  border-radius: 8px;
+			  color:white;
+			  text-transform:none;
+			  font-weight:500;
+			  padding: 10px 0;
+			}
+			.homepage-job-post-button a:hover,
+			.homepage-job-post-button a:active,
+			.homepage-job-post-button a:focus {
+			  text-decoration:none;
+			}
+			.homepage-job-post-button h4:hover{
+			  opacity: .7;
+			}
+			.view-more-jobs {
+			  text-align: center;
+			}
+			.view-more-jobs h4 {
+			  font-weight:600;
+			  margin-top:20px;
+			}
+			
 
 Photos Feed
 ----------
