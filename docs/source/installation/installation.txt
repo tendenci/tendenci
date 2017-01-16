@@ -227,15 +227,8 @@ Now, use the deploy script to create the database tables and static media.
 Load some defaults to ensure proper functioning
 ::
 
-    python manage.py load_base_defaults
+    python manage.py load_creative_defaults
 
-
-.. Note:: 
-
-    Optionally, you can load more data with the following command.
-    ::
-
-        python manage.py load_npo_defaults
 
 
 Make sure the execute permission is removed from the media/ directory
