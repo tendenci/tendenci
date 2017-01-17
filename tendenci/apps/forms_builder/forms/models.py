@@ -8,13 +8,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.shortcuts import get_object_or_404
 
 from django_countries import countries as COUNTRIES
-try: from localflavor.us.us_states import STATE_CHOICES
-# Work-around for https://github.com/django/django-localflavor/issues/203
-# If using django-localflavor 1.2 or 1.3, ignore the exception thrown when
-# importing STATE_CHOICES during Django initialization (when this module is
-# imported via search_indexes.py).  STATE_CHOICES will be imported again later
-# when this module is imported by other modules after Django initialization.
-except AppRegistryNotReady: pass
+from localflavor.us.us_states import STATE_CHOICES
 from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
@@ -266,7 +260,8 @@ class Field(OrderingBaseModel):
                                ('','-----------'))
             choices = initial_choices + tuple(countries)
         elif self.field_type == 'StateProvinceField':
-            choices = (('','-----------'),) + STATE_CHOICES + PROVINCE_CHOICES
+            choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                                + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
             choices = sorted(choices)
         elif self.field_function == 'Recipients':
             choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
