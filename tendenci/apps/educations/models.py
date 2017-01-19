@@ -38,7 +38,7 @@ class Education(TendenciBaseModel):
                 self.degree = ast.literal_eval(self.degree)
                 if isinstance(self.degree, list):
                     self.degree = ', '.join(self.degree)
-            except ValueError:
+            except:
                 pass
         
         
