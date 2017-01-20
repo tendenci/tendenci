@@ -101,7 +101,7 @@ def search(request, template_name="pages/search.html"):
     if query:
         if "category:" in query or "sub_category:" in query:
             # handle category and sub_category
-            key, name = query.split(':')
+            key, name = query.split(':', 1)
             categories = Category.objects.filter(name__iexact=name)
             if categories.exists():
                 category = categories[0]
