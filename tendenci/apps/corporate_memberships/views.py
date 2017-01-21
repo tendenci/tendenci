@@ -474,8 +474,8 @@ def corpmembership_edit(request, id,
             # assign a secret code for this corporate
             # secret code is a unique 6 characters long string
             if not corp_profile.secret_code:
-                corp_membership.assign_secret_code()
-                corp_membership.save()
+                corp_profile.assign_secret_code()
+                corp_profile.save()
 
             # assign object permissions
             corp_membership_update_perms(corp_membership)
