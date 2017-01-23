@@ -204,6 +204,182 @@ In Tendenci, the Footer is usually set up inside a box to make it easy for clien
             footer .fa:hover {
               opacity:.5;
             }
+
+Sidebar Navigation
+--------------
+
+Some clients have asked for all navigation links in the sidebar.  This can create a long list of links.  To avoid overly verbose sidebar menus, add a simple accordion to hide and show the navigation dropdown categories.
+
+.. image:: img/accordionsidebar.png
+
+.. Tip:: 
+
+    For this example, I copy and pasted the HTML from /sitemap (included in every Tendenci site). You can also use tags to dynamically generate the sidebar nav.
+    
+    .. hidden-code-block:: html
+        :label: + Show HTML
+    
+            <div class="sidebar-navigation">
+
+              <div class="sitemap">       
+                <ul>
+                  <li><button class="accordion">About</button>
+
+                    <div class="panel-sidebar-nav">
+                    <ul>
+                      <li><a class="" href="/about/">Who we are</a></li>
+                      <li><a class="" href="/board-staff/">Board &amp; Staff</a></li>
+                      <li><a class="" href="/impact/">Financials &amp; Impact</a></li>
+                      <li><a class="" href="/policies/">Policies</a></li>
+                      <li><a class="" href="/contact/">Contact Information</a></li>
+                    </ul>
+                   </div>
+
+                  </li>     
+
+                  <li><button class="accordion">Services</button>
+
+                    <div class="panel-sidebar-nav">
+                    <ul>
+                      <li><a class="fa fa-user" href="/operation-id/">Identification Assistance</a></li>
+                      <li><a class="fa fa-pagelines" href="/garden/">Community Garden</a></li>
+                    </ul>
+                   </div>
+                  </li>
+
+                  <li><button class="accordion">Volunteer</button>
+
+                    <div class="panel-sidebar-nav">
+                      <ul>
+                        <li><a class="" href="/jobs/">Opportunities</a></li>
+                        <li><a class="" href="/forms/volunteer-application/">Volunteer Application</a></li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <li><button class="accordion">Latest</button>
+
+                    <div class="panel-sidebar-nav">
+                      <ul>
+                        <li><a class="" href="/news/">News</a></li>
+                        <li><a class="" href="/events/month">Calendar</a></li>
+                        <li><a class="/other-resources/" href="">Other Resources</a></li> 
+                        <li><a class="/newsletter/" href="">Newsletter</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>  
+
+                  <li><button class="accordion">Give</button>
+
+                    <div class="panel-sidebar-nav">
+                      <ul>
+                        <li><a class="/donations/" href="">Donate Online</a></li>
+                        <li><a class="/more-ways-to-give/" href="">More Ways to Give</a></li>
+                        <li><a class="/give/" href="">Donor Privacy Policy</a></li>
+                      </ul> 
+                    </div>
+                  </li>
+
+                </ul>
+
+              </div>  
+            </div>
+            
+    .. hidden-code-block:: html
+        :label: + Show Javascript
         
+            <script>
+            var acc = document.getElementsByClassName("accordion");
+            var i;
+
+            for (i = 0; i < acc.length; i++) {
+                acc[i].onclick = function(){
+
+                    this.classList.toggle("active");
+
+                    var panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                    } else {
+                        panel.style.display = "block";
+                    }
+                }
+            }
+            </script>
+            
+            
+    .. hidden-code-block:: css
+        :label: + Show CSS
+        
+            /*SIDEBAR and PANEL-SIDEBAR */
+            ====================*/
+            .sidebar li li {
+              list-style:none;
+              font-weight:300;
+              padding: 10px 0;
+              border-bottom: 1px solid #F1F1F2;
+            }
+            .sidebar li li:hover {
+              border-right: 3px solid #2D95D2;
+              background-color: #F1F1F2;
+            }
+            .sidebar-navigation .sitemap>ul>li>a {
+              text-transform: uppercase;
+              color: #2D95D2;
+              font-weight:600;
+              font-size:20px;
+            }
+            .sidebar-navigation .sitemap>ul {
+              list-style: none;
+            }
+            .sidebar-navigation .sitemap>ul>li {
+              padding-top: 15px;
+            }
+            .sidebar-navigation .sitemap ul {
+              padding-left: 0px;
+            }
+            div.panel-sidebar-nav {
+              background-color: white;
+              display: none;
+              border:0;
+              border-radius:0;
+              box-shadow: 0;
+              -webkit-box-shadow:0;
+            }
+        
+            /*SIDEBAR NAV
+            =====================*/
+            /* buttons here refer to the Main Nav section */
+            button.accordion {
+              background-color: transparent;
+              cursor: pointer;
+              padding: 12px;
+              width: 100%;
+              text-align: left;
+              outline: none;
+              transition: 0.4s;
+              border-bottom: 1px solid #e6e7e8;
+              border-top: none;
+              border-left: none;
+              border-right: none;
+            }
+
+            button.accordion.active, 
+            button.accordion:hover {
+              background-color: #e6e7e8;
+            }
+
+            button.accordion:after {
+              content: '\02795'; /* Unicode (+) */
+              font-size: 13px;
+              color: #2d95d2;
+              float: right;
+              margin-left: 5px;
+            }
+
+            button.accordion.active:after {
+              content: "\2796"; /* Unicode (-) */
+            }
         
         
