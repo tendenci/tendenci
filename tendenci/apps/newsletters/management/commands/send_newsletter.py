@@ -1,7 +1,5 @@
-from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
 
