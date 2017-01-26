@@ -172,7 +172,7 @@ class Newsletter(models.Model):
     resumes_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
 
     # default template
-    default_template = models.CharField(max_length=255, choices=DEFAULT_TEMPLATE_CHOICES, null=True)
+    default_template = models.CharField(max_length=255, null=True)
 
     # format
     format = models.IntegerField(default=0, choices=FORMAT_CHOICES)
