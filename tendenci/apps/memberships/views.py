@@ -8,6 +8,7 @@ import time as ttime
 import subprocess
 from sets import Set
 import calendar
+from collections import OrderedDict
 from dateutil.relativedelta import relativedelta
 
 from django.core.urlresolvers import reverse
@@ -2313,42 +2314,34 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
 
 @staff_member_required
 def report_members_ytd_type(request, template_name='reports/members_ytd_type.html'):
-    import datetime
-
-    year = datetime.datetime.now().year
+    year = datetime.now().year
     years = [year, year - 1, year - 2, year - 3, year - 4]
     if request.GET.get('year'):
         year = int(request.GET.get('year'))
 
-    types_new = []
-    types_renew = []
-    types_expired = []
+    types_new = OrderedDict()
+    types_renew = OrderedDict()
+    types_expired = OrderedDict()
     months = calendar.month_abbr[1:]
-    itermonths = iter(calendar.month_abbr)
-    next(itermonths)
+    
+    membership_types = MembershipType.objects.all()
 
-    for type in MembershipType.objects.all():
-        mems = MembershipDefault.objects.filter(membership_type=type)
+    for mtype in membership_types:
+        mems = MembershipDefault.objects.filter(membership_type=mtype)
+        types_new[mtype.name] = []
+        types_renew[mtype.name] = []
+        types_expired[mtype.name] = []
+        itermonths = iter(calendar.month_abbr)
+        next(itermonths)
         for index, month in enumerate(itermonths):
             index = index + 1
             new_mems = mems.filter(join_dt__year=year, join_dt__month=index).count()
             renew_mems = mems.filter(renew_dt__year=year, renew_dt__month=index).count()
             expired_mems = mems.filter(expire_dt__year=year, expire_dt__month=index).count()
-            new_dict = {
-                'name': type.name,
-                'new_mems': new_mems,
-            }
-            types_new.append(new_dict)
-            renew_dict = {
-                'name': type.name,
-                'renew_mems': renew_mems,
-            }
-            types_renew.append(renew_dict)
-            expired_dict = {
-                'name': type.name,
-                'expired_mems': expired_mems,
-            }
-            types_expired.append(expired_dict)
+
+            types_new[mtype.name].append(new_mems)
+            types_renew[mtype.name].append(renew_mems)
+            types_expired[mtype.name].append(expired_mems)
 
     totals_new = []
     totals_renew = []
