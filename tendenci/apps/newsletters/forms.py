@@ -11,7 +11,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.campaign_monitor.models import Template
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.http import Http403
-from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set
+from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set, get_default_template_choices
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.models import (
     THIS_YEAR,
@@ -60,6 +60,7 @@ class GenerateForm(forms.Form):
 
 
 class OldGenerateForm(forms.ModelForm):
+    default_template = forms.ChoiceField(widget=forms.RadioSelect, choices=get_default_template_choices())
     class Meta:
         model = Newsletter
         fields = "__all__"
@@ -67,7 +68,6 @@ class OldGenerateForm(forms.ModelForm):
             'subject': forms.TextInput(attrs={'size': 50}),
             'event_start_dt': SelectDateWidget(None, range(1920, THIS_YEAR+10)),
             'event_end_dt': SelectDateWidget(None, range(1920, THIS_YEAR+10)),
-            'default_template': forms.RadioSelect,
             'format': forms.RadioSelect
         }
 

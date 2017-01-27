@@ -137,6 +137,8 @@ def index(request, username='', template_name="profiles/index.html"):
         can_edit = request.user == user_this
 
     multiple_apps = False
+    membership_reminders = ()
+    
     if get_setting('module', 'memberships', 'enabled'):
         from tendenci.apps.memberships.models import MembershipApp
         membership_apps = MembershipApp.objects.filter(
@@ -147,12 +149,11 @@ def index(request, username='', template_name="profiles/index.html"):
                                          ).order_by('name')
         if len(membership_apps) > 1:
             multiple_apps = True
+            
+        if request.user == user_this or request.user.profile.is_superuser:
+            membership_reminders = get_member_reminders(user_this, view_self=request.user == user_this)
     else:
         membership_apps = None
-
-    membership_reminders = ()
-    if request.user == user_this or request.user.profile.is_superuser:
-        membership_reminders = get_member_reminders(user_this, view_self=request.user == user_this)
 
     return render_to_response(template_name, {
         'can_edit': can_edit,
@@ -1276,7 +1277,7 @@ def profile_export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=profiles_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="profiles_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
 
@@ -1477,7 +1478,7 @@ def user_import_download_recap(request, uimport_id):
     if default_storage.exists(recap_path):
         response = HttpResponse(default_storage.open(recap_path).read(),
                                 content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
     else:
         raise Http404

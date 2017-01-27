@@ -11,6 +11,7 @@ class EmailBlock(TendenciBaseModel):
     email_domain = models.CharField(max_length=255)
 
     class Meta:
+        app_label = 'email_blocks'
         permissions = (("view_email_block",_("Can view email block")),)
 
     def save(self, *args, **kwargs):

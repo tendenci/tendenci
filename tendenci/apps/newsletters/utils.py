@@ -22,6 +22,25 @@ def get_type_choices():
 
     return tuple(types_list)
 
+
+def get_default_template_choices():
+    newsletters_relative_path = 'newsletters/templates/default/'
+    path_in_core = os.path.join(settings.TENDENCI_ROOT, 
+                'apps/newsletters/templates/', newsletters_relative_path)
+    path_in_theme = os.path.join(settings.THEMES_DIR, 
+                    get_setting('module', 'theme_editor', 'theme'), 
+                    'templates/', newsletters_relative_path)
+    if os.path.isdir(path_in_theme):
+        list_in_theme = os.listdir(path_in_theme)
+    else:
+        list_in_theme = []
+    default_templates = list(set(os.listdir(path_in_core) + list_in_theme))
+    default_templates.sort()
+    template_choices = []
+    for template in default_templates:
+        template_choices.append((newsletters_relative_path + template, os.path.splitext(template)[0]))
+    return template_choices
+
 def get_start_dt(duration_days, end_dt=None):
     if not end_dt:
         end_dt = datetime.datetime.now()

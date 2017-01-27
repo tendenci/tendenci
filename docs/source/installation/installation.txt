@@ -218,24 +218,17 @@ Setting up SECRET_KEY and SITE_SETTINGS_KEY
 Setting up the site
 -------------------
 
-Now, use the deploy script to create the database tables and static media. (The purpose of the script `migrate_initials.sh` is to ease the RAM consumption by the initial migrations. The error from the initial 4 migrations in the script can be safely ignored.)
+Now, use the deploy script to create the database tables and static media. 
 ::
 
-    bash migrate_initials.sh
+    python manage.py migrate
     python deploy.py
 
 Load some defaults to ensure proper functioning
 ::
 
-    python manage.py load_base_defaults
+    python manage.py load_creative_defaults
 
-
-.. Note:: 
-
-    Optionally, you can load more data with the following command.
-    ::
-
-        python manage.py load_npo_defaults
 
 
 Make sure the execute permission is removed from the media/ directory

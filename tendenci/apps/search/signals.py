@@ -27,7 +27,7 @@ class QueuedSignalProcessor(signals.BaseSignalProcessor):
         for app in settings.INSTALLED_APPS:
             try:
                 __import__(app + '.search_indexes')
-            except:
+            except ImportError:
                 pass
         return [c.get_model() for c in TendenciBaseSearchIndex.__subclasses__()]    
        

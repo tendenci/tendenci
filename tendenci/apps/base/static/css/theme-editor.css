@@ -435,3 +435,9 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 #create-tform div{
 	margin: 0.5em 0;
 }
+.upload-link .upload_btn{
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	left: 0;
+}

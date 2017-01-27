@@ -1,0 +1,461 @@
+[
+{
+    "fields": {
+        "name": "display",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": false,
+        "height": 275,
+        "width": 500,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 80
+    },
+    "model": "photos.photosize",
+    "pk": 1
+},
+{
+    "fields": {
+        "name": "small_crop",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": true,
+        "height": 75,
+        "width": 100,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 100
+    },
+    "model": "photos.photosize",
+    "pk": 2
+},
+{
+    "fields": {
+        "name": "large",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": false,
+        "height": 1024,
+        "width": 1024,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 85
+    },
+    "model": "photos.photosize",
+    "pk": 3
+},
+{
+    "fields": {
+        "name": "thumbnail",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": false,
+        "height": 100,
+        "width": 100,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 100
+    },
+    "model": "photos.photosize",
+    "pk": 4
+},
+{
+    "fields": {
+        "name": "square",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": true,
+        "height": 75,
+        "width": 75,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 85
+    },
+    "model": "photos.photosize",
+    "pk": 5
+},
+{
+    "fields": {
+        "name": "small",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": false,
+        "height": 240,
+        "width": 240,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 100
+    },
+    "model": "photos.photosize",
+    "pk": 6
+},
+{
+    "fields": {
+        "name": "medium_500",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": false,
+        "height": 500,
+        "width": 500,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 85
+    },
+    "model": "photos.photosize",
+    "pk": 7
+},
+{
+    "fields": {
+        "name": "medium_640",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": false,
+        "height": 640,
+        "width": 640,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 85
+    },
+    "model": "photos.photosize",
+    "pk": 8
+},
+{
+    "fields": {
+        "name": "album_cover",
+        "watermark": null,
+        "increment_count": false,
+        "effect": null,
+        "crop": true,
+        "height": 100,
+        "width": 100,
+        "upscale": false,
+        "pre_cache": false,
+        "quality": 85
+    },
+    "model": "photos.photosize",
+    "pk": 9
+},
+{
+    "fields": {
+        "publish_type": 2,
+        "creator": 1,
+        "allow_user_view": false,
+        "entity": 1,
+        "owner": 1,
+        "guid": "21982ee2-6098-11e5-aebb-0242ac110073",
+        "create_dt": "2015-09-21T14:37:01.958",
+        "group": 4,
+        "update_dt": "2016-06-02T14:37:53.331",
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "description": "",
+        "tags": "tendencidemo, ",
+        "status_detail": "active",
+        "creator_username": "system_generated",
+        "name": "Tendenci Stock Photos",
+        "allow_user_edit": false,
+        "author": 1,
+        "allow_member_view": false,
+        "allow_member_edit": false,
+        "position": 0
+    },
+    "model": "photos.photoset",
+    "pk": 1
+},
+{
+    "fields": {
+        "date_taken": "2015-09-21T14:40:09.736",
+        "creator": 1,
+        "allow_user_view": false,
+        "crop_from": "",
+        "entity": 1,
+        "meta": null,
+        "is_public": true,
+        "owner": 1,
+        "guid": "9184cc6a-6098-11e5-aebb-0242ac110073",
+        "photoset": [
+            1
+        ],
+        "view_count": 0,
+        "create_dt": "2015-09-21T14:40:09.736",
+        "group": 4,
+        "update_dt": "2016-06-13T17:20:49.247",
+        "photographer": "",
+        "tags": "featured",
+        "member": null,
+        "image": "photos/9184e344/california-91820.jpg",
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "safetylevel": 3,
+        "effect": null,
+        "status_detail": "active",
+        "date_added": "2015-09-21T14:40:09.739",
+        "creator_username": "system_generated",
+        "license": 2,
+        "title_slug": "",
+        "allow_user_edit": false,
+        "title": " Tendenci Stock Photography Photos by Ed Schipul",
+        "allow_member_view": false,
+        "caption": "Creative Commons Attribution photographs for use as Stock Photography on your Non Profit Tendenci web sites. Free! All photos by Ed Schipul - See more at: https://www.tendenci.com/True/set/3/#sthash.vy9JPezj.dpuf",
+        "allow_member_edit": false,
+        "position": 1
+    },
+    "model": "photos.image",
+    "pk": 1
+},
+{
+    "fields": {
+        "date_taken": "2015-09-21T14:40:16.404",
+        "creator": 1,
+        "allow_user_view": false,
+        "crop_from": "",
+        "entity": 1,
+        "meta": null,
+        "is_public": true,
+        "owner": 1,
+        "guid": "957e3950-6098-11e5-aebb-0242ac110073",
+        "photoset": [
+            1
+        ],
+        "view_count": 0,
+        "create_dt": "2015-09-21T14:40:16.404",
+        "group": 4,
+        "update_dt": "2016-06-13T17:20:49.231",
+        "photographer": "",
+        "tags": "featured",
+        "member": null,
+        "image": "photos/957e4d64/fountain-957c2.jpg",
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "safetylevel": 3,
+        "effect": null,
+        "status_detail": "active",
+        "date_added": "2015-09-21T14:40:16.405",
+        "creator_username": "system_generated",
+        "license": 2,
+        "title_slug": "",
+        "allow_user_edit": false,
+        "title": " Tendenci Stock Photography Photos by Ed Schipul",
+        "allow_member_view": false,
+        "caption": "Creative Commons Attribution photographs for use as Stock Photography on your Non Profit Tendenci web sites. Free! All photos by Ed Schipul - See more at: https://www.tendenci.com/True/set/3/#sthash.vy9JPezj.dpuf",
+        "allow_member_edit": false,
+        "position": 2
+    },
+    "model": "photos.image",
+    "pk": 2
+},
+{
+    "fields": {
+        "date_taken": "2015-09-21T14:40:23.124",
+        "creator": 1,
+        "allow_user_view": false,
+        "crop_from": "",
+        "entity": 1,
+        "meta": null,
+        "is_public": true,
+        "owner": 1,
+        "guid": "997fa03e-6098-11e5-aebb-0242ac110073",
+        "photoset": [
+            1
+        ],
+        "view_count": 0,
+        "create_dt": "2015-09-21T14:40:23.124",
+        "group": 4,
+        "update_dt": "2016-06-13T17:20:49.261",
+        "photographer": "",
+        "tags": "featured",
+        "member": null,
+        "image": "photos/997fb358/drone-997da.jpg",
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "safetylevel": 3,
+        "effect": null,
+        "status_detail": "active",
+        "date_added": "2015-09-21T14:40:23.125",
+        "creator_username": "system_generated",
+        "license": 2,
+        "title_slug": "",
+        "allow_user_edit": false,
+        "title": " Tendenci Stock Photography Photos by Ed Schipul",
+        "allow_member_view": false,
+        "caption": "Creative Commons Attribution photographs for use as Stock Photography on your Non Profit Tendenci web sites. Free! All photos by Ed Schipul - See more at: https://www.tendenci.com/True/set/3/#sthash.vy9JPezj.dpuf",
+        "allow_member_edit": false,
+        "position": 3
+    },
+    "model": "photos.image",
+    "pk": 3
+},
+{
+    "fields": {
+        "date_taken": "2015-09-21T14:40:29.937",
+        "creator": 1,
+        "allow_user_view": false,
+        "crop_from": "",
+        "entity": 1,
+        "meta": null,
+        "is_public": true,
+        "owner": 1,
+        "guid": "9d8f389c-6098-11e5-aebb-0242ac110073",
+        "photoset": [
+            1
+        ],
+        "view_count": 0,
+        "create_dt": "2015-09-21T14:40:29.937",
+        "group": 4,
+        "update_dt": "2016-06-13T17:20:49.195",
+        "photographer": "",
+        "tags": "",
+        "member": null,
+        "image": "photos/9d8f4d64/dancer-9d8d4.jpg",
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "safetylevel": 3,
+        "effect": null,
+        "status_detail": "active",
+        "date_added": "2015-09-21T14:40:29.938",
+        "creator_username": "system_generated",
+        "license": 2,
+        "title_slug": "",
+        "allow_user_edit": false,
+        "title": " Tendenci Stock Photography Photos by Ed Schipul",
+        "allow_member_view": false,
+        "caption": "Creative Commons Attribution photographs for use as Stock Photography on your Non Profit Tendenci web sites. Free! All photos by Ed Schipul - See more at: https://www.tendenci.com/True/set/3/#sthash.vy9JPezj.dpuf",
+        "allow_member_edit": false,
+        "position": 4
+    },
+    "model": "photos.image",
+    "pk": 4
+},
+{
+    "fields": {
+        "date_taken": "2015-09-21T14:40:36.994",
+        "creator": 1,
+        "allow_user_view": false,
+        "crop_from": "",
+        "entity": 1,
+        "meta": null,
+        "is_public": true,
+        "owner": 1,
+        "guid": "a1c3fe84-6098-11e5-aebb-0242ac110073",
+        "photoset": [
+            1
+        ],
+        "view_count": 0,
+        "create_dt": "2015-09-21T14:40:36.994",
+        "group": 4,
+        "update_dt": "2016-06-13T17:20:49.217",
+        "photographer": "",
+        "tags": "featured",
+        "member": null,
+        "image": "photos/a1c412a2/Chairs-a1c1f.jpg",
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "safetylevel": 3,
+        "effect": null,
+        "status_detail": "active",
+        "date_added": "2015-09-21T14:40:36.996",
+        "creator_username": "system_generated",
+        "license": 2,
+        "title_slug": "",
+        "allow_user_edit": false,
+        "title": " Tendenci Stock Photography Photos by Ed Schipul",
+        "allow_member_view": false,
+        "caption": "Creative Commons Attribution photographs for use as Stock Photography on your Non Profit Tendenci web sites. Free! All photos by Ed Schipul - See more at: https://www.tendenci.com/True/set/3/#sthash.vy9JPezj.dpuf",
+        "allow_member_edit": false,
+        "position": 5
+    },
+    "model": "photos.image",
+    "pk": 5
+},
+{
+    "fields": {
+        "deed": "#",
+        "code": "",
+        "name": "All Rights Reserved",
+        "legal_code": "#",
+        "author": ""
+    },
+    "model": "photos.license",
+    "pk": 1
+},
+{
+    "fields": {
+        "deed": "http://creativecommons.org/licenses/by/3.0",
+        "code": "CC BY",
+        "name": "Attribution",
+        "legal_code": "http://creativecommons.org/licenses/by/3.0/legalcode",
+        "author": "Creative Commons"
+    },
+    "model": "photos.license",
+    "pk": 2
+},
+{
+    "fields": {
+        "deed": "http://creativecommons.org/licenses/by-sa/3.0",
+        "code": "CC BY-SA",
+        "name": "Attribution-ShareAlike",
+        "legal_code": "http://creativecommons.org/licenses/by-sa/3.0/legalcode",
+        "author": "Creative Commons"
+    },
+    "model": "photos.license",
+    "pk": 3
+},
+{
+    "fields": {
+        "deed": "http://creativecommons.org/licenses/by-nd/3.0",
+        "code": "CC BY-ND",
+        "name": "Attribution-NoDerivs",
+        "legal_code": "http://creativecommons.org/licenses/by-nd/3.0/legalcode",
+        "author": "Creative Commons"
+    },
+    "model": "photos.license",
+    "pk": 4
+},
+{
+    "fields": {
+        "deed": "http://creativecommons.org/licenses/by-nc/3.0",
+        "code": "CC BY-NC",
+        "name": "Attribution-NonCommercial",
+        "legal_code": "http://creativecommons.org/licenses/by-nc/3.0/legalcode",
+        "author": "Creative Commons"
+    },
+    "model": "photos.license",
+    "pk": 5
+},
+{
+    "fields": {
+        "deed": "http://creativecommons.org/licenses/by-nc-sa/3.0",
+        "code": "CC BY-NC-SA",
+        "name": "Attribution-NonCommercial-ShareAlike",
+        "legal_code": "http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode",
+        "author": "Creative Commons"
+    },
+    "model": "photos.license",
+    "pk": 6
+},
+{
+    "fields": {
+        "deed": "http://creativecommons.org/licenses/by-nc-nd/3.0",
+        "code": "CC BY-NC-ND",
+        "name": "Attribution-NonCommercial-NoDerivs",
+        "legal_code": "http://creativecommons.org/licenses/by-nc-nd/3.0/legalcode",
+        "author": "Creative Commons"
+    },
+    "model": "photos.license",
+    "pk": 7
+}
+]

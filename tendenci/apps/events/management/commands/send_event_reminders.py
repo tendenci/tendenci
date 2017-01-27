@@ -15,7 +15,7 @@ class Command(BaseCommand):
         count = 0
         for registrant in registrants:
             if registrant.email:
-                if verbosity == '2':
+                if verbosity == 2:
                     print 'Sending reminder email to %s %s' % (
                                 registrant.first_name,
                                 registrant.last_name)
@@ -105,8 +105,6 @@ class Command(BaseCommand):
 
                     if today_tuple[0] <= start_dt and start_dt <= today_tuple[1]:
                         events_list.append(event)
-
-                        break
 
             for event in events_list:
                 registrants = Registrant.objects.filter(

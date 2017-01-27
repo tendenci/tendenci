@@ -78,7 +78,7 @@ def get_user_import_settings(request, id):
 def render_excel(filename, title_list, data_list, file_extension='.xls'):
     if file_extension == '.csv':
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=' + filename
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         csv_writer = csv.writer(response)
 
         csv_writer.writerow(title_list)
@@ -151,7 +151,7 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
         str_out = output.getvalue()
         response = HttpResponse(str_out)
         response['Content-Type']  = 'application/vnd.ms-excel'
-        response['Content-Disposition'] = 'attachment; filename=' + filename
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
     return response
 

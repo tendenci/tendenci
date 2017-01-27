@@ -474,8 +474,8 @@ def corpmembership_edit(request, id,
             # assign a secret code for this corporate
             # secret code is a unique 6 characters long string
             if not corp_profile.secret_code:
-                corp_membership.assign_secret_code()
-                corp_membership.save()
+                corp_profile.assign_secret_code()
+                corp_profile.save()
 
             # assign object permissions
             corp_membership_update_perms(corp_membership)
@@ -651,7 +651,7 @@ def download_file(request, cm_id, field_id):
                     mimetype = 'application/octet-stream'
                 response = HttpResponse(default_storage.open(value).read(),
                                         content_type=mimetype)
-                response['Content-Disposition'] = 'attachment; filename=%s' % file_name
+                response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
                 return response
 
     raise Http404
@@ -1579,7 +1579,7 @@ def corpmembership_export(request,
 
             filename = 'corporate_memberships_export.csv'
             response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=' + filename
+            response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
             csv_writer = csv.writer(response)
 

@@ -1,0 +1,810 @@
+[
+{
+    "fields": {
+        "bg_color": "d96666",
+        "border_color": "c33",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 1
+},
+{
+    "fields": {
+        "bg_color": "e67399",
+        "border_color": "d47",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 2
+},
+{
+    "fields": {
+        "bg_color": "b373b3",
+        "border_color": "949",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 3
+},
+{
+    "fields": {
+        "bg_color": "8c66d9",
+        "border_color": "63c",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 4
+},
+{
+    "fields": {
+        "bg_color": "668cb3",
+        "border_color": "369",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 5
+},
+{
+    "fields": {
+        "bg_color": "668CD9",
+        "border_color": "36c",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 6
+},
+{
+    "fields": {
+        "bg_color": "59BFB3",
+        "border_color": "2a9",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 7
+},
+{
+    "fields": {
+        "bg_color": "65ad89",
+        "border_color": "329262",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 8
+},
+{
+    "fields": {
+        "bg_color": "4cb052",
+        "border_color": "109618",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 9
+},
+{
+    "fields": {
+        "bg_color": "8cbf40",
+        "border_color": "6a0",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 10
+},
+{
+    "fields": {
+        "bg_color": "bfbf4d",
+        "border_color": "aa1",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 11
+},
+{
+    "fields": {
+        "bg_color": "e0c240",
+        "border_color": "d6ae00",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 12
+},
+{
+    "fields": {
+        "bg_color": "f2a640",
+        "border_color": "e80",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 13
+},
+{
+    "fields": {
+        "bg_color": "e6804d",
+        "border_color": "d51",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 14
+},
+{
+    "fields": {
+        "bg_color": "be9494",
+        "border_color": "a87070",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 15
+},
+{
+    "fields": {
+        "bg_color": "a992a9",
+        "border_color": "8c6d8c",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 16
+},
+{
+    "fields": {
+        "bg_color": "8997a5",
+        "border_color": "627487",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 17
+},
+{
+    "fields": {
+        "bg_color": "94a2be",
+        "border_color": "7083a8",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 18
+},
+{
+    "fields": {
+        "bg_color": "85aaa5",
+        "border_color": "5c8d87",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 19
+},
+{
+    "fields": {
+        "bg_color": "a7a77d",
+        "border_color": "898951",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 20
+},
+{
+    "fields": {
+        "bg_color": "c4a883",
+        "border_color": "b08b59",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 21
+},
+{
+    "fields": {
+        "bg_color": "c7561e",
+        "border_color": "9f3501",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 22
+},
+{
+    "fields": {
+        "bg_color": "b5515d",
+        "border_color": "8a2d38",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 23
+},
+{
+    "fields": {
+        "bg_color": "c244ab",
+        "border_color": "962181",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 24
+},
+{
+    "fields": {
+        "bg_color": "603f99",
+        "border_color": "402175",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 25
+},
+{
+    "fields": {
+        "bg_color": "536ca6",
+        "border_color": "30487e",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 26
+},
+{
+    "fields": {
+        "bg_color": "3640ad",
+        "border_color": "182186",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 27
+},
+{
+    "fields": {
+        "bg_color": "3c995b",
+        "border_color": "1f753c",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 28
+},
+{
+    "fields": {
+        "bg_color": "5ca632",
+        "border_color": "3d8215",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 29
+},
+{
+    "fields": {
+        "bg_color": "7ec225",
+        "border_color": "5a9a08",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 30
+},
+{
+    "fields": {
+        "bg_color": "a7b828",
+        "border_color": "81910b",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 31
+},
+{
+    "fields": {
+        "bg_color": "cf9911",
+        "border_color": "9d7000",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 32
+},
+{
+    "fields": {
+        "bg_color": "d47f1e",
+        "border_color": "aa5a00",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 33
+},
+{
+    "fields": {
+        "bg_color": "b56414",
+        "border_color": "8d4500",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 34
+},
+{
+    "fields": {
+        "bg_color": "914d14",
+        "border_color": "743500",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 35
+},
+{
+    "fields": {
+        "bg_color": "ab2671",
+        "border_color": "870b50",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 36
+},
+{
+    "fields": {
+        "bg_color": "9643a5",
+        "border_color": "70237f",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 37
+},
+{
+    "fields": {
+        "bg_color": "4585a3",
+        "border_color": "25617d",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 38
+},
+{
+    "fields": {
+        "bg_color": "737373",
+        "border_color": "515151",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 39
+},
+{
+    "fields": {
+        "bg_color": "41a587",
+        "border_color": "227f63",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 40
+},
+{
+    "fields": {
+        "bg_color": "d1bc36",
+        "border_color": "a59114",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 41
+},
+{
+    "fields": {
+        "bg_color": "ad2d2d",
+        "border_color": "871111",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 42
+},
+{
+    "fields": {
+        "bg_color": "E37C23",
+        "border_color": "272727",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 43
+},
+{
+    "fields": {
+        "bg_color": "08766D",
+        "border_color": "272727",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 44
+},
+{
+    "fields": {
+        "bg_color": "78002E",
+        "border_color": "272727",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 45
+},
+{
+    "fields": {
+        "bg_color": "E6BE19",
+        "border_color": "272727",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 46
+},
+{
+    "fields": {
+        "bg_color": "73B532",
+        "border_color": "272727",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 47
+},
+{
+    "fields": {
+        "bg_color": "D53F20",
+        "border_color": "272727",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 48
+},
+{
+    "fields": {
+        "bg_color": "00ADEF",
+        "border_color": "272727",
+        "fg_color": "FFF"
+    },
+    "model": "events.typecolorset",
+    "pk": 49
+},
+{
+    "fields": {
+        "color_set": 27,
+        "name": "General Meeting",
+        "slug": "general-meeting"
+    },
+    "model": "events.type",
+    "pk": 1
+},
+{
+    "fields": {
+        "color_set": 36,
+        "name": "Annual Events",
+        "slug": "annual-events"
+    },
+    "model": "events.type",
+    "pk": 2
+},
+{
+    "fields": {
+        "color_set": 37,
+        "name": "Board Meeting",
+        "slug": "board-meeting"
+    },
+    "model": "events.type",
+    "pk": 3
+},
+{
+    "fields": {
+        "color_set": 3,
+        "name": "Community Services",
+        "slug": "community-services"
+    },
+    "model": "events.type",
+    "pk": 4
+},
+{
+    "fields": {
+        "color_set": 6,
+        "name": "Continuing Education",
+        "slug": "continuing-education"
+    },
+    "model": "events.type",
+    "pk": 5
+},
+{
+    "fields": {
+        "color_set": 49,
+        "name": "Projects & Special Events",
+        "slug": "projects-special-events"
+    },
+    "model": "events.type",
+    "pk": 6
+},
+{
+    "fields": {
+        "color_set": 46,
+        "name": "Research & Development",
+        "slug": "research-development"
+    },
+    "model": "events.type",
+    "pk": 7
+},
+{
+    "fields": {
+        "color_set": 43,
+        "name": "Social Activities",
+        "slug": "social-activities"
+    },
+    "model": "events.type",
+    "pk": 8
+},
+{
+    "fields": {
+        "color_set": 48,
+        "name": "Training",
+        "slug": "training"
+    },
+    "model": "events.type",
+    "pk": 9
+},
+{
+    "fields": {
+        "color_set": 45,
+        "name": "Young Professionals",
+        "slug": "young-professionals"
+    },
+    "model": "events.type",
+    "pk": 10
+},
+{
+    "fields": {
+        "city": "",
+        "name": "",
+        "zip": "",
+        "url": "",
+        "country": "United States",
+        "state": "",
+        "address": "",
+        "description": ""
+    },
+    "model": "events.place",
+    "pk": 1
+},
+{
+    "fields": {
+        "display_registration_stats": false,
+        "create_dt": "2015-09-30T13:50:21.171",
+        "registration_email_text": "",
+        "use_custom_reg_form": false,
+        "registration_email_type": "default",
+        "update_dt": "2015-10-12T16:42:29.078",
+        "payment_method": [
+            1,
+            2,
+            3
+        ],
+        "payment_required": true,
+        "enabled": true,
+        "reg_form": null,
+        "bind_reg_form_to_conf_only": true,
+        "limit": 0,
+        "require_guests_info": false,
+        "send_reminder": false,
+        "allow_free_pass": false,
+        "reminder_days": "7,1",
+        "discount_eligible": true,
+        "email": null,
+        "is_guest_price": false
+    },
+    "model": "events.registrationconfiguration",
+    "pk": 1
+},
+{
+    "fields": {
+        "status": true,
+        "reg_conf": 1,
+        "allow_anonymous": true,
+        "description": "",
+        "title": "",
+        "include_tax": false,
+        "price": "0.00",
+        "reg_form": null,
+        "allow_user": false,
+        "tax_rate": "0.0000",
+        "groups": [],
+        "allow_member": false,
+        "position": 0,
+        "start_dt": "2015-09-24T18:10:00",
+        "end_dt": "2015-10-25T00:10:00",
+        "payment_required": true,
+        "quantity": 1
+    },
+    "model": "events.regconfpricing",
+    "pk": 1
+},
+{
+    "fields": {
+        "label": "Credit Card"
+    },
+    "model": "events.paymentmethod",
+    "pk": 1
+},
+{
+    "fields": {
+        "label": "Check"
+    },
+    "model": "events.paymentmethod",
+    "pk": 2
+},
+{
+    "fields": {
+        "label": "Cash"
+    },
+    "model": "events.paymentmethod",
+    "pk": 3
+},
+{
+    "fields": {
+        "event": [
+            1
+        ],
+        "description": "",
+        "user": null,
+        "name": ""
+    },
+    "model": "events.organizer",
+    "pk": 1
+},
+{
+    "fields": {
+        "creator": 1,
+        "allow_user_view": false,
+        "allow_member_view": false,
+        "on_weekend": true,
+        "recurring_event": null,
+        "owner": 1,
+        "timezone": "US/Central",
+        "guid": "19ec1952-67a4-11e5-aebb-0242ac110085",
+        "create_dt": "2015-09-30T13:50:21.187",
+        "creator_username": "system_generated",
+        "update_dt": "2015-11-02T15:38:04.327",
+        "is_recurring_event": false,
+        "priority": false,
+        "enable_private_slug": false,
+        "private_slug": "063fd57",
+        "type": 1,
+        "image": null,
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "mark_registration_ended": false,
+        "description": "<p>Event description shows here.</p>",
+        "tags": "",
+        "display_event_registrants": false,
+        "status_detail": "active",
+        "groups": [
+            5
+        ],
+        "entity": 1,
+        "registration_configuration": 1,
+        "display_registrants_to": "public",
+        "allow_user_edit": false,
+        "title": "Event 1",
+        "all_day": false,
+        "password": "",
+        "meta": null,
+        "place": 1,
+        "allow_member_edit": false,
+        "start_dt": "2015-11-30T13:00:00",
+        "end_dt": "2015-11-30T15:00:00",
+        "external_url": ""
+    },
+    "model": "events.event",
+    "pk": 1
+},
+{
+    "fields": {
+        "last_name": true,
+        "creator": null,
+        "position_title": true,
+        "owner": null,
+        "mail_name": false,
+        "city": false,
+        "create_dt": "2015-09-30T13:49:48.159",
+        "zip": false,
+        "update_dt": "2015-09-30T13:49:48.172",
+        "comments": true,
+        "state": false,
+        "company_name": true,
+        "email": true,
+        "owner_username": "system_generated",
+        "status": "active",
+        "meal_option": false,
+        "first_name": true,
+        "phone": false,
+        "address": false,
+        "creator_username": "system_generated",
+        "name": "Default Custom Registration Form",
+        "country": false,
+        "notes": "This is a default custom registration form."
+    },
+    "model": "events.customregform",
+    "pk": 1
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "First Name",
+        "field_function": null,
+        "choices": "",
+        "position": 1,
+        "map_to_field": "first_name",
+        "display_on_roster": true
+    },
+    "model": "events.customregfield",
+    "pk": 1
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Last Name",
+        "field_function": null,
+        "choices": "",
+        "position": 2,
+        "map_to_field": "last_name",
+        "display_on_roster": true
+    },
+    "model": "events.customregfield",
+    "pk": 2
+},
+{
+    "fields": {
+        "field_type": "EmailField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Email",
+        "field_function": null,
+        "choices": "",
+        "position": 3,
+        "map_to_field": "email",
+        "display_on_roster": true
+    },
+    "model": "events.customregfield",
+    "pk": 3
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Title",
+        "field_function": null,
+        "choices": "",
+        "position": 4,
+        "map_to_field": "position_title",
+        "display_on_roster": true
+    },
+    "model": "events.customregfield",
+    "pk": 4
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Company",
+        "field_function": null,
+        "choices": "",
+        "position": 5,
+        "map_to_field": "company_name",
+        "display_on_roster": true
+    },
+    "model": "events.customregfield",
+    "pk": 5
+},
+{
+    "fields": {
+        "field_type": "CharField/django.forms.Textarea",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Comments",
+        "field_function": null,
+        "choices": "",
+        "position": 6,
+        "map_to_field": "comments",
+        "display_on_roster": true
+    },
+    "model": "events.customregfield",
+    "pk": 6
+}
+]

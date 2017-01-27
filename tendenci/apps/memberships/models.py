@@ -431,6 +431,12 @@ class MembershipSet(models.Model):
         """
         id_list = []
         description = ''
+        donation_amount = inv.get_donation_amount()
+        if donation_amount:
+            donation_msg = '(Donation: %s%s)' % (get_setting('site', 'global', 'currencysymbol'),
+                                               donation_amount)
+        else:
+            donation_msg = ''
 
         site_display_name = get_setting('site', 'global', 'sitedisplayname')
         for i, membership in enumerate(self.membershipdefault_set.order_by('-pk')):
@@ -438,14 +444,16 @@ class MembershipSet(models.Model):
 
             if i == 0:
                 if membership.renewal:
-                    description = '%s Invoice %d for Online Membership Renewal Application - Submission ' % (
+                    description = '%s Invoice %d for Online Membership Renewal Application%s - Submission ' % (
                         site_display_name,
                         inv.id,
+                        donation_msg,
                     )
                 else:
-                    description = '%s Invoice %d for Online Membership Application - Submission ' % (
+                    description = '%s Invoice %d for Online Membership Application%s - Submission ' % (
                         site_display_name,
                         inv.id,
+                        donation_msg,
                     )
 
         description += ', '.join(id_list)

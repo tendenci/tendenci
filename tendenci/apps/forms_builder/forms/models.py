@@ -1,3 +1,4 @@
+from django.core.exceptions import AppRegistryNotReady
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -259,7 +260,8 @@ class Field(OrderingBaseModel):
                                ('','-----------'))
             choices = initial_choices + tuple(countries)
         elif self.field_type == 'StateProvinceField':
-            choices = (('','-----------'),) + STATE_CHOICES + PROVINCE_CHOICES
+            choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                                + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
             choices = sorted(choices)
         elif self.field_function == 'Recipients':
             choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]

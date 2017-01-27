@@ -8,6 +8,7 @@ import time as ttime
 import subprocess
 from sets import Set
 import calendar
+from collections import OrderedDict
 from dateutil.relativedelta import relativedelta
 
 from django.core.urlresolvers import reverse
@@ -66,6 +67,8 @@ from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_membership_app)
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.recurring_payments.models import RecurringPayment
+from tendenci.apps.perms.decorators import is_enabled
+
 
 
 def membership_index(request):
@@ -82,6 +85,7 @@ def membership_search(request, template_name="memberships/search.html"):
     return HttpResponseRedirect(reverse('profile.search') + "?member_only=on")
 
 
+@is_enabled('memberships')
 @login_required
 def membership_details(request, id=0, template_name="memberships/details.html"):
     """
@@ -505,7 +509,7 @@ def membership_default_import_download_recap(request, mimport_id):
     if default_storage.exists(recap_path):
         response = HttpResponse(default_storage.open(recap_path).read(),
                                 content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
     else:
         raise Http404
@@ -581,8 +585,12 @@ def download_default_template(request):
                   'zipcode_2', 'county_2', 'country_2',
                   'url', 'url2', 'address_type', 'fax',
                   'work_phone', 'home_phone', 'mobile_phone',
-                  'dob', 'ssn', 'spouse',
-                  'department', 'ud1', 'ud2', 'ud3', 'ud4', 'ud5',
+                  'dob', 'ssn', 'spouse', 'department',
+                  'school1', 'major1', 'degree1', 'graduation_year1',
+                  'school2', 'major2', 'degree2', 'graduation_year2',
+                  'school3', 'major3', 'degree3', 'graduation_year3',
+                  'school4', 'major4', 'degree4', 'graduation_year4',
+                  'ud1', 'ud2', 'ud3', 'ud4', 'ud5',
                   'ud6', 'ud7', 'ud8', 'ud9', 'ud10',
                   'ud11', 'ud12', 'ud13', 'ud14', 'ud15',
                   'ud16', 'ud17', 'ud18', 'ud19', 'ud20',
@@ -740,7 +748,7 @@ def membership_default_export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="membership_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
 
@@ -826,6 +834,7 @@ def membership_default_add_legacy(request):
     return redirect(redirect_url)
 
 
+@is_enabled('memberships')
 def membership_default_add(request, slug='', membership_id=None,
                            template='memberships/applications/add.html', **kwargs):
     """
@@ -2402,42 +2411,34 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
 
 @staff_member_required
 def report_members_ytd_type(request, template_name='reports/members_ytd_type.html'):
-    import datetime
-
-    year = datetime.datetime.now().year
+    year = datetime.now().year
     years = [year, year - 1, year - 2, year - 3, year - 4]
     if request.GET.get('year'):
         year = int(request.GET.get('year'))
 
-    types_new = []
-    types_renew = []
-    types_expired = []
+    types_new = OrderedDict()
+    types_renew = OrderedDict()
+    types_expired = OrderedDict()
     months = calendar.month_abbr[1:]
-    itermonths = iter(calendar.month_abbr)
-    next(itermonths)
+    
+    membership_types = MembershipType.objects.all()
 
-    for type in MembershipType.objects.all():
-        mems = MembershipDefault.objects.filter(membership_type=type)
+    for mtype in membership_types:
+        mems = MembershipDefault.objects.filter(membership_type=mtype)
+        types_new[mtype.name] = []
+        types_renew[mtype.name] = []
+        types_expired[mtype.name] = []
+        itermonths = iter(calendar.month_abbr)
+        next(itermonths)
         for index, month in enumerate(itermonths):
             index = index + 1
             new_mems = mems.filter(join_dt__year=year, join_dt__month=index).count()
             renew_mems = mems.filter(renew_dt__year=year, renew_dt__month=index).count()
             expired_mems = mems.filter(expire_dt__year=year, expire_dt__month=index).count()
-            new_dict = {
-                'name': type.name,
-                'new_mems': new_mems,
-            }
-            types_new.append(new_dict)
-            renew_dict = {
-                'name': type.name,
-                'renew_mems': renew_mems,
-            }
-            types_renew.append(renew_dict)
-            expired_dict = {
-                'name': type.name,
-                'expired_mems': expired_mems,
-            }
-            types_expired.append(expired_dict)
+
+            types_new[mtype.name].append(new_mems)
+            types_renew[mtype.name].append(renew_mems)
+            types_expired[mtype.name].append(expired_mems)
 
     totals_new = []
     totals_renew = []
@@ -2456,3 +2457,18 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
     EventLog.objects.log()
 
     return render_to_response(template_name, {'months': months, 'years': years, 'year': year, 'types_new': types_new, 'types_renew': types_renew, 'types_expired': types_expired, 'totals_new': totals_new, 'totals_renew': totals_renew, 'totals_expired': totals_expired}, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def report_members_donated(request, template_name='reports/members_donated.html'):
+    memberships = MembershipDefault.objects.filter(membership_set__donation_amount__gt=0
+                                   ).values('id',
+                                'user__first_name', 'user__last_name', 'user__username',
+                                'membership_set__donation_amount', 'membership_set__invoice',
+                                'create_dt', 'status_detail'
+                                ).order_by('-membership_set__donation_amount', 'user__last_name')
+
+    return render_to_response(template_name,
+                              {'memberships': memberships,},
+                              context_instance=RequestContext(request))
+

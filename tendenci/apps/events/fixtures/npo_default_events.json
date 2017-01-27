@@ -551,7 +551,9 @@
             "guid": "fc33861e-5033-11e2-9429-1231381d2980",
             "create_dt": "2012-12-27T08:44:57.932",
             "creator_username": "",
-            "group": 1,
+            "groups": [
+                1
+            ],
             "update_dt": "2012-12-31T16:50:57.154",
             "priority": false,
             "type": 4,
@@ -592,7 +594,9 @@
             "guid": "f272a85e-537a-11e2-a2e2-22000a1e8c2c",
             "create_dt": "2012-12-31T12:50:29.325",
             "creator_username": "",
-            "group": 1,
+            "groups": [
+                1
+            ],
             "update_dt": "2012-12-31T15:45:11.410",
             "priority": false,
             "type": 3,
@@ -633,7 +637,9 @@
             "guid": "5902ddfa-5295-11e2-8119-123139081846",
             "create_dt": "2012-12-30T09:26:57.150",
             "creator_username": "",
-            "group": 1,
+            "groups": [
+                1
+            ],
             "update_dt": "2012-12-31T16:42:55.063",
             "priority": false,
             "type": 3,
@@ -674,7 +680,9 @@
             "guid": "1655dcae-5034-11e2-991f-1231381d2980",
             "create_dt": "2012-12-27T08:45:41.778",
             "creator_username": "",
-            "group": 1,
+            "groups": [
+                1
+            ],
             "update_dt": "2012-12-31T16:51:11.850",
             "priority": false,
             "type": 4,
@@ -715,7 +723,9 @@
             "guid": "f1f14aa6-5033-11e2-a3d1-1231381d2980",
             "create_dt": "2012-12-27T08:44:40.721",
             "creator_username": "",
-            "group": 1,
+            "groups": [
+                1
+            ],
             "update_dt": "2012-12-31T16:42:21.298",
             "priority": false,
             "type": 2,
@@ -756,7 +766,9 @@
             "guid": "1629a8ee-536a-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T10:49:47.800",
             "creator_username": "",
-            "group": 1,
+            "groups": [
+                1
+            ],
             "update_dt": "2012-12-31T16:51:44.028",
             "priority": false,
             "type": 5,

@@ -37,6 +37,7 @@ from tendenci.apps.base.utils import normalize_newline, UnicodeWriter
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email
+from tendenci.apps.educations.models import Education
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -1056,7 +1057,12 @@ class ImportMembDefault(object):
                             for field in MembershipDemographic._meta.fields \
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user']])
+        self.education_fields = ['school1', 'major1', 'degree1', 'graduation_year1',
+                                  'school2', 'major2', 'degree2', 'graduation_year2',
+                                  'school3', 'major3', 'degree3', 'graduation_year3',
+                                  'school4', 'major4', 'degree4', 'graduation_year4',]
         self.should_handle_demographic = False
+        self.should_handle_education = False
         self.membership_fields = dict([(field.name, field) \
                             for field in MembershipDefault._meta.fields \
                             if field.get_internal_type() != 'AutoField' and \
@@ -1267,6 +1273,16 @@ class ImportMembDefault(object):
         Check if import has demographic fields.
         """
         for field_name in self.membershipdemographic_fields.keys():
+            if field_name in field_names:
+                return True
+
+        return False
+    
+    def has_education_fields(self, field_names):
+        """
+        Check if import has education fields.
+        """
+        for field_name in self.education_fields:
             if field_name in field_names:
                 return True
 
@@ -1492,6 +1508,8 @@ class ImportMembDefault(object):
         if self.mimport.num_processed == 0:
             self.should_handle_demographic = self.has_demographic_fields(
                                         self.memb_data.keys())
+            self.should_handle_education = self.has_education_fields(
+                                        self.memb_data.keys())
 
         if self.should_handle_demographic:
             # process only if we have demographic fields in the import.
@@ -1500,6 +1518,28 @@ class ImportMembDefault(object):
             self.assign_import_values_from_dict(demographic,
                                                 action_info['user_action'])
             demographic.save()
+            
+        if self.should_handle_education:
+            educations = user.educations.all().order_by('pk')[0:4]
+            for x in xrange(1, 5):
+                school = memb_data.get('school%s' % x, '')
+                major = memb_data.get('major%s' % x, '')
+                degree = memb_data.get('degree%s' % x, '')
+                graduation_year = memb_data.get('graduation_year%s' % x, 0)
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
+                if any([school, major, degree, graduation_year]):
+                    try:
+                        education = educations[x-1]
+                    except IndexError:
+                        education = Education(user=user)
+                    education.school =school
+                    education.major = major
+                    education.degree = degree
+                    education.graduation_year = graduation_year
+                    education.save()
 
         # membership
         if not memb:

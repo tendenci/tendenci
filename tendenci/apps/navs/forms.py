@@ -128,10 +128,7 @@ class ItemAdminForm(forms.ModelForm):
         return data
 
     def save(self, *args, **kwargs):
-        nav_item = super(ItemAdminForm, self).save(*args, **kwargs)
-        nav_item.url = self.cleaned_data.get('url_field')
-        commit = kwargs.get('commit', False)
-        if commit:
-            nav_item.save()
+        self.instance.url = self.cleaned_data.get('url_field')
+        self.instance.page = self.cleaned_data.get('page', None)
 
-        return nav_item
+        return super(ItemAdminForm, self).save(*args, **kwargs)

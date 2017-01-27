@@ -4,7 +4,6 @@ import uuid
 
 from django.conf import settings
 from django.db import models
-from django.template import Template as DTemplate
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -16,7 +15,6 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.files.models import file_directory
 from tendenci.apps.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
-from tendenci.apps.newsletters.utils import apply_template_media
 from tendenci.apps.site_settings.utils import get_setting
 
 from tendenci.apps.newsletters.utils import (
@@ -29,9 +27,6 @@ from tendenci.apps.newsletters.utils import (
     newsletter_resumes_list)
 
 from tendenci.apps.user_groups.models import Group, GroupMembership
-from tendenci.apps.user_groups.utils import get_default_group
-
-from tendenci.libs.tinymce import models as tinymce_models
 
 
 """
@@ -172,7 +167,7 @@ class Newsletter(models.Model):
     resumes_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
 
     # default template
-    default_template = models.CharField(max_length=255, choices=DEFAULT_TEMPLATE_CHOICES, null=True)
+    default_template = models.CharField(max_length=255, null=True)
 
     # format
     format = models.IntegerField(default=0, choices=FORMAT_CHOICES)

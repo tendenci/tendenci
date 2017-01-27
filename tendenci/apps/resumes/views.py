@@ -60,7 +60,7 @@ def resume_file(request, slug=None, template_name="resumes/view.html"):
 
             EventLog.objects.log(instance=resume)
             response = HttpResponse(resume.resume_file)
-            response['Content-Disposition'] = 'attachment; filename=%s' % (os.path.basename(unicode(resume.resume_file)))
+            response['Content-Disposition'] = 'attachment; filename="%s"' % (os.path.basename(unicode(resume.resume_file)))
 
             return response
         else:

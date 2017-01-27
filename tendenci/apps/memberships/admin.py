@@ -345,17 +345,18 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_status.admin_order_field = 'status_detail'
 
     def get_invoice(self, instance):
-        if instance.get_invoice():
-            if instance.get_invoice().balance > 0:
-                return '<a href="%s">Invoice %s (%s)</a>' % (
-                    instance.get_invoice().get_absolute_url(),
-                    instance.get_invoice().pk,
-                    tcurrency(instance.get_invoice().balance)
+        inv = instance.get_invoice()
+        if inv:
+            if inv.balance > 0:
+                return '<a href="%s" title="Invoice">#%s (%s)</a>' % (
+                    inv.get_absolute_url(),
+                    inv.pk,
+                    tcurrency(inv.balance)
                 )
             else:
-                return '<a href="%s">Invoice %s</a>' % (
-                    instance.get_invoice().get_absolute_url(),
-                    instance.get_invoice().pk
+                return '<a href="%s" title="Invoice">#%s</a>' % (
+                    inv.get_absolute_url(),
+                    inv.pk
                 )
         return ""
     get_invoice.short_description = u'Invoice'

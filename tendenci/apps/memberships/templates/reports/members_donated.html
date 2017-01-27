@@ -1,0 +1,46 @@
+{% extends "reports/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+
+<style>
+.text-right{
+	text-align: right !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div><a href="{% url 'reports-memberships' %}">Back to Membership Reports</a></div>
+
+<h1>{% trans "Members Donated On Signup/Renewal" %}</h1>
+<div>
+{% autopaginate memberships 30 %}
+<table class="table table-striped table-bordered">
+    <tr>
+        <th>{% trans "Member" %}</th>
+        <th>{% trans "Amount Donated" %} ({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
+        <th>{% trans "Invoice" %}</th>
+        <th>{% trans "Date" %}</th>
+        <th>{% trans "Status" %}</th>
+        
+    </tr>
+
+	{% for m in memberships %}
+    <tr>
+        <td><a href="{% url 'profile' m.user__username %}">{{ m.user__first_name }} {{ m.user__last_name }} ({{ m.user__username }})</a></td>
+        <td class="text-right">{{ m.membership_set__donation_amount }}</td>
+        <td class="text-right">{% if m.membership_set__invoice %}<a href="{% url 'invoice.view' m.membership_set__invoice %}">{{ m.membership_set__invoice }}</a>{% endif %}</td>
+        <td>{{ m.create_dt }}</td>
+        <td><a href="{% url 'membership.details' m.id %}">{{ m.status_detail }}</a></td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% paginate %}
+
+</div>
+
+{% endblock content %}

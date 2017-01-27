@@ -1,0 +1,42 @@
+[
+{
+    "fields": {
+        "status": true,
+        "create_dt": "2015-09-29T10:52:30.199",
+        "creator_username": "system_generated",
+        "premium_price_member": "0.00",
+        "regular_price": "0.00",
+        "update_dt": "2015-09-29T10:52:30.199",
+        "premium_price": "0.00",
+        "regular_price_member": "0.00",
+        "show_member_pricing": false,
+        "owner": 1,
+        "duration": 0,
+        "guid": "171ad2f0-66c2-11e5-aebb-0242ac110085",
+        "creator": 1,
+        "owner_username": "ediaz"
+    },
+    "model": "directories.directorypricing",
+    "pk": 1
+},
+{
+    "fields": {
+        "status": true,
+        "create_dt": "2015-10-16T10:32:33.399",
+        "creator_username": "system_generated",
+        "premium_price_member": "0.00",
+        "regular_price": "0.00",
+        "update_dt": "2015-10-16T10:32:33.399",
+        "premium_price": "0.00",
+        "regular_price_member": "0.00",
+        "show_member_pricing": false,
+        "owner": 1,
+        "duration": 365,
+        "guid": "1ec745c2-741b-11e5-aebb-0242ac110109",
+        "creator": 1,
+        "owner_username": "ediaz"
+    },
+    "model": "directories.directorypricing",
+    "pk": 2
+}
+]
