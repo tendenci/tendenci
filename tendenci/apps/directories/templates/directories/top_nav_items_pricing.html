@@ -18,7 +18,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                     <li><span class="content-head">{% trans "All Pricings" %}</span></li>
                     {% endif %}
@@ -30,7 +30,7 @@
                 </ul>
                 {% if app_object %}
                 {% if can_view_directory_pricing or can_edit_directory_pricing %}
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     <li><span class="content-head">{% trans "This Price" %}</span></li>
                     {% if can_view_directory_pricing %}
                     <li class="content-item"><span class="app-name"><a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricing" %}</a></span></li>
