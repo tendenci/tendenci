@@ -20,7 +20,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         {# "All Users" Section #}
                         <li>
@@ -91,7 +91,7 @@
                     {# Edit links need to point to the user_this instead of app_object since the views for profile pull from auth.user #}
                     {% if can_view_profile or can_edit %}
                         {# "This User" Section #}
-                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This User" %}</span>
                             </li>
