@@ -59,7 +59,7 @@ class Command(BaseCommand):
         elif email_domain:
             users = User.objects.filter(email__iendswith='@%s' % email_domain)
             if not users:
-                print 'User with email=%s could not be found' % email
+                print 'Users with email domain=%s could not be found' % email_domain
         else:
             users = None
 
