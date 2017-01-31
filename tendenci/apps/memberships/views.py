@@ -1680,13 +1680,14 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
 @staff_member_required
 def membership_join_report(request):
     TODAY = date.today()
-    memberships = MembershipDefault.objects.all()
+    memberships = MembershipDefault.objects.filter(status=True,
+                                                   status_detail__in=["active", 'archive'])
     membership_type = u''
     membership_status = u''
     start_date = u''
     end_date = u''
 
-    start_date = TODAY - timedelta(days=30)
+    start_date = TODAY - relativedelta(months=1)
     end_date = TODAY
 
     if request.method == 'POST':
@@ -1709,8 +1710,11 @@ def membership_join_report(request):
             'start_date': start_date.strftime('%m/%d/%Y'),
             'end_date': end_date.strftime('%m/%d/%Y')})
 
-    memberships = memberships.filter(
-        join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
+    end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+    memberships = memberships.filter(application_approved_dt__gte=start_date,
+                                     application_approved_dt__lt=end_date_time)
+    memberships = memberships.filter(renewal=False).distinct('user__id', 'membership_type__id')
+
 
     EventLog.objects.log()
 
