@@ -75,7 +75,9 @@ Then add the following code snippet where you want to place your articles feed:
 .. code-block:: django
 
     {% list_articles as articles_list limit=3 %}
-      <li>
+    <ul class="list-unstyled">
+        {% for article in articles_list %}
+        <li>
           <a href="{{ article.get_absolute_url }}"><strong>{{ article.headline }}</strong></a>
            <br> 
            <span>
@@ -88,7 +90,7 @@ Then add the following code snippet where you want to place your articles feed:
              {% endif %}
            </span>
        </li>
-    {% endfor %}
+        {% endfor %}
     </ul>
 
 
