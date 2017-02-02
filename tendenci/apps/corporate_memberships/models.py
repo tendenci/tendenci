@@ -1110,6 +1110,20 @@ class CorpMembership(TendenciBaseModel):
     @property
     def is_archive(self):
         return self.status_detail.lower() in ('archive',)
+    
+    def get_latest_renewed(self):
+        """
+        Get the latest renewed corpMembership.
+        """
+        if self.is_archive:
+            [latest_renewed] = CorpMembership.objects.filter(
+                                    corp_profile=self.corp_profile,
+                                    expiration_dt__gt=self.expiration_dt,
+                                    status_detail='active'
+                                    ).order_by('-expiration_dt')[:1] or [None]
+            return latest_renewed
+            
+        return None
 
     @property
     def is_in_grace_period(self):
