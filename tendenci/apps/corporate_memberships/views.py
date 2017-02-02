@@ -938,6 +938,17 @@ def corp_renew(request, id,
                              for admin approval.""" % corp_membership)
         return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[corp_membership.id]))
+    if corp_membership.is_archive:
+        # don't renew archive 
+        [latest_renewed] = CorpMembership.objects.filter(
+                                    corp_profile=corp_membership.corp_profile,
+                                    expiration_dt__gt=corp_membership.expiration_dt,
+                                    ).exclude(status_detail__in=('archive', 'inactive')
+                                              ).order_by('-expiration_dt')[:1] or [None]
+        if latest_renewed:
+            return HttpResponseRedirect(reverse('corpmembership.view',
+                                        args=[latest_renewed.id]))
+        
     corpmembership_app = CorpMembershipApp.objects.current_app()
     new_corp_membership = corp_membership.copy()
     form = CorpMembershipRenewForm(
