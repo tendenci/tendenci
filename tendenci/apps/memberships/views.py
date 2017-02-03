@@ -2179,6 +2179,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
     if ouput == 'csv':
 
         table_header = [
+            'id',
             'member number',
             'last name',
             'first name',
@@ -2193,6 +2194,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
         for mem in members:
 
             table_data.append([
+                mem.id,
                 mem.member_number,
                 mem.user.last_name,
                 mem.user.first_name,
