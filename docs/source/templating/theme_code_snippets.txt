@@ -75,11 +75,22 @@ Then add the following code snippet where you want to place your articles feed:
 .. code-block:: django
 
     {% list_articles as articles_list limit=3 %}
-	<ul class="list-unstyled">
-	{% for article in articles_list %}
-    <li><a href="{{ article.get_absolute_url }}"><strong>{{ article.headline }}</strong></a><br>
-      <em>{{ article.summary|striptags|safe|truncatewords:"6" }}</em></li>
-    {% endfor %}
+    <ul class="list-unstyled">
+        {% for article in articles_list %}
+        <li>
+          <a href="{{ article.get_absolute_url }}"><strong>{{ article.headline }}</strong></a>
+           <br> 
+           <span>
+             {% if article.summary %}
+             
+             {{ article.summary|striptags|truncatewords:"6"|safe }}
+              {% else %}            
+             {{ article.body|striptags|truncatewords:"6"|safe }} 
+       
+             {% endif %}
+           </span>
+       </li>
+        {% endfor %}
     </ul>
 
 

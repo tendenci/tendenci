@@ -844,6 +844,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
     user = None
     membership = None
+    renewed_corp = None
     username = request.GET.get('username', u'')
     is_renewal = False
 
@@ -921,6 +922,17 @@ def membership_default_add(request, slug='', membership_id=None,
             if not is_verified:
                 return redirect(reverse('membership_default.corp_pre_add',
                                         args=[cm_id]))
+        else:
+            # check if corp membership has expired or is renewed
+            renewed_corp = corp_membership.get_latest_renewed()
+            if corp_membership.is_expired or (membership.expire_dt >= corp_membership.expiration_dt and not renewed_corp):
+                display_msg = _("Sorry, we can't process your membership renewal at the moment.")
+                return render(request, 'memberships/applications/corp_not_renewed.html',
+                    {'app': app,
+                       'corp_membership_renew_link': reverse('corpmembership.renew', args=[corp_membership.id]),
+                       'corp_membership': corp_membership,
+                       'is_rep': is_corp_rep,
+                       'is_admin': request.user.profile.is_superuser}) 
 
         # check if this corp. has exceeded the maximum number of members allowed if applicable
         apply_cap, membership_cap, allow_above_cap, above_cap_price = corp_membership.get_cap_info()
@@ -1777,13 +1789,14 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
 @staff_member_required
 def membership_join_report(request):
     TODAY = date.today()
-    memberships = MembershipDefault.objects.all()
+    memberships = MembershipDefault.objects.filter(status=True,
+                                                   status_detail__in=["active", 'archive'])
     membership_type = u''
     membership_status = u''
     start_date = u''
     end_date = u''
 
-    start_date = TODAY - timedelta(days=30)
+    start_date = TODAY - relativedelta(months=1)
     end_date = TODAY
 
     if request.method == 'POST':
@@ -1806,8 +1819,11 @@ def membership_join_report(request):
             'start_date': start_date.strftime('%m/%d/%Y'),
             'end_date': end_date.strftime('%m/%d/%Y')})
 
-    memberships = memberships.filter(
-        join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
+    end_date_time = datetime(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+    memberships = memberships.filter(application_approved_dt__gte=start_date,
+                                     application_approved_dt__lt=end_date_time)
+    memberships = memberships.filter(renewal=False).distinct('user__id', 'membership_type__id')
+
 
     EventLog.objects.log()
 

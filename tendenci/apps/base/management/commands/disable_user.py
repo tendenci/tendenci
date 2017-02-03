@@ -27,6 +27,10 @@ class Command(BaseCommand):
             dest='email',
             default=None,
             help='Email of the user account being disabled')
+        parser.add_argument('--email_domain',
+            dest='email_domain',
+            default=None,
+            help='Email domain of the user accounts being disabled (e.g. example.com)')
 
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import GroupMembership
@@ -34,23 +38,30 @@ class Command(BaseCommand):
         verbosity = options['verbosity']
         username = options['username']
         email = options['email']
+        email_domain = options['email_domain']
 
-        if not any([username, email]):
-            raise CommandError('downgrade_user: --username or email parameter is required')
+        if not any([username, email, email_domain]):
+            raise CommandError('downgrade_user: --username or email or email_domain parameter is required')
 
         # get the user
         if username and email:
-            users = User.objects.filter(username=username, email=email)
+            users = User.objects.filter(username=username, email__iexact=email)
             if not users:
                 print 'User with username=%s and email=%s could not be found' % (username, email)
         elif username:
             users = User.objects.filter(username=username)
             if not users:
                 print 'User with username=%s could not be found' % username
-        else:
-            users = User.objects.filter(email=email)
+        elif email:
+            users = User.objects.filter(email__iexact=email)
             if not users:
                 print 'User with email=%s could not be found' % email
+        elif email_domain:
+            users = User.objects.filter(email__iendswith='@%s' % email_domain)
+            if not users:
+                print 'Users with email domain=%s could not be found' % email_domain
+        else:
+            users = None
 
         if not users:
             return
