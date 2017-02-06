@@ -19,6 +19,7 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
+from tendenci.apps.files.validators import FileValidator
 
 
 class FileForm(TendenciBaseForm):
@@ -110,16 +111,8 @@ class FileForm(TendenciBaseForm):
             if file_cat and file_cat != '0' and file_cat != u'':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
+        self.fields['file'].validators = [FileValidator()]
 
-    def clean_file(self):
-        data = self.cleaned_data.get('file')
-        max_upload_size = get_max_file_upload_size(file_module=True)
-        if data.size > max_upload_size:
-            raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'data_size': filesizeformat(data.size)})
-
-        return data
 
     def clean_group(self):
         group_id = self.cleaned_data['group']
