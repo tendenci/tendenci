@@ -29,7 +29,7 @@ urlpatterns = patterns('tendenci.apps.files.views',
 
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="file.search"),
     url(r'^%s/add/$' % urlpath, 'add', name="file.add"),
-    url(r'^%s/bulk-add/$' % urlpath, 'bulk_add', name="file.bulk_add"),
+#     url(r'^%s/bulk-add/$' % urlpath, 'bulk_add', name="file.bulk_add"),
     url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="file.edit"),
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="file.delete"),
 
