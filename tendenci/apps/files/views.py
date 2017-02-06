@@ -701,7 +701,7 @@ class JSONResponse(HttpResponse):
     """JSON response class."""
     def __init__(self, obj='', json_opts={}, content_type="application/json", *args, **kwargs):
         content = simplejson.dumps(obj, **json_opts)
-        super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
+        super(JSONResponse, self).__init__(content, content_type, *args, **kwargs)
 
 
 @csrf_exempt
