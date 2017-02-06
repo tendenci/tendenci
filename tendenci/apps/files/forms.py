@@ -1,21 +1,15 @@
 import os
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
-from tendenci.apps.categories.forms import (CategoryForm, CategoryField, category_defaults,
-    sub_category_defaults)
-
-from tendenci.apps.categories.models import CategoryItem, Category
+from tendenci.apps.categories.models import Category
 from tendenci.apps.files.fields import MultiFileField
 from tendenci.apps.files.models import File, FilesCategory
 from tendenci.apps.files.utils import get_max_file_upload_size, get_allowed_upload_file_exts
-from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
+from tendenci.apps.perms.fields import GroupPermissionField, UserPermissionField, MemberPermissionField
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
