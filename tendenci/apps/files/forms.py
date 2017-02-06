@@ -105,8 +105,8 @@ class FileForm(TendenciBaseForm):
             if file_cat and file_cat != '0' and file_cat != u'':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
-        self.fields['file'].validators = [FileValidator()]
-
+        if 'file' in self.fields:
+            self.fields['file'].validators = [FileValidator()]
 
     def clean_group(self):
         group_id = self.cleaned_data['group']
