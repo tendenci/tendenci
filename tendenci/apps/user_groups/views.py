@@ -1062,13 +1062,18 @@ def import_download_template(request, file_ext='.csv'):
 # Newsletter stuff here:
 @login_required
 def subscribe_to_newsletter_interactive(request, group_slug):
-    group = get_object_or_404(Group, slug=group_slug)
+    group = get_object_or_404(Group, slug=group_slug,
+                              allow_self_add=True,
+                              status_detail='active')
 
-    groupmembership = get_object_or_404(GroupMembership,
+    [groupmembership] = GroupMembership.objects.filter(
                         group=group,
                         member=request.user,
                         status=True,
-                        status_detail='active')
+                        status_detail='active')[:1] or [None]
+    if not groupmembership:
+        groupmembership = GroupMembership.add_to_group(group=group,
+                                                       member=request.user)
 
     if groupmembership.subscribe_to_newsletter():
         messages.success(request, _('Successfully subscribed to Newsletters.'))
