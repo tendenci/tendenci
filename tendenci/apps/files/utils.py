@@ -526,6 +526,9 @@ def get_allowed_upload_file_exts(file_type='other'):
              'video': ('.wmv', '.mov', '.mpg', '.mp4', '.m4v'),
              'other': ('.txt','.doc', '.docx', '.csv', '.xls', '.xlsx', '.ppt', '.pptx', '.pps', '.ppsx', '.pdf', '.zip'),
              }
+    if settings.ALLOW_MP3_UPLOAD:
+        types['other'] += ('.mp3',)
+
     if file_type in ['image', 'video']:
         return types[file_type]
 
