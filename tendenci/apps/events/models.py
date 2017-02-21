@@ -826,20 +826,6 @@ class Registrant(models.Model):
     def hash(self):
         return md5(".".join([str(self.registration.event.pk), str(self.pk)])).hexdigest()
 
-    @property
-    def old_hash1(self):
-        """
-        Deprecated: Remove after 7/01/2011
-        """
-        return md5(".".join([str(self.registration.event.pk), self.email, str(self.pk)])).hexdigest()
-
-    @property
-    def old_hash2(self):
-        """
-        Deprecated: Remove after 7/01/2011
-        """
-        return md5(".".join([str(self.registration.event.pk), self.email])).hexdigest()
-
     @models.permalink
     def hash_url(self):
         return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
