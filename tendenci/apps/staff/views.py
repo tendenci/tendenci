@@ -39,7 +39,7 @@ def detail(request, slug=None, cv=None):
 def search(request, template_name="staff/search.html"):
     """Staff plugin search list view"""
     query = request.GET.get('q')
-    department = request.GET.get('department')
+    department = request.GET.get('department', '')
 
     filters = get_query_filters(request.user, 'staff.view_staff')
     staff = Staff.objects.filter(filters).distinct()
@@ -56,7 +56,7 @@ def search(request, template_name="staff/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'staff_members':staff},
+    return render_to_response(template_name, {'staff_members':staff, 'department': department},
         context_instance=RequestContext(request))
 
 
