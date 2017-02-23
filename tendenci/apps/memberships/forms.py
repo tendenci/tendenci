@@ -1585,7 +1585,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             self.fields['career_end_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
 
         self.fields['corporate_membership_id'].widget = forms.widgets.Select(
-                                        choices=get_corporate_membership_choices())
+                                        choices=get_corporate_membership_choices(active_only=False))
         self.fields['corporate_membership_id'].queryset = CorpMembership.objects.filter(
                                         status=True).exclude(
                                         status_detail__in=['archive', 'inactive'])
