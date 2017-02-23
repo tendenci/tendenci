@@ -205,3 +205,42 @@ In Tendenci, the Footer is usually set up inside a box to make it easy for clien
               opacity:.5;
             }
 
+Embed Forms in Bootstrap Modals
+--------------
+
+Embed forms in Bootstrap Modals to declutter your pages.
+
+.. image:: img/formmodal.png
+
+.. Tip:: 
+    
+    This code referenced W3schools and is for educational purposes only!  Original here: https://www.w3schools.com/bootstrap/bootstrap_modal.asp
+
+    .. hidden-code-block:: html
+        :label: + Show HTML
+            
+              <!-- BUTTON -->
+              <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                Sign up Now</button>
+              <!-- MODAL -->
+              <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Sign up Now</h4>
+                    </div>
+                    <div class="modal-body">
+                <!-- EMBED FORM HERE -->
+                      {% embed_form 2 %}
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END -->
+        
