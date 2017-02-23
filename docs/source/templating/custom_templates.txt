@@ -214,7 +214,9 @@ Embed forms in Bootstrap Modals to declutter your pages.
 
 .. Tip:: 
     
-    This code referenced W3schools and is for educational purposes only!  Original here: https://www.w3schools.com/bootstrap/bootstrap_modal.asp
+    Don't forget to add ``{% load forms_tags %}`` at the top of your template.
+    
+    This code references W3schools and is for educational purposes only!  Original here: https://www.w3schools.com/bootstrap/bootstrap_modal.asp
 
     .. hidden-code-block:: html
         :label: + Show HTML
