@@ -5887,8 +5887,8 @@ msgstr "رقم التسجيل:"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:96
 #: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registation"
-msgstr "إلغاء Registation"
+msgid "Cancel Registration"
+msgstr "إلغاء Registration"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "

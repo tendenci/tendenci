@@ -5888,7 +5888,7 @@ msgstr "注册号："
 
 #: addons/events/templates/events/reg8n/register-confirm.html:96
 #: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registation"
+msgid "Cancel Registration"
 msgstr "取消工商注册"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
