@@ -866,14 +866,18 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                     major = data.get('major%s' % cnt, '')
                     degree = data.get('degree%s' % cnt, '')
                     graduation_year = data.get('graduation_dt%s' % cnt, 0)
-
+                    try:
+                        graduation_year = int(graduation_year)
+                    except ValueError:
+                        graduation_year = 0
                     if any([school, major, degree, graduation_year]):
                         Education.objects.create(
                             user=user,
                             school=school,
                             major=major,
                             degree=degree,
-                            graduation_year=int(graduation_year))
+                            graduation_year=graduation_year
+                        )
 
         else: # meaning edit
             education_list = self.user.educations.all().order_by('pk')[0:4]
@@ -883,11 +887,14 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                 major = data.get('major%s' % cnt, '')
                 degree = data.get('degree%s' % cnt, '')
                 graduation_year = data.get('graduation_dt%s' % cnt, 0)
-
-                education.school =school
-                education.major = major
-                education.degree = degree
-                education.graduation_year = int(graduation_year)
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
+                education.school=school
+                education.major=major
+                education.degree=degree
+                education.graduation_year=graduation_year
                 education.save()
 
 
@@ -1873,12 +1880,15 @@ class MembershipDefaultForm(TendenciBaseForm):
                 major = request.POST.get('major%s' % cnt, '')
                 degree = request.POST.get('degree%s' %cnt, '')
                 graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
-
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
                 if any([school, major, degree, graduation_year]):
-                    education.school = school
-                    education.major = major
-                    education.degree =degree
-                    education.graduation_year = int(graduation_year)
+                    education.school=school
+                    education.major=major
+                    education.degree=degree
+                    education.graduation_year=graduation_year
                     education.save()
 
                 cnt += 1
@@ -1890,14 +1900,17 @@ class MembershipDefaultForm(TendenciBaseForm):
                     major = request.POST.get('major%s' % cnt, '')
                     degree = request.POST.get('degree%s' %cnt, '')
                     graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
-
+                    try:
+                        graduation_year = int(graduation_year)
+                    except ValueError:
+                        graduation_year = 0
                     if any([school, major, degree, graduation_year]):
                         Education.objects.create(
                             user=membership.user,
                             school=school,
                             major=major,
                             degree=degree,
-                            graduation_year=int(graduation_year)
+                            graduation_year=graduation_year
                         )
 
         else:   # create education instances here
@@ -1906,14 +1919,17 @@ class MembershipDefaultForm(TendenciBaseForm):
                 major = request.POST.get('major%s' % cnt, '')
                 degree = request.POST.get('degree%s' %cnt, '')
                 graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
-
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
                 if any([school, major, degree, graduation_year]):
                     Education.objects.create(
                         user=membership.user,
                         school=school,
                         major=major,
                         degree=degree,
-                        graduation_year=int(graduation_year)
+                        graduation_year=graduation_year
                     )
 
 
