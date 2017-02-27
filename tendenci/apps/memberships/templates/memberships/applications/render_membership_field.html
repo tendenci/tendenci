@@ -11,7 +11,7 @@
 {% else %}
     {% if field %}
         <div class="form-group{% if field_obj.admin_only %} t-membershipapp-admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
-            {% if field_obj.field_stype == 'checkboxinput' %}
+            {% if field_obj.field_stype == 'old_checkboxinput' %}
                 <div class="col-sm-offset-2 col-sm-10">
                     {% if field.errors %}
                         <div class="error">
