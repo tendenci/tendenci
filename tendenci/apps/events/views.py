@@ -411,7 +411,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
 def icalendar(request):
     import os
-    from tendenci.settings import MEDIA_ROOT
+    from django.conf import settings
     from tendenci.apps.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
@@ -428,7 +428,7 @@ def icalendar(request):
     if request.user.is_authenticated():
         file_name = 'ics-%s.ics' % (request.user.pk)
 
-    absolute_directory = os.path.join(MEDIA_ROOT, 'files/ics')
+    absolute_directory = os.path.join(settings.MEDIA_ROOT, 'files/ics')
     if not os.path.exists(absolute_directory):
         os.makedirs(absolute_directory)
 

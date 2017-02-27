@@ -588,6 +588,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             passwd = app_field_objs.filter(field_name='password')[0]
             self.fields['password'] = forms.CharField(
                 initial=u'',
+                label=passwd.label,
                 widget=forms.PasswordInput,
                 required=False,
                 help_text=passwd.help_text
@@ -596,18 +597,20 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
             self.fields['confirm_password'] = forms.CharField(
                 initial=u'',
+                label=_("Confirm password"),
                 widget=forms.PasswordInput,
                 required=False,
             )
             self.fields['confirm_password'].widget.attrs.update({'size': 28})
 
         if 'username' in self_fields_keys:
+            username = app_field_objs.filter(field_name='username')[0]
             self.fields['username'] = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 required=False,
                                 max_length=30,
                                 widget=forms.TextInput,
-                                label=_(u'Username'),
-                                help_text = _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
+                                label=username.label,
+                                help_text=username.label,
                                 error_messages = {
                                     'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
@@ -866,14 +869,18 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                     major = data.get('major%s' % cnt, '')
                     degree = data.get('degree%s' % cnt, '')
                     graduation_year = data.get('graduation_dt%s' % cnt, 0)
-
+                    try:
+                        graduation_year = int(graduation_year)
+                    except ValueError:
+                        graduation_year = 0
                     if any([school, major, degree, graduation_year]):
                         Education.objects.create(
                             user=user,
                             school=school,
                             major=major,
                             degree=degree,
-                            graduation_year=int(graduation_year))
+                            graduation_year=graduation_year
+                        )
 
         else: # meaning edit
             education_list = self.user.educations.all().order_by('pk')[0:4]
@@ -883,11 +890,14 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                 major = data.get('major%s' % cnt, '')
                 degree = data.get('degree%s' % cnt, '')
                 graduation_year = data.get('graduation_dt%s' % cnt, 0)
-
-                education.school =school
-                education.major = major
-                education.degree = degree
-                education.graduation_year = int(graduation_year)
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
+                education.school=school
+                education.major=major
+                education.degree=degree
+                education.graduation_year=graduation_year
                 education.save()
 
 
@@ -1873,12 +1883,15 @@ class MembershipDefaultForm(TendenciBaseForm):
                 major = request.POST.get('major%s' % cnt, '')
                 degree = request.POST.get('degree%s' %cnt, '')
                 graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
-
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
                 if any([school, major, degree, graduation_year]):
-                    education.school = school
-                    education.major = major
-                    education.degree =degree
-                    education.graduation_year = int(graduation_year)
+                    education.school=school
+                    education.major=major
+                    education.degree=degree
+                    education.graduation_year=graduation_year
                     education.save()
 
                 cnt += 1
@@ -1890,14 +1903,17 @@ class MembershipDefaultForm(TendenciBaseForm):
                     major = request.POST.get('major%s' % cnt, '')
                     degree = request.POST.get('degree%s' %cnt, '')
                     graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
-
+                    try:
+                        graduation_year = int(graduation_year)
+                    except ValueError:
+                        graduation_year = 0
                     if any([school, major, degree, graduation_year]):
                         Education.objects.create(
                             user=membership.user,
                             school=school,
                             major=major,
                             degree=degree,
-                            graduation_year=int(graduation_year)
+                            graduation_year=graduation_year
                         )
 
         else:   # create education instances here
@@ -1906,14 +1922,17 @@ class MembershipDefaultForm(TendenciBaseForm):
                 major = request.POST.get('major%s' % cnt, '')
                 degree = request.POST.get('degree%s' %cnt, '')
                 graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
-
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
                 if any([school, major, degree, graduation_year]):
                     Education.objects.create(
                         user=membership.user,
                         school=school,
                         major=major,
                         degree=degree,
-                        graduation_year=int(graduation_year)
+                        graduation_year=graduation_year
                     )
 
 

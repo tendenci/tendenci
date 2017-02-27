@@ -19,7 +19,7 @@ class Command(BaseCommand):
         reg8n_configs = RegistrationConfiguration.objects.raw(select_sql)
         cursor = connection.cursor()
 
-        # add the pricing and update registations
+        # add the pricing and update registrations
         for config in reg8n_configs:
             reg_conf_pricing = RegConfPricing()
             reg_conf_pricing.title = ''

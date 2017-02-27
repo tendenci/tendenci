@@ -5887,8 +5887,8 @@ msgstr "Numero ng Pagpaparehistro:"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:96
 #: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registation"
-msgstr "Kanselahin Registation"
+msgid "Cancel Registration"
+msgstr "Kanselahin Registration"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "

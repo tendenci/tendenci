@@ -30,7 +30,8 @@ def tags_list(request, template_name="tags/list.html"):
 @login_required
 def detail(request, id=None, template_name="tags/detail.html"):
     tag = get_object_or_404(Tag, pk=id)
-    tagged_items = TaggedItem.objects.filter(tag=tag).order_by('content_type__name', 'tag__name')
+    tagged_items = TaggedItem.objects.filter(tag=tag)
+    tagged_items = sorted(tagged_items, key=lambda i: i.content_type.name)
     return render_to_response(template_name, {'tag': tag, 'tagged_items': tagged_items},
         context_instance=RequestContext(request))
 
