@@ -588,6 +588,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             passwd = app_field_objs.filter(field_name='password')[0]
             self.fields['password'] = forms.CharField(
                 initial=u'',
+                label=passwd.label,
                 widget=forms.PasswordInput,
                 required=False,
                 help_text=passwd.help_text
@@ -596,18 +597,20 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 
             self.fields['confirm_password'] = forms.CharField(
                 initial=u'',
+                label=_("Confirm password"),
                 widget=forms.PasswordInput,
                 required=False,
             )
             self.fields['confirm_password'].widget.attrs.update({'size': 28})
 
         if 'username' in self_fields_keys:
+            username = app_field_objs.filter(field_name='username')[0]
             self.fields['username'] = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 required=False,
                                 max_length=30,
                                 widget=forms.TextInput,
-                                label=_(u'Username'),
-                                help_text = _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_)."),
+                                label=username.label,
+                                help_text=username.label,
                                 error_messages = {
                                     'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
