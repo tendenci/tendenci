@@ -123,6 +123,10 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
                        '%scss/corpmemberships-admin.css' % settings.STATIC_URL], }
 
+    def get_queryset(self, request):
+        qs = super(CorpMembershipAppAdmin, self).get_queryset(request)
+        # filter out soft-deleted items
+        return qs.filter(status=True)
 
 
 class StatusDetailFilter(SimpleListFilter):
