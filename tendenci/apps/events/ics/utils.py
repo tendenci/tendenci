@@ -1,7 +1,7 @@
 import re
 import subprocess
 import os
-from tendenci.settings import MEDIA_ROOT
+from django.conf import settings
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.events.ics.models import ICS
 
@@ -17,7 +17,7 @@ def create_ics(user):
         else:
             d['domain_name'] = ""
     
-        absolute_directory = os.path.join(MEDIA_ROOT, 'files/ics')
+        absolute_directory = os.path.join(settings.MEDIA_ROOT, 'files/ics')
         if not os.path.exists(absolute_directory):
             os.makedirs(absolute_directory)
     
