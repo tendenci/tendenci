@@ -348,6 +348,10 @@ def _specific_view(user, obj):
         sqs = sqs.filter(q_primary_key & q_users)
 
     if sqs:
+        # Make sure the index isn't doing something unexpected with the query,
+        # like when the Whoosh StopFilter caused the primary_key portion of the
+        # query to be ignored.
+        assert len(sqs) == 1, "Index returned an unexpected result set when searching for view permissions on an object"
         return True
 
     return False
