@@ -14,7 +14,7 @@
 
         {# if form and not 'settings/module/forms' in request.path #}
         {% if form_instance %}
-            {% form_current_app request.user form %}
+            {% form_current_app request.user form_instance %}
         {% else %}
             {% form_current_app request.user %}
         {% endif %}
