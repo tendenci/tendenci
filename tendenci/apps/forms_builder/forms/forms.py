@@ -588,7 +588,7 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
         #pricing.save()
         return pricing
 
-class BillingForm(forms.Form):
+class BillingForm(FormControlWidgetMixin, forms.Form):
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
     company = forms.CharField(required=False)
