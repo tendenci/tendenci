@@ -109,7 +109,42 @@ Adding Font-Awesome Icons
     Also using the Nav App Classes, you can add Font Awesome Icons to your navigation bar. Just add the Font Awesome tag into the CSS Class and leave the Label blank.
     
     .. image:: img/fontawesomenavapp.png
-    
+
+Simple Search Bar w/ Font-Awesome Icon
+^^^^^^^^^
+.. image:: img/simplesearch.png
+
+.. Tip:: 
+        
+    .. hidden-code-block:: html
+        :label: + Show Added HTML
+        
+            <div class="globalSearch pull-right" id="global-search">
+               <form method="get" action="/search/">
+                 <input type="text" name="q" size="28" maxlength="300" title="Search" class="searchbox blur" onfocus="clearDefault(this)">
+                 <input type="submit" value="&#xf002;" class="fa fa-search">
+               </form>
+             </div>
+             
+    .. hidden-code-block:: css
+        :label: + Show Added CSS
+
+            /* SEARCH ICON */
+            input.fa.fa-search {
+              border: none;
+              background: none;
+            }
+            /* SEARCH BOX */
+            .searchbox {
+              border: none;
+              border-bottom: 1px solid gray;
+              background: transparent;
+            }
+            /* SEARCH BOX FOCUS */
+            input.searchbox.blur {
+              box-shadow: none;
+              outline: none;
+            }
 
 
 Basic Footer
