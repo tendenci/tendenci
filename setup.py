@@ -179,7 +179,7 @@ setup(
         "python_openid>=2.2",
         "ordereddict==1.1",
         "createsend==3.1.0",
-        "celery==2.2.7",
+        "celery==4.0.2",
         "django-celery==2.2.7",
         "django-kombu>=0.9.4",
         "mimeparse>=0.1.3",
