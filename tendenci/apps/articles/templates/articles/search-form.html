@@ -4,7 +4,7 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
     <form id="t-articles-search-form" class="form-inline t-search-form" action="{% url 'articles' %}" method="get">
         <div class="form-group{% if form.search_category.errors %} has-error{% endif %}">
-            <label for="{{ form.search_category.id_for_label }}" class="control-label">{{ form.search_category.label }}</label>
+            <label for="{{ form.search_category.id_for_label }}" class="control-label">{{ form.search_category.label }}&nbsp;</label>
             {{ form.search_category }}
 
             {% if form.search_category.errors %}
@@ -32,6 +32,6 @@
             {% endif %}
         </div>
 
-        <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+        <button type="submit" class="btn btn-default"> <i class="glyphicon glyphicon-search" alt="{% trans "Search" %}"></i></button>
     </form>
 {% endif %}
