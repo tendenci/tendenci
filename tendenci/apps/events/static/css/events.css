@@ -575,14 +575,14 @@ ul.errorlist {;
 }
 .month-view div.weekday,
 .month-view div.weekday-mobile {
-    width: 13.8470282554%;
+    width: 13.7%;
     float: left;
     text-align: center;
     border-bottom: 1px solid silver;
 }
-
 .month-view div.weekday-mobile {
     display: none;
+    width: 13.8470282554%;
 }
 
 .month-view .calendar-wrap {
