@@ -9,6 +9,7 @@ if not urlpath:
 urlpatterns = patterns('tendenci.apps.staff.views',
     url(r'^%s/$' % urlpath, 'search', name="staff"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="staff.search"),
+    url(r'^%s/department/(?P<slug>[\w\-]+)/$' % urlpath, 'search', name="staff.department_view"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='staff.feed'),
     url(r'^%s/(?P<slug>[\w\-]+)/$' % urlpath, 'detail', name="staff.view"),
     url(r'^%s/(?P<slug>[\w\-]+)/(?P<cv>cv)/$' % urlpath, 'detail', name="staff.cv"),

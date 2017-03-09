@@ -8,7 +8,7 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import get_query_filters, has_view_perm
-from tendenci.apps.staff.models import Staff
+from tendenci.apps.staff.models import Staff, Department
 
 
 @is_enabled('staff')
@@ -36,10 +36,18 @@ def detail(request, slug=None, cv=None):
 
 
 @is_enabled('staff')
-def search(request, template_name="staff/search.html"):
+def search(request, slug=None, template_name="staff/search.html"):
     """Staff plugin search list view"""
     query = request.GET.get('q')
-    department = request.GET.get('department', '')
+    
+    if slug:
+        department = get_object_or_404(Department, slug=slug)
+    else:
+        department_id = request.GET.get('department', '')
+        if department_id and department_id.isdigit():
+            department = Department.objects.filter(id=int(department_id))
+        else:
+            department = None
 
     filters = get_query_filters(request.user, 'staff.view_staff')
     staff = Staff.objects.filter(filters).distinct()
@@ -49,8 +57,8 @@ def search(request, template_name="staff/search.html"):
     if query:
         staff = staff.filter(Q(name__icontains=query) | Q(department__name__icontains=query))
 
-    if department and department.isdigit():
-        staff = staff.filter(department__id=int(department))
+    if department:
+        staff = staff.filter(department__id=department.id)
 
     staff = staff.order_by('-position', 'name', '-status', 'status_detail')
 

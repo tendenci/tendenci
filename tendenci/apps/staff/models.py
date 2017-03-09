@@ -86,12 +86,17 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
 
 class Department(models.Model):
     name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=250, unique=True)
 
     class Meta:
         app_label = 'staff'
 
     def __unicode__(self):
         return self.name
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("staff.department_view", [self.slug])
 
 
 class Position(models.Model):
