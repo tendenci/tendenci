@@ -38,16 +38,18 @@ def detail(request, slug=None, cv=None):
 @is_enabled('staff')
 def search(request, slug=None, template_name="staff/search.html"):
     """Staff plugin search list view"""
-    query = request.GET.get('q')
-    
     if slug:
         department = get_object_or_404(Department, slug=slug)
     else:
-        department_id = request.GET.get('department', '')
-        if department_id and department_id.isdigit():
-            department = Department.objects.filter(id=int(department_id))
-        else:
-            department = None
+        department = None
+
+    query = request.GET.get('q')
+    # department_id is legacy code that is still used by some sites
+    department_id = request.GET.get('department', '')
+    try:
+        department_id = int(department_id)
+    except:
+        department_id = None
 
     filters = get_query_filters(request.user, 'staff.view_staff')
     staff = Staff.objects.filter(filters).distinct()
@@ -59,6 +61,10 @@ def search(request, slug=None, template_name="staff/search.html"):
 
     if department:
         staff = staff.filter(department__id=department.id)
+    else:
+        if department_id:
+            staff = staff.filter(department__id=department_id)
+            [department] = Department.objects.filter(id=department_id)[:1] or [None]
 
     staff = staff.order_by('-position', 'name', '-status', 'status_detail')
 
