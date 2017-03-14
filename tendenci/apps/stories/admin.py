@@ -11,7 +11,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class StoryAdmin(TendenciBaseModelAdmin):
-    list_display = ('image_preview', 'title', 'tags', 'status', 'position')
+    list_display = ('image_preview', 'title', 'tags', 'video_embed_url', 'status', 'position')
     search_fields = ('title', 'content')
     list_editable = ['title', 'tags', 'position']
     actions = ['clone_story']
@@ -19,6 +19,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
                       'fields': ['title',
                                  'content',
                                  'photo_upload',
+                                 'video_embed_url',
                                  'full_story_link',
                                  'link_title',
                                  'rotator',
