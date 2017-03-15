@@ -1,11 +1,10 @@
 import operator
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
-from django.db.models import Manager
 from django.db.models import Q
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 
-from haystack.query import SearchQuerySet
 from tendenci.apps.perms.managers import TendenciBaseManager
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -142,13 +141,21 @@ class MembershipDefaultManager(TendenciBaseManager):
         """
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
+    
+    def active(self, **kwargs):
+        """
+        Returns active memberships 
+        """
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+        return self.filter(
+            Q(expire_dt__gt=datetime.now()) | Q(expire_dt__isnull=True), **kwargs)
 
     def expired(self, **kwargs):
         """
         Returns memberships records that are expired. Considers records
         that are expired, include records that have a status detail of 'expired'.
         """
-        from datetime import datetime
         from tendenci.apps.memberships.models import MembershipType
 
         qs = self.none()
