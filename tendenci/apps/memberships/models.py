@@ -893,7 +893,7 @@ class MembershipDefault(TendenciBaseModel):
         self.archive_old_memberships()
 
         # show member number on profile
-        self.user.profile.refresh_member_number()
+        self.profile_refresh_member_number()
 
         # Activate user
         if not self.user.is_active:
@@ -961,7 +961,7 @@ class MembershipDefault(TendenciBaseModel):
         dupe.archive_old_memberships()
 
         # show member number on profile
-        dupe.user.profile.refresh_member_number()
+        self.profile_refresh_member_number(user=dupe.user)
 
         return dupe
 
@@ -1011,7 +1011,7 @@ class MembershipDefault(TendenciBaseModel):
         self.archive_old_memberships()
 
         # show member number on profile
-        self.user.profile.refresh_member_number()
+        self.profile_refresh_member_number()
 
         return True
 
@@ -1043,11 +1043,23 @@ class MembershipDefault(TendenciBaseModel):
             self.group_refresh()
     
             # show member number on profile
-            self.user.profile.refresh_member_number()
+            self.profile_refresh_member_number()
     
             return True
         
         return False
+    
+    def profile_refresh_member_number(self, user=None):
+        """
+        Create the profile if not exists and refresh member number for the profile
+        """
+        if not user:
+            user = self.user
+        try:
+            profile = Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create_profile(user=user)
+        profile.refresh_member_number()
 
     def pend(self):
         """
@@ -1086,7 +1098,7 @@ class MembershipDefault(TendenciBaseModel):
         self.save_invoice(status_detail='estimate')
 
         # remove member number on profile
-        self.user.profile.refresh_member_number()
+        self.profile_refresh_member_number()
 
         return True
 
