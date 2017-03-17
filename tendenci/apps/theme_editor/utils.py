@@ -31,6 +31,7 @@ ALLOWED_EXTENSIONS = (
     '.eot',
     '.ttf',
     '.woff',
+    '.woff2',
     '.svg',
 )
 
