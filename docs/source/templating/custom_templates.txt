@@ -122,6 +122,7 @@ Font-Awesome After Nav Items
     
     .. hidden-code-block:: css
         :label: + Show Added css
+        
             a.t-caret.dropdown-toggle:after {
                 content: "\f0d7";
             }
