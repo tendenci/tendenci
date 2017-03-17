@@ -109,6 +109,22 @@ Adding Font-Awesome Icons
     Also using the Nav App Classes, you can add Font Awesome Icons to your navigation bar. Just add the Font Awesome tag into the CSS Class and leave the Label blank.
     
     .. image:: img/fontawesomenavapp.png
+    
+Font-Awesome After Nav Items
+^^^^^^^^^
+.. image:: img/dropdownicons.png
+
+.. Tip:: 
+
+    To add a dropdown caret or other icons to the Tendenci Navbar, use FontAwesome in the css.  For this application, I added a css class ("t-caret") to the navbar items that I wanted to have a dropdown caret.
+    
+    .. image:: img/t-caret.png
+    
+    .. hidden-code-block:: css
+        :label: + Show Added css
+            a.t-caret.dropdown-toggle:after {
+                content: "\f0d7";
+            }
 
 Simple Search Bar w/ Font-Awesome Icon
 ^^^^^^^^^
