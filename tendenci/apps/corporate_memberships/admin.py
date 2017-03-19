@@ -50,6 +50,11 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
+        
+    def get_queryset(self, request):
+        qs = super(CorporateMembershipTypeAdmin, self).get_queryset(request)
+        # filter out soft-deleted items
+        return qs.filter(status=True)        
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -118,6 +123,10 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
                        '%scss/corpmemberships-admin.css' % settings.STATIC_URL], }
 
+    def get_queryset(self, request):
+        qs = super(CorpMembershipAppAdmin, self).get_queryset(request)
+        # filter out soft-deleted items
+        return qs.filter(status=True)
 
 
 class StatusDetailFilter(SimpleListFilter):

@@ -91,7 +91,7 @@ def search(request, template_name="jobs/search.html"):
             status_detail__contains='pending'
         )
     
-    jobs = jobs.order_by('list_type', '-post_dt')
+    jobs = jobs.order_by('list_type', '-post_dt', '-update_dt')
 
     EventLog.objects.log()
 

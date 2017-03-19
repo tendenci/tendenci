@@ -33,10 +33,9 @@ def member_choices(group, member_label):
 
 def get_default_group():
     """
-    Get the default group specified in the global setting
+    Get the ID of the default group specified in the global setting
     """
-    return (Group.objects.filter(
-            id=Group.objects.get_initial_group_id()) or [None])[0]
+    return Group.objects.get_initial_group_id()
 
 
 def process_export(

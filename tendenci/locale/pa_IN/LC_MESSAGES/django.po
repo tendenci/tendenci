@@ -5887,8 +5887,8 @@ msgstr "ਰਜਿਸਟਰੇਸ਼ਨ ਨੰਬਰ:"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:96
 #: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registation"
-msgstr "Registation ਰੱਦ ਕਰੋ"
+msgid "Cancel Registration"
+msgstr "Registration ਰੱਦ ਕਰੋ"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "

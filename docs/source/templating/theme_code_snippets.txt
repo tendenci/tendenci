@@ -204,6 +204,51 @@ Inside the boxes interface, adding code allows you to add images, add Font-Aweso
 		}
 		
 		
+		
+Bootstrap Carousel
+----------
+Add `{% load story_tags %}` to the very top of your html page
+
+Then add the following code snippet where you want to place your carousel:
+
+.. code-block:: django
+
+	{% list_stories as stories_list limit=10 tags="rotator" quality="80" %}
+	<div id="myCarousel" class="carousel slide" data-ride="carousel">
+ 	   <ol class="carousel-indicators">
+   	     {% for story in stories_list %}
+   	     <li data-target="#myCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %} class="active"{% endif %}></li>
+   	     {% endfor %}
+ 	   </ol>
+ 	  <!-- begin: carousel-inner -->
+ 	  <div class="carousel-inner" role="listbox">
+  	    <!-- begin: item active -->
+  	    {% for story in stories_list %} 
+   	   <div class="item {% if forloop.first %} active {% endif %}">
+      	  <img class="img-responsive" src="{{ story.photo.url }}" alt="{{ story.title }}">
+      	    <div class="container-fluid">
+         	  <!-- begin: carousel-caption -->
+          	  <div class="carousel-caption">
+            	  <h2><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+             	  <p class="story-summary">{{ story.content|safe|truncatewords:12 }}</p>
+             	  <p><a class="btn btn-lg btn-primary" href="{{ story.full_story_link }}" role="button">Read more</a></p>
+     	      </div>
+       	      <!-- end: carousel-caption -->
+     	    </div>
+   	   </div>
+   	   <!-- end: item -->
+     	{% endfor %}   
+  	 </div>
+  	 <!-- end: carousel-inner -->
+  	  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+  	   <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+ 	   <span class="sr-only">Previous</span>
+ 	  </a>
+ 	  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+ 	   <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+ 	   <span class="sr-only">Next</span>
+ 	  </a>
+    </div> 
 
 
 Directories Carousel
@@ -229,12 +274,12 @@ Then add the following code snippet where you want to place your directories:
                </li>
              {% endfor %}
              </ul>
-           </div><!--/.carousel-items-->
-         </div><!--/#carousel-wrap-->
+           </div><!--end: .carousel-items-->
+         </div><!--end: #carousel-wrap-->
          <div class="next" id="port-right"></div>
-       </div><!--/#carousel-container--> 
-     </div><!--/.col -->   
-  </div><!--/ #directories -->
+       </div><!--end: #carousel-container--> 
+     </div><!--end: .col -->   
+  </div><!--end: #directories -->
 
 
 

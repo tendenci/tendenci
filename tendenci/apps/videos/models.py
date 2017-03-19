@@ -165,7 +165,6 @@ class OembedlyCache(models.Model):
 
             instance.code = code
             instance.save()
-            return code
 
         except IndexError:
             try:
@@ -184,7 +183,12 @@ class OembedlyCache(models.Model):
                 return 'Unable to embed code for <a href="%s">%s</a><br>Error: %s' % (url, url, e)
             obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
             obj.save()
-            return code
+            
+        # Strip the obsolete attributes from iframe to avoid html validation errors 
+        code = code.replace('scrolling="no" ', '')
+        code = code.replace('frameborder="0" ', '')
+        
+        return code
 
 def get_oembed_code(url, width, height):
     return OembedlyCache.get_code(url, width, height)

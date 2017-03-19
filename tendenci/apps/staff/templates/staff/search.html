@@ -20,10 +20,11 @@
 {% has_perm user staff.add_staff as can_add_staff %}
 <div class="t">
     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %}</h1>
-    {% staff_search %}
-    {% if can_add_staff %}
-    <div><a href="{% url "admin:staff_staff_add" %}">{% trans "Add" %} {% firstof MODULE_STAFF_LABEL 'Staff' %}</a></div>
+    {% if department %}
+    <h4>{% trans "Department:" %} {{ department.name }}</h4>
     {% endif %}
+    {% staff_search %}
+
     <div class="staff-search-wrap-list clearfix">
         {% for staff in staff_members %}
             {% search_result staff %}

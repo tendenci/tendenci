@@ -38,7 +38,10 @@ class Command(BaseCommand):
         # create a metric from the totals
         metric = Metric()
         metric.users = len(self.users)
-        metric.members = len(self.members)
+        if self.members:
+            metric.members = len(self.members)
+        else:
+            metric.members = 0
         metric.visits = len(self.get_visits())
         metric.disk_usage = self.get_site_size()
         metric.invoices = self.get_invoices().count()
@@ -69,9 +72,9 @@ class Command(BaseCommand):
         Get all members from the memberships_membership table
         """
         try:
-            from tendenci.apps.memberships.models import Membership
+            from tendenci.apps.memberships.models import MembershipDefault
 
-            return Membership.objects.active()
+            return MembershipDefault.objects.active()
         except ImportError:
             pass
 

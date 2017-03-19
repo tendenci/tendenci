@@ -32,6 +32,7 @@ FILE_EXTENTIONS = (
     '.eot',
     '.ttf',
     '.woff',
+    '.woff2',
     '.svg',
 )
 

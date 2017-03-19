@@ -76,23 +76,20 @@ def get_default_membership_corp_fields():
     return corp_field_list
 
 
-def get_corporate_membership_choices():
+def get_corporate_membership_choices(active_only=True):
     cm_list = [(0, 'SELECT ONE')]
-    from django.db import connection
-    # use the raw sql because we cannot import CorporateMembership
-    # in the memberships app
-    cursor = connection.cursor()
-    cursor.execute(
-        """SELECT cm.id, cp.name
-        FROM corporate_memberships_corpmembership cm
-        INNER JOIN corporate_memberships_corpprofile cp
-        ON cm.corp_profile_id=cp.id
-        WHERE cm.status=True AND cm.status_detail='active'
-        ORDER BY cp.name"""
-    )
-
-    for row in cursor.fetchall():
-        cm_list.append((row[0], row[1]))
+    from tendenci.apps.corporate_memberships.models import CorpMembership
+     
+    corp_membs = CorpMembership.objects.exclude(status_detail='archive')
+    if active_only:
+        corp_membs = corp_membs.filter(status_detail='active')
+    corp_membs = corp_membs.order_by('corp_profile__name')
+     
+    for corp_memb in corp_membs:
+        if corp_memb.status_detail == 'active':
+            cm_list.append((corp_memb.id, corp_memb.corp_profile.name))
+        else:
+            cm_list.append((corp_memb.id, '%s (%s)' % (corp_memb.corp_profile.name, corp_memb.status_detail)))
 
     return cm_list
 

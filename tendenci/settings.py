@@ -564,3 +564,9 @@ PYBB_ATTACHMENT_ENABLE = True
 # -------------------------------------- #
 GAVATAR_DEFAULT_SIZE = 80
 GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'
+
+# ------------------------------------------------- #
+# Allow .mp3 files to be uploaded - default to False
+# ------------------------------------------------- #
+ALLOW_MP3_UPLOAD = False
+

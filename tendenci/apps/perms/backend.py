@@ -169,6 +169,8 @@ class ObjectPermBackend(object):
                 index = site.get_index(obj.__class__)
                 if can_view(user, obj):
                     return True
+            except AssertionError:
+                raise
             except:
                 pass
 

@@ -39,41 +39,45 @@ class FileValidator(object):
         self.allowed_mimetypes = kwargs.pop('allowed_mimetypes', get_allowed_mimetypes(self.allowed_extensions))
         self.max_size = kwargs.pop('max_size', get_max_file_upload_size(file_module=True))
 
-    def __call__(self, value):
+    def __call__(self, values):
         """
         Check the extension, content type and file size.
         """
 
-        # Check the extension
-        ext = splitext(value.name)[1].lower()
-        if self.allowed_extensions and not ext in self.allowed_extensions:
-            message = self.extension_message % {
-                'extension' : ext,
-                'allowed_extensions': ', '.join(self.allowed_extensions)
-            }
+        if not isinstance(values, list):
+            values = [values]
 
-            raise ValidationError(message)
-
-        # Check the content type
-        try:
-            mime_type = magic.from_buffer(value.read(1024), mime=True)
-            if self.allowed_mimetypes and not mime_type in self.allowed_mimetypes:
-                message = self.mime_message % {
-                    'mimetype': mime_type,
-                    'allowed_mimetypes': ', '.join(self.allowed_mimetypes)
+        for value in values:    
+            # Check the extension
+            ext = splitext(value.name)[1].lower()
+            if self.allowed_extensions and not ext in self.allowed_extensions:
+                message = self.extension_message % {
+                    'extension' : ext,
+                    'allowed_extensions': ', '.join(self.allowed_extensions)
                 }
     
                 raise ValidationError(message)
-        except AttributeError as e:
-            raise ValidationError(_('File type is not valid'))
-
-
-        # Check the file size
-        filesize = len(value)
-        if self.max_size and filesize > self.max_size:
-            message = self.max_size_message % {
-                'size': filesizeformat(filesize),
-                'allowed_size': filesizeformat(self.max_size)
-            }
-
-            raise ValidationError(message)
+    
+            # Check the content type
+            try:
+                mime_type = magic.from_buffer(value.read(1024), mime=True)
+                if self.allowed_mimetypes and not mime_type in self.allowed_mimetypes:
+                    message = self.mime_message % {
+                        'mimetype': mime_type,
+                        'allowed_mimetypes': ', '.join(self.allowed_mimetypes)
+                    }
+        
+                    raise ValidationError(message)
+            except AttributeError as e:
+                raise ValidationError(_('File type is not valid'))
+    
+    
+            # Check the file size
+            filesize = len(value)
+            if self.max_size and filesize > self.max_size:
+                message = self.max_size_message % {
+                    'size': filesizeformat(filesize),
+                    'allowed_size': filesizeformat(self.max_size)
+                }
+    
+                raise ValidationError(message)

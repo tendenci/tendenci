@@ -232,7 +232,7 @@ def copy(request, id):
 
     EventLog.objects.log(instance=form_instance)
     messages.add_message(request, messages.SUCCESS, _('Successfully added %(n)s' % {'n': new_form}))
-    return redirect('form_edit', new_form.pk)
+    return redirect('admin:forms_form_change', new_form.pk)
 
 
 @is_enabled('forms')
@@ -398,13 +398,23 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     'payment for anonymous users.')
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
+    if form.custom_payment and not form.recurring_payment:
+        billing_form = BillingForm(request.POST or None)
+        if request.user.is_authenticated():
+            billing_form.initial = {
+                        'first_name':request.user.first_name,
+                        'last_name':request.user.last_name,
+                        'email':request.user.email}
+    else:
+        billing_form = None
+
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
             form_for_form.fields[field].initial = field_default
 
     if request.method == "POST":
-        if form_for_form.is_valid():
+        if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
             if request.user.is_anonymous():
@@ -555,14 +565,20 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 else:
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
+                    
+                    update_invoice_for_entry(invoice, billing_form)
+                    
                     # log an event for invoice add
-
                     EventLog.objects.log(instance=form)
-
-                    # redirect to billing form
-                    return redirect('form_entry_payment', invoice.id, invoice.guid)
+                    
+                    # redirect to online payment
+                    if (entry.payment_method.machine_name).lower() == 'credit-card':
+                        return redirect('payment.pay_online', invoice.id, invoice.guid)
+                    # redirect to invoice page
+                    return redirect('invoice.view', invoice.id, invoice.guid)
 
             # default redirect
+            form.completion_url = form.completion_url.strip(' ')
             if form.completion_url:
                 return HttpResponseRedirect(form.completion_url)
             return redirect("form_sent", form.slug)
@@ -573,6 +589,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
     context = {
         "form": form,
+        'billing_form': billing_form,
         "form_for_form": form_for_form,
         'form_template': form.template,
     }
