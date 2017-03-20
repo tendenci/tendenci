@@ -10,6 +10,8 @@
 
 {% block content %}
 <div class="t">
+    {% campaign_nav request.user %}
+
     <h1>{% trans "Campaign Monitor Campaigns" %}</h1>
     {% autopaginate campaigns 5 %}
 

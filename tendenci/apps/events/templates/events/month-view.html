@@ -20,6 +20,7 @@
 {% block content %}
 
 <div class="month-view">
+    {% event_nav request.user %}
 
     <div class="month-names">
         <div class="month-name previous"><a href="{{ prev_month_url }}"> &laquo;</a></div>

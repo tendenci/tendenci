@@ -32,6 +32,8 @@
 {% has_perm user forms.view_form as view_forms %}
 {% has_perm user resumes.view_reume as view_resumes %}
 
+{% dashboard_nav request.user %}
+
 {% block content_messages %}
     {{ block.super }}
 

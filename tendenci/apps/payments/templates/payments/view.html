@@ -12,6 +12,8 @@
 
 {% block content %}
 <div class="t payment-view">
+{% payment_nav request.user payment %}
+
 <h1>{% trans "View a Payment" %}</h1>
 
 <p class="payment-view-intro">

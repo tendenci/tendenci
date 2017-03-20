@@ -6,6 +6,8 @@
 {% block title %}{% blocktrans %}Add Photo Set{% endblocktrans %}{% endblock %}
 
 {% block content %}
+    {% photo_set_nav request.user %}
+
     <h1>{{ MODULE_PHOTOS_LABEL }} {% trans 'Set Add' %}</h1>
     <div class="forms">
     <form method="POST" class="form-horizontal" action="">{% csrf_token %}

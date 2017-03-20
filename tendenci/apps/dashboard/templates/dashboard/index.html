@@ -38,6 +38,8 @@
 {% has_perm user forms.view_form as view_forms %}
 {% has_perm user resumes.view_reume as view_resumes %}
 
+{% dashboard_nav request.user %}
+
 <div class="main-panel">
 
     {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}

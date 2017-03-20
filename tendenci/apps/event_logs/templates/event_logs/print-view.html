@@ -12,6 +12,8 @@
 
 {% block content %}
 <div class="t">
+    {% event_log_nav request.user event_log %}
+
     <h1>{{ MODULE_EVENT_LOGS_LABEL }} {% trans 'Print' %}</h1>
 
     <div class="event-log-wrap">

@@ -4,6 +4,8 @@
 
 {% block content %}
 <div class="t">
+    {% photo_nav request.user photo %}
+
     <h1>{% firstof MODULE_PHOTOS_LABEL 'Photo' %} {% trans "Delete Page" %}</h1>
     <div class="delete-prompt">
         {% trans "Are you sure you want to permanently delete this photo?" %}

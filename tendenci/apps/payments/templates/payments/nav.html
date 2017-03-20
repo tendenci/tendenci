@@ -8,10 +8,13 @@
     {% has_perm request.user invoices.view_invoice nav_object.invoice as can_view_invoice %}
 {% endif %}
 
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
             <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
@@ -20,15 +23,14 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Payments" %}</a>
-        {% if nav_object %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Payments" %}</a>
         <div class="dropdown-menu">
+        {% if nav_object %}
         <ul class="first">
             <li class="heading">{% trans "All Payments" %}</li>
             <li class="divider"></li>
         {% else %}
-            <div>
-            <ul class="dropdown-menu">
+        <ul>
         {% endif %}
             <li><a href="{% url "payment.search" %}">{% trans "Search Payments" %}</a></li>
         </ul>
@@ -47,7 +49,7 @@
     </li>
     {% if user.is_authenticated %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Invoices" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Invoices" %}</a>
         <ul class="dropdown-menu">
             {% if can_edit_setting %}
             <li><a href="{% url "settings.index" "module" "invoices" %}">{% trans "Settings" %}</a></li>
@@ -61,3 +63,5 @@
     </li>
     {% endif %}
 </ul>
+{% endif %}
+{% endif %}

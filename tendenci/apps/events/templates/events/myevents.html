@@ -16,6 +16,7 @@
 {% block content %}
 
 <div class='t search-view'>
+    {% event_nav request.user %}
 
     <div class="header" style="margin-bottom: 20px;">
         <h1>{% trans "My Upcoming Events" %}</h1>

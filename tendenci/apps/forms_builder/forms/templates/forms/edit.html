@@ -8,6 +8,8 @@
 {% block content %}
 
 <div class="t">
+    {% forms_nav request.user form_instance %}
+
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Edit' %}</h1>
 
     <div class="form-builder-wrap">

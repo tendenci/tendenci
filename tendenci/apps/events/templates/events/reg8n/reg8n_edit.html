@@ -13,6 +13,7 @@
 
 {% block content %}
 <div class="t">
+    {% event_nav request.user reg8n.event %}
 
     <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Registration Edit" %}</h1>
     <div class="event-title">{% trans "Event" %}: <a href="{% url "event" reg8n.event.id%}">{% blocktrans with title=reg8n.event.title %}{{ title }}{% endblocktrans %}</a></div>

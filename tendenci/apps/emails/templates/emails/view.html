@@ -13,6 +13,8 @@
 {% endblock %}
 
 {% block content %}
+    {% emails_nav request.user email %}
+
     {% emails_options email %}
 
     <article id="t-emails-email-{{ news.pk }}" class="t-emails-email">

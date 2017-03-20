@@ -9,8 +9,9 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="t">
+    {% discount_nav request.user %}
+
     <div class="discounts-wrap">
         <h1>{% trans "Discounts Export" %}</h1>
         <div class="content">

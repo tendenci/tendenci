@@ -12,6 +12,8 @@
 
 {% block content %}
 <div class="t">
+    {% resume_nav request.user resume %}
+
     <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resumes' %} {% blocktrans with resume.title as resume_title %}Meta Information for<br />
     {{ resume_title }}{% endblocktrans %}</h1>
 

@@ -4,6 +4,8 @@
 
 {% block content %}
 <div class="t">
+    {% event_nav request.user event %}
+
     <div class="info">
         <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Approve" %}</h1>
         <div class="delete-prompt">

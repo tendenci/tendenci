@@ -41,6 +41,8 @@
 <div class="t">
 <div id="t-rp">
 <div id="t-view">
+    {% rp_nav request.user rp %}
+
         {% if not is_active %}
         <div class="not-active-alert">{% trans 'This account is' %} {{ rp.status_detail }}</div>
         {% endif %}

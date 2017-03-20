@@ -13,6 +13,8 @@
 
 {% block content %}
 <div class="t">
+    {% location_nav request.user location %}
+
     <div class="location-wrap">
             <h1>{% firstof location.location_name "Untitled" %}</h1>
             {% if location.logo %}

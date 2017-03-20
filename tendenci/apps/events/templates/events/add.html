@@ -16,6 +16,8 @@
 {% endblock %}
 
 {% block content %}
+    {% event_nav request.user %}
+
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
 
     <form id="t-events-form" class="form-horizontal" action="{% url 'event.add' %}" method="post" enctype="multipart/form-data">{% csrf_token %}

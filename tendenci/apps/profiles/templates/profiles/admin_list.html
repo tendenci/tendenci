@@ -17,6 +17,8 @@
 
 {% block content %}
     <div class="t">
+        {% users_nav request.user %}
+
         <h1>{% trans "Superusers" %}</h1>
 
         {% autopaginate admins 50 %}

@@ -8,7 +8,10 @@
 
 {% block content %}
 <div class="t">
+    {% contact_nav request.user contact %}
+
     <h1>{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %} {% trans "Print" %}</h1>
+
     <div class="contact-wrap">
 
         <div class="options">

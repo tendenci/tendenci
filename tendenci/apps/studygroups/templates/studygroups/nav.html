@@ -15,12 +15,13 @@
     {% has_perm user studygroups.change_studygroup as can_edit_studygroup %}
 {% endif %}
 
-
 {% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
@@ -29,15 +30,14 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_STUDYGROUPS_LABEL 'Study Groups' %}</a>
-        {% if nav_object %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_STUDYGROUPS_LABEL 'Study Groups' %}</a>
         <div class="dropdown-menu">
+        {% if nav_object %}
         <ul class="first">
             <li class="heading">{% trans "All Study Groups" %}</li>
             <li class="divider"></li>
         {% else %}
-            <div>
-            <ul class="dropdown-menu">
+        <ul>
         {% endif %}
             {% if can_edit_setting %}
                 <li><a href="{% url "settings.index" "module" "studygroups" %}">{% trans "Settings" %}</a></li>
@@ -76,4 +76,5 @@
     <li><a href="{% url "files" %}?group={{ nav_object.group_id }}">{% trans 'Files' %}</a></li>
     {% endif %}
 </ul>
+{% endif %}
 {% endif %}

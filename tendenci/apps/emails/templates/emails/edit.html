@@ -17,6 +17,8 @@
 
 {% block content %}
 <div class="t">
+{% emails_nav request.user email %}
+
 <h1>{% trans 'E-mail Record '%}{% if email %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}</h1>
 
 <form class="form-horizontal" method="post" action=".">{% csrf_token %}

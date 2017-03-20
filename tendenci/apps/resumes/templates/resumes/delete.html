@@ -4,6 +4,8 @@
 
 {% block content %}
 <div class="t">
+    {% resume_nav request.user resume %}
+
     <div class="resume-wrap">
         <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resume' %} {% trans "Delete" %}</h1>
         <p><a href="{{ resume.get_absolute_url }}" title="{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</a></p>

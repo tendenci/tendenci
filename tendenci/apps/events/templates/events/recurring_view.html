@@ -15,6 +15,8 @@
 {% block content %}
 
 <div class="t search-view">
+    {% event_nav request.user event %}
+
     <h1>{% trans 'Recurring Event List' %}</h1>
     <h3>{{ recurring_event.get_info }}</h3>
     {% autopaginate events 10 %}

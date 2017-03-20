@@ -14,6 +14,10 @@
 {% endblock extra_head %}
 
 {% block content %}
+    {% if request.user.is_authenticated %}
+        {% forms_nav request.user form %}
+    {% endif %}
+
     <h1>{{ form.title }}</h1>
 
     <section>

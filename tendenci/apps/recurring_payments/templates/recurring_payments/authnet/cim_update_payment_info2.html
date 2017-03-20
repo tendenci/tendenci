@@ -23,6 +23,8 @@
 </form>
 
 <div class="t">
+   {% rp_nav request.user rp %}
+
     <h1>
     {% if request.user.id == rp.user.id %}
        {% trans 'Manage my Payment Info' %}

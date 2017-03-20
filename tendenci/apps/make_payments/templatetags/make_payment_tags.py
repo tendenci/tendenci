@@ -5,9 +5,10 @@ register = Library()
 
 
 @register.inclusion_tag("make_payments/nav.html", takes_context=True)
-def make_payment_nav(context, make_payment=None):
+def make_payment_nav(context, user, make_payment=None):
     context.update({
         "nav_object" : make_payment,
+        "user" : user,
     })
     return context
 

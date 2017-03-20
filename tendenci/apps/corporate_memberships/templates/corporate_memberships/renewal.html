@@ -91,6 +91,8 @@ div.forms{
 
 {% block content %}
 <div class="t">
+    {% corpmemb_nav request.user corp_membership %}
+
      <h1>{% trans "Corporate Membership Renewal" %}</h1>
 
 <form action="" method="post">{% csrf_token %}

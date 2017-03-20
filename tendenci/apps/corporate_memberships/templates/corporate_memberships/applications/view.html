@@ -72,6 +72,8 @@
 {% endblock %}
 
 {% block content %}
+    {% corpmemb_nav request.user corporate_membership %}
+
     {% corpmemb_options request.user corporate_membership %}
 
     <article id="t-corpmemberships-corpmembership-{{ corporate_membership.pk }}" class="t-corpmemberships-corpmembership">

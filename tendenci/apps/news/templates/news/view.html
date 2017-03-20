@@ -21,6 +21,8 @@
 {% endblock %}
 
 {% block content %}
+    {% news_nav request.user news %}
+
     {% tags_for_object news as tags %}
 
     <article id="t-news-news-{{ news.pk }}" class="t-news-news">

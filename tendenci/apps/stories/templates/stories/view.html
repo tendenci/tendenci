@@ -9,6 +9,8 @@
 {% block title %}{{ block.super }}{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
+    {% stories_nav request.user story %}
+
     <article id="t-stories-story-{{ story.pk }}" class="t-stories-story">
         {% if story.image %}
             <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" alt="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}">

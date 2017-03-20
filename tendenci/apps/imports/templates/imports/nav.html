@@ -8,10 +8,12 @@
 {% has_perm user profiles.add_profile as can_add_user %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
             <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
@@ -20,9 +22,8 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_USERS_LABEL 'Users' %}</a>
-            <div>
-            <ul class="dropdown-menu">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_USERS_LABEL 'Users' %}</a>
+        <ul class="dropdown-menu">
             {% if can_edit_setting %}
                 <li><a href="{% url "settings.index" "module" "users" %}">{% trans "Settings" %}</a></li>
             {% endif %}
@@ -36,8 +37,8 @@
 
             {% endif %}
         </ul>
-        </div>
     </li>
     <li><a href="{% url "groups" %}">{% trans "Groups" %}</a></li>
 </ul>
+{% endif %}
 {% endif %}

@@ -7,6 +7,8 @@
 
 {% block content %}
 <div class="t">
+    {% article_nav request.user article %}
+
     <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% blocktrans with article.headline as article_headline %}Meta Information for<br />
     {{ article_headline }}{% endblocktrans %}</h1>
 

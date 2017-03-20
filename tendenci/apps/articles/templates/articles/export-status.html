@@ -9,6 +9,8 @@
 {% block content %}
 {% url "article.export_download" identifier as dl_url %}
 <div class="t">
+    {% article_nav request.user %}
+
     <div class="article-wrap">
 
         <h1>{% trans "Articles Export - Status" %}</h1>

@@ -7,6 +7,7 @@
 
 {% block content %}
 <div class="t">
+{% emails_nav request.user email %}
 
 <h1>{% trans "Delete an Email Record" %}</h1>
 <h3>{% blocktrans with email.subject as subject %}Subject: {{ subject }}{% endblocktrans %}</h3>
@@ -22,7 +23,6 @@
 <input type="hidden" name="id" value="{{email.id}}" />
 <input type="submit" value="{% trans 'Delete Email' %}" />
 </form>
-
 
 </div>
 {% endblock %}

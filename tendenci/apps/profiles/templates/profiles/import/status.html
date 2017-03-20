@@ -21,6 +21,8 @@
 
 {% block content %}
     <div class="t">
+        {% users_nav request.user %}
+
         <div id="import-wrap">
 
             <h1>{% trans "Import Users" %}</h1>

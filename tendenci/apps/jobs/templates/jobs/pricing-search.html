@@ -10,6 +10,8 @@
 
 {% block content %}
 <div class="t">
+    {% job_pricing_nav request.user %}
+
     <h1>{% trans "Job Pricing List" %}</h1>
 
     {% autopaginate job_pricings 10 %}

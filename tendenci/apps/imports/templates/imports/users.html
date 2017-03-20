@@ -11,6 +11,7 @@
 
 {% block content %}
 <div class="t">
+{% dashboard_nav request.user %}
 
 <div class="imports">
 <h1>{% trans "Import Users" %}</h1>
@@ -26,7 +27,6 @@
     </div>
     <div class="clear-both"></div>
 </div>
-
 
 {% if form.non_field_errors %}
     {{ form.non_field_errors }}

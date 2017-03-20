@@ -13,6 +13,8 @@
 {% endblock %}
 
 {% block content %}
+    {% directory_nav request.user directory %}
+
     <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Edit" %}</h1>
 
 

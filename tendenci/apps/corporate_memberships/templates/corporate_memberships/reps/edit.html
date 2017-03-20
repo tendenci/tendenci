@@ -16,6 +16,8 @@
 
 {% block content %}
 <div class="t">
+{% corpmemb_nav request.user corp_membership %}
+
 <div class="corp-reps">
      <h1>{% trans "Representatives for: " %} <a href="{% url "corpmembership.view" corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></h1>
      {% if reps %}

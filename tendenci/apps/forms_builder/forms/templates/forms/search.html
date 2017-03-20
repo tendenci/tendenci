@@ -12,6 +12,8 @@
 
 {% block content %}
 <div class="t">
+    {% forms_nav request.user %}
+
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Search' %}</h1>
 
     {% forms_search %}

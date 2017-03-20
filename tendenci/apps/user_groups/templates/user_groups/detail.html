@@ -20,6 +20,8 @@
 
 <div class="t">
     <div class="group-view">
+        {% user_group_nav request.user group %}
+
         <h1>{{ group.name }}</h1>
 
         {% if can_edit and group.type == 'system_generated' %}

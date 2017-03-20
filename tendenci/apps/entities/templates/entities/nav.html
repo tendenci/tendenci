@@ -16,6 +16,8 @@
 {% endif %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}
+{# Menus for authenticated users are now handled by top_nav.html #}
+{% if not user.is_authenticated %}
 <div id="showh">
     <ul id="primary">
 
@@ -57,4 +59,5 @@
     {% endif %}
     </ul>
 </div>
+{% endif %}
 {% endif %}

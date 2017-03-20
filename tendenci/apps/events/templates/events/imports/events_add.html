@@ -15,6 +15,8 @@
 
 {% block content %}
 <div class="t">
+{% event_nav request.user %}
+
 <div class="imports">
     <h1>{% firstof MODULE_EVENTS_LABEL_PLURAL trans 'Events' %} {% trans "Import" %}</h1>
 

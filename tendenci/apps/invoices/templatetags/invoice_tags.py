@@ -6,9 +6,10 @@ register = Library()
 
 
 @register.inclusion_tag("invoices/nav.html", takes_context=True)
-def invoice_nav(context, invoice=None):
+def invoice_nav(context, user, invoice=None):
     context.update({
         "nav_object" : invoice,
+        "user" : user,
     })
     return context
 

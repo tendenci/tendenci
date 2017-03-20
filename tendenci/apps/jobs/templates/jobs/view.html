@@ -11,6 +11,8 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ job.get_canonical_url }}">{% endblock %}
 
 {% block content %}
+    {% job_nav request.user job %}
+
     <article id="t-jobs-job-{{ job.pk }}" class="t-jobs-job">
         <div class="page-header">
             <h1>{% blocktrans with title=job.title %}{{ title }}{% endblocktrans %}</h1>
