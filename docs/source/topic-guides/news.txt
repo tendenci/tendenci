@@ -16,10 +16,12 @@ Adding a Thumbnail
 
 .. Tip:: 
 
-  To add the thumbnail image to your search results, use this code:
+  To add the thumbnail image to ``search-result.html``, use this code:
     
    .. hidden-code-block:: html
          :label: + Show Added HTML / Django Template Tags
+         
+              <!-- NOTE: This is a different tagging convention than the thumbnail display in a News Feed -->
          
               {% if news.thumbnail %}
               <div class="col-xs-4">
