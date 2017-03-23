@@ -14,6 +14,8 @@ The overall page layout is dictated by ``search.html``.  The look of the news re
 Adding a Thumbnail
 ---------------
 
+.. image:: img/newsthumbnail.png
+
 .. Tip:: 
 
   To add the thumbnail image to ``search-result.html``, use this code:
@@ -35,6 +37,8 @@ Adding a Thumbnail
           
 Blog Styling: Show Image in the News Article
 ---------------
+
+.. image:: img/blogstyle.png
 
 .. Tip:: 
   
