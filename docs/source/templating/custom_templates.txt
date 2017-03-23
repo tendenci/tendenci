@@ -125,6 +125,7 @@ Font-Awesome After Nav Items
         
             a.t-caret.dropdown-toggle:after {
                 content: "\f0d7";
+                font-family: FontAwesome, 'Roboto', sans-serif;
             }
 
 Simple Search Bar w/ Font-Awesome Icon

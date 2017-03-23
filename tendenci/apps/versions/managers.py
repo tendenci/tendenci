@@ -3,7 +3,6 @@ import uuid
 from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
-from django.core.serializers.json import DjangoJSONEncoder
 import simplejson as json
 
 
@@ -39,7 +38,7 @@ class VersionManager(Manager):
                 version.create_dt = old_instance.update_dt
                 version.hash = str(uuid.uuid1())
 
-                version.object_changes = json.dumps(changes, cls=DjangoJSONEncoder)
+                version.object_changes = json.dumps(changes)
 
                 object_json = serializers.serialize('json', [old_instance], ensure_ascii=False)
                 object_value = object_json[1:-1]
