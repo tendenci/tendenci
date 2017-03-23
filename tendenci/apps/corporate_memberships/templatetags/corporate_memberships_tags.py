@@ -15,7 +15,7 @@ register = Library()
 
 
 @register.inclusion_tag(
-        "corporate_memberships/applications/render_corpmembership_field.html")
+        "memberships/applications/render_membership_field.html")
 def render_corpmembership_field(request, field_obj,
                                 corpprofile_form,
                             corpmembership_form):
