@@ -279,6 +279,7 @@ class FormAdminForm(TendenciBaseForm):
                   'slug',
                   'intro',
                   'response',
+                  'group',
                   'template',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
                   'email_text',
