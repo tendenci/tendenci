@@ -100,7 +100,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         else:
             return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
 
-    list_display = ['user', edit_payment_info_link, view_on_site,
+    list_display = ['user', edit_payment_info_link, 'view_on_site',
                     'description', 'billing_start_dt',
                      how_much_to_pay,
                      'status_detail']
