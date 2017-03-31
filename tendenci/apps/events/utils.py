@@ -1698,10 +1698,8 @@ def add_sf_attendance(registrant, event):
 
             elif all(contact_requirements):
                 # Query for a duplicate entry in salesforce
-                result = sf.query("SELECT Id FROM Contact WHERE FirstName='%s' AND LastName='%s' AND Email='%s'"
-                                  %(registrant.first_name.replace("'", "''"), 
-                                    registrant.last_name.replace("'", "''"), 
-                                    registrant.email.replace("'", "''")) )
+                # saleforce blocks the request if email is already in their system - so just checking email
+                result = sf.query("SELECT Id FROM Contact WHERE Email='%s'" % registrant.email.replace("'", "''"))
                 if result['records']:
                     contact_id = result['records'][0]['Id']
                 else:
