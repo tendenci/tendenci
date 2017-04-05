@@ -18,6 +18,12 @@
     <div class="download">
         <a title="Download {{ file.ext }}" href="{% url file file.pk 'download' %}">{% trans "Download" %} this {{ file.type }}</a>
     </div>
+    
+    <br />
+    <div>
+    <div>Secure link: <input type="text" value="{% url file file.pk %}" /> </div>
+    <div>Full link (no security): <input type="text" value="{{ file.get_file_public_url }}" /></div>
+    </div>
 
     <div class="meta">
         {% with file.category_set as file_cat %}
