@@ -646,4 +646,42 @@ Here's an example of what this snippet can look like:
 		#services img {
 		  padding:0 10px;
 		}
+		
+RSS Feed
+----------
+
+Add the following code snippet where you want to place your RSS Feed, include only the elements that you can to display on your page.  If the RSS feed does not contain the elements you're calling, they won't show on the page and may throw an error.
+
+.. code-block:: django
+	
+	   <!-- begin: subscribe-block -->
+            <div class="col-xs-12">
+               <h3>Careers</h3>
+              
+                <ul class="list-unstyled">{% get_rss "https://example.com" as rss %}                
+                  {% for entry in rss.entries|slice:":4" %}
+                  <li>
+                    <p class="rss-title"><a target="_blank" href="{{ entry.link }}">{{ entry.title }}</a><br /> 
+                      <span class="date">Posted Date: {{ entry.updated_parsed|rss_date:"F j, Y" }}</span></p>
+                  </li>
+                  {% endfor %}
+                </ul>
+                <a class="read-more" href="/example/">View More</a>
+             
+            </div>
+            <!-- end: subscribe-block -->
+	    
+.. Tip:: 	
+	
+	Other elements you can include:
+	
+	.. code-block:: django
+
+	    {{ entry.enclosure }}
+	    {{ entry.pubdate }}
+	    {{ entry.updateddate }}
+	    {{ entry.author_name }}
+	    {{ author_email}} 
+	    {{ author_link }}	  
+	
 
