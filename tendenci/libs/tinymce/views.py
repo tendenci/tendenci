@@ -137,5 +137,5 @@ def filebrowser(request):
 # 
 #     return render_to_response('tinymce/filebrowser.js', {'fb_url': fb_url},
 #             context_instance=RequestContext(request))
-    return render_to_response('tinymce/filebrowser.js', {},
+    return render_to_response('tinymce/filebrowser.js', {}, mimetype='application/javascript',
             context_instance=RequestContext(request))

@@ -261,7 +261,8 @@ def obfuscate_email(email, linktext=None, autoescape=None):
         esc(email))).encode('rot13')
 
     if linktext:
-        linktext = esc(linktext).encode('rot13')
+        # fix UnicodeEncodeError
+        linktext = esc(linktext).encode('unicode-escape').encode('rot13')
     else:
         linktext = email
 

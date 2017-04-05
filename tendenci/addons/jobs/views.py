@@ -55,7 +55,6 @@ def detail(request, slug=None, template_name="jobs/view.html"):
     else:
         raise Http403
 
-
 @is_enabled('jobs')
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
@@ -63,16 +62,13 @@ def search(request, template_name="jobs/search.html"):
     category = None
     subcategory = None
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        jobs = Job.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'jobs.view_job')
-        jobs = Job.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            jobs = jobs.select_related()
+    filters = get_query_filters(request.user, 'jobs.view_job')
+    jobs = Job.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        jobs = jobs.select_related()
 
-        if not has_perm(request.user, 'jobs.change_job'):
-            jobs = jobs.filter(Q(expiration_dt__isnull=True) | Q(expiration_dt__gte=datetime.now()))
+    if not has_perm(request.user, 'jobs.change_job'):
+        jobs = jobs.filter(Q(expiration_dt__isnull=True) | Q(expiration_dt__gte=datetime.now()))
 
     form = JobSearchForm(request.GET)
     if form.is_valid():
@@ -80,10 +76,16 @@ def search(request, template_name="jobs/search.html"):
         category = form.cleaned_data.get('categories')
         subcategory = form.cleaned_data.get('subcategories')
 
-    if category:
-        jobs = jobs.filter(categories__category=category)
-    if subcategory:
-        jobs = jobs.filter(categories__parent=subcategory)
+        if category:
+            jobs = jobs.filter(categories__category=category)
+        if subcategory:
+            jobs = jobs.filter(categories__parent=subcategory)
+        if query:
+            if 'tag:' in query:
+                tag = query.strip('tag:')
+                jobs = jobs.filter(tags__icontains=tag)
+            else:
+                jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query))
 
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
@@ -93,7 +95,8 @@ def search(request, template_name="jobs/search.html"):
             status_detail__contains='pending'
         )
 
-    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+    jobs = jobs.order_by('list_type', '-post_dt', '-update_dt')
+    print jobs.query
 
     EventLog.objects.log()
 
@@ -102,6 +105,54 @@ def search(request, template_name="jobs/search.html"):
         {'jobs': jobs, 'form': form},
         context_instance=RequestContext(request)
     )
+    
+
+# @is_enabled('jobs')
+# def search(request, template_name="jobs/search.html"):
+#     query = request.GET.get('q', None)
+#     my_pending_jobs = request.GET.get('my_pending_jobs', False)
+#     category = None
+#     subcategory = None
+# 
+#     if get_setting('site', 'global', 'searchindex') and query:
+#         jobs = Job.objects.search(query, user=request.user)
+#     else:
+#         filters = get_query_filters(request.user, 'jobs.view_job')
+#         jobs = Job.objects.filter(filters).distinct()
+#         if not request.user.is_anonymous():
+#             jobs = jobs.select_related()
+# 
+#         if not has_perm(request.user, 'jobs.change_job'):
+#             jobs = jobs.filter(Q(expiration_dt__isnull=True) | Q(expiration_dt__gte=datetime.now()))
+# 
+#     form = JobSearchForm(request.GET)
+#     if form.is_valid():
+#         query = form.cleaned_data.get('q')
+#         category = form.cleaned_data.get('categories')
+#         subcategory = form.cleaned_data.get('subcategories')
+# 
+#     if category:
+#         jobs = jobs.filter(categories__category=category)
+#     if subcategory:
+#         jobs = jobs.filter(categories__parent=subcategory)
+# 
+#     # filter for "my pending jobs"
+#     if my_pending_jobs and not request.user.is_anonymous():
+#         template_name = "jobs/my_pending_jobs.html"
+#         jobs = jobs.filter(
+#             creator_username=request.user.username,
+#             status_detail__contains='pending'
+#         )
+# 
+#     jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+# 
+#     EventLog.objects.log()
+# 
+#     return render_to_response(
+#         template_name,
+#         {'jobs': jobs, 'form': form},
+#         context_instance=RequestContext(request)
+#     )
 
 
 def search_redirect(request):

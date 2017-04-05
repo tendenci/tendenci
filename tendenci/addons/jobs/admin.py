@@ -64,7 +64,7 @@ class JobAdmin(TendenciBaseModelAdmin):
         )}),
     )
     form = JobAdminForm
-    ordering = ['-update_dt']
+    ordering = ['-post_dt', '-update_dt']
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(JobAdmin, self).get_form(request, obj=None, **kwargs)

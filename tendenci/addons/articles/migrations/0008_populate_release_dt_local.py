@@ -33,7 +33,7 @@ class Migration(DataMigration):
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'body': ('tinymce.models.HTMLField', [], {}),
+            'body': ('tendenci.libs.tinymce.models.HTMLField', [], {}),
             'contributor_type': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'articles_article_creator'", 'null': 'True', 'on_delete': 'models.SET_NULL', 'to': "orm['auth.User']"}),
