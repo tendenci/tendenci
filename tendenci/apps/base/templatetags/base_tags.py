@@ -379,7 +379,7 @@ def get_rss(parser, token):
         ``cache``
            The length of time to cache the feed in seconds. **Default: 300**
 
-    Example::
+    Example 1::
 
         {% get_rss "http://www.freesound.org/blog/?feed=rss2" as rss %}
         {% for entry in rss.entries %}
@@ -391,6 +391,54 @@ def get_rss(parser, token):
                 <a href="{{entry.link}}">read more...</a>
             </p>
         {% endfor %}
+        
+        
+     Example 2::   
+        
+        {% get_rss "http://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml" as rss %}
+        {% if rss.feed.image %}
+            <img src="{{ rss.feed.image.href }}" alt="" />
+        {% endif %}
+        {% for entry in rss.entries %}        
+        <div class="row entry-item">
+              
+             <div class="col-xs-4 col-md-3">
+              {% if entry.media_content %}
+                  {% for media in entry.media_content %}
+                      {% if media.medium == 'image' %}
+                      <img src="{{ media.url }}" width="{{ media.width }}" height="{{ media.height }}" alt="" />
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+               </div>
+               
+              <div class="col-xs-8 col-md-9">
+                  <h4 class="entry-title"><a href="{{ entry.link }}">{{entry.title}}</a></h4>
+                  <div class="small">Published on: {{entry.published}}</div>
+                  {% if entry.authors %}
+                      <div class="small">Author{{ entry.authors|pluralize }}:
+                      {% for author in entry.authors %}
+                          {{ author.name }}
+                    {% endfor %}
+                      </div>
+                {% endif %}
+
+                {% if entry.content %}
+                  {% for content in entry.content %}
+                      <div>{{ content.value|safe }}</div>
+                  {% endfor %}
+                {% elif entry.summary %}
+                  <div>{{ entry.summary|safe }}</div>
+                {% endif %}
+              
+              <a href="{{entry.link}}">read more...</a>
+           </div>
+            
+        </div>
+        {% endfor %}
+        
+        
+        
     """
     args, kwargs = [], {}
     bits = token.split_contents()
