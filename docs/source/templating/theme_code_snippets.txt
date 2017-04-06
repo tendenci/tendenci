@@ -681,7 +681,7 @@ Add the following code snippet where you want to place your RSS Feed, include on
 	    {{ entry.pubdate }}
 	    {{ entry.updateddate }}
 	    {{ entry.author_name }}
-	    {{ author_email}} 
-	    {{ author_link }}	  
+	    {{ entry.author_email}} 
+	    {{ entry.author_link }}	  
 	
 
