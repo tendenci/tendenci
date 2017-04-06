@@ -1,6 +1,10 @@
+import datetime
+import traceback
+from logging import getLogger
 from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
 from django.template.loader import render_to_string
+from django.core.urlresolvers import reverse
 
 
 class Command(BaseCommand):
@@ -16,9 +20,8 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('newsletter_id', type=int)
-
-    def handle(self, *args, **options):
-        import datetime
+        
+    def send_newsletter(self, newsletter_id, **kwargs):
         from tendenci.apps.emails.models import Email
         from tendenci.apps.newsletters.models import Newsletter
         from tendenci.apps.site_settings.utils import get_setting
@@ -32,8 +35,7 @@ class Command(BaseCommand):
 
 
         print "Started sending newsletter..."
-
-        newsletter_id = options['newsletter_id']
+        
         if newsletter_id == 0:
             raise CommandError('Newsletter ID is required. Usage: ./manage.py send_newsletter <newsletter_id>')
 
@@ -142,10 +144,25 @@ class Command(BaseCommand):
             body=body)
 
         email.send(connection=connection)
-
+        
         print "Confirmation email sent."
 
         # add cache clear to resolve issue
         # TODO: cache clear only to specifies
         cache.clear()
         print 'Cache cleared!'
+        
+
+    def handle(self, *args, **options):
+        from tendenci.apps.site_settings.utils import get_setting
+        logger = getLogger('send_newsletter')
+        
+        newsletter_id = options['newsletter_id']
+        
+        try:
+            self.send_newsletter(newsletter_id)
+        except:
+            print traceback.format_exc()
+            newsletter_url = '%s%s' % (get_setting('site', 'global', 'siteurl'),
+                                        reverse('newsletter.detail.view', kwargs={'pk': newsletter_id}))
+            logger.error('Error sending newsletter %s...\n\n%s' % (newsletter_url, traceback.format_exc()))
