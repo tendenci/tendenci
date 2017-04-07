@@ -499,7 +499,7 @@ Then add the following code snippet where you want to place your photos:
 
 Drag and drop photo albums to change the order of display on /photos/. To display photos from the top of your list in your feed - as opposed to the most recently added photos - add this order selection to your code.
 
-  {% list_photos as photos_list limit=2 order='photoset__position' %}
+`{% list_photos as photos_list limit=2 order='photoset__position' %}`
                
 
 
