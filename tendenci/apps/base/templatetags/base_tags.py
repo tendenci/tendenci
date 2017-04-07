@@ -403,6 +403,7 @@ def get_rss(parser, token):
         <div class="row entry-item">
               
              <div class="col-xs-4 col-md-3">
+             {# media image #}
               {% if entry.media_content %}
                   {% for media in entry.media_content %}
                       {% if media.medium == 'image' %}
@@ -413,8 +414,13 @@ def get_rss(parser, token):
                </div>
                
               <div class="col-xs-8 col-md-9">
+                  {# title #}
                   <h4 class="entry-title"><a href="{{ entry.link }}">{{entry.title}}</a></h4>
+                  
+                  {# pubdate #}
                   <div class="small">Published on: {{entry.published}}</div>
+                  
+                  {# authors #}
                   {% if entry.authors %}
                       <div class="small">Author{{ entry.authors|pluralize }}:
                       {% for author in entry.authors %}
@@ -422,13 +428,41 @@ def get_rss(parser, token):
                     {% endfor %}
                       </div>
                 {% endif %}
+                
+                {# categories #}
+                {% if entry.tags %}
+                      <div class="small">Categories:
+                      {% for tag in entry.tags %}
+                          {% if tag.scheme  %}
+                          <a href="{{ tag.scheme }}">{{ tag.term }}</a>
+                          {% else  %}
+                          {{ tag.term }}
+                          {% endif %}
+                    {% endfor %}
+                      </div>
+                {% endif %}
 
+                {# description #}
                 {% if entry.content %}
                   {% for content in entry.content %}
                       <div>{{ content.value|safe }}</div>
                   {% endfor %}
                 {% elif entry.summary %}
                   <div>{{ entry.summary|safe }}</div>
+                {% endif %}
+                
+                {# enclosure #}
+                {% if entry.links %}
+                  {% for link in entry.links %}
+                      {% if link.rel == 'enclosure' %}
+                      <div>
+                       <audio controls>
+                          <source src="{{ link.href }}" type="{{ link.type }}">
+                        </audio> 
+                        {{ link.length|filesizeformat }}
+                        </div>
+                      {% endif %}
+                  {% endfor %}
                 {% endif %}
               
               <a href="{{entry.link}}">read more...</a>
