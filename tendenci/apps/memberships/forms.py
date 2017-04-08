@@ -610,7 +610,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                 max_length=30,
                                 widget=forms.TextInput,
                                 label=username.label,
-                                help_text=username.label,
+                                help_text=username.help_text,
                                 error_messages = {
                                     'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
