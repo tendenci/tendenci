@@ -393,8 +393,8 @@ def get_rss(parser, token):
         {% endfor %}
         
         
-     Example 2::   
-        
+    Example 2::   
+
         {% get_rss "http://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml" as rss %}
         {% if rss.feed.image %}
             <img src="{{ rss.feed.image.href }}" alt="" />
