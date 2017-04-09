@@ -5,7 +5,8 @@ from reportlab.lib.pagesizes import A5
 from django.core.urlresolvers import reverse
 from django.utils.html import mark_safe
 
-from django.utils.translation import ugettext_lazy as _
+# ReportLab does not support ugettext_lazy() translations, so use ugettext() instead
+from django.utils.translation import ugettext as _
 from tendenci.libs.model_report.report import reports, ReportAdmin
 from tendenci.libs.model_report.utils import count_column, us_date_format, yesno_format
 from tendenci.apps.memberships.models import MembershipDefault, MembershipType
