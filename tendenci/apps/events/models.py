@@ -242,7 +242,7 @@ class RegistrationConfiguration(models.Model):
                     status=True
                     )
         if q_obj:
-            pricings = pricings.filter(q_obj)
+            pricings = pricings.filter(q_obj).distinct()
 
         return pricings
 
