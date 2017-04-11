@@ -25,6 +25,6 @@ urlpatterns = patterns('tendenci.apps.locations.views',
     url(r'^locations/upload/formats/csv/$', 'download_location_upload_template',
             name="locations.download_location_upload_template_csv"),
     url(r'^%s/export/$' % urlpath, 'export', name='locations_export'),
-    url(r'^%s/(?P<id>[-\w]+)/$' % urlpath, 'detail', name="location"),
+    url(r'^%s/(?P<slug>[-\w]+)/$' % urlpath, 'detail', name="location"),
 
 )

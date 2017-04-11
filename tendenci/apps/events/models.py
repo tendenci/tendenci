@@ -242,7 +242,7 @@ class RegistrationConfiguration(models.Model):
                     status=True
                     )
         if q_obj:
-            pricings = pricings.filter(q_obj)
+            pricings = pricings.filter(q_obj).distinct()
 
         return pricings
 
@@ -373,14 +373,16 @@ class RegConfPricing(OrderingBaseModel):
                 filter_or = {'allow_anonymous': True,
                              'allow_user': True,
                              'allow_member': True}
-                # get a list of groups for this user
-                groups_id_list = user.group_member.values_list('group__id', flat=True)
-                if groups_id_list:
-                    filter_or.update({'groups__in': groups_id_list})
+                
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
                         'allow_member': True}
+        if not user.is_anonymous() and user.profile.is_member:
+            # get a list of groups for this user
+            groups_id_list = user.group_member.values_list('group__id', flat=True)
+            if groups_id_list:
+                filter_or.update({'groups__in': groups_id_list})
 
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,

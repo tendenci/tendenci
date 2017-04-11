@@ -226,7 +226,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     response = HttpResponse(content_type='image/jpeg')
     response['Content-Disposition'] = '%s filename="%s"' % (attachment, photo.image_filename())
-    image.save(response, "JPEG", quality=quality)
+    image.convert('RGB').save(response, "JPEG", quality=quality)
 
     if photo.is_public_photo() and photo.is_public_photoset():
         file_name = photo.image_filename()

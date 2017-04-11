@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from tendenci.apps.stories.models import Story
         for story in Story.objects.filter(expires=True, status_detail='active'):
-            if story.end_dt < datetime.now():
+            if story.end_dt and story.end_dt < datetime.now():
                 story.status_detail = 'expired'
                 story.save()
         call_command('update_index', *["stories"])

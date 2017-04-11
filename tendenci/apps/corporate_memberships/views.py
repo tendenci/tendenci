@@ -1569,6 +1569,7 @@ def corpmembership_export(request,
                                        if not name in base_field_list]
             corp_profile_field_list.remove('guid')
             corp_profile_field_list.append('dues_rep')
+            corp_profile_field_list.append('member_rep')
             corp_profile_field_list.append('authorized_domains')
             corp_memb_field_list = [smart_str(field.name) for field \
                                in CorpMembership._meta.fields]

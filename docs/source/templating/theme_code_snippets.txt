@@ -497,6 +497,12 @@ Then add the following code snippet where you want to place your photos:
      {% endfor %}
    </ul>
 
+Drag and drop photo albums to change the order of display on /photos/. To display photos from the top of your list in your feed - as opposed to the most recently added photos - add this order selection to your code.
+
+`{% list_photos as photos_list limit=2 order='photoset__position' %}`
+               
+
+
 Videos Feed
 ----------
 Add `{% load video_tags %}` to the very top of your html page
@@ -646,4 +652,123 @@ Here's an example of what this snippet can look like:
 		#services img {
 		  padding:0 10px;
 		}
+		
+RSS Feed
+----------
+
+Add the following code snippet where you want to place your RSS Feed, include only the elements that you can to display on your page.  If the RSS feed does not contain the elements you're calling, they won't show on the page and may throw an error.
+
+.. image:: img/rssfeed.png
+
+.. code-block:: django
+	
+	   <!-- begin: subscribe-block -->
+            <div class="col-xs-12">
+               <h3>Careers</h3>
+              
+                <ul class="list-unstyled">{% get_rss "https://example.com" as rss %}                
+                  {% for entry in rss.entries|slice:":4" %}
+                  <li>
+                    <p class="rss-title"><a target="_blank" href="{{ entry.link }}">{{ entry.title }}</a><br /> 
+                      <span class="date">Posted Date: {{ entry.updated_parsed|rss_date:"F j, Y" }}</span></p>
+                  </li>
+                  {% endfor %}
+                </ul>
+                <a class="read-more" href="/example/">View More</a>
+             
+            </div>
+            <!-- end: subscribe-block -->
+	    
+Example 2 shows more of the rss elements that could be included in your site:
+	    
+.. code-block:: django
+
+        {% get_rss "http://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml" as rss %}
+        {% if rss.feed.image %}
+            <img src="{{ rss.feed.image.href }}" alt="" />
+        {% endif %}
+        {% for entry in rss.entries %}        
+        <div class="row entry-item">
+              
+             <div class="col-xs-4 col-md-3">
+             {# media image #}
+              {% if entry.media_content %}
+                  {% for media in entry.media_content %}
+                      {% if media.medium == 'image' %}
+                      <img src="{{ media.url }}" width="{{ media.width }}" height="{{ media.height }}" alt="" />
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+               </div>
+               
+              <div class="col-xs-8 col-md-9">
+                  {# title #}
+                  <h4 class="entry-title"><a href="{{ entry.link }}">{{entry.title}}</a></h4>
+                  
+                  {# pubdate #}
+                  <div class="small">Published on: {{entry.published}}</div>
+                  
+                  {# authors #}
+                  {% if entry.authors %}
+                      <div class="small">Author{{ entry.authors|pluralize }}:
+                      {% for author in entry.authors %}
+                          {{ author.name }}
+                    {% endfor %}
+                      </div>
+                {% endif %}
+                
+                {# categories #}
+                {% if entry.tags %}
+                      <div class="small">Categories:
+                      {% for tag in entry.tags %}
+                          {% if tag.scheme  %}
+                          <a href="{{ tag.scheme }}">{{ tag.term }}</a>
+                          {% else  %}
+                          {{ tag.term }}
+                          {% endif %}
+                    {% endfor %}
+                      </div>
+                {% endif %}
+                {# description #}
+                {% if entry.content %}
+                  {% for content in entry.content %}
+                      <div>{{ content.value|safe }}</div>
+                  {% endfor %}
+                {% elif entry.summary %}
+                  <div>{{ entry.summary|safe }}</div>
+                {% endif %}
+                
+                {# enclosure #}
+                {% if entry.links %}
+                  {% for link in entry.links %}
+                      {% if link.rel == 'enclosure' %}
+                      <div>
+                       <audio controls>
+                          <source src="{{ link.href }}" type="{{ link.type }}">
+                        </audio> 
+                        {{ link.length|filesizeformat }}
+                        </div>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+              
+              <a href="{{entry.link}}">read more...</a>
+           </div>
+            
+        </div>
+        {% endfor %}
+
+.. Tip:: 	
+	
+	Other elements you can include:
+	
+	.. code-block:: django
+
+	    {{ entry.enclosure }}
+	    {{ entry.pubdate }}
+	    {{ entry.updateddate }}
+	    {{ entry.author_name }}
+	    {{ entry.author_email}} 
+	    {{ entry.author_link }}	  
+	
 

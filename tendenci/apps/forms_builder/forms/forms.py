@@ -272,6 +272,7 @@ class FormAdminForm(TendenciBaseForm):
         'storme_model':Form._meta.model_name.lower()}))
 
     template = forms.ChoiceField(choices=template_choices, required=False)
+    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = Form
@@ -279,6 +280,7 @@ class FormAdminForm(TendenciBaseForm):
                   'slug',
                   'intro',
                   'response',
+                  'group',
                   'template',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
                   'email_text',
@@ -312,11 +314,21 @@ class FormAdminForm(TendenciBaseForm):
         else:
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['response'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['group'].initial = Group.objects.get_initial_group_id()
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+        self.fields['group'].choices = default_groups.values_list('pk', 'name')
 
         position_fields = ['intro_position', 'fields_position', 'pricing_position']
         for field in position_fields:
             self.fields[field].widget.attrs['class'] = 'position_field'
 
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            return Group.objects.get(pk=group_id)
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
 
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])

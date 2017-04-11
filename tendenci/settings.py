@@ -570,3 +570,31 @@ GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'
 # ------------------------------------------------- #
 ALLOW_MP3_UPLOAD = False
 
+# -------------------------------------- #
+# logging
+# -------------------------------------- #
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'tendenci.apps.base.log.CustomAdminEmailHandler',
+        },
+    },
+    'loggers': {
+        'send_newsletter': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+        },
+    },
+}
+
