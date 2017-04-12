@@ -3468,7 +3468,7 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             email.sender_display = request.user.get_full_name()
             email.reply_to = request.user.email
             email.recipient = request.user.email
-            email.content_type = "text/html"
+            email.content_type = "html"
             email.save(request.user)
             subject = email.subject
 
