@@ -20,7 +20,7 @@ def prepare_paypal_form(request, payment):
     amount = "%.2f" % payment.amount
     image_url = get_setting("site", "global", "MerchantLogo")
     site_url = get_setting('site', 'global', 'siteurl')
-    notify_url = '%s/%s' % (site_url, reverse('paypal.ipn'))
+    notify_url = '%s%s' % (site_url, reverse('paypal.ipn'))
     currency_code = get_setting('site', 'global', 'currency')
     if not currency_code:
         currency_code = 'USD'
