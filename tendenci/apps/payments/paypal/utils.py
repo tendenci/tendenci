@@ -18,7 +18,7 @@ from tendenci.apps.site_settings.utils import get_setting
 
 def prepare_paypal_form(request, payment):
     amount = "%.2f" % payment.amount
-    image_url = get_setting("site", "global", "MerchantLogo")
+    image_url = get_setting('site', 'global', 'merchantlogo')
     site_url = get_setting('site', 'global', 'siteurl')
     notify_url = '%s%s' % (site_url, reverse('paypal.ipn'))
     currency_code = get_setting('site', 'global', 'currency')
