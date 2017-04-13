@@ -140,6 +140,23 @@ class RecurringPayment(models.Model):
         return None
 
 
+    def create_customer_profile_from_trans_id(self, trans_id):
+        from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfileFromTransaction
+        cpt = CIMCustomerProfileFromTransaction()
+        success, response_d = cpt.create(trans_id=trans_id)
+        if success:
+            self.customer_profile_id = response_d['customer_profile_id']
+            self.save()
+            customer_payment_profile_id = response_d['customer_payment_profile_id_list']['numeric_string']
+            payment_profile = PaymentProfile(customer_profile_id=self.customer_profile_id,
+                                             payment_profile_id=customer_payment_profile_id,
+                                             creator=self.user,
+                                             owner=self.user,
+                                             creator_username= self.user.username,
+                                             owner_username = self.user.username)
+            payment_profile.save()
+                
+
     def add_customer_profile(self):
         """Add the customer profile on payment gateway
         """

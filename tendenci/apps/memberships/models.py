@@ -1908,6 +1908,10 @@ class MembershipDefault(TendenciBaseModel):
             if self.corporate_membership_id:
                 # notify corp reps
                 self.email_corp_reps(request)
+                
+        if self.auto_renew:
+            # add recurring payment entry here
+            self.get_or_create_rp(self, request.user, trans_id=payment.trans_id)
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
@@ -1943,7 +1947,37 @@ class MembershipDefault(TendenciBaseModel):
                 return True
         
         return False
-            
+    
+    def get_or_create_rp(self, request_user, **kwargs):
+        """
+        Get or create recurring payment entry
+        """ 
+        from tendenci.apps.recurring_payments.models import RecurringPayment
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            ct = ContentType.objects.get_for_model(MembershipDefault)
+            [rp] = self.user.recurring_payments.filter(object_content_type=ct,
+                                       status=True,
+                                       status_detail__in=['active', 'disabled'])[:1] or [None]
+            if not rp:
+                if not request_user or request_user.is_anonymous():
+                    request_user = self.user
+                rp = RecurringPayment(user=self.user,
+                                     object_content_type=ct,
+                                     description='Membership Auto Renew',
+                                     billing_start_dt=datetime.now(),
+                                     payment_amount=0,
+                                     creator=request_user,
+                                     creator_username=request_user.username,
+                                     owner=self.user,
+                                     owner_username=self.user.username,
+                                     status=True,
+                                     status_detail='active')
+                rp.save()
+            if not rp.customer_profile_id:
+                trans_id = kwargs.get('trans_id', None)
+                if trans_id:
+                    rp.create_customer_profile_from_trans_id(trans_id)
+
 
     # def custom_fields(self):
     #     return self.membershipfield_set.order_by('field__position')

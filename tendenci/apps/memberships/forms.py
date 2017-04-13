@@ -39,6 +39,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.site_settings.utils import get_setting
 
 
 THIS_YEAR = datetime.today().year
@@ -1142,7 +1143,9 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             else:
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
-                
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'))
+               
         self.add_form_control_class()
 
         if self.membership_app.donation_enabled:
