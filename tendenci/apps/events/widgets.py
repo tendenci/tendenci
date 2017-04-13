@@ -1,7 +1,6 @@
 from django import forms
 from django.core.urlresolvers import reverse
 from django.forms.widgets import RadioFieldRenderer
-from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -21,7 +20,8 @@ class BootstrapChoiceFieldRenderer(RadioFieldRenderer):
         start_tag = format_html('<div id="{0}">', id_) if id_ else '<div>'
         output = [start_tag]
         for widget in self:
-            output.append(format_html('<div class="radio">{0}</div>', force_text(widget)))
+            # apply str() to force widget to render
+            output.append(format_html('<div class="radio">{0}</div>', str(widget)))
         output.append('</div>')
         return mark_safe('\n'.join(output))
 
