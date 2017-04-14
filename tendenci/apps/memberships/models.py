@@ -1911,7 +1911,8 @@ class MembershipDefault(TendenciBaseModel):
                 
         if self.auto_renew:
             # add recurring payment entry here
-            self.get_or_create_rp(self, request.user, trans_id=payment.trans_id)
+            params = {'trans_id': payment.trans_id}
+            self.get_or_create_rp(request.user, **params)
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
@@ -1972,8 +1973,10 @@ class MembershipDefault(TendenciBaseModel):
                                      owner_username=self.user.username,
                                      status=True,
                                      status_detail='active')
+                # bypass the signal on save so that we can create customer profile from trans_id
+                rp.customer_profile_id = 'TBD'
                 rp.save()
-            if not rp.customer_profile_id:
+            if not rp.customer_profile_id or rp.customer_profile_id == 'TBD':
                 trans_id = kwargs.get('trans_id', None)
                 if trans_id:
                     rp.create_customer_profile_from_trans_id(trans_id)
