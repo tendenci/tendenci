@@ -1144,7 +1144,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
         if get_setting('module', 'recurring_payments', 'enabled'):
-            self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'))
+            self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'), required=False)
                
         self.add_form_control_class()
 
