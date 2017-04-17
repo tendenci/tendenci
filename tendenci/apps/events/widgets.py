@@ -3,6 +3,8 @@ from django.core.urlresolvers import reverse
 from django.forms.widgets import RadioFieldRenderer
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.encoding import smart_unicode
+import chardet
 
 
 class BootstrapChoiceFieldRenderer(RadioFieldRenderer):
@@ -20,10 +22,13 @@ class BootstrapChoiceFieldRenderer(RadioFieldRenderer):
         start_tag = format_html('<div id="{0}">', id_) if id_ else '<div>'
         output = [start_tag]
         for widget in self:
-            # apply str() to force widget to render
             output.append(format_html('<div class="radio">{0}</div>', str(widget)))
         output.append('</div>')
-        return mark_safe('\n'.join(output))
+        ret_value = '\n'.join(output)
+        encoding = chardet.detect(ret_value)['encoding']
+        if encoding not in ['ascii', 'utf-8']:
+            ret_value = smart_unicode(ret_value)
+        return ret_value
 
 
 class UseCustomRegWidget(forms.MultiWidget):
