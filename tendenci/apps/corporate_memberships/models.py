@@ -847,6 +847,9 @@ class CorpMembership(TendenciBaseModel):
                 new_membership.save()
                 # archive old memberships
                 new_membership.archive_old_memberships()
+                
+                # show member_number on profile
+                new_membership.profile_refresh_member_number()
 
                 # check and add member to the group if not exist
                 [gm] = GroupMembership.objects.filter(group=group,
