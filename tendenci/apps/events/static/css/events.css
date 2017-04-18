@@ -575,14 +575,14 @@ ul.errorlist {;
 }
 .month-view div.weekday,
 .month-view div.weekday-mobile {
-    width: 13.7%;
+    width: 14.25%;
     float: left;
     text-align: center;
     border-bottom: 1px solid silver;
 }
 .month-view div.weekday-mobile {
     display: none;
-    width: 13.8470282554%;
+    width: 14.25%;
 }
 
 .month-view .calendar-wrap {
@@ -590,7 +590,7 @@ ul.errorlist {;
 }
 .month-view .month-wrap {
     float: left;
-    background-color: white;
+    background-color: transparent;
     padding-right: 10px;
     width: 100%;
 }
@@ -599,7 +599,7 @@ ul.errorlist {;
     border-left: 1px solid silver;
 }
 .month-view div.day {
-    width: 13.7%;
+    width: 14.25%;
     height: 116px;
     border: 1px solid silver;
 
@@ -708,7 +708,7 @@ div.event-recurring {
     border-bottom: 1px solid #DDD;
 }
 .side-bar .types {
-    margin: 0 10px;
+    margin: 5px 10px;
     float: left;
 }
 .side-bar .types .type a {
