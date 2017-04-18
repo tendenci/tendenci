@@ -49,6 +49,7 @@ ActivateForm)
 from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
+from tendenci.apps.memberships.forms import EducationForm
 from tendenci.apps.invoices.models import Invoice
 
 try:
@@ -931,6 +932,32 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
             messages.add_message(request, messages.SUCCESS, _('Successfully updated memberships for %s' % { 'full_name': user.get_full_name()}))
             membership.populate_or_clear_member_id()
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
+
+    return render_to_response(template_name, {
+                            'form': form,
+                            'user_this': user,
+                            }, context_instance=RequestContext(request))
+
+
+@login_required
+def user_education_edit(request, username, form_class=EducationForm, template_name="profiles/edit_education.html"):
+    user = get_object_or_404(User, username=username)
+
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user)
+
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+
+    form = form_class(None, request.POST or None, user=user)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(user)
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited education for %(full_name)s' % { 'full_name' : user.get_full_name()}))
+            return HttpResponseRedirect("%s" % (reverse('profile', args=[user.username])))
 
     return render_to_response(template_name, {
                             'form': form,

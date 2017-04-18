@@ -116,6 +116,11 @@
                                         <a href="{% url 'profile.edit_groups' user_this.username %}">{% trans "Edit Groups" %}</a>
                                     </span>
                                 </li>
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'profile.edit_education' user_this.username %}">{% trans "Edit Education" %}</a>
+                                    </span>
+                                </li>
                             {% endif %}
 
                             {% if user.profile.is_staff %}
