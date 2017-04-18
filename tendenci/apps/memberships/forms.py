@@ -812,19 +812,19 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
     school1 = forms.CharField(label=_('School'), max_length=200, required=False, initial='')
     major1 = forms.CharField(label=_('Major'), max_length=200, required=False, initial='')
     degree1 = forms.CharField(label=_('Degree'), max_length=200, required=False, initial='')
-    graduation_dt1 = forms.ChoiceField(label=_('Graduation Date'), required=False, choices=YEAR_CHOICES)
+    graduation_dt1 = forms.ChoiceField(label=_('Graduation Year'), required=False, choices=YEAR_CHOICES)
     school2 = forms.CharField(label=_('School 2'), max_length=200, required=False, initial='')
     major2 = forms.CharField(label=_('Major 2'), max_length=200, required=False, initial='')
     degree2 = forms.CharField(label=_('Degree 2'), max_length=200, required=False, initial='')
-    graduation_dt2 = forms.ChoiceField(label=_('Graduation Date 2'), required=False, choices=YEAR_CHOICES)
+    graduation_dt2 = forms.ChoiceField(label=_('Graduation Year 2'), required=False, choices=YEAR_CHOICES)
     school3 = forms.CharField(label=_('School 3'), max_length=200, required=False, initial='')
     major3 = forms.CharField(label=_('Major 3'), max_length=200, required=False, initial='')
     degree3 = forms.CharField(label=_('Degree 3'), max_length=200, required=False, initial='')
-    graduation_dt3 = forms.ChoiceField(label=_('Graduation Date 3'), required=False, choices=YEAR_CHOICES)
+    graduation_dt3 = forms.ChoiceField(label=_('Graduation Year 3'), required=False, choices=YEAR_CHOICES)
     school4 = forms.CharField(label=_('School 4'), max_length=200, required=False, initial='')
     major4 = forms.CharField(label=_('Major 4'), max_length=200, required=False, initial='')
     degree4 = forms.CharField(label=_('Degree 4'), max_length=200, required=False, initial='')
-    graduation_dt4 = forms.ChoiceField(label=_('Graduation Date 4'), required=False, choices=YEAR_CHOICES)
+    graduation_dt4 = forms.ChoiceField(label=_('Graduation Year 4'), required=False, choices=YEAR_CHOICES)
 
     def __init__(self, app_field_objs, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -833,7 +833,8 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
             self.user = user
         else:
             self.user = None
-        assign_fields(self, app_field_objs)
+        if app_field_objs:
+            assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
         self.keys = self.fields.keys()
 
@@ -863,29 +864,13 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
 
         if not self.user: # meaning add
             education_list = user.educations.all().order_by('pk')[0:4]
-            if not education_list:
-                for cnt in range(1, 5):
-                    school = data.get('school%s' % cnt, '')
-                    major = data.get('major%s' % cnt, '')
-                    degree = data.get('degree%s' % cnt, '')
-                    graduation_year = data.get('graduation_dt%s' % cnt, 0)
-                    try:
-                        graduation_year = int(graduation_year)
-                    except ValueError:
-                        graduation_year = 0
-                    if any([school, major, degree, graduation_year]):
-                        Education.objects.create(
-                            user=user,
-                            school=school,
-                            major=major,
-                            degree=degree,
-                            graduation_year=graduation_year
-                        )
-
         else: # meaning edit
             education_list = self.user.educations.all().order_by('pk')[0:4]
-            cnt = 1
-            for education in education_list:
+        
+        cnt = 0 
+        if education_list:
+            for i, education in enumerate(education_list):
+                cnt = i + 1
                 school = data.get('school%s' % cnt, '')
                 major = data.get('major%s' % cnt, '')
                 degree = data.get('degree%s' % cnt, '')
@@ -899,6 +884,25 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                 education.degree=degree
                 education.graduation_year=graduation_year
                 education.save()
+
+        if cnt < 4:
+            for i in range(cnt+1, 5):
+                school = data.get('school%s' % i, '')
+                major = data.get('major%s' % i, '')
+                degree = data.get('degree%s' % i, '')
+                graduation_year = data.get('graduation_dt%s' % i, 0)
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
+                if any([school, major, degree, graduation_year]):
+                    Education.objects.create(
+                        user=user,
+                        school=school,
+                        major=major,
+                        degree=degree,
+                        graduation_year=graduation_year
+                    )
 
 
 class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
