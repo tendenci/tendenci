@@ -13,6 +13,7 @@
 	    <div class="jobpricing-wrap">
 		    <form action="." method="post" class="form-horizontal">{% csrf_token %}
 		    	{{ form|styled_form }}
+		        <input type="hidden" name="_popup" value="1">
 		        <div id="pricing-submit">
 		            <input type="submit" value="{% trans 'Submit' %}" />
 		        </div>

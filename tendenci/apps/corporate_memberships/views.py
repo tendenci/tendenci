@@ -1658,7 +1658,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
 @is_enabled('corporate_memberships')
 def corp_reps_lookup(request):
-    q = request.REQUEST['term']
+    q = request.GET['term']
     #use_search_index = get_setting('site', 'global', 'searchindex')
     # TODO: figure out a way of assigning search permission to dues_reps.
     use_search_index = False
@@ -1912,7 +1912,7 @@ def search(request, template_name="corporate_memberships/search.html"):
 
 @is_enabled('corporate_memberships')
 def reps_lookup(request):
-    q = request.REQUEST['term']
+    q = request.GET['term']
     use_search_index = get_setting('site', 'global', 'searchindex')
 
     if use_search_index:

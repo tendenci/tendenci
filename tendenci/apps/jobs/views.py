@@ -482,7 +482,7 @@ def pricing_add(request, form_class=JobPricingForm,
 
                 EventLog.objects.log(instance=job_pricing)
 
-                if "_popup" in request.REQUEST:
+                if "_popup" in request.POST:
                     return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(job_pricing.pk), escape(job_pricing)))
 
                 return HttpResponseRedirect(
@@ -490,7 +490,7 @@ def pricing_add(request, form_class=JobPricingForm,
         else:
             form = form_class()
 
-        if "_popup" in request.REQUEST:
+        if "_popup" in request.GET:
             template_name="jobs/pricing-add-popup.html"
 
         return render_to_response(template_name, {'form': form},

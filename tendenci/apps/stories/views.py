@@ -139,7 +139,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
 
                 messages.add_message(request, messages.SUCCESS, _('Successfully updated %(str)s' % {'str': unicode(story)}))
 
-                redirect_to = request.REQUEST.get('next', '')
+                redirect_to = request.POST.get('next', '')
                 if redirect_to:
                     return HttpResponseRedirect(redirect_to)
                 else:
