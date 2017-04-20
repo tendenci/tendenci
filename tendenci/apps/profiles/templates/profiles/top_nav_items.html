@@ -104,7 +104,7 @@
                                 </li>
                             {% endif %}
 
-                            {% if can_edit %}
+                            {% if can_edit or can_edit_profile %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'profile.edit' user_this.id %}">{% trans "Edit User Profile" %}</a>
