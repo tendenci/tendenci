@@ -68,6 +68,11 @@ Then add the following code snippet where you want to place your event feed:
    </section>
 
 
+Time Display on Event Feed (hide time if all day)
+-------------------------------------------------
+{% if event.all_day %}{{ event.start_dt|date:"F j, Y" }}{% else %}{{ event.start_dt }}{% endif %}
+
+
 Articles Feed
 ------------
 Add `{% load article_tags %}` to the very top of your html page
