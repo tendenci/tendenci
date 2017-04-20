@@ -249,7 +249,7 @@ class ModelSearchForm(SearchForm):
     def get_models(self):
         """Return an alphabetical list of model classes in the index."""
         search_models = self.models
-        if self.cleaned_data['models']:
+        if self.cleaned_data.get('models', []):
             search_models = []
             for model in self.cleaned_data['models']:
                 class_model = models.get_model(*model.split('.'))
