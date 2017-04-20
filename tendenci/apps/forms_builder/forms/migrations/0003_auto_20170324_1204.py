@@ -10,6 +10,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('user_groups', '0001_initial'),
+        ('site_settings', '0001_initial'),
+        ('search', '0001_initial'),
         ('forms', '0002_auto_20161208_2003'),
     ]
 
