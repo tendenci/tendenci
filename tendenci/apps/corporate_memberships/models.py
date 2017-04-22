@@ -1335,8 +1335,8 @@ class CorpMembershipApp(TendenciBaseModel):
 
     def application_form_link(self):
         if self.is_active():
-            return '<a href="%s">%s</a>' % (reverse('corpmembership.add_slug'),
-                                            self.slug)
+            return '<a href="%s">%s</a>' % (reverse('corpmembership.add_slug',
+                                                    args=[self.slug]), self.slug)
         return '--'
 
     application_form_link.allow_tags = True
