@@ -1320,6 +1320,8 @@ class CorpMembershipApp(TendenciBaseModel):
         current_app = CorpMembershipApp.objects.current_app()
 
         return current_app and current_app.id == self.id
+    def is_active(self):
+        return self.status and self.status_detail in ['active', 'published']
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -1331,7 +1333,7 @@ class CorpMembershipApp(TendenciBaseModel):
             self.memb_app.save()
 
     def application_form_link(self):
-        if self.is_current():
+        if self.is_active():
             return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
                                             self.slug)
         return '--'
