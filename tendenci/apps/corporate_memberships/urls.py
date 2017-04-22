@@ -25,7 +25,7 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
         "corpmembership_add", name="corpmembership.add"),
 
     url(r"^%s/(?P<slug>[\w\-]+)/add/$" % urlpath,
-        "corpmembership_add", name="corpmembership.add"),
+        "corpmembership_add", name="corpmembership.add_slug"),
 
     url(r"^%s/applications/add_conf/(?P<id>\d+)/$" % urlpath,
         "corpmembership_add_conf", name="corpmembership.add_conf"),

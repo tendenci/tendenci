@@ -188,7 +188,7 @@ def corpmembership_add_pre(request,
             EventLog.objects.log(instance=creator)
 
             # redirect to add
-            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add',
+            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add_slug',
                                                           args=[app.slug]),
                                               '?hash=%s' % hash))
 
