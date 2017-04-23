@@ -1286,7 +1286,7 @@ class CorpMembershipApp(TendenciBaseModel):
     confirmation_text = models.TextField(_("Confirmation Text"),
                                          blank=True, null=True)
 
-    memb_app = models.OneToOneField(MembershipApp,
+    memb_app = models.ForeignKey(MembershipApp,
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
                             verbose_name=_("Membership Application"),

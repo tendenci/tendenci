@@ -50,11 +50,11 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
-        
+
     def get_queryset(self, request):
         qs = super(CorporateMembershipTypeAdmin, self).get_queryset(request)
         # filter out soft-deleted items
-        return qs.filter(status=True)        
+        return qs.filter(status=True)
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -86,6 +86,13 @@ class CorpMembershipAppFieldAdmin(admin.TabularInline):
     template = "corporate_memberships/admin/corpmembershipapp/tabular.html"
 
 
+def clone_apps(model_admin, request, queryset):
+    for form in queryset:
+        form.clone()
+
+clone_apps.short_description = 'Clone selected forms'
+
+
 class CorpMembershipAppAdmin(admin.ModelAdmin):
     inlines = (CorpMembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
@@ -111,6 +118,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
     )
 
     form = CorpMembershipAppForm
+    actions = (clone_apps,)
 
     class Media:
         js = (
