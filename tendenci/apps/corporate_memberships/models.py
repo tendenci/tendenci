@@ -1486,7 +1486,7 @@ class CorpMembershipAppField(OrderingBaseModel):
         """
         obj = self
         obj.pk = None
-        obj.membership_app = membership_app
+        obj.corp_app = membership_app
         obj.save()
         return obj
 
