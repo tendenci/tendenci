@@ -13,7 +13,7 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
-from django.db.models import Q
+from django.db.models import Q, AutoField
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete
 
@@ -1333,6 +1333,23 @@ class CorpMembershipApp(TendenciBaseModel):
             self.memb_app.use_for_corp = True
             self.memb_app.save()
 
+    def clone(self):
+        """
+        Clone this app.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__ == AutoField])
+        params['slug'] = 'clone-%d-%s' % (self.id, params['slug'])
+        params['name'] = 'Clone of %s' % params['name']
+        params['slug'] = params['slug'][:200]
+        params['name'] = params['name'][:155]
+        app_cloned = self.__class__.objects.create(**params)
+        # clone fields
+        fields = self.fields.all()
+        for field in fields:
+            field.clone(app_cloned)
+
+        return app_cloned
     def application_form_link(self):
         if self.is_active():
             return '<a href="%s">%s</a>' % (reverse('corpmembership.add_slug',
