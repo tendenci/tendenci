@@ -13,9 +13,10 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
-from django.db.models import Q, AutoField, copy
+from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete
+import copy
 
 #from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.tinymce import models as tinymce_models
