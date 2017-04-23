@@ -1481,6 +1481,18 @@ class CorpMembershipAppField(OrderingBaseModel):
             return field_class(**field_args)
         return None
 
+    def clone(self, membership_app):
+        """
+        Clone this field.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__==AutoField])
+        cloned_field = self.__class__.objects.create(**params)
+
+        cloned_field.membership_app = membership_app
+        cloned_field.save()
+        return cloned_field
+
     @staticmethod
     def get_default_field_type(field_name):
         """
