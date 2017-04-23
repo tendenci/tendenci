@@ -13,7 +13,7 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
-from django.db.models import Q, AutoField
+from django.db.models import Q, AutoField, copy
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete
 
@@ -1337,19 +1337,17 @@ class CorpMembershipApp(TendenciBaseModel):
         """
         Clone this app.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
-                       for field in self._meta.fields if not field.__class__ == AutoField])
-        params['slug'] = 'clone-%d-%s' % (self.id, params['slug'])
-        params['name'] = 'Clone of %s' % params['name']
-        params['slug'] = params['slug'][:200]
-        params['name'] = params['name'][:155]
-        app_cloned = self.__class__.objects.create(**params)
-        # clone fields
+        obj = copy.deepcopy(self)
+        obj.pk = None
+        obj.slug = 'clone-%d-%s' % (self.id, self.slug)
+        obj.name = 'Clone of %s' % self.name
+        obj.save()
         fields = self.fields.all()
         for field in fields:
-            field.clone(app_cloned)
+            field.clone(obj)
 
-        return app_cloned
+        return obj
+
     def application_form_link(self):
         if self.is_active():
             return '<a href="%s">%s</a>' % (reverse('corpmembership.add_slug',
@@ -1485,13 +1483,11 @@ class CorpMembershipAppField(OrderingBaseModel):
         """
         Clone this field.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
-                       for field in self._meta.fields if not field.__class__==AutoField])
-        cloned_field = self.__class__.objects.create(**params)
-
-        cloned_field.membership_app = membership_app
-        cloned_field.save()
-        return cloned_field
+        obj = self
+        obj.pk = None
+        obj.membership_app = membership_app
+        obj.save()
+        return obj
 
     @staticmethod
     def get_default_field_type(field_name):
