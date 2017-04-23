@@ -51,7 +51,7 @@ python-memcached==1.57
 Whoosh==2.7.4
 simple-salesforce==0.68.1
 selenium==2.53.2
-raven==5.17.0
+raven==6.0.0
 django-admin-bootstrapped==2.5.7
 django-bootstrap3==7.0.1
 django-app-namespace-template-loader==0.4
