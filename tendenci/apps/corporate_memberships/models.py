@@ -1484,7 +1484,7 @@ class CorpMembershipAppField(OrderingBaseModel):
         """
         Clone this field.
         """
-        obj = self
+        obj = copy.deepcopy(self)
         obj.pk = None
         obj.corp_app = core_app
         obj.save()
