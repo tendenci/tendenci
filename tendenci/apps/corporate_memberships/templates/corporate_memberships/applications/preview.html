@@ -56,7 +56,7 @@
                 {% if current_app.id == app.id%}
                 {% trans 'of the' %} <a href="{% url "corpmembership.add_slug" current_app.slug %}">{% trans 'current application' %}</a>.
                 {% else %}
-               . {%  trans 'This application is NOT the current application.'%} <a href="{% url "corpmembership.add_slug" current_app.slug %}">{% trans 'Click here to view current application' %}</a>.
+               . {%  trans 'This application is NOT the current application.'%} <a href="{% url "corpmembership_app.preview" current_app.slug %}">{% trans 'Click here to view current application' %}</a>.
                 {% endif %}
             </p>
         </div>
