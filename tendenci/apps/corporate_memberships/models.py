@@ -1480,13 +1480,13 @@ class CorpMembershipAppField(OrderingBaseModel):
             return field_class(**field_args)
         return None
 
-    def clone(self, membership_app):
+    def clone(self, core_app):
         """
         Clone this field.
         """
         obj = self
         obj.pk = None
-        obj.corp_app = membership_app
+        obj.corp_app = core_app
         obj.save()
         return obj
 
