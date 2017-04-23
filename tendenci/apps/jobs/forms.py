@@ -370,7 +370,13 @@ class JobSearchForm(FormControlWidgetMixin, forms.Form):
             cat_choices.append((category.pk, category.name))
 
         query_string = args[0]
-        category = query_string.get('categories', None)
+        category = None
+        try:
+            category_id = int(query_string.get('categories', None))
+            if category_id > 0:
+                [category] = Category.objects.filter(id=category_id)[:1] or [None]
+        except:
+            pass
         if category:
             sub_categories = Category.objects.get_for_model(Job, category)[1]
         subcat_length = len(sub_categories)
