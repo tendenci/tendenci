@@ -52,6 +52,7 @@ from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
 from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.base.utils import truncate_words
+from tendenci.apps.perms.utils import has_perm
 
 
 FIELD_CHOICES = (
@@ -442,7 +443,7 @@ class CorpMembership(TendenciBaseModel):
                 filter_and = {'status': True,
                           'status_detail': 'active'}
         else:
-            if user.profile.is_superuser:
+            if user.profile.is_superuser or  has_perm(user, 'corporate_memberships.view_corpmembership'):
                 return None, None
 
             allow_anonymous_search = get_setting('module',
@@ -1023,6 +1024,8 @@ class CorpMembership(TendenciBaseModel):
     def allow_edit_by(self, this_user):
         if self.is_active or self.is_expired:
             if this_user.profile.is_superuser:
+                return True
+            if has_perm(this_user, 'corporate_memberships.change_corpmembership'):
                 return True
 
             if not this_user.is_anonymous():

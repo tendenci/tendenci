@@ -440,6 +440,10 @@ def corpmembership_edit(request, id,
     if not app:
         raise Http404
     corp_membership = get_object_or_404(CorpMembership, id=id)
+
+    if not corp_membership.allow_edit_by(request.user):
+        raise Http403
+
     corp_profile = corp_membership.corp_profile
     is_superuser = request.user.profile.is_superuser
 
@@ -794,7 +798,7 @@ def corpmembership_delete(request, id,
     corp_memb = get_object_or_404(CorpMembership, pk=id)
 
     if has_perm(request.user,
-                'corporate_memberships.delete_corporatemembership'):
+                'corporate_memberships.delete_corpmembership'):
         if request.method == "POST":
             messages.add_message(request, messages.SUCCESS,
                                  'Successfully deleted %s' % corp_memb)
@@ -1128,7 +1132,7 @@ def corp_renew_conf(request, id,
     corp_membership = get_object_or_404(CorpMembership, id=id)
 
     if not has_perm(request.user,
-                    'corporate_memberships.change_corporatemembership',
+                    'corporate_memberships.change_corpmembership',
                     corp_membership):
         if not corp_membership.allow_view_by(request.user):
             raise Http403
@@ -1181,7 +1185,8 @@ def roster_search(request,
     is_rep = corp_membership and corp_membership.is_rep(request.user)
 
     # only admins and corp reps can view roster
-    if not any([request.user.profile.is_superuser, is_rep]):
+    if not any([request.user.profile.is_superuser, is_rep, has_perm(request.user,
+                    'corporate_memberships.change_corpmembership')]):
         raise Http403
 
     memberships = MembershipDefault.objects.filter(
