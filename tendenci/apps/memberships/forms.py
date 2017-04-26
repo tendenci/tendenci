@@ -644,13 +644,13 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         login_link = _('click <a href="/accounts/login/?next=%s">HERE</a> to log in before completing your application.') % self.request.get_full_path()
         username_validate_err_msg = mark_safe(_('This Username already exists in the system. If this is your Username, %s Else, select a new Username to continue.') % login_link)
         email_validate_err_msg = mark_safe(_('This Email address already exists in the system. If this is your Email address, %s Else, select a different Email address to continue.') % login_link)
-        activation_link = _('<a href="%s?username=%s&email=%s&next=%s">HERE</a>') % (
-                                                    reverse('profile.activate_email'), 
-                                                    requests.utils.quote(un), requests.utils.quote(email), 
-                                                    self.request.get_full_path())
-        inactive_user_err_msg =  mark_safe(_('''This email "%s" is associated with previous site activity.
-                    Please click %s and we'll send you an email to activate your account and then you 
-                    will be returned to this application.''') % (email, activation_link))
+        activation_link = _('<a href="{activate_link}?username={username}&email={email}&next={next_path}">HERE</a>').format(
+                                                    activate_link=reverse('profile.activate_email'), 
+                                                    username=requests.utils.quote(un), email=requests.utils.quote(email), 
+                                                    next_path=self.request.get_full_path())
+        inactive_user_err_msg =  mark_safe(_('''This email "{email}" is associated with previous site activity.
+                    Please click {activation_link} and we'll send you an email to activate your account and then you 
+                    will be returned to this application.''').format(email=email, activation_link=activation_link))
 
         if self.request.user.is_authenticated() and self.request.user.username == un:
             # they are logged in and join or renewal for themselves 

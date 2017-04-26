@@ -545,7 +545,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
             if not cmt.allow_above_cap:
                 if count_members > cmt.membership_cap:
                     raise forms.ValidationError(
-                        _("You've selected %d individual members, but the maximum allowed is %d." % (count_members,  cmt.membership_cap)) )
+                        _("You've selected {count} individual members, but the maximum allowed is {cap}.".format(count=count_members,  cap=cmt.membership_cap)) )
         
         return cleaned_data
 
