@@ -5,7 +5,7 @@ python:
 env:
   global:
     # for $TENDENCI_TRANSIFEX_PASSWORD
-    secure: "ApaVbAAOUc34lgR75CN56yenXV80wYuXl6gWYkv8ibVelnfFK1cEfzapl9zMhEES0cPdRTxb0Dwihr1tNFj/zSboO+T7TOPj0xoW3j6k6RBPWy6DQDvLPOANNeurhnHoiRp12GPxMgjDLc2fT0dvHJnawJy7XEHySZIXZWY+2gw="
+    secure: "odfSCDi6UKkIKu9Vi5Rx3fXi0CgIZa3y5w1jcsVluaLijXqLPMHj215FzV1Y5jF7tI/GbnHrLy3LhRfPPRlpaHvE3zDe5ZZYLKfOMmPtYEYPghFFVoiY7138jNssqxwF5kV85pxEQ49nDzK8fqHnfgqJEn3pJkdZlOKB3KQiskw="
 
 # command to install dependencies
 install:
