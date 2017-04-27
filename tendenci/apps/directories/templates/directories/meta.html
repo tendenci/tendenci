@@ -72,10 +72,10 @@
         {% if directory_cat.category %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?q=category:{{ directory_cat.category }}">{{ directory_cat.category }}</a></li>
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?category={{ directory_cat.category.id }}">{{ directory_cat.category }}</a></li>
                     {% if directory_cat.sub_category %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?q=sub_category:{{ directory_cat.sub_category }}">{{ directory_cat.sub_category }}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?sub_category={{ directory_cat.sub_category.id }}">{{ directory_cat.sub_category }}</a></li>
                     {% endif %}
                 </ul>
             </li>

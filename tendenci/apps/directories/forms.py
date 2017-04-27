@@ -94,7 +94,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
         cat = self.cleaned_data.get('search_category', None)
 
         if cat is None or cat == "" :
-            if not (q is None or q == ""):
+            if not (q is None or q == "" or 'tag:' in q):
                 self._errors['search_category'] =  ErrorList(['Select a category'])
 
         if cat in ('id', 'owner__id', 'creator__id') :
