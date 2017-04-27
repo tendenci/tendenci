@@ -583,7 +583,7 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
     notice_recipients = get_setting('site', 'global', 'allnoticerecipients').split(',')
-    email_list = [admin.strip() for admin in admins]
+    email_list = [admin.strip() for admin in admins if admin.strip()]
 
     # additional check just in case admin emails in event settings
     #are also in all notice recipients set on global site settings
