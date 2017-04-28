@@ -16,7 +16,7 @@ def settings(request):
     key = '.'.join(key)
 
     settings = cache.get(key)
-    if not settings:
+    if not settings or not hasattr(settings, '__iter__'):
         settings = Setting.objects.all()
         is_set = cache.add(key, settings)
         if not is_set:
