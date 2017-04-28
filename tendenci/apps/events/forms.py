@@ -616,7 +616,7 @@ class EventForm(TendenciBaseForm):
     repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RecurringEvent.RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
     frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
     end_recurring = forms.DateField(
-        label=_('Ends On'), initial=date.today()+timedelta(days=30),
+        label=_('Recurring Ends On'), initial=date.today()+timedelta(days=30),
         widget=forms.DateInput(attrs={'class':'datepicker'}))
     recurs_on = forms.ChoiceField(label=_('Recurs On'), widget=forms.RadioSelect, initial='weekday',
         choices=(('weekday', _('the same day of the week')),('date',_('the same date')),))
