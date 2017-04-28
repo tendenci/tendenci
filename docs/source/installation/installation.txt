@@ -141,10 +141,19 @@ You can also create a database in your GUI of choice (recommended: `PGAdmin <htt
 Ubuntu
 ~~~~~~
 
-To install postgres and required packages.
+Install postgres and required packages:
+
+On Ubuntu 14.04
 ::
 
     sudo apt-get install postgresql postgresql-contrib-9.3 postgresql-9.3-postgis-2.1
+
+
+On Ubuntu 16.04
+::
+    
+    sudo apt-get install postgresql postgresql-contrib postgis
+
 
 Create the database and a new postgres user with the following commands (replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user and password):
 ::
@@ -368,7 +377,7 @@ To start the service run
 
 ::
 
-    systemctl enable tendenci-test
+    systemctl start tendenci-test
 
 and to enable it so it starts on boot use
 
