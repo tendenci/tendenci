@@ -96,7 +96,79 @@ Once pip is installed you can continue to install
 OS X specific
 -------------
 
-In order for images to correctly render, you will need to install the jpeg libraries with the commands below:
+This section includes the entire install process for Mac OS X.  Once you have installed Virtualenv, create a virtualenv inside your project top folder. You can name your virtualenv whatever you like, in this example, we used "venv."
+::
+
+    virtualenv -p venv
+    
+Note: If you have anaconda installed on your machine, you would have to specify the path where the version of python is that you would like to use.
+::
+
+    virtualenv -p /Library/Frameworks/Python.framework/Versions/2.7/bin/python2 venv
+
+To activate the Virtualenv
+::
+
+    source venv/bin/activate
+    
+Note: When you're ready to get out of the Virtualenv simply use the command:
+::
+
+    deactivate
+    
+Once inside your VirtualEnv, install Tendenci with PyPy by using the pip command below (you can learn more about PyPy packages at: http://packages.pypy.org/ :
+::
+
+    pip install tendenci
+
+Noted in a separate section of the docs, you can get setup quickly with the Postgres App.  We strongly recommend checking out their documentation for help.  For documentation on their App check out: https://postgresapp.com/.
+
+You can "enter" Postgres with the command line
+::
+
+    psql
+    
+One in Postgres, add a project, user, and password
+::
+
+    CREATE DATABASE myproject;
+    CREATE USER myprojectuser WITH PASSWORD 'password';
+
+    ALTER ROLE myprojectuser SET client_encoding TO 'utf8';
+    ALTER ROLE myprojectuser SET default_transaction_isolation TO 'read committed';
+    ALTER ROLE myprojectuser SET timezone TO 'UTC';   
+    GRANT ALL PRIVILEGES ON DATABASE myproject TO myprojectuser;
+
+To exit:
+::
+    \q
+
+You can also alter your database entirely from the command line using these commmands: 
+::
+
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
+
+Or this
+::
+
+    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis;"
+    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
+    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
+    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
+
+Next, to start your Tendenci project
+::
+
+    sudo django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip    myproject
+    cd myproject
+    sudo pip install -r requirements/dev.txt
+
+    cd ..
+    
+Change to your top-level directory where "myproject" and "venv" are.  In order for images to correctly render, you will need to install the jpeg libraries with the commands below
 ::
 
     curl -O http://www.ijg.org/files/jpegsrc.v9.tar.gz
@@ -106,14 +178,74 @@ In order for images to correctly render, you will need to install the jpeg libra
     make
     sudo make install
 
-You can remove the downloaded files with these commands:
+To remove the files
 ::
 
     cd ..
     rm -r jpeg-9
     rm jpegsrc.v9.tar.gz
+    
 
 On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
+
+Next, configure your database in local_settings.py
+::
+
+    cd myprojectfolder/conf
+    sudo nano local_settings.py
+
+Set up the following:
+::
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'myproject',
+            'USER': 'myprojectuser',
+            'PASSWORD': 'password',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
+
+Then migrate and deploy your project
+::
+
+    python manage.py migrate
+    python deploy.py
+    python manage.py runserver
+
+And finally load the default
+::
+
+    python manage.py load_creative_defaults
+    chmod -R -x+X media
+
+Then create a superuser to login!
+::
+
+    python manage.py createsuperuser
+    python manage.py runserver
+
+To exit the server
+::
+    
+    ^C
+
+To add the tendenci code base to your local machine, pull down forked version to be able to submit pull requests on github.  Add above project folder, go to python packages and delete the tendenci folder then generate a symlink to the github repo
+
+Here's how to delete the current tendenci folder
+::
+
+    cd /Users/myusername/myprojectname/venv/lib/python2.7/site-packages
+    rm -rf tendenci
+
+To create a symlink, then
+::
+
+    ln -s /Users/myusername/myprojectname/code/tendenci/tendenci .
+
+
 
 Setting up the database
 -----------------------
