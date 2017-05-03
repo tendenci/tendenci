@@ -310,11 +310,15 @@ class FormEntry(models.Model):
         app_label = 'forms'
 
     def __unicode__(self):
-        return unicode(self.id)
+        return ('%s submission' % (self.form.title,))
 
     @models.permalink
     def get_absolute_url(self):
         return ("form_entry_detail", (), {"id": self.pk})
+    
+    @property
+    def owner(self):
+        return self.creator
 
     def entry_fields(self):
         return self.fields.all().order_by('field__position')
