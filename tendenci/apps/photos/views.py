@@ -331,7 +331,10 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 photo = update_perms_and_save(request, form, photo)
 
                 messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': unicode(photo)}) )
-                return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
+                if set_id:
+                    return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
+                else:
+                    return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id}))
         else:
             form = form_class(instance=photo, user=request.user)
 
