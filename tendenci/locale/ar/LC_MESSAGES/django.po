@@ -4488,7 +4488,7 @@ msgstr "مكان"
 #: addons/events/forms.py:958
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "يجب أن يكون المتحدثين في هذا الحدث أسماء متميزة. ويستخدم بالفعل &#39;٪ ق&#39;."
+msgstr "يجب أن يكون المتحدثين في هذا الحدث أسماء متميزة. ويستخدم بالفعل &#39;%s&#39;."
 
 #: addons/events/forms.py:1026 core/files/forms.py:117 core/files/forms.py:292
 #: core/files/forms.py:420
@@ -4535,7 +4535,7 @@ msgstr "يرجى تحديد وقت إرسال رسائل تذكير البريد
 #: addons/events/forms.py:1372
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "قيمة غير صالحة &#39;٪ ق&#39;. صحيح (ق) فقط."
+msgstr "قيمة غير صالحة &#39;%s&#39;. صحيح (ق) فقط."
 
 #: addons/events/forms.py:1515 addons/events/registration/forms.py:23
 #: addons/events/templates/events/reg8n/multi_register.html:98
@@ -4877,7 +4877,7 @@ msgstr "الملحق غير صالح للمجموعة الحالية من الم
 #: addons/events/addons/forms.py:62
 #, python-format
 msgid "Option required for %s"
-msgstr "الخيار المطلوب ل٪ s"
+msgstr "الخيار المطلوب ل%s"
 
 #: addons/events/ics/models.py:11 core/exports/models.py:10
 #: core/imports/models.py:22
@@ -4947,7 +4947,7 @@ msgstr "إعلام المسؤولين أن التسجيل لهذا الحدث ق
 #: addons/events/registration/forms.py:74
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "كود خصم لا يمكن استخدامها ل٪ s الناس."
+msgstr "كود خصم لا يمكن استخدامها ل%s الناس."
 
 #: addons/events/registration/forms.py:76
 msgid "This is not a valid Discount Code!"
@@ -4970,7 +4970,7 @@ msgstr "%(user)s ق غير مخول لاستخدام %(pricing)s ق"
 #: addons/events/registration/formsets.py:161
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "لا يمكن إلا أن تكون مسجلة٪ ق مرة واحدة في تسجيل"
+msgstr "لا يمكن إلا أن تكون مسجلة%s مرة واحدة في تسجيل"
 
 #: addons/events/registration/views.py:210
 msgid "Registration is closed."
@@ -5731,6 +5731,8 @@ msgstr "المبلغ:"
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "إلغاء التسجيل"
 
@@ -5884,11 +5886,6 @@ msgstr "التفاصيل الخاصة بك"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "رقم التسجيل:"
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "إلغاء Registration"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
@@ -9138,7 +9135,7 @@ msgid ""
 "Chain multiple filters using the following pattern "
 "\"FILTER_ONE->FILTER_TWO->FILTER_THREE\". Image filters will be applied in "
 "order. The following filters are available: %s."
-msgstr "سلسلة مرشحات متعددة باستخدام نمط التالي &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE&quot;. سيتم تطبيق مرشحات الصورة في النظام. هي المرشحات التالية متوفرة:٪ ق."
+msgstr "سلسلة مرشحات متعددة باستخدام نمط التالي &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE&quot;. سيتم تطبيق مرشحات الصورة في النظام. هي المرشحات التالية متوفرة:%s."
 
 #: addons/photos/models.py:106 addons/photos/models.py:463
 msgid "image"
@@ -10145,7 +10142,7 @@ msgstr "لا يكون ذلك عنوان البريد الإلكتروني لحس
 #: apps/accounts/forms.py:236
 #, python-format
 msgid "Password reset on %s"
-msgstr "إعادة تعيين كلمة المرور على٪ ق"
+msgstr "إعادة تعيين كلمة المرور على%s"
 
 #: apps/accounts/templates/accounts/activate.html:5
 msgid "Account Activation"
@@ -14379,7 +14376,7 @@ msgstr "دراسات حالة"
 msgid ""
 "Your site export is being processed. You will receive an email at %s when "
 "the export is complete."
-msgstr "يتم معالجة الصادرات موقعك. سوف تتلقى رسالة بريد إلكتروني في٪ s عند تصدير كامل."
+msgstr "يتم معالجة الصادرات موقعك. سوف تتلقى رسالة بريد إلكتروني في%s عند تصدير كامل."
 
 #: apps/wp_exporter/templates/notification/wp_export/full.html:7
 msgid "Blog Export Success!"
@@ -14419,7 +14416,7 @@ msgstr "تم استيراد بلوق الخاص بك!"
 msgid ""
 "Your site import is being processed. You will receive an email at %s when "
 "the import is complete."
-msgstr "يتم معالجة استيراد موقعك. سوف تتلقى رسالة بريد إلكتروني في٪ s عند اكتمال عملية الاستيراد."
+msgstr "يتم معالجة استيراد موقعك. سوف تتلقى رسالة بريد إلكتروني في%s عند اكتمال عملية الاستيراد."
 
 #: apps/wp_importer/templates/notification/wp_import/full.html:7
 msgid "Blog Import Success!"
@@ -14566,13 +14563,13 @@ msgstr "لديك حاليا الإصدار الأحدث من Tendenci."
 #: core/base/templatetags/base_tags.py:663
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "تتطلب٪ ق علامة بالضبط ثلاث حجج"
+msgstr "تتطلب%s علامة بالضبط ثلاث حجج"
 
 #: core/base/templatetags/base_tags.py:645
 #: core/base/templatetags/base_tags.py:665
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "يجب أن تكون الحجة الثانية إلى٪ s علامة &#39;ك&#39;"
+msgstr "يجب أن تكون الحجة الثانية إلى%s علامة &#39;ك&#39;"
 
 #: core/email_blocks/templates/email_blocks/delete.html:15
 msgid "Delete an Email Block Record"
@@ -15217,7 +15214,7 @@ msgstr "ملف ( %(file)s ق) حذف من %(SITE_GLOBAL_SITEDISPLAYNAME)s ق"
 msgid ""
 "The uploaded file lacks the required field(s) as the identity for "
 "duplicates: %s."
-msgstr "الملف الذي تم تحميله يفتقر إلى حقل مطلوب (ق) كما في الهوية عن التكرارات:٪ ق."
+msgstr "الملف الذي تم تحميله يفتقر إلى حقل مطلوب (ق) كما في الهوية عن التكرارات:%s."
 
 #: core/imports/models.py:21
 msgid "Processing"
