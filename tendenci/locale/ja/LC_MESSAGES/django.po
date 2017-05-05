@@ -4488,7 +4488,7 @@ msgstr "場所"
 #: addons/events/forms.py:958
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "イベントでスピーカーは、異なる名前を付ける必要があります。 &#39;％s&#39;は既に使用されています。"
+msgstr "イベントでスピーカーは、異なる名前を付ける必要があります。 &#39;%s&#39;は既に使用されています。"
 
 #: addons/events/forms.py:1026 core/files/forms.py:117 core/files/forms.py:292
 #: core/files/forms.py:420
@@ -4535,7 +4535,7 @@ msgstr "電子メール通知を送信するタイミングを指定してくだ
 #: addons/events/forms.py:1372
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "無効な値 &#39;％s&#39;が。整数（秒）のみ。"
+msgstr "無効な値 &#39;%s&#39;が。整数（秒）のみ。"
 
 #: addons/events/forms.py:1515 addons/events/registration/forms.py:23
 #: addons/events/templates/events/reg8n/multi_register.html:98
@@ -4877,7 +4877,7 @@ msgstr "アドオンは、登録者の現在のセットは無効です"
 #: addons/events/addons/forms.py:62
 #, python-format
 msgid "Option required for %s"
-msgstr "％sのために必要なオプション"
+msgstr "%sのために必要なオプション"
 
 #: addons/events/ics/models.py:11 core/exports/models.py:10
 #: core/imports/models.py:22
@@ -4947,7 +4947,7 @@ msgstr "イベントの登録が終了したことを管理者に通知します
 #: addons/events/registration/forms.py:74
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "割引コードは、％sの人のために使用することはできません。"
+msgstr "割引コードは、%sの人のために使用することはできません。"
 
 #: addons/events/registration/forms.py:76
 msgid "This is not a valid Discount Code!"
@@ -4970,7 +4970,7 @@ msgstr "%(user)sの %(pricing)sを使用することが許可されていませ�
 #: addons/events/registration/formsets.py:161
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "％sは登録のみごとに一度登録することができます"
+msgstr "%sは登録のみごとに一度登録することができます"
 
 #: addons/events/registration/views.py:210
 msgid "Registration is closed."
@@ -5731,6 +5731,8 @@ msgstr "額："
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "登録を取り消す"
 
@@ -5884,11 +5886,6 @@ msgstr "あなたの詳細"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "登録番号："
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "Registrationキャンセル"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
@@ -9108,7 +9105,7 @@ msgid ""
 "Chain multiple filters using the following pattern "
 "\"FILTER_ONE->FILTER_TWO->FILTER_THREE\". Image filters will be applied in "
 "order. The following filters are available: %s."
-msgstr "以下のパターン &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE」を使用してチェーン複数のフィルタ。画像フィルタが順に適用される。以下のフィルタを使用できます。％sの。"
+msgstr "以下のパターン &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE」を使用してチェーン複数のフィルタ。画像フィルタが順に適用される。以下のフィルタを使用できます。%sの。"
 
 #: addons/photos/models.py:106 addons/photos/models.py:463
 msgid "image"
@@ -10110,7 +10107,7 @@ msgstr "その電子メールアドレスが関連付けられているユーザ
 #: apps/accounts/forms.py:236
 #, python-format
 msgid "Password reset on %s"
-msgstr "％sのパスワードのリセット"
+msgstr "%sのパスワードのリセット"
 
 #: apps/accounts/templates/accounts/activate.html:5
 msgid "Account Activation"
@@ -14344,7 +14341,7 @@ msgstr "ケーススタディ"
 msgid ""
 "Your site export is being processed. You will receive an email at %s when "
 "the export is complete."
-msgstr "あなたのサイトのエクスポートが処理されている。エクスポートが完了すると、[％sのメールが届きます。"
+msgstr "あなたのサイトのエクスポートが処理されている。エクスポートが完了すると、[%sのメールが届きます。"
 
 #: apps/wp_exporter/templates/notification/wp_export/full.html:7
 msgid "Blog Export Success!"
@@ -14384,7 +14381,7 @@ msgstr "あなたのブログがインポートされている！"
 msgid ""
 "Your site import is being processed. You will receive an email at %s when "
 "the import is complete."
-msgstr "あなたのサイトのインポートが処理されている。インポートが完了すると、[％sのメールが届きます。"
+msgstr "あなたのサイトのインポートが処理されている。インポートが完了すると、[%sのメールが届きます。"
 
 #: apps/wp_importer/templates/notification/wp_import/full.html:7
 msgid "Blog Import Success!"
@@ -14531,13 +14528,13 @@ msgstr "現在、Tendenciの最新バージョンを持っている。"
 #: core/base/templatetags/base_tags.py:663
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "％sのタグが正確に3つの引数が必要です"
+msgstr "%sのタグが正確に3つの引数が必要です"
 
 #: core/base/templatetags/base_tags.py:645
 #: core/base/templatetags/base_tags.py:665
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "％sのタグへの二番目の引数は、 &#39;として&#39;でなければなりません"
+msgstr "%sのタグへの二番目の引数は、 &#39;として&#39;でなければなりません"
 
 #: core/email_blocks/templates/email_blocks/delete.html:15
 msgid "Delete an Email Block Record"
@@ -15182,7 +15179,7 @@ msgstr "%(file)sから削除されたファイル（ %(SITE_GLOBAL_SITEDISPLAYNA
 msgid ""
 "The uploaded file lacks the required field(s) as the identity for "
 "duplicates: %s."
-msgstr "％sに：アップロードされたファイルは、重複のためのIDとして必要なフィールド（複数可）を欠いている。"
+msgstr "%sに：アップロードされたファイルは、重複のためのIDとして必要なフィールド（複数可）を欠いている。"
 
 #: core/imports/models.py:21
 msgid "Processing"

@@ -4488,7 +4488,7 @@ msgstr "जगह"
 #: addons/events/forms.py:958
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "एक घटना में वक्ताओं अलग नाम होना चाहिए. &#39;% S&#39; पहले से ही प्रयोग किया जाता है."
+msgstr "एक घटना में वक्ताओं अलग नाम होना चाहिए. &#39;%s&#39; पहले से ही प्रयोग किया जाता है."
 
 #: addons/events/forms.py:1026 core/files/forms.py:117 core/files/forms.py:292
 #: core/files/forms.py:420
@@ -4877,7 +4877,7 @@ msgstr "Addon कुलसचिव के मौजूदा सेट के �
 #: addons/events/addons/forms.py:62
 #, python-format
 msgid "Option required for %s"
-msgstr "देखिये% S के लिए आवश्यक"
+msgstr "देखिये %s के लिए आवश्यक"
 
 #: addons/events/ics/models.py:11 core/exports/models.py:10
 #: core/imports/models.py:22
@@ -4947,7 +4947,7 @@ msgstr "घटना के लिए पंजीकरण समाप्त �
 #: addons/events/registration/forms.py:74
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "डिस्काउंट कोड% लोगों के लिए इस्तेमाल नहीं किया जा सकता."
+msgstr "डिस्काउs %s लोगों के लिए इस्तेमाल नहीं किया जा सकता."
 
 #: addons/events/registration/forms.py:76
 msgid "This is not a valid Discount Code!"
@@ -4970,7 +4970,7 @@ msgstr "%(user)sएस %(pricing)sका उपयोग करने के ल
 #: addons/events/registration/formsets.py:161
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "% ही पंजीकरण प्रति एक बार पंजीकृत किया जा सकता है"
+msgstr "%s ही पंजीकरण प्रति एक बार पंजीकृत किया जा सकता है"
 
 #: addons/events/registration/views.py:210
 msgid "Registration is closed."
@@ -5731,6 +5731,8 @@ msgstr "राशि:"
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "पंजीकरण रद्द"
 
@@ -5884,11 +5886,6 @@ msgstr "आपके विवरण"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "पंजीकरण संख्या:"
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "Registration रद्द"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
@@ -9114,7 +9111,7 @@ msgid ""
 "Chain multiple filters using the following pattern "
 "\"FILTER_ONE->FILTER_TWO->FILTER_THREE\". Image filters will be applied in "
 "order. The following filters are available: %s."
-msgstr "निम्नलिखित प्रारूप &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE&quot; की मदद चैन कई फिल्टर. छवि फिल्टर क्रम में लागू किया जाएगा. निम्नलिखित फिल्टर उपलब्ध हैं:% है."
+msgstr "निम्नलिखित प्रारूप &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE&quot; की मदद चैन कई फिल्टर. छवि फिल्टर क्रम में लागू किया जाएगा. निम्नलिखित फिल्टर उपलब्ध हैं:%s है."
 
 #: addons/photos/models.py:106 addons/photos/models.py:463
 msgid "image"
@@ -10117,7 +10114,7 @@ msgstr "उस ई मेल से जुड़े एक उपयोगकर
 #: apps/accounts/forms.py:236
 #, python-format
 msgid "Password reset on %s"
-msgstr "% S पर पासवर्ड रीसेट"
+msgstr "%s पर पासवर्ड रीसेट"
 
 #: apps/accounts/templates/accounts/activate.html:5
 msgid "Account Activation"
@@ -14538,7 +14535,7 @@ msgstr "आप वर्तमान में Tendenci के नवीनत�
 #: core/base/templatetags/base_tags.py:663
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "% S टैग ठीक तीन तर्क की आवश्यकता है"
+msgstr "%s टैग ठीक तीन तर्क की आवश्यकता है"
 
 #: core/base/templatetags/base_tags.py:645
 #: core/base/templatetags/base_tags.py:665

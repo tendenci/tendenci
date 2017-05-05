@@ -4494,7 +4494,7 @@ msgstr "Lugar"
 #: addons/events/forms.py:958
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "Los oradores en un evento deben tener nombres distintos. &#39;% S&#39; ya está en uso."
+msgstr "Los oradores en un evento deben tener nombres distintos. &#39;%s&#39; ya está en uso."
 
 #: addons/events/forms.py:1026 core/files/forms.py:117 core/files/forms.py:292
 #: core/files/forms.py:420
@@ -4976,7 +4976,7 @@ msgstr "%(user)s no está autorizado a utilizar %(pricing)s"
 #: addons/events/registration/formsets.py:161
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "% S sólo puede registrarse una vez por registro"
+msgstr "%s sólo puede registrarse una vez por registro"
 
 #: addons/events/registration/views.py:210
 msgid "Registration is closed."
@@ -5737,6 +5737,8 @@ msgstr "Importe:"
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "Cancelar Registro"
 
@@ -5890,11 +5892,6 @@ msgstr "Sus Detalles"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "Número de registro:"
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "Cancelar Inscripción de"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
@@ -14544,7 +14541,7 @@ msgstr "Actualmente tienes la última versión de Tendenci."
 #: core/base/templatetags/base_tags.py:663
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "% S etiqueta requiere exactamente tres argumentos"
+msgstr "%s etiqueta requiere exactamente tres argumentos"
 
 #: core/base/templatetags/base_tags.py:645
 #: core/base/templatetags/base_tags.py:665

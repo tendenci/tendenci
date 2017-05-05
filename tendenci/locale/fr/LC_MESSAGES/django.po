@@ -4490,7 +4490,7 @@ msgstr "Lieu"
 #: addons/events/forms.py:958
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "Haut-parleurs à un événement doivent avoir des noms distincts. &#39;% S&#39; est déjà utilisé."
+msgstr "Haut-parleurs à un événement doivent avoir des noms distincts. &#39;%s&#39; est déjà utilisé."
 
 #: addons/events/forms.py:1026 core/files/forms.py:117 core/files/forms.py:292
 #: core/files/forms.py:420
@@ -4949,7 +4949,7 @@ msgstr "Signaler aux administrateurs que l&#39;inscription à l&#39;événement 
 #: addons/events/registration/forms.py:74
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "Code de réduction ne peut pas être utilisé pour% de la population."
+msgstr "Code de réduction ne peut pas être utilisé pour %s la population."
 
 #: addons/events/registration/forms.py:76
 msgid "This is not a valid Discount Code!"
@@ -4972,7 +4972,7 @@ msgstr "%(user)s n&#39;est pas autorisé à utiliser %(pricing)s"
 #: addons/events/registration/formsets.py:161
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "% S ne peut être enregistrée une fois par enregistrement"
+msgstr "%s ne peut être enregistrée une fois par enregistrement"
 
 #: addons/events/registration/views.py:210
 msgid "Registration is closed."
@@ -5733,6 +5733,8 @@ msgstr "Montant:"
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "Annuler l&#39;enregistrement"
 
@@ -5886,11 +5888,6 @@ msgstr "Vos détails"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "Numéro d&#39;enregistrement:"
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "Annuler Enregistrement"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
@@ -14540,13 +14537,13 @@ msgstr "Vous avez actuellement la dernière version de Tendenci."
 #: core/base/templatetags/base_tags.py:663
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "La balise% de nécessite exactement trois arguments"
+msgstr "La balise %s nécessite exactement trois arguments"
 
 #: core/base/templatetags/base_tags.py:645
 #: core/base/templatetags/base_tags.py:665
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "Le deuxième argument de la balise% de doit être &#39;comme&#39;"
+msgstr "Le deuxième argument de la balise %s doit être &#39;comme&#39;"
 
 #: core/email_blocks/templates/email_blocks/delete.html:15
 msgid "Delete an Email Block Record"

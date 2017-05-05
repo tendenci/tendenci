@@ -5732,6 +5732,8 @@ msgstr ""
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr ""
 
@@ -5884,11 +5886,6 @@ msgstr ""
 #: addons/events/templates/events/reg8n/register-confirm.html:87
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
-msgstr ""
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
 msgstr ""
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113

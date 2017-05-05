@@ -4535,7 +4535,7 @@ msgstr "אנא ציין מתי לשלוח תזכורות בדואר אלקטרו
 #: addons/events/forms.py:1372
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "&#39;% S&#39; ערך לא חוקי. מספר שלם (ים) בלבד."
+msgstr "&#39;%s&#39; ערך לא חוקי. מספר שלם (ים) בלבד."
 
 #: addons/events/forms.py:1515 addons/events/registration/forms.py:23
 #: addons/events/templates/events/reg8n/multi_register.html:98
@@ -4970,7 +4970,7 @@ msgstr ""
 #: addons/events/registration/formsets.py:161
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "% S יכול להיות רשום רק פעם אחת לכל רישום"
+msgstr "%s יכול להיות רשום רק פעם אחת לכל רישום"
 
 #: addons/events/registration/views.py:210
 msgid "Registration is closed."
@@ -5731,6 +5731,8 @@ msgstr "סכום:"
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "לבטל רישום"
 
@@ -5884,11 +5886,6 @@ msgstr "פרטים שלך"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "מספר רישום:"
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "לבטל Registration"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
