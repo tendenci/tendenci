@@ -13,7 +13,7 @@
 {% block content %}
 <div class="t">
     <div class="form-builder-wrap">
-        <h2>{% blocktrans with t= %}{{ entry.form.title }}</h2>
+        <h2>{{ entry.form.title }}</h2>
          <div class="quick-options">
             {% forms_entry_options request.user entry %}
          </div>
