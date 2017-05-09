@@ -22,7 +22,7 @@
     <br />
     <div>
     <div>Secure link: <input type="text" value="{% url 'file' file.pk %}" /> </div>
-    <div>Full link (no security): <input type="text" value="{{ file.get_file_public_url }}" /></div>
+    <div>Full link (no security): <input type="text" value="{{ file.get_full_url }}" /></div>
     </div>
 
     <div class="meta">

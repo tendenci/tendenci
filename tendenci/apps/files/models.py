@@ -335,11 +335,18 @@ class File(TendenciBaseModel):
 
     def get_file_public_url(self):
         if self.is_public_file():
-            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                return self.file.url
-            else:
-                return "%s%s" % (settings.MEDIA_URL, self.file)
+            return self.get_full_url()
         return None
+
+    def get_full_url(self):
+        """
+        This link can be used for the performance reason but it doesn't have the security check.
+        Use carefully.
+        """
+        if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            return self.file.url
+        else:
+            return "%s%s" % (settings.MEDIA_URL, self.file)
 
     def get_content(self):
         if self.content_type and self.object_id:
