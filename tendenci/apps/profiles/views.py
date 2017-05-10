@@ -1181,7 +1181,10 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                             field_dict[field_name] = master_user
                                             # check if the master record exists
                                             if model.objects.filter(**field_dict).exists():
-                                                obj.delete()
+                                                if hasattr(obj, 'hard_delete'):
+                                                    obj.hard_delete()
+                                                else:  
+                                                    obj.delete()
                                             else:
                                                 setattr(obj, field_name, master_user)
                                                 obj.save()
@@ -1211,7 +1214,10 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                             if updated:
                                                 master_obj.save()
                                             # delete obj
-                                            obj.delete()
+                                            if hasattr(obj, 'hard_delete'):
+                                                obj.hard_delete()
+                                            else: 
+                                                obj.delete()
         
                         master.save()
                         profile.delete()
