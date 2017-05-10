@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.conf import settings
+from django.utils.encoding import smart_bytes
 
 from tendenci.apps.robots.models import Robot
 
@@ -239,8 +240,8 @@ class EventLogManager(Manager):
                     event_log.user_ip_address = event_log.user_ip_address.split(",")[-1].replace(" ", "")
 
                 event_log.user_ip_address = event_log.user_ip_address[-15:]
-                event_log.http_referrer = request.META.get('HTTP_REFERER', '')[:255]
-                event_log.http_user_agent = request.META.get('HTTP_USER_AGENT', '')
+                event_log.http_referrer = smart_bytes(request.META.get('HTTP_REFERER', '')[:255], errors='replace')
+                event_log.http_user_agent = smart_bytes(request.META.get('HTTP_USER_AGENT', ''), errors='replace')
                 event_log.request_method = request.META.get('REQUEST_METHOD', '')
                 event_log.query_string = request.META.get('QUERY_STRING', '')
 
