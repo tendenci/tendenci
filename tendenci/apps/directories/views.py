@@ -356,14 +356,14 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 directory_pricing.status = 1
                 directory_pricing.save(request.user)
 
-                if "_popup" in request.REQUEST:
+                if "_popup" in request.POST:
                     return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(directory_pricing.pk), escape(directory_pricing)))
 
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
             form = form_class(user=request.user)
 
-        if "_popup" in request.REQUEST:
+        if "_popup" in request.GET:
             template_name="directories/pricing-add-popup.html"
 
         return render_to_response(template_name, {'form':form},

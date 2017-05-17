@@ -85,7 +85,10 @@ def disconnect(request, backend):
     if not backend:
         return HttpResponseServerError('Incorrect authentication service')
     backend.disconnect(request.user)
-    url = request.REQUEST.get(REDIRECT_FIELD_NAME, '') or DEFAULT_REDIRECT
+    url = request.GET.get(REDIRECT_FIELD_NAME, '')
+    if request.method == 'POST':
+        url = request.POST.get(REDIRECT_FIELD_NAME, url)
+    url = url or DEFAULT_REDIRECT
     return HttpResponseRedirect(url)
 
 
@@ -96,8 +99,10 @@ def auth_process(request, backend, complete_url_name):
     if not backend:
         return HttpResponseServerError(_('Incorrect authentication service'))
     # Check and sanitize a user-defined GET/POST redirect_to field value.
-    redirect = sanitize_redirect(request.get_host(),
-                                 request.REQUEST.get(REDIRECT_FIELD_NAME))
+    redirect = request.GET.get(REDIRECT_FIELD_NAME)
+    if request.method == 'POST':
+        redirect = request.POST.get(REDIRECT_FIELD_NAME, redirect)
+    redirect = sanitize_redirect(request.get_host(), redirect)
     request.session[REDIRECT_FIELD_NAME] = redirect or DEFAULT_REDIRECT
     if backend.uses_redirect:
         return HttpResponseRedirect(backend.auth_url())

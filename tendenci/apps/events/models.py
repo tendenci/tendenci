@@ -1741,5 +1741,6 @@ class RegAddonOption(models.Model):
         app_label = 'events'
 
     def __unicode__(self):
-        return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
+        #return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
+        return "%s: %s" % (self.regaddon.pk, self.option.title)
 

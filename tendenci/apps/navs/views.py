@@ -147,7 +147,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
 
     #         EventLog.objects.log(instance=nav)
 
-    #         redirect_to = request.REQUEST.get('next', '')
+    #         redirect_to = request.GET.get('next', '')
     #         if redirect_to:
     #             return HttpResponseRedirect(redirect_to)
     #         else:

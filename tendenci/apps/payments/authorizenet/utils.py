@@ -25,7 +25,7 @@ def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))
     x_amount = "%.2f" % payment.amount
     x_fp_hash = get_fingerprint(str(payment.id), x_fp_timestamp, x_amount)
-    x_logo_URL = get_setting("site", "global", "MerchantLogo")
+    x_logo_URL = get_setting('site', 'global', 'merchantlogo')
 
     params = {
               'x_fp_sequence':payment.id,
