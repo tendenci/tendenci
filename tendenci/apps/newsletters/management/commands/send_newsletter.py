@@ -25,6 +25,7 @@ class Command(BaseCommand):
         from tendenci.apps.emails.models import Email
         from tendenci.apps.newsletters.models import Newsletter
         from tendenci.apps.site_settings.utils import get_setting
+        from tendenci.apps.base.utils import validate_email
 
         from tendenci.apps.newsletters.utils import get_newsletter_connection
 
@@ -69,6 +70,10 @@ class Command(BaseCommand):
 
         counter = 0
         for recipient in recipients:
+            # skip if not a valid email address
+            if not validate_email(recipient.member.email):
+                continue
+            
             subject = email.subject
             body = email.body
 
