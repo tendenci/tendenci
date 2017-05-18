@@ -49,16 +49,25 @@ class VideoForm(TendenciBaseForm):
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
         self.fields['release_dt'].widget = widgets.AdminSplitDateTime()
+    
+    def clean(self):
+        if self.embedly_403:
+            if not self.cleaned_data.get('image'):
+                raise forms.ValidationError('An image is also needed because currently embed.ly is not available.')
+        return self.cleaned_data
             
     def clean_video_url(self):
-        value = self.cleaned_data.get('video_url')
+        video_url = self.cleaned_data.get('video_url')
         # Get embedded object from URL
-        obj = client.oembed(value)
-        if not value:
+        obj = client.oembed(video_url)
+        if not video_url:
             raise forms.ValidationError('You must enter a URL')
         if obj.get('error'):
-            raise forms.ValidationError('This url is not supported by embed.ly')
-        return value
+            if obj.get('error_code') != 403:
+                raise forms.ValidationError('This url is not supported by embed.ly')
+            else:
+                self.embedly_403 = True
+        return video_url
 
     def save(self, *args, **kwargs):
         video = super(VideoForm, self).save(*args, **kwargs)

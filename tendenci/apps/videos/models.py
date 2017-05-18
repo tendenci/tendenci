@@ -1,3 +1,4 @@
+import re
 from django.db import models
 from django.core.urlresolvers import reverse
 from embedly import Embedly
@@ -178,7 +179,12 @@ class OembedlyCache(models.Model):
                     code = code.replace('http:', '')
 
             except KeyError:
-                return 'Unable to embed code for <a href="%s">%s</a>' % (url, url)
+                # Embedly is not available - try the alternative way
+                return '<iframe width="{width}" height="{height}" src="{url}" allowfullscreen></iframe>'.format(
+                        width=width,
+                        height=height,
+                        url=get_embed_ready_url(url))
+                #return 'Unable to embed code for <a href="%s">%s</a>' % (url, url)
             except Exception, e:
                 return 'Unable to embed code for <a href="%s">%s</a><br>Error: %s' % (url, url, e)
             obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
@@ -189,6 +195,27 @@ class OembedlyCache(models.Model):
         code = code.replace('frameborder="0" ', '')
         
         return code
+
+def get_embed_ready_url(url):
+    """
+    Gets the embed ready url - only for youtube and vimeo for now.
+    """
+    # check if it is a youtube video
+    p = re.compile(r'youtube\.com/watch\?v\=([\w\d]+)')
+    match = p.search(url)
+    if not match:
+        p = re.compile(r'youtu\.be/([\w\d]+)')
+        match = p.search(url)
+    if match:
+        return 'https://www.youtube.com/embed/{}'.format(match.group(1))
+    
+    # check if it's a vimeo video
+    p = re.compile(r'vimeo\.com/(\d+)')
+    match = p.search(url)
+    if match:
+        return 'https://player.vimeo.com/video/{}'.format(match.group(1))
+    return url
+        
 
 def get_oembed_code(url, width, height):
     return OembedlyCache.get_code(url, width, height)
