@@ -8,6 +8,7 @@ urlpath = get_setting('module', 'corporate_memberships', 'url')
 if not urlpath:
     urlpath = "corporatememberships"
 
+
 urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
     url(r'^%s/$' % urlpath, 'search', name="corp_memb"),
     url(r'^%s/$' % urlpath, 'search', name="corp_memb.search"),
@@ -20,6 +21,9 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
 
     url(r"^%s/applications/add_pre/$" % urlpath,
         "corpmembership_add_pre", name="corpmembership.add_pre"),
+
+   url(r"^%s/(?P<slug>[\w\-]+)/add_pre/$" % urlpath, "corpmembership_add_pre",
+       name="corpmembership.add_pre"),
 
     url(r"^%s/applications/add/$" % urlpath,
         "corpmembership_add", name="corpmembership.add"),
@@ -41,7 +45,7 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
 
     url(r"^%s/applications/search/$" % urlpath,
         "corpmembership_search", name="corpmembership.search"),
-                       
+
     url(r"^%s/applications/cap_status/$" % urlpath,
         "corpmembership_cap_status", name="corpmembership.cap_status"),
 

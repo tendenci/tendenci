@@ -170,9 +170,12 @@ def app_preview(request, slug,
 
 
 @is_enabled('corporate_memberships')
-def corpmembership_add_pre(request,
+def corpmembership_add_pre(request, slug='',
                 template='corporate_memberships/applications/add_pre.html'):
-    app = CorpMembershipApp.objects.current_app()
+    if slug == '':
+        app = CorpMembershipApp.objects.current_app()
+    else:
+        app = CorpMembershipApp.objects.get(slug=slug)
     if not app:
         raise Http404
     form = CreatorForm(request.POST or None)
@@ -211,7 +214,8 @@ def corpmembership_add(request, slug='',
         if not creator:
             # anonymous user - redirect them to enter their
             # contact email before processing
-            return HttpResponseRedirect(reverse('corpmembership.add_pre'))
+            return HttpResponseRedirect(reverse('corpmembership.add_pre',
+                                                args=[app.slug]))
 
     if not slug:
         app = CorpMembershipApp.objects.current_app()
@@ -219,9 +223,7 @@ def corpmembership_add(request, slug='',
             raise Http404
     else:
         app = get_object_or_404(CorpMembershipApp, slug=slug)
-        current_app = CorpMembershipApp.objects.current_app()
-
-        if app.id != current_app.id:
+        if not app.is_active():
             return HttpResponseRedirect(reverse('corpmembership_app.preview',
                                                 args=[app.slug]))
     is_superuser = request.user.profile.is_superuser
