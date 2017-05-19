@@ -387,7 +387,7 @@ class MembershipSet(models.Model):
         tax = 0
         if app and app.include_tax:
             invoice.tax_rate = app.tax_rate
-            tax = app.tax_rate * price
+            tax = app.tax_rate * price / 100
             invoice.tax = tax
 
         invoice.subtotal = price
@@ -2353,8 +2353,7 @@ class MembershipApp(TendenciBaseModel):
     donation_label = models.CharField(_("Label"), max_length=255, blank=True, null=True)
     donation_default_amount = models.DecimalField(_("Default Amount"), max_digits=15, decimal_places=2, blank=True, default=0)
     include_tax = models.BooleanField(default=False)
-    tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
-                                   help_text=_('Example: 0.0825 for 8.25%.'))
+    tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=2, default=0)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name=_("Payment Methods"))
     discount_eligible = models.BooleanField(default=False)
