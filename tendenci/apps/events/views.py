@@ -4134,7 +4134,7 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
                 option.save()
 
             EventLog.objects.log(instance=addon)
-            msg_string = 'Successfully added %s' % addon
+            msg_string = 'Successfully added %s' % unicode(addon)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return redirect('event', event.pk)
     else:
@@ -4182,7 +4182,7 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
                 option.save()
 
             EventLog.objects.log(instance=addon)
-            msg_string = 'Successfully updated %s' % addon
+            msg_string = 'Successfully updated %s' % unicode(addon)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return redirect('event', event.pk)
     else:

@@ -1690,7 +1690,7 @@ class Addon(models.Model):
         return True
 
     def field_name(self):
-        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
+        return "%s_%s" % (self.pk, self.title.encode('ascii', 'ignore').lower().replace(' ', '').replace('-', ''))
 
 
 class AddonOption(models.Model):
