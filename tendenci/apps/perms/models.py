@@ -125,6 +125,7 @@ class TendenciBaseModel(models.Model):
         # set status to False and then save(). We do NOT
         # actually delete anything from the database.
         self.status = False
+        self.status_detail = 'inactive'
 
         # Making slugs unique by appending pk
         # This prevents Integrity errors if
