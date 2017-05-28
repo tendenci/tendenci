@@ -2,18 +2,11 @@ from django import forms
 
 
 class PayPalPaymentForm(forms.Form):
-    # the _ext-enter is no longer required.
     cmd = forms.CharField(max_length=10,
-                            widget=forms.HiddenInput,
-                            initial='_ext-enter')
-    redirect_cmd = forms.CharField(max_length=10,
                             widget=forms.HiddenInput,
                             initial='_xclick')
     business = forms.CharField(max_length=50, widget=forms.HiddenInput)
     image_url = forms.CharField(max_length=100, widget=forms.HiddenInput)
-    display = forms.CharField(max_length=1,
-                              widget=forms.HiddenInput,
-                              initial='0')
     # do not prompt buyers to include a note with their payments.
     no_note = forms.CharField(max_length=1,
                               widget=forms.HiddenInput,
@@ -29,10 +22,6 @@ class PayPalPaymentForm(forms.Form):
     rm = forms.CharField(max_length=1,
                               widget=forms.HiddenInput,
                               initial='2')
-    # indicates the use of third-party shopping cart
-    upload = forms.CharField(max_length=1,
-                              widget=forms.HiddenInput,
-                              initial='0')
     paymentaction = forms.CharField(max_length=10,
                               widget=forms.HiddenInput,
                               initial='sale')
