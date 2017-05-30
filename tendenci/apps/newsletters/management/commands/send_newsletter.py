@@ -103,12 +103,13 @@ class Command(BaseCommand):
                     reply_to=email.reply_to,
                     recipient=recipient.member.email
                     )
+            print "Sending to %s" % recipient.member.email
             email_to_send.send(connection=connection)
             counter += 1
             print "Newsletter sent to %s" % recipient.member.email
 
             if newsletter.send_to_email2 and hasattr(recipient.member, 'profile') \
-                and recipient.member.profile.email2:
+                and validate_email(recipient.member.profile.email2):
                 email_to_send.recipient = recipient.member.profile.email2
                 email_to_send.send(connection=connection)
                 counter += 1
