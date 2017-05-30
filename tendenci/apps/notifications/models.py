@@ -1,5 +1,6 @@
 from os.path import splitext
 import datetime
+import logging
 import uuid
 
 try:
@@ -25,10 +26,12 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, get_language, activate
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.emails.models import Email
+
+
+logger = logging.getLogger(__name__)
 
 QUEUE_ALL = getattr(settings, "NOTIFICATION_QUEUE_ALL", False)
 
@@ -338,7 +341,9 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     try:
         notice_type = NoticeType.objects.get(label=label)
-    except:
+    except NoticeType.DoesNotExist as err:
+        logger.warning('Skipping notification send for "{label}": {err}'.format(
+            label=label, err=err))
         # Stop here because we need a notice_type
         return None
 
