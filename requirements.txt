@@ -43,7 +43,7 @@ django-ses==0.7.1
 Geraldo==0.4.17
 django-tastypie==0.13.3
 docutils==0.12
-chardet==2.3.0
+chardet==3.0.3
 psycopg2==2.6.1
 gunicorn==19.5.0
 django-storages==1.4.1
