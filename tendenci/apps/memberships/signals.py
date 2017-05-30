@@ -80,8 +80,8 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
 
     notification.create_notice_type(
         'membership_notice_email',
-        _('Membership Expiry'),
-        _('Membership Expiry'))
+        _('Membership Notice Email'),
+        _('Membership Notice Custom Email'))
 
     notification.create_notice_type(
         'membership_corp_indiv_verify_email',
