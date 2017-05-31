@@ -25,7 +25,7 @@
 {% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
 	<div class="invoice-options">
 	    <ul>
-	        <li><a class="admin-options" href="{% url 'payment.pay_online' invoice.pk %}">{% trans "Pay Online" %}</a></li>
+	        <li><a class="admin-options" href="{% url 'payment.pay_online' invoice.pk guid %}">{% trans "Pay Online" %}</a></li>
 	    </ul>
 	</div>
 {% endif %}
