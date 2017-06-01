@@ -44,6 +44,7 @@ class VideoForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs): 
         super(VideoForm, self).__init__(*args, **kwargs)
+        self.embedly_403 = False
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
