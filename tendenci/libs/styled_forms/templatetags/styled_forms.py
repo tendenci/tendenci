@@ -43,6 +43,8 @@ def col_sm_width(field):
     The width is calculated based on the size of the field.
     """
     f = field.field
+    if field.name == 'salutation':
+        return 5
     if hasattr(f, 'widget') and 'size' in f.widget.attrs:
         try:
             size = int(f.widget.attrs['size'])
