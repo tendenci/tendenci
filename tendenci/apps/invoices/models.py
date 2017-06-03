@@ -295,7 +295,8 @@ class Invoice(models.Model):
             return True
 
         if user2_compare.is_authenticated():
-            if user2_compare in [self.creator, self.owner]:
+            if user2_compare in [self.creator, self.owner] or \
+                    user2_compare.email == self.bill_to_email:
                 return self.status
 
         return False
@@ -314,7 +315,8 @@ class Invoice(models.Model):
                     return True
 
                 if self.creator == user2_compare or \
-                        self.owner == user2_compare:
+                        self.owner == user2_compare or \
+                        self.bill_to_email == user2_compare.email:
                     if self.status == 1:
                         # user can only edit a non-tendered invoice
                         if not self.is_tendered:
