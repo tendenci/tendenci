@@ -66,3 +66,4 @@ email-reply-parser
 django-markdown-deux
 xhtml2pdf
 python-magic
+XlsxWriter==0.9.6
