@@ -305,7 +305,7 @@ def search(request, template_name="profiles/search.html"):
             profiles = profiles.exclude(hide_in_search=True)
 
     if membership_type:
-        profiles = profiles.filter(
+        profiles = profiles.filter(user__membershipdefault__status_detail='active',
             user__membershipdefault__membership_type_id=membership_type)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
