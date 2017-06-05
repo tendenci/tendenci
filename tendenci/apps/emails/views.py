@@ -43,6 +43,7 @@ def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
     email = get_object_or_404(Email, pk=id)
     if not email.allow_edit_by(request.user): raise Http403
 
+    next = request.GET.get("next", "")
     if request.method == "POST":
         form = form_class(request.POST, instance=email)
 

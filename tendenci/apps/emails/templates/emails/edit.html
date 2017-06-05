@@ -25,7 +25,7 @@
             {{ form.content_type.errors }}
         {% endif %}
         <label for="id_content_type" class="col-sm-3 control-label">{% trans 'Content Type'%} :</label>
-        <div class="col-sm-5">
+        <div class="col-sm-6">
         {{ form.content_type }}
         </div>
     </div>
@@ -94,20 +94,11 @@
             {{ form.status_detail.errors }}
         {% endif %}
         <label for="id_status_detail" class="col-sm-3 control-label">{% trans 'Status Detail'%} :</label>
-        <div class="col-sm-4">
+        <div class="col-sm-5">
         {{ form.status_detail }}
         </div>
     </div>
 
-    <div class="form-group">
-        {% if form.status.errors %}
-            {{ form.status.errors }}
-        {% endif %}
-        <label for="id_status" class="col-sm-3 control-label">{% trans 'Status'%} :</label>
-        <div class="col-sm-1">
-        {{ form.status }}
-        </div>
-    </div>
 
     <input type="hidden" name="next" value="{{ next }}" />
     <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save' %}" />
