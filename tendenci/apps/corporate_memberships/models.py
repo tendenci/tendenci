@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete
+import copy
 
 #from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.tinymce import models as tinymce_models
@@ -1289,7 +1290,7 @@ class CorpMembershipApp(TendenciBaseModel):
     confirmation_text = models.TextField(_("Confirmation Text"),
                                          blank=True, null=True)
 
-    memb_app = models.OneToOneField(MembershipApp,
+    memb_app = models.ForeignKey(MembershipApp,
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
                             verbose_name=_("Membership Application"),
@@ -1324,6 +1325,9 @@ class CorpMembershipApp(TendenciBaseModel):
 
         return current_app and current_app.id == self.id
 
+    def is_active(self):
+        return self.status and self.status_detail in ['active', 'published']
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -1333,10 +1337,25 @@ class CorpMembershipApp(TendenciBaseModel):
             self.memb_app.use_for_corp = True
             self.memb_app.save()
 
+    def clone(self):
+        """
+        Clone this app.
+        """
+        obj = copy.deepcopy(self)
+        obj.pk = None
+        obj.slug = 'clone-%d-%s' % (self.id, self.slug)
+        obj.name = 'Clone of %s' % self.name
+        obj.save()
+        fields = self.fields.all()
+        for field in fields:
+            field.clone(obj)
+
+        return obj
+
     def application_form_link(self):
-        if self.is_current():
-            return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
-                                            self.slug)
+        if self.is_active():
+            return '<a href="%s">%s</a>' % (reverse('corpmembership.add_slug',
+                                                    args=[self.slug]), self.slug)
         return '--'
 
     application_form_link.allow_tags = True
@@ -1463,6 +1482,16 @@ class CorpMembershipAppField(OrderingBaseModel):
 
             return field_class(**field_args)
         return None
+
+    def clone(self, core_app):
+        """
+        Clone this field.
+        """
+        obj = copy.deepcopy(self)
+        obj.pk = None
+        obj.corp_app = core_app
+        obj.save()
+        return obj
 
     @staticmethod
     def get_default_field_type(field_name):

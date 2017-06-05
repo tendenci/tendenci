@@ -21,10 +21,10 @@
     {% has_perm request.user corporate_memberships.change_corpemembership as can_edit %}
 
     {% if can_view %}
-    <p><a href="{% url "corpmembership.view" corporate_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
+    <p><a href="{% url "corpmembership.view_slug" corporate_membership.id app.slug %}">{% trans "View this Corporate Membership" %}</a></p>
     {% endif %}
     {% if can_edit %}
-    <p><a href="{% url "corpmembership.edit" corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
+    <p><a href="{% url "corpmembership.edit_slug" corporate_membership.id app.slug %}">{% trans "Edit this Corporate Membership" %}</a></p>
     <p><a href="{% url "corpmembership.edit_corp_reps" corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
     {% endif %}
 </div>

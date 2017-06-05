@@ -20,24 +20,35 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
 
     url(r"^%s/applications/add_pre/$" % urlpath,
         "corpmembership_add_pre", name="corpmembership.add_pre"),
+    url(r"^%s/applications/(?P<slug>[\w\-]+)/add_pre/$" % urlpath,
+        "corpmembership_add_pre", name="corpmembership.add_pre_slug"),
 
     url(r"^%s/applications/add/$" % urlpath,
         "corpmembership_add", name="corpmembership.add"),
-
     url(r"^%s/(?P<slug>[\w\-]+)/add/$" % urlpath,
-        "corpmembership_add", name="corpmembership.add"),
+        "corpmembership_add", name="corpmembership.add_slug"),
 
     url(r"^%s/applications/add_conf/(?P<id>\d+)/$" % urlpath,
         "corpmembership_add_conf", name="corpmembership.add_conf"),
+    url(r"^%s/applications/add_conf/(?P<id>\d+)/(?P<slug>[\w\-]+)/$" % urlpath,
+        "corpmembership_add_conf", name="corpmembership.add_conf_slug"),
 
-    url(r"^%s/applications/edit/(?P<id>\d+)/$" % urlpath,
-        "corpmembership_edit", name="corpmembership.edit"),
 
     url(r"^%s/applications/upgrade/(?P<id>\d+)/$" % urlpath,
         "corpmembership_upgrade", name="corpmembership.upgrade"),
+    url(r"^%s/applications/upgrade/(?P<id>\d+)/(?P<slug>[\w\-]+)/$" % urlpath,
+        "corpmembership_upgrade", name="corpmembership.upgrade_slug"),
+
+    url(r"^%s/applications/edit/(?P<id>\d+)/$" % urlpath,
+        "corpmembership_edit", name="corpmembership.edit"),
+    url(r"^%s/applications/edit/(?P<id>\d+)/(?P<slug>[\w\-]+)/$" % urlpath,
+            "corpmembership_edit", name="corpmembership.edit_slug"),
+
 
     url(r"^%s/applications/view/(?P<id>\d+)/$" % urlpath,
         "corpmembership_view", name="corpmembership.view"),
+    url(r"^%s/applications/view/(?P<id>\d+)/(?P<slug>[\w\-]+)/$" % urlpath,
+            "corpmembership_view", name="corpmembership.view_slug"),
 
     url(r"^%s/applications/search/$" % urlpath,
         "corpmembership_search", name="corpmembership.search"),
@@ -61,8 +72,10 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
         "corpmembership_approve", name="corpmembership.approve"),
 
     url(r"^%s/renewal/(?P<id>\d+)/$" % urlpath, "corp_renew", name="corpmembership.renew"),
+    url(r"^%s/renewal/(?P<id>\d+)/(?P<slug>[\w\-]+)/$" % urlpath, "corp_renew", name="corpmembership.renew_slug"),
 
     url(r"^%s/renewal_conf/(?P<id>\d+)/$" % urlpath, "corp_renew_conf", name="corpmembership.renew_conf"),
+    url(r"^%s/renewal_conf/(?P<id>\d+)/(?P<slug>[\w\-]+)/$" % urlpath, "corp_renew_conf", name="corpmembership.renew_conf_slug"),
 
     url(r'^%s/roster/$' % urlpath, 'roster_search', name="corpmembership.roster_search"),
 

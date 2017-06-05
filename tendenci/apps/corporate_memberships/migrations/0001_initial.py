@@ -377,7 +377,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corpmembershipapp',
             name='memb_app',
-            field=models.OneToOneField(related_name='corp_app', default=1, to='memberships.MembershipApp', help_text='App for individual memberships.', verbose_name='Membership Application'),
+            field=models.ForeignKey(related_name='corp_app', default=1, to='memberships.MembershipApp', help_text='App for individual memberships.', verbose_name='Membership Application'),
         ),
         migrations.AddField(
             model_name='corpmembershipapp',
