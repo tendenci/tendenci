@@ -24,6 +24,7 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = "Categories"
         app_label = 'videos'
+        ordering = ('name',)
 
     def get_absolute_url(self):
         return reverse('video.category', args=[self.slug])
@@ -39,6 +40,7 @@ class VideoType(models.Model):
     class Meta:
         verbose_name_plural = "Video Types"
         app_label = 'videos'
+        ordering = ('name',)
 
 
 class Video(TendenciBaseModel):

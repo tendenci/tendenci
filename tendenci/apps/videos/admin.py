@@ -16,6 +16,7 @@ class VideoInline(admin.TabularInline):
 
 
 class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
     prepopulated_fields = {'slug': ['name']}
     inlines = [VideoInline]
 
