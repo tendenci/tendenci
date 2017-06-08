@@ -16,9 +16,23 @@ class VideoInline(admin.TabularInline):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ('id', 'name', 'position')
+    list_editable = ['position', 'name']
     prepopulated_fields = {'slug': ['name']}
     inlines = [VideoInline]
+    ordering = ('position',)
+    
+    class Media:
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
+            'js/admin/admin-list-reorder.js',
+        )
+
+
+class VideoTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    prepopulated_fields = {'slug': ['name']}
 
 
 class VideoAdmin(TendenciBaseModelAdmin):
@@ -68,4 +82,4 @@ class VideoAdmin(TendenciBaseModelAdmin):
 
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(VideoType, CategoryAdmin)
+admin.site.register(VideoType, VideoTypeAdmin)

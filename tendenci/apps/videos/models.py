@@ -11,10 +11,11 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.videos.managers import VideoManager
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 client = Embedly("438be524153e11e18f884040d3dc5c07")
 
-class Category(models.Model):
+class Category(OrderingBaseModel):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(unique=True)
 
@@ -24,7 +25,7 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = "Categories"
         app_label = 'videos'
-        ordering = ('name',)
+        ordering = ('position', 'name')
 
     def get_absolute_url(self):
         return reverse('video.category', args=[self.slug])
