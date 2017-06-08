@@ -5,7 +5,6 @@ from decimal import Decimal
 from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 import pytz
-from sets import Set
 import time as ttime
 
 from django.http import HttpResponseServerError
@@ -426,7 +425,7 @@ def process_export(
             field.name for field in MembershipDefault._meta.fields
             if isinstance(field, (ForeignKey, OneToOneField))]
 
-        fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
+        fks = set(user_fks + profile_fks + demographic_fks + membership_fks)
 
     membership_ids_dict = dict(MembershipType.objects.all().values_list('id', 'name'))
     app_ids_dict = dict(MembershipApp.objects.all().values_list('id', 'name'))
