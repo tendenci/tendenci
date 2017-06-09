@@ -20,8 +20,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.apps.recurring_payments.models import RecurringPayment
         from tendenci.apps.recurring_payments.utils import run_a_recurring_payment
+        from tendenci.apps.site_settings.utils import get_setting
 
-        verbosity = int(options['verbosity'])
-        recurring_payments = RecurringPayment.objects.filter(status_detail='active', status=True)
-        for rp in recurring_payments:
-            run_a_recurring_payment(rp, verbosity)
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            verbosity = int(options['verbosity'])
+            recurring_payments = RecurringPayment.objects.filter(status_detail='active', status=True)
+            for rp in recurring_payments:
+                run_a_recurring_payment(rp, verbosity)
+        else:
+            print('Recurring payments not enabled')
