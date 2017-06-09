@@ -50,11 +50,10 @@ class RegistrationForm(forms.Form):
         in use.
 
         """
-        try:
-            user = User.objects.get(username__iexact=self.cleaned_data['username'])
-        except User.DoesNotExist:
-            return self.cleaned_data['username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        value = self.cleaned_data['username']
+        if User.objects.filter(username__iexact=value).count() > 0:
+            raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        return value
 
     def clean(self):
         """
