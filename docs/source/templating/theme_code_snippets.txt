@@ -2,7 +2,9 @@ Theme: Code Snippets for Dynamic Content
 ========================================
 
 You can pull various pieces of dynamic content into your Tendenci theme template. 
-Before adding the snippets below be sure that your template file has the "load" tag for that module at the top of your page. Example: if you were to add an event feed you would want `{% load event_tags %}` pasted at the very top of your html doc. 
+Before adding the snippets below be sure that your template file has the "load" tag for that module at the top of your page. Example: if you were to add an event feed you would want `{% load event_tags %}` pasted at the very top of your html doc.
+
+For more tag references, check out the docs built into your site at: yourdomain/admin/doc/tags/
 
 Event Feed
 ------------
@@ -64,6 +66,11 @@ Then add the following code snippet where you want to place your event feed:
 	     </div>
      {% endif %}
    </section>
+
+
+Time Display on Event Feed (hide time if all day)
+-------------------------------------------------
+{% if event.all_day %}{{ event.start_dt|date:"F j, Y" }}{% else %}{{ event.start_dt }}{% endif %}
 
 
 Articles Feed

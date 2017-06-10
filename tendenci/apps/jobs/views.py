@@ -247,7 +247,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             #save relationships
             job.save()
-            msg_string = 'Successfully added %s' % job
+            msg_string = 'Successfully added %s' % unicode(job)
             messages.add_message(request, messages.SUCCESS,_(msg_string))
 
             # send notification to administrators
@@ -388,7 +388,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
 
             #save relationships
             job.save()
-            msg_string = 'Successfully updated %s' % job
+            msg_string = 'Successfully updated {}'.format(unicode(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(
@@ -482,7 +482,7 @@ def pricing_add(request, form_class=JobPricingForm,
 
                 EventLog.objects.log(instance=job_pricing)
 
-                if "_popup" in request.REQUEST:
+                if "_popup" in request.POST:
                     return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(job_pricing.pk), escape(job_pricing)))
 
                 return HttpResponseRedirect(
@@ -490,7 +490,7 @@ def pricing_add(request, form_class=JobPricingForm,
         else:
             form = form_class()
 
-        if "_popup" in request.REQUEST:
+        if "_popup" in request.GET:
             template_name="jobs/pricing-add-popup.html"
 
         return render_to_response(template_name, {'form': form},

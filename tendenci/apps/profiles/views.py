@@ -49,6 +49,7 @@ ActivateForm)
 from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
+from tendenci.apps.memberships.forms import EducationForm
 from tendenci.apps.invoices.models import Invoice
 
 try:
@@ -312,7 +313,7 @@ def search(request, template_name="profiles/search.html"):
             profiles = profiles.exclude(hide_in_search=True)
 
     if membership_type:
-        profiles = profiles.filter(
+        profiles = profiles.filter(user__membershipdefault__status_detail='active',
             user__membershipdefault__membership_type_id=membership_type)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
@@ -947,6 +948,32 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
 
 
 @login_required
+def user_education_edit(request, username, form_class=EducationForm, template_name="profiles/edit_education.html"):
+    user = get_object_or_404(User, username=username)
+
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user)
+
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+
+    form = form_class(None, request.POST or None, user=user)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(user)
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited education for %(full_name)s' % { 'full_name' : user.get_full_name()}))
+            return HttpResponseRedirect("%s" % (reverse('profile', args=[user.username])))
+
+    return render_to_response(template_name, {
+                            'form': form,
+                            'user_this': user,
+                            }, context_instance=RequestContext(request))
+
+
+@login_required
 def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     if not request.user.profile.is_superuser:
         raise Http403
@@ -1162,7 +1189,10 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                             field_dict[field_name] = master_user
                                             # check if the master record exists
                                             if model.objects.filter(**field_dict).exists():
-                                                obj.delete()
+                                                if hasattr(obj, 'hard_delete'):
+                                                    obj.hard_delete()
+                                                else:  
+                                                    obj.delete()
                                             else:
                                                 setattr(obj, field_name, master_user)
                                                 obj.save()
@@ -1192,7 +1222,10 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                             if updated:
                                                 master_obj.save()
                                             # delete obj
-                                            obj.delete()
+                                            if hasattr(obj, 'hard_delete'):
+                                                obj.hard_delete()
+                                            else: 
+                                                obj.delete()
         
                         master.save()
                         profile.delete()

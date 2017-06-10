@@ -1,8 +1,10 @@
 {% load i18n %}
 {% load base_filters %}
 {% load base_tags %}
+{% load corporate_memberships_tags %}
 
 
+{% allow_edit_corp corporate_membership request.user as allow_edit %}
 <ul class="list-unstyled t-meta-data">
     {% if user.is_authenticated %}
         {% if user.profile.is_superuser or user == corporate_membership.creator or user == corporate_membership.owner %}
@@ -17,7 +19,7 @@
     {% endif %}
 </ul>
 
-{% if user.profile.is_superuser or corporate_membership|args:request.user|call:"is_rep" %}
+{% if allow_edit %}
     <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
             <div class="collapse navbar-collapse">
@@ -45,9 +47,11 @@
                                     <a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corporate_membership.id }}&active_only=1">{% trans "Roster" %}{{corporate_memberhsip.status_detail }}</a>
                                 </li>
 
+								{% if user.profile.is_superuser %}
                                 <li>
                                     <a class="t-meta-delete-link" href="{% url 'corpmembership.delete' corporate_membership.pk %}">{% trans "Delete" %}</a>
                                 </li>
+                                {% endif %}
                             </ul>
                         </li>
                     {% endif %}

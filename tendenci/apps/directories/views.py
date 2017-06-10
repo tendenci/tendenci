@@ -63,9 +63,6 @@ def search(request, template_name="directories/search.html"):
         directories = directories.select_related()
 
     query = request.GET.get('q', None)
-    # Handle legacy tag links
-    if query and "tag:" in query:
-        return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('directories'), query.replace('tag:', '')))
 
     form = DirectorySearchForm(request.GET, is_superuser=request.user.is_superuser)
 
@@ -75,7 +72,10 @@ def search(request, template_name="directories/search.html"):
         sub_category = form.cleaned_data['sub_category']
         search_method = form.cleaned_data['search_method']
 
-        if query and cat:
+        if query and 'tag:' in query:
+            tag = query.strip('tag:')
+            directories = directories.filter(tags__icontains=tag)
+        elif query and cat:
             search_type = '__iexact'
             if search_method == 'starts_with':
                 search_type = '__istartswith'
@@ -356,14 +356,14 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 directory_pricing.status = 1
                 directory_pricing.save(request.user)
 
-                if "_popup" in request.REQUEST:
+                if "_popup" in request.POST:
                     return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(directory_pricing.pk), escape(directory_pricing)))
 
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
             form = form_class(user=request.user)
 
-        if "_popup" in request.REQUEST:
+        if "_popup" in request.GET:
             template_name="directories/pricing-add-popup.html"
 
         return render_to_response(template_name, {'form':form},

@@ -23,7 +23,7 @@ class EmailForm(forms.ModelForm):
                   'sender_display',
                   'reply_to',
                   'recipient',
-                  'status',
+                  #'status',
                   'status_detail',
                   )
 

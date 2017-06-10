@@ -49,7 +49,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
             msg_string = 'Successfully saved %s settings' % scope_category.replace('_',' ').title()
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-            redirect_to = request.REQUEST.get('next', '')
+            redirect_to = request.POST.get('next', '')
             if redirect_to:
                 return HttpResponseRedirect(redirect_to)
 
@@ -97,7 +97,7 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
             msg_string = 'Successfully saved %s settings' % name.replace('_',' ').title()
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-            redirect_to = request.REQUEST.get('next', '')
+            redirect_to = request.POST.get('next', '')
             if redirect_to:
                 return HttpResponseRedirect(redirect_to)
 

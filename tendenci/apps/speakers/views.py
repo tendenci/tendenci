@@ -42,7 +42,7 @@ def search(request, template_name="speakers/search.html"):
     if has_index and query:
         speakers = Speaker.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'speakers.view_story')
+        filters = get_query_filters(request.user, 'speakers.view_speaker')
         speakers = Speaker.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             speakers = speakers.select_related()

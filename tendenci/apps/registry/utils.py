@@ -152,7 +152,7 @@ def get_addons(installed_apps, addon_folder_path):
         try:
             __import__(addon_package)
             new_addons.append(addon_package)
-        except:
+        except ImportError:
             pass
 
     return new_addons
@@ -174,7 +174,7 @@ def get_url_patterns():
         try:
             __import__('.'.join([addon, 'urls']))
             items.append((r'', include('%s.urls' % addon,)))
-        except:
+        except ImportError:
             pass
 
     return patterns('', *items)

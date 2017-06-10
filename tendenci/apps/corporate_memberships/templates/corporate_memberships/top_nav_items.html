@@ -22,7 +22,7 @@
     <li>
         <div class="yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-{% if app_object %}6{% else %}12{% endif %} col-xs-12">
                     {% if app_object %}
                         <li>
                             <span class="content-head text-content-head">{% trans "All Corp. Members" %}</span>
@@ -132,7 +132,7 @@
 
                 {% if app_object %}
                     {% if can_view_corpmemb or can_edit_corpmemb %}
-                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Corp. Member" %}</span>
                             </li>

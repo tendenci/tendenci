@@ -55,6 +55,7 @@ urlpatterns = patterns('tendenci.apps.profiles.views',
 
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/$' % urlpath, 'index', name='profile'),
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/groups/edit/$' % urlpath, 'user_groups_edit', name='profile.edit_groups'),
+    url(r'^%s/(?P<username>[+-.\w\d@\s]+)/education/edit/$' % urlpath, 'user_education_edit', name='profile.edit_education'),
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/groups/(?P<membership_id>\d+)/edit/$' % urlpath, 'user_role_edit', name='profile.edit_role'),
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/memberships/add/$' % urlpath, 'user_membership_add', name='profile.add_membership'),
 )

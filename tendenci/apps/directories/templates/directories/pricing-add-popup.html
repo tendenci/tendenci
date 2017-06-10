@@ -33,6 +33,7 @@
 
     <div class="directory-pricing-wrap">
     <form action="" method="post">{% csrf_token %}
+        <input type="hidden" name="_popup" value="1">
         <div class="forms">
             <div class="pricing-item">
                 <div class="errs">{{ form.duration.errors }}</div>

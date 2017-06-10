@@ -20,7 +20,7 @@ from tendenci.apps.accounts.forms import PasswordResetForm
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
 
-    redirect_to = request.REQUEST.get('next', u'')
+    redirect_to = request.GET.get('next', u'')
 
     if request.method == "POST":
         default_redirect_to = getattr(settings, "LOGIN_REDIRECT_URLNAME", None)

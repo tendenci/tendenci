@@ -4489,7 +4489,7 @@ msgstr "地点"
 #: addons/events/forms.py:958
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "在事件音箱必须有不同的名称。 &#39;％s&#39;的已被使用。"
+msgstr "演讲人名字\"%s\"的已被使用。"
 
 #: addons/events/forms.py:1026 core/files/forms.py:117 core/files/forms.py:292
 #: core/files/forms.py:420
@@ -4536,7 +4536,7 @@ msgstr "请注明何时发送电子邮件提醒"
 #: addons/events/forms.py:1372
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "值无效的&#39;％s&#39;的。整数（S）只。"
+msgstr "值无效的&#39;%s&#39;的。整数（S）只。"
 
 #: addons/events/forms.py:1515 addons/events/registration/forms.py:23
 #: addons/events/templates/events/reg8n/multi_register.html:98
@@ -4878,7 +4878,7 @@ msgstr "插件是当前的一组登记无效"
 #: addons/events/addons/forms.py:62
 #, python-format
 msgid "Option required for %s"
-msgstr "需要％s选项"
+msgstr "需要%s选项"
 
 #: addons/events/ics/models.py:11 core/exports/models.py:10
 #: core/imports/models.py:22
@@ -4948,7 +4948,7 @@ msgstr "通知管理员的登记活动已经结束。"
 #: addons/events/registration/forms.py:74
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "折扣代码不能用％s的人。"
+msgstr "折扣代码不能用%s的人。"
 
 #: addons/events/registration/forms.py:76
 msgid "This is not a valid Discount Code!"
@@ -4971,7 +4971,7 @@ msgstr "%(user)sS是无权使用 %(pricing)s"
 #: addons/events/registration/formsets.py:161
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "％s只能为每注册一次，注册"
+msgstr "%s只能为每注册一次，注册"
 
 #: addons/events/registration/views.py:210
 msgid "Registration is closed."
@@ -5732,6 +5732,8 @@ msgstr "金额："
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "取消注册"
 
@@ -5885,11 +5887,6 @@ msgstr "您的详细信息"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "注册号："
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "取消工商注册"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
@@ -9109,7 +9106,7 @@ msgid ""
 "Chain multiple filters using the following pattern "
 "\"FILTER_ONE->FILTER_TWO->FILTER_THREE\". Image filters will be applied in "
 "order. The following filters are available: %s."
-msgstr "使用下面的模式“FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE”链多个过滤器。图片过滤器会按顺序使用。下面的过滤器：％s的。"
+msgstr "使用下面的模式“FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE”链多个过滤器。图片过滤器会按顺序使用。下面的过滤器：%s的。"
 
 #: addons/photos/models.py:106 addons/photos/models.py:463
 msgid "image"
@@ -10111,7 +10108,7 @@ msgstr "该E-mail地址不具有相关联的用户帐户。"
 #: apps/accounts/forms.py:236
 #, python-format
 msgid "Password reset on %s"
-msgstr "％s上的密码重设"
+msgstr "%s上的密码重设"
 
 #: apps/accounts/templates/accounts/activate.html:5
 msgid "Account Activation"
@@ -14345,7 +14342,7 @@ msgstr "案例分析"
 msgid ""
 "Your site export is being processed. You will receive an email at %s when "
 "the export is complete."
-msgstr "您的网站出口正在处理。你会在％s接收电子邮件时，导出完成。"
+msgstr "您的网站出口正在处理。你会在%s接收电子邮件时，导出完成。"
 
 #: apps/wp_exporter/templates/notification/wp_export/full.html:7
 msgid "Blog Export Success!"
@@ -14385,7 +14382,7 @@ msgstr "您的博客已导入！"
 msgid ""
 "Your site import is being processed. You will receive an email at %s when "
 "the import is complete."
-msgstr "您的网站导入正在处理。你会在％s接收电子邮件时，在导入完成。"
+msgstr "您的网站导入正在处理。你会在%s接收电子邮件时，在导入完成。"
 
 #: apps/wp_importer/templates/notification/wp_import/full.html:7
 msgid "Blog Import Success!"
@@ -14532,13 +14529,13 @@ msgstr "您目前有苏天泽的最新版本。"
 #: core/base/templatetags/base_tags.py:663
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "％s的标记正好需要三个参数"
+msgstr "%s的标记正好需要三个参数"
 
 #: core/base/templatetags/base_tags.py:645
 #: core/base/templatetags/base_tags.py:665
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "第二个参数％s的标签必须是&#39;为&#39;"
+msgstr "第二个参数%s的标签必须是&#39;为&#39;"
 
 #: core/email_blocks/templates/email_blocks/delete.html:15
 msgid "Delete an Email Block Record"
@@ -15183,7 +15180,7 @@ msgstr "文件（ %(file)sS）从 %(SITE_GLOBAL_SITEDISPLAYNAME)s删除Š"
 msgid ""
 "The uploaded file lacks the required field(s) as the identity for "
 "duplicates: %s."
-msgstr "上传的文件缺乏必要的栏位为重复的身份：％s的。"
+msgstr "上传的文件缺乏必要的栏位为重复的身份：%s的。"
 
 #: core/imports/models.py:21
 msgid "Processing"

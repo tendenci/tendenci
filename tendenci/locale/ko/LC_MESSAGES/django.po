@@ -4535,7 +4535,7 @@ msgstr "이메일 알림을 보낼 때 지정하십시오"
 #: addons/events/forms.py:1372
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "잘못된 값 &#39;% S&#39;이 (가) 있습니다. 정수 (들) 만."
+msgstr "잘못된 값 &#39;%s&#39;이 (가) 있습니다. 정수 (들) 만."
 
 #: addons/events/forms.py:1515 addons/events/registration/forms.py:23
 #: addons/events/templates/events/reg8n/multi_register.html:98
@@ -4877,7 +4877,7 @@ msgstr "애드온은 등록자의 현재 설정이 잘못되었습니다"
 #: addons/events/addons/forms.py:62
 #, python-format
 msgid "Option required for %s"
-msgstr "옵션 %의 필요"
+msgstr "옵션 %s 필요"
 
 #: addons/events/ics/models.py:11 core/exports/models.py:10
 #: core/imports/models.py:22
@@ -4947,7 +4947,7 @@ msgstr "이벤트에 대한 등록이 종료되었음을 관리자에게 통지�
 #: addons/events/registration/forms.py:74
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "할인 코드 %의 사람들을 위해 사용할 수 없습니다."
+msgstr "할인 코드 %s 사람들을 위해 사용할 수 없습니다."
 
 #: addons/events/registration/forms.py:76
 msgid "This is not a valid Discount Code!"
@@ -5731,6 +5731,8 @@ msgstr "금액 :"
 #: addons/events/templates/events/reg8n/cancel_registration.html:8
 #: addons/events/templates/events/registrants/options.html:10
 #: addons/events/templates/notification/event_registration_confirmation/full.html:168
+#: addons/events/templates/events/reg8n/register-confirm.html:96
+#: addons/events/templates/events/reg8n/register-confirm.html:98
 msgid "Cancel Registration"
 msgstr "등록 취소"
 
@@ -5884,11 +5886,6 @@ msgstr "당신의 세부 사항"
 #: addons/events/templates/events/registrants/global-search.html:90
 msgid "Registration Number: "
 msgstr "등록 번호 :"
-
-#: addons/events/templates/events/reg8n/register-confirm.html:96
-#: addons/events/templates/events/reg8n/register-confirm.html:98
-msgid "Cancel Registration"
-msgstr "Registration 취소"
 
 #: addons/events/templates/events/reg8n/register-confirm.html:113
 msgid "Table/Team of "
@@ -14531,13 +14528,13 @@ msgstr "당신은 현재 Tendenci의 최신 버전을 가지고있다."
 #: core/base/templatetags/base_tags.py:663
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "%의 태그는 정확히 3 인수가 필요합니다"
+msgstr "%s 태그는 정확히 3 인수가 필요합니다"
 
 #: core/base/templatetags/base_tags.py:645
 #: core/base/templatetags/base_tags.py:665
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "%의 태그에 두 번째 인수는 &#39;로&#39;해야"
+msgstr "%s 태그에 두 번째 인수는 &#39;로&#39;해야"
 
 #: core/email_blocks/templates/email_blocks/delete.html:15
 msgid "Delete an Email Block Record"

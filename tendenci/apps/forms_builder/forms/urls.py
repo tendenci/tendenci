@@ -1,6 +1,10 @@
 from django.conf.urls import patterns, url
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.forms_builder.forms.signals import init_signals
 
+
+init_signals()
+             
 urlpath = get_setting('module', 'forms', 'url')
 if not urlpath:
     urlpath = "forms"

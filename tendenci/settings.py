@@ -73,7 +73,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware', 
     'django.middleware.common.CommonMiddleware',
-    'pagination.middleware.PaginationMiddleware',
+    'dj_pagination.middleware.PaginationMiddleware',
     'tendenci.apps.profiles.middleware.ForceLogoutProfileMiddleware',
     'tendenci.apps.profiles.middleware.ProfileMiddleware',
     'tendenci.apps.base.middleware.Http403Middleware',
@@ -193,12 +193,12 @@ INSTALLED_APPS = (
     # applications
     'formtools',
     'bootstrap3',
-    'pagination', 
+    'dj_pagination',
     'tagging',
     'captcha',
     'haystack',
     'tastypie',
-    
+
     'tendenci',
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',

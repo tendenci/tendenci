@@ -18,7 +18,10 @@ class RobotManager(Manager):
 
         # UnicodeDecodeError: 'ascii' codec can't decode byte 0xf3
         # http://stackoverflow.com/questions/2392732/sqlite-python-unicode-and-non-utf-data
-        user_agent = unicode(user_agent, errors='ignore')
+        try:
+            user_agent = unicode(user_agent, errors='ignore')
+        except TypeError:
+            pass
 
         for robot in robots:
             if robot.name.lower() in user_agent.lower():

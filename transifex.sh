@@ -15,6 +15,6 @@ if [ $? -eq 0 ] && [ $TRAVIS_BRANCH == master ]; then
     echo "hostname = https://www.transifex.com" >> ~/.transifexrc
     echo "password = $TENDENCI_TRANSIFEX_PASSWORD" >> ~/.transifexrc
     echo "token =" >> ~/.transifexrc
-    echo "username = tendenci" >> ~/.transifexrc
+    echo "username = jqian" >> ~/.transifexrc
     tx push --source --no-interactive --skip
 fi

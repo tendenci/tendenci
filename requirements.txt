@@ -10,7 +10,7 @@ django-authority>=0.4
 django-countries==3.4.1
 django-form-utils>=0.1.8
 django-localflavor==1.4.1
-django-pagination>=1.0.7
+dj-pagination>=2.2.0
 django-picklefield>=0.1.6
 django-simple-captcha==0.5.2
 django-tagging==0.4.3
@@ -43,7 +43,7 @@ django-ses==0.7.1
 Geraldo==0.4.17
 django-tastypie==0.13.3
 docutils==0.12
-chardet==2.3.0
+chardet==3.0.3
 psycopg2==2.6.1
 gunicorn==19.5.0
 django-storages==1.4.1
@@ -51,7 +51,7 @@ python-memcached==1.57
 Whoosh==2.7.4
 simple-salesforce==0.68.1
 selenium==2.53.2
-raven==5.17.0
+raven==6.0.0
 django-admin-bootstrapped==2.5.7
 django-bootstrap3==7.0.1
 django-app-namespace-template-loader==0.4
@@ -66,3 +66,4 @@ email-reply-parser
 django-markdown-deux
 xhtml2pdf
 python-magic
+XlsxWriter==0.9.6

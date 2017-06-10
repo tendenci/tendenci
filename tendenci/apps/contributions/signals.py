@@ -7,13 +7,13 @@ from tendenci.apps.contributions.models import Contribution
 def save_contribution(sender, **kwargs):
     instance = kwargs['instance']
 
-    if not hasattr(instance, 'owner') or not hasattr(instance, 'creator'):
+    if not hasattr(instance, 'owner') and not hasattr(instance, 'creator'):
         return None
     # TODO: Possibly allow anonymous contributions
     # to be added to the system
-    if isinstance(instance.owner, AnonymousUser):
+    if hasattr(instance, 'owner') and isinstance(instance.owner, AnonymousUser):
         return None
-    if isinstance(instance.creator, AnonymousUser):
+    if hasattr(instance, 'creator') and isinstance(instance.creator, AnonymousUser):
         return None
     if not instance.owner or not instance.creator:
         return None
@@ -40,6 +40,9 @@ def save_contribution(sender, **kwargs):
             if hasattr(instance, attr):
                 contrib.title = getattr(instance, attr, '')
                 break
+            
+        if not contrib.title:
+            contrib.title = instance
 
         contrib.owner = instance.owner
         contrib.save()

@@ -1093,11 +1093,11 @@ def membership_default_add(request, slug='', membership_id=None,
 
     education_form = EducationForm(app_fields, request.POST or None)
 
-    demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None)
-
     if user and (not is_renewal):
         [membership] = user.membershipdefault_set.filter(
             membership_type=membership_type_id).order_by('-pk')[:1] or [None]
+    
+    demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None, membership=membership)
 
     membership_initial = {}
     if membership:
