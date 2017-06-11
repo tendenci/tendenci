@@ -118,7 +118,7 @@ def index(request, username='', template_name="profiles/index.html"):
                 active_qs | expired_qs)
 
     auto_renew_is_set = False
-    if get_setting('module', 'recurring_payments', 'enabled'):
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         if user_this.recurring_payments.filter(status=True, 
                                                  status_detail='active',
                                                  object_content_type__model='membershipdefault').exists():

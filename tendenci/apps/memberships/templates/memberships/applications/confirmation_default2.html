@@ -69,9 +69,11 @@
             {% endif %}
             
             {% if not membership.is_pending and MODULE_RECURRING_PAYMENTS_ENABLED %}
+            {% if MODULE_MEMBERSHIPS_AUTORENEW %}
             <li>
             	<a href="{% url "memberships.auto_renew_setup" membership.user.id %}">{% if not user.is_authenticated %}{% trans 'Log in and Set Up Auto Renew' %}{% else %}{% trans 'Set Up Auto Renew' %}{% endif %}</a>
             </li>
+			{% endif %}
 			{% endif %}
         </ul>
 

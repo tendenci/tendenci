@@ -1500,7 +1500,7 @@ class MembershipDefault(TendenciBaseModel):
                 approve_link: u'Approve Membership'})
         
         if status != 'archive':
-            if get_setting('module', 'recurring_payments', 'enabled'):
+            if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
                 if not self.has_rp():
                     label = _('Set Up Auto Renew')
                 else:

@@ -66,7 +66,7 @@
                             {% endif %}
                             
                             {% if membership.status_detail != 'archive' %}
-                            {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
+                            {% if MODULE_RECURRING_PAYMENTS_ENABLED and MODULE_MEMBERSHIPS_AUTORENEW %}
                             {% if  user.is_superuser or user == membership.user %}
                             <p>{% trans 'Auto Renew:' %} <strong>{% if membership.auto_renew %}{% trans 'On' %}{% else %}{% trans 'Off' %}{% endif %}</strong>
                          

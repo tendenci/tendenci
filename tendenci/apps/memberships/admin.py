@@ -284,7 +284,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'get_status',
         'get_invoice',
     ]
-    if get_setting('module', 'recurring_payments', 'enabled'):
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         list_display.append('auto_renew')
     list_display_links = ('name',)
 
@@ -292,7 +292,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         MembershipStatusDetailFilter,
         'membership_type',
     ]
-    if get_setting('module', 'recurring_payments', 'enabled'):
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         list_filter.append(MembershipAutoRenewFilter)
 
     actions = [

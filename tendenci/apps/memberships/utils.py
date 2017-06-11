@@ -812,7 +812,7 @@ def get_notice_token_help_text(notice=None):
                     'referer_url',
                     'renew_link',
                     'expire_dt',]
-    if get_setting('module', 'recurring_payments', 'enabled'):
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         other_labels += ['link_to_setup_auto_renew']
     other_labels += ['site_contact_name',
                     'site_contact_email',

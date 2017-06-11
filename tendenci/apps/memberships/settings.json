@@ -135,5 +135,22 @@
         "scope_category": "memberships",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, members can opt to auto renewal, providing the recurring payments is on.",
+        "data_type": "boolean",
+        "update_dt": "2017-06-10 15:50:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "autorenew",
+        "value": "false",
+        "label": "Allow Auto Renewal",
+        "input_value": "true, false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "memberships",
+        "store": true,
+        "updated_by": ""
     }
 ]

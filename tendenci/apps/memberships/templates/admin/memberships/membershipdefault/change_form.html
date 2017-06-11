@@ -27,7 +27,7 @@
             {{ original.get_status|capfirst }} &rarr; {% trans "Approve" %}</a></li>
         {% endif %}
     {% endif %}
-    {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
+    {% if MODULE_RECURRING_PAYMENTS_ENABLED and MODULE_MEMBERSHIPS_AUTORENEW %}
     {% if original.is_active or original.is_expired %}
     <li><a href="{% url "memberships.auto_renew_setup" original.user.id %}">{% if original.auto_renew %}{% trans 'Auto renew On' %} &rarr; {% trans 'Off' %}{% else %}{% trans 'Auto renew Off' %} &rarr; {% trans 'On' %}{% endif %}</a></li>
     {% endif %}
