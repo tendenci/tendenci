@@ -678,9 +678,12 @@ def is_blank(item):
         l = item
     elif isinstance(item, basestring):
         l = list(item)
+        
+    item = []
 
     # return not bool([i for i in l if i.strip)
-    return not bool(''.join(l).strip())
+    return not any(l)
+    #return not bool(''.join(l).strip())
 
     raise Exception
 
