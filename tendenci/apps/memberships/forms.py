@@ -938,7 +938,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                 # Commenting out the line below because it loses the field widget as the field has already been assigned
                 #self.fields[field_name] = field
                 # set initial value
-                if self.demographics:
+                if self.demographics and field_name in self.fields:
                     ud_field = MembershipAppField.objects.get(field_name=field_name,
                         membership_app=self.app, display=True)
                     if ud_field.field_type == u'FileField':
