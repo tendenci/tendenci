@@ -54,7 +54,7 @@ class VideoForm(TendenciBaseForm):
     def clean(self):
         if self.embedly_403:
             if not self.cleaned_data.get('image'):
-                raise forms.ValidationError('An image is also needed because currently embed.ly is not available.')
+                raise forms.ValidationError('Please provide a thumbnail of your video in the image upload field.')
         return self.cleaned_data
             
     def clean_video_url(self):
