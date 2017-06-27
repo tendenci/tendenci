@@ -6,10 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.videos.models import Video
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
-from embedly import Embedly
-
-# Create Embedly instance
-client = Embedly("438be524153e11e18f884040d3dc5c07")
+from .utils import get_embedly_client
 
 class VideoForm(TendenciBaseForm):
     release_dt = forms.DateTimeField(label=_('Release Date/Time'),
@@ -60,6 +57,7 @@ class VideoForm(TendenciBaseForm):
     def clean_video_url(self):
         video_url = self.cleaned_data.get('video_url')
         # Get embedded object from URL
+        client = get_embedly_client()
         obj = client.oembed(video_url)
         if not video_url:
             raise forms.ValidationError('You must enter a URL')

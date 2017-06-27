@@ -1,7 +1,6 @@
 import re
 from django.db import models
 from django.core.urlresolvers import reverse
-from embedly import Embedly
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import ugettext_lazy as _
 
@@ -12,8 +11,8 @@ from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.videos.managers import VideoManager
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from .utils import get_embedly_client
 
-client = Embedly("438be524153e11e18f884040d3dc5c07")
 
 class Category(OrderingBaseModel):
     name = models.CharField(max_length=200, unique=True)
@@ -144,6 +143,7 @@ class OembedlyCache(models.Model):
             return OembedlyCache.objects.filter(url=url, width=width, height=height)[0].thumbnail
         except IndexError:
             try:
+                client = get_embedly_client()
                 result = client.oembed(url, format='json', maxwidth=width, maxheight=height)
                 thumbnail = result['thumbnail_url']
                 code = result['html']
@@ -172,6 +172,7 @@ class OembedlyCache(models.Model):
 
         except IndexError:
             try:
+                client = get_embedly_client()
                 result = client.oembed(url, format='json', maxwidth=width, maxheight=height)
                 thumbnail = result['thumbnail_url']
                 code = result['html']
