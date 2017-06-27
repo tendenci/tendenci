@@ -56,11 +56,17 @@ class VideoForm(TendenciBaseForm):
             
     def clean_video_url(self):
         video_url = self.cleaned_data.get('video_url')
+        
+        if not video_url:
+            raise forms.ValidationError('You must enter a URL')
+        
+        if self.instance and self.instance.video_url == video_url:
+            # the video_url is not changed, let it go
+            return video_url
+        
         # Get embedded object from URL
         client = get_embedly_client()
         obj = client.oembed(video_url)
-        if not video_url:
-            raise forms.ValidationError('You must enter a URL')
         if obj.get('error'):
             if obj.get('error_code') != 403:
                 raise forms.ValidationError('This url is not supported by embed.ly')
