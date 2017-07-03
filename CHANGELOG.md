@@ -1,3 +1,20 @@
+### 7.3.1 [2017-07-03]
+
+**Improvements**
+
+* A new site setting is added for embed.ly API key to allow your site to sign up for your own embed.ly API Key.
+* Made video categories draggable.
+* Handled html emails for Helpdesk tickets - stripped html from email body and added to ticket description.
+
+**Fixes**
+
+* Fixed raw HTML showing up in renewal alert.
+* Removed the deprecated sets module.
+* Fixed UnicodeDecodeError on jobs add_message.
+* Disabled the correct button during event registration
+* Updated the way of handling unsubscribe url to prevent it from being broken.
+
+
 ### 7.3.0 [2017-06-07]
 
 * Upgraded tinymce from 4.3.8 to 4.6.3 which fixed the issue about image linking not working.
