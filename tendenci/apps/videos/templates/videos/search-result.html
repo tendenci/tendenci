@@ -7,7 +7,11 @@
         {% if video.thumbnail %}
         <img src="{{ video.thumbnail }}" style="width: 180px; height: 120px;">
         {% else %}
-        <img src="{{ STATIC_URL }}images/default-photo.jpg" style="width: 180px; height: 120px;">
+        	{% if video.is_youtube_video %}
+        		<img src="https://img.youtube.com/vi/{{ video.youtube_video_id }}/0.jpg" style="width: 160px; height: 120px;">
+        	{% else %}
+        		<img src="{{ STATIC_URL }}images/default-photo.jpg" style="width: 180px; height: 120px;">
+        	{%endif%}
         {%endif%}
     {%endif%}
 

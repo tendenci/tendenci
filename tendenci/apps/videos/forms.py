@@ -71,7 +71,9 @@ class VideoForm(TendenciBaseForm):
             if obj.get('error_code') != 403:
                 raise forms.ValidationError('This url is not supported by embed.ly')
             else:
-                self.embedly_403 = True
+                # if youbube video, we can get the thumbnail from youtube API
+                if not 'www.youtube.com' in video_url:
+                    self.embedly_403 = True
         return video_url
 
     def save(self, *args, **kwargs):

@@ -121,6 +121,14 @@ class Video(TendenciBaseModel):
 
     def thumbnail(self):
         return get_oembed_thumbnail(self.video_url, 600, 400)
+    
+    def is_youtube_video(self):
+        return 'www.youtube.com' in self.video_url
+        
+    def youtube_video_id(self):
+        if self.is_youtube_video():
+            return get_embed_ready_url(self.video_url).replace('https://www.youtube.com/embed/', '')
+        return None
 
 
 class OembedlyCache(models.Model):
