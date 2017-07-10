@@ -192,6 +192,10 @@ class OembedlyCache(models.Model):
 
             except KeyError:
                 # Embedly is not available - try the alternative way
+                width, height = int(width), int(height)
+                if width < height:
+                    # adjust the height
+                    height = int(round(width/1.78))
                 return '<iframe width="{width}" height="{height}" src="{url}" allowfullscreen></iframe>'.format(
                         width=width,
                         height=height,
