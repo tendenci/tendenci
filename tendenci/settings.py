@@ -479,6 +479,7 @@ ADMIN_AUTH_GROUP_NAME = 'Admin'
 # --------------------------------------#
 CAPTCHA_FONT_SIZE = 50
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+CAPTCHA_IMAGE_SIZE = (180,80)
 
 # ------------------------------------ #
 # Django Messaging
