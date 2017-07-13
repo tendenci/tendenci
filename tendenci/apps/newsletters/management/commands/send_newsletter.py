@@ -1,5 +1,6 @@
 import datetime
 import traceback
+import re
 from logging import getLogger
 from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
@@ -90,7 +91,11 @@ class Command(BaseCommand):
                 body = body.replace('[firstname]', recipient.member.first_name)
 
             if '[unsubscribe_url]' in body:
-                body = body.replace('[unsubscribe_url]', recipient.noninteractive_unsubscribe_url)
+                #body = body.replace('[unsubscribe_url]', recipient.noninteractive_unsubscribe_url)
+                # The unsubscribe_url link should be something like <a href="[unsubscribe_url]">Unsubscribe</a>.
+                # But it can be messed up sometimes. Let's prevent that from happening. 
+                p = r'(href=\")([^\"]*)(\[unsubscribe_url\])(\")'
+                body = re.sub(p, r'\1' + recipient.noninteractive_unsubscribe_url + r'\4', body)
 
             if '[browser_view_url]' in body:
                 body = body.replace('[browser_view_url]', newsletter.get_browser_view_url())

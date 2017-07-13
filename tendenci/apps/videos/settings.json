@@ -66,5 +66,22 @@
         "scope_category": "videos", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "", 
+        "description": "Enter your embed.ly api key if you have an Embedly App account.", 
+        "data_type": "string",
+        "update_dt": "2017-06-27 12:10:00",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "embedly_apikey", 
+        "value": "", 
+        "label": "Embed.ly API Key", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "videos", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

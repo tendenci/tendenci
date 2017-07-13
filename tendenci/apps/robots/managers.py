@@ -1,6 +1,7 @@
 from django.db.models import Manager
 from django.core.cache import cache
 from django.conf import settings
+from django.db.models.query import QuerySet
 
 from tendenci.apps.robots.cache import CACHE_PRE_KEY, cache_all_robots
 
@@ -12,7 +13,7 @@ class RobotManager(Manager):
         key = '.'.join(keys)
 
         robots = cache.get(key)
-        if not robots:
+        if not (robots and isinstance(robots, QuerySet)):
             cache_all_robots()
             robots = cache.get(key, [])
 

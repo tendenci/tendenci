@@ -6,10 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.videos.models import Video
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
-from embedly import Embedly
-
-# Create Embedly instance
-client = Embedly("438be524153e11e18f884040d3dc5c07")
+from .utils import get_embedly_client
 
 class VideoForm(TendenciBaseForm):
     release_dt = forms.DateTimeField(label=_('Release Date/Time'),
@@ -54,20 +51,29 @@ class VideoForm(TendenciBaseForm):
     def clean(self):
         if self.embedly_403:
             if not self.cleaned_data.get('image'):
-                raise forms.ValidationError('An image is also needed because currently embed.ly is not available.')
+                raise forms.ValidationError('Please provide a thumbnail of your video in the image upload field.')
         return self.cleaned_data
             
     def clean_video_url(self):
         video_url = self.cleaned_data.get('video_url')
-        # Get embedded object from URL
-        obj = client.oembed(video_url)
+        
         if not video_url:
             raise forms.ValidationError('You must enter a URL')
+        
+        if self.instance and self.instance.video_url == video_url:
+            # the video_url is not changed, let it go
+            return video_url
+        
+        # Get embedded object from URL
+        client = get_embedly_client()
+        obj = client.oembed(video_url)
         if obj.get('error'):
             if obj.get('error_code') != 403:
                 raise forms.ValidationError('This url is not supported by embed.ly')
             else:
-                self.embedly_403 = True
+                # if youbube video, we can get the thumbnail from youtube API
+                if not 'www.youtube.com' in video_url:
+                    self.embedly_403 = True
         return video_url
 
     def save(self, *args, **kwargs):

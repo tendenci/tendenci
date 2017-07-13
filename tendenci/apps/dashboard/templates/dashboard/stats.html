@@ -49,7 +49,7 @@
             {% for active, expiring, new, pending, expired in value %}
                 <h2>{{ active }} {% trans "Active" %} | {{ expiring }} {% trans "Expire in 30 days" %}</h2>
 
-                <div id="t-dashborad-js-statistics-members-info" data-new="{{ new }}" data-pending="{{ pending }}" data-expired="{{ expired }}">
+                <div id="t-dashboard-js-statistics-members-info" data-new="{{ new }}" data-pending="{{ pending }}" data-expired="{{ expired }}">
                     {% trans "Last 30 days" %}
                     <p>{% trans "New" %}: {{ new }}</p>
                     <p>{% trans "Pending" %}: {{ pending }}</p>

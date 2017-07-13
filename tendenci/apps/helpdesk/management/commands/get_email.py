@@ -28,6 +28,9 @@ from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 from django.utils.translation import ugettext as _
+from django.template.defaultfilters import striptags
+from HTMLParser import HTMLParser
+unescape = HTMLParser().unescape
 from tendenci.apps.helpdesk import settings
 
 try:
@@ -214,6 +217,13 @@ def ticket_from_message(message, queue, quiet):
                 body_plain = EmailReplyParser.parse_reply(decodeUnknown(part.get_content_charset(), part.get_payload(decode=True)))
             else:
                 body_html = part.get_payload(decode=True)
+                # strip html tags
+                body_plain = striptags(body_html)
+                # remove extra new lines
+                body_plain, n = re.subn(r'[\r\n]+', r'\n', body_plain)
+                # remove extra spaces
+                body_plain, n = re.subn(r'\s+$', '', body_plain, flags=re.M)
+                body_plain = unescape(body_plain)
         else:
             if not name:
                 ext = mimetypes.guess_extension(part.get_content_type())
@@ -229,6 +239,9 @@ def ticket_from_message(message, queue, quiet):
 
     if body_plain:
         body = body_plain
+        if body_html:
+            body += '\n\n'
+            body += _('***Note that HTML tags are stripped out. Please see attachment email_html_body.html for the full html content.')
     else:
         body = _('No plain-text email body available. Please see attachment email_html_body.html.')
 
