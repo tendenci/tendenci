@@ -78,6 +78,9 @@ def delete(request, id, template_name="emails/delete.html"):
     if not has_perm(request.user,'emails.delete_email',email): raise Http403
 
     if request.method == "POST":
+        msg_string = 'Successfully deleted %s' % unicode(email)
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
+            
         email.delete()
         return HttpResponseRedirect(reverse('email.search'))
 
