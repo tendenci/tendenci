@@ -51,14 +51,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Tendenci'
-copyright = u'2015, Tendenci'
+copyright = u'2017, Tendenci'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '7.0'
+version = '7.3'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 
@@ -113,10 +113,11 @@ html_theme = 'default'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = "<project> v<release> - The Open Source AMS Software for NGOs and Governments"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+# html_short_title = None
+html_short_title= "<project> v<release>"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
