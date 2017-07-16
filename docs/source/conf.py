@@ -34,7 +34,7 @@ from tendenci import __version__ as tendenci_version
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-    'sphinx.ext.autodoc', 'hidden_code_block',
+    'sphinx.ext.autodoc', 'hidden_code_block', 'sphinxcontrib.googleanalytics',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -224,7 +224,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'tendenci', u'Tendenci Documentation',
+    ('index', 'tendenci', u'Tendenci Open AMS Documentation',
         [u'Tendenci'], 1)
 ]
 
@@ -238,9 +238,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Tendenci', u'Tendenci Documentation',
-        u'Tendenci', 'Tendenci', 'One line description of project.',
-        'Miscellaneous'),
+    ('index', 'Tendenci', u'Tendenci AMS Docs',
+        u'Tendenci', 'Tendenci', 'The Open Source AMS for NGOs and Governments',
+        'Open Source AMS'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -251,3 +251,6 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
+
+# google analytics - Tendenci seeking to improve UX by looking at areas of frequent search
+googleanalytics_id = 'UA-3369175-11'
