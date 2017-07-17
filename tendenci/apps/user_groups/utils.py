@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.profiles.models import Profile
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.emails.models import Email
@@ -103,7 +104,10 @@ def process_export(
             num_rows_processed += rows_per_batch
             row_dict = field_dict.copy()
             for user in users:
-                profile = user.profile
+                if hasattr(user, 'profile'):
+                    profile = user.profile
+                else:
+                    profile = Profile.objects.create_profile(user)
                 for field_name in user_fields:
                     if hasattr(user, field_name):
                         row_dict[field_name] = getattr(user, field_name)
