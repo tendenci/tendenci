@@ -69,6 +69,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
 
     return render_to_response(template_name, {'form': form,
                                               'billing_info_form': billing_info_form,
+                                              'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
                                               'payment': payment},
                               context_instance=RequestContext(request))
 
