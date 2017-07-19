@@ -84,7 +84,7 @@ def view_account(request, recurring_payment_id, guid=None,
     test_mode = get_test_mode()
     is_active = (rp.status_detail == 'active')
     if is_active:
-        rp.populate_payment_profile()
+        #rp.populate_payment_profile()
         payment_profiles = PaymentProfile.objects.filter(
                             customer_profile_id=rp.customer_profile_id,
                             status=True, status_detail='active')

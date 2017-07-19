@@ -19,6 +19,7 @@ from forms import StripeCardForm, BillingInfoForm
 import stripe
 from utils import payment_update_stripe
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.recurring_payments.models import RecurringPayment
 
 
 @csrf_exempt
@@ -37,14 +38,37 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
 
             if billing_info_form.is_valid():
                 payment = billing_info_form.save()
+                
+            # determine if we need to create a stripe customer (for membership auto renew)
+            customer = False
+            obj_user = None
+            membership = None
+            obj = payment.invoice.get_object()
+            if obj and hasattr(obj, 'memberships'):
+                membership = obj.memberships()[0]
+                if membership.auto_renew and not membership.has_rp(platform='stripe'):
+                    obj_user = membership.user
+                else:
+                    membership = None
+                    
+            if obj_user:
+                # Create a Customer:
+                customer = stripe.Customer.create(
+                            email=obj_user.email,
+                            description="For membership auto renew",
+                            source=token,
+                )
 
             # create the charge on Stripe's servers - this will charge the user's card
             params = {
                        'amount': math.trunc(payment.amount * 100), # amount in cents, again
                        'currency': currency,
-                       'card': token,
                        'description': payment.description
                       }
+            if customer:
+                params.update({'customer': customer.id})
+            else:
+                params.update({'card': token})
 
             try:
                 charge_response = stripe.Charge.create(**params)
@@ -52,7 +76,15 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                 #charge_response = simplejson.loads(charge)
             except Exception, e:
                 charge_response = e.message
-            
+               
+            # add a rp entry now 
+            if hasattr(charge_response,'paid') and charge_response.paid:
+                if customer and membership:
+                    kwargs = {'platform': 'stripe',
+                              'customer_profile_id': customer.id,
+                              }
+                    membership.get_or_create_rp(request.user, **kwargs)
+                    
             # update payment status and object
             if  payment.invoice.balance > 0:
                 payment_update_stripe(request, charge_response, payment)

@@ -39,7 +39,10 @@ DUE_SORE_CHOICES = (
 
 
 class RecurringPayment(models.Model):
+    PLATFORM_CHOICES = (('authorizenet', 'authorizenet'),
+                        ('stripe', 'stripe'))
     guid = models.CharField(max_length=50)
+    platform = models.CharField(max_length=50, blank=True, default='authorizenet')
     # gateway assigned ID associated with the customer profile
     customer_profile_id = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User, related_name="recurring_payments",
@@ -708,7 +711,7 @@ def create_customer_profile(sender, instance=None, created=False, **kwargs):
     """ A post_save signal of RecurringPayment to create a customer profile
         on payment gateway.
     """
-    if instance.id and (not instance.customer_profile_id):
+    if instance.id and instance.platform == 'authorizenet' and (not instance.customer_profile_id):
         # create a customer profile on payment gateway
         instance.add_customer_profile()
 
@@ -718,7 +721,7 @@ def delete_customer_profile(sender, instance=None, user=None, **kwargs):
     """ A post_delete signal of RecurringPayment to delete a customer profile
         on payment gateway.
     """
-    if instance.id and instance.customer_profile_id:
+    if instance.id and instance.platform == 'authorizenet' and instance.customer_profile_id:
         # create a customer profile on payment gateway
         instance.delete_customer_profile()
 

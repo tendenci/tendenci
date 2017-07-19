@@ -1937,15 +1937,18 @@ class MembershipDefault(TendenciBaseModel):
         # reference: /accountings/account_numbers/
         return 464700 if discount else 404700
     
-    def has_rp(self):
+    def has_rp(self, platform=''):
         """
         Check if this membership has a recurring payment account for membership renew
         """
         if get_setting('module', 'recurring_payments', 'enabled'):
-            if self.user.recurring_payments.filter(status=True, 
+            rps = self.user.recurring_payments.filter(status=True, 
                                                      status_detail='active',
-                                                     object_content_type__model='membershipdefault').exists():
-                return True
+                                                     object_content_type__model='membershipdefault')
+            if platform:
+                rps = rps.filter(platform=platform)
+            
+            return rps.exists()
         
         return False
     
@@ -1964,6 +1967,7 @@ class MembershipDefault(TendenciBaseModel):
                     request_user = self.user
                 rp = RecurringPayment(user=self.user,
                                      object_content_type=ct,
+                                     platform= kwargs.get('platform', 'authorizenet'),
                                      description='Membership Auto Renew',
                                      billing_start_dt=datetime.now(),
                                      payment_amount=0,
@@ -1974,12 +1978,15 @@ class MembershipDefault(TendenciBaseModel):
                                      status=True,
                                      status_detail='active')
                 # bypass the signal on save so that we can create customer profile from trans_id
-                rp.customer_profile_id = 'TBD'
+                rp.customer_profile_id = kwargs.get('customer_profile_id', '')
                 rp.save()
-            if not rp.customer_profile_id or rp.customer_profile_id == 'TBD':
-                trans_id = kwargs.get('trans_id', None)
-                if trans_id:
-                    rp.create_customer_profile_from_trans_id(trans_id)
+            if rp.platform == 'authorizenet':
+                if not rp.customer_profile_id or rp.customer_profile_id == 'TBD':
+                    trans_id = kwargs.get('trans_id', None)
+                    if trans_id:
+                        rp.create_customer_profile_from_trans_id(trans_id)
+            return rp
+        return None
 
 
     # def custom_fields(self):
