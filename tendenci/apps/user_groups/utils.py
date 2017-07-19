@@ -100,7 +100,7 @@ def process_export(
                 group_member__status=True,
                 group_member__status_detail='active'
                 ).select_related('profile'
-                )[num_rows_processed:(num_rows_processed + rows_per_batch)]
+                ).order_by('group_member__member_id')[num_rows_processed:(num_rows_processed + rows_per_batch)]
             num_rows_processed += rows_per_batch
             row_dict = field_dict.copy()
             for user in users:
