@@ -490,7 +490,7 @@ look like this
     PIDFile=/run/<project_name>.pid
     Type=forking
     KillMode=process
-    Restart=restart-always
+    Restart=on-failure
     ExecStart=/srv/tendenci/venv/bin/gunicorn              \
               --group www-data                             \
               --user www-data                              \
