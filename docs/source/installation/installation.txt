@@ -306,11 +306,13 @@ Creating a Virtualenv
 ---------------------
 
 It's best practice to make a virtual environment for your site. Make a folder to hold your virtual environment and cd into it. This can go anywhere but avoid /var/www or anywhere inside your tendenci site directory.
+::
 
     sudo mkdir /srv/tendenci/
     cd /srv/tendenci/
 
 Make a virtual environment called 'venv' and activate it.
+::
 
     sudo virtualenv venv
     source venv/bin/activate
@@ -336,7 +338,7 @@ This download and install step will take some time and download around 70MB of p
 Installing the requirements
 --------------------
 
-Install the requirements with the following commands (sudo is not required if run in a virtualenv).
+Install the requirements with the following commands (do not use sudo if run in a virtualenv).
 ::
     cd <project_name>
     sudo pip install -r requirements/dev.txt
