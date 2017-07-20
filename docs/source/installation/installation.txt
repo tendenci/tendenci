@@ -338,7 +338,7 @@ This download and install step will take some time and download around 70MB of p
 Installing the requirements
 --------------------
 
-Install the requirements with the following commands (sudo is not required if run in a virtualenv).
+Install the requirements with the following commands (do not use sudo if run in a virtualenv).
 ::
     cd <project_name>
     sudo pip install -r requirements/dev.txt
