@@ -341,6 +341,10 @@ Install the requirements with the following commands (sudo is not required if ru
     cd <project_name>
     sudo pip install -r requirements/dev.txt
 
+.. Note:: 
+
+    Make sure you remove "sudo" when installing in your virtualenv. Otherwise, the requirements will be installed in your system.
+
 Next update the ``conf/local_settings.py`` file in the site folder (``/var/www/<project_name>``). Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` for the setting ``DATABASE`` with the newly created database name, user and password.
 
 Update your database name, database user and database password for the `DATABASES` setting in the ``conf/local_settings.py``.
