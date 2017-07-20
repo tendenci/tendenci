@@ -306,11 +306,13 @@ Creating a Virtualenv
 ---------------------
 
 It's best practice to make a virtual environment for your site. Make a folder to hold your virtual environment and cd into it. This can go anywhere but avoid /var/www or anywhere inside your tendenci site directory.
+::
 
     sudo mkdir /srv/tendenci/
     cd /srv/tendenci/
 
 Make a virtual environment called 'venv' and activate it.
+::
 
     sudo virtualenv venv
     source venv/bin/activate
