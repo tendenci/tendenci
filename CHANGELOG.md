@@ -1,3 +1,10 @@
+### 7.3.3 [2017-07-21]
+
+* Fixed NoReverseMatch on email delete
+* Bugfix Attribute error on group members export
+* Resolved the 'form' name conflicts - the name conflicts occurs when a custom form is embedded in a template header
+
+
 ### 7.3.2 [2017-07-13]
 
 **Improvements**
