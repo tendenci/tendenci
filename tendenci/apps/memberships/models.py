@@ -1987,6 +1987,15 @@ class MembershipDefault(TendenciBaseModel):
                         rp.create_customer_profile_from_trans_id(trans_id)
             return rp
         return None
+    
+
+    def next_auto_renew_date(self):
+        if self.expire_dt and self.auto_renew:
+            if self.expire_dt > datetime.now():
+                return self.expire_dt
+            else:
+                return datetime.now() + timedelta(days=1)
+        return None
 
 
     # def custom_fields(self):

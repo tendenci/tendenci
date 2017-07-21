@@ -417,15 +417,14 @@ class MembershipAppForm(TendenciBaseForm):
                                     'app_instance_id'] = 0
 
 
-class AutoRenewSetupForm(forms.ModelForm):
-    class Meta:
-        model = MembershipDefault
-        fields = (
-                  'auto_renew',
-                  )
+class AutoRenewSetupForm(forms.Form):
+    selected_m = forms.MultipleChoiceField(choices=[], error_messages={'required':_('Please select one')})
 
     def __init__(self, *args, **kwargs):
+        memberships = kwargs.pop('memberships')
         super(AutoRenewSetupForm, self).__init__(*args, **kwargs)
+        self.fields['selected_m'].choices = [(m.id, m.id) for m in memberships]
+        
         
 
 class MembershipAppFieldAdminForm(forms.ModelForm):

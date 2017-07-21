@@ -3,43 +3,118 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{% trans "Membership Auto-Renew Setup" %}{% endblock %}
+{% block title %}{% trans "Update Membership Auto-Renew" %}{% endblock %}
 
+{% block extra_head %}
+    {{ block.super }}
+    <style>
+	.glyphicon-minus-sign{
+		color: #DE2121;
+	}
+	.glyphicon-ok-sign{
+		color: #42AD3F !important;
+	}
+	</style>
+{% endblock %}  
 
 {% block content %}
 <div>
-	<h1>{% trans "Memberships Auto-Renew - Turn On / Off" %}</h1>
+	<h1>{% trans "Update Memberships Auto-Renew" %}</h1>
+	{% if is_owner %}
+	<div><a href="{% url 'profile' u.username %}">&laquo; Back to My Profile</a></div>
+	{% else %}
 	<div>{% trans "User:" %} <a href="{% url 'profile' u.username %}">{% firstof u.get_full_name u.username %}</a></div>
+	{% endif %}
+	
 	{% if rp and rp.status_detail == 'active' %}
 	<div class="text-right">
-	<a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% trans "Update Payment Profile" %}</a>
+	<a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% trans "Update Payment Method" %}</a>
 	</div>
 	{% endif %}
 	<p>&nbsp;</p>
 	
+	{% if form.errors.values %}
+    <div class="alert alert-danger" role="alert">
+        <ul>
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+        </ul>
+    </div>
+    {% endif %}
+	
 	<form id="auto-renew-form" action="" method="post">{% csrf_token %}
-	{{ formset.management_form }}
 		<table class="table">
 			<tr>
-				<th>{% trans "Auto renew" %}</th>
-				<th>{% trans "Membership type" %}</th>
-				<th>{% trans "Expire date" %}</th>
-				<th>{% trans "Status detail" %}</th>
+				<th width="5%"><input type="checkbox" id="ar-select-all-toggle" /> </th>
+				<th width="25%" class="text-left">{% trans "Membership type" %}</th>
+				<th width="20%" class="text-center">{% trans "Expire date" %}</th>
+				<th width="15%" class="text-center">{% trans "Auto Renew" %}</th>
+				<th width="20%" class="text-center">{% trans "Next Auto Renew Date" %}</th>
+				<th width="15%" class="text-center">{% trans "Status detail" %}</th>
 			</tr>
-			{% for form in formset.forms %}
+			{% for m in memberships %}
 			<tr>
-				<td>{{ form.auto_renew }} {{ form.id }}</td>
-				<td>{{ form.instance.membership_type.name }}</td>
-				<td>{{ form.instance.expire_dt }}</td>
-				<td>{{ form.instance.status_detail }}</td>
+				<td><input type="checkbox" class="ar-checkbox" name="selected_m" value="{{ m.id }}"/></td>
+				<td class="text-left">{{ m.membership_type.name }}</td>
+				<td class="text-center">{{ m.expire_dt|date:'m/d/Y' }}</td>
+				<td class="text-center">{% if m.auto_renew %}
+	        	<span class="glyphicon glyphicon-ok-sign"></span>
+	        	{% else %}
+	        	<span class="glyphicon glyphicon-minus-sign"></span>
+	        	{% endif %}</td>
+	        	{% with m.next_auto_renew_date as next_auto_renew_date %}
+	        	<td class="text-center">{% if next_auto_renew_date %}{{ next_auto_renew_date|date:'m/d/Y' }}{% else %} -- {% endif %}</td>
+	        	{% endwith %}
+				<td class="text-center">{{ m.status_detail }}</td>
 			</tr>
 			{% endfor %}
 		</table>
-		 <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+		  <div class="text-right">
+		  <button type="submit" class="btn btn-primary">{% trans "Turn Auto Renew On" %}</button>
+		  <button type="submit" name="cancel_auto_renew" class="btn btn-default">{% trans "Cancel Auto Renew" %}</button>
+		  </div>
 	
 	</form>
 
 </div>
 
 <p>&nbsp;</p>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript">
+(function($){
+	($('#ar-select-all-toggle')).on('click',function(){
+        if(this.checked){
+            $('.ar-checkbox').each(function(){
+                this.checked = true;
+            });
+        }else{
+             $('.ar-checkbox').each(function(){
+                this.checked = false;
+            });
+        }
+    });
+    
+    $('.ar-checkbox').on('click',function(){
+        if($('.ar-checkbox:checked').length == $('.ar-checkbox').length){
+            $('#ar-select-all-toggle').prop('checked',true);
+        }else{
+            $('#ar-select-all-toggle').prop('checked',false);
+        }
+    });
+	
+}(jQuery));
+
+</script>
+
 {% endblock %}
