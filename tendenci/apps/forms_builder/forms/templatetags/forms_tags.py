@@ -57,7 +57,7 @@ class GetFormNode(Node):
 
     def render(self, context):
         pk = 0
-        template_name = 'forms/embed_form.html'
+        template_name = 'forms/embed_form_new.html'
 
         if 'pk' in self.kwargs:
             try:
@@ -77,16 +77,16 @@ class GetFormNode(Node):
 
         try:
             form = Form.objects.get(pk=pk)
-            context['form'] = form.object
-            context['form_for_form'] = FormForForm(form.object, AnonymousUser())
+            context['embed_form'] = form.object
+            context['embed_form_for_form'] = FormForForm(form.object, AnonymousUser())
             template = get_template(template_name)
             output = '<div class="embed-form">%s</div>' % template.render(context)
             return output
         except:
             try:
                 form = Form.objects.get(pk=pk)
-                context['form'] = form
-                context['form_for_form'] = FormForForm(form, AnonymousUser())
+                context['embed_form'] = form
+                context['embed_form_for_form'] = FormForForm(form, AnonymousUser())
                 template = get_template(template_name)
                 output = '<div class="embed-form">%s</div>' % template.render(context)
                 return output
