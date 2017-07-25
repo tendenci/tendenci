@@ -78,7 +78,15 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                 charge_response = stripe.Charge.create(**params)
                 # an example of response: https://api.stripe.com/v1/charges/ch_YjKFjLIItzRDv7
                 #charge_response = simplejson.loads(charge)
-            except Exception, e:
+            except stripe.error.CardError as e:
+                # it's a decline
+                json_body = e.json_body
+                err  = json_body and json_body['error']
+                code = err and err['code']
+                message = err and err['message']
+                charge_response = '{message} status={status}, code={code}'.format(
+                            message=message, status=e.http_status, code=code)
+            except Exception as e:
                 charge_response = e.message
                
             # add a rp entry now 
@@ -125,9 +133,19 @@ def update_card(request, rp_id):
         customer.save()
         message_status = messages.SUCCESS
         msg_string = 'Successfully updated payment method'
-    except Exception, e:
+    except stripe.error.CardError as e:
+        # it's a decline
+        json_body = e.json_body
+        err  = json_body and json_body['error']
+        code = err and err['code']
+        message = err and err['message']
         message_status = messages.ERROR
-        msg_string = 'Error updating payment method'
+        msg_string = '{message} status={status}, code={code}'.format(
+                            message=message, status=e.http_status, code=code)
+    except Exception as e:
+        # Something else happened, completely unrelated to Stripe
+        message_status = messages.ERROR
+        msg_string = 'Error updating payment method: {}'.format(e)
     
     messages.add_message(request, message_status, _(msg_string))
     next_page = request.GET.get('next')
