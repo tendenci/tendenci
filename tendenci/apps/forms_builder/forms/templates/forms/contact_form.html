@@ -2,15 +2,15 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% has_perm user forms.change_form form as can_edit %}
+{% has_perm user forms.change_form embed_form as can_edit %}
 
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 
-    <h1>{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}</h1>
+    <h1>{{ embed_form.title }}</h1>
     <p>{{ embed_form.intro|safe }}</p>
 
     <div class="form-builder-wrap">
-        <form method="post" class="form-horizontal" enctype="multipart/form-data" action="{{ form.get_absolute_url }}">{% csrf_token %}
+        <form method="post" class="form-horizontal" enctype="multipart/form-data" action="{{ embed_form.get_absolute_url }}">{% csrf_token %}
         <div class="forms">
             {{ embed_form_for_form|styled_form }}
             <input type="submit" value="{% trans 'Submit' %}" />
