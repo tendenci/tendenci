@@ -43,7 +43,7 @@
 
     
 
-<form action="" method="POST" id="payment-form" class="form-horizontal">
+<form action="" method="POST" id="payment-form" class="form-horizontal">{% csrf_token %}
   <h3>{% trans 'Payment Information' %}</h3>
     <div class="form-group">
 	    <label for="card-element" class="col-sm-3 control-label">

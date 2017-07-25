@@ -9,6 +9,9 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
 import simplejson
 
@@ -20,9 +23,10 @@ import stripe
 from utils import payment_update_stripe
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.recurring_payments.models import RecurringPayment
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
 
 
-@csrf_exempt
 def pay_online(request, payment_id, template_name='payments/stripe/payonline.html'):
     payment = get_object_or_404(Payment, pk=payment_id)
     form = StripeCardForm(request.POST or None)
@@ -105,7 +109,34 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                                               'payment': payment},
                               context_instance=RequestContext(request))
 
-@csrf_exempt
+
+@login_required
+def update_card(request, rp_id):
+    rp = get_object_or_404(RecurringPayment, pk=rp_id, platform='stripe')
+    if not has_perm(request.user, 'recurring_payments.change_recurringpayment', rp) \
+        and not (rp.owner is request.user):
+        raise Http403
+    
+    stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+    token = request.POST.get('stripeToken')
+    try:
+        customer = stripe.Customer.retrieve(rp.customer_profile_id)
+        customer.source = token
+        customer.save()
+        message_status = messages.SUCCESS
+        msg_string = 'Successfully updated payment method'
+    except Exception, e:
+        message_status = messages.ERROR
+        msg_string = 'Error updating payment method'
+    
+    messages.add_message(request, message_status, _(msg_string))
+    next_page = request.GET.get('next')
+    if next_page:
+        return HttpResponseRedirect(next_page)
+    else:
+        return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
+    
+
 def thank_you(request, payment_id, template_name='payments/receipt.html'):
     #payment, processed = stripe_thankyou_processing(request, dict(request.POST.items()))
     payment = get_object_or_404(Payment, pk=payment_id)

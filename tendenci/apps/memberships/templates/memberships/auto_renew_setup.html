@@ -28,7 +28,26 @@
 	
 	{% if rp and rp.status_detail == 'active' %}
 	<div class="text-right">
+	{% if rp.platform == 'stripe' %}
+	<form action="{% url 'stripe.update_card' rp.id %}?next={{ request.path }}" method="POST">{% csrf_token %}
+	  <script
+	  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+	  data-key="{{ STRIPE_PUBLISHABLE_KEY }}"
+	  data-name="{{ SITE_GLOBAL_SITEDISPLAYNAME }}"
+	  data-panel-label="Update Card Details"
+	  data-label="Update Payment Method"
+	  data-description="for membership auto renew"
+	  data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+	  data-allow-remember-me=false
+	  data-locale="auto"
+	  data-email={{ u.email }}
+	  data-zip-code="true">
+	  </script>
+	</form>
+	<small class="text-muted">{% trans "Current card: " %} ····{{ source_data.last4 }} &nbsp;&nbsp;&nbsp; {{ source_data.exp_month }}/{{ source_data.exp_year }}</small>
+	{% else %}
 	<a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% trans "Update Payment Method" %}</a>
+	{% endif %}
 	</div>
 	{% endif %}
 	<p>&nbsp;</p>
@@ -77,7 +96,7 @@
 			{% endfor %}
 		</table>
 		  <div class="text-right">
-		  <button type="submit" class="btn btn-primary">{% trans "Turn Auto Renew On" %}</button>
+		  <button type="submit" class="btn btn-primary">{% trans "Turn On Auto Renew" %}</button>
 		  <button type="submit" name="cancel_auto_renew" class="btn btn-default">{% trans "Cancel Auto Renew" %}</button>
 		  </div>
 	

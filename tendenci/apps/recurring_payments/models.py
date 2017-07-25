@@ -2,11 +2,14 @@ import uuid
 import re
 from datetime import datetime, timedelta
 from decimal import Decimal
+import stripe
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
+from django.conf import settings
+
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
@@ -142,6 +145,17 @@ class RecurringPayment(models.Model):
                                              ).order_by('-expire_dt')
         return None
 
+
+    def get_source_data(self):
+        # https://www.pcisecuritystandards.org/pdfs/pci_fs_data_storage.pdf
+        if self.platform == 'stripe':
+            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            customer = stripe.Customer.retrieve(self.customer_profile_id)
+            default_card_id = customer['default_card']
+            card = customer.sources.retrieve(default_card_id)
+            return {'last4': card['last4'], 'exp_year': card['exp_year'], 'exp_month': card['exp_month']}
+        return None
+        
 
     def create_customer_profile_from_trans_id(self, trans_id):
         from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfileFromTransaction

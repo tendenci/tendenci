@@ -31,6 +31,7 @@ from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 from django.forms import modelformset_factory
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 from geraldo.generators import PDFGenerator
 
@@ -1538,8 +1539,10 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
         'memberships' : memberships,
         'u': u,
         'rp': rp,
+        'source_data': rp.get_source_data(),
         'form': form,
         'is_owner': is_owner,
+        'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
     }
     return render_to_response(template, context, RequestContext(request))
 
