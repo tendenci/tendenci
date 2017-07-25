@@ -37,7 +37,11 @@
 	  data-panel-label="Update Card Details"
 	  data-label="Update Payment Method"
 	  data-description="for membership auto renew"
+	  {% if SITE_GLOBAL_STRIPEDATAIMAGE %}
+	  data-image="{{ SITE_GLOBAL_STRIPEDATAIMAGE }}"
+	  {% else %}
 	  data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+	  {% endif  %}
 	  data-allow-remember-me=false
 	  data-locale="auto"
 	  data-email={{ u.email }}
