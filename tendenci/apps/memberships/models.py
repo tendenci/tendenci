@@ -1499,14 +1499,6 @@ class MembershipDefault(TendenciBaseModel):
             actions.update({
                 approve_link: u'Approve Membership'})
         
-        if status != 'archive':
-            if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
-                if not self.has_rp():
-                    label = _('Set Up Auto Renew')
-                else:
-                    label = _('Update Auto Renew')
-                actions.update({reverse('memberships.auto_renew_setup', args=[self.user.pk]): label})
-
         return actions
 
     def get_invoice(self):
@@ -1990,7 +1982,7 @@ class MembershipDefault(TendenciBaseModel):
     
 
     def next_auto_renew_date(self):
-        if self.expire_dt and self.auto_renew:
+        if self.status_detail != 'archive' and self.expire_dt and self.auto_renew:
             if self.expire_dt > datetime.now():
                 return self.expire_dt
             else:
