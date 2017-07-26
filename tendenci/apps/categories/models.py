@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.categories.utils import prep_category
 
@@ -134,6 +135,8 @@ class Category(models.Model):
     
     class Meta:
         app_label = 'categories'
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
 
 class CategoryItem(models.Model):
     content_type = models.ForeignKey(ContentType, db_index=True)
