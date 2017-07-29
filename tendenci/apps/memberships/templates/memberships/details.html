@@ -135,9 +135,10 @@
                             {% endif %}
                             </div>
                             {% endif %}
-                            <hr style="max-width: 350px; border: 1px solid #eee;">
+                            
                             {% with membership.next_auto_renew_date as next_auto_renew_date %}
                             {% if membership.has_rp and next_auto_renew_date %}
+                            <hr style="max-width: 350px; border: 1px solid #eee;">
                             <div class="status-action">
                             	<ul class="nav nav-pills nav-stacked">
                              	<li>

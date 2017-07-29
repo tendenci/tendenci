@@ -95,7 +95,7 @@
 	        	{% with m.next_auto_renew_date as next_auto_renew_date %}
 	        	<td class="text-center">{% if next_auto_renew_date %}{{ next_auto_renew_date|date:'m/d/Y' }}{% else %} -- {% endif %}</td>
 	        	{% endwith %}
-				<td class="text-center">{{ m.status_detail }}</td>
+				<td class="text-center"><a href="{% url "membership.details" m.pk %}">{{ m.status_detail }}</a></td>
 			</tr>
 			{% endfor %}
 		</table>

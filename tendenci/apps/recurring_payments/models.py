@@ -2,6 +2,7 @@ import uuid
 import re
 from datetime import datetime, timedelta
 from decimal import Decimal
+import math
 import stripe
 from django.db import models
 from django.contrib.auth.models import User
@@ -20,6 +21,7 @@ from tendenci.apps.recurring_payments.authnet.cim import (CIMCustomerProfile,
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.apps.payments.models import Payment
+from tendenci.apps.site_settings.utils import get_setting
 
 
 BILLING_PERIOD_CHOICES = (
@@ -406,7 +408,7 @@ class RecurringPayment(models.Model):
             memberships = self.memberships
             if memberships:
                 for m in self.memberships:
-                    if m.expire_dt < now + timedelta(days=1):
+                    if m.expire_dt < datetime(now.year, now.month, now.day, 0, 0, 0) + timedelta(days=1):
                         renewed_m = m.renew(m.user)
                         renewed_m.status_detail = 'pending'
                         renewed_m.save()
@@ -624,25 +626,102 @@ class RecurringPaymentInvoice(models.Model):
         payment.payments_pop_by_invoice_user(self.recurring_payment.user,
                                              self.invoice,
                                              self.invoice.guid)
-        # make a transaction using CIM
-        description = self.recurring_payment.description
+
         if self.billing_cycle_start_dt and self.billing_cycle_end_dt:
+            description = self.recurring_payment.description
             description += '(billing cycle from %s to %s)' % (
                             self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
                             self.billing_cycle_end_dt.strftime('%m/%d/%Y')),
-        d = {'amount': amount,
-             'order': {
-                       'invoice_number': str(payment.invoice_num),
+        else:
+            description = payment.description
+
+        # charge user
+        if  self.recurring_payment.platform == "stripe":
+            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            params = {
+                       'amount': math.trunc(amount * 100), # amount in cents, again
+                       'currency': get_setting('site', 'global', 'currency'),
                        'description': description,
-                       'recurring_billing': 'true'
-                       }
-             }
+                       'customer': self.recurring_payment.customer_profile_id
+                      }
+            
+            success = False
+            response_d = {
+                          'status_detail': 'not approved',
+                          'response_code': '0',
+                          'response_reason_code': '0',
+                          'result_code': 'Error',  # Error, Ok
+                          'message_code': '',    # I00001, E00027
+                          }
+            try:
+                charge_response = stripe.Charge.create(**params)
+                success = True
+                response_d['status_detail'] = 'approved'
+                response_d['response_code'] = '1'
+                response_d['response_subcode'] = '1'
+                response_d['response_reason_code'] = '1'
+                response_d['response_reason_text'] = 'This transaction has been approved. (Created# %s)' % charge_response.created
+                response_d['trans_id'] = charge_response.id
+                response_d['result_code'] = 'Ok'
+                response_d['message_text'] = 'Successful.'
+            except stripe.error.CardError as e:
+                # it's a decline
+                json_body = e.json_body
+                err  = json_body and json_body['error']
+                code = err and err['code']
+                message = err and err['message']
+                charge_response = '{message} status={status}, code={code}'.format(
+                            message=message, status=e.http_status, code=code)
+                
+                response_d['response_reason_text'] = charge_response
+                response_d['message_code'] = code
+                response_d['message_text'] = charge_response
+            except Exception as e:
+                charge_response = e.message
+                response_d['response_reason_text'] = charge_response
+                response_d['message_text'] = charge_response[:200]
+            print response_d
+            # update payment
+            for key in response_d:
+                if hasattr(payment, key):
+                    setattr(payment, key, response_d[key])                   
+            
+        else:                  
+            # make a transaction using CIM
+            d = {'amount': amount,
+                 'order': {
+                           'invoice_number': str(payment.invoice_num),
+                           'description': description,
+                           'recurring_billing': 'true'
+                           }
+                 }
+    
+            cpt = CIMCustomerProfileTransaction(self.recurring_payment.customer_profile_id,
+                                                payment_profile_id)
+    
+            success, response_d = cpt.create(**d)
+            
+            # update the payment entry with the direct response returned from payment gateway
+            payment = payment_update_from_response(payment, response_d['direct_response'])     
+                
+        if success:
+            payment.mark_as_paid()
+            payment.save()
+            payment.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
+            # approve membership
+            if membership:
+                membership.approve()
+                # send notification to user
 
-        cpt = CIMCustomerProfileTransaction(self.recurring_payment.customer_profile_id,
-                                            payment_profile_id)
+            self.payment_received_dt = datetime.now()
+        else:
+            if payment.status_detail == '':
+                payment.status_detail = 'not approved'
+            payment.save()
+            self.last_payment_failed_dt = datetime.now()
 
-        success, response_d = cpt.create(**d)
-
+        self.save()
+            
         # create a payment transaction record
         payment_transaction = PaymentTransaction(
                                     recurring_payment = self.recurring_payment,
@@ -651,31 +730,6 @@ class RecurringPaymentInvoice(models.Model):
                                     trans_type='auth_capture',
                                     amount=amount,
                                     status=success)
-
-
-        # update the payment entry with the direct response returned from payment gateway
-        payment = payment_update_from_response(payment, response_d['direct_response'])
-        
-        if success:
-            payment.mark_as_paid()
-            payment.save()
-            payment.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
-            
-            # approve membership
-            if membership:
-                membership.approve()
-#             if self.invoice.object_type and self.invoice.object_id:
-#                 m = self.invoice.object_type.get_object_for_this_type(id=self.invoice.object_id)
-#                 m.approve()
-                # send notification to user
-
-            self.payment_received_dt = datetime.now()
-        else:
-            if payment.status_detail == '':
-                payment.status_detail = 'not approved'
-                payment.save()
-            self.last_payment_failed_dt = datetime.now()
-            self.save()
 
         payment_transaction.payment = payment
         payment_transaction.result_code = response_d['result_code']

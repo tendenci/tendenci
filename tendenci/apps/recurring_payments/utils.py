@@ -37,6 +37,7 @@ class RecurringPaymentEmailNotices(object):
         self.email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         self.email.sender_display = self.site_display_name
         self.email.reply_to = self.reply_to_email
+        self.email_footer = render_to_string("email_footer.html")
 
         self.admin_emails = self.get_admin_emails()
 
@@ -73,7 +74,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content
+                self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 self.email.priority = 1
                 self.email.subject = _('Recurring payment transaction error on %(dname)s' % {
@@ -102,7 +103,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'user_in_texas': user_in_texas,
                                                 'membership': membership,
                                                 })
-                self.email.body = email_content
+                self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 if not success:
                     self.email.subject = _('Recurring payment transaction failed on %(dname)s' % {
@@ -131,12 +132,13 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_url': self.site_url,
                                                 'membership': membership,
                                                 })
-                self.email.body = email_content
+                
+                self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 if payment_transaction.status:
-                    self.email.subject = _('Payment received ')
+                    self.email.subject = _('Payment Received ')
                 else:
-                    self.email.subject = _('Payment failed ')
+                    self.email.subject = _('Payment Failed ')
                 self.email.subject = _("%(subj)s for %(desc)s " % {
                             'subj': self.email.subject,
                             'desc': payment_transaction.recurring_payment.description})
@@ -157,7 +159,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content
+                self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 self.email.subject = _('Payment method not setup for %(rp)s on %(dname)s' % {
                                     'rp': recurring_payment ,
@@ -179,7 +181,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content
+                self.email.body = email_content + self.self.email_footer
                 self.email.content_type = "html"
                 self.email.subject = _('Please update your payment method for %(rp)s on %(dname)s' % {
                                     'rp': recurring_payment.description,
@@ -202,7 +204,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content
+                self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 self.email.subject = _('Recurring Payment Account (ID:%(id)d) Disabled by %(usr)s on %(dname)s' % {
                        'id':recurring_payment.id,
@@ -228,11 +230,12 @@ def run_a_recurring_payment(rp, verbosity=0):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
         # check and store payment profiles in local db
-        if verbosity > 1:
-            print
-            print 'Processing for "%s":' % rp
-            print '...Populating payment profiles from payment gateway...'
-        rp.populate_payment_profile()
+        if rp.platform == 'authorizenet':
+            if verbosity > 1:
+                print
+                print 'Processing for "%s":' % rp
+                print '...Populating payment profiles from payment gateway...'
+            rp.populate_payment_profile()
 
         # create invoices if needed
         if verbosity > 1:
@@ -247,13 +250,18 @@ def run_a_recurring_payment(rp, verbosity=0):
                                              ).order_by('id')
 
         if rp_invoices:
-            payment_profiles = PaymentProfile.objects.filter(
-                        customer_profile_id=rp.customer_profile_id,
-                        status=True,
-                        status_detail='active'
-                        ).order_by('-update_dt')
+            require_payment_profile = True
+            if rp.platform == 'stripe':
+                require_payment_profile = False
+                
+            if require_payment_profile:
+                payment_profiles = PaymentProfile.objects.filter(
+                            customer_profile_id=rp.customer_profile_id,
+                            status=True,
+                            status_detail='active'
+                            ).order_by('-update_dt')
 
-            if payment_profiles:
+            if require_payment_profile and payment_profiles or not require_payment_profile:
 
                 for i, rp_invoice in enumerate(rp_invoices):
                     inv = rp_invoice.invoice
@@ -266,7 +274,11 @@ def run_a_recurring_payment(rp, verbosity=0):
                     # otherwise, the payment gateway would through the "duplicate transaction" error.
                     if i > 0: time.sleep(3*60)
 
-                    payment_profile = payment_profiles[0]
+                    if require_payment_profile:
+                        payment_profile = payment_profiles[0]
+                    else:
+                        payment_profile = ''
+
 #                     if rp_invoice.last_payment_failed_dt and \
 #                         rp_invoice.last_payment_failed_dt > payment_profile.update_dt:
 #                         # this invoice was processed but failed, and they haven't update the payment profile yet,
@@ -293,7 +305,10 @@ def run_a_recurring_payment(rp, verbosity=0):
 
                     success = False
 
-                    payment_profile_id = payment_profile.payment_profile_id
+                    if payment_profile:
+                        payment_profile_id = payment_profile.payment_profile_id
+                    else:
+                        payment_profile_id = ''
                     payment_transaction = rp_invoice.make_payment_transaction(payment_profile_id, membership=membership)
                     if payment_transaction.status:
                         success = True

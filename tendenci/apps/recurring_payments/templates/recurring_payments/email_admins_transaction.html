@@ -3,7 +3,12 @@
 
 {% trans "Greetings:" %}<br /><br />
 {% trans 'A transaction was processed' %} {% if pt.status %}{% trans 'successfully' %}{% endif %}{% if not pt.status %}{% trans 'but failed' %}{% endif %}
+
+{% if membership %}
+{% trans 'for membership auto renew' %} ({{ pt.recurring_payment }})
+{% else %}
 {% trans 'for the recurring payment' %} ({{ pt.recurring_payment }})
+{% endif %}
 on <a href="{{ site_url }}">{{ site_display_name }}</a>.
 <br /><br />
 
@@ -44,7 +49,7 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
 <div>
 <table border="0" width="90%">
     <tr>
-        <td>{% trans 'Customer' %}:</td><td>{{ pt.recurring_payment.user.get_full_name }}({{ pt.recurring_payment.user.email }})</td>
+        <td>{% trans 'Customer' %}:</td><td>{{ pt.recurring_payment.user.get_full_name }} ({{ pt.recurring_payment.user.email }})</td>
     </tr>
     {% if membership %}
     <tr>
@@ -73,4 +78,3 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
 
 <P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
 
-{% include email_footer.html %}
