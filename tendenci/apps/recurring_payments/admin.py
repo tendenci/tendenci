@@ -12,6 +12,7 @@ from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.site_settings.utils import get_setting
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign
@@ -161,6 +162,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             instance.owner = request.user
             instance.owner_username = request.user.username
 
+        instance.platform  = get_setting("site", "global", "merchantaccount")
         # save the object
         instance.save()
 

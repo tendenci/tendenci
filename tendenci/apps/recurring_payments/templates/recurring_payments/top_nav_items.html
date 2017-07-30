@@ -69,12 +69,13 @@
 									        <input type="hidden" name="action" value="Disable Account">
 									    </form>
                                 </li>
-
+								{% if SITE_GLOBAL_MERCHANTACCOUNT == "authorizenet" %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'recurring_payment.authnet.update_payment_info' app_object.id %}">{% trans "Payment Method" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     </ul>

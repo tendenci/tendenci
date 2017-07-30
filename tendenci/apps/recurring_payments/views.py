@@ -10,6 +10,7 @@ from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.conf import settings
 import simplejson
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
@@ -112,7 +113,8 @@ def view_account(request, recurring_payment_id, guid=None,
                                               'is_active': is_active,
                                               'is_owner': is_owner,
                                               'num_accounts': num_accounts,
-                                              'memberships': rp.memberships
+                                              'memberships': rp.memberships,
+                                              'STRIPE_PUBLISHABLE_KEY': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
                                               },
         context_instance=RequestContext(request))
 
