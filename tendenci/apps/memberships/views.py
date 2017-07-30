@@ -1509,7 +1509,10 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
                                        status=True,
                                        status_detail__in=['active', 'disabled'])[:1] or [None]
     if not rp:
-        raise Http404
+        kwargs = {'platform': 'stripe', }
+        rp = memberships[0].get_or_create_rp(request.user, **kwargs)
+        if not rp:
+            raise Http404
     
     if rp.status_detail == 'disabled':
         rp.status_detail = 'active'

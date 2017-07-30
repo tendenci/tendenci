@@ -46,7 +46,7 @@
         <div class="not-active-alert">{% trans 'This account is' %} {{ rp.status_detail }}</div>
         {% endif %}
 
-        <h1>{% trans 'Recurring Payment Account' %} </h1>
+        <h1>{% trans 'Recurring Payment Account' %}<br /><small>{{ rp.description }}</small> </h1>
 
         {% if is_active %}
         <div id="btn-pm-wrap">

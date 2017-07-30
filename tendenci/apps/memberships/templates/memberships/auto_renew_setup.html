@@ -34,8 +34,8 @@
 	  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
 	  data-key="{{ STRIPE_PUBLISHABLE_KEY }}"
 	  data-name="{{ SITE_GLOBAL_SITEDISPLAYNAME }}"
-	  data-panel-label="Update Card Details"
-	  data-label="Update Payment Method"
+	  data-panel-label="{% if rp.customer_profile_id %}Update Card Details{% else %}Add Card{% endif %}"
+	  data-label="{% if rp.customer_profile_id %}Update Payment Method{% else %}Add Payment Method{% endif %}"
 	  data-description="for membership auto renew"
 	  {% if SITE_GLOBAL_STRIPEDATAIMAGE %}
 	  data-image="{{ SITE_GLOBAL_STRIPEDATAIMAGE }}"
@@ -48,7 +48,10 @@
 	  data-zip-code="true">
 	  </script>
 	</form>
+	{% if source_data %}
 	<small class="text-muted">{% trans "Current card: " %} ····{{ source_data.last4 }} &nbsp;&nbsp;&nbsp; {{ source_data.exp_month }}/{{ source_data.exp_year }}</small>
+	{% endif %}
+	
 	{% else %}
 	<a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% trans "Update Payment Method" %}</a>
 	{% endif %}

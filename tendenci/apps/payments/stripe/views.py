@@ -128,11 +128,20 @@ def update_card(request, rp_id):
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
     token = request.POST.get('stripeToken')
     try:
-        customer = stripe.Customer.retrieve(rp.customer_profile_id)
-        customer.source = token
-        customer.save()
+        if not rp.customer_profile_id:
+            customer = stripe.Customer.create(
+                            email=rp.user.email,
+                            description=rp.description,
+                            source=token)
+            rp.customer_profile_id = customer.id
+            rp.save()
+            msg_string = 'Successfully added payment method'
+        else:
+            customer = stripe.Customer.retrieve(rp.customer_profile_id)
+            customer.source = token
+            customer.save()
+            msg_string = 'Successfully updated payment method'
         message_status = messages.SUCCESS
-        msg_string = 'Successfully updated payment method'
     except stripe.error.CardError as e:
         # it's a decline
         json_body = e.json_body

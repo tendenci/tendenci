@@ -136,18 +136,16 @@
                             </div>
                             {% endif %}
                             
-                            {% with membership.next_auto_renew_date as next_auto_renew_date %}
-                            {% if membership.has_rp and next_auto_renew_date %}
+                            {% if MODULE_RECURRING_PAYMENTS_ENABLED  and MODULE_MEMBERSHIPS_AUTORENEW %}
                             <hr style="max-width: 350px; border: 1px solid #eee;">
                             <div class="status-action">
                             	<ul class="nav nav-pills nav-stacked">
                              	<li>
-                             	<a href="{% url "memberships.auto_renew_setup" membership.user.id %}"><span class="glyphicon glyphicon-edit"></span> {% trans 'Update Auto Renew' %}</a>
+                             	<a href="{% url "memberships.auto_renew_setup" membership.user.id %}"><span class="glyphicon glyphicon-edit"></span> {% if membership.has_rp %}{% trans 'Update Auto Renew' %}{% else %}{% trans 'Set Up Auto Renew' %}{% endif %}</a>
                              	</li>
                              	</ul>
                             </div>
                             {% endif %}
-                            {% endwith %}
                         </td>
                     </tr>
                 </table>
