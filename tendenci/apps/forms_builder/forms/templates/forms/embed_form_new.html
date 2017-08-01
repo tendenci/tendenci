@@ -2,7 +2,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% has_perm user forms.change_form form as can_edit %}
+{% has_perm user forms.change_form embed_form as can_edit %}
 
 <style scoped>
 .id_captcha input[type="text"]{
@@ -13,7 +13,7 @@
     <p>{{ embed_form.intro|safe }}</p>
 
     <div class="form-builder-wrap">
-        <form method="post" enctype="multipart/form-data" action="{{ form.get_absolute_url }}">{% csrf_token %}
+        <form method="post" enctype="multipart/form-data" action="{{ embed_form.get_absolute_url }}">{% csrf_token %}
         <div class="forms">
             {{ embed_form_for_form|styled_form }}
             <input type="submit" value="{% trans 'Submit' %}" />
