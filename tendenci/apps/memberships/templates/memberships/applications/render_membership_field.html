@@ -28,7 +28,7 @@
                     </div>
 
                     {% if field.help_text %}
-                        <div class="help-block">{{ field.help_text }}</div>
+                        <div class="help-block">{{ field.help_text|safe }}</div>
                     {% endif %}
                 </div>
                 <div style="clear: both"><!-- IE7 --></div>
@@ -48,7 +48,7 @@
                             {{ field }}
 
                             {% if field.help_text %}
-                                <span class="help-block">{{ field.help_text }}</span>
+                                <span class="help-block">{{ field.help_text|safe }}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -64,13 +64,13 @@
 
                     {% if field|is_checkboxselectmultiple %}
                         {% if field.help_text %}
-                            <span class="help-block checkmultiple">{{ field.help_text }}</span>
+                            <span class="help-block checkmultiple">{{ field.help_text|safe }}</span>
                         {% endif %}
                     {% endif %}
 
                     {% if field|is_fileinput %}
                         {% if field.help_text %}
-                            <span class="help-block">{{ field.help_text }}</span>
+                            <span class="help-block">{{ field.help_text|safe }}</span>
                         {% endif %}
                     {% endif %}
 
@@ -109,7 +109,7 @@
 
                         {% if not field|is_checkboxselectmultiple and not field|is_fileinput %}
                             {% if field.help_text %}
-                                <span class="help-block">{{ field.help_text }}</span>
+                                <span class="help-block">{{ field.help_text|safe }}</span>
                             {% endif %}
                         {% endif %}
                     </div>

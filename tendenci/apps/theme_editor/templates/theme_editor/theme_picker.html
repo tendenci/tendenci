@@ -14,9 +14,6 @@
 {% block content %}
 <h1>{% trans "Theme Picker" %}</h1>
 
-<form method="POST" action="{% url "theme_editor.get_themes" %}">{% csrf_token %}
-    <input style="padding:3px;" type="submit" value="{% trans 'Get more themes' %}"/>
-</form>
 
 {% for theme in themes %}
     {% theme_detail theme current_theme%}

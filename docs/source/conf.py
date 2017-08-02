@@ -51,14 +51,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Tendenci'
-copyright = u'2015, Tendenci'
+copyright = u'2017, Tendenci'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '7.0'
+version = '7.3'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 
@@ -113,10 +113,11 @@ html_theme = 'default'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = "<project> v<release> - The Open Source AMS Software for NGOs and Governments"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+# html_short_title = None
+html_short_title= "<project> v<release>"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -223,7 +224,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'tendenci', u'Tendenci Documentation',
+    ('index', 'tendenci', u'Tendenci Open AMS Documentation',
         [u'Tendenci'], 1)
 ]
 
@@ -237,9 +238,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Tendenci', u'Tendenci Documentation',
-        u'Tendenci', 'Tendenci', 'One line description of project.',
-        'Miscellaneous'),
+    ('index', 'Tendenci', u'Tendenci AMS Docs',
+        u'Tendenci', 'Tendenci', 'The Open Source AMS for NGOs and Governments',
+        'Open Source AMS'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -250,3 +251,6 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
+
+# google analytics - Tendenci seeking to improve UX by looking at areas of frequent search
+googleanalytics_id = 'UA-3369175-11'
