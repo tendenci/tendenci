@@ -263,8 +263,11 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
     payment_transaction = get_object_or_404(PaymentTransaction,
                                             pk=payment_transaction_id,
                                             status=True)
-    payment_profile = PaymentProfile.objects.filter(
-                    payment_profile_id=payment_transaction.payment_profile_id)[0]
+    if rp.platform == 'authorizenet':
+        payment_profile = PaymentProfile.objects.filter(
+                        payment_profile_id=payment_transaction.payment_profile_id)[0]
+    else:
+        payment_profile = ''
     invoice = payment_transaction.payment.invoice
 
 

@@ -119,7 +119,8 @@ class RecurringPayment(models.Model):
         self.guid = self.guid or str(uuid.uuid1())
         if self.taxable and self.tax_rate:
             self.tax_exempt = 0
-
+        if not self.id:
+            self.platform = get_setting("site", "global", "merchantaccount").lower()
         super(RecurringPayment, self).save(*args, **kwargs)
 
     @property
@@ -630,9 +631,9 @@ class RecurringPaymentInvoice(models.Model):
 
         if self.billing_cycle_start_dt and self.billing_cycle_end_dt:
             description = self.recurring_payment.description
-            description += '(billing cycle from %s to %s)' % (
+            description += '(billing cycle from {0} to {1})'.format(
                             self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
-                            self.billing_cycle_end_dt.strftime('%m/%d/%Y')),
+                            self.billing_cycle_end_dt.strftime('%m/%d/%Y'))
         else:
             description = payment.description
 
