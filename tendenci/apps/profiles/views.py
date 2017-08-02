@@ -118,7 +118,12 @@ def index(request, username='', template_name="profiles/index.html"):
                 active_qs | expired_qs)
 
     auto_renew_is_set = False
-    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+    can_auto_renew = False
+    for m in memberships:
+        if m.can_auto_renew():
+            can_auto_renew = True
+            break
+    if can_auto_renew:
         if user_this.recurring_payments.filter(status=True, 
                                                  status_detail='active',
                                                  object_content_type__model='membershipdefault').exists():
@@ -170,6 +175,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_apps': membership_apps,
         'multiple_apps': multiple_apps,
         'membership_reminders': membership_reminders,
+        'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
         }, context_instance=RequestContext(request))
 

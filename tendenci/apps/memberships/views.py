@@ -1499,6 +1499,8 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
     memberships = MembershipDefault.objects.filter(user=u).filter(status=True
                     ).filter(status_detail__in=['active', 'expired']
                              ).exclude(expire_dt__isnull=True).order_by('-expire_dt')
+    # exclude corp individuals
+    memberships = memberships.filter(Q(corporate_membership_id=0) | Q(corporate_membership_id__isnull=True))
     if not memberships:
         raise Http404
     

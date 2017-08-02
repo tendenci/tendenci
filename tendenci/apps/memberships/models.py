@@ -1988,6 +1988,18 @@ class MembershipDefault(TendenciBaseModel):
             else:
                 return datetime.now() + timedelta(days=1)
         return None
+ 
+    
+    def can_auto_renew(self):
+        """
+        Check if membership auto renew can be set up for this membership.
+        """
+        if self.status_detail in ['active', 'expired']:
+            if not self.corporate_membership_id:
+                if get_setting('module', 'recurring_payments', 'enabled') \
+                    and get_setting('module', 'memberships', 'autorenew'):
+                    return True
+        return False
 
 
     # def custom_fields(self):

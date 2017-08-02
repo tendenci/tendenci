@@ -136,7 +136,7 @@
                             </div>
                             {% endif %}
                             
-                            {% if MODULE_RECURRING_PAYMENTS_ENABLED  and MODULE_MEMBERSHIPS_AUTORENEW %}
+                            {% if membership.can_auto_renew %}
                             <hr style="max-width: 350px; border: 1px solid #eee;">
                             <div class="status-action">
                             	<ul class="nav nav-pills nav-stacked">
