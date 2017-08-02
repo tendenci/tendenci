@@ -100,10 +100,16 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         else:
             return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
 
-    list_display = ['id', 'user', 'view_on_site', edit_payment_info_link, 
-                    'description', 'create_dt',
+    list_display = ['id', 'user', 'view_on_site'] 
+                   
+    if get_setting("site", "global", "merchantaccount").lower() == 'authorizenet':
+        list_display.append(edit_payment_info_link)
+        
+    list_display += ['description', 'create_dt',
                      how_much_to_pay,
                      'status_detail']
+        
+    
     list_filter = ['status_detail']
 
     fieldsets = (
