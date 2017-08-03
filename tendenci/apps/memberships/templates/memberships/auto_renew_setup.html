@@ -26,6 +26,27 @@
 	<div>{% trans "User:" %} <a href="{% url 'profile' u.username %}">{% firstof u.get_full_name u.username %}</a></div>
 	{% endif %}
 	
+	<div class="well">
+	<h4>{% trans "Instructions" %}</h4>
+	<ul >
+	{% if auto_renew_all_off or not auto_renew_all_on %}
+	<li>{% trans 'Select your membership by clicking on the checkbox next to the membership, then hit the button "Turn on Auto Renew".' %}</li>
+	{% endif %}
+	
+	{% if rp and rp.customer_profile_id %}
+		<li>{% trans 'Click the button "Update Payment Method" to update your credit card if needed.' %} </li>
+	{% else %}
+		<li>{% trans 'Click the button "Add Payment Method" to add your credit card.' %} </li>
+	{% endif %}
+	
+	{% if auto_renew_all_on or not auto_renew_all_off %}
+	<li>{% trans 'To cancel auto renew, select your membership by clicking on the checkbox next to the membership, then hit the button "Cancel Auto Renew".' %}</li>
+	{% endif %}
+	
+	</ul>
+	</div>	
+	
+	
 	{% if rp and rp.status_detail == 'active' %}
 	<div class="text-right">
 	{% if rp.platform == 'stripe' %}
@@ -103,8 +124,12 @@
 			{% endfor %}
 		</table>
 		  <div class="text-right">
+		  {% if not auto_renew_all_on %}
 		  <button type="submit" class="btn btn-primary">{% trans "Turn On Auto Renew" %}</button>
+		  {% endif %}
+		  {% if not auto_renew_all_off %}
 		  <button type="submit" name="cancel_auto_renew" class="btn btn-default">{% trans "Cancel Auto Renew" %}</button>
+		  {% endif %}
 		  </div>
 	
 	</form>

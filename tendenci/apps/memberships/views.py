@@ -1539,6 +1539,14 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
             
             msg_string = 'Updated Successfully'
             messages.add_message(request, messages.SUCCESS, _(msg_string))
+    
+    auto_renew_all_on = True
+    auto_renew_all_off = True
+    for m in memberships:
+        if not m.auto_renew:
+            auto_renew_all_on = False
+        else:
+            auto_renew_all_off = False
             
     context = {
         'memberships' : memberships,
@@ -1548,6 +1556,8 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
         'form': form,
         'is_owner': is_owner,
         'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
+        'auto_renew_all_on': auto_renew_all_on,
+        'auto_renew_all_off': auto_renew_all_off
     }
     return render_to_response(template, context, RequestContext(request))
 
