@@ -886,11 +886,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             images = Image.objects.filter(position__gt=self.position)
         images = images.values_list("position", flat=True)
         images = images.order_by('-position')
-        if set:
-            try:
-                return Image.objects.get(photoset=set, position=min(images))
-            except (ValueError, Image.MultipleObjectsReturned):
-                return None
+        if set and images:
+            [ image ] = Image.objects.filter(photoset=set, position=min(images))[:1] or [None]
+            return image
         return None
 
     def get_prev(self, set=None):
