@@ -28,15 +28,15 @@
 	
 	<div class="well">
 	<h4>{% trans "Instructions" %}</h4>
-	<ul >
-	{% if auto_renew_all_off or not auto_renew_all_on %}
-	<li>{% trans 'Select your membership by clicking on the checkbox next to the membership, then hit the button "Turn on Auto Renew".' %}</li>
-	{% endif %}
-	
+	<ul>
 	{% if rp and rp.customer_profile_id %}
 		<li>{% trans 'Click the button "Update Payment Method" to update your credit card if needed.' %} </li>
 	{% else %}
 		<li>{% trans 'Click the button "Add Payment Method" to add your credit card.' %} </li>
+	{% endif %}
+	
+	{% if auto_renew_all_off or not auto_renew_all_on %}
+	<li>{% trans 'Select your membership by clicking on the checkbox next to the membership, then hit the button "Turn on Auto Renew".' %}</li>
 	{% endif %}
 	
 	{% if auto_renew_all_on or not auto_renew_all_off %}
@@ -125,7 +125,7 @@
 		</table>
 		  <div class="text-right">
 		  {% if not auto_renew_all_on %}
-		  <button type="submit" class="btn btn-primary">{% trans "Turn On Auto Renew" %}</button>
+		  <button type="submit" class="btn btn-primary" id="turn-on-auto-renew">{% trans "Turn On Auto Renew" %}</button>
 		  {% endif %}
 		  {% if not auto_renew_all_off %}
 		  <button type="submit" name="cancel_auto_renew" class="btn btn-default">{% trans "Cancel Auto Renew" %}</button>
@@ -133,7 +133,26 @@
 		  </div>
 	
 	</form>
-
+	
+	{% if not rp.customer_profile_id %}
+	<div id="payment-method-needed-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="payment-method-needed-label">>
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="payment-method-needed-label">{% trans "Payment Method Needed" %}</h4>
+	      </div>
+	      <div class="modal-body">
+	        <p>{% trans "Please add a payment method first!" %}</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Got it" %}</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	{% endif %}
+	
 </div>
 
 <p>&nbsp;</p>
@@ -163,6 +182,13 @@
             $('#ar-select-all-toggle').prop('checked',false);
         }
     });
+    
+    {% if not rp.customer_profile_id %}
+    $('#turn-on-auto-renew').on('click',function(){
+    	$('#payment-method-needed-modal').modal('show');
+    	return false;
+    });
+    {% endif %}
 	
 }(jQuery));
 
