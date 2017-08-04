@@ -53,6 +53,7 @@ from tendenci.apps.regions.models import Region
 from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.base.utils import truncate_words
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.files.models import File
 
 
 FIELD_CHOICES = (
@@ -166,6 +167,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
 
 class CorpProfile(TendenciBaseModel):
     guid = models.CharField(max_length=50)
+    logo = models.ForeignKey(File, null=True)
     name = models.CharField(max_length=250, unique=True)
     address = models.CharField(_('Address'), max_length=150,
                                blank=True, default='')
@@ -294,6 +296,12 @@ class CorpProfile(TendenciBaseModel):
             if rep.user.id == this_user.id:
                 return True
         return False
+    
+    def get_logo_url(self):
+        if not self.logo:
+            return u''
+
+        return reverse('file', args=[self.logo.pk])
 
 
 class CorpMembership(TendenciBaseModel):

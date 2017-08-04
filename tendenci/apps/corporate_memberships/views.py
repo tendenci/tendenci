@@ -621,6 +621,7 @@ def corpmembership_view(request, id,
         all_records = []
 
     context = {"corporate_membership": corp_membership,
+               'corp_profile': corp_membership.corp_profile,
                'all_records': all_records,
                'app_fields': app_fields,
                'app': app,

@@ -7,6 +7,13 @@
     "admin_only": "false"
     },
     {
+    "label": "Logo",
+    "field_name": "logo_file",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
     "label": "Company Name",
     "field_name": "name",
     "display": "true",
