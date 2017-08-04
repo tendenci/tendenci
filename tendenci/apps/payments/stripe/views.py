@@ -56,12 +56,15 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                     membership = None
                     
             if obj_user:
-                # Create a Customer:
-                customer = stripe.Customer.create(
-                            email=obj_user.email,
-                            description="For membership auto renew",
-                            source=token,
-                )
+                try:
+                    # Create a Customer:
+                    customer = stripe.Customer.create(
+                                email=obj_user.email,
+                                description="For membership auto renew",
+                                source=token,
+                    )
+                except:
+                    customer = None
 
             # create the charge on Stripe's servers - this will charge the user's card
             params = {
