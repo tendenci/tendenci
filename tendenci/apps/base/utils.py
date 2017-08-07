@@ -828,6 +828,13 @@ def create_salesforce_contact(profile):
         # since that is a required field for Salesforce Contact.
         user = profile.user
         if sf and user.last_name:
+            # Query for a duplicate entry in salesforce
+            # saleforce blocks the request if email is already in their system - so just checking email
+            if user.email:
+                result = sf.query("SELECT Id FROM Contact WHERE Email='%s'" % user.email.replace("'", "''"))
+                if result['records']:
+                    return result['records'][0]['Id']
+
             contact = sf.Contact.create({
                 'FirstName':user.first_name,
                 'LastName':user.last_name,
