@@ -33,10 +33,22 @@
         {% else %}
             {% trans "News List" %}
         {% endif %}
+        {% if release_year %}
+        - {{ release_year }}
+        {% endif %}
     </h1>
 
     {% autopaginate search_news 10 %}
     {% news_search %}
+
+{% if release_years_list %}
+<div class="pull-right">
+	{% for year in release_years_list %}
+   <span><a href="{% url 'news_by_release_year' year %}">{{ year }}</a></span>
+   {% if not forloop.last %} | {% endif %}
+	{% endfor %}
+</div>
+{% endif %}
 
     <h4 class="capitalize">
         {% if MODULE_NEWS_LABEL_PLURAL %}

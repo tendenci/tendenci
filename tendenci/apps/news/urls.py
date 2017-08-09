@@ -11,6 +11,7 @@ if not urlpath:
 
 urlpatterns = patterns('tendenci.apps.news.views',
     url(r'^%s/$' % urlpath, 'search', name="news"),
+    url(r'^%s/(?P<release_year>\d{4})/$' % urlpath, 'search', name="news_by_release_year"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="news.search"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="news.print_view"),
     url(r'^%s/add/$' % urlpath, 'add', name="news.add"),
