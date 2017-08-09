@@ -84,7 +84,9 @@ def search(request, release_year=None, template_name="news/search.html"):
 
     release_years = News.objects.distinct('release_dt').values_list('release_dt', flat=True
                                                                         ).order_by('release_dt')
-    release_years_list = [rel.year for rel in release_years]
+    # make a list of unique release years
+    release_years_list = list(set([rel.year for rel in release_years]))
+    release_years_list.sort()
     if release_year:
         release_year = int(release_year)
         if release_year < 1900:
