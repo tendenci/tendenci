@@ -82,19 +82,14 @@ def search(request, release_year=None, template_name="news/search.html"):
 
     EventLog.objects.log()
 
-    release_years = News.objects.distinct('release_dt').values_list('release_dt', flat=True
-                                                                        ).order_by('release_dt')
-    # make a list of unique release years
-    release_years_list = list(set([rel.year for rel in release_years]))
-    release_years_list.sort(reverse=True)
+    release_years = News.objects.datetimes('release_dt', 'year', order='DESC')
+    release_years_list = [rel.year for rel in release_years]
+
     if release_year:
         release_year = int(release_year)
         if release_year < 1900:
             raise Http404
-        release_dt_start = datetime(release_year, 1, 1, 0, 0, 0)
-        release_dt_end = datetime(release_year, 12, 31,23, 59, 59)
-        news = news.filter(release_dt_local__gte=release_dt_start,
-                           release_dt_local__lte=release_dt_end)
+        news = news.filter(release_dt_local__year=release_year)
         
 
     return render_to_response(template_name, {'search_news': news,
