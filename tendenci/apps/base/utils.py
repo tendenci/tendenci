@@ -835,26 +835,26 @@ def create_salesforce_contact(profile):
                 if result['records']:
                     return result['records'][0]['Id']
 
-            contact = sf.Contact.create({
-                'FirstName':user.first_name,
-                'LastName':user.last_name,
-                'Email':user.email,
-                'Title':profile.position_title,
-                'Phone':profile.phone,
-                'MailingStreet':profile.address,
-                'MailingCity':profile.city,
-                'MailingState':profile.state,
-                'MailingCountry':profile.country,
-                'MailingPostalCode':profile.zipcode,
-                })
-
-            # update field Company_Name__c
-            if profile.company and contact.has_key('Company_Name__c'):
-                sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
-
-            profile.sf_contact_id = contact['id']
-            profile.save()
-            return contact['id']
+                contact = sf.Contact.create({
+                    'FirstName':user.first_name,
+                    'LastName':user.last_name,
+                    'Email':user.email,
+                    'Title':profile.position_title,
+                    'Phone':profile.phone,
+                    'MailingStreet':profile.address,
+                    'MailingCity':profile.city,
+                    'MailingState':profile.state,
+                    'MailingCountry':profile.country,
+                    'MailingPostalCode':profile.zipcode,
+                    })
+    
+                # update field Company_Name__c
+                if profile.company and contact.has_key('Company_Name__c'):
+                    sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
+    
+                profile.sf_contact_id = contact['id']
+                profile.save()
+                return contact['id']
     return None
 
 
