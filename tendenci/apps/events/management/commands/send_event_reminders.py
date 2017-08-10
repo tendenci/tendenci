@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
@@ -16,9 +17,9 @@ class Command(BaseCommand):
         for registrant in registrants:
             if registrant.email:
                 if verbosity == 2:
-                    print 'Sending reminder email to %s %s' % (
+                    print('Sending reminder email to %s %s' % (
                                 registrant.first_name,
-                                registrant.last_name)
+                                registrant.last_name))
                 email.recipient = registrant.email
                 email.send()
                 count += 1

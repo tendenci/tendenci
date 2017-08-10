@@ -97,9 +97,9 @@ class Feed(object):
             # the function may raise the TypeError. This technique is more
             # accurate.
             if hasattr(attr, 'func_code'):
-                argcount = attr.func_code.co_argcount
+                argcount = attr.__code__.co_argcount
             else:
-                argcount = attr.__call__.func_code.co_argcount
+                argcount = attr.__call__.__code__.co_argcount
             if argcount == 2: # one argument is 'self'
                 return attr(obj)
             else:

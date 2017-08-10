@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.template import Library
 
 register = Library()
@@ -32,5 +33,5 @@ def entity_current_app(context, user, entity=None):
         "user": user
     })
 
-    print context.get('nav_object', None)
+    print(context.get('nav_object', None))
     return context

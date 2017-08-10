@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from datetime import timedelta, datetime
 
@@ -175,7 +176,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
 @login_required
 def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
     resume = get_object_or_404(Resume, pk=id)
-    print request.FILES
+    print(request.FILES)
     form = form_class(request.POST or None, request.FILES or None, instance=resume, user=request.user)
     if has_perm(request.user,'resumes.change_resume',resume):
         if request.method == "POST":

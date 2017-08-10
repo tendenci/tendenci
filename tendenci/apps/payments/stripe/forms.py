@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from django import forms
-from widgets import NoNameTextInput
+from .widgets import NoNameTextInput
 from tendenci.apps.payments.models import Payment
 #from form_utils.forms import BetterModelForm
 

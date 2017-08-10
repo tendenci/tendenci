@@ -1,11 +1,12 @@
 # coding=utf-8
 from __future__ import unicode_literals
+from __future__ import absolute_import
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save, post_delete, pre_save
 from .models import Post, Category, Topic, Forum, create_or_check_slug
 from .subscription import notify_topic_subscribers
-import util, defaults, compat
+from . import util, defaults, compat
 from .permissions import perms
 
 

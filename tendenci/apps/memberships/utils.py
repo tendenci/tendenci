@@ -542,7 +542,7 @@ def csv_to_dict(file_path, **kwargs):
 
     normalize_newline(file_path)
     csv_file = csv.reader(default_storage.open(file_path, 'rU'))
-    colnames = csv_file.next()  # row 1;
+    colnames = next(csv_file)  # row 1;
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
@@ -917,7 +917,7 @@ def memb_import_parse_csv(mimport):
     normalize_newline(mimport.upload_file.name)
     csv_reader = csv.reader(
         default_storage.open(mimport.upload_file.name, 'rb'))
-    fieldnames = csv_reader.next()
+    fieldnames = next(csv_reader)
     fieldnames = normalize_field_names(fieldnames)
 
     data_list = []

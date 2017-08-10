@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.cache import cache
 from django.conf import settings
 
@@ -64,7 +65,7 @@ def get_color(event_id):
         cache_colors(colors)
 
     if event_id in colors:
-        print event_id
+        print(event_id)
         return colors[event_id]
     else:
         return '17ABB9'

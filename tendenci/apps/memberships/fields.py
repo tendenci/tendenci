@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget, DonationOptionAmountWidget,
+from .widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget, DonationOptionAmountWidget,
                      AppFieldSelectionWidget)
 from tendenci.apps.site_settings.utils import get_setting
 

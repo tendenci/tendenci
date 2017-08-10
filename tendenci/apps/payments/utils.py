@@ -34,7 +34,7 @@ def payment_processing_object_updates(request, payment, **kwargs):
         send_mail(subject, body, sender, recipients, fail_silently=True)
 
         # still want the end user know an error occurred
-        raise Exception, err_msg
+        raise Exception(err_msg)
 
 
 def log_silent_post(request, payment):

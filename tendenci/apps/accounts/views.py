@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
@@ -10,7 +11,7 @@ from django.contrib.auth.views import password_reset as auth_password_reset
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.registration.forms import RegistrationForm
-from forms import LoginForm
+from .forms import LoginForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import ssl_required

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import simplejson as json
 
@@ -100,15 +101,15 @@ class Command(BaseCommand):
             }).exists()
 
             if (exists):
-                print '%s (%s) already exists ... skipping.' % (
+                print('%s (%s) already exists ... skipping.' % (
                     new_setting.name,
                     new_setting.scope_category
-                )
+                ))
             else:
-                print '%s (%s) ... done.' % (
+                print('%s (%s) ... done.' % (
                     new_setting.name,
                     new_setting.scope_category
-                )
+                ))
                 new_setting.save()
 
     def handle(self, *args, **options):

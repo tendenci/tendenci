@@ -17,6 +17,7 @@ from django.template.response import TemplateResponse
 from tagging.models import TaggedItem
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
+from functools import reduce
 
 
 class TendenciBaseModelAdmin(admin.ModelAdmin):
@@ -110,7 +111,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         result = super(TendenciBaseModelAdmin, self).change_view(
             request, object_id, form_url=form_url, extra_context=extra_context)
-        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+        if '_addanother' not in request.POST and '_continue' not in request.POST and 'next' in request.GET:
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
 

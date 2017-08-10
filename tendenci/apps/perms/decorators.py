@@ -35,7 +35,7 @@ class PageSecurityCheck(object):
             if self.page_security_level == 'anonymous':
                 boo = True
             elif self.page_security_level == 'user':
-                if user_security_level <> 'anonymous':
+                if user_security_level != 'anonymous':
                     boo = True
             elif self.page_security_level == 'superuser':
                 if user_security_level == 'superuser':

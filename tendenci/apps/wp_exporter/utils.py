@@ -1,4 +1,6 @@
-import datetime, encoder
+from __future__ import absolute_import
+import datetime
+from . import encoder
 from django.conf import settings
 from django.db.models import Q
 from django.template.defaultfilters import slugify

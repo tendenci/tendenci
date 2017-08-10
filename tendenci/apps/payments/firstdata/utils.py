@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 #import time
 #import hashlib
 from datetime import datetime
 from django.conf import settings
 #from django.http import Http404
 from django.core.urlresolvers import reverse
-from forms import FirstDataPaymentForm
+from .forms import FirstDataPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice

@@ -7,6 +7,7 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 from tendenci.apps.site_settings.utils import get_global_setting
+from functools import reduce
 
 
 class GroupManager(TendenciBaseManager):

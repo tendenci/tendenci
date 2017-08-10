@@ -1,3 +1,4 @@
+from __future__ import print_function
 import subprocess
 from datetime import datetime
 from datetime import date
@@ -97,7 +98,7 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 
     EventLog.objects.log(instance=group)
 
-    if request.user.profile.is_superuser or membership_view_perms <> 'private': 
+    if request.user.profile.is_superuser or membership_view_perms != 'private': 
         groupmemberships = GroupMembership.objects.filter(
             group=group,
             status=True,
@@ -172,7 +173,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         return redirect('group.detail', group_slug=group_slug)
 
     else:
-        print 'form errors', form.errors.items()
+        print('form errors', form.errors.items())
 
 
     return render(request, template_name, {

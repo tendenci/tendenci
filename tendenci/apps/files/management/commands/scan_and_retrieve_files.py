@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
@@ -64,9 +65,9 @@ class Command(BaseCommand):
             retriever.process_app(app)
 
         if retriever.broken_links:
-            print '\nBROKEN LINKS:\n', '-' * 30
+            print('\nBROKEN LINKS:\n', '-' * 30)
             for key in retriever.broken_links.keys():
-                print
-                print key
+                print()
+                print(key)
                 for link in retriever.broken_links[key]:
-                    print ' ' * 4, link
+                    print(' ' * 4, link)

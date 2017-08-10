@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.stories.models import Story
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.perms.utils import get_query_filters
+from functools import reduce
 
 
 register = Library()

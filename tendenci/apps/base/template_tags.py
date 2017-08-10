@@ -10,6 +10,7 @@ from django.db.models import Q
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.utils import get_query_filters
+from functools import reduce
 
 
 def parse_tag_kwargs(bits):

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 import csv
 from dateutil.relativedelta import relativedelta
@@ -460,7 +461,7 @@ def csv_to_dict(file_path):
     data_list = []
 
     data = csv.reader(default_storage.open(file_path, 'rU'))
-    fields = data.next()
+    fields = next(data)
 
     fields = [smart_str(field) for field in fields]
 
@@ -476,7 +477,7 @@ def validate_import_file(file_path):
     """
     normalize_newline(file_path)
     data = csv.reader(default_storage.open(file_path, mode='rU'))
-    fields = data.next()
+    fields = next(data)
     fields = [smart_str(field) for field in fields]
 
     corp_memb_keys = [slugify(cm) for cm in fields]
@@ -682,7 +683,7 @@ def create_salesforce_lead(sf, corporate_profile):
                 'Email':corporate_profile.email,
                 'Website':corporate_profile.url})
         except:
-            print 'Salesforce lead not found'
+            print('Salesforce lead not found')
 
     else:
         # Create a new Salesforce Lead object

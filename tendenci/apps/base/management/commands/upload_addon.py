@@ -1,3 +1,4 @@
+from __future__ import print_function
 from optparse import make_option
 import os
 import zipfile
@@ -33,14 +34,14 @@ class Command(BaseCommand):
 
         addon_zip.extractall(settings.SITE_ADDONS_PATH)
 
-        print "Updating tendenci site"
+        print("Updating tendenci site")
         os.system('python manage.py syncdb --noinput')
         os.system('python manage.py migrate %s --noinput' % addon_name)
         os.system('python manage.py update_settings %s' % addon_name)
         os.system('python manage.py collectstatic --noinput')
 
-        print "Restarting Server"
+        print("Restarting Server")
         os.system('sudo reload %s' % os.path.basename(settings.PROJECT_ROOT))
 
-        print 'Deleting zip file'
+        print('Deleting zip file')
         default_storage.delete(path)

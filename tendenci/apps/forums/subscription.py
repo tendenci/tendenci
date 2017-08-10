@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+from __future__ import absolute_import
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
@@ -9,7 +10,7 @@ from django.utils import translation
 from django.contrib.sites.models import Site
 from tendenci.apps.site_settings.utils import get_setting
 
-import defaults, util, compat
+from . import defaults, util, compat
 
 if defaults.PYBB_USE_DJANGO_MAILER:
     try:

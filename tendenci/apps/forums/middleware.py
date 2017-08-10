@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+from __future__ import absolute_import
 from django.utils import translation
 from django.db.models import ObjectDoesNotExist
 from django.contrib.auth.models import Permission
-import util
+from . import util
 from tendenci.apps.site_settings.utils import get_setting
 
 class PybbMiddleware(object):

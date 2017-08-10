@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -22,12 +23,12 @@ class Command(BaseCommand):
                 else:
                     perm = 'private'
 
-                print 'Setting %s to %s' % (tfile.file.name,
-                                            perm)
+                print('Setting %s to %s' % (tfile.file.name,
+                                            perm))
 
                 set_s3_file_permission(tfile.file.name,
                                        public=(perm == 'public'))
                 count += 1
 
-        print 'Done'
-        print 'Total files processed', count
+        print('Done')
+        print('Total files processed', count)

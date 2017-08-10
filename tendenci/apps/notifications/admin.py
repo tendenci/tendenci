@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -46,7 +47,7 @@ class NoticeEmailAdmin(admin.ModelAdmin):
 
     def resend(self, request, queryset):
         for q in queryset:
-            print q.resend()
+            print(q.resend())
     resend.short_description = _("Resend the selected emails")
 
     def has_change_permission(self, request, obj=None):

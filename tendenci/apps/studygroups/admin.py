@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -114,7 +115,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
         """
         update the permissions backend
         """
-        print 'enter save_model'
+        print('enter save_model')
         instance = form.save(commit=False)
         perms = update_perms_and_save(request, form, instance)
         return instance

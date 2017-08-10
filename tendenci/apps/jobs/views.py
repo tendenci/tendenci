@@ -352,13 +352,13 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
     if not request.user.profile.is_superuser:
         del form.fields['pricing']
         del form.fields['list_type']
-        if form.fields.has_key('activation_dt'):
+        if 'activation_dt' in form.fields:
             del form.fields['activation_dt']
-        if form.fields.has_key('post_dt'):
+        if 'post_dt' in form.fields:
             del form.fields['post_dt']
-        if form.fields.has_key('expiration_dt'):
+        if 'expiration_dt' in form.fields:
             del form.fields['expiration_dt']
-        if form.fields.has_key('entity'):
+        if 'entity' in form.fields:
             del form.fields['entity']
     del form.fields['payment_method']
 

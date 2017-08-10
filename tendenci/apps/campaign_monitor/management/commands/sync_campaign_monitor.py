@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
@@ -25,16 +26,16 @@ class Command(BaseCommand):
             try:
                 subscriber = subscriber_obj.get(list_id, email)
                 if str(subscriber.State).lower() == 'active':
-                    print name, email, ' - UPDATED'
+                    print(name, email, ' - UPDATED')
                     subscriber = subscriber_obj.update(email, name, custom_data, True)
             except BadRequest as br:
-                print br
+                print(br)
                 try:
                     email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
                     if verbosity >=2:
-                        print "%s (%s)" % (name, email)
+                        print("%s (%s)" % (name, email))
                 except BadRequest as br:
-                    print name, email, ' - NOT ADDED: %s' % br
+                    print(name, email, ' - NOT ADDED: %s' % br)
 
         api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
         client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
@@ -52,8 +53,8 @@ class Command(BaseCommand):
         syncd_groups = [listmap.group for listmap in listmaps]
         cm_list = List(auth)
 
-        print "Starting to sync groups with campaign monitor..."
-        print
+        print("Starting to sync groups with campaign monitor...")
+        print()
 
         for group in groups:
             if group not in syncd_groups:
@@ -64,8 +65,8 @@ class Command(BaseCommand):
                 else:
                     # add group to the campaign monitor
                     list_id = cm_list.create(client_id, group.name, "", False, "")
-                    print "Added group '%s' to the C.M. list." % group.name
-                    print
+                    print("Added group '%s' to the C.M. list." % group.name)
+                    print()
 
                 # insert to the listmap
                 list_map = ListMap(group=group,
@@ -82,7 +83,7 @@ class Command(BaseCommand):
             try:
                 list_stats = a_list.stats()
                 # set up custom fields
-                print "Setting up custom fields..."
+                print("Setting up custom fields...")
                 setup_custom_fields(a_list)
                 #num_unsubscribed = list_stats.TotalUnsubscribes
                 #if num_unsubscribed > 0:
@@ -101,7 +102,7 @@ class Command(BaseCommand):
 
 
             # sync subscribers in this group
-            print "Subscribing users to the C.M. list '%s'..." % group.name
+            print("Subscribing users to the C.M. list '%s'..." % group.name)
             members = group.members.all()
             for i, member in enumerate(members, 1):
                 # Append custom fields from the profile
@@ -124,12 +125,12 @@ class Command(BaseCommand):
                 subscriber_obj = Subscriber(auth, list_id, email)
                 subscribe_to_list(subscriber_obj, list_id, name, email, custom_data)
 
-        print 'Done'
+        print('Done')
 
-        print 'Starting to sync campaigns with campaign monitor...'
+        print('Starting to sync campaigns with campaign monitor...')
         sync_campaigns()
-        print "Done"
+        print("Done")
 
-        print 'Syncing templates...'
+        print('Syncing templates...')
         sync_templates()
-        print "Done"
+        print("Done")

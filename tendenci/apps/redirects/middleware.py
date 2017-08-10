@@ -18,7 +18,7 @@ class RedirectMiddleware(object):
                 return view(*args, **kwargs)
             except:
                 raise
-        except Exception, e:
+        except Exception as e:
             # No redirect was found. Return the response.
             # Log the 404
             # print "e: ", e

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -48,7 +49,7 @@ class Command(BaseCommand):
 
         for l in lst:
             for m in l:
-                print m
+                print(m)
                 m.delete()
 
         self.print_results(lst, imported_count, total_count)
@@ -59,12 +60,12 @@ class Command(BaseCommand):
         """
         for i, l in enumerate(lst):
             if l:
-                print i+1, len(l), sum(self.delta(l))/len(l), min(self.delta(l)), max(self.delta(l))
+                print(i+1, len(l), sum(self.delta(l))/len(l), min(self.delta(l)), max(self.delta(l)))
 
-        print '-'*50
-        print 'imported:', imported_count
-        print 'total:', total_count
-        print 'legit:', total_count-imported_count
+        print('-'*50)
+        print('imported:', imported_count)
+        print('total:', total_count)
+        print('legit:', total_count-imported_count)
 
     def delta(self, lst):
         """

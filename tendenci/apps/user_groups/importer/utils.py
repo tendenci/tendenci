@@ -104,7 +104,7 @@ def user_groups_import_process(import_i, preview=True):
         if not preview: # save import status
             import_i.status = "completed"
             import_i.save()
-    except Exception, e:
+    except Exception as e:
         import_i.status = "failed"
         import_i.failure_reason = unicode(e)
         import_i.save()

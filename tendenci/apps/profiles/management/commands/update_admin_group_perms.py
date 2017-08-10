@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -30,5 +31,5 @@ class Command(BaseCommand):
 
         #self.stdout.write('Successfully added all permissions to group "Admin".')
         out += 'Successfully added/updated all permissions to group "%s".' % name
-        print out
+        print(out)
 

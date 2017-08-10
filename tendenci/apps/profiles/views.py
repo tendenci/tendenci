@@ -1095,7 +1095,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
         raise Http403
 
     sid = str(sid)
-    if not request.session.has_key(sid):
+    if sid not in request.session:
         return redirect("profile.similar")
 
     users_ids = (request.session[sid]).get('users', [])

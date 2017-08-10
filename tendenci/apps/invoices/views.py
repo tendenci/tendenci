@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import print_function
 from datetime import datetime, time, timedelta
 import time as ttime
 import subprocess
@@ -324,10 +325,10 @@ def search_report(request, template_name="invoices/search.html"):
         invoices = invoices.order_by('object_type', '-create_dt')
 
         for i in invoices: #[0:2]:
-            print i.title, i.object_id, i.object_type
+            print(i.title, i.object_id, i.object_type)
 
             ct = ContentType.objects.get_for_model(Invoice)
-            print ct, ct.__module__, ct.pk, i.pk
+            print(ct, ct.__module__, ct.pk, i.pk)
 
 #            invoice_ids = invoices_objects.value_list('object_id', flat=True).filter(content_type = ct)
 #            events = Invoice.objects.filter(pk__in=event_ids)
@@ -335,7 +336,7 @@ def search_report(request, template_name="invoices/search.html"):
 #            if i.object_type == 'registration':
 #                print 'hello'
 #            else: print 'not'
-        print dir(ct)
+        print(dir(ct))
 
     else:
         if request.user.is_authenticated():
@@ -443,7 +444,7 @@ def detail(request, id, template_name="invoices/detail.html"):
 
     EventLog.objects.log(instance=invoice)
 
-    print 'here'
+    print('here')
 
     return render_to_response(template_name, {
         'invoice': invoice,

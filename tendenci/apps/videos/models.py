@@ -157,7 +157,7 @@ class OembedlyCache(models.Model):
                 code = result['html']
             except KeyError:
                 return False
-            except Exception, e:
+            except Exception as e:
                 return False
             obj = OembedlyCache(url=url, width=width, height=height, thumbnail=thumbnail, code=code)
             obj.save()
@@ -201,7 +201,7 @@ class OembedlyCache(models.Model):
                         height=height,
                         url=get_embed_ready_url(url))
                 #return 'Unable to embed code for <a href="%s">%s</a>' % (url, url)
-            except Exception, e:
+            except Exception as e:
                 return 'Unable to embed code for <a href="%s">%s</a><br>Error: %s' % (url, url, e)
             obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
             obj.save()

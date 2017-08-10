@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+from __future__ import absolute_import
 import math
 
 from django.contrib.auth.decorators import login_required
@@ -19,7 +20,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin
 from django.views.decorators.csrf import csrf_protect
 from django.views import generic
-import compat, defaults, util
+from . import compat, defaults, util
 from .compat import get_atomic_func
 from .forms import PostForm, AdminPostForm, PollAnswerFormSet, PollForm
 from .models import Category, Forum, Topic, Post, TopicReadTracker, ForumReadTracker, PollAnswerUser

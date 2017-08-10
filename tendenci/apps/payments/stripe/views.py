@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #import os
 import math
 import traceback
@@ -15,9 +16,9 @@ import simplejson
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.payments.models import Payment
-from forms import StripeCardForm, BillingInfoForm
+from .forms import StripeCardForm, BillingInfoForm
 import stripe
-from utils import payment_update_stripe
+from .utils import payment_update_stripe
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -50,7 +51,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                 charge_response = stripe.Charge.create(**params)
                 # an example of response: https://api.stripe.com/v1/charges/ch_YjKFjLIItzRDv7
                 #charge_response = simplejson.loads(charge)
-            except Exception, e:
+            except Exception as e:
                 charge_response = e.message
             
             # update payment status and object

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -14,7 +15,7 @@ class Command(BaseCommand):
 
             if verbosity:
                 if member_number:
-                    print 'profile(%d) has member number %s' % \
-                        (profile.pk, member_number)
+                    print('profile(%d) has member number %s' % \
+                        (profile.pk, member_number))
                 else:
-                    print 'profile(%d) is not a member' % profile.pk
+                    print('profile(%d) is not a member' % profile.pk)

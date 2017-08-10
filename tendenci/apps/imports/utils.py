@@ -515,7 +515,7 @@ def extract_from_excel(file_path):
         data = csv.reader(default_storage.open(file_path, 'rU'))
 
         # read the column header
-        fields = data.next()
+        fields = next(data)
         fields = [smart_str(field) for field in fields]
 
         r = 1

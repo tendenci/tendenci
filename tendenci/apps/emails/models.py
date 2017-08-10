@@ -71,20 +71,20 @@ class Email(TendenciBaseModel):
         if isinstance(self.recipient, basestring):
             recipient_list = self.recipient.split(',')
             recipient_list = [recipient.strip() for recipient in recipient_list \
-                              if recipient.strip() <> '']
+                              if recipient.strip() != '']
         else:
             recipient_list = list(self.recipient)
         if isinstance(self.recipient_cc, basestring):
             recipient_cc_list = self.recipient_cc.split(',')
             recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if \
-                                  recipient_cc.strip() <> '']
+                                  recipient_cc.strip() != '']
             recipient_list += recipient_cc_list
         else:
             recipient_list += list(self.recipient_cc)
         if isinstance(self.recipient_bcc, basestring):
             recipient_bcc_list = self.recipient_bcc.split(',')
             recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if \
-                                   recipient_bcc.strip() <> '']
+                                   recipient_bcc.strip() != '']
         else:
             recipient_bcc_list = list(self.recipient_bcc)
 
@@ -198,7 +198,7 @@ class Email(TendenciBaseModel):
             for key in email_d.keys():
                 # need to convert [blah] to %5Bblah%5D for replace line
                 tmp_value = "%5B" + key[1:-1] + "%5D"
-                if email_d[key] <> None:
+                if email_d[key] != None:
                     self.body = self.body.replace(key, email_d[key])
                     self.body = self.body.replace(tmp_value, email_d[key])
                 else:

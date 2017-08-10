@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from optparse import make_option
 from random import randint
@@ -108,7 +109,7 @@ and m.status_detail<>'archive'"""),
                               description=description,
                               sql=sql)
                 query.save()
-                print 'Inserted: ', title
+                print('Inserted: ', title)
                 
         else:
-            print 'NO default sqls loaded for SQL Explorer because django-sqlexplorer is not installed'
+            print('NO default sqls loaded for SQL Explorer because django-sqlexplorer is not installed')

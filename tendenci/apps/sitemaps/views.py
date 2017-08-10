@@ -34,7 +34,7 @@ def get_all_sitemaps():
 def _try_import(module):
     try:
         __import__(module)
-    except ImportError, e:
+    except ImportError as e:
         pass
 
 

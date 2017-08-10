@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import simplejson as json
 
@@ -45,7 +46,7 @@ class Command(BaseCommand):
             # check the required fields
             req_list = [k for k in setting.keys() if k in required_keys]
             if len(req_list) != len(required_keys):
-                print 'Setting does not have the required fields ... skipping.'
+                print('Setting does not have the required fields ... skipping.')
                 continue
 
             try:
@@ -55,7 +56,7 @@ class Command(BaseCommand):
                     'scope_category': setting['scope_category']
                 })
             except Setting.DoesNotExist:
-                print "Setting: %s %s %s, is missing." % (setting['name'], setting['scope'], setting['scope_category'])
+                print("Setting: %s %s %s, is missing." % (setting['name'], setting['scope'], setting['scope_category']))
 
     def handle(self, *args, **options):
         json_file = os.path.abspath(os.path.join(

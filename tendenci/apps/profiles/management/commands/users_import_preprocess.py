@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import chardet
 import traceback
@@ -46,7 +47,7 @@ class Command(BaseCommand):
                 encoding_updated = False
                 for chunk in f.chunks():
                     encoding = chardet.detect(chunk)['encoding']
-                    print encoding
+                    print(encoding)
                     if encoding not in ('ascii', 'utf8'):
                         if encoding == 'ISO-8859-1' or \
                             encoding == 'ISO-8859-2':

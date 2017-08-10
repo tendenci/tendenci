@@ -44,6 +44,7 @@ from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.apps.base.fields import PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.files.utils import get_max_file_upload_size
+from functools import reduce
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 

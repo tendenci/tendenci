@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import re
 import imghdr
 import calendar
@@ -46,8 +47,8 @@ from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 
-from fields import UseCustomRegField
-from widgets import UseCustomRegWidget
+from .fields import UseCustomRegField
+from .widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -263,7 +264,7 @@ class FormForCustomRegForm(forms.ModelForm):
             else:
                 field_class = getattr(forms, field_class)
             field_args = {"label": mark_safe(field.label), "required": field.required}
-            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            arg_names = field_class.__init__.__func__.__code__.co_varnames
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
@@ -1668,7 +1669,7 @@ class RegistrantForm(forms.Form):
                     field_args['label'] = field_name.title()
                 else:
                     field_class = getattr(forms, field_class)
-                arg_names = field_class.__init__.im_func.func_code.co_varnames
+                arg_names = field_class.__init__.__func__.__code__.co_varnames
                 if "max_length" in arg_names:
                     field_args["max_length"] = 100
                 if "choices" in arg_names:
@@ -1780,7 +1781,7 @@ class RegistrantForm(forms.Form):
         if self.validate_pricing:
             # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
             # Both 'validated' and 'strict' require validation.
-            if self.event.anony_setting <> 'open':
+            if self.event.anony_setting != 'open':
                 # check if user is eligiable for this pricing
                 email = self.cleaned_data.get('email', '')
                 registrant_user = self.get_user(email)

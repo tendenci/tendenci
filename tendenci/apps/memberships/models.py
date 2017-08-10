@@ -2486,7 +2486,7 @@ class MembershipAppField(OrderingBaseModel):
             field_args = {"label": self.label,
                           "required": self.required,
                           'help_text': self.help_text}
-            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            arg_names = field_class.__init__.__func__.__code__.co_varnames
             if initial:
                 field_args['initial'] = initial
             else:

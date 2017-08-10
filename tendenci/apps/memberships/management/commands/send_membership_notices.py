@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime, timedelta
 import time
 import traceback
@@ -212,7 +213,7 @@ class Command(BaseCommand):
                     except:
                         # catch the exception and email
                         notice.err += traceback.format_exc()
-                        print traceback.format_exc()
+                        print(traceback.format_exc())
 
                 if num_sent > 0:
                     notice_log.num_sent = num_sent
@@ -282,7 +283,7 @@ class Command(BaseCommand):
             notification.send_emails([email_recipient], 'membership_notice_email',
                                      email_context)
             if verbosity > 1:
-                print 'To ', email_recipient, subject
+                print('To ', email_recipient, subject)
 
         exception_str = ""
 
@@ -291,7 +292,7 @@ class Command(BaseCommand):
 
         if notices:
             if verbosity > 1:
-                print "Start sending out notices to members:"
+                print("Start sending out notices to members:")
             total_notices = 0
             total_sent = 0
             for notice in notices:
@@ -311,10 +312,10 @@ class Command(BaseCommand):
                 email_script_errors(exception_str)
 
             if verbosity > 1:
-                print 'Total notice processed: %d' % (total_notices)
-                print 'Total email sent: %d' % (total_sent)
-                print "Done"
+                print('Total notice processed: %d' % (total_notices))
+                print('Total email sent: %d' % (total_sent))
+                print("Done")
         else:
             if verbosity > 1:
-                print "No notices on the site."
+                print("No notices on the site.")
 

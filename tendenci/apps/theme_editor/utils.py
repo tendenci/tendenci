@@ -14,6 +14,7 @@ from importlib import import_module
 from tendenci.apps.theme.utils import get_theme_root, get_theme
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.libs.boto_s3.utils import save_file_to_s3, read_theme_file_from_s3
+from functools import reduce
 
 
 template_directory = "/templates"
@@ -82,7 +83,7 @@ app_templates = {}
 for app in settings.INSTALLED_APPS:
     try:
         mod = import_module(app)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('ImportError %s: %s' % (app, e.args[0]))
     template_dir = os.path.join(os.path.dirname(mod.__file__), 'templates')
     if os.path.isdir(template_dir):

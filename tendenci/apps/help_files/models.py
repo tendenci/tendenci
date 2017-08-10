@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from django.db import models
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
@@ -8,7 +9,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.base.fields import SlugField
 from tendenci.libs.tinymce import models as tinymce_models
-from managers import HelpFileManager
+from .managers import HelpFileManager
 
 class Topic(models.Model):
     """Help topic"""

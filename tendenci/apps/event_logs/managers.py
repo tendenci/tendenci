@@ -13,6 +13,7 @@ from django.conf import settings
 from django.utils.encoding import smart_bytes
 
 from tendenci.apps.robots.models import Robot
+from functools import reduce
 
 
 default_keyword_args = (

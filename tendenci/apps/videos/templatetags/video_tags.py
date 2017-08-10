@@ -5,6 +5,7 @@ from django.template import Library, TemplateSyntaxError, Variable, Node
 
 from tendenci.apps.videos.models import Video
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from functools import reduce
 
 register = Library()
 

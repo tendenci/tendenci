@@ -1,3 +1,4 @@
+from __future__ import print_function
 from PIL import Image
 from os.path import exists
 from cStringIO import StringIO
@@ -274,7 +275,7 @@ class AppRetrieveFiles(object):
 
             articles = Article.objects.all()
             for article in articles:
-                print 'Processing article - ', article.id,  article
+                print('Processing article - ', article.id,  article)
                 kwargs['instance'] = article
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   article.get_absolute_url())
@@ -287,7 +288,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.news.models import News
             news = News.objects.all()
             for n in news:
-                print 'Processing news -', n.id, n
+                print('Processing news -', n.id, n)
                 kwargs['instance'] = n
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   n.get_absolute_url())
@@ -299,7 +300,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.pages.models import Page
             pages = Page.objects.all()
             for page in pages:
-                print 'Processing page -', page.id, page
+                print('Processing page -', page.id, page)
                 kwargs['instance'] = page
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   page.get_absolute_url())
@@ -311,7 +312,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.jobs.models import Job
             jobs = Job.objects.all()
             for job in jobs:
-                print 'Processing job -', job.id, job
+                print('Processing job -', job.id, job)
                 kwargs['instance'] = job
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   job.get_absolute_url())
@@ -323,7 +324,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.events.models import Event, Speaker
             events = Event.objects.all()
             for event in events:
-                print 'Processing event -', event.id, event
+                print('Processing event -', event.id, event)
                 kwargs['instance'] = event
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   event.get_absolute_url())
@@ -335,7 +336,7 @@ class AppRetrieveFiles(object):
             # speakers
             speakers = Speaker.objects.all()
             for speaker in speakers:
-                print 'Processing event speaker -', speaker.id, speaker
+                print('Processing event speaker -', speaker.id, speaker)
                 kwargs['instance'] = speaker
                 [event] = speaker.event.all()[:1] or [None]
                 if event:
@@ -357,7 +358,7 @@ class AppRetrieveFiles(object):
                             """ % mig_file_table)
             row = cursor.fetchone()
             if row[0] == 0:
-                print 'File migration table %s does not exist. Exiting..' % mig_file_table
+                print('File migration table %s does not exist. Exiting..' % mig_file_table)
                 return
             tfiles = TFile.objects.all()
             for tfile in tfiles:
@@ -365,13 +366,13 @@ class AppRetrieveFiles(object):
                                                   tfile.get_absolute_url())
                 self.check_file(tfile, cursor, mig_file_table, **kwargs)
 
-        print "\nTotal links updated for %s: " % app_name, self.total_count
+        print("\nTotal links updated for %s: " % app_name, self.total_count)
 
     def process_content(self, content, **kwargs):
         self.replace_dict = {}
 
         matches = self.p.findall(content)
-        print '... ', len(matches), 'matches found.'
+        print('... ', len(matches), 'matches found.')
 
         for match in matches:
             link = match[1]
@@ -383,7 +384,7 @@ class AppRetrieveFiles(object):
             for url_find, url_repl in self.replace_dict.iteritems():
                 content = content.replace(url_find, url_repl)
             count = self.replace_dict.__len__()
-            print '...', count, 'link(s) replaced.'
+            print('...', count, 'link(s) replaced.')
             self.total_count += count
         else:
             updated = False
@@ -419,7 +420,7 @@ class AppRetrieveFiles(object):
                         tfile.file.save(file_path,
                                         ContentFile(
                                     urllib2.urlopen(t4_url).read()))
-                        print tfile.get_absolute_url(), 'file downloaded.'
+                        print(tfile.get_absolute_url(), 'file downloaded.')
                     else:
                         # t4_url not exist
                         self.add_broken_link(t4_url, **kwargs)
@@ -450,7 +451,7 @@ class AppRetrieveFiles(object):
                                          self.src_domain,
                                          self.src_domain.lstrip('www.')):
             if not self.link_exists(relative_url, hostname):
-                print '-- External broken link: ', link
+                print('-- External broken link: ', link)
                 self.add_broken_link(link, **kwargs)
             return
 
@@ -462,7 +463,7 @@ class AppRetrieveFiles(object):
                 tfile = self.save_file_from_url(url, kwargs.get('instance'))
                 self.replace_dict[link] = tfile.get_absolute_url()
             else:
-                print '** Broken link - ', link, "doesn't exist on both sites."
+                print('** Broken link - ', link, "doesn't exist on both sites.")
                 self.add_broken_link(link, **kwargs)
 
     def link_exists(self, relative_link, domain):

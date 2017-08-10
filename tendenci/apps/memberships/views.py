@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import os
 import math
 from decimal import Decimal
@@ -42,7 +43,7 @@ from tendenci.apps.corporate_memberships.models import (CorpMembership,
                                                           CorpProfile,
                                                           CorpMembershipApp,
                                                           IndivEmailVerification)
-from reports import ReportNewMems
+from .reports import ReportNewMems
 from tendenci.apps.exports.utils import render_csv
 from tendenci.apps.perms.utils import get_notice_recipients
 
@@ -1499,7 +1500,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
         del form.fields['secret_code']
         del form.fields['email']
 
-        from utils import get_corporate_membership_choices
+        from .utils import get_corporate_membership_choices
         cm_choices = get_corporate_membership_choices()
         form.fields['corporate_membership_id'].choices = cm_choices
 

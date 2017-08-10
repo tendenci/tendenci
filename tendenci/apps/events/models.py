@@ -36,6 +36,7 @@ from tendenci.apps.base.utils import localize_date
 from tendenci.apps.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from functools import reduce
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
@@ -388,7 +389,7 @@ class RegConfPricing(OrderingBaseModel):
                       'end_dt__gt': now,
                       }
 
-        if spots_available <> -1:
+        if spots_available != -1:
             if not user.profile.is_superuser:
                 filter_and['quantity__lte'] = spots_available
 

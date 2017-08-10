@@ -39,7 +39,7 @@ class Meta(models.Model):
 
         # check if attribute exists; else raise exception
         if not hasattr(self.object, 'get_meta'):
-            raise AttributeError, 'Method get_meta() does not exist in %s' % self.object._meta.object_name
+            raise AttributeError('Method get_meta() does not exist in %s' % self.object._meta.object_name)
 
         return getattr(self.object,'get_meta')(meta_name)
 

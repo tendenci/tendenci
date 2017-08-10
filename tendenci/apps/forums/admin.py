@@ -1,5 +1,6 @@
 # -*- coding: utf-8
 from __future__ import unicode_literals
+from __future__ import absolute_import
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
@@ -9,7 +10,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from .models import Category, Forum, Topic, Post, Profile, Attachment, PollAnswer
 from .forms import CategoryAdminForm
 
-import compat, util
+from . import compat, util
 username_field = compat.get_username_field()
 
 

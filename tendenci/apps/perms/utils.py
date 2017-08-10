@@ -1,3 +1,4 @@
+from __future__ import print_function
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
@@ -66,7 +67,7 @@ def update_perms_and_save(request, form, instance, **kwargs):
         try:
             instance.save()
         except Exception as e:
-            print 'boom! in update_perms_and_save()', e
+            print('boom! in update_perms_and_save()', e)
 
     # assign permissions for selected groups
     if 'group_perms' in form.cleaned_data:

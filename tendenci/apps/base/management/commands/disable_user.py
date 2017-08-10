@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 from optparse import make_option
 
@@ -47,19 +48,19 @@ class Command(BaseCommand):
         if username and email:
             users = User.objects.filter(username=username, email__iexact=email)
             if not users:
-                print 'User with username=%s and email=%s could not be found' % (username, email)
+                print('User with username=%s and email=%s could not be found' % (username, email))
         elif username:
             users = User.objects.filter(username=username)
             if not users:
-                print 'User with username=%s could not be found' % username
+                print('User with username=%s could not be found' % username)
         elif email:
             users = User.objects.filter(email__iexact=email)
             if not users:
-                print 'User with email=%s could not be found' % email
+                print('User with email=%s could not be found' % email)
         elif email_domain:
             users = User.objects.filter(email__iendswith='@%s' % email_domain)
             if not users:
-                print 'Users with email domain=%s could not be found' % email_domain
+                print('Users with email domain=%s could not be found' % email_domain)
         else:
             users = None
 
@@ -85,4 +86,4 @@ class Command(BaseCommand):
                 m.delete()
 
             if verbosity >= 2:
-                print 'Done downgrading user (%s).' % u
+                print('Done downgrading user (%s).' % u)

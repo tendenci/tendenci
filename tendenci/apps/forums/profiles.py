@@ -1,10 +1,11 @@
 # coding=utf-8
+from __future__ import absolute_import
 import urllib, hashlib
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-import defaults, util
+from . import defaults, util
 from .compat import get_image_field_class, get_username_field
 from tendenci.apps.site_settings.utils import get_setting
 

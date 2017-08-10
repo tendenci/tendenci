@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.events.models import Event, Addon, AddonOption
+from functools import reduce
 
 def get_active_addons(event):
     """

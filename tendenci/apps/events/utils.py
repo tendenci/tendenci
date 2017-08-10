@@ -182,7 +182,7 @@ def get_ACRF_queryset(event=None):
             for regfield in data:
                 regfield['fields']['form'] = form
                 CustomRegField.objects.create(**regfield['fields'])
-                if regfield['fields'].has_key('map_to_field'):
+                if 'map_to_field' in regfield['fields']:
                     map_to_fields.append(regfield['fields']['map_to_field'])
 
             for field in map_to_fields:
@@ -707,7 +707,7 @@ def split_table_price(total_price, quantity):
     avg = Decimal(str(round(total_price/quantity, 2)))
     diff = total_price - avg * quantity
 
-    if diff <> 0:
+    if diff != 0:
         return (avg+diff, avg)
     return (avg, avg)
 
@@ -1542,13 +1542,13 @@ def event_import_process(import_i, preview=True):
             try:
                 datetime.strptime(event_object_dict["start_dt"], VALID_DATE_FORMAT)
                 datetime.strptime(event_object_dict["end_dt"], VALID_DATE_FORMAT)
-            except ValueError, e:
+            except ValueError as e:
                 invalid = True
                 invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
 
             try:
                 timezone(event_object_dict["timezone"])
-            except UnknownTimeZoneError, e:
+            except UnknownTimeZoneError as e:
                 invalid = True
                 invalid_reason = "UNKNOWN TIMEZONE %s" % event_object_dict["timezone"]
 
@@ -1579,7 +1579,7 @@ def event_import_process(import_i, preview=True):
         if not preview:  # save import status
             import_i.status = "completed"
             import_i.save()
-    except Exception, e:
+    except Exception as e:
         import_i.status = "failed"
         import_i.failure_reason = unicode(e)
         import_i.save()
@@ -1717,7 +1717,7 @@ def add_sf_attendance(registrant, event):
                         'Title': registrant.position_title
                         })
                     # update field Company_Name__c
-                    if registrant.company_name and contact.has_key('Company_Name__c'):
+                    if registrant.company_name and 'Company_Name__c' in contact:
                         sf.Contact.update(contact['id'], {'Company_Name__c': registrant.company_name})
 
                     contact_id = contact['id']

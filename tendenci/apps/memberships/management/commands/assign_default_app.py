@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 from django.core.management.base import BaseCommand
 
@@ -42,10 +43,10 @@ class Command(BaseCommand):
                 errors += 'Missing a membership application ' + \
                           '(for non-corporate-individuals).\n'
         if errors:
-            print '\nWARNING:'
-            print errors
-            print 'Please correct the issue(s) then ' + \
-                    'run this command "assign_default_app" again.\n'
+            print('\nWARNING:')
+            print(errors)
+            print('Please correct the issue(s) then ' + \
+                    'run this command "assign_default_app" again.\n')
             return
 
         mts = MembershipType.objects.all()
@@ -70,8 +71,8 @@ class Command(BaseCommand):
                     membership.save()
                     count += 1
                     if verbosity > 1:
-                        print 'Updated "%s" (ID: %d)' % (membership,
-                                                         membership.id)
+                        print('Updated "%s" (ID: %d)' % (membership,
+                                                         membership.id))
             else:
                 mt_id = membership.membership_type.id
                 if not membership.app in type_to_apps_map[mt_id]:
@@ -79,8 +80,8 @@ class Command(BaseCommand):
                     membership.save()
                     count += 1
                     if verbosity > 1:
-                        print 'Updated "%s" (ID: %d)' % (membership,
-                                                         membership.id)
+                        print('Updated "%s" (ID: %d)' % (membership,
+                                                         membership.id))
 
-        print 'Total membership updated %d' % count
-        print 'Done'
+        print('Total membership updated %d' % count)
+        print('Done')

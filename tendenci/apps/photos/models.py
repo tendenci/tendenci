@@ -1,3 +1,4 @@
+from __future__ import print_function
 import uuid
 import os
 from PIL import Image as PILImage
@@ -264,7 +265,7 @@ class ImageModel(models.Model):
             content = default_storage.open(unicode(self.image)).read()
             im = PILImage.open(StringIO(content))
         except IOError as e:
-            print e
+            print(e)
             return
 
         im_format = im.format
@@ -292,7 +293,7 @@ class ImageModel(models.Model):
             im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
         except IOError as e:
-            print e
+            print(e)
             pass
 
     def remove_size(self, photosize, remove_dirs=True):

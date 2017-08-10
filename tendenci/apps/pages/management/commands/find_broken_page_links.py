@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 import requests
@@ -85,4 +86,4 @@ class Command(BaseCommand):
             # print 'images', '%s/%s' % (len(images), len(broken_images)),
             # print 'links', '%s/%s' % (len(links), len(broken_links)), broken_links
 
-            print page.slug, broken_links
+            print(page.slug, broken_links)

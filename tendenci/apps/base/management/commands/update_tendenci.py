@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os, subprocess, xmlrpclib
 from optparse import make_option
 
@@ -49,7 +50,7 @@ class Command(BaseCommand):
                 email_recipient = user.email
 
         try:
-            print "Updating tendenci"
+            print("Updating tendenci")
             subprocess.check_output("pip install tendenci --upgrade", stderr=subprocess.STDOUT, shell=True)
             pass_update_tendenci = True
 
@@ -59,7 +60,7 @@ class Command(BaseCommand):
         # run python deploy.py iff update_tendenci is successful
         if pass_update_tendenci:
             try:
-                print "Updating tendenci site"
+                print("Updating tendenci site")
                 subprocess.check_output("python deploy.py", stderr=subprocess.STDOUT, shell=True)
                 pass_update_tendenci_site = True
 
@@ -69,7 +70,7 @@ class Command(BaseCommand):
         # run reload if update is done
         if pass_update_tendenci_site:
             try:
-                print "Restarting Server"
+                print("Restarting Server")
                 subprocess.check_output("sudo reload %s" % os.path.basename(settings.PROJECT_ROOT),
                                     stderr=subprocess.STDOUT, shell=True)
 
@@ -81,7 +82,7 @@ class Command(BaseCommand):
         # run usgi command iff it was proven that the site is using uwsgi instead
         if is_uwsgi:
             try:
-                print "Restarting Server"
+                print("Restarting Server")
                 subprocess.check_output("sudo touch /etc/uwsgi/vassals/%s.ini" % os.path.basename(settings.PROJECT_ROOT),
                                     stderr=subprocess.STDOUT, shell=True)
 
@@ -93,7 +94,7 @@ class Command(BaseCommand):
             errors_list.append(gunicorn_error_msg)
 
         try:
-            print "Clearing cache"
+            print("Clearing cache")
             call_command('clear_cache')
         except CommandError as e:
             errors_list.append(e.output)

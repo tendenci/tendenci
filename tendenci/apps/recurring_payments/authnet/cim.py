@@ -154,7 +154,7 @@ class CIMBase(object):
 
             children = sub_e.getchildren()
             if not children:
-                if d.has_key(name):
+                if name in d:
                     if not type(d[name]) is list:
                         d[name] = list([d[name]])
                     d[name].append(sub_e.text)
@@ -355,10 +355,10 @@ class CIMCustomerProfile(CIMBase):
 
         if mode == 'create':
             if not customer_id and not all([email, description]):
-                raise AttributeError, _("Either custom_id or email and description are required fields.")
+                raise AttributeError(_("Either custom_id or email and description are required fields."))
         else: # mode == 'update'
             if not customer_profile_id:
-                raise AttributeError, _("The customer_profile_id is a required field.")
+                raise AttributeError(_("The customer_profile_id is a required field."))
 
         profile_node = ET.Element("profile")
         if customer_id:
@@ -445,7 +445,7 @@ class CIMCustomerPaymentProfile(CIMBase):
         """
 
         if not self.customer_profile_id:
-            raise AttributeError, "Missing customer_profile_id."
+            raise AttributeError("Missing customer_profile_id.")
 
         root_name = 'createCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -483,7 +483,7 @@ class CIMCustomerPaymentProfile(CIMBase):
         """
 
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id."))
 
         root_name = 'deleteCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -517,7 +517,7 @@ class CIMCustomerPaymentProfile(CIMBase):
         """
 
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id in input.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id in input."))
 
         root_name = 'getCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -555,7 +555,7 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         """
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id in input.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id in input."))
 
         root_name = 'updateCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -593,7 +593,7 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         """
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id in input.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id in input."))
 
         root_name = 'validateCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -656,7 +656,7 @@ class CIMCustomerProfileTransaction(CIMBase):
         if not self.customer_profile_id:
             msg_string = "%s Missing customer_profile_id in input." % \
                                 'createCustomerProfileTransactionRequest'
-            raise AttributeError, _(msg_string)
+            raise AttributeError(_(msg_string))
 
         root_name = 'createCustomerProfileTransactionRequest'
         xml_root = self.create_base_xml(root_name)
@@ -678,7 +678,7 @@ class CIMCustomerProfileTransaction(CIMBase):
         if amount <= 0:
             msg_string = '%s - the amount %.2f is not greater than 0.' % \
                                ('<createCustomerProfileTransactionRequest', amount)
-            raise ValueError, _(msg_string)
+            raise ValueError(_(msg_string))
         tax = kwargs.get('tax', '')
         shipping = kwargs.get('shipping')
         line_items_list = kwargs.get('line_items_list')
@@ -790,7 +790,7 @@ class CIMHostedProfilePage(CIMBase):
         if not self.customer_profile_id:
             msg_string = "%s Missing customer_profile_id in input." % \
                                 'getHostedProfilePageRequest'
-            raise AttributeError, _(msg_string)
+            raise AttributeError(_(msg_string))
 
         root_name = 'getHostedProfilePageRequest'
         xml_root = self.create_base_xml(root_name)

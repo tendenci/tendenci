@@ -1,9 +1,10 @@
+from __future__ import absolute_import
 import time
 import hmac
 import hashlib
 from django.conf import settings
 from django.http import Http404
-from forms import PaymentForm
+from .forms import PaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
@@ -94,7 +95,7 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
     my_md5_hash = hashlib.md5(s).hexdigest()
 
     if settings.FIRSTDATA_USE_RELAY_RESPONSE:
-        if my_md5_hash.lower() <> md5_hash.lower():
+        if my_md5_hash.lower() != md5_hash.lower():
             raise Http404
 
     if payment.invoice.balance > 0:     # if balance==0, it means already processed

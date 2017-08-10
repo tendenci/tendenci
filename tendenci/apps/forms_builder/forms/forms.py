@@ -84,7 +84,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 else:
                     field_class = getattr(forms, field_class)
                 field_args = {"label": mark_safe(field.label), "required": field.required}
-                arg_names = field_class.__init__.im_func.func_code.co_varnames
+                arg_names = field_class.__init__.__func__.__code__.co_varnames
                 if "max_length" in arg_names:
                     field_args["max_length"] = FIELD_MAX_LENGTH
                 if "choices" in arg_names:

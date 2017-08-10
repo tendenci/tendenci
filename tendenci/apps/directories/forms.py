@@ -291,9 +291,9 @@ class DirectoryForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
-        if self.fields.has_key('payment_method'):
+        if 'payment_method' in self.fields:
             self.fields['payment_method'] = forms.ChoiceField(widget=forms.RadioSelect, choices=get_payment_method_choices(self.user))
-        if self.fields.has_key('pricing'):
+        if 'pricing' in self.fields:
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
         self.fields['timezone'].initial = settings.TIME_ZONE
@@ -326,7 +326,7 @@ class DirectoryForm(TendenciBaseForm):
                 app_label=Directory._meta.app_label,
                 model=Directory._meta.model_name)
 
-        if self.cleaned_data.has_key('pricing'):
+        if 'pricing' in self.cleaned_data:
             directory.requested_duration = self.cleaned_data['pricing'].duration
 
         if self.cleaned_data['logo']:
@@ -407,14 +407,14 @@ class DirectoryRenewForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(DirectoryRenewForm, self).__init__(*args, **kwargs)
 
-        if self.fields.has_key('payment_method'):
+        if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
-        if self.fields.has_key('pricing'):
+        if 'pricing' in self.fields:
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
     def save(self, *args, **kwargs):
         directory = super(DirectoryRenewForm, self).save(*args, **kwargs)
-        if self.cleaned_data.has_key('pricing'):
+        if 'pricing' in self.cleaned_data:
             directory.requested_duration = self.cleaned_data['pricing'].duration
         return directory
 

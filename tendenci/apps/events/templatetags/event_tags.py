@@ -14,6 +14,7 @@ from tendenci.apps.events.utils import (registration_earliest_time,
                                         registration_has_ended,)
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.perms.utils import get_query_filters
+from functools import reduce
 
 
 register = Library()

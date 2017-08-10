@@ -82,6 +82,7 @@ from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 #from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.site_settings.utils import get_setting
+from functools import reduce
 
 @is_enabled('corporate_memberships')
 @staff_member_required
@@ -1791,7 +1792,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
     corp_app = get_object_or_404(CorpApp, slug=slug)
     user_is_superuser = request.user.profile.is_superuser
 
-    if not user_is_superuser and corp_app.status <> 1 and corp_app.status_detail <> 'active':
+    if not user_is_superuser and corp_app.status != 1 and corp_app.status_detail != 'active':
         raise Http403
 
     creator = None

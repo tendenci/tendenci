@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 from tendenci.apps.perms.managers import TendenciBaseManager
 from tendenci.apps.site_settings.utils import get_setting
+from functools import reduce
 
 
 def user3_sqs(sqs, **kwargs):

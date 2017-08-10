@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 import os
 import warnings
@@ -8,7 +9,7 @@ import uuid
 from importlib import import_module
 from django.utils.six import string_types
 from django.utils.translation import ugettext as _
-import compat
+from . import compat
 
 from .compat import get_username_field, get_user_model
 from .defaults import (
@@ -131,7 +132,7 @@ def unescape(text):
 
 
 def get_pybb_profile(user):
-    import defaults
+    from . import defaults
 
     if not user.is_authenticated():
         if defaults.PYBB_ENABLE_ANONYMOUS_POST:
@@ -146,7 +147,7 @@ def get_pybb_profile(user):
 
 
 def get_pybb_profile_model():
-    import defaults
+    from . import defaults
 
     if defaults.PYBB_PROFILE_RELATED_NAME:
         return compat.get_related_model_class(get_user_model(), defaults.PYBB_PROFILE_RELATED_NAME)

@@ -142,7 +142,7 @@ def search(request, template_name="articles/search.html"):
             sub_cat = int(sub_cat)
             subcat_article_ids = CategoryItem.objects.filter(content_type_id=ContentType.objects.get_for_model(Article), parent_id=sub_cat, category_id__isnull=True).values('object_id')
             articles = articles.filter(id__in=[c['object_id'] for c in subcat_article_ids])
-        except Exception, e:
+        except Exception as e:
             pass
 
     # don't use order_by with "whoosh"

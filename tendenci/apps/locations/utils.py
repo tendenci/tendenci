@@ -89,7 +89,7 @@ def csv_to_dict(file_path, **kwargs):
 
     normalize_newline(file_path)
     csv_file = csv.reader(default_storage.open(file_path, 'rU'))
-    colnames = csv_file.next()  # row 1;
+    colnames = next(csv_file)  # row 1;
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]

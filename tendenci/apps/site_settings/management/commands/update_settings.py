@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import simplejson as json
 
@@ -107,7 +108,7 @@ class Command(BaseCommand):
             # check the required fields
             req_list = [k for k in setting.keys() if k in required_keys]
             if len(req_list) != len(required_keys):
-                print 'Setting does not have the required fields ... skipping.'
+                print('Setting does not have the required fields ... skipping.')
                 continue
 
             try:
@@ -122,23 +123,23 @@ class Command(BaseCommand):
             # update the setting
             if (current_setting):
                 # skip the value for the existing setting
-                if setting.has_key('value'):
+                if 'value' in setting:
                     del setting['value']
                 current_setting.__dict__.update(setting)
                 current_setting.save()
-                print '%s (%s)  - updated.' % (
+                print('%s (%s)  - updated.' % (
                     setting['name'],
                     setting['scope_category']
-                )
+                ))
             else:
                 # insert
                 new_setting = Setting(**setting)
                 new_setting.save()
                 #if verbosity >= 2:
-                print '%s (%s)  - added.' % (
+                print('%s (%s)  - added.' % (
                     setting['name'],
                     setting['scope_category']
-                )
+                ))
 
     def add_arguments(self, parser):
         # optional arguments
@@ -158,8 +159,8 @@ class Command(BaseCommand):
             appnames = [app for app in appnames if not app.startswith('django.')]
 
         for appname in appnames:
-            print
-            print 'Processing for %s ...' % appname
+            print()
+            print('Processing for %s ...' % appname)
             if appname.startswith('addons.') or appname.startswith('themes.'):
                 json_file = os.path.abspath(os.path.join(
                                 django_settings.PROJECT_ROOT,
@@ -179,8 +180,8 @@ class Command(BaseCommand):
                     try:
                         settings = json.loads(f.read())
                     except ValueError as e:
-                        print "Error updating setting for %s/settings.json" % appname
-                        print e
+                        print("Error updating setting for %s/settings.json" % appname)
+                        print(e)
                         continue
 
                 if settings:

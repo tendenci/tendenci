@@ -1,3 +1,4 @@
+from __future__ import print_function
 import subprocess
 
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
@@ -29,7 +30,7 @@ def export_page(request):
     if request.method == 'POST':
         form = DatabaseDumpForm(request.POST)
         if form.is_valid():
-            print "Form submitted is valid!"
+            print("Form submitted is valid!")
             if can_create_dump():
                 new_obj = DatabaseDumpFile()
                 new_obj.author = request.user

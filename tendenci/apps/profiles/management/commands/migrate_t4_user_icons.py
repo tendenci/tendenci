@@ -1,3 +1,4 @@
+from __future__ import print_function
 import mimetypes
 from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
@@ -45,5 +46,5 @@ class Command(BaseCommand):
                                 primary=True,
                                 avatar=avatar_path
                                     )
-                            print 'Avatar created for ', user
-        print 'Done'
+                            print('Avatar created for ', user)
+        print('Done')
