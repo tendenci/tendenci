@@ -1315,7 +1315,7 @@ class NoticeForm(forms.ModelForm):
         return value
 
 
-class AppCorpPreForm(forms.Form):
+class AppCorpPreForm(FormControlWidgetMixin, forms.Form):
     corporate_membership_id = forms.ChoiceField(
                             label=_('Join Under the Corporation:'))
     secret_code = forms.CharField(
