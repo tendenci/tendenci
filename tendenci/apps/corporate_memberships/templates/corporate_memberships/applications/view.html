@@ -76,7 +76,7 @@
 
     <article id="t-corpmemberships-corpmembership-{{ corporate_membership.pk }}" class="t-corpmemberships-corpmembership">
         <div class="page-header">
-            <h1>{% trans "View Corporate Membership Information" %}</h1>
+            <h1>{% trans "Corporate Membership Information" %}</h1>
         </div>
         
         {% if corp_profile.logo %}
@@ -123,7 +123,7 @@
                                     </table>
 
                                     {% if corporate_membership.status_detail != "archive" %}
-                                        <a class="btn btn-primary" href="{% url 'corpmembership.edit_corp_reps' corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a>
+                                        <a href="{% url 'corpmembership.edit_corp_reps' corporate_membership.pk %}"><span class="glyphicon glyphicon-edit"></span> {% trans "Add/Edit Representatives" %}</a>
                                     {% endif %}
                                 {% else %}
                                     <h3><em>{% trans "No representatives available" %}</em></h3>
