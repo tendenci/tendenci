@@ -80,6 +80,8 @@ class OldGenerateForm(forms.ModelForm):
         self.fields['default_template'].blank = False
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')
+        self.fields['event_start_dt'].initial = datetime.date.today()
+        self.fields['event_end_dt'].initial = datetime.date.today() + datetime.timedelta(days=30)
 
         for key in not_required:
             self.fields[key].required = False
