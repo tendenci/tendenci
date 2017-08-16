@@ -247,7 +247,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             #save relationships
             job.save()
-            msg_string = 'Successfully added %s' % unicode(job)
+            msg_string = u'Successfully added %s' % unicode(job)
             messages.add_message(request, messages.SUCCESS,_(msg_string))
 
             # send notification to administrators
@@ -388,7 +388,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
 
             #save relationships
             job.save()
-            msg_string = 'Successfully updated {}'.format(unicode(job))
+            msg_string = u'Successfully updated {}'.format(unicode(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(
