@@ -257,7 +257,6 @@ def photo_original(request, id):
         request.user.profile.is_superuser,
         request.user == photo.creator,
         request.user == photo.owner,
-        photo.get_license().name != 'All Rights Reserved',
     ]
 
     if not any(allowed_to_view_original):
