@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget, DonationOptionAmountWidget,
@@ -105,3 +106,15 @@ class MembershipTypeModelChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         return obj.get_price_display(self.customer, self.corp_membership)
+    
+    def to_python(self, value):
+        if value in self.empty_values:
+            return None
+        try:
+            key = self.to_field_name or 'pk'
+            if type(value) == list:
+                value = value[0]
+            value = self.queryset.get(**{key: value})
+        except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+            raise ValidationError(self.error_messages['invalid_choice'], code='invalid_choice')
+        return value
