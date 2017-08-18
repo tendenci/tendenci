@@ -1148,7 +1148,10 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         if not require_payment:
             del self.fields['payment_method']
         else:
-            self.fields['payment_method'].queryset = self.membership_app.payment_methods.all()
+            payment_method_qs = self.membership_app.payment_methods.all()
+            if not (request_user and request_user.is_authenticated() and request_user.is_superuser):
+                payment_method_qs = payment_method_qs.exclude(admin_only=True)
+            self.fields['payment_method'].queryset = payment_method_qs
    
 
     def clean_donatin_option_value(self):
