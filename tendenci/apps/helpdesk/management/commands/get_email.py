@@ -224,7 +224,7 @@ def ticket_from_message(message, queue, quiet):
                     body_plain = striptags(body_html)
                 except DjangoUnicodeDecodeError as e:
                     charset = chardet.detect(body_html)['encoding']
-                    body_plain = unicode(body_html, charset)
+                    body_plain = striptags(unicode(body_html, charset))
                 # remove extra new lines
                 body_plain, n = re.subn(r'[\r\n]+', r'\n', body_plain)
                 # remove extra spaces
