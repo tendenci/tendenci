@@ -397,6 +397,9 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
 
 class CorpProfileAdmin(admin.ModelAdmin):
     model = CorpProfile
+    
+    def has_add_permission(self, request):
+        return False
 
 
 admin.site.register(CorpMembership, CorpMembershipAdmin)

@@ -31,7 +31,8 @@ from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
                                                         LABEL_MAX_LENGTH)
 from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
-                                                CorpMembershipAppManager)
+                                                CorpMembershipAppManager,
+                                                CorpProfileManager)
 #from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.payments.models import PaymentMethod, Payment
@@ -226,6 +227,7 @@ class CorpProfile(TendenciBaseModel):
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
                                       content_type_field="content_type")
+    objects = CorpProfileManager()
 
     class Meta:
         app_label = 'corporate_memberships'
@@ -239,6 +241,14 @@ class CorpProfile(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s" % (self.name)
+    
+    
+    def delete(self, *args, **kwargs):
+        if len(self.name) + len(str(self.pk)) >= 250:
+            self.name = '%s-%s' % (self.name[:250-len(str(self.pk))], self.pk)
+        else:
+            self.name = '%s-%s' % (self.name, self.pk)
+        super(CorpProfile, self).delete(*args, **kwargs)
 
     def assign_secret_code(self):
         if not self.secret_code:
