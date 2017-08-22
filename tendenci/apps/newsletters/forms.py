@@ -66,8 +66,8 @@ class OldGenerateForm(forms.ModelForm):
         fields = "__all__"
         widgets = {
             'subject': forms.TextInput(attrs={'size': 50}),
-            'event_start_dt': SelectDateWidget(None, range(1920, THIS_YEAR+10)),
-            'event_end_dt': SelectDateWidget(None, range(1920, THIS_YEAR+10)),
+            'event_start_dt': SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)),
+            'event_end_dt': SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)),
             'format': forms.RadioSelect
         }
 
