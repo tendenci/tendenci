@@ -28,7 +28,6 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
-    from django.core.mail.message import EmailMessage
     from django.template import RequestContext
 
     subject = 'User Account Modification Notice for %s' % get_setting('site', 'global', 'sitedisplayname')
@@ -40,12 +39,13 @@ def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs)
 
     sender = settings.DEFAULT_FROM_EMAIL
     recipients = ['%s<%s>' % (r[0], r[1]) for r in settings.ADMINS]
-    msg = EmailMessage(subject, body, sender, recipients)
-    msg.content_subtype = 'html'
-    try:
-        msg.send()
-    except:
-        pass
+    email = Email(
+            sender=sender,
+            recipient=recipients,
+            subject=subject,
+            body=body)
+    email.send(fail_silently=True)
+
 
 # return admin auth group as a list
 def get_admin_auth_group(name="Admin"):

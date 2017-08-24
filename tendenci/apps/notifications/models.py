@@ -29,6 +29,7 @@ from django.utils.safestring import mark_safe
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.emails.models import Email
+from tendenci.apps.base.utils import add_tendenci_footer
 
 
 logger = logging.getLogger(__name__)
@@ -424,6 +425,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     # removing newlines
     subject = ''.join(subject.splitlines())
+    body = add_tendenci_footer(body)
 
     for email_addr in emails:
         recipients = [email_addr]
@@ -564,7 +566,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
                 # headers = {'Content-Type': 'text/plain'}
                 content_type = 'text'
 
-            email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
+            email = EmailMessage(subject, add_tendenci_footer(body), settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
             email.content_subtype = content_type
             email.send()
 

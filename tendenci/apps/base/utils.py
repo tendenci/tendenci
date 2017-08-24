@@ -33,6 +33,7 @@ from django.db import router
 from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html
+from django.utils.translation import ugettext as _
 
 from django.utils.functional import Promise
 from django.core.serializers.json import DjangoJSONEncoder
@@ -937,3 +938,24 @@ def get_latest_version():
     import xmlrpclib
     proxy = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     return proxy.package_releases('tendenci')[0]
+
+
+def add_tendenci_footer(email_content, content_type='html'):
+    if content_type == 'text':
+        footer = _("This Association is Powered by Tendenci - The Open Source AMS https://www.tendenci.com")
+        return email_content + '\n\n' + footer
+    # Sorry but have to put html code here instead of in a template
+    footer = '''<br /><div style="text-align:center; font-size:90%;">
+    {0} <a href="https://www.tendenci.com" style="text-decoration: none;">{1}</a>
+    <div>
+    <div style="margin:5px auto;">
+    <a href="https://www.tendenci.com" style="text-decoration: none;">
+    <img src="https://www.tendenci.com/media/tendenci-open.png" width="100" height="35" alt="tendenci logo" />
+    </a>
+    </div>'''.format(_('This Association is Powered by'), _('Tendenci&reg; &ndash; The Open Source AMS'))
+    if email_content.find('</body>') != -1:
+        return email_content.replace("</body>", footer + "\n</body>")
+    return email_content + footer
+
+
+

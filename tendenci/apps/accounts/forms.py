@@ -21,6 +21,7 @@ from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.accounts.utils import send_registration_activation_email
 from tendenci.apps.base.utils import create_salesforce_contact
+from tendenci.apps.emails.models import Email
 
 
 class SetPasswordCustomForm(SetPasswordForm):
@@ -241,5 +242,10 @@ class PasswordResetForm(forms.Form):
         }
 
         from_email = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
-        send_mail(_("Password reset on %s") % site_name,
-            t.render(Context(c)), from_email, [user.email])
+        email = Email(
+                sender=from_email,
+                recipient=user.email,
+                subject=_("Password reset on %s") % site_name,
+                body=t.render(Context(c)))
+        email.send()
+

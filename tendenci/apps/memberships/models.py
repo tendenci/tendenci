@@ -2170,7 +2170,7 @@ class Notice(models.Model):
         Return self.email_content with footer appended and replace shortcode
         (context) variables
         """
-        content = self.email_content + '\n<br /><br />\n{% include "email_footer.html" %}'
+        content = self.email_content
         context = self.get_default_context(membership)
 
         return self.build_notice(content, context=context)
