@@ -18,20 +18,17 @@
 
 
        {% with article.category_set as article_cat %}
-          {% if article_cat.category %}
-      <div class="panel-footer t-search-result-footer">
-        <ul class="list-unstyled t-meta-data">
-              <li>
-                  <ul class="list-inline">
-                    <li><strong>{% trans "Topic:" %}</strong> <a href="{% url 'articles' %}?category={{ article_cat.category.pk }}">{{ article_cat.category }}</a></li>
-                    {% if article_cat.sub_category %}
-                    <li>|</li>
-                    <li><strong>{% trans "Alt:" %}</strong> <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.pk }}">{{ article_cat.sub_category }}</a></li>
-                    {% endif %}
-                  </ul>
-              </li>
-        </ul>
-      <div>
+          {% if article_cat %}
+      <div class="panel-footer">
+         <ul class="list-inline" style="margin-bottom: 0px;">
+           <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'articles' %}?category={{ article_cat.category.name }}">{{ article_cat.category }}</a></li>
+           {% if article_cat.sub_category %}
+           <li>&#124;</li>
+           <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.name }}">{{ article_cat.sub_category }}</a></li>
+           {% endif %}
+         </ul>
+
+      </div>
         {% endif %}
        {% endwith %}
         

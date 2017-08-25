@@ -12,6 +12,7 @@ from tendenci.apps.articles.models import Article
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.categories.forms import CategoryField
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
@@ -62,6 +63,8 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
         label=_(u'Search by')
     )
     q = forms.CharField(required=False)
+    category = CategoryField(label=_('All Categories'), choices=[], required=False)
+    sub_category = CategoryField(label=_('All Subcategories'), choices=[], required=False)
     filter_date = forms.BooleanField(required=False)
     date = forms.DateField(initial=date.today(), required=False)
 
@@ -71,6 +74,16 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
 
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
+            
+        categories, sub_categories = Article.objects.get_categories()
+
+        categories = [(cat.name, cat) for cat in categories]
+        categories.insert(0, ('', _('All Categories (%d)' % len(categories))))
+        sub_categories = [(cat.name, cat) for cat in sub_categories]
+        sub_categories.insert(0, ('', _('All Subcategories (%d)' % len(sub_categories))))
+
+        self.fields['category'].choices = categories
+        self.fields['sub_category'].choices = sub_categories
 
     def clean(self):
         cleaned_data = self.cleaned_data
