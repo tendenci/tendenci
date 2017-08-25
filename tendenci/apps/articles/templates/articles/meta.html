@@ -40,10 +40,10 @@
         {% if article_cat.category %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'articles' %}?category={{ article_cat.category.pk }}">{{ article_cat.category }}</a></li>
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'articles' %}?category={{ article_cat.category.name }}">{{ article_cat.category }}</a></li>
                     {% if article_cat.sub_category %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.pk }}">{{ article_cat.sub_category }}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.name }}">{{ article_cat.sub_category }}</a></li>
                     {% endif %}
                 </ul>
             </li>
