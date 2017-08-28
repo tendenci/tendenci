@@ -16,6 +16,9 @@ import requests
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
+from PIL import Image as pil
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from django.conf import settings
 from django.utils import translation
@@ -548,8 +551,6 @@ def make_image_object_from_url(image_url):
 
 def image_rescale(img, size, force=True):
     """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
-    from PIL import Image as pil
-
     format = img.format  # temp. save format
     max_width, max_height = size
 
