@@ -1156,7 +1156,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
     def clean_donatin_option_value(self):
         value_list = self.cleaned_data['donatin_option_value']
-        print 'value_list=', value_list
         if value_list:
             donation_option, donation_amount = value_list
             if donation_option == 'custom':
