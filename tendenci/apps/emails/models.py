@@ -9,6 +9,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.email_blocks.models import EmailBlock
+from tendenci.apps.base.utils import add_tendenci_footer
 
 
 class Email(TendenciBaseModel):
@@ -112,7 +113,7 @@ class Email(TendenciBaseModel):
 
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
-                               self.body,
+                               add_tendenci_footer(self.body),
                                self.sender,
                                recipient_list,
                                recipient_bcc_list,

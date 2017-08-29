@@ -8,13 +8,11 @@
             {{ form.search_category }}
 
             {% if form.search_category.errors %}
-                <p class="help-block">
-                    <ul class="list-unstyled">
-                        {% for error in form.search_category.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </p>
+              <ul class="list-unstyled alert alert-danger">
+                  {% for error in form.search_category.errors %}
+                      <li>{{ error }}</li>
+                  {% endfor %}
+              </ul>
             {% endif %}
         </div>
 
@@ -22,16 +20,40 @@
             {{ form.q }}
 
             {% if form.q.errors %}
-                <p class="help-block">
-                    <ul class="list-unstyled">
-                        {% for error in form.q.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </p>
+              <ul class="list-unstyled alert alert-danger">
+                  {% for error in form.q.errors %}
+                      <li>{{ error }}</li>
+                  {% endfor %}
+              </ul>
             {% endif %}
         </div>
 
         <button type="submit" class="btn btn-default"> <i class="glyphicon glyphicon-search" alt="{% trans "Search" %}"></i></button>
+        
+        <div style="margin: 5px;">
+           <div class="form-group{% if form.category.errors %} has-error{% endif %}">
+                {{ form.category }}
+
+                {% if form.category.errors %}
+                 <ul class="list-unstyled alert alert-danger">
+                     {% for error in form.category.errors %}
+                         <li>{{ error }}</li>
+                     {% endfor %}
+                 </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group{% if form.sub_category.errors %} has-error{% endif %}">
+                {{ form.sub_category }}
+
+                {% if form.sub_category.errors %}
+                 <ul class="list-unstyled alert alert-danger">
+                     {% for error in form.sub_category.errors %}
+                         <li>{{ error }}</li>
+                     {% endfor %}
+                 </ul>
+                {% endif %}
+            </div>
+       </div> 
     </form>
 {% endif %}

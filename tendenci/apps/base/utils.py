@@ -16,6 +16,9 @@ import requests
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
+from PIL import Image as pil
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from django.conf import settings
 from django.utils import translation
@@ -33,6 +36,7 @@ from django.db import router
 from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html
+from django.utils.translation import ugettext as _
 
 from django.utils.functional import Promise
 from django.core.serializers.json import DjangoJSONEncoder
@@ -124,47 +128,6 @@ def get_deleted_objects(objs, user):
     protected = [format_callback(obj) for obj in collector.protected]
 
     return to_delete, collector.model_count, perms_needed, protected
-
-
-# def get_deleted_objects(obj, user):
-#     """
-#     Find all objects related to ``obj`` that should also be deleted.
-# 
-#     Returns a nested list of strings suitable for display in the
-#     template with the ``unordered_list`` filter.
-# 
-#     Copied and updated from django.contrib.admin.util for front end display.
-# 
-#     """
-#     using = router.db_for_write(obj.__class__)
-#     collector = NestedObjects(using=using)
-#     collector.collect([obj])
-#     perms_needed = set()
-# 
-#     def format_callback(obj):
-#         opts = obj._meta
-# 
-#         if hasattr(obj, 'get_absolute_url'):
-#             url = obj.get_absolute_url()
-#             p = '%s.%s' % (opts.app_label,
-#                            opts.get_delete_permission())
-#             if not user.has_perm(p):
-#                 perms_needed.add(opts.verbose_name)
-#             # Display a link to the admin page.
-#             return mark_safe(u'%s: <a href="%s">%s</a>' %
-#                              (escape(capfirst(opts.verbose_name)),
-#                               url,
-#                               escape(obj)))
-#         else:
-#             # no link
-#             return u'%s: %s' % (capfirst(opts.verbose_name),
-#                                 force_unicode(obj))
-# 
-#     to_delete = collector.nested(format_callback)
-# 
-#     protected = [format_callback(obj) for obj in collector.protected]
-# 
-#     return to_delete, perms_needed, protected
 
 
 # this function is not necessary - datetime.now() *is* localized in django
@@ -547,8 +510,6 @@ def make_image_object_from_url(image_url):
 
 def image_rescale(img, size, force=True):
     """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
-    from PIL import Image as pil
-
     format = img.format  # temp. save format
     max_width, max_height = size
 
@@ -828,26 +789,33 @@ def create_salesforce_contact(profile):
         # since that is a required field for Salesforce Contact.
         user = profile.user
         if sf and user.last_name:
-            contact = sf.Contact.create({
-                'FirstName':user.first_name,
-                'LastName':user.last_name,
-                'Email':user.email,
-                'Title':profile.position_title,
-                'Phone':profile.phone,
-                'MailingStreet':profile.address,
-                'MailingCity':profile.city,
-                'MailingState':profile.state,
-                'MailingCountry':profile.country,
-                'MailingPostalCode':profile.zipcode,
-                })
+            # Query for a duplicate entry in salesforce
+            # saleforce blocks the request if email is already in their system - so just checking email
+            if user.email:
+                result = sf.query("SELECT Id FROM Contact WHERE Email='%s'" % user.email.replace("'", "''"))
+                if result['records']:
+                    return result['records'][0]['Id']
 
-            # update field Company_Name__c
-            if profile.company and contact.has_key('Company_Name__c'):
-                sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
-
-            profile.sf_contact_id = contact['id']
-            profile.save()
-            return contact['id']
+                contact = sf.Contact.create({
+                    'FirstName':user.first_name,
+                    'LastName':user.last_name,
+                    'Email':user.email,
+                    'Title':profile.position_title,
+                    'Phone':profile.phone,
+                    'MailingStreet':profile.address,
+                    'MailingCity':profile.city,
+                    'MailingState':profile.state,
+                    'MailingCountry':profile.country,
+                    'MailingPostalCode':profile.zipcode,
+                    })
+    
+                # update field Company_Name__c
+                if profile.company and contact.has_key('Company_Name__c'):
+                    sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
+    
+                profile.sf_contact_id = contact['id']
+                profile.save()
+                return contact['id']
     return None
 
 
@@ -930,3 +898,24 @@ def get_latest_version():
     import xmlrpclib
     proxy = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     return proxy.package_releases('tendenci')[0]
+
+
+def add_tendenci_footer(email_content, content_type='html'):
+    if content_type == 'text':
+        footer = _("This Association is Powered by Tendenci - The Open Source AMS https://www.tendenci.com")
+        return email_content + '\n\n' + footer
+    # Sorry but have to put html code here instead of in a template
+    footer = '''<br /><div style="text-align:center; font-size:90%;">
+    {0} <a href="https://www.tendenci.com" style="text-decoration: none;">{1}</a>
+    <div>
+    <div style="margin:5px auto;">
+    <a href="https://www.tendenci.com" style="text-decoration: none;">
+    <img src="https://www.tendenci.com/media/tendenci-open.png" width="100" height="35" alt="tendenci logo" />
+    </a>
+    </div>'''.format(_('This Association is Powered by'), _('Tendenci&reg; &ndash; The Open Source AMS'))
+    if email_content.find('</body>') != -1:
+        return email_content.replace("</body>", footer + "\n</body>")
+    return email_content + footer
+
+
+

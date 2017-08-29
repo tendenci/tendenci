@@ -31,7 +31,8 @@ from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
                                                         LABEL_MAX_LENGTH)
 from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
-                                                CorpMembershipAppManager)
+                                                CorpMembershipAppManager,
+                                                CorpProfileManager)
 #from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.payments.models import PaymentMethod, Payment
@@ -53,6 +54,7 @@ from tendenci.apps.regions.models import Region
 from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.base.utils import truncate_words
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.files.models import File
 
 
 FIELD_CHOICES = (
@@ -166,6 +168,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
 
 class CorpProfile(TendenciBaseModel):
     guid = models.CharField(max_length=50)
+    logo = models.ForeignKey(File, null=True)
     name = models.CharField(max_length=250, unique=True)
     address = models.CharField(_('Address'), max_length=150,
                                blank=True, default='')
@@ -224,6 +227,7 @@ class CorpProfile(TendenciBaseModel):
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
                                       content_type_field="content_type")
+    objects = CorpProfileManager()
 
     class Meta:
         app_label = 'corporate_memberships'
@@ -237,6 +241,14 @@ class CorpProfile(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s" % (self.name)
+    
+    
+    def delete(self, *args, **kwargs):
+        if len(self.name) + len(str(self.pk)) >= 250:
+            self.name = '%s-%s' % (self.name[:250-len(str(self.pk))], self.pk)
+        else:
+            self.name = '%s-%s' % (self.name, self.pk)
+        super(CorpProfile, self).delete(*args, **kwargs)
 
     def assign_secret_code(self):
         if not self.secret_code:
@@ -294,6 +306,12 @@ class CorpProfile(TendenciBaseModel):
             if rep.user.id == this_user.id:
                 return True
         return False
+    
+    def get_logo_url(self):
+        if not self.logo:
+            return u''
+
+        return reverse('file', args=[self.logo.pk])
 
 
 class CorpMembership(TendenciBaseModel):

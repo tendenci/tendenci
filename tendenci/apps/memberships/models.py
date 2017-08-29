@@ -2230,6 +2230,11 @@ class Notice(models.Model):
             payment_method_name = membership.payment_method.human_name
         else:
             payment_method_name = ''
+        inv = membership.get_invoice()
+        if inv:
+            invoice_link = inv.get_absolute_url()
+        else:
+            invoice_link = ''
         context.update({
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
@@ -2240,6 +2245,7 @@ class Notice(models.Model):
             'payment_method': payment_method_name,
             'referer_url': '%s%s?next=%s' % (global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
             'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
+            'invoice_link': '%s%s' % (global_setting('siteurl'), invoice_link),
             'renew_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'link_to_setup_auto_renew': '%s%s' % (global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
             'corporate_membership_notice': corporate_msg,
@@ -2260,7 +2266,7 @@ class Notice(models.Model):
         Return self.email_content with footer appended and replace shortcode
         (context) variables
         """
-        content = self.email_content + '\n<br /><br />\n{% include "email_footer.html" %}'
+        content = self.email_content
         context = self.get_default_context(membership)
 
         return self.build_notice(content, context=context)

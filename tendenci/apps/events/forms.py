@@ -1922,10 +1922,6 @@ class RegistrantBaseFormSet(BaseFormSet):
             except IndexError:
                 pass
 
-        # Allow extra forms to be empty.
-        if i >= self.initial_form_count():
-            defaults['empty_permitted'] = True
-
         defaults.update(kwargs)
         form = self.form(**defaults)
         self.add_fields(form, i)

@@ -364,7 +364,7 @@ class Newsletter(models.Model):
                 owner_username=user.username,
                 headline=self.email.subject,
                 slug=slugify(self.email.subject),
-                body=self.email.body)
+                body=self.email.body.replace('[browser_view_url]', reverse('newsletter.view_from_browser', args=[self.id])))
 
             self.article = article
             self.save()

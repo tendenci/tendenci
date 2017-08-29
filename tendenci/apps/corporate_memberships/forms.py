@@ -1,3 +1,5 @@
+import imghdr
+from os.path import splitext
 import operator
 from uuid import uuid4
 from os.path import join
@@ -10,6 +12,8 @@ from django.forms.fields import ChoiceField
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.files.storage import default_storage
+from django.template.defaultfilters import filesizeformat
+from django.contrib.contenttypes.models import ContentType
 
 from captcha.fields import CaptchaField
 #from tendenci.apps.base.forms import SimpleMathField
@@ -39,6 +43,7 @@ from tendenci.apps.corporate_memberships.utils import (
 from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.apps.base.fields import PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.files.utils import get_max_file_upload_size
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -302,6 +307,10 @@ def assign_fields(form, app_field_objs, instance=None):
 
 
 class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
+    logo_file = forms.FileField(
+      required=False,
+      help_text=_('Company logo. Only jpg, gif, or png images.'))
+
     class Meta:
         model = CorpProfile
         fields = "__all__"
@@ -310,6 +319,12 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
         self.request_user = kwargs.pop('request_user')
         self.corpmembership_app = kwargs.pop('corpmembership_app')
         super(CorpProfileForm, self).__init__(*args, **kwargs)
+
+        if not app_field_objs.filter(field_name='logo_file').exists():
+            del self.fields['logo_file']
+        else:
+            if self.instance.logo:
+                self.initial['logo_file'] = self.instance.logo.file
 
         assign_fields(self, app_field_objs)
         self.add_form_control_class()
@@ -360,7 +375,40 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
 
         return number_employees
 
+    def clean_logo_file(self):
+        ALLOWED_LOGO_EXT = (
+            '.jpg',
+            '.jpeg',
+            '.gif',
+            '.png'
+        )
+        
+        logo_file = self.cleaned_data['logo_file']
+        if logo_file:
+            try:
+                extension = splitext(logo_file.name)[1]
+
+                # check the extension
+                if extension.lower() not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
+
+                # check the image header
+                image_type = '.%s' % imghdr.what('', logo_file.read())
+                if image_type not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
+
+                max_upload_size = get_max_file_upload_size()
+                if logo_file.size > max_upload_size:
+                    raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(logo_size)s') % {
+                                                    'max_upload_size': filesizeformat(max_upload_size),
+                                                    'logo_size': filesizeformat(logo_file.size)})
+            except IOError:
+                logo_file = None
+
+        return logo_file
+
     def save(self, *args, **kwargs):
+        from tendenci.apps.files.models import File
         if not self.instance.id:
             if not self.request_user.is_anonymous():
                 self.instance.creator = self.request_user
@@ -386,6 +434,30 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
         if self.corpmembership_app.authentication_method == 'email':
             update_authorized_domains(self.instance,
                             self.cleaned_data['authorized_domain'])
+        
+        content_type = ContentType.objects.get(
+            app_label=self.instance._meta.app_label,
+            model=self.instance._meta.model_name) 
+        logo_file = self.cleaned_data.get('logo_file', None) 
+        if logo_file:
+            file_object, created = File.objects.get_or_create(
+                file=logo_file,
+                defaults={
+                    'name': logo_file.name,
+                    'content_type': content_type,
+                    'object_id': self.instance.pk,
+                    'is_public': True,
+                })
+            self.instance.logo = file_object
+            self.instance.save(log=False)
+        else:
+            self.instance.logo = None
+            self.instance.save(log=False)
+            File.objects.filter(
+                        content_type=content_type,
+                        object_id=self.instance.pk).delete()
+            
+            
         return self.instance
 
 

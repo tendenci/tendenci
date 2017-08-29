@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 from django.utils import translation
 from django.contrib.sites.models import Site
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import add_tendenci_footer
 
 import defaults, util, compat
 
@@ -69,6 +70,7 @@ def notify_topic_subscribers(post):
     for user in users:
         message = get_email_message(user, **context_vars)
         if message:
+            message = add_tendenci_footer(message, content_type="text")
             mails += ((subject, message, from_email, [user.email]),)
 
     # Send mails

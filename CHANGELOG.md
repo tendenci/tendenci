@@ -1,8 +1,30 @@
+### 7.3.8 [2017-08-16]
+
+**Improvements**
+
+* Added logo field to corporate memberships
+* News can be viewed by release year and linked on news search
+* Removed stub test files so the real tests stand out
+* Updated corporate membership summary report with more graphs
+
+
+**Fixes**
+
+* Bugfix on event registration with custom form 
+* Set start_dt and end_dt to current year for newsletter events
+* Fixed AttributeError: 'Options' object has no attribute 'module_name'
+* Fixed TypeError: Related Field got invalid lookup: icontains
+* Bugfixes on form entries export, jobs add/edit, renewed_members and profiles
+
+
 ### 7.3.3 [2017-07-21]
 
 * Fixed NoReverseMatch on email delete
 * Bugfix Attribute error on group members export
 * Resolved the 'form' name conflicts - the name conflicts occurs when a custom form is embedded in a template header
+* Caught DjangoUnicodeDecodeError exception on helpdesk
+* Fix UnicodeEncodeError on jobs add/edit
+* 
 
 
 ### 7.3.2 [2017-07-13]

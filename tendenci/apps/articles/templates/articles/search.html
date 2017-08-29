@@ -79,4 +79,17 @@
     {{ block.super }}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{% static 'js/articles.js' %}"></script>
+    <script>
+    (function($) {
+    	$(document).ready(function () {
+            var $catAndSubcatSelect = $('#id_category, #id_sub_category'),
+                $articlesSearchForm = $('#t-articles-search-form');
+
+            $catAndSubcatSelect.on('change', function (e) {
+                $articlesSearchForm.submit();
+            });
+        });	
+    }(jQuery));
+
+    </script>
 {% endblock %}

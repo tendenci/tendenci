@@ -31,7 +31,7 @@ class CategoryItemAdmin(admin.ModelAdmin):
     list_display = ['id', 'category', 'show_parent', 'content_type', 'show_object']
     list_filter = (('content_type', admin.RelatedOnlyFieldListFilter),
                    'category', )
-    search_fields = ['category', 'parent']
+    search_fields = ['category__name', 'parent__name']
     ordering = ['content_type', 'object_id']
     view_on_site = False
     

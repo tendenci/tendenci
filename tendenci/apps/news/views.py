@@ -55,7 +55,7 @@ def detail(request, slug=None, template_name="news/view.html"):
 
 
 @is_enabled('news')
-def search(request, template_name="news/search.html"):
+def search(request, release_year=None, template_name="news/search.html"):
     query = request.GET.get('q', None)
     form = NewsSearchForm(request.GET, user=request.user)
 
@@ -82,8 +82,20 @@ def search(request, template_name="news/search.html"):
 
     EventLog.objects.log()
 
+    release_years = News.objects.datetimes('release_dt', 'year', order='DESC')
+    release_years_list = [rel.year for rel in release_years]
+
+    if release_year:
+        release_year = int(release_year)
+        if release_year < 1900:
+            raise Http404
+        news = news.filter(release_dt_local__year=release_year)
+        
+
     return render_to_response(template_name, {'search_news': news,
-                                              'form': form},
+                                              'form': form,
+                                              'release_year': release_year,
+                                              'release_years_list': release_years_list},
         context_instance=RequestContext(request))
 
 

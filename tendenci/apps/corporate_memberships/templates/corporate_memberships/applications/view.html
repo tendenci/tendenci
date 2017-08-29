@@ -76,8 +76,14 @@
 
     <article id="t-corpmemberships-corpmembership-{{ corporate_membership.pk }}" class="t-corpmemberships-corpmembership">
         <div class="page-header">
-            <h1>{% trans "View Corporate Membership Information" %}</h1>
+            <h1>{% trans "Corporate Membership" %}<br />&nbsp;<small>{{ corp_profile.name }}</small></h1>
         </div>
+        
+        {% if corp_profile.logo %}
+         <div class="t-corp-membership-logo">
+             <img class="img-responsive" src="{{ corp_profile.get_logo_url }}" alt="{{ corp_profile.name }}" title="{{ corp_profile.name }}">
+         </div>
+       {% endif %}
 
         <div class="t-corpmemberships-corpmembership-body">
             {% for field_obj in app_fields %}
@@ -85,10 +91,10 @@
                     {# We have a section label #}
                     {% if field_obj.field_name == "" %}
                         {% if not forloop.last %}
-                            <h2 class="t-field-sectionlabel t-corpmemberships-application-field-sectionlabel
+                            <h3 class="t-field-sectionlabel t-corpmemberships-application-field-sectionlabel
                                            {% if field_obj.admin_only%} t-admin-only-header{% endif %}
                                            {% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}"
-                                >{% blocktrans with label=field_obj.label %}{{ label }}{% endblocktrans %}</h2>
+                                >{{ field_obj.label }}</h3>
                         {% endif %}
                     {% else %}
                         <div class="t-field-sectionrow t-corpmemberhsips-application-field-sectionrow
@@ -117,7 +123,7 @@
                                     </table>
 
                                     {% if corporate_membership.status_detail != "archive" %}
-                                        <a class="btn btn-primary" href="{% url 'corpmembership.edit_corp_reps' corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a>
+                                        <a href="{% url 'corpmembership.edit_corp_reps' corporate_membership.pk %}"><span class="glyphicon glyphicon-edit"></span> {% trans "Add/Edit Representatives" %}</a>
                                     {% endif %}
                                 {% else %}
                                     <h3><em>{% trans "No representatives available" %}</em></h3>
@@ -170,33 +176,28 @@
 
             {% if user_can_edit and MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
                 <section class="t-corpmemberships-free-passes">
-                    <h2 class="t-field-sectionlabel t-corpmemberships-free-passes-label">{% trans "Free Passes" %}<h2>
+                    <h3 class="t-field-sectionlabel t-corpmemberships-free-passes-label">{% trans "Free Passes" %}</h3>
 
                     <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
-                        <h3 class="t-field-fieldlabel t-short-label">{% trans "Total Allowed:" %}</h3>
-
-                        <p class="t-field-fieldvalue">
+                        <div>
+                        	<strong>{% trans "Total Allowed:" %}</strong>
                             <span>{{ corporate_membership.free_pass_total }}</span>
                             {% if request.user.is_superuser %}
-                                <a href="{% url 'corpmembership.free_passes_edit' corporate_membership.id %}">{% trans "Edit" %}</a>
+                                 &nbsp;&nbsp;&nbsp;<a href="{% url 'corpmembership.free_passes_edit' corporate_membership.id %}"><span class="glyphicon glyphicon-edit"></span> {% trans "Edit" %}</a>
                             {% endif %}
-                        </p>
+                        </div>
                     </div>
 
                     <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
-                        <h3 class="t-field-fieldlabel t-short-label">{% trans "# Used:" %}</h3>
-
-                        <p class="t-field-fieldvalue">
+                        <div><strong>{% trans "# Used:" %}</strong>
                             <span>{{ corporate_membership.free_pass_used }}</span>
-                        </p>
+                        </div>
                     </div>
 
                     <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
-                        <h3 class="t-field-fieldlabel t-short-label">{% trans "# Available:" %}</h3>
-
-                        <p class="t-field-fieldvalue">
+                        <div><strong>{% trans "# Available:" %}</strong>
                             <span>{{ corporate_membership.free_pass_avail }}</span>
-                        </p>
+                        </div>
                     </div>
 
                     {% if corporate_membership.free_pass_used > 0 %}
@@ -239,7 +240,7 @@
 
             {% if all_records|length > 1 %}
                 <section class="t-corpmemberships-timeline">
-                    <h2 class="t-field-sectionlabel t-corpmemberships-timeline-label">{% trans "Timeline" %}</h2>
+                    <h3 class="t-field-sectionlabel t-corpmemberships-timeline-label">{% trans "Timeline" %}</h3>
 
                     <div class="t-field-sectionrow t-corpmemberships-timeline-row">
                         <ul>
