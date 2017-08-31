@@ -375,7 +375,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         # donation_option
         OPTION_CHOICE = (
                           ("default", "%s%s" % (currency_symbol, self.default_amount)),
-                          ("custom", mark_safe('%s %s</div>' % \
+                          ("custom", mark_safe('%s %s' % \
                                           (currency_symbol, rendered_donation_amount))),)
         donation_option_widget = self.pos_d['donation_option'][1]
         donation_option_widget.choices=OPTION_CHOICE
