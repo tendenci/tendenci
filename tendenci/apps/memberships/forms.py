@@ -1182,6 +1182,15 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
 
         return value_list
+    
+    
+    def clean_auto_renew(self):
+        value = self.cleaned_data['auto_renew']
+        if value:
+            payment_method = self.cleaned_data['payment_method']
+            if payment_method and not payment_method.is_online:
+                raise forms.ValidationError(_("Please either de-select it or change to an online payment method."))
+        return value
         
 
     def save(self, *args, **kwargs):

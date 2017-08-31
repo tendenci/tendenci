@@ -201,6 +201,13 @@
 		            <div class="form-group clearfix">
 		                <div class="col-sm-3"></div>
 		                <div class="col-sm-8">
+		                {% if membership_form.auto_renew.errors %}
+                            <div class="error">
+                                {% for error in membership_form.auto_renew.errors %}
+                                    <div><br />{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 		                    {{ membership_form.auto_renew }} <label for="{{ membership_form.auto_renew.id_for_label }}" class="control-label">{{ membership_form.auto_renew.label }}</label>
 		                </div>
 		            </div>
