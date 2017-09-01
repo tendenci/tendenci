@@ -153,11 +153,24 @@ class RecurringPayment(models.Model):
         # https://www.pcisecuritystandards.org/pdfs/pci_fs_data_storage.pdf
         if self.platform == 'stripe':
             stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            card = None
             if self.customer_profile_id:
                 customer = stripe.Customer.retrieve(self.customer_profile_id)
-                default_card_id = customer['default_card']
-                card = customer.sources.retrieve(default_card_id)
-                return {'last4': card['last4'], 'exp_year': card['exp_year'], 'exp_month': card['exp_month']}
+                default_card_id = customer.get('default_card', None)
+                if default_card_id:
+                    card = customer.sources.retrieve(default_card_id)
+                else:
+                    default_source = customer.get('default_source', None)
+                    if default_source:
+                        sources = customer.get('sources', None)
+                        if sources:
+                            data = sources.get('data', None)
+                            for c in data:
+                                if c['id'] == default_source:
+                                    card = c
+                                    break
+                if card:       
+                    return {'last4': card['last4'], 'exp_year': card['exp_year'], 'exp_month': card['exp_month']}
         return None
         
 
