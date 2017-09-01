@@ -122,19 +122,19 @@ class FormAdmin(TendenciBaseModelAdmin):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         obj = self.get_object(request, unquote(object_id))
-
-        #check if the form has file fields
-        extra_context = extra_context or {}
-        extra_context['has_files'] = obj.has_files()
-
-        for inline_class in self.inlines:
-            if inline_class.model == Field:
-                if obj.fields_name:
-                    inline_class.verbose_name = obj.fields_name
-                    inline_class.verbose_name_plural = obj.fields_name
-            elif inline_class.model == Pricing:
-                inline_class.verbose_name = obj.pricing_name
-                inline_class.verbose_name_plural = obj.pricing_name
+        if obj:
+            #check if the form has file fields
+            extra_context = extra_context or {}
+            extra_context['has_files'] = obj.has_files()
+    
+            for inline_class in self.inlines:
+                if inline_class.model == Field:
+                    if obj.fields_name:
+                        inline_class.verbose_name = obj.fields_name
+                        inline_class.verbose_name_plural = obj.fields_name
+                elif inline_class.model == Pricing:
+                    inline_class.verbose_name = obj.pricing_name
+                    inline_class.verbose_name_plural = obj.pricing_name
 
         return super(FormAdmin, self).change_view(request, object_id, form_url, extra_context)
 
