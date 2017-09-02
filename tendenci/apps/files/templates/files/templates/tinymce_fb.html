@@ -78,19 +78,31 @@
 	    {% if page_range|length  > 1 %}
 		    <nav>
 			  <ul class="pagination">
-			    <li {% if page_num == 1 %}class="disabled"{% endif %}>
+			    {% if page_num == 1 %}
+			    <li class="disabled">
+			      <span aria-hidden="true">&laquo;</span>
+			    </li>
+			    {% else %}
+			    <li>
 			      <a href="?page={{ page_num|add:'-1' }}&&pop=2" aria-label="Previous">
 			        <span aria-hidden="true">&laquo;</span>
 			      </a>
 			    </li>
+			    {% endif %}
 			    {% for n in page_range %}
 			    <li {% if n == page_num %}class="active"{% endif %}><a href="?page={{ n }}&&pop=2">{{ n }}</a></li>
 			    {% endfor %}
-			    <li {% if page_num == page_range|last %}class="disabled"{% endif %}>
+			    {% if page_num == page_range|last %}
+			    <li class="disabled">
+			      <span aria-hidden="true">&raquo;</span>
+			    </li>
+			    {% else %}
+			    <li>
 			      <a href="?page={{ page_num|add:'1' }}&&pop=2" aria-label="Next">
 			        <span aria-hidden="true">&raquo;</span>
 			      </a>
 			    </li>
+			    {% endif %}
 			  </ul>
 			</nav>
 	    {% endif %}
