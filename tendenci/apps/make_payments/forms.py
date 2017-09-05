@@ -18,6 +18,7 @@ class MakePaymentForm(forms.ModelForm):
     address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'size':'35'}))
     state = forms.CharField(max_length=50, required=False,  widget=forms.TextInput(attrs={'size':'5'}))
     zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
+    reference_number = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'15'}))
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
     email = EmailVerificationField(label=_("Email"), help_text=_('A valid e-mail address, please.'))
     email_receipt = forms.BooleanField(initial=True)
@@ -39,6 +40,7 @@ class MakePaymentForm(forms.ModelForm):
                   'phone',
                   'email',
                   'email_receipt',
+                  'reference_number',
                   'referral_source',
                   'comments',
                   'captcha',
@@ -47,6 +49,9 @@ class MakePaymentForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(MakePaymentForm, self).__init__(*args, **kwargs)
         self.initial['country'] = get_setting('site', 'global', 'defaultcountry')
+        self.fields['reference_number'].label = get_setting('module',
+                                                            'make_payment',
+                                                            'referencenumberlabel') or _('Reference #')
         # populate the user fields
         if user and user.id:
             if 'captcha' in self.fields:
