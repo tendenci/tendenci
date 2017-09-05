@@ -933,8 +933,12 @@ def membership_default_add(request, slug='', membership_id=None,
         apply_cap, membership_cap, allow_above_cap, above_cap_price = corp_membership.get_cap_info()
         if apply_cap:
             if corp_membership.members_count >= membership_cap:
-                # email admin and corporate reps about this corp. has reached cap
-                email_sent = corp_membership.email_reps_cap_reached()
+                if corp_membership.members_count == membership_cap:
+                    # email admin and corporate reps about this corp. has reached cap
+                    # only sent when cap is reached so they don't get freaked out for too many emails
+                    email_sent = corp_membership.email_reps_cap_reached()
+                else:
+                    email_sent = False
                 
                 if not allow_above_cap:
                     reps = corp_membership.corp_profile.reps.all()
