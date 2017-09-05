@@ -21,7 +21,7 @@ def index(request, cat_slug=None, template_name="videos/list.html"):
         videos = videos.select_related()
     if cat_slug:
         videos = videos.filter(category__slug=cat_slug)
-    videos = videos.order_by('-ordering', '-create_dt')
+    videos = videos.order_by('-position', '-create_dt')
 
     categories = Category.objects.all()
     video_types = VideoType.objects.all()
@@ -66,7 +66,7 @@ def search(request, cat_slug=None, template_name="videos/list.html"):
             video_type = vtypes[0]
         if video_type:
             videos = videos.filter(video_type=video_type)
-    videos = videos.order_by('-ordering', '-create_dt')
+    videos = videos.order_by('-position', '-create_dt')
 
     EventLog.objects.log()
 

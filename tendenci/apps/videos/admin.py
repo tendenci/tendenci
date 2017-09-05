@@ -44,8 +44,8 @@ class VideoAdmin(TendenciBaseModelAdmin):
         return u''
     get_release_dt.short_description = _('Release Date')
 
-    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'ordering']
-    list_editable = ['ordering']
+    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'position']
+    list_editable = ['position']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['question', 'answer']
     fieldsets = (
@@ -61,14 +61,14 @@ class VideoAdmin(TendenciBaseModelAdmin):
         )}),
     )
     form = VideoForm
-    ordering = ['-ordering']
+    ordering = ['-position']
 
     class Media:
         js = (
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-#             '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
-#             '%sjs/jquery-ui-1.8.17.custom.min.js' % settings.STATIC_URL,
-#             '%sjs/admin/admin-list-reorder-ordering.js' % settings.STATIC_URL,
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
+            'js/admin/admin-list-reorder.js',
+            'js/global/tinymce.event_handlers.js',
         )
     
     def get_fieldsets(self, request, obj=None):
