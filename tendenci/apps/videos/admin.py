@@ -47,7 +47,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
     list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'position']
     list_editable = ['position']
     prepopulated_fields = {'slug': ['title']}
-    search_fields = ['question', 'answer']
+    search_fields = ['title', 'description']
     fieldsets = (
         (None, {'fields': ('title', 'slug', 'category', 'video_type', 'image', 'clear_image', 'video_url', 'tags', 'description', 'release_dt')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
