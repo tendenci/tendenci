@@ -45,7 +45,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
     get_release_dt.short_description = _('Release Date')
 
     list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'position']
-    list_editable = ['position']
+    list_editable = ['category', 'video_type', 'position']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['title', 'description']
     fieldsets = (
