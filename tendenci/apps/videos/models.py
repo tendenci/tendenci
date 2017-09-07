@@ -43,12 +43,12 @@ class VideoType(models.Model):
         ordering = ('name',)
 
 
-class Video(TendenciBaseModel):
+class Video(OrderingBaseModel, TendenciBaseModel):
     """
     Videos plugin to add embedding based on video url. Uses embed.ly
     """
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, max_length=200)
+    slug = models.SlugField(_('URL Path'), unique=True, max_length=200)
     category = models.ForeignKey(Category)
     video_type = models.ForeignKey(VideoType, null=True, blank=True)
     image = models.ImageField(upload_to='uploads/videos/%y/%m', blank=True)
@@ -56,7 +56,6 @@ class Video(TendenciBaseModel):
     description = tinymce_models.HTMLField()
     release_dt = models.DateTimeField(_("Release Date"), null=True)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
-    ordering = models.IntegerField(blank=True, null=True)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -70,20 +69,20 @@ class Video(TendenciBaseModel):
     def save(self, *args, **kwargs):
         model = self.__class__
 
-        if self.ordering is None:
+        if self.position is None:
             # Append
             try:
-                last = model.objects.order_by('-ordering')[0]
-                self.ordering = last.ordering + 1
+                last = model.objects.order_by('-position')[0]
+                self.position = last.position + 1
             except IndexError:
                 # First row
-                self.ordering = 0
+                self.position = 0
 
         return super(Video, self).save(*args, **kwargs)
 
     class Meta:
         permissions = (("view_video","Can view video"),)
-        ordering = ('ordering',)
+        ordering = ('position',)
         verbose_name = get_setting('module', 'videos', 'label') or "Video"
         verbose_name_plural = get_setting('module', 'videos', 'label_plural') or "Videos"
         app_label = 'videos'

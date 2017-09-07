@@ -48,7 +48,8 @@ class VideoForm(TendenciBaseForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
         self.fields['release_dt'].widget = widgets.AdminSplitDateTime()
     
-    def clean(self):
+    def clean(self, *args, **kwargs):
+        super(VideoForm, self).clean(*args, **kwargs)
         if self.embedly_403:
             if not self.cleaned_data.get('image'):
                 raise forms.ValidationError('Please provide a thumbnail of your video in the image upload field.')

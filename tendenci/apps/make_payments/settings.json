@@ -66,5 +66,22 @@
         "scope_category": "make_payment",
         "store": false,
         "updated_by": ""
+    },
+    {
+        "default_value": "Reference #",
+        "description": "Specify the label of the reference_number field.",
+        "data_type": "string",
+        "update_dt": "2010-08-12 17:19:12",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "referencenumberlabel",
+        "value": "Reference #",
+        "label": "Label of the reference_number field",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "make_payment",
+        "store": false,
+        "updated_by": ""
     }
 ]

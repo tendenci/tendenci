@@ -236,7 +236,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             entry.pricing = self.cleaned_data['pricing_option']
             custom_price = self.data.get('custom_price_%s' % entry.pricing.id)
             if custom_price:
-                entry.custom_price = custom_price
+                entry.custom_price = currency_check(custom_price)
             entry.save()
 
         return entry

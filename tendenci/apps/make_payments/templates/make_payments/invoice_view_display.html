@@ -8,8 +8,12 @@
         {% else %}
             {{ invoice.title }}
         {% endif%}
+        {% if obj and obj.reference_number  %}
+         <br />
+        {% if MODULE_MAKE_PAYMENT_REFERENCENUMBERLABEL %}{{ MODULE_MAKE_PAYMENT_REFERENCENUMBERLABEL }}{% else %}{% trans "Reference #" %}{% endif %}: {{ obj.reference_number }}
+         {% endif%}
     </td>
     <td class="td-right">
         {{ invoice.total|format_currency }}
     </td>
-</td>
+</tr>

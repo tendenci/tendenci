@@ -32,7 +32,8 @@ from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
 from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
                                                 CorpMembershipAppManager,
-                                                CorpProfileManager)
+                                                CorpProfileManager,
+                                                CorpMembershipTypeManager)
 #from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.payments.models import PaymentMethod, Payment
@@ -138,6 +139,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                                default=0,
                                                blank=True)
 
+    objects = CorpMembershipTypeManager()
 
     class Meta:
         app_label = 'corporate_memberships'

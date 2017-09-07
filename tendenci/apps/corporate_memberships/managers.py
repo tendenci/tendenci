@@ -26,3 +26,7 @@ class CorpMembershipAppManager(Manager):
 
 class CorpProfileManager(TendenciBaseManager):
     pass
+
+
+class CorpMembershipTypeManager(TendenciBaseManager):
+    pass

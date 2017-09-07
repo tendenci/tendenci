@@ -1,3 +1,18 @@
+### 7.3.9 [2017-09-06]
+
+* Replaced allowed_to_view_orginal with has_perm for photos
+* Fixed multiple membership types validation error
+* Excluded admin_only payment method for non-admin
+* Truncated the date list to start with current year for newsletters
+* Some updates on corp memberships
+* Added tendenci footer to email notifications
+* Added category and subcategory drop downs to articles search
+* Added reference_number field to /py/ 
+* Made videos sort draggable
+* Sending notification only at the time the corp cap is reached
+* Made category and video_type editable for the videos list
+* More bugfixes
+
 ### 7.3.8 [2017-08-16]
 
 **Improvements**
