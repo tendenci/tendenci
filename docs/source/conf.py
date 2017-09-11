@@ -13,9 +13,9 @@
 
 import sys
 import os
-from docutils.parsers.rst.directives.admonitions import BaseAdmonition
-from sphinx.util import compat
-compat.make_admonition = BaseAdmonition
+# from docutils.parsers.rst.directives.admonitions import BaseAdmonition
+# from sphinx.util import compat
+# compat.make_admonition = BaseAdmonition
 
 
 # If extensions (or modules to document with autodoc) are in another directory,

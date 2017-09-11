@@ -9,7 +9,7 @@ instructions are presented below.
 These instructions create a Tendenci site on an Ubuntu server (14.04 is recommended).
 
 Testing Installation
-==================
+====================
 
 You can use the following installation instructions to install a local Tendenci site on Ubuntu (deb). 
 This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, 
@@ -35,7 +35,7 @@ minimum CPU cores and storage.
 
 
 System update
-------------
+-------------
 
 Before installing it is recommended you update your system to ensure you have
 the latest packages. For Ubuntu this is done by
@@ -68,7 +68,7 @@ To configure your system to automatically install security updates, run the foll
 Note: Say 'Yes' when it asks about security updates. Without security we have nothing.
 
 Pip Install
-----------
+-----------
 Depending on your version of python `pip <http://www.pip-installer.org/>`_ is
 installed differently. If your system is python 2.7.9 or later pip can be
 installed with:
@@ -141,7 +141,7 @@ One in Postgres, add a project, user, and password
 
 To exit:
 ::
-    \q
+\q
 
 You can also alter your database entirely from the command line using these commmands: 
 ::
@@ -319,7 +319,7 @@ Make a virtual environment called 'venv' and activate it.
 
 
 Creating a new tendenci project
---------------------
+-------------------------------
 
 Make sure Django 1.8 is installed in your environment (sudo is not required if run in a virtualenv).
 ::
@@ -336,10 +336,11 @@ This download and install step will take some time and download around 70MB of p
 
 
 Installing the requirements
---------------------
+---------------------------
 
 Install the requirements with the following commands (do not use sudo if run in a virtualenv).
 ::
+
     cd <project_name>
     sudo pip install -r requirements/dev.txt
 
@@ -406,7 +407,7 @@ Theming Options
 
 
 Scalable Installation
-===================
+=====================
 
 With a working test setup you can upgrade it to a fully functional, scalable install.
 

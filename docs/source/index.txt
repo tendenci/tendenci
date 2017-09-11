@@ -4,7 +4,7 @@
 .. image:: img/tendencidocs.png
 
 Tendenci - The Open Source Association Management System (AMS)
-====================================
+==============================================================
 
 Tendenci is a association management system (AMS) designed for organizations with powerful features for event registration, membership management, and email communication.
 
@@ -79,7 +79,7 @@ Templating
 
 
 .. Trouble Shooting
-.. ----------
+.. ----------------
 
 .. .. toctree::
 ..    :maxdepth: 1
