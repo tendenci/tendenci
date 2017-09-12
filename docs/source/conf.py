@@ -34,6 +34,14 @@ from tendenci import __version__ as tendenci_version
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
+# theme options
+html_theme_options = {
+    'collapse_navigation': True,
+    'display_version': True,
+    'navigation_depth': 4,
+}
+
+
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
