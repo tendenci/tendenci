@@ -9,7 +9,7 @@ Step 1: Back up your site and database
 If you're using docker, just backup your docker container:
 ::
 
-docker commit <site_name> backup/<site_name>:<your tag>
+    docker commit <site_name> backup/<site_name>:<your tag>
 
 
 Step 2: Update some files
@@ -62,6 +62,7 @@ Replace:
 ::
 
     'OPTIONS': {'autocommit': True},
+
 With:
 ::
 
