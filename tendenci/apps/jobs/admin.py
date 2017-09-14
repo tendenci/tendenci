@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.jobs.models import Job, JobPricing
 from tendenci.apps.jobs.forms import JobAdminForm, JobPricingForm
+from tendenci.apps.jobs.models import Category as JobCategory
 
 
 class JobAdmin(TendenciBaseModelAdmin):
@@ -97,3 +98,37 @@ class JobPricingAdmin(admin.ModelAdmin):
     form = JobPricingForm
 
 admin.site.register(JobPricing, JobPricingAdmin)
+
+
+class CategoryAdminInline(admin.TabularInline):
+    fieldsets = ((None, {'fields': ('name', 'slug')}),)
+    prepopulated_fields = {'slug': ['name']}
+    model = JobCategory
+    extra = 0
+    verbose_name = _("Job Sub-Category")
+    verbose_name_plural = _("Job Sub-Categories")
+    ordering = ['name']
+    
+
+class JobCategoryAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'name',
+        'sub_categories',
+        'slug',
+    ]
+    list_display_links = ('name', )
+    inlines = (CategoryAdminInline,)
+    prepopulated_fields = {'slug': ['name']}
+    fieldsets = ((None, {'fields': ('name', 'slug')}),)
+    
+   
+    def sub_categories(self, instance):
+        return ', '.join(JobCategory.objects.filter(parent=instance).values_list('name', flat=True))
+    sub_categories.allow_tags = True
+    
+    def get_queryset(self, request):
+        qs = super(JobCategoryAdmin, self).get_queryset(request)
+        return qs.filter(parent__isnull=True)
+
+admin.site.register(JobCategory, JobCategoryAdmin)

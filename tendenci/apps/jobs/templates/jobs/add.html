@@ -27,12 +27,7 @@
                 </div>
             {% endif %}
             {{ form|styled_form }}
-            <fieldset class="boxy-grey" >
-                <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans 'Category' %}</legend>
-                <div id="category-form">
-                    {{ categoryform|styled_form }}
-                </div>
-            </fieldset>
+            
             <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}" />
         </div>
     </form>
@@ -54,6 +49,9 @@
     <script type="text/javascript" src="/admin/jsi18n/"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
+	<script type="text/javascript">
+    {% include 'jobs/include/get_subcategories.js' %}
+    </script>
     <script type="text/javascript">
         var slugit = new Slugify({
             input_element : 'input#id_title',
@@ -82,19 +80,20 @@
     {% endif %}
     <script type="text/javascript">
         $('#meta-form').hide();
-        $('#category-form').hide();
+/*         $('#category-form').hide(); */
         $('#meta-title').click(function() {
             $('#meta-form').slideToggle('fast');
             if ($('#meta-title span').text() == '+') {
                 $('#meta-title span').text('-');}
             else {$('#meta-title span').text('+');}
         });
-        $('#category-title').click(function() {
+/*         $('#category-title').click(function() {
             $('#category-form').slideToggle('fast');
              if ($('#category-title span').text() == '+') {
                 $('#category-title span').text('-');}
             else {$('#category-title span').text('+');}
-        });
+        }); */
+        
     </script>
 
     {% if require_payment %}

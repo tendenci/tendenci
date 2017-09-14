@@ -16,8 +16,8 @@ class JobIndex(TendenciBaseSearchIndex, indexes.Indexable):
     syndicate = indexes.BooleanField(model_attr='syndicate', null=True)
 
     # categories
-    category = indexes.CharField()
-    sub_category = indexes.CharField()
+    cat = indexes.CharField()
+    sub_cat = indexes.CharField()
 
     # RSS fields
     can_syndicate = indexes.BooleanField(null=True)
@@ -41,14 +41,14 @@ class JobIndex(TendenciBaseSearchIndex, indexes.Indexable):
         description = strip_entities(description)
         return description
 
-    def prepare_category(self, obj):
-        category = Category.objects.get_for_object(obj, 'category')
+    def prepare_cate(self, obj):
+        category = obj.cat
         if category:
             return category.name
         return ''
 
-    def prepare_sub_category(self, obj):
-        category = Category.objects.get_for_object(obj, 'sub_category')
+    def prepare_sub_cat(self, obj):
+        category = obj.sub_cat
         if category:
             return category.name
         return ''

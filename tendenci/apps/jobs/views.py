@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -12,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
+from django.http import Http404
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
@@ -30,6 +32,7 @@ from tendenci.apps.categories.models import Category
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.jobs.models import Job, JobPricing
+from tendenci.apps.jobs.models import Category as JobCategory
 from tendenci.apps.jobs.forms import JobForm, JobPricingForm, JobSearchForm
 from tendenci.apps.jobs.utils import is_free_listing, job_set_inv_payment
 
@@ -69,13 +72,13 @@ def search(request, template_name="jobs/search.html"):
     form = JobSearchForm(request.GET)
     if form.is_valid():
         query = form.cleaned_data.get('q')
-        category = form.cleaned_data.get('categories')
-        subcategory = form.cleaned_data.get('subcategories')
+        cat = form.cleaned_data.get('cat')
+        sub_cat = form.cleaned_data.get('sub_cat')
 
-        if category:
-            jobs = jobs.filter(categories__category=category)
-        if subcategory:
-            jobs = jobs.filter(categories__parent=subcategory)
+        if cat:
+            jobs = jobs.filter(cat=cat)
+        if sub_cat:
+            jobs = jobs.filter(sub_cat=sub_cat)
         if query:
             if 'tag:' in query:
                 tag = query.strip('tag:')
@@ -158,11 +161,6 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
         model=object_type._meta.model_name
     )
 
-    if request.user.profile.is_superuser:
-        category_form_class = CategoryForm
-    else:
-        category_form_class = CategoryForm2
-
     form = form_class(request.POST or None, request.FILES or None, user=request.user)
     # adjust the fields depending on user type
     if not require_payment:
@@ -177,11 +175,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             if is_free:
                 del form.fields['payment_method']
 
-        categoryform = category_form_class(
-                        content_type,
-                        request.POST,)
-
-        if form.is_valid() and categoryform.is_valid():
+        if form.is_valid():
             job = form.save(commit=False)
             pricing = form.cleaned_data['pricing']
 
@@ -221,30 +215,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             # create invoice
             job_set_inv_payment(request.user, job, pricing)
 
-            #setup categories
-            category = Category.objects.get_for_object(job, 'category')
-            sub_category = Category.objects.get_for_object(
-                                                job, 'sub_category')
-
-            ## update the category of the job
-            category_removed = False
-            category = categoryform.cleaned_data['category']
-            if category != '0':
-                Category.objects.update(job, category, 'category')
-            else:  # remove
-                category_removed = True
-                Category.objects.remove(job, 'category')
-                Category.objects.remove(job, 'sub_category')
-
-            if not category_removed:
-                # update the sub category of the job
-                sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0':
-                    Category.objects.update(job, sub_category,
-                                                'sub_category')
-                else:  # remove
-                    Category.objects.remove(job,'sub_category')
-
+    
             #save relationships
             job.save()
             msg_string = u'Successfully added %s' % unicode(job)
@@ -285,19 +256,9 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             messages.add_message(request, messages.WARNING, _(msg_string))
             return HttpResponseRedirect(reverse('job_pricing.add'))
 
-        initial_category_form_data = {
-            'app_label': 'jobs',
-            'model': 'job',
-            'pk': 0, #not used for this view but is required for the form
-        }
-        categoryform = category_form_class(
-                        content_type,
-                        initial=initial_category_form_data,)
-
     return render_to_response(template_name,
             {'form': form,
-             'require_payment': require_payment,
-             'categoryform': categoryform},
+             'require_payment': require_payment},
             context_instance=RequestContext(request))
 
 
@@ -326,28 +287,6 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
                         instance=job,
                         user=request.user)
 
-    #setup categories
-    content_type = get_object_or_404(ContentType, app_label=object_type._meta.app_label, model=object_type._meta.model_name)
-
-    category = Category.objects.get_for_object(job,'category')
-    sub_category = Category.objects.get_for_object(job,'sub_category')
-
-    initial_category_form_data = {
-        'app_label': 'jobs',
-        'model': 'job',
-        'pk': job.pk,
-        'category': getattr(category,'name','0'),
-        'sub_category': getattr(sub_category,'name','0')
-    }
-    if request.user.profile.is_superuser:
-        category_form_class = CategoryForm
-    else:
-        category_form_class = CategoryForm2
-    categoryform = category_form_class(
-                        content_type,
-                        request.POST or None,
-                        initial= initial_category_form_data,)
-
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
     if not request.user.profile.is_superuser:
         del form.fields['pricing']
@@ -363,31 +302,11 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
     del form.fields['payment_method']
 
     if request.method == "POST":
-        if form.is_valid() and categoryform.is_valid():
+        if form.is_valid():
             job = form.save(commit=False)
 
             job = update_perms_and_save(request, form, job)
 
-            ## update the category of the job
-            category_removed = False
-            category = categoryform.cleaned_data['category']
-            if category != '0':
-                Category.objects.update(job, category, 'category')
-            else:  # remove
-                category_removed = True
-                Category.objects.remove(job, 'category')
-                Category.objects.remove(job, 'sub_category')
-
-            if not category_removed:
-                # update the sub category of the job
-                sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0':
-                    Category.objects.update(job, sub_category, 'sub_category')
-                else:  # remove
-                    Category.objects.remove(job, 'sub_category')
-
-            #save relationships
-            job.save()
             msg_string = u'Successfully updated {}'.format(unicode(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
@@ -397,8 +316,26 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
     return render_to_response(template_name, {
         'job': job,
         'form': form,
-        'categoryform': categoryform
         }, context_instance=RequestContext(request))
+
+
+@is_enabled('jobs')
+@login_required
+def get_subcategories(request):
+    if request.is_ajax() and request.method == "POST":
+        category = request.POST.get('category', None)
+        if category:
+            sub_categories = JobCategory.objects.filter(parent=category)
+            count = sub_categories.count()
+            sub_categories = list(sub_categories.values_list('pk','name'))
+            data = json.dumps({"error": False,
+                               "sub_categories": sub_categories,
+                               "count": count})
+        else:
+            data = json.dumps({"error": True})
+
+        return HttpResponse(data, content_type="text/plain")
+    raise Http404
 
 
 @is_enabled('jobs')
