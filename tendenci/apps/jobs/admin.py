@@ -9,7 +9,7 @@ from tendenci.apps.jobs.models import Category as JobCategory
 
 
 class JobAdmin(TendenciBaseModelAdmin):
-    list_display = ['title', 'post_dt', 'owner_link', 'admin_perms', 'admin_status']
+    list_display = ['title', 'post_dt', 'cat', 'sub_cat', 'owner_link', 'admin_perms', 'admin_status']
     list_filter = ['status_detail', 'owner_username']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['title', 'description']
