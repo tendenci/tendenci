@@ -4,6 +4,7 @@ $.ajaxSetup({beforeSend: function(xhr, settings){
 	                      '{{ csrf_token }}');
 }});
 (function($) {
+$(document).ready(function(){
     $('select#id_cat').change(function() {
         $.post(
             "{% url "job.get_subcategories" %}",
@@ -31,4 +32,5 @@ $.ajaxSetup({beforeSend: function(xhr, settings){
             }
         );
     });
+});
 }(jQuery));

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
@@ -54,6 +55,12 @@ class JobAdmin(TendenciBaseModelAdmin):
                 'list_type',
             )
         }),
+         (_('Category'), {
+            'fields': ['cat',
+                       'sub_cat'
+                       ],
+            'classes': ['boxy-grey job-category'],
+          }),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
