@@ -109,6 +109,13 @@ class BaseJob(TendenciBaseModel):
     sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),
                                  related_name="job_subcat", null=True, on_delete=models.SET_NULL)
 
+    # needed for migration 0003
+    categories = GenericRelation(
+        CategoryItem,
+        object_id_field="object_id",
+        content_type_field="content_type"
+    )
+
     perms = GenericRelation(
         ObjectPermission,
         object_id_field="object_id",
