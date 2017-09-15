@@ -35,7 +35,7 @@
     },
     {
         "default_value": "Tendenci",
-        "description": "Enter how you'd like your organization's name displayed on the website. This also is inserted in the title tags and is used for SEO (Search Engine Optimization).",
+        "description": "Enter how you'd like your organization's name displayed on the website. This is also inserted into the title tags and is used for SEO (Search Engine Optimization).",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "text",
@@ -68,7 +68,7 @@
         "updated_by": ""
     },
     {
-        "default_value": "http://tendenci.com",
+        "default_value": "https://www.tendenci.com",
         "description": "The main URL of your site. This is used to generate links within the software so it is important that it remains the same.",
         "data_type": "string",
         "update_dt": "2011-01-19 15:39:33",
@@ -137,7 +137,7 @@
     },
     {
         "default_value": "email@example.com",
-        "description": "E-Mail address of your site owner or primary site administrator.",
+        "description": "Email address of your site owner or primary site administrator.",
         "data_type": "string",
         "update_dt": "2010-10-22 09:29:46",
         "input_type": "text",
@@ -154,7 +154,7 @@
     },
     {
         "default_value": "Webmaster",
-        "description": "Name of Your webmaster.",
+        "description": "Name of your webmaster.",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "text",
@@ -171,7 +171,7 @@
     },
     {
         "default_value": "email@example.com",
-        "description": "E-Mail address of your webmaster.",
+        "description": "Email address of your webmaster.",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "text",
@@ -188,7 +188,7 @@
     },
     {
         "default_value": " ",
-        "description": "The primary, physical address of your website or business.",
+        "description": "The primary physical address of your organization.",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "text",
@@ -205,7 +205,7 @@
     },
     {
         "default_value": "AuthorizeNet",
-        "description": "If you have a merchant account, enter the name of the merchant account service provider. Check out the help file on <a href='http://tendenci.com/help-files/setup-online-payment-tendenci-t5-site/'>how to set up online payment</a>.",
+        "description": "If you have a merchant account, enter the name of your merchant account service provider. View the help file on <a href='https://www.tendenci.com/help-files/setup-online-payment-tendenci-t5-site/'>how to set up online payment</a>.",
         "data_type": "string",
         "update_dt": "2011-04-28 13:59:53",
         "input_type": "text",
@@ -273,7 +273,7 @@
     },
     {
         "default_value": "false",
-        "description": "Merchant Authorize Only is a true/false variable indicating whether to just authorize payment or authorize and process payment.  If true, then merchant only authorizes the order, but holds off on processing until a later time.",
+        "description": "Merchant Authorize Only is a true/false variable indicating whether to just authorize payment or to authorize and process payment.  If true, then merchant only authorizes the order, but holds off on processing until a later time.",
         "data_type": "boolean",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "select",
@@ -290,7 +290,7 @@
     },
     {
         "default_value": " ",
-        "description": "Merchant CC Accepted displays what credit cards are accepted by the merchant. ie Visa, Mastercard, Amex",
+        "description": "Merchant CC Accepted displays what credit cards are accepted by the merchant. ie Visa, Mastercard, AMEX",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "text",
@@ -307,7 +307,7 @@
     },
     {
         "default_value": "",
-        "description": "Keywords that your site will automatically populate within the keywords meta tag, Page titles and other locations on many modules.",
+        "description": "Keywords that your site will automatically populate within the keywords meta tag, page titles and other locations on many modules.",
         "data_type": "string",
         "update_dt": "2010-12-01 14:10:00",
         "input_type": "text",
@@ -324,7 +324,7 @@
     },
     {
         "default_value": " ",
-        "description": "Secondary Keywords that your site will automatically populate within keywords meta tag, Page titles and other locations on many modules.",
+        "description": "Secondary Keywords that your site will automatically populate within keywords meta tag, page titles and other locations on many modules.",
         "data_type": "string",
         "update_dt": "2010-12-01 14:10:00",
         "input_type": "text",
@@ -341,7 +341,7 @@
     },
     {
         "default_value": " ",
-        "description": "CompanyTax ID Number is Your Organization's tax id number",
+        "description": "Enter your organization's Tax ID Number",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "text",
@@ -358,7 +358,7 @@
     },
     {
         "default_value": "true",
-        "description": "Select true if you want to include Captcha codes on your forms and false to turn them off.  This effects all forms site-wide.",
+        "description": "Select true if you want to include Captcha codes on your forms and false to turn them off.  This affects all forms site-wide.",
         "data_type": "boolean",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "select",
@@ -409,7 +409,7 @@
     },
     {
         "default_value": " ",
-        "description": "The phone number of your site or business.",
+        "description": "The phone number of your organization.",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "text",
@@ -426,7 +426,7 @@
     },
     {
         "default_value": "noreply@example.com",
-        "description": "Enter the address that will be shown as the sender when the system sends out emails.",
+        "description": "Enter the address that will be shown as the sender when the system sends out emails. This email address must be verified against your host server to ensure proper forwarding. To verify a new email address, please <a href='https://www.tendenci.com/tickets/tickets/submit/'>submit a help desk ticket</a>.",
         "data_type": "string",
         "update_dt": "2011-02-24 14:22:04",
         "input_type": "text",
@@ -443,7 +443,7 @@
     },
     {
         "default_value": "en",
-        "description": "Select the language for your site to translate. Most words will be translated.",
+        "description": "Select the language for your Tendenci site. This affects the software but not the page content.",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "select",
@@ -459,7 +459,7 @@
         "updated_by": ""
     },
     {
-        "default_value": "http://www.example.com/policy/",
+        "default_value": "https://www.example.com/policy/",
         "description": "Link or text containing your site policies.",
         "data_type": "string",
         "update_dt": "2010-10-22 09:29:46",
@@ -494,7 +494,7 @@
     },
     {
         "default_value": " ",
-        "description": "Enter your Google Analytics web stats tracking UA number to start tracking stats on your website. You will need to first sign up at <a target='_blank' href='http://www.google.com/analytics/'>http://www.google.com/analytics/</a>. Ex: UA-12345678-9",
+        "description": "Enter your Google Analytics UA number to start tracking stats on your website. You will need to first sign up at <a target='_blank' href='https://www.google.com/analytics/'>http://www.google.com/analytics/</a>. Ex: UA-12345678-9",
         "data_type": "string",
         "update_dt": "2010-10-22 09:29:46",
         "input_type": "text",
@@ -562,7 +562,7 @@
     },
     {
         "default_value": "/profiles/",
-        "description": "A global site setting for a url for users to redirect to when they first login. Site setting to redirect non-admin users to a specific page. Can be /dashboard, /profiles/, or a custom instruction page. Use '<username>' to have the username inserted for unique login pages for all non-admin users.",
+        "description": "Site setting to redirect non-admin users to a specific page on login to the website. Can be /dashboard, /profiles/, or a custom instruction page. Use '<username>' to have the username inserted for unique login pages for all non-admin users.",
         "data_type": "string",
         "update_dt": "2011-05-27 15:38:23",
         "input_type": "text",
@@ -664,7 +664,7 @@
     },
     {
         "default_value": 0,
-        "description": "Select a group that will be used as the default group for all modules.",
+        "description": "Select a Group to be used as the default Group for all modules.",
         "data_type": "int",
         "update_dt": "2013-05-09 10:13:00",
         "input_type": "select",
@@ -715,7 +715,7 @@
     },
     {
         "default_value": "base/robots_private.txt",
-        "description": "This setting determines whether your website is visible to search engines like Google and Yahoo. <strong>Private</strong> will block search engines, <strong>Public</strong> will allow them in, and <strong>Custom</strong> will let you customize this in your theme. The default for the custom option is the same as private.",
+        "description": "This setting determines whether your website is visible to search engines like Google and Bing. <strong>Private</strong> will block search engines, <strong>Public</strong> will allow them in, and <strong>Custom</strong> will let you customize this in your theme. The default for the custom option is the same as private.",
         "data_type": "string",
         "update_dt": "2012-07-12 10:18:26",
         "input_type": "select",
@@ -749,7 +749,7 @@
     },
     {
         "default_value": "false",
-        "description": "If True, Tendenci Tabs will be hidden on all module navigation.",
+        "description": "If True, Tendenci tabs will be hidden on all module navigation.",
         "data_type": "boolean",
         "update_dt": "2012-02-16 09:42:02",
         "input_type": "select",
@@ -817,7 +817,7 @@
     },
     {
         "default_value": "US",
-        "description": "Enter the Country of your site.",
+        "description": "Enter the Country for your site.",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:13",
         "input_type": "select",
@@ -834,7 +834,7 @@
     },
     {
         "default_value": "",
-        "description": "Select the initial choices for the country field dropdown (on your membership or other forms).",
+        "description": "Select the initial choices for the Country field dropdown (on your membership or other forms).",
         "data_type": "string",
         "update_dt": "2016-03-03 15:02:00",
         "input_type": "selectmultiple",
