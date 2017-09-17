@@ -5,7 +5,7 @@
 import re
 import calendar
 import itertools
-import subprocess
+import subprocess, sys
 import time
 import xlwt
 from collections import OrderedDict
@@ -4386,7 +4386,7 @@ def import_process(request, import_id,
 
     import_i = get_object_or_404(Import, id=import_id)
 
-    subprocess.Popen(['python', 'manage.py', 'import_events', str(import_id)])
+    subprocess.Popen([sys.executable, 'manage.py', 'import_events', str(import_id)])
 
     return render_to_response(template_name, {
         'total': import_i.total_created + import_i.total_invalid,
@@ -4412,7 +4412,7 @@ def export(request, template_name="events/export.html"):
         temp_file_path = 'export/events/%s_temp.csv' % identifier
         default_storage.save(temp_file_path, ContentFile(''))
 
-        process_options = ["python", "manage.py", "event_export_process",
+        process_options = [sys.executable, "manage.py", "event_export_process",
                            "--identifier=%s" % identifier,
                            "--user=%s" % request.user.id]
         if by_type:

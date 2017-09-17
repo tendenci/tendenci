@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import subprocess, time
+import subprocess, sys, time
 import string
 
 from django.contrib.auth.decorators import login_required
@@ -598,7 +598,7 @@ def directory_export(request, template_name="directories/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([sys.executable, "manage.py",
                           "directory_export_process",
                           '--export_fields=%s' % export_fields,
                           '--export_status_detail=%s' % export_status_detail,

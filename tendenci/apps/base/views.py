@@ -7,7 +7,7 @@ from PIL import Image as Pil
 import os
 import mimetypes
 import shutil
-import subprocess
+import subprocess, sys
 import zipfile
 import xmlrpclib
 
@@ -415,14 +415,14 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
     addon_name = addon_zip.namelist()[0]
     addon_name = addon_name.strip('/')
     if not os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon_name)):
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([sys.executable, "manage.py",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
 
     if request.method == "POST":
         shutil.rmtree(os.path.join(settings.SITE_ADDONS_PATH, addon_name))
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([sys.executable, "manage.py",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
@@ -469,7 +469,7 @@ def update_tendenci(request, template_name="base/update.html"):
         tos = request.POST.get('tos')
         
         if tos:
-            SubProcessManager.set_process(["python", "manage.py", "auto_update",
+            SubProcessManager.set_process([sys.executable, "manage.py", "auto_update",
                                             "--user_id=%s" % request.user.id])
             return redirect('update_tendenci.confirmation')
 

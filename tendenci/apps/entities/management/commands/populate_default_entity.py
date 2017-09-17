@@ -14,7 +14,7 @@ class Command(BaseCommand):
     If not found, create one.
 
     Usage:
-        .manage.py populate_default_entity --verbosity=2
+        python manage.py populate_default_entity --verbosity=2
     """
     def handle(self, *args, **options):
         from tendenci.apps.entities.models import Entity

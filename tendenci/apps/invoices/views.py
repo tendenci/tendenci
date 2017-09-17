@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from datetime import datetime, time, timedelta
 import time as ttime
-import subprocess
+import subprocess, sys
 
 from django.template import RequestContext
 from django.db.models import Sum, Q
@@ -500,7 +500,7 @@ def export(request, template_name="invoices/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([sys.executable, "manage.py",
                           "invoice_export_process",
                           '--start_dt=%s' % start_dt,
                           '--end_dt=%s' % end_dt,

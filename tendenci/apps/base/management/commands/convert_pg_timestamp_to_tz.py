@@ -14,7 +14,7 @@ class Command(BaseCommand):
     timestamptz.
 
     Usage:
-        .manage.py convert_pg_timestamp_to_tz
+        python manage.py convert_pg_timestamp_to_tz
     """
     def convert_to_utc(self, timestamp):
         from_zone = tz.gettz(settings.TIME_ZONE)

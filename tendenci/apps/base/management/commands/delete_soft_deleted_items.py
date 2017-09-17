@@ -10,7 +10,7 @@ class Command(BaseCommand):
     and delete all soft deleted items.
 
     Usage:
-        .manage.py delete_soft_deleted_items
+        python manage.py delete_soft_deleted_items
     """
     def handle(self, *args, **options):
         from tendenci.apps.perms.models import TendenciBaseModel

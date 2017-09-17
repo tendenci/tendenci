@@ -14,10 +14,10 @@ class Command(BaseCommand):
     and add or update the settings accordingly.
 
     Usage:
-        manage.py update_settings <appname appname ...>
+        python manage.py update_settings <appname appname ...>
 
     Example:
-        manage.py update_settings articles plugins.donations
+        python manage.py update_settings articles plugins.donations
 
     If no appname specified, it updates for ALL installed apps.
 

@@ -7,7 +7,7 @@ class Command(BaseCommand):
     and object_id.
 
     Usage:
-        .manage.py refresh_invoice_entity_field
+        python manage.py refresh_invoice_entity_field
     """
     def handle(self, *args, **options):
         from tendenci.apps.invoices.models import Invoice

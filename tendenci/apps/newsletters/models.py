@@ -1,5 +1,5 @@
 import datetime
-import subprocess
+import subprocess, sys
 import uuid
 
 from django.conf import settings
@@ -399,7 +399,7 @@ class Newsletter(models.Model):
         return members
 
     def send_to_recipients(self):
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([sys.executable, "manage.py",
                               "send_newsletter",
                               str(self.pk)])
 

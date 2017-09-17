@@ -11,7 +11,7 @@ class Command(BaseCommand):
     Only run this once, and after running convert_pg_timestamp_to_tz
 
     Usage:
-        .manage.py update_event_timezone_values
+        python manage.py update_event_timezone_values
     """
     def handle(self, *args, **options):
         from tendenci.apps.events.models import Event

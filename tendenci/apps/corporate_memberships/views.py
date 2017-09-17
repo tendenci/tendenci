@@ -5,7 +5,7 @@ import csv
 import operator
 from hashlib import md5
 from sets import Set
-import subprocess
+import subprocess, sys
 import mimetypes
 
 from django.contrib.admin.views.decorators import staff_member_required
@@ -1412,7 +1412,7 @@ def import_preview(request, mimport_id,
 #                                 args=[mimport.id]))
         else:
             if mimport.status == 'not_started':
-                subprocess.Popen(["python", "manage.py",
+                subprocess.Popen([sys.executable, "manage.py",
                               "corp_membership_import_preprocess",
                               str(mimport.pk)])
 
@@ -1452,7 +1452,7 @@ def import_process(request, mimport_id):
         mimport.num_processed = 0
         mimport.save()
         # start the process
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([sys.executable, "manage.py",
                           "import_corp_memberships",
                           str(mimport.pk),
                           str(request.user.pk)])
