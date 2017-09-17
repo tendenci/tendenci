@@ -1671,8 +1671,8 @@ def register(request, event_id=0,
 
 
     # check if event allows registration
-    if not event.registration_configuration and \
-       event.registration_configuration.enabled:
+    if not (event.registration_configuration and
+            event.registration_configuration.enabled):
         raise Http404
 
     # check spots available
@@ -2093,8 +2093,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     event = get_object_or_404(Event, pk=event_id)
 
     # check if event allows registration
-    if not event.registration_configuration and \
-       event.registration_configuration.enabled:
+    if not (event.registration_configuration and
+            event.registration_configuration.enabled):
         raise Http404
 
     # set up pricing
