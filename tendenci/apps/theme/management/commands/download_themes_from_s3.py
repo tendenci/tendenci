@@ -8,9 +8,9 @@ class Command(NoArgsCommand):
     Download themes from S3 to the local themes directory.
 
     Usage:
-        manage.py download_themes_from_s3 --update-only --dry-run
-        manage.py download_themes_from_s3 --update-only
-        manage.py download_themes_from_s3
+        python manage.py download_themes_from_s3 --update-only --dry-run
+        python manage.py download_themes_from_s3 --update-only
+        python manage.py download_themes_from_s3
     """
     option_list = NoArgsCommand.option_list + (
         make_option('-n', '--dry-run',

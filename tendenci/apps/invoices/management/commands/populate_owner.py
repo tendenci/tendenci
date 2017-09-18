@@ -6,7 +6,7 @@ class Command(BaseCommand):
     Populate the invoice owner.
 
     Usage:
-        .manage.py populate_owner
+        python manage.py populate_owner
     """
     def handle(self, *args, **options):
         from tendenci.apps.invoices.models import Invoice

@@ -1,4 +1,4 @@
-import os, subprocess, xmlrpclib
+import os, subprocess, sys, xmlrpclib
 from optparse import make_option
 
 from django.conf import settings
@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         try:
             print "Updating tendenci"
-            subprocess.check_output("pip install tendenci --upgrade", stderr=subprocess.STDOUT, shell=True)
+            subprocess.check_output("%s -m pip install tendenci --upgrade" % sys.executable, stderr=subprocess.STDOUT, shell=True)
             pass_update_tendenci = True
 
         except subprocess.CalledProcessError as e:
@@ -60,7 +60,7 @@ class Command(BaseCommand):
         if pass_update_tendenci:
             try:
                 print "Updating tendenci site"
-                subprocess.check_output("python deploy.py", stderr=subprocess.STDOUT, shell=True)
+                subprocess.check_output("%s deploy.py" % sys.executable, stderr=subprocess.STDOUT, shell=True)
                 pass_update_tendenci_site = True
 
             except subprocess.CalledProcessError as e:

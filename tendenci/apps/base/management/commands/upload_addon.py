@@ -34,13 +34,13 @@ class Command(BaseCommand):
         addon_zip.extractall(settings.SITE_ADDONS_PATH)
 
         print "Updating tendenci site"
-        os.system('python manage.py syncdb --noinput')
-        os.system('python manage.py migrate %s --noinput' % addon_name)
-        os.system('python manage.py update_settings %s' % addon_name)
-        os.system('python manage.py collectstatic --noinput')
+        os.system('"%s" manage.py syncdb --noinput' % (sys.executable))
+        os.system('"%s" manage.py migrate %s --noinput' % (sys.executable, addon_name))
+        os.system('"%s" manage.py update_settings %s' % (sys.executable, addon_name))
+        os.system('"%s" manage.py collectstatic --noinput' % (sys.executable))
 
         print "Restarting Server"
-        os.system('sudo reload %s' % os.path.basename(settings.PROJECT_ROOT))
+        os.system('sudo reload "%s"' % os.path.basename(settings.PROJECT_ROOT))
 
         print 'Deleting zip file'
         default_storage.delete(path)

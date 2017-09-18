@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, sys
 
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
@@ -35,7 +35,7 @@ def export_page(request):
                 new_obj.author = request.user
                 new_obj.export_format = form.cleaned_data['format']
                 new_obj.save()
-                subprocess.Popen(["python", "manage.py",
+                subprocess.Popen([sys.executable, "manage.py",
                               "create_database_dump",
                               str(request.user.pk), form.cleaned_data['format'], str(new_obj.pk) ])
                 messages.add_message(request, messages.INFO, "Success! The system is now generating your export file. Please reload in a few seconds to update the list.")

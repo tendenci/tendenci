@@ -10,7 +10,7 @@ from tendenci.apps.site_settings.models import Setting
 class Command(BaseCommand):
     """Encrypts all Setting values if they are not already encrypted
     Usage:
-        manage.py encrypt_settings
+        python manage.py encrypt_settings
     """
     help = 'Encrypt all settings if they are not already encrypted'
 

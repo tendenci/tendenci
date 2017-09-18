@@ -13,7 +13,7 @@ class Command(BaseCommand):
     Performs a run for a report
 
     Usage:
-        ./manage.py process_report_run 32
+        python manage.py process_report_run 32
     """
     help = "Performs a report run based on the configuration in the report and in the run."
 
