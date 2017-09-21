@@ -219,16 +219,28 @@ def ticket_from_message(message, queue, quiet):
                 body_plain = EmailReplyParser.parse_reply(decodeUnknown(part.get_content_charset(), part.get_payload(decode=True)))
             else:
                 body_html = part.get_payload(decode=True)
+                # make plain text more legible when viewing the ticket
+                body_html, n = re.subn(r'[\r\n]+', r'', body_html)
+                body_html, n = re.subn(r'\>\s+\<', r'><', body_html)
+                body_html = body_html.replace("</h1>", "</h1>\n")
+                body_html = body_html.replace("</h2>", "</h2>\n")
+                body_html = body_html.replace("</h3>", "</h3>\n")
+                body_html = body_html.replace("<p>", "\n<p>")
+                body_html = body_html.replace("</p>", "</p>\n")
+                body_html = body_html.replace("</div>", "</div>\n")
+                body_html = body_html.replace("</tr>", "</tr>\n")
+                body_html = body_html.replace("</td>", "</td> ")
+                body_html = body_html.replace("<table>", "\n<table>")
+                body_html = body_html.replace("</table>", "</table>\n")
+                body_html = body_html.replace("<br />", "<br />\n")
+                
                 try:
                     # strip html tags
                     body_plain = striptags(body_html)
                 except DjangoUnicodeDecodeError as e:
                     charset = chardet.detect(body_html)['encoding']
                     body_plain = striptags(unicode(body_html, charset))
-                # remove extra new lines
-                body_plain, n = re.subn(r'[\r\n]+', r'\n', body_plain)
-                # remove extra spaces
-                body_plain, n = re.subn(r'\s+$', '', body_plain, flags=re.M)
+
                 body_plain = unescape(body_plain)
         else:
             if not name:
