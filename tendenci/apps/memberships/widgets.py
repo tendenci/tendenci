@@ -395,7 +395,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
             try:
                 widget_value = value[i]
             except IndexError:
-                self.fields['donatin_option_value'].initial = None
+                self.fields['donation_option_value'].initial = None
         else:
             widget_value = None
         if id_:

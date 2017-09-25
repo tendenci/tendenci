@@ -185,12 +185,12 @@
         {% for field_obj in app_fields %}
             {% render_membership_field request field_obj user_form profile_form demographics_form membership_form education_form %}
         	{% if field_obj.field_name == 'membership_type' %}
-        		{% if membership_form.donatin_option_value %}
+        		{% if membership_form.donation_option_value %}
 		            <div class="form-group donation-option-value" style="margin-top: 1.5em;">
-		                <label for="{{ membership_form.donatin_option_value.id_for_label }}" class="col-sm-3 control-label">{{ membership_form.donatin_option_value.label }}</label>
+		                <label for="{{ membership_form.donation_option_value.id_for_label }}" class="col-sm-3 control-label">{{ membership_form.donation_option_value.label }}</label>
 		
 		                <div class="col-sm-8">
-		                    {{ membership_form.donatin_option_value }}
+		                    {{ membership_form.donation_option_value }}
 		                </div>
 		            </div>
 		            
