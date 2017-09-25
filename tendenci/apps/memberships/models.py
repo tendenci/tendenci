@@ -1800,9 +1800,9 @@ class MembershipDefault(TendenciBaseModel):
             else:
                 demographics = None
             for field_name in field_names:
-                if hasattr(user, field_name):
+                if hasattr(user, field_name) and field_name != 'groups':
                     items[field_name] = getattr(user, field_name)
-                elif hasattr(profile, field_name):
+                elif hasattr(profile, field_name) and field_name != 'referral_source':
                     items[field_name] = getattr(profile, field_name)
                 elif demographics and hasattr(demographics, field_name):
                     items[field_name] = getattr(demographics, field_name)
@@ -2147,6 +2147,9 @@ class Notice(models.Model):
             'username': membership.user.username,
             'member_number': membership.member_number,
             'membership_type': membership.membership_type.name,
+            'membership_price': membership.get_price(),
+            'donation_amount': inv.get_donation_amount(),
+            'total_amount': inv.total,
             'payment_method': payment_method_name,
             'referer_url': '%s%s?next=%s' % (global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
             'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
@@ -2277,7 +2280,6 @@ class Notice(models.Model):
                     'membership_%s_to_member' % template_type, {
                     'subject': notice.get_subject(membership=membership),
                     'content': notice.get_content(membership=membership),
-                    'membership_total': MembershipDefault.objects.filter(status=True, status_detail='active').count(),
                     'reply_to': notice.sender,
                     'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
                     'sender_display': notice.sender_display,

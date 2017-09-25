@@ -1222,7 +1222,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
             if app.donation_enabled:
                 # check for donation
-                donation_option, donation_amount = membership_form2.cleaned_data.get('donatin_option_value', (None, None))
+                donation_option, donation_amount = membership_form2.cleaned_data.get('donation_option_value', (None, None))
                 if donation_option:
                     if donation_option == 'default':
                         donation_amount = app.donation_default_amount

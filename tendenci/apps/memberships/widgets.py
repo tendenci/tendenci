@@ -375,8 +375,9 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         # donation_option
         OPTION_CHOICE = (
                           ("default", "%s%s" % (currency_symbol, self.default_amount)),
-                          ("custom", mark_safe('%s %s</div>' % \
-                                          (currency_symbol, rendered_donation_amount))),)
+                          ("custom", mark_safe('%s %s' % \
+                                          (currency_symbol, rendered_donation_amount))),
+                        )
         donation_option_widget = self.pos_d['donation_option'][1]
         donation_option_widget.choices=OPTION_CHOICE
         output_html = self.render_widget(donation_option_widget,
@@ -394,7 +395,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
             try:
                 widget_value = value[i]
             except IndexError:
-                self.fields['donatin_option_value'].initial = None
+                self.fields['donation_option_value'].initial = None
         else:
             widget_value = None
         if id_:
