@@ -1800,9 +1800,9 @@ class MembershipDefault(TendenciBaseModel):
             else:
                 demographics = None
             for field_name in field_names:
-                if hasattr(user, field_name):
+                if hasattr(user, field_name) and field_name != 'groups':
                     items[field_name] = getattr(user, field_name)
-                elif hasattr(profile, field_name):
+                elif hasattr(profile, field_name) and field_name != 'referral_source':
                     items[field_name] = getattr(profile, field_name)
                 elif demographics and hasattr(demographics, field_name):
                     items[field_name] = getattr(demographics, field_name)
