@@ -2277,7 +2277,6 @@ class Notice(models.Model):
                     'membership_%s_to_member' % template_type, {
                     'subject': notice.get_subject(membership=membership),
                     'content': notice.get_content(membership=membership),
-                    'membership_total': MembershipDefault.objects.filter(status=True, status_detail='active').count(),
                     'reply_to': notice.sender,
                     'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
                     'sender_display': notice.sender_display,
