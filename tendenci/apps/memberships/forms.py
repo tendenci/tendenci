@@ -775,6 +775,9 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
+
+        del self.fields['referral_source']
+
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
 
