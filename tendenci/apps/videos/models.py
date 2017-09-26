@@ -69,7 +69,7 @@ class Video(OrderingBaseModel, TendenciBaseModel):
     def save(self, *args, **kwargs):
         model = self.__class__
 
-        if self.position is None:
+        if self.pk is None:
             # Append
             try:
                 last = model.objects.order_by('-position')[0]
