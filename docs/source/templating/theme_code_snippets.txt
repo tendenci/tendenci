@@ -220,7 +220,7 @@ Then add the following code snippet where you want to place your carousel:
 
 .. code-block:: django
 
-	{% list_stories as stories_list limit=10 tags="rotator" quality="80" %}
+	{% list_stories as stories_list limit=10 tags="rotator" quality="80" data-interval="5000" %}
 	<div id="myCarousel" class="carousel slide" data-ride="carousel">
  	   <ol class="carousel-indicators">
    	     {% for story in stories_list %}
