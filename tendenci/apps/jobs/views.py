@@ -235,7 +235,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             # send user to the payment page if payment is required
             if require_payment:
-                if job.payment_method.lower() in ['credit card', 'cc']:
+                if job.payment_method.lower() in ['credit card', 'cc', 'online payment']:
                     if job.invoice and job.invoice.balance > 0:
                         return HttpResponseRedirect(reverse(
                             'payment.pay_online',
