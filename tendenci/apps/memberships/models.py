@@ -2153,6 +2153,7 @@ class Notice(models.Model):
             'payment_method': payment_method_name,
             'referer_url': '%s%s?next=%s' % (global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
             'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
+            'view_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'invoice_link': '%s%s' % (global_setting('siteurl'), invoice_link),
             'renew_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'corporate_membership_notice': corporate_msg,

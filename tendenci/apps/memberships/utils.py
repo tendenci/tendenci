@@ -813,8 +813,8 @@ def get_notice_token_help_text(notice=None):
                     'total_amount',
                     'referer_url',
                     'membership_link',
+                    'view_link',
                     'invoice_link',
-                    'renew_link'
                     'renew_link',
                     'expire_dt',
                     'site_contact_name',
