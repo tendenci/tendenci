@@ -379,7 +379,7 @@ def delete(request, id, template_name="jobs/delete.html"):
 
     if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
-            msg_string = 'Successfully deleted %s' % job
+            msg_string = u'Successfully deleted {}'.format(unicode(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
