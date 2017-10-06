@@ -361,7 +361,7 @@ def edit_meta(request, id, form_class=MetaForm,
         if form.is_valid():
             job.meta = form.save()  # save meta
             job.save()  # save relationship
-            msg_string = 'Successfully updated meta for %s' % job
+            msg_string = u'Successfully updated meta for {}'.format(unicode(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
@@ -559,7 +559,7 @@ def approve(request, id, template_name="jobs/approve.html"):
                 'job_approved_user_notice', recipients, extra_context)
             #except:
             #    pass
-        msg_string = 'Successfully approved %s' % job
+        msg_string = u'Successfully approved {}'.format(unicode(job))
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))
