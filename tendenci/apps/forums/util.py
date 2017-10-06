@@ -139,7 +139,7 @@ def get_pybb_profile(user):
         else:
             raise ValueError(_('Can\'t get profile for anonymous user'))
 
-    if defaults.PYBB_PROFILE_RELATED_NAME:
+    if defaults.PYBB_PROFILE_RELATED_NAME and hasattr(user, defaults.PYBB_PROFILE_RELATED_NAME):
         return getattr(user, defaults.PYBB_PROFILE_RELATED_NAME)
     else:
         return user
