@@ -2115,11 +2115,14 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
         table_data = []
         for mem in members:
-
+            if hasattr(mem.user, 'profile'):
+                company = mem.user.profile.company
+            else:
+                company = ''
             table_data.append([
                 mem.user.first_name,
                 mem.user.last_name,
-                mem.user.profile.company
+                company
             ])
 
         return render_csv(
