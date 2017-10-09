@@ -370,7 +370,12 @@ TINYMCE_DEFAULT_CONFIG = {
     # Specify your css to apply to the editable area
     #'content_css': '/themes/<theme name>/media/css/styles.css',
     'resize': 'both',
-
+    'link_class_list': [
+        {'title': 'None', 'value': ''},
+        {'title': 'Primary Button', 'value': 'btn btn-primary'},
+        {'title': 'Default Button', 'value': 'btn btn-default'}
+        ],
+    
     'tabfocus_elements': ":prev,:next",
     'convert_urls': 'false',
     'handle_event_callback': "event_handler",
