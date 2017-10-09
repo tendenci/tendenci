@@ -17,13 +17,13 @@
             {% endif %}
         </div>
 
-        <div class="form-group{% if form.categories.errors %} has-error{% endif %}">
-            {{ form.categories }}
+        <div class="form-group{% if form.cat.errors %} has-error{% endif %}">
+            {{ form.cat }}
 
-            {% if form.categories.errors %}
+            {% if form.cat.errors %}
                 <p class="help-block">
                     <ul class="list-unstyled">
-                        {% for error in form.categories.errors %}
+                        {% for error in form.cat.errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </ul>
@@ -31,13 +31,13 @@
             {% endif %}
         </div>
 
-        <div class="form-group{% if form.subcategories.errors %} has-error{% endif %}">
-            {{ form.subcategories }}
+        <div class="form-group{% if form.sub_cat.errors %} has-error{% endif %}">
+            {{ form.sub_cat }}
 
-            {% if form.subcategories.errors %}
+            {% if form.sub_cat.errors %}
                 <p class="help-block">
                     <ul class="list-unstyled">
-                        {% for error in form.subcategories.errors %}
+                        {% for error in form.sub_cat.errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </ul>

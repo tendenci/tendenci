@@ -10,14 +10,14 @@
         <li>{% fb_like_button_iframe job.get_absolute_url height=20 %}</li>
     {% endif %}
 
-    {% with job.category_set as job_cat %}
-        {% if job_cat.category %}
+    {% with job.cat as job_cat %}
+        {% if job_cat %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'jobs' %}?categories={{ job_cat.category.pk }}">{{ job_cat.category }}</a></li>
-                    {% if job_cat.sub_category %}
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'jobs' %}?cat={{ job_cat.pk }}">{{ job_cat.name }}</a></li>
+                    {% if job.sub_cat %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'jobs' %}?subcategories={{ job_cat.sub_category.pk }}">{{ job_cat.sub_category }}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'jobs' %}?cat={{ job_cat.pk }}&sub_cat={{ job.sub_cat.pk }}">{{ job.sub_cat.name }}</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -74,10 +74,6 @@
 
                             <li>
                                 <a href="{% url 'job.edit.meta' job.pk %}">{% trans "Edit Meta" %}</a>
-                            </li>
-
-                            <li>
-                                <a href="{% url 'category.update' job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a>
                             </li>
                         </ul>
                     </li>

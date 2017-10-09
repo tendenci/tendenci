@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.admin import widgets
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -14,6 +15,7 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.jobs.models import JobPricing
+from tendenci.apps.jobs.models import Category as JobCategory
 from tendenci.apps.jobs.utils import get_payment_method_choices, pricing_choices
 from tendenci.apps.user_groups.models import Group
 
@@ -91,6 +93,15 @@ class JobForm(TendenciBaseForm):
 
     pricing = forms.ModelChoiceField(queryset=JobPricing.objects.filter(status=True).order_by('duration'),
                 **request_duration_defaults)
+    cat = forms.ModelChoiceField(label=_("Category"),
+                                      queryset=JobCategory.objects.filter(parent=None),
+                                      empty_label="-----------",
+                                      required=False)
+    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
+                                          queryset=JobCategory.objects.none(),
+                                          empty_label=_("Please choose a category first"),
+                                          required=False)
+
 
     class Meta:
         model = Job
@@ -138,6 +149,8 @@ class JobForm(TendenciBaseForm):
             'syndicate',
             'status_detail',
             'payment_method',
+            'cat',
+            'sub_cat'
         )
 
         fieldsets = [
@@ -206,6 +219,12 @@ class JobForm(TendenciBaseForm):
                 ],
                 'classes': ['permissions'],
             }),
+            (_('Category'), {
+                    'fields': ['cat',
+                               'sub_cat'
+                               ],
+                    'classes': ['boxy-grey job-category'],
+                  }),
             (_('Administrator Only'), {
                 'fields': ['syndicate',
                            'status_detail'],
@@ -224,6 +243,24 @@ class JobForm(TendenciBaseForm):
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
+
+        # cat and sub_cat
+        if self.user.profile.is_superuser:
+            self.fields['sub_cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+                                        reverse('admin:jobs_category_changelist'),
+                                        _('Manage Categories'),))
+        if self.instance and self.instance.pk:
+            self.fields['sub_cat'].queryset = JobCategory.objects.filter(
+                                                        parent=self.instance.cat)
+        if args:
+            post_data = args[0]
+        else:
+            post_data = None
+        if post_data:
+            cat = post_data.get('cat', '0')
+            if cat and cat != '0' and cat != u'':
+                cat = JobCategory.objects.get(pk=int(cat))
+                self.fields['sub_cat'].queryset = JobCategory.objects.filter(parent=cat)
 
         self.fields['pricing'].choices = pricing_choices(self.user)
 
@@ -356,33 +393,28 @@ class JobPricingForm(forms.ModelForm):
 
 class JobSearchForm(FormControlWidgetMixin, forms.Form):
     q = forms.CharField(label=_("Search"), required=False, max_length=200,)
-    categories = forms.ChoiceField(required=False)
-    subcategories = forms.ChoiceField(required=False)
+    cat = forms.ModelChoiceField(label=_("Category"),
+                                      queryset=JobCategory.objects.filter(parent=None),
+                                      empty_label="-----------",
+                                      required=False)
+    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
+                                          queryset=JobCategory.objects.none(),
+                                          empty_label=_("Subcategories"),
+                                          required=False)
 
     def __init__(self, *args, **kwargs):
         super(JobSearchForm, self).__init__(*args, **kwargs)
 
         # setup categories
-        (categories, sub_categories) = Category.objects.get_for_model(Job)
-        cat_length = len(categories)
-        cat_choices = [('', _('Categories (%(l)s)' % {'l' : cat_length}))]
-        for category in categories:
-            cat_choices.append((category.pk, category.name))
-
-        query_string = args[0]
-        category = None
-        try:
-            category_id = int(query_string.get('categories', None))
-            if category_id > 0:
-                [category] = Category.objects.filter(id=category_id)[:1] or [None]
-        except:
-            pass
-        if category:
-            sub_categories = Category.objects.get_for_model(Job, category)[1]
-        subcat_length = len(sub_categories)
-        subcat_choices = [('', _('Subcategories (%(l)s)' % {'l' : subcat_length}))]
-        for category in sub_categories:
-            subcat_choices.append((category.pk, category.name))
-
-        self.fields['categories'].choices = cat_choices
-        self.fields['subcategories'].choices = subcat_choices
+        categories = JobCategory.objects.filter(parent__isnull=True)
+        categories_count = categories.count() 
+        self.fields['cat'].queryset = categories
+        self.fields['cat'].empty_label = _('Categories (%(c)s)' % {'c' : categories_count})
+        data = args[0]
+        if data:
+            cat = data.get('cat', None)
+            if cat:
+                sub_categories = JobCategory.objects.filter(parent=cat)
+                sub_categories_count = sub_categories.count()
+                self.fields['sub_cat'].empty_label = _('Subcategories (%(c)s)' % {'c' : sub_categories_count})
+                self.fields['sub_cat'].queryset = sub_categories

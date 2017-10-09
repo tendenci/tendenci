@@ -3,7 +3,7 @@ Created on 28-02-2011
 
 @author: hpolloni
 '''
-import subprocess
+import subprocess, sys
 
 from django.contrib.sites.models import get_current_site
 from django.core.paginator import EmptyPage, PageNotAnInteger
@@ -72,7 +72,7 @@ def sitemap(request, sitemaps, section=None,
             site_urls = cache.get(sitemap_cache_key)
             if not isinstance(site_urls, list):
                 if not cached:
-                    subprocess.Popen(['python', 'manage.py', 'sitemap_cache'])
+                    subprocess.Popen([sys.executable, 'manage.py', 'sitemap_cache'])
                     cached = True
                 site_urls = site.get_urls(page=page, site=req_site,
                                           protocol=req_protocol)

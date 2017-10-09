@@ -10,9 +10,31 @@ To change the look of the News Search Results page, pull down these two template
 
 The overall page layout is dictated by ``search.html``.  The look of the news results can be changed through the ``search-result.html`` template.
 
+Social Sharing Links
+--------------------
+You can add social sharing links to the New's module meta.html or view.html to allow users to share the specific news articles they are viewing on your site.
+
+Facebook
+
+  .. code-block:: html
+
+    <a class="fa fa-facebook fa-2x" href="https://www.facebook.com/sharer/sharer.php?u={{ SITE_GLOBAL_SITEURL }}{{ news.get_canonical_url }}">&nbsp;</a>
+    
+Twitter
+
+  .. code-block:: html
+  
+     <a class="fa fa-twitter fa-2x" href="https://twitter.com/home?status={{ SITE_GLOBAL_SITEURL }}{{ news.get_canonical_url }}">&nbsp;</a>
+     
+Linkedin
+
+  .. code-block:: html
+  
+    <a class="fa fa-linkedin fa-2x" href="https://www.linkedin.com/shareArticle?mini=true&url={{ SITE_GLOBAL_SITEURL }}{{ news.get_canonical_url }}&title={{ news.headline }}&summary=&source=">&nbsp;</a>
+  
 
 Adding a Thumbnail
----------------
+------------------
 
 .. image:: img/newsthumbnail.png
 
@@ -36,7 +58,7 @@ Adding a Thumbnail
           
           
 Blog Styling: Show Image in the News Article
----------------
+--------------------------------------------
 
 .. image:: img/blogstyle.png
 

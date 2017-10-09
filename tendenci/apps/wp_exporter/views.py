@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, sys
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
@@ -27,7 +27,7 @@ def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"
             result = WPExportTask.delay(form, request.user)
             #uncomment the next line if there is no celery server yet.
             #result.wait()
-            subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
+            subprocess.Popen([sys.executable, 'manage.py', 'celeryd_detach'])
 
             return redirect("export_detail", result.task_id)
     else:

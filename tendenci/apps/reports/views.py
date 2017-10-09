@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import subprocess
+import subprocess, sys
 
 from django.views.generic import DetailView, ListView, CreateView
 from django.utils.decorators import method_decorator
@@ -87,7 +87,7 @@ class RunDetailView(DetailView):
         #invalidate('reports_run')
         obj = get_object_or_404(Run, pk=self.kwargs['pk'], report_id=self.kwargs['report_id'])
         if obj.status == "unstarted":
-            subprocess.Popen(["python", "manage.py", "process_report_run", str(obj.pk)])
+            subprocess.Popen([sys.executable, "manage.py", "process_report_run", str(obj.pk)])
         return obj
 
 

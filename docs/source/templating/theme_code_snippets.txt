@@ -30,7 +30,7 @@ Then add the following code snippet where you want to place your event feed:
 
 
 Single Event (featured event)
-----------------------------
+-----------------------------
 Add `{% load event_tags %}` to the very top of your html page
 
 
@@ -74,7 +74,7 @@ Time Display on Event Feed (hide time if all day)
 
 
 Articles Feed
-------------
+-------------
 Add `{% load article_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your articles feed:
@@ -213,14 +213,14 @@ Inside the boxes interface, adding code allows you to add images, add Font-Aweso
 		
 		
 Bootstrap Carousel
-----------
+------------------
 Add `{% load story_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your carousel:
 
 .. code-block:: django
 
-	{% list_stories as stories_list limit=10 tags="rotator" quality="80" %}
+	{% list_stories as stories_list limit=10 tags="rotator" quality="80" data-interval="5000" %}
 	<div id="myCarousel" class="carousel slide" data-ride="carousel">
  	   <ol class="carousel-indicators">
    	     {% for story in stories_list %}
@@ -259,7 +259,7 @@ Then add the following code snippet where you want to place your carousel:
 
 
 Directories Carousel
-----------
+--------------------
 Add `{% load directory_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your directories:
@@ -291,7 +291,7 @@ Then add the following code snippet where you want to place your directories:
 
 
 Directories (use with flexslider)
-----------
+---------------------------------
 Add `{% load directory_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your directories:
@@ -489,7 +489,7 @@ Simple Job Feed Layout
 			
 
 Photos Feed
-----------
+-----------
 
 Add `{% load photo_tags %}` to the very top of your html page
 
@@ -511,7 +511,7 @@ Drag and drop photo albums to change the order of display on /photos/. To displa
 
 
 Videos Feed
-----------
+-----------
 Add `{% load video_tags %}` to the very top of your html page
 Also add {% load video_filters %} to the very top of your html page 
 
@@ -529,7 +529,7 @@ Then add the following code snippet where you want to place your videos:
    </ul>
 
 News Feed (with Thumbnail Image)
-----------
+--------------------------------
 Add `{% load news_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your news feed:

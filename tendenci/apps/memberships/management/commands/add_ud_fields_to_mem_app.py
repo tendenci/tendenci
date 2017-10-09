@@ -9,7 +9,7 @@ class Command(BaseCommand):
     Add missing ud fields ud6, ...ud30 to a membership app
 
     Usage:
-        .manage.py add_ud_fields_to_mem_app 1
+        python manage.py add_ud_fields_to_mem_app 1
     """
     def add_arguments(self, parser):
         parser.add_argument('app_id', type=int)

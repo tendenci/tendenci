@@ -808,8 +808,13 @@ def get_notice_token_help_text(notice=None):
 
     other_labels = ['member_number',
                     'membership_type',
-                    'membership_link',
+                    'membership_price',
+                    'donation_amount',
+                    'total_amount',
                     'referer_url',
+                    'membership_link',
+                    'view_link',
+                    'invoice_link',
                     'renew_link',
                     'expire_dt',]
     if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):

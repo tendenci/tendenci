@@ -22,6 +22,29 @@ from tendenci.apps.jobs.module_meta import JobMeta
 from tendenci.apps.invoices.models import Invoice
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField()
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+
+    class Meta:
+        unique_together = ('slug', 'parent',)
+        verbose_name_plural = _("Categories")
+        ordering = ('name',)
+        app_label = 'jobs'
+
+    def __unicode__(self):
+        return self.name
+#         full_path = [self.name]
+#         p = self.parent
+# 
+#         while p is not None:
+#             full_path.append(p.name)
+#             p = p.parent
+# 
+#         return ' -> '.join(full_path[::-1])
+
+
 class BaseJob(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
@@ -80,12 +103,19 @@ class BaseJob(TendenciBaseModel):
     member_count = models.IntegerField(blank=True, null=True)
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
+    
+    cat = models.ForeignKey(Category, verbose_name=_("Category"),
+                                 related_name="job_cat", null=True, on_delete=models.SET_NULL)
+    sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),
+                                 related_name="job_subcat", null=True, on_delete=models.SET_NULL)
 
+    # needed for migration 0003
     categories = GenericRelation(
         CategoryItem,
         object_id_field="object_id",
         content_type_field="content_type"
     )
+
     perms = GenericRelation(
         ObjectPermission,
         object_id_field="object_id",
@@ -161,16 +191,6 @@ class BaseJob(TendenciBaseModel):
     @property
     def opt_module_name(self):
         return self._meta.model_name
-
-    @property
-    def category_set(self):
-        items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
-            if cat.category:
-                items["category"] = cat.category
-            elif cat.parent:
-                items["sub_category"] = cat.parent
-        return items
 
 
 class Job(BaseJob):

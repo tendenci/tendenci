@@ -12,50 +12,67 @@ Basic Functionality Testing
 -----------------------------
 
 1. Newsletter Sending has been tested
- - Instead of the settings for the regular emails, the newsletter has a separate set of the settings. In your site's 
-   conf/local_settings.py, make sure you have the following settings set up.
 
-     ::
+  - Instead of the settings for the regular emails, the newsletter has a separate set of the settings. In your site's conf/local_settings.py, make sure you have the following settings set up.
 
-       NEWSLETTER_EMAIL_HOST = '<email-host>'
-       NEWSLETTER_EMAIL_PORT = <email-port>
-       NEWSLETTER_EMAIL_HOST_USER = '<email-host-user>'
-       NEWSLETTER_EMAIL_HOST_PASSWORD = '<email-host-password>'
+    ::
 
- - Then, set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
+        NEWSLETTER_EMAIL_HOST = '<email-host>'
+        NEWSLETTER_EMAIL_PORT = <email-port>
+        NEWSLETTER_EMAIL_HOST_USER = '<email-host-user>'
+        NEWSLETTER_EMAIL_HOST_PASSWORD = '<email-host-password>'
+
+  - Then, set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
 
 2. Email sending from site is tested and sender address is client's email
+
   - Do a password reset and confirm you received the email
+ 
 3. Redirects have been tested
+
   - If they are using /redirects - click links in the list. Try in a new browser window when you are specifically NOT logged in.
   - Note the redirects module only redirects within the same site.
+
 4. 404 page has search bar (Debug=True is off)
+
   - Test the reflex. Make up a page that doesn't exist example:(/blah/blah) and see what the result is. Note that example link has two slashes to see if the images break.
+
 5. The security, 403 page is working properly
+
   - Not logged in try to access a page that requires you to be logged in. Make sure you are prompted to login.
+
 6. Merchant account has been tested
+
   - Donation form is a good way to test /donations or use /py
 
 Site Content Review
 -------------------
 
 1. Verify homepage is not pulling in demo/blank content. An example might be an auto feed from the photos module but no photos have been added.
+
   - twitter feed - verify it is using latest twitter embed code
   - facebook feed - *make sure* it is using latest FB embed iframe method or the site will run very slow waiting on FB
+
 2. Favicon and apple-touch-icon.png are logo
+
 3. Check Title Tag Spelling and Unique Meta and keywords on homepage. 
+
   - Check "Site Display Name", "Site Primary Keywords", and "Site Secondary Keywords" first. These are located at /settings/site/global/
   - Do a view source to see what is pulling in for <title></title>. 
   - Check for duplicate wording. 
   - *Danger* You can override dynamic title tags in the theme editor: /theme-editor/?file=/templates/homepage.html but this is a terrible idea. Instead check your base.html file in theme, that homepage.html is extending from base. Then check that your homepage.html is doing a block.super either at the front or back of the title tag block in your homepage.
+
 4. Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
 
 Contact and Custom Forms
 ------------------------
 
 1. Verify the official "contact" form is using the "contacts" module and not the custom forms module. There are many technical reasons for this beyond the scope of a checklist. 
+
   - Default Contact form has an email address in th "Send Copies To" field. 
+
 2. Custom forms - a necessary evil. Verify all forms if used on the site are in "published" status
+
   - Logout. Make Sure you still see them. Submit form to test.
   - Test if admin receives notification as well.
   - Make sure "Send Copies To" field is filled out with an email address
@@ -67,32 +84,47 @@ Edit Default Data to Make Sense
 *To Repeat - this should already have been done because this is a QA checklist*
 
 1. Unused Applications disabled in /admin/
+ 
   - Check if default users have email address ending in @<YOUR DOMAIN NAME>. Maybe delete them but be careful for deleting relational data.
   - Company listed as <WHATEVER YOUR ORGANIZATION NAME IS>
   - Edit, don't delete, default user groups. *warning* Edit/Don't Delete.
   - Test pages edited to be relevant or possibly removed or set to draft where appropriate. (Recommended - Please check with project manager before deleting)
+
 2. Test invoices have been voided
+
 3. Images are using alt tags throughout the site
+
 4. Site has been checked in an html validator (https://www.onlinewebcheck.com/check.php) and on http://www.site-analyzer.com
+
 5. Optional: Test site speed (http://tools.pingdom.com/fpt/)
+
 6. H2, H3 etc. subtitle tags are in place across the site
 
 Site Settings
 -------------
 
 1. Site URL field contains an url that starts with "www"
+
   - The canonical name must *NOT* be the apex/naked url. (This is BAD --> "example.org" and so very 1990s. Do NOT do this.)
   - Do an nslookup and be sure apex "example.org" forwards to "www.example.org" 
   - Do an nslookup to confirm www.example.org is using a CNAME to a host and not the IP address. Verify your site is future proof.
+
 2. Site name is correct, spelled out and not abbreviated if possible.
+
   - there are exceptions but generally this is best practice.
   - Example: "California Dog Walking Association"
+
 3. Physical address is the actual physical address. 
+
   - Required for email delivery by law.
   - Should match registered corporate or 501c address for SSL if possible
+
 4. Location setting is correct (and Time Zone).
+ 
   - this is important for reminders for events and merchant approvals
+
 5. Email - *CRITICAL*
+
   - Appropriate names and emails are set for administrator, contact, webmaster in site settings.
   - Default send email is set up in local_settings.py
   - Mail relay must have MX, SPF, DKIM records in DNS or email will not go through.
@@ -102,23 +134,33 @@ Search Engine Visibility Site Settings
 --------------------------------------
 
 1. HTML Sitemap is linked in the footer and is functioning properly
+
 2. RSS feed is referenced in HTML header (view source)
+
 3. check /robots.txt 
+ 
   - if it is set to disallow all, update your site settings to make it public. 
   - Make sure robots.txt links to your sitemap.xml file which is generated dynamically as well
+
 4. check /sitemap.xml to be sure it is updating and can be crawled by Google.
+
 5. Site Primary Keywords are set up
+
   - *MUST NOT* be the orgnaization's name 
-    - Consequence is spammy titles like "NAME - NAME"
+  - Consequence is spammy titles like "NAME - NAME"
   - two to three words max with no commas
-    - Example: "Leadership Training"
-    - Note that these show up ON PAGES like articles list view so use proper case. They are not just used in metadata. 
+  - Example: "Leadership Training"
+  - Note that these show up ON PAGES like articles list view so use proper case. They are not just used in metadata. 
+
 6. Secondary Keywords are set up
+
   - Secondary keywords can use two to three commas max
   - Example: "dog walking, california dog walking, walking your dog in LA"
   - Don't spam - should reflect what your site is about
   - Most modules have seo meta options at the bottom which override these on a per module or per page basis.
+  
 7. Google Analytics is set up in site settings. 
+
   - There is a field for the UA- code
   - If using google "tags" put javascript below the <body> tag in "base.html"
   - Direct further questions on this to forums www.tendenci.com/forums/ or an SEO professional
@@ -129,17 +171,22 @@ Cross Browser Site Checking
 *Note - it is best to check your site with automated testing tools like Selenium but there is always a human element for formatting*
 
 1. Browse site in
-    - Firefox
-    - Chrome
-    - Safari
-    - IE (gah!)
-    - iPhones
-    - Android Devices
-    - iPad
+
+  - Firefox
+  - Chrome
+  - Safari
+  - IE (gah!)
+  - iPhones
+  - Android Devices
+  - iPad
+
 2. Themes for Tendenci are strictly Bootstrap3
+
   - you CAN use other frameworks in conjunction with it
   - use DIV IDs to avoid css conflicts if using other frameworks
+
 3. IE - We make little to no effort to support IE more than the current and previous version. 
+
   - Example: If the current version of IE is 10, then Tendenci tries to support 10 and 9. Nothing further. (You can of course modify it to support older versions by doing a fork or submitting a pull request.)
   - Safari is getting to be more like IE so same policy - current and previous versions are the only ones we check.
 
@@ -147,46 +194,68 @@ Accessibility
 -------------
 
 1. Check for Accessibility 
+ 
   - Web Accessibility Measurement Tool http://wave.webaim.org/
   - Note: The community's goal is to make Tendenci 100% Accessible. 
+
 2. Submit issues if you see something in core that is broken
+
   - https://github.com/tendenci/tendenci/issues
+
 3. Not broken, but a pain? Submit on the forum.
+
   - https://www.tendenci.com/forums
+
 4. Talk to your developer if something in your theme is broken
 
 Security Recommendations
 ------------------------
 
 1. *Recommended* Check if web site is routing through a proxy IDS/IPS service
+
   - Securi is a low cost IDS/IPS that protects your site
   - Alert Logic has an AMI appliance that you can manage yourself
+
 2. *Recommended* Set your server to automatically install security updates
+
 3. Verify SSL configuration is correct
+
   - SSL we consider baseline although not everyone installs it unfortunately.
+
 4. Audit your site settings monthly
+
   - Frequently what looks like a security issue is a site setting. 
   - Audit your site settings at least monthly
+
 5. Run the "administrators report" 
+
   - remove security as needed
 
 Security Awareness - YOU ARE RESPONSIBLE
 ----------------------------------------
 
 1. Check that all content on your site is licensed properly 
+ 
   - know where the licenses are now and in the future. 
   - Examples include but are not limited to images, content, video, audio, cat gifs, 3d monsters that jump out of your computer, etc.
+
 2. Tendenci is FOSS (Free/Open Source Software) 
+
   - Read the license here https://github.com/tendenci/tendenci/blob/master/LICENSE.md 
   - Themes use a variety of licenses such as the Apache Open Source license, etc. Read them.
   - Components may use other similar open source licenses which are distributed in the code.
+
 3. YOU ARE RESPONSIBLE to confirm rights for anything uploaded to your site
+
   - Example: a user picks the password "12345678" that is guessed by a competitor and something inappropriate gets uploaded.
+
 4. Backups are your responsibility and strongly recommended.
+ 
   - Tendenci is not your typical software. This community pushes limits and moves fast. So sometimes things break. Use common sense.
   - You can download your database at /explorer/ on your site. If not enabled talk to your developer
   - You can create a static backup of your site by following the instructions on this blog post http://blog.tendenci.com/tag/make-a-static-copy-of-your-website/
   - You can arrange with your developer to have a scheduled backup of your site pushed to your own S3 bucket on Amazon via SSH.
+
 5. You, or your developer, are responsible to keep the code up to date to be sure you have the latest security patches.
 
 

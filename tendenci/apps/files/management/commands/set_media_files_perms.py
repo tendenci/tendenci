@@ -6,7 +6,7 @@ class Command(BaseCommand):
     Set the media files permissions on S3.
 
     Example:
-        ./manage.py set_media_files_perms
+        python manage.py set_media_files_perms
     """
 
     def handle(self, *apps, **kwargs):

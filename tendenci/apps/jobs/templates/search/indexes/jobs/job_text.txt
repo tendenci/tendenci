@@ -17,17 +17,15 @@ location:{{ object.location }}
 is:{{ object.status_detail }}
 is:{{ object.list_type }}
 
-{% with object.category_set as obj_cats %}
-{% if obj_cats.category %}
-category:{{ obj_cats.category }}
-category:{{ obj_cats.category.pk }}
+{% if object.cat %}
+category:{{ object.cat }}
+category:{{ object.cat.pk }}
 {% endif %}
 
-{% if obj_cats.sub_category %}
-sub_category:{{ obj_cats.sub_category }}
-sub_category:{{ obj_cats.sub_category.pk }}
+{% if object.sub_cat %}
+sub_category:{{ object.sub_cat }}
+sub_category:{{ object.sub_cat.pk }}
 {% endif %}
-{% endwith %}
 
 {% if object.tags %}
 {% for tag in object.tags|tag_split %}

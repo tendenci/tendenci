@@ -29,5 +29,6 @@ urlpatterns = patterns('tendenci.apps.jobs.views',
     url(r'^%s/approve/(?P<id>\d+)/$' % urlpath, 'approve', name="job.approve"),
     url(r'^%s/thank-you/$' % urlpath, 'thank_you', name="job.thank_you"),
     url(r'^%s/export/$' % urlpath, 'export', name="job.export"),
+    url(r'^%s/get_subcategories/$' % urlpath, 'get_subcategories', name="job.get_subcategories"),
     url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'detail', name="job"),
 )

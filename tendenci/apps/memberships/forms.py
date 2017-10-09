@@ -786,6 +786,9 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
+
+        del self.fields['referral_source']
+
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
 
@@ -1153,9 +1156,9 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         self.add_form_control_class()
 
         if self.membership_app.donation_enabled:
-            self.fields['donatin_option_value'] = DonationOptionAmountField(required=False)
-            self.fields['donatin_option_value'].label = self.membership_app.donation_label
-            self.fields['donatin_option_value'].widget = DonationOptionAmountWidget(attrs={},
+            self.fields['donation_option_value'] = DonationOptionAmountField(required=False)
+            self.fields['donation_option_value'].label = self.membership_app.donation_label
+            self.fields['donation_option_value'].widget = DonationOptionAmountWidget(attrs={},
                                                 default_amount=self.membership_app.donation_default_amount)
             require_payment = True
 
@@ -1168,8 +1171,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.fields['payment_method'].queryset = payment_method_qs
    
 
-    def clean_donatin_option_value(self):
-        value_list = self.cleaned_data['donatin_option_value']
+    def clean_donation_option_value(self):
+        value_list = self.cleaned_data['donation_option_value']
         if value_list:
             donation_option, donation_amount = value_list
             if donation_option == 'custom':

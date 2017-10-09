@@ -180,6 +180,11 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
         is_valid = verify_no_fraud(response_d, payment)
 
         if is_valid:
+            charset = response_d.get('charset', '')
+            # make sure data is encoded in utf-8 before processing
+            if charset and not charset in ('ascii', 'utf8', 'utf-8'):
+                for k in response_d.keys():
+                    response_d[k] = response_d[k].decode(charset).encode('utf-8')
             payment_update_paypal(request, response_d, payment)
             payment_processing_object_updates(request, payment)
             processed = True

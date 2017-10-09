@@ -17,7 +17,7 @@
         "category": 1,
         "create_dt": "2015-09-21T14:46:47.268",
         "update_dt": "2015-09-21T16:18:27.548",
-        "ordering": 0,
+        "position": 0,
         "image": "",
         "owner_username": "system_generated",
         "allow_anonymous_view": true,

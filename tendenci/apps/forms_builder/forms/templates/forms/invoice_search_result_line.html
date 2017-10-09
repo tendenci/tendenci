@@ -1,0 +1,29 @@
+{% load i18n %}
+
+{% load base_filters %}
+{% load invoice_tags %}
+ <table width="100%">
+      {% invoices_search_line_header request invoice '#996600' %}
+
+      {# display form info #}
+      <tr>
+          <td>{% trans "EntryID" %}</td>
+          <td>{% trans "Form" %}</td>
+          <td>{% trans "Name" %}</td>
+          <td>{% trans "Date" %}</td>
+          <td>{% trans "Amount" %}</td>
+          <td>{% trans "Balance" %}</td>
+      </tr>
+
+       {% if obj %}
+        <tr>
+            <td><a href="{% url "form_entries" obj.id %}">{{obj.id}}</a></td>
+            <td><a href="{% url "form_detail" obj.form.slug %}">{{ obj.form.title|truncatewords:5 }}</a></td>
+            <td>{{ obj.creator.first_name }} {{ obj.creator.last_name }}</td>
+            <td>{{obj.create_dt|date:'long'}}</td>
+            <td>{{invoice.total|format_currency}}</td>
+            <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+        </tr>
+         {% endif %}
+
+ </table>

@@ -253,6 +253,7 @@ class Command(BaseCommand):
                 'payment_method': payment_method_name,
                 'referer_url': '%s%s?next=%s' % (site_url, reverse('auth_login'), membership.referer_url),
                 'membership_link': '%s%s' % (site_url, membership.get_absolute_url()),
+                'view_link': '%s%s' % (site_url, membership.get_absolute_url()),
                 'renew_link': '%s%s' % (site_url, membership.get_absolute_url()),
                 'mymembershipslink': '%s%s' % (site_url, membership.get_absolute_url()),
                 'membershiplink': '%s%s' % (site_url, membership.get_absolute_url()),

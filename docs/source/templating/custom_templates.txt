@@ -65,7 +65,7 @@ Navigation Bar
 --------------
 
 Adding a button
-^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 .. image:: img/navbarbutton.png
 
@@ -101,7 +101,7 @@ Adding a button
             }
 
 Adding Font-Awesome Icons
-^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. image:: img/fontawesomenav.png
 
 .. Tip:: 
@@ -111,7 +111,7 @@ Adding Font-Awesome Icons
     .. image:: img/fontawesomenavapp.png
     
 Font-Awesome After Nav Items
-^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. image:: img/dropdownicons.png
 
 .. Tip:: 
@@ -129,7 +129,7 @@ Font-Awesome After Nav Items
             }
 
 Simple Search Bar w/ Font-Awesome Icon
-^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. image:: img/simplesearch.png
 
 .. Tip:: 
@@ -165,7 +165,7 @@ Simple Search Bar w/ Font-Awesome Icon
             }
             
 Bootstrap Search Bar w/ Font-Awesome Icon
-^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. image:: img/bootstrapsearch.png
 
 .. Tip:: 
@@ -288,7 +288,7 @@ In Tendenci, the Footer is usually set up inside a box to make it easy for clien
             }
 
 Embed Forms in Bootstrap Modals
---------------
+-------------------------------
 
 Embed forms in Bootstrap Modals to declutter your pages.
 
