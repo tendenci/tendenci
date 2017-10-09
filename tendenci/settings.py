@@ -358,9 +358,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme': "modern",
     'plugins': "image  advlist autolink lists link charmap print preview anchor \
         searchreplace visualblocks code fullscreen \
-        insertdatetime media table contextmenu paste textcolor colorpicker",
+        insertdatetime media table contextmenu paste textcolor colorpicker hr",
     'menubar': 'file edit insert view format table',
-    'toolbar': "code insertfile undo redo | styleselect | forecolor backcolor | bold italic | \
+    'toolbar': "code insertfile undo redo | styleselect | forecolor backcolor | bold italic hr | \
                 alignleft aligncenter alignright alignjustify | bullist numlist outdent \
                 indent | link image | fullscreen",
     'image_advtab': 'true',
@@ -370,7 +370,12 @@ TINYMCE_DEFAULT_CONFIG = {
     # Specify your css to apply to the editable area
     #'content_css': '/themes/<theme name>/media/css/styles.css',
     'resize': 'both',
-
+    'link_class_list': [
+        {'title': 'None', 'value': ''},
+        {'title': 'Primary Button', 'value': 'btn btn-primary'},
+        {'title': 'Default Button', 'value': 'btn btn-default'}
+        ],
+    
     'tabfocus_elements': ":prev,:next",
     'convert_urls': 'false',
     'handle_event_callback': "event_handler",
