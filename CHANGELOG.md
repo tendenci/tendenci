@@ -1,3 +1,8 @@
+### 7.3.12 [2017-10-09]
+
+* Added horizontal rule (hr) to tinymce editor
+* Added class dropdown to the tinymce link dialog box
+
 ### 7.3.11 [2017-10-09]
 
 * Made jobs categories and subcagegories easy to manage
