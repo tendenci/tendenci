@@ -1,3 +1,14 @@
+### 7.3.11 [2017-10-09]
+
+* Made jobs categories and subcagegories easy to manage
+* Set default to now() for date or datetime fields in custom forms
+* Fixed encoding error on paypal_thankyou_processing
+* Fixed handling of disabled registration forms
+* Ensured correct venv is used for subprocesses
+* Registered forums to apps_list
+* Updated invoices search for custom forms
+* Multiple more bugfixes
+
 ### 7.3.9 [2017-09-06]
 
 * Replaced allowed_to_view_orginal with has_perm for photos
@@ -39,7 +50,6 @@
 * Resolved the 'form' name conflicts - the name conflicts occurs when a custom form is embedded in a template header
 * Caught DjangoUnicodeDecodeError exception on helpdesk
 * Fix UnicodeEncodeError on jobs add/edit
-* 
 
 
 ### 7.3.2 [2017-07-13]
