@@ -2745,11 +2745,11 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
             if not check_month(month, year, current_type[0]):
                 current_date = current_date.strftime('%b %Y')
                 latest_date = latest_event[0].start_dt.strftime('%b %Y')
-                msg_string = 'No %s Events were found for %s. The next %s event is on %s, shown below.' % (current_type[0], current_date, current_type[0], latest_date)
+                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (unicode(current_type[0]), current_date, unicode(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month, current_type[0].slug]))
         else:
-            msg_string = 'No more %s Events were found.' % (current_type[0])
+            msg_string = u'No more %s Events were found.' % (unicode(current_type[0]))
             messages.add_message(request, messages.INFO, _(msg_string))
 
     if year <= 1900 or year >= 9999:
