@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 
 from subprocess import Popen
 
@@ -581,7 +580,7 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     # serialize queryset
     data = serializers.serialize("json", Image.objects.filter(id=photo.id))
 
-    cache_image = Popen([sys.executable, "manage.py", "precache_photo", str(photo.pk)])
+    cache_image = Popen([os.environ.get('_', 'python'), "manage.py", "precache_photo", str(photo.pk)])
 
 
 @is_enabled('photos')

@@ -1,4 +1,4 @@
-import subprocess, sys
+import subprocess, os
 import datetime
 import csv
 from StringIO import StringIO
@@ -69,7 +69,7 @@ def run_export_task(app_label, model_name, fields):
     )
 
     if settings.USE_SUBPROCESS:
-        subprocess.Popen([sys.executable, 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
+        subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
     else:
         from django.core.management import call_command
         args = [unicode(export.pk)] + fields

@@ -1,4 +1,4 @@
-import subprocess, sys
+import subprocess, os
 import time
 
 from datetime import datetime
@@ -393,7 +393,7 @@ def export(request, template_name="articles/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen([sys.executable, "manage.py",
+        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
                           "articles_export_process",
                           '--identifier=%s' % identifier,
                           '--user=%s' % request.user.id])

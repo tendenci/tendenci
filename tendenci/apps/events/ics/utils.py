@@ -50,5 +50,5 @@ def run_precreate_ics(app_label, model_name, user):
         model_name=model_name,
         user=user
     )
-    subprocess.Popen([sys.executable, 'manage.py', 'run_precreate_ics', unicode(ics.pk)])
+    subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'run_precreate_ics', unicode(ics.pk)])
     return ics.pk

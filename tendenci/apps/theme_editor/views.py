@@ -1,5 +1,4 @@
 import os
-import sys
 
 from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -442,7 +441,7 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
         return HttpResponse(tracker.is_updating)
 
     if request.method == 'POST':
-        process = SubProcessManager.set_process([sys.executable, "manage.py", "install_theme", "--all"])
+        process = SubProcessManager.set_process([os.environ.get('_', 'python'), "manage.py", "install_theme", "--all"])
         return render_to_response(template_name, context_instance=RequestContext(request))
 
     raise Http404

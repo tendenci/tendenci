@@ -34,10 +34,10 @@ class Command(BaseCommand):
         addon_zip.extractall(settings.SITE_ADDONS_PATH)
 
         print "Updating tendenci site"
-        os.system('"%s" manage.py syncdb --noinput' % (sys.executable))
-        os.system('"%s" manage.py migrate %s --noinput' % (sys.executable, addon_name))
-        os.system('"%s" manage.py update_settings %s' % (sys.executable, addon_name))
-        os.system('"%s" manage.py collectstatic --noinput' % (sys.executable))
+        os.system('"%s" manage.py syncdb --noinput' % (os.environ.get('_', 'python')))
+        os.system('"%s" manage.py migrate %s --noinput' % (os.environ.get('_', 'python'), addon_name))
+        os.system('"%s" manage.py update_settings %s' % (os.environ.get('_', 'python'), addon_name))
+        os.system('"%s" manage.py collectstatic --noinput' % (os.environ.get('_', 'python')))
 
         print "Restarting Server"
         os.system('sudo reload "%s"' % os.path.basename(settings.PROJECT_ROOT))
