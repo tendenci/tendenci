@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         try:
             print "Updating tendenci"
-            subprocess.check_output("%s -m pip install tendenci --upgrade" % sys.executable, stderr=subprocess.STDOUT, shell=True)
+            subprocess.check_output("%s -m pip install tendenci --upgrade" % os.environ.get('_', 'python'), stderr=subprocess.STDOUT, shell=True)
             pass_update_tendenci = True
 
         except subprocess.CalledProcessError as e:
@@ -60,7 +60,7 @@ class Command(BaseCommand):
         if pass_update_tendenci:
             try:
                 print "Updating tendenci site"
-                subprocess.check_output("%s deploy.py" % sys.executable, stderr=subprocess.STDOUT, shell=True)
+                subprocess.check_output("%s deploy.py" % os.environ.get('_', 'python'), stderr=subprocess.STDOUT, shell=True)
                 pass_update_tendenci_site = True
 
             except subprocess.CalledProcessError as e:

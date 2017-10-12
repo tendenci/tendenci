@@ -1,4 +1,4 @@
-import subprocess, sys
+import subprocess, os
 from datetime import datetime
 from datetime import date
 import time as ttime
@@ -533,7 +533,7 @@ def group_members_export(request, group_slug, export_target='all'):
                                             identifier)
     default_storage.save(temp_export_path, ContentFile(''))
     # start the process
-    subprocess.Popen([sys.executable, "manage.py",
+    subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
                   "group_members_export",
                   '--group_id=%d' % group.id,
                   '--export_target=%s' % export_target,
@@ -1035,7 +1035,7 @@ def import_process(request, import_id,
 
     import_i = get_object_or_404(Import, id=import_id)
 
-    subprocess.Popen([sys.executable, 'manage.py', 'import_groups', str(import_id)])
+    subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'import_groups', str(import_id)])
 
     return render_to_response(template_name, {
         'total': import_i.total_created + import_i.total_invalid,

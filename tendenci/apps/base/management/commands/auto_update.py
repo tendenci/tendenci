@@ -71,7 +71,7 @@ class Command(BaseCommand):
             try:
                 if verbosity >1:
                     print("Updating tendenci...")
-                update_cmd = '{0} -m pip install -r {1}/{2} --upgrade'.format(sys.executable, project_root, 'requirements/tendenci.txt')
+                update_cmd = '{0} -m pip install -r {1}/{2} --upgrade'.format(os.environ.get('_', 'python'), project_root, 'requirements/tendenci.txt')
                 subprocess.check_output('cd {}; {}'.format(project_root, update_cmd),
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
@@ -80,23 +80,23 @@ class Command(BaseCommand):
         if not err_list:
             # run migrate, collectstatic, etc via deploy.py
             try:
-                subprocess.check_output("cd {0}; {1} manage.py migrate".format(latest_version, sys.executable),
+                subprocess.check_output("cd {0}; {1} manage.py migrate".format(latest_version, os.environ.get('_', 'python')),
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
                 known_error = "BadMigrationError: Migrated app 'djcelery' contains South migrations"
                 known_error2 = 'relation "djcelery_crontabschedule" already exists'
                 if known_error in e.output or known_error2 in e.output:
                     try:
-                        subprocess.check_output("cd {0}; {1} manage.py migrate djcelery 0001 --fake".format(latest_version, sys.executable),
+                        subprocess.check_output("cd {0}; {1} manage.py migrate djcelery 0001 --fake".format(latest_version, os.environ.get('_', 'python')),
                                             stderr=subprocess.STDOUT, shell=True)
-                        subprocess.check_output("cd {0}; {1} manage.py migrate".format(latest_version, sys.executable),
+                        subprocess.check_output("cd {0}; {1} manage.py migrate".format(latest_version, os.environ.get('_', 'python')),
                                             stderr=subprocess.STDOUT, shell=True)
                     except subprocess.CalledProcessError as e:
                         err_list.append(e.output)
         if not err_list:
             # run deploy.py
             try:
-                subprocess.check_output("cd {0}; {1} deploy.py".format(latest_version, sys.executable),
+                subprocess.check_output("cd {0}; {1} deploy.py".format(latest_version, os.environ.get('_', 'python')),
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
                 err_list.append(e.output)
