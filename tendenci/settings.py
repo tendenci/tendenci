@@ -364,6 +364,7 @@ TINYMCE_DEFAULT_CONFIG = {
                 alignleft aligncenter alignright alignjustify | bullist numlist outdent \
                 indent | link image | fullscreen",
     'image_advtab': 'true',
+    'image_title': 'true',
     'media_alt_source': 'false',
     'media_poster': 'false',
     'cache_suffix': '?v=4.3.8',
