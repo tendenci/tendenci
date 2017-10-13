@@ -39,9 +39,8 @@ request_duration_defaults = {
 
 SEARCH_CATEGORIES = (
     ('', _('-- SELECT ONE --') ),
-    ('id', _('Directory ID')),
-    ('body', _('Body')),
-    ('headline', _('Headline')),
+    ('headline', _('Name')),
+    ('body', _('Description')),
     ('city', _('City')),
     ('state', _('State')),
     ('tags', _('Tags')),
@@ -107,7 +106,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
 
 
 class DirectoryForm(TendenciBaseForm):
-    body = forms.CharField(required=False,
+    body = forms.CharField(label=_("Description"), required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Directory._meta.app_label,
         'storme_model':Directory._meta.model_name.lower()}))

@@ -34,9 +34,9 @@ class Directory(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
     timezone = TimeZoneField(_('Time Zone'))
-    headline = models.CharField(max_length=200, blank=True)
+    headline = models.CharField(_('Name'), max_length=200, blank=True)
     summary = models.TextField(blank=True)
-    body = tinymce_models.HTMLField()
+    body = tinymce_models.HTMLField(_('Description'))
     source = models.CharField(max_length=300, blank=True)
     # logo = models.FileField(max_length=260, upload_to=file_directory,
     #                         help_text=_('Company logo. Only jpg, gif, or png images.'),
