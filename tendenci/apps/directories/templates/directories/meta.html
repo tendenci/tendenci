@@ -68,14 +68,14 @@
         </address>
     {% endif %}
 
-    {% with directory.category_set as directory_cat %}
-        {% if directory_cat.category %}
+    {% with directory.cat as directory_cat %}
+        {% if directory_cat %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?category={{ directory_cat.category.id }}">{{ directory_cat.category }}</a></li>
-                    {% if directory_cat.sub_category %}
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}">{{ directory_cat.name }}</a></li>
+                    {% if directory.sub_cat %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?sub_category={{ directory_cat.sub_category.id }}">{{ directory_cat.sub_category }}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}&sub_cat={{ directory.sub_cat.pk }}">{{ directory.sub_cat.name }}</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -134,10 +134,6 @@
 
                             <li>
                                 <a href="{% url 'directory.edit.meta' directory.pk %}">{% trans "Edit Meta" %}</a>
-                            </li>
-
-                            <li>
-                                <a href="{% url 'category.update' directory.opt_app_label directory.opt_module_name directory.pk %}">{% trans "Edit Categories" %}</a>
                             </li>
                         </ul>
                     </li>

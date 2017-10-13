@@ -36,6 +36,9 @@
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
     <script type="text/javascript">
+    {% include 'directories/include/get_subcategories.js' %}
+    </script>
+    <script type="text/javascript">
         $(document).ready(function() {
             $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
             $('.timepicker').timepicker({'step':15});

@@ -38,6 +38,9 @@ urlpatterns = patterns('tendenci.apps.directories.views',
     url(r"^%s/export/download/(?P<identifier>\d+)/$" % urlpath,
         "directory_export_download",
         name="directory.export_download"),
+                       
+    url(r'^%s/get_subcategories/$' % urlpath, 'get_subcategories', name="directory.get_subcategories"),
+    
 
     url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'details', name="directory"),
 )
