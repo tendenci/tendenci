@@ -14,6 +14,7 @@ from tendenci.apps.events.utils import (registration_earliest_time,
                                         registration_has_ended,)
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.events.forms import EventSimpleSearchForm
 
 
 register = Library()
@@ -141,8 +142,16 @@ class EventListNode(Node):
     def render(self, context):
 
         request = context.get('request', None)
-        query = request.GET.get('q', None)
-        cat = request.GET.get('search_category', None)
+
+        # make sure data in query and cat are valid
+        form = EventSimpleSearchForm(request.GET)
+        if form.is_valid():
+            cat = form.cleaned_data.get('search_category', None)
+            query = form.cleaned_data.get('q', None)
+        else:
+            cat = None
+            query = ''
+        
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
 

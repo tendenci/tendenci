@@ -2897,8 +2897,10 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
     form = EventSimpleSearchForm(request.GET)
     if form.is_valid():
         cat = form.cleaned_data.get('search_category', None)
+        query = form.cleaned_data.get('q', None)
     else:
         cat = None
+        query = ''
 
     day_date = datetime(year=int(year), month=int(month), day=int(day))
     yesterday = day_date - timedelta(days=1)
