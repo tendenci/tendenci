@@ -2,7 +2,6 @@
 {% load staticfiles %}
 {% load page_tags %}
 
-
 <div id="t-admin-megamenu" class="navbar-inverse navbar-fixed-top yamm t-megamenu" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -24,12 +23,12 @@
 
                 {% include 'top_menu/_community_dropdown.html' %}
 				
-				{% if USER_IS_SUPERUSER %}
                 {% include 'top_menu/_apps_dropdown.html' %}
+                
+                {% if USER_IS_SUPERUSER %}	
+                {% include 'top_menu/_reports_dropdown.html' %}
+				{% endif %}
 				
-                {% include 'top_menu/_support_dropdown.html' %}
-                {% endif %}
-
                 {# Block containing the navigation for the current app #}
                 {% block current_app %}
                 	{# This block should be overrided by top_nav.html for inner apps #}
@@ -50,24 +49,15 @@
 					    </li>
 			        {% endif %}
                 {% endblock %}
+                
+                
+                
             </ul>
 
             <ul class="nav navbar-nav navbar-right inner-top-nav">
-                {% if USE_I18N %}
-                    {% include 'top_menu/change_lang-new.html' %}
-                {% else %}
-                    <li>
-                        <form class="navbar-form" action="{% url 'haystack_search' %}" method="get" id="t-megamenu-search-form" role="search">
-                            <div class="form-group">
-                                <input class="form-control" type="text" maxlength="255" value="" name="q" id="t-megamenu-search-form-input" x-webkit-speech speech onwebkitspeechchange="this.form.submit();" placeholder="{% trans 'Search' %}">
-                            </div>
-                        </form>
-                    </li>
+                {% if USER_IS_SUPERUSER %}				
+                {% include 'top_menu/_support_dropdown.html' %}
                 {% endif %}
-
-                <li>
-                    <a href="{% url 'auth_logout' %}" id="t-megamenu-logout"><span class="glyph">&#88;</span><span class="nav-label">{% trans "Logout" %}</span></a>
-                </li>
             </ul>
         </div>
     </div>
