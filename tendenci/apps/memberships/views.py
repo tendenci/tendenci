@@ -5,7 +5,7 @@ from hashlib import md5
 from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
-import subprocess, sys
+import subprocess
 from sets import Set
 import calendar
 from collections import OrderedDict
@@ -32,6 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geraldo.generators import PDFGenerator
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403
@@ -430,7 +431,7 @@ def membership_default_import_preview(request, mimport_id,
                                      args=[mimport.id]))
         else:
             if mimport.status == 'not_started':
-                subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+                subprocess.Popen([python_executable(), "manage.py",
                               "membership_import_preprocess",
                               str(mimport.pk)])
 
@@ -454,7 +455,7 @@ def membership_default_import_process(request, mimport_id):
         mimport.num_processed = 0
         mimport.save()
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "import_membership_defaults",
                           str(mimport.pk),
                           str(request.user.pk)])
@@ -633,7 +634,7 @@ def membership_default_export(
             default_storage.save(temp_file_path, ContentFile(''))
 
             # start the process
-            subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+            subprocess.Popen([python_executable(), "manage.py",
                           "membership_export_process",
                           '--export_fields=%s' % export_fields,
                           '--export_type=%s' % export_type,

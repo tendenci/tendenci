@@ -5,7 +5,7 @@
 import re
 import calendar
 import itertools
-import subprocess, os
+import subprocess
 import time
 import xlwt
 from collections import OrderedDict
@@ -35,6 +35,7 @@ from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
@@ -4388,7 +4389,7 @@ def import_process(request, import_id,
 
     import_i = get_object_or_404(Import, id=import_id)
 
-    subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'import_events', str(import_id)])
+    subprocess.Popen([python_executable(), 'manage.py', 'import_events', str(import_id)])
 
     return render_to_response(template_name, {
         'total': import_i.total_created + import_i.total_invalid,
@@ -4414,7 +4415,7 @@ def export(request, template_name="events/export.html"):
         temp_file_path = 'export/events/%s_temp.csv' % identifier
         default_storage.save(temp_file_path, ContentFile(''))
 
-        process_options = [os.environ.get('_', 'python'), "manage.py", "event_export_process",
+        process_options = [python_executable(), "manage.py", "event_export_process",
                            "--identifier=%s" % identifier,
                            "--user=%s" % request.user.id]
         if by_type:

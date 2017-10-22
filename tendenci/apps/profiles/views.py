@@ -2,7 +2,7 @@
 import os
 import math
 import time
-import subprocess, sys
+import subprocess
 from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth.decorators import login_required
@@ -23,6 +23,8 @@ from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
 import simplejson
+
+from tendenci.libs.utils import python_executable
 
 from tendenci.apps.base.decorators import ssl_required, password_required
 from tendenci.apps.base.utils import get_pagination_page_range
@@ -1254,7 +1256,7 @@ def profile_export(request, template_name="profiles/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "profile_export_process",
                           '--export_fields=%s' % export_fields,
                           '--identifier=%s' % identifier,
@@ -1429,7 +1431,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
                                      args=[uimport.id]))
         else:
             if uimport.status == 'not_started':
-                subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+                subprocess.Popen([python_executable(), "manage.py",
                               "users_import_preprocess",
                               str(uimport.pk)])
 
@@ -1454,7 +1456,7 @@ def user_import_process(request, uimport_id):
         uimport.num_processed = 0
         uimport.save()
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "import_users",
                           str(uimport.pk),
                           str(request.user.pk)])
