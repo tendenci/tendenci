@@ -230,13 +230,13 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
                 else:  # renewal = True
                     if self.rolling_renew_option == '0':
                         # expires on the end of full period
-                        
-                        # if they are renewing before expiration, the new expiration date 
+
+                        # if they are renewing before expiration, the new expiration date
                         # should start from the previous expiration date instead of the renew date
                         if isinstance(previous_expire_dt, datetime):
                             if previous_expire_dt > now:
                                 return previous_expire_dt + relativedelta(years=self.period)
-                            
+
                         return renew_dt + relativedelta(years=self.period)
                     elif self.rolling_renew_option == '1':
                         # expires on the ? days at signup (join) month
@@ -310,7 +310,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         renewal_price = self.renewal_price
         price = self.price
         above_cap_format = ''
-        
+
         if corp_membership:
             apply_above_cap, above_cap_price = \
                     corp_membership.get_above_cap_price()
@@ -609,7 +609,7 @@ class MembershipDefault(TendenciBaseModel):
         if hasattr(self, 'user') and self.user:
             if hasattr(self.user, 'demographics'):
                 return self.user.demographics
-    
+
     @property
     def obj_status(self):
         t = '<span class="t-profile-status t-status-%s">%s</span>'
@@ -924,7 +924,7 @@ class MembershipDefault(TendenciBaseModel):
 
         dupe.status = True,
         dupe.status_detail = 'active'
-        
+
         dupe.renewal = True
         if not dupe is self:
             dupe.renew_from_id = self.id
@@ -1027,28 +1027,28 @@ class MembershipDefault(TendenciBaseModel):
 
         if self.is_approved() or (self.is_expired() and self.status_detail == 'active'):
             NOW = datetime.now()
-    
+
             self.status = True
             self.status_detail = 'expired'
-    
+
             # action_taken ------------------------------
             self.action_taken = True
             self.action_taken_dt = self.action_taken_dt or NOW
             if request_user:  # else: don't set
                 self.action_taken_user = request_user
-    
+
             self.save()
-    
+
             # remove from group
             self.group_refresh()
-    
+
             # show member number on profile
             self.profile_refresh_member_number()
-    
+
             return True
-        
+
         return False
-    
+
     def profile_refresh_member_number(self, user=None):
         """
         Create the profile if not exists and refresh member number for the profile
@@ -1232,7 +1232,7 @@ class MembershipDefault(TendenciBaseModel):
             if membership_from:
                 membership_from.status_detail = 'archive'
                 membership_from.save()
-                
+
 
     def approval_required(self):
         """
@@ -1375,12 +1375,12 @@ class MembershipDefault(TendenciBaseModel):
 
         m_exists = self.user.membershipdefault_set.filter(
                     Q(status_detail='active') | Q(status_detail='expired'))
-        
-        if MembershipApp.objects.filter(allow_multiple_membership=True).exists(): 
+
+        if MembershipApp.objects.filter(allow_multiple_membership=True).exists():
             m_exists = m_exists.filter(
                 membership_type=self.membership_type)
         m_exists = m_exists.exists()
-        
+
         return m_exists
 
     def can_renew(self):
@@ -1587,7 +1587,7 @@ class MembershipDefault(TendenciBaseModel):
                         return above_cap_price
                     else:
                         return above_cap_price + (self.membership_type.admin_fee or 0)
-   
+
         if self.renewal:
             return self.membership_type.renewal_price or 0
         else:
@@ -1720,7 +1720,7 @@ class MembershipDefault(TendenciBaseModel):
             # corp individuals expire with their corporate membership
             from tendenci.apps.corporate_memberships.models import CorpMembership
             [corp_membership] = CorpMembership.objects.filter(id=self.corporate_membership_id)[:1] or [None]
-            
+
         if corp_membership:
             # check if the associated corp. membership has been renewed
             latest_renewed = corp_membership.get_latest_renewed()
@@ -1729,7 +1729,7 @@ class MembershipDefault(TendenciBaseModel):
                 self.corporate_membership_id = latest_renewed.id
             else:
                 self.expire_dt = corp_membership.expiration_dt
-                                    
+
         else:
 
             if self.renew_dt:

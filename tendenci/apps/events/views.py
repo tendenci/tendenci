@@ -552,7 +552,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             # update all permissions and save the model
             event = update_perms_and_save(request, form_event, event)
             form_event.save_m2m()
-            
+
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
@@ -1019,10 +1019,10 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
         if 'apply_changes_to' not in post_data:
             post_data = {'apply_changes_to':'self'}
         form_apply_recurring = ApplyRecurringChangesForm(post_data)
-        
+
         if form_regconfpricing.is_valid() and form_apply_recurring.is_valid():
             apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
-            
+
             regconf_pricing = form_regconfpricing.save()
             EventLog.objects.log(instance=event)
 
@@ -1032,14 +1032,14 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                     if not pricing_reg_form_required:
                         regconf_price.reg_form = None
                     regconf_price.save()
-            
+
                 msg_string = 'Successfully updated %s' % unicode(event)
                 redirect_url = reverse('event', args=[event.pk])
             else:
                 recurring_events = event.recurring_event.event_set.all()
                 if apply_changes_to == 'rest':
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
-                
+
                 for e in recurring_events:
                     e_reg_conf = e.registration_configuration
                     if e.id != event.id:
@@ -1049,12 +1049,12 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                         e_regconf_price = deepcopy(regconf_price)
                         e_regconf_price.reg_conf = e_reg_conf
                         if e.id != event.id:
-                            e_regconf_price.pk = None 
+                            e_regconf_price.pk = None
                             # calculate the start_dt and end_dt for this pricing
                             time_diff = e.start_dt.date() - event.start_dt.date()
                             e_regconf_price.start_dt += time_diff
                             e_regconf_price.end_dt += time_diff
-                            
+
                         e_regconf_price.save()
                 msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
                 redirect_url = reverse('event.recurring', args=[event.pk])
@@ -1972,7 +1972,7 @@ def register(request, event_id=0,
                     do_confirmation = True
                     amount_list, discount_amount, discount_list = get_registrants_prices(*args)
                     discount_applied = (discount_amount > 0)
-                    
+
                     for i, form in enumerate(registrant.forms):
                         if not is_table:
                             form.discount = discount_list[i]
@@ -2429,7 +2429,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         for registrant in reg8n.registrant_set.filter(cancel_dt__isnull=True):
             if not registrant.custom_reg_form_entry:
                 registrant.populate_custom_form_entry()
-        
+
         entry_ids = reg8n.registrant_set.filter(cancel_dt__isnull=True
                                                 ).values_list('custom_reg_form_entry',
                                                               flat=True).order_by('id')
@@ -3751,7 +3751,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('payment method', 'registration__payment_method__machine_name'),
         ('balance', 'registration__invoice__balance'),
     ])
-    
+
     if not registrants.exclude(meal_option='').exists():
         # remove meal_option if the field is empty for every registrant
         del registrant_mappings['meal_option']
@@ -3988,7 +3988,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             # update all permissions and save the model
             event = update_perms_and_save(request, form, event)
             form.save_m2m()
-            
+
             # handle image
             photo = form.cleaned_data['photo_upload']
             if photo:

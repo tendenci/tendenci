@@ -122,7 +122,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         app = get_membership_app(membership)
         # this membership is not associated with any app
         # figure out which app it belongs to
-        
+
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
@@ -927,7 +927,7 @@ def membership_default_add(request, slug='', membership_id=None,
                        'corp_membership_renew_link': reverse('corpmembership.renew', args=[corp_membership.id]),
                        'corp_membership': corp_membership,
                        'is_rep': is_corp_rep,
-                       'is_admin': request.user.profile.is_superuser}) 
+                       'is_admin': request.user.profile.is_superuser})
 
         # check if this corp. has exceeded the maximum number of members allowed if applicable
         apply_cap, membership_cap, allow_above_cap, above_cap_price = corp_membership.get_cap_info()
@@ -939,7 +939,7 @@ def membership_default_add(request, slug='', membership_id=None,
                     email_sent = corp_membership.email_reps_cap_reached()
                 else:
                     email_sent = False
-                
+
                 if not allow_above_cap:
                     reps = corp_membership.corp_profile.reps.all()
                     # give them the option to join as an individual membership
@@ -951,7 +951,7 @@ def membership_default_add(request, slug='', membership_id=None,
                                                      )[:1] or [None]
                         if app_for_individuals:
                             join_as_indiv_url = reverse('membership_default.add', args=[app_for_individuals.slug])
-                    
+
                     return render(request, 'memberships/applications/corp_cap_reached.html',
                                   {'app': app,
                                    'join_as_indiv_url': join_as_indiv_url,
@@ -987,7 +987,7 @@ def membership_default_add(request, slug='', membership_id=None,
         join_under_corporate and is_corp_rep,
         username == request.user.username,
     )
-       
+
     if is_renewal:
         user = membership.user
     else:
@@ -1026,7 +1026,7 @@ def membership_default_add(request, slug='', membership_id=None,
         request=request,
         is_corp_rep=is_corp_rep,
         initial=user_initial)
-    
+
     if not (request.user.profile.is_superuser or is_corp_rep) and user and 'username' in user_form.fields:
         # set username as readonly field for regular logged-in users
         # we don't want them to change their username, but they can change it through profile
@@ -1095,7 +1095,7 @@ def membership_default_add(request, slug='', membership_id=None,
     if user and (not is_renewal):
         [membership] = user.membershipdefault_set.filter(
             membership_type=membership_type_id).order_by('-pk')[:1] or [None]
-    
+
     demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None, membership=membership)
 
     membership_initial = {}
@@ -1234,7 +1234,7 @@ def membership_default_add(request, slug='', membership_id=None,
                         invoice.balance += donation_amount
                         invoice.save()
 
-                    
+
             memberships_join_notified = []
             memberships_renewal_notified = []
             notice_sent = False
@@ -1319,7 +1319,7 @@ def membership_default_add(request, slug='', membership_id=None,
                 recipients = get_notice_recipients(
                     'module', 'memberships',
                     'membershiprecipients')
-     
+
                 extra_context = {
                     'membership': membership,
                     'app': app,
@@ -1638,7 +1638,7 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
             raise Http403
 
     msg_deleted = ''
-    
+
     if request.method == "POST":
         # reassign owner to current user
         membership.owner = request.user
@@ -1647,7 +1647,7 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
         msg_deleted = '%s has been deleted.' % membership.__unicode__()
         membership.delete(log=True)
         messages.add_message(request, messages.SUCCESS, _(msg_deleted))
-        
+
         next_page = request.GET.get('next', '')
         if next_page:
             return HttpResponseRedirect(next_page)
@@ -1657,8 +1657,8 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
             'membership': membership,
             'msg_deleted': msg_deleted
         }, context_instance=RequestContext(request))
-    
-    
+
+
 @login_required
 def expire(request, id, template_name="memberships/applications/expire.html"):
     membership = get_object_or_404(MembershipDefault, pk=id)
@@ -1673,15 +1673,15 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
             raise Http403
 
     msg_expired = ''
-    
+
     if request.method == "POST":
         membership.expire(request_user=request.user)
         msg_expired = '%s has been expired.' % membership.__unicode__()
         messages.add_message(request, messages.SUCCESS, _(msg_expired))
-        
+
         # log an event
         EventLog.objects.log(instance=membership, description=msg_expired)
-        
+
         next_page = request.GET.get('next', '')
         if next_page:
             return HttpResponseRedirect(next_page)
@@ -2348,7 +2348,7 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
     types_renew = OrderedDict()
     types_expired = OrderedDict()
     months = calendar.month_abbr[1:]
-    
+
     membership_types = MembershipType.objects.all()
 
     for mtype in membership_types:
