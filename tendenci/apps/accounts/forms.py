@@ -140,12 +140,12 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
         # check if we need to hide the remember me checkbox
         # and set the default value for remember me
-        hide_remember_me = get_setting('module', 'users', 'usershiderememberme')
-        remember_me_default_checked = get_setting('module', 'users', 'usersremembermedefaultchecked')
+        self.hide_remember_me = get_setting('module', 'users', 'usershiderememberme')
+        self.remember_default = get_setting('module', 'users', 'usersremembermedefaultchecked')
 
-        if remember_me_default_checked:
+        if self.remember_default:
             self.fields['remember'].initial = True
-        if hide_remember_me:
+        if self.hide_remember_me:
             self.fields['remember'].widget = forms.HiddenInput()
 
     def clean(self):
@@ -182,8 +182,9 @@ class LoginForm(forms.Form):
                     'first_name' : self.user.first_name or self.user.username,
                     'last_name' : self.user.last_name }))
 
-            if self.cleaned_data['remember']:
-                request.session.set_expiry(60 * 60 * 24 * 7 * 3)
+            remember = (self.remember_default if self.hide_remember_me else self.cleaned_data['remember'])
+            if remember:
+                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
             else:
                 request.session.set_expiry(0)
             return True
