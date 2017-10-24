@@ -8,8 +8,9 @@ from tendenci.apps.files.models import File, file_directory
 from tagging.fields import TagField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.testimonials.managers import TestimonialManager
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
-class Testimonial(TendenciBaseModel):
+class Testimonial(OrderingBaseModel, TendenciBaseModel):
     first_name = models.CharField(max_length=50, blank=True, default="")
     last_name = models.CharField(max_length=50, blank=True, default="")
     city = models.CharField(max_length=50, blank=True, default="")
@@ -29,9 +30,20 @@ class Testimonial(TendenciBaseModel):
                                           content_type_field="content_type")
 
     objects = TestimonialManager()
+    
+    class Meta:
+        permissions = (("view_testimonial","Can view testimonial"),)
+        verbose_name = 'Testimonial'
+        verbose_name_plural = 'Testimonials'
+        ordering = ['position']
+        app_label = 'testimonials'
 
     def __unicode__(self):
         return '%s %s %s' % (self.first_name, self.last_name, self._meta.verbose_name)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("testimonial.view", [self.pk])
 
     def first_last_name(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -44,6 +56,18 @@ class Testimonial(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         photo_upload = kwargs.pop('photo', None)
+        
+        if self.pk is None:
+            # Append to top of the list on add
+            try:
+                last = Testimonial.objects.all().order_by('-position')[0]
+                if last.position:
+                    self.position = int(last.position) + 1
+                else:
+                    self.position = 1
+            except IndexError:
+                # First row
+                self.position = 1
 
         super(Testimonial, self).save(*args, **kwargs)
 
@@ -66,15 +90,7 @@ class Testimonial(TendenciBaseModel):
 
             self.save()
     
-    class Meta:
-        permissions = (("view_testimonial","Can view testimonial"),)
-        verbose_name = 'Testimonial'
-        verbose_name_plural = 'Testimonials'
-        app_label = 'testimonials'
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ("testimonial.view", [self.pk])
+    
 
 class TestimonialPhoto(File):
     class Meta:
