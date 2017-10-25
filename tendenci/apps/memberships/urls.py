@@ -116,6 +116,7 @@ urlpatterns = patterns(
 
     # reports
     url(r'^%s/reports/$' % urlpath, 'report_list', name='reports-memberships'),
+    url(r'^%s/reports/overview/$' % urlpath, 'memberships_overview', name='reports-memberships_overview'),
     url(r'^%s/reports/join_summary$' % urlpath, 'membership_join_report', name='reports-memberships-joins'),
     url(r'^%s/reports/pdf/$' % urlpath, 'membership_join_report_pdf', name='reports-memberships-joins-pdf'),
     url(r'^%s/reports/active_members/$' % urlpath, 'report_active_members', name='reports-active-members'),

@@ -61,7 +61,7 @@ from tendenci.apps.memberships.forms import (
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault,
-    get_membership_app)
+    get_membership_app, get_membership_summary_data)
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 
@@ -2399,4 +2399,24 @@ def report_members_donated(request, template_name='reports/members_donated.html'
     return render_to_response(template_name,
                               {'memberships': memberships,},
                               context_instance=RequestContext(request))
+    
+@is_enabled('memberships')
+@staff_member_required
+def memberships_overview(request,
+                template_name='reports/overview.html'):
+    """
+    A  report of memberships overview.
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    summary, total = get_membership_summary_data()
+
+    EventLog.objects.log()
+
+    return render_to_response(template_name, {
+        'summary': summary,
+        'total': total,
+        }, context_instance=RequestContext(request))
+
 
