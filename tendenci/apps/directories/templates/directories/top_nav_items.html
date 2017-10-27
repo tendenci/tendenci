@@ -70,6 +70,15 @@
                             </span>
                         </li>
                     {% endif %}
+                    
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:directories_category_changelist' %}">{% trans "Manage Categories" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                    
                 </ul>
 
                 {% if app_object %}
@@ -97,12 +106,6 @@
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'directory.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
-                                    </span>
-                                </li>
-
-                                <li class="content-item">
-                                    <span class="app-name">
-                                        <a href="{% url 'category.update' app_object.opt_app_label app_object.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
                                     </span>
                                 </li>
 

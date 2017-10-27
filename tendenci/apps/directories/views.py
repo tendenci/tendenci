@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import subprocess, os, time
 import string
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -29,6 +30,7 @@ from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
 from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
@@ -56,8 +58,6 @@ def search(request, template_name="directories/search.html"):
     filters = get_query_filters(request.user, 'directories.view_directory')
     directories = Directory.objects.filter(filters).distinct()
     cat = None
-    category = None
-    sub_category = None
 
     if not request.user.is_anonymous():
         directories = directories.select_related()
@@ -67,44 +67,37 @@ def search(request, template_name="directories/search.html"):
     form = DirectorySearchForm(request.GET, is_superuser=request.user.is_superuser)
 
     if form.is_valid():
-        cat = form.cleaned_data['search_category']
-        category = form.cleaned_data['category']
-        sub_category = form.cleaned_data['sub_category']
+        search_category = form.cleaned_data['search_category']
+        query = form.cleaned_data.get('q')
         search_method = form.cleaned_data['search_method']
+        cat = form.cleaned_data.get('cat')
+        sub_cat = form.cleaned_data.get('sub_cat')
+
+        if cat:
+            directories = directories.filter(cat=cat)
+        if sub_cat:
+            directories = directories.filter(sub_cat=sub_cat)
 
         if query and 'tag:' in query:
             tag = query.strip('tag:')
             directories = directories.filter(tags__icontains=tag)
-        elif query and cat:
+        elif query and search_category:
             search_type = '__iexact'
             if search_method == 'starts_with':
                 search_type = '__istartswith'
             elif search_method == 'contains':
                 search_type = '__icontains'
 
-            search_filter = {'%s%s' % (cat, search_type): query}
+            search_filter = {'%s%s' % (search_category, search_type): query}
             directories = directories.filter( **search_filter)
-
-    if category:
-        directories = directories.filter(categories__category__id=category)
-    if sub_category:
-        directories = directories.filter(categories__parent__id=sub_category)
 
     directories = directories.order_by('headline')
 
     EventLog.objects.log()
 
-    try:
-        category = int(category)
-    except:
-        category = 0
-    categories, sub_categories = Directory.objects.get_categories(category=category)
-
     return render_to_response(template_name,
         {'directories': directories,
-        'categories': categories,
         'form' : form,
-        'sub_categories': sub_categories,
         'a_to_z': string.lowercase[:26]},
         context_instance=RequestContext(request))
 
@@ -301,6 +294,25 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 
     return render_to_response(template_name, {'directory': directory, 'form':form},
         context_instance=RequestContext(request))
+
+
+@is_enabled('directories')
+@login_required
+def get_subcategories(request):
+    if request.is_ajax() and request.method == "POST":
+        category = request.POST.get('category', None)
+        if category:
+            sub_categories = DirectoryCategory.objects.filter(parent=category)
+            count = sub_categories.count()
+            sub_categories = list(sub_categories.values_list('pk','name'))
+            data = json.dumps({"error": False,
+                               "sub_categories": sub_categories,
+                               "count": count})
+        else:
+            data = json.dumps({"error": True})
+
+        return HttpResponse(data, content_type="text/plain")
+    raise Http404
 
 
 @is_enabled('directories')

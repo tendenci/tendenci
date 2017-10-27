@@ -224,7 +224,13 @@ def process_export(export_fields='all_fields', export_status_detail='',
 
     with default_storage.open(file_name_temp, 'wb') as csvfile:
         csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(field_list)
+        fields_names = list(field_list)
+        for i, item in enumerate(fields_names):
+            if item == 'headline':
+                fields_names[i] = 'name'
+            if item == 'body':
+                fields_names[i] = 'description'
+        csv_writer.writerow(fields_names)
 
         directories = Directory.objects.all()
         if export_status_detail:

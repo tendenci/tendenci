@@ -52,7 +52,7 @@ class PagesExportTask(Task):
             # get the available fields from the model's meta
             opts = page._meta
             d = {}
-            for f in opts.fields + opts.many_to_many:
+            for f in opts.get_fields() + opts.many_to_many:
                 if f.name in fields: # include specified fields only
                     if isinstance(f, ManyToManyField):
                         value = ["%s" % obj for obj in f.value_from_object(page)]
@@ -61,6 +61,7 @@ class PagesExportTask(Task):
                     if isinstance(f, GenericRelation):
                         generics = f.value_from_object(page).all()
                         value = ["%s" % obj for obj in generics]
+                        value = ', '.join(value)
                     else:
                         value = f.value_from_object(page)
                     d[f.name] = value

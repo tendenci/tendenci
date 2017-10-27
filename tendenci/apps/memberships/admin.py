@@ -614,7 +614,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
 
 
 class MembershipTypeAdmin(TendenciBaseModelAdmin):
-    list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
+    list_display = ['name', 'price', 'admin_fee', 'show_group', 'require_approval',
                      'allow_renewal', 'renewal_price', 'renewal',
                      'admin_only', 'status_detail']
     list_filter = ['name', 'price', 'status_detail']
@@ -651,6 +651,18 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
     class Media:
         js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
               "%sjs/membtype.js" % settings.STATIC_URL,)
+        
+    def show_group(self, instance):
+        if instance.group:
+            return '<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
+                    reverse('group.detail', args=[instance.group.slug]),
+                    instance.group,
+                    instance.group.id
+                )
+        return ""
+    show_group.short_description = u'Group'
+    show_group.allow_tags = True
+    show_group.admin_order_field = 'group'
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)

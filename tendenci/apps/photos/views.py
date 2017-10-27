@@ -463,11 +463,8 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
 
         messages.add_message(request, messages.SUCCESS, _('Photo Set %(set)s deleted' % {'set':photo_set}))
 
-        if "delete" in request.META.get('HTTP_REFERER', None):
-            #if the referer is the get page redirect to the photo set search
-            return redirect('photoset_latest')
-
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
+        # redirect to the photo set search
+        return redirect('photoset_latest')
 
     return render_to_response(template_name, {
         'photo_set': photo_set,
