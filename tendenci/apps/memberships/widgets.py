@@ -185,7 +185,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
                                   ("0", mark_safe("%s %s %s" % (rendered_fixed_option1_month,
                                                       rendered_fixed_option1_day,
                                                       rendered_fixed_option1_year))),
-                                  ("1", mark_safe("%s %s of current year" % \
+                                  ("1", mark_safe("%s %s of current/next year" % \
                                                   (rendered_fixed_option2_month,
                                                    rendered_fixed_option2_day))))
 
