@@ -19,12 +19,15 @@
 {% block content %}
 
 <div class="month-view week-view">
+  <div class="row">
+    <div class="col-md-9 col-xs-12">
 
-      <div class="month-names">
-          <div class="month-name previous"><a href="{{ prev_week_url }}">&laquo;</a></div>
-          <div class="month-name current">{% trans "Week of " %}{{ cur_date|date:"n/j/Y" }}</div>
-          <div class="month-name next"><a href="{{ next_week_url }}">&raquo;</a></div>
-          <div style="clear:both;"></div>
+      <div class="page-header">
+        <ul class="list-inline text-center">
+          <li><h1>{% trans "Week of " %}{{ cur_date|date:"n/j/Y" }}</h1></li>
+          <li class="pull-left"><h1><a href="{{ prev_week_url }}"> <i class="fa fa-angle-left"></i></a></h1></li>
+          <li class="pull-right"><h1><a href="{{ next_week_url }}"><i class="fa fa-angle-right"></i></a></h1></li>
+        </ul>
       </div>
 
       <div style="clear:both;"></div>
@@ -63,10 +66,10 @@
                 <a href="{{ event.get_absolute_url }}" class="time-stamp">
                   {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}<br/>{% endif %}
                 </a>
+                <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
                 <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
                   <span itemprop="name">{{ event.title }}</span>
                 </a>
-                <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
                 <br><a href="{{ event.get_absolute_url }}" itemprop="description">{{ event.description|striptags|safe|truncatewords:5 }}</a>
                 <a class='click-mask' href="{{ event.get_absolute_url }}"></a>
               </div>
@@ -81,13 +84,27 @@
 
         </div> <!-- END month-wrap -->
 
-    {# TODO: If there are no types, don't show sidebar #}
-        <div class="side-bar">
+      </div> <!-- END calendar-wrap -->
 
+    </div> <!-- END col -->
+    {# TODO: If there are no types, don't show sidebar #}
+    <div class="col-md-3 col-xs-12">
+
+      <div class="event-buttons btn-group-vertical" role="group" aria-label="Events Views">
+        <a href="{% url "event.month" %}" class="btn btn-primary">{% trans "Month View" %}</a>
+        <a href="{% url "event.week" %}" class="btn btn-secondary">{% trans "Week View" %}</a>
+        <a href="{% url "event.today" %}" class="btn btn-primary">{% trans "Day View" %}</a>
+        <a href="{% url "event.search" %}" class="btn btn-primary">{% trans "List/Search" %}</a>
+        <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
+      </div>
+
+      <br/>
+      <div class="well">
+        <div class="month-side-bar">
           <div class="header">
             {% trans "Legend" %}
+            <hr />
           </div>
-
           <div class="types">
 
             {% for type in types %}
@@ -99,11 +116,15 @@
             {% endfor %}
 
           </div> <!-- END types -->
-        </div> <!-- END side-bar -->
-    <div style="clear:both;"></div>
-    </div> <!-- END calendar-wrap -->
+          <div style="clear:both;"></div>
+        </div> <!-- END month-side-bar -->
+      </div> <!-- END well -->
 
+    </div> <!-- END col -->
+  </div> <!-- END row -->
 </div> <!-- END month-view week-view -->
+
+<br/><br/>
 
 {% endblock %}
 
