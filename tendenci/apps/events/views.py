@@ -2814,9 +2814,9 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         'month_names':month_names,
         'year':year,
         'weekdays':weekdays,
+        'today':date.today(),
         'types':types,
         'type':type,
-        'date': date,
         },
         context_instance=RequestContext(request))
 
@@ -2883,6 +2883,7 @@ def week_view(request, year=None, month=None, day=None, template_name='events/we
         'next_week_url':next_week_url,
         'prev_week_url':prev_week_url,
         'cur_date':tgtdate,
+        'today':date.today(),
         'types':types,
         },
         context_instance=RequestContext(request))

@@ -45,7 +45,7 @@
           <div class="month-grid">
             {% for day in week %}
 
-            <div class="day{% if today.date == day %} today{% endif %}">
+            <div class="day{% if today == day %} today{% endif %}">
               <div class="date-numeral"><a href="{% url "event.day" day.year day.month day.day %}">{{ day.day }}</a></div>
 
               {% event_list day 'single_day' as events %}
