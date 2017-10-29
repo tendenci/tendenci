@@ -21,6 +21,14 @@
 <div class="day-view">
     <h2>{{ date|date:"l, F j Y" }}</h2>
 
+    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Events Views">
+      <a href="{% url "event.month" %}" class="btn btn-primary">{% trans "Month View" %}</a>
+      <a href="{% url "event.week" %}" class="btn btn-primary">{% trans "Week View" %}</a>
+      <a href="{% url "event.today" %}" class="btn btn-secondary">{% trans "Day View" %}</a>
+      <a href="{% url "event.search" %}" class="btn btn-primary">{% trans "List/Search" %}</a>
+      <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
+    </div>
+
 <form class="search-form" action="{% url "event.today" %}" method="get">
 
 <div class="form-field clearfix">
