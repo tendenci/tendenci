@@ -16,6 +16,8 @@
 
         <li class="pull-right">
             <a class="t-meta-print-link" href="{% url "event.print_view" event.pk %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a>
+            <br/>
+            <a class="t-meta-print-link" href="{% url "event.ics_single" event.pk %}">{% trans "Calendar ICS" %}</a>
         </li>
         {% if tags %}
         <li><strong>{% trans "Tags:" %} </strong>
