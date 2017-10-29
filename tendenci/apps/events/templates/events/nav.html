@@ -152,3 +152,21 @@
  to any calendar application such as MS Outlook, Google calendar, Apple iCal with the following link.{% endblocktrans %}</p>
 <p ><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.ics" %}">{{ SITE_GLOBAL_SITEURL }}{% url "event.ics" %}</a>
 </div>
+<script type="text/javascript">
+  // Dialog
+  $('#event_export_dialog').dialog({
+    autoOpen: false,
+    width: 600,
+    buttons: {
+      "Close": function() {
+        $(this).dialog("close");
+      }
+    }
+  });
+  // Dialog Link
+  $('#event_export_link').click(function(){
+    $('#event_export_dialog').show();
+    $('#event_export_dialog').dialog('open');
+    return false;
+  });
+</script>
