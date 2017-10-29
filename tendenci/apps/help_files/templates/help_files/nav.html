@@ -19,7 +19,7 @@
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
@@ -28,15 +28,14 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a>
-        {% if nav_object %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a>
         <div class="dropdown-menu">
+        {% if nav_object %}
         <ul class="first">
             <li class="heading">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</li>
             <li class="divider"></li>
         {% else %}
-            <div>
-            <ul class="dropdown-menu">
+        <ul>
         {% endif %}
             {% if can_edit_setting %}
                 <li><a href="{% url "settings.index" "module" "help_files" %}">{% trans "Settings" %}</a></li>
