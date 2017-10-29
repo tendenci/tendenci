@@ -5,7 +5,7 @@
 {% load category_tags %}
 {% load i18n %}
 
-{% block title %}{{ cur_date|date:"F j, Y" }} - {% trans 'Weekly Calendar' %} {% endblock %}
+{% block title %}{{ cur_date|date:"F j, Y" }} - {% trans 'Week Calendar' %} {% endblock %}
 {% block meta_description %} {% endblock %}
 {% block meta_keywords %} {% endblock %}
 
@@ -51,7 +51,7 @@
             <div class="day{% if today == day %} today{% endif %}">
               <div class="date-numeral"><a href="{% url "event.day" day.year day.month day.day %}">{{ day.day }}</a></div>
 
-              {% event_list day 'single_day' as events %}
+              {% event_list day type 'single_day' as events %}
               {% if events %}
 
               {% for event in events %}
@@ -102,18 +102,33 @@
       <div class="well">
         <div class="month-side-bar">
           <div class="header">
-            {% trans "Legend" %}
+            <h2>{% trans "Filter by Type" %}</h2>
             <hr />
           </div>
           <div class="types">
-
-            {% for type in types %}
-
-            <div class="type">
-              <a style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.border_color }};">{{ type }}</a>
+            <div class="type all-types">
+              <a class="btn btn-default" href="{% url "event.week" cur_date.year cur_date.month cur_date.day %}">
+                {% trans "All Events" %}
+              </a>
             </div>
 
+            {% with type as curr_type %}
+            {% for type in types %}
+
+            {% if curr_type == type.slug %}
+            <div class="type">
+              <a class="btn btn-default" style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.border_color }};"
+              href="{% url "event.week" cur_date.year cur_date.month cur_date.day type.slug %}?latest">{{ type }}</a>
+            </div>
+            {% else %}
+            <div class="type">
+              <a class="btn btn-default" style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.bg_color }};"
+              href="{% url "event.week" cur_date.year cur_date.month cur_date.day type.slug %}?latest">{{ type }}</a>
+            </div>
+            {% endif %}
+
             {% endfor %}
+            {% endwith %}
 
           </div> <!-- END types -->
           <div style="clear:both;"></div>

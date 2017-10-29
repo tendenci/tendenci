@@ -73,6 +73,7 @@ urlpatterns = patterns(
     # month-view(s) / day-view
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.day_view', name='event.day'),
     url(r'^%s/week/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.week_view', name='event.week'),
+    url(r'^%s/week/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.week_view', name='event.week'),
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/$' % urlpath, 'views.month_view', name='event.month'),
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view', name='event.month'),
 
