@@ -78,7 +78,7 @@
                 </a>
                 <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
                 <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
-                  <span itemprop="name">{{ event.title|slice:":15" }}&nbsp;...</span>
+                  <span itemprop="name">{{ event.title|truncatechars:15 }}</span>
                 </a>
                 <a class='click-mask' href="{{ event.get_absolute_url }}"></a>
               </div>
