@@ -288,6 +288,7 @@
 {% if request.user == user_this or request.user.profile.is_superuser %}
     <div class="events info">
     <h2>{% trans "Upcoming Event Registrations" %}</h2>
+    <a href="{% url 'event.myevents' %}?all=true">{% trans "View All Event Registrations" %}</a>
     {% if registrations %}
     <table>
     {% for reg in registrations %}
