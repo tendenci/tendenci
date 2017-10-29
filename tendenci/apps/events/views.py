@@ -5,6 +5,7 @@
 import re
 import calendar
 import itertools
+import os
 import subprocess
 import time
 import xlwt
@@ -17,6 +18,7 @@ from copy import deepcopy
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 import simplejson as json
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
@@ -126,6 +128,7 @@ from tendenci.apps.events.utils import (
     clean_price,
     get_event_spots_taken,
     get_ievent,
+    get_vevents,
     copy_event,
     email_admins,
     get_active_days,
@@ -136,8 +139,8 @@ from tendenci.apps.events.utils import (
     create_member_registration,
     get_recurrence_dates,
     get_week_days,
-    next_month,
-    prev_month)
+    get_next_month,
+    get_prev_month)
 from tendenci.apps.events.addons.forms import RegAddonForm
 from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.apps.events.addons.utils import get_available_addons
@@ -411,9 +414,6 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
 
 def icalendar(request):
-    import os
-    from django.conf import settings
-    from tendenci.apps.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
     file_name = ''
@@ -446,7 +446,6 @@ def icalendar(request):
         ics_str += "VERSION:2.0\n"
         ics_str += "METHOD:PUBLISH\n"
 
-        # function get_vevents in events.utils
         ics_str += get_vevents(request.user, d)
 
         ics_str += "END:VCALENDAR\n"
@@ -461,7 +460,6 @@ def icalendar(request):
 
 
 def icalendar_single(request, id):
-    from tendenci.apps.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
 
@@ -480,7 +478,6 @@ def icalendar_single(request, id):
     ics_str += "VERSION:2.0\n"
     ics_str += "METHOD:PUBLISH\n"
 
-    # function get_vevents in events.utils
     ics_str += get_ievent(request.user, d, id)
 
     ics_str += "END:VCALENDAR\n"
@@ -1152,7 +1149,7 @@ def get_place(request):
 
 @is_enabled('events')
 @login_required
-def add(request, year=None, month=None, day=None, \
+def add(request, year=None, month=None, day=None,
     form_class=EventForm, template_name="events/add.html"):
     """
     Add event page.  You can preset the start date of
@@ -1568,7 +1565,7 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
     event = get_object_or_404(Event, pk=event_id)
 
     reg_conf=event.registration_configuration
-    anony_reg8n = get_setting('module', 'events', 'anonymousregistration')
+    #anony_reg8n = get_setting('module', 'events', 'anonymousregistration')
 
     # check spots available
     limit = event.get_limit()
@@ -1883,7 +1880,7 @@ def register(request, event_id=0,
                     registrant.is_valid(),
                     addon_formset.is_valid()]):
 
-                args = [request, event, reg_form, registrant, addon_formset, \
+                args = [request, event, reg_form, registrant, addon_formset,
                         pricing, pricing and pricing.price or 0]
                 if 'confirmed' in request.POST:
 
@@ -2740,8 +2737,8 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
 
-    next_month, next_year = next_month(month, year)
-    prev_month, prev_year = prev_month(month, year)
+    next_month, next_year = get_next_month(month, year)
+    prev_month, prev_year = get_prev_month(month, year)
 
     if type and "latest" in request.GET:
         current_type = Type.objects.filter(slug=type)
@@ -3210,7 +3207,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         if reg_form_field_entries:
             for field_entry in reg_form_field_entries:
                 key = str(field_entry[0])
-                if not key in roster_fields_dict:
+                if key not in roster_fields_dict:
                     roster_fields_dict[key] = []
                 roster_fields_dict[key].append({'label': field_entry[1], 'value': field_entry[2]})
 
@@ -3249,7 +3246,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     reg8n_to_invoice_dict = {}
     invoice_fields = ('id', 'total', 'balance', 'admin_notes', 'tender_date')
     for item in reg8n_to_invoice_objs:
-        if item[1] == None:
+        if item[1] is None:
             reg8n_to_invoice_dict[item[0]] = dict(zip(invoice_fields, (0, 0, 0, '', '')))
         else:
             reg8n_to_invoice_dict[item[0]] = dict(zip(invoice_fields, item[1:]))
@@ -3285,7 +3282,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     for registrant in registrants:
         # assign pricing title to the registrants
         key = reg7n_to_pricing_dict[registrant.id]
-        if not key in pricing_titles_dict:
+        if key not in pricing_titles_dict:
             if reg7n_to_reg8n_dict[registrant.id] in reg8n_to_pricing_dict:
                 key = reg8n_to_pricing_dict[reg7n_to_reg8n_dict[registrant.id]]
         if key in pricing_titles_dict:
@@ -3587,7 +3584,7 @@ def edit_email(request, event_id, form_class=EmailForm, template_name='events/ed
             form = form_class(initial={
                                      'subject': '{{ event_title }}',
                                      'body': openingtext,
-                                     'reply_to': organizer and organizer.user \
+                                     'reply_to': organizer and organizer.user
                                       and organizer.user.email or request.user.email,
                                      'sender_display': organizer and organizer.name})
         else:
@@ -3720,7 +3717,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
     event = get_object_or_404(Event, pk=event_id)
 
     # if they can view registrants or edit the event, they can export it
-    if not (has_perm(request.user, 'events.view_registrant') or \
+    if not (has_perm(request.user, 'events.view_registrant') or
              has_perm(request.user, 'events.change_event', event)):
         raise Http403
 
@@ -3944,36 +3941,36 @@ def delete_speaker(request, id):
     return redirect('event', id=event.id)
 
 
-@is_enabled('events')
-@login_required
-def delete_group_pricing(request, id):
-    if not has_perm(request.user,'events.delete_registrationconfiguration'):
-        raise Http403
+#@is_enabled('events')
+#@login_required
+#def delete_group_pricing(request, id):
+#    if not has_perm(request.user,'events.delete_registrationconfiguration'):
+#        raise Http403
+#
+#    gp = get_object_or_404(GroupRegistrationConfiguration, id = id)
+#    event = Event.objects.get(registration_configuration=gp.config)
+#    msg_string = 'Successfully deleted Group Pricing for %s' % gp
+#    messages.add_message(request, messages.SUCCESS, _(msg_string))
+#
+#    gp.delete()
+#
+#    return redirect('event', id=event.id)
 
-    gp = get_object_or_404(GroupRegistrationConfiguration, id = id)
-    event = Event.objects.get(registration_configuration=gp.config)
-    msg_string = 'Successfully deleted Group Pricing for %s' % gp
-    messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-    gp.delete()
-
-    return redirect('event', id=event.id)
-
-
-@is_enabled('events')
-@login_required
-def delete_special_pricing(request, id):
-    if not has_perm(request.user,'events.delete_registrationconfiguration'):
-        raise Http403
-
-    s = get_object_or_404(SpecialPricing, id = id)
-    event = Event.objects.get(registration_configuration=s.config)
-    msg_string = 'Successfully deleted Special Pricing for %s' % s
-    messages.add_message(request, messages.SUCCESS, _(msg_string))
-
-    s.delete()
-
-    return redirect('event', id=event.id)
+#@is_enabled('events')
+#@login_required
+#def delete_special_pricing(request, id):
+#    if not has_perm(request.user,'events.delete_registrationconfiguration'):
+#        raise Http403
+#
+#    s = get_object_or_404(SpecialPricing, id = id)
+#    event = Event.objects.get(registration_configuration=s.config)
+#    msg_string = 'Successfully deleted Special Pricing for %s' % s
+#    messages.add_message(request, messages.SUCCESS, _(msg_string))
+#
+#    s.delete()
+#
+#    return redirect('event', id=event.id)
 
 
 @is_enabled('events')
@@ -4314,7 +4311,7 @@ def myevents(request, template_name='events/myevents.html'):
 
     events = events.order_by('-start_dt')
 
-    types = Type.objects.all().order_by('name')
+    #types = Type.objects.all().order_by('name')
 
     EventLog.objects.log()
 

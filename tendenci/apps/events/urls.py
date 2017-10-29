@@ -61,8 +61,8 @@ urlpatterns = patterns(
 
     #delete
     url(r'^%s/speaker/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_speaker', name='event.delete_speaker'),
-    url(r'^%s/group_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_group_pricing', name='event.delete_group_pricing'),
-    url(r'^%s/special_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_special_pricing', name='event.delete_special_pricing'),
+    #url(r'^%s/group_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_group_pricing', name='event.delete_group_pricing'),
+    #url(r'^%s/special_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_special_pricing', name='event.delete_special_pricing'),
 
     # registration confirmation
     url(r'^%s/(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$' % urlpath,

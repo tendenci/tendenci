@@ -503,7 +503,7 @@ def degrade_tags(str):
     return str
 
 
-def next_month(month, year):
+def get_next_month(month, year):
     # TODO: cleaner way to get next date
     next_month = (month+1)%13
     next_year = year
@@ -513,7 +513,7 @@ def next_month(month, year):
 
     return (next_month, next_year)
 
-def prev_month(month, year):
+def get_prev_month(month, year):
     # TODO: cleaner way to get previous date
     prev_month = (month-1)%13
     prev_year = year
