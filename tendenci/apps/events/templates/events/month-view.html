@@ -98,8 +98,12 @@
     {# TODO: If there are no types, don't show sidebar #}
     <div class="col-md-3 col-xs-12">
 
-      <div class="event-buttons">
-        <a href="/events/search/" class="btn btn-primary">List View</a>
+      <div class="event-buttons btn-group-vertical" role="group" aria-label="Events Views">
+        <a href="{% url "event.month" %}" class="btn btn-secondary">{% trans "Month View" %}</a>
+        <a href="{% url "event.week" %}" class="btn btn-primary">{% trans "Week View" %}</a>
+        <a href="{% url "event.today" %}" class="btn btn-primary">{% trans "Day View" %}</a>
+        <a href="{% url "event.search" %}" class="btn btn-primary">{% trans "List/Search" %}</a>
+        <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
       </div>
 
       <br/>
