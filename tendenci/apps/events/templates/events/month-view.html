@@ -20,14 +20,6 @@
 {% block content %}
 
 <div class="month-view">
-
-  <div class="event-buttons pull-right">
-    <ul class="nav nav-pills">
-        <br /><br /><br />
-      <li><a href="/events/search/" class="btn btn-primary">List View</a></li>
-    </ul>
-  </div>
-
   <div class="row">
     <div class="col-md-9 col-xs-12">
 
@@ -106,15 +98,17 @@
     {# TODO: If there are no types, don't show sidebar #}
     <div class="col-md-3 col-xs-12">
 
-      <br /><br/>
+      <div class="event-buttons">
+        <a href="/events/search/" class="btn btn-primary">List View</a>
+      </div>
+
+      <br/>
       <div class="well">
         <div class="month-side-bar">
-
           <div class="header">
             <h2>{% trans "Filter by Type" %}</h2>
             <hr />
           </div>
-
           <div class="types">
             <div class="type all-types">
               <a class="btn btn-default" href="{% url "event.month" year month %}">
@@ -147,7 +141,6 @@
 
     </div> <!-- END col -->
   </div> <!-- END row -->
-
 </div> <!-- END month-view -->
 
 <br/><br/>
