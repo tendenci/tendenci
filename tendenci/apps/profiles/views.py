@@ -119,7 +119,7 @@ def index(request, username='', template_name="profiles/index.html"):
             status=True) & user_this.membershipdefault_set.filter(
                 active_qs | expired_qs)
 
-    registrations = Registrant.objects.filter(user=user_this)
+    registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
 
     EventLog.objects.log(instance=profile)
 
