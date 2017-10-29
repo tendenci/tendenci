@@ -22,7 +22,7 @@
 
       <div class="month-names">
           <div class="month-name previous"><a href="{{ prev_week_url }}">&laquo;</a></div>
-          <div class="month-name current"><a>{% trans "Week of " %}{{ cur_date|date:"n/j/Y" }}</a></div>
+          <div class="month-name current">{% trans "Week of " %}{{ cur_date|date:"n/j/Y" }}</div>
           <div class="month-name next"><a href="{{ next_week_url }}">&raquo;</a></div>
           <div style="clear:both;"></div>
       </div>
