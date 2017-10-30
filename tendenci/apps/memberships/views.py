@@ -1012,69 +1012,23 @@ def membership_default_add(request, slug='', membership_id=None,
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
-    user_initial = {}
-    if user:
-        user_initial = {
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-        }
-
     user_form = UserForm(
         app_fields,
         request.POST or None,
         request=request,
         is_corp_rep=is_corp_rep,
-        initial=user_initial)
+        instance=user)
 
     if not (request.user.profile.is_superuser or is_corp_rep) and user and 'username' in user_form.fields:
         # set username as readonly field for regular logged-in users
         # we don't want them to change their username, but they can change it through profile
         user_form.fields['username'].widget.attrs['readonly'] = 'readonly'
 
-    profile_initial = {}
-    if user:
-        profile_initial = {
-            'salutation': user.profile.salutation,
-            'phone': user.profile.phone,
-            'phone2': user.profile.phone2,
-            'address': user.profile.address,
-            'address2': user.profile.address2,
-            'city': user.profile.city,
-            'state': user.profile.state,
-            'zipcode': user.profile.zipcode,
-            'county': user.profile.county,
-            'country': user.profile.country,
-            'address_type': user.profile.address_type,
-            'url': user.profile.url,
-            'display_name': user.profile.display_name,
-            'mailing_name': user.profile.mailing_name,
-            'company': user.profile.company,
-            'position_title': user.profile.position_title,
-            'position_assignment': user.profile.position_assignment,
-            'fax': user.profile.fax,
-            'work_phone': user.profile.work_phone,
-            'home_phone': user.profile.home_phone,
-            'mobile_phone': user.profile.mobile_phone,
-            'email2': user.profile.email2,
-            'dob': user.profile.dob,
-            'spouse': user.profile.spouse,
-            'department': user.profile.department,
-            # alternate address fields goes here
-            'address_2': user.profile.address_2,
-            'address2_2': user.profile.address2_2,
-            'city_2': user.profile.city_2,
-            'state_2': user.profile.state_2,
-            'zipcode_2': user.profile.zipcode_2,
-            'county_2': user.profile.county_2,
-            'country_2': user.profile.country_2,
-        }
-
+    profile = user.profile if user else None
     profile_form = ProfileForm(
         app_fields,
         request.POST or None,
-        initial=profile_initial
+        instance=profile
     )
 
     params = {
@@ -1104,6 +1058,7 @@ def membership_default_add(request, slug='', membership_id=None,
         membership_initial = {
             'membership_type': membership.membership_type,
             'payment_method': membership.payment_method,
+            'groups': [group.id for group in membership.groups.all()],
             'certifications': membership.certifications,
             'work_experience': membership.work_experience,
             'referral_source': membership.referral_source,
@@ -1138,7 +1093,7 @@ def membership_default_add(request, slug='', membership_id=None,
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
 
-    if (not app.discount_eligible or
+    if 'discount_code' in membership_form.fields and (not app.discount_eligible or
         not Discount.has_valid_discount(model=MembershipSet._meta.model_name)):
         del membership_form.fields['discount_code']
 
