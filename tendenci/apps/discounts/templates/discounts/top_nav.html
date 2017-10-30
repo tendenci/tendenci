@@ -1,21 +1,16 @@
-{% extends "top_menu/admin_top-new.html" %}
+{% extends 'top_menu/admin_top-new.html' %}
 {% load i18n %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load discount_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/money_delete.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_DISCOUNTS_LABEL_PLURAL trans "Discounts" %}{% endblock %}
 
 {% block current_app %}
-    <li class="dropdown">
-         <button type="button" class="btn btn-primary" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% spaceless %}
-            <img class="nav-icon" src="{% static 'famfamfam/icons/money_delete.png' %}">
-            <span class="nav-label">{% firstof MODULE_DISCOUNTS_LABEL_PLURAL trans "Discounts" %}</span>
-            <span class="caret"></span>
-        {% endspaceless %}</button>
-
-        {% if discount %}
-            {% discount_current_app request.user discount %}
-        {% else %}
-            {% discount_current_app request.user %}
-        {% endif %}
-    </li>
+    {% if discount %}
+        {% discount_current_app request.user discount %}
+    {% else %}
+        {% discount_current_app request.user %}
+    {% endif %}
 {% endblock %}
