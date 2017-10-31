@@ -1871,11 +1871,9 @@ def get_membership_summary_data():
         date_to_expire = now - relativedelta(days=grace_period)
         mems = MembershipDefault.objects.filter(
                     membership_type=membership_type)
-        active = mems.filter(status=True, status_detail='active',
-                             expire_dt__gt=now)
+        active = mems.filter(status=True, status_detail='active')
         expired = mems.filter(status=True,
-                              status_detail__in=('expired', 'active'),
-                              expire_dt__lt=date_to_expire)
+                              status_detail='expired')
         in_grace_period = mems.filter(status=True,
                               status_detail='active',
                               expire_dt__lte=now,
@@ -1887,10 +1885,8 @@ def get_membership_summary_data():
         expired_count = expired.count()
         in_grace_period_count = in_grace_period.count()
         type_total = sum([active_count,
-                            pend_count,
-                            expired_count,
-                            in_grace_period_count
-                            ])
+                          pend_count,
+                          expired_count])
 
         total_active += active_count
         total_pending += pend_count

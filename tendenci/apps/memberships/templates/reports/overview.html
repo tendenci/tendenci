@@ -33,14 +33,46 @@
                 <td>{{ type.active }}</td>
                 <td>{{ type.pending }}</td>
                 <td>{{ type.expired }}</td>
-                <td><strong><a href="{% url "admin:memberships_membershipdefault_changelist" %}?membership_type__id__exact={{ type.type.id  }}">{{ type.total }}</a></strong></td>
+                <td>
+                    <strong>
+                        {% if type.total %}
+                		<a href="{% url "admin:memberships_membershipdefault_changelist" %}?membership_type__id__exact={{ type.type.id  }}">{{ type.total }}</a>
+                		{% else %}
+                		{{ type.total }}
+                		{% endif %}
+                    </strong>
+                </td>
             </tr>
             {% endfor %}
             <tr>
                 <td><strong>{% trans 'Total' %}</strong></td>
-                <td><strong>{{ total.total_active }}</strong></td>
-                <td><strong>{{ total.total_pending }}</strong></td>
-                <td><strong>{{ total.total_expired }}</strong></td>
+                <td>
+                   <strong>
+                   {% if total.total_active > 0 %}
+                	<a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=active">{{ total.total_active }}</a>
+                	{% else %}
+                	{{ total.total_active }}
+                	{% endif %}
+                	</strong>
+                </td>
+                <td>
+                   <strong>
+                   {% if total.total_pending > 0 %}
+                	<a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=pending">{{ total.total_pending }}</a>
+                	{% else %}
+                	{{ total.total_pending }}
+                	{% endif %}
+                	</strong>
+                </td>
+                <td>
+                   <strong>
+                   {% if total.total_expired > 0 %}
+                	<a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=expired">{{ total.total_expired }}</a>
+                	{% else %}
+                	{{ total.total_expired }}
+                	{% endif %}
+                	</strong>
+                </td>
                 <td><strong>{{ total.total_total }}</strong></td>
             </tr>
         </tbody>
