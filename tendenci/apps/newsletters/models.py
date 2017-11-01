@@ -228,10 +228,8 @@ class Newsletter(models.Model):
 
         if '[content]' in content:
             full_content = data.get('opening_text') + \
-                            data.get('login_content') + \
-                            data.get('footer_text') + \
-                            data.get('unsubscribe_text') + \
-                            data.get('browser_text')
+                           data.get('login_content')
+                            
             content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
@@ -254,6 +252,12 @@ class Newsletter(models.Model):
 
         if '[resumes]' in content:
             content = content.replace('[resumes]', data.get('resumes_content'))
+            
+        if '[footer]' in content:
+            content = content.replace('[footer]', data.get('footer_text'))
+            
+        if '[unsubscribe]' in content:
+            content = content.replace('[unsubscribe]', data.get('unsubscribe_text'))
 
         content = content.replace('[site_url]', get_setting('site', 'global', 'siteurl'))
         content = content.replace('[site_mailing_address]', get_setting('site', 'global', 'sitemailingaddress'))
