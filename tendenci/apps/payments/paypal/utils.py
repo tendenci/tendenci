@@ -201,8 +201,9 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     payment = get_object_or_404(Payment, pk=paymentid)
     processed = False
 
-    # if balance==0, it means already processed
-    if payment.invoice.balance > 0:
+    if payment.is_approved:  # if already processed
+        return payment, processed
+
     # To prevent fraud, verify the following before updating the database:
     # 1) txn_id is not a duplicate to prevent someone from reusing an old,
     #    completed transaction.
@@ -211,9 +212,16 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     #    account.
     # 3) Other transaction details, such as the item number and price,
     #    to confirm that the price has not been changed.
-        is_valid = verify_no_fraud(response_d, payment)
+    if not verify_no_fraud(response_d, payment):
+        return payment, processed
 
-        if is_valid:
+    with transaction.atomic():
+        # verify_no_fraud() cannot be run within a transaction, so we must
+        # re-retrieve payment and re-check payment.is_approved within a
+        # transaction after calling verify_no_fraud() in order to prevent
+        # duplicate processing of simultaneous redundant payment requests
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=paymentid)
+        if not payment.is_approved:  # if not already processed
             charset = response_d.get('charset', '')
             # make sure data is encoded in utf-8 before processing
             if charset and not charset in ('ascii', 'utf8', 'utf-8'):

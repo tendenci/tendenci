@@ -3,6 +3,7 @@ import hmac
 import hashlib
 from django.conf import settings
 from django.http import Http404
+from django.db import transaction
 from forms import PaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
@@ -76,9 +77,9 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
     except:
         x_invoice_num = 0
 
-    if True:
-        #payment = get_object_or_404(Payment, pk=x_invoice_num)
-        [payment] = Payment.objects.filter(pk=x_invoice_num)[:1] or [None]
+    with transaction.atomic():
+        #payment = get_object_or_404(Payment.objects.select_for_update(), pk=x_invoice_num)
+        payment = Payment.objects.select_for_update().first(pk=x_invoice_num)
         if not payment:
             return None
 
@@ -98,7 +99,7 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
             if my_md5_hash.lower() <> md5_hash.lower():
                 raise Http404
 
-        if payment.invoice.balance > 0:     # if balance==0, it means already processed
+        if not payment.is_approved:  # if not already processed
             payment_update_firstdatae4(request, response_d, payment)
             payment_processing_object_updates(request, payment)
 

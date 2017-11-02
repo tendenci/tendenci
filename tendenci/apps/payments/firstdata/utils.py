@@ -4,6 +4,7 @@ from datetime import datetime
 from django.conf import settings
 #from django.http import Http404
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from forms import FirstDataPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
@@ -82,10 +83,10 @@ def firstdata_thankyou_processing(request, response_d, **kwargs):
         paymentid = int(paymentid)
     except:
         paymentid = 0
-    if True:
-        payment = get_object_or_404(Payment, pk=paymentid)
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=paymentid)
 
-        if payment.invoice.balance > 0:     # if balance==0, it means already processed
+        if not payment.is_approved:  # if not already processed
             payment_update_firstdata(request, response_d, payment)
             payment_processing_object_updates(request, payment)
 

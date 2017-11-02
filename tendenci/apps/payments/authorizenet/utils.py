@@ -3,6 +3,7 @@ import hmac
 import hashlib
 from django.conf import settings
 from django.http import Http404
+from django.db import transaction
 from forms import SIMPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
@@ -74,8 +75,8 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
     except:
         x_invoice_num = 0
 
-    if True:
-        payment = get_object_or_404(Payment, pk=x_invoice_num)
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=x_invoice_num)
 
         # authenticate with md5 hash to make sure the response is securely
         # received from authorize.net.
@@ -95,7 +96,7 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
         #if my_md5_hash.lower() <> md5_hash.lower():
         #    raise Http404
 
-        if payment.invoice.balance > 0:     # if balance==0, it means already processed
+        if not payment.is_approved:  # if not already processed
             payment_update_authorizenet(request, response_d, payment)
             payment_processing_object_updates(request, payment)
 
